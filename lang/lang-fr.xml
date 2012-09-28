@@ -3324,6 +3324,6 @@
 <string id="No mail to send or all mail allready sent">Pas d'email a envoyer ou tout les mails ont déjà été envoyés</string>
 <string id="Back to directory">Retour à l'annuaire</string>
 <string id="Send email notifications to the imported users">Envoi des notifications vers les utilisateurs importés</string>
-<string id="Send an email for each created or updated account">Envoyer un email pour chaque compte créé ou mis a jour</string>
+<string id="Send an email for each created or updated account">Envoi d'un email pour chaque compte créé ou mis à jour</string>
 
 </fr>

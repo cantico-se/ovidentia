@@ -2165,7 +2165,6 @@ function processImportDbFile( $pfile, $id, $separ )
 			$babBody->msgerror = bab_translate("Passwords not match !!");
 			return false;
 			}
-		$password1=md5(mb_strtolower(bab_rp('password1')));
 		
 		
 
@@ -2266,6 +2265,7 @@ function processImportDbFile( $pfile, $id, $separ )
 									}
 								}
 								
+							
 							$password3 = bab_rp('password3');
 
 							if( $password3 !== '')
@@ -2273,12 +2273,12 @@ function processImportDbFile( $pfile, $id, $separ )
 									$pwd=false;
 									if (mb_strlen($arr[$password3]) >= 6)
 									{
-										$pwd = md5(mb_strtolower($arr[$password3]));
+										$pwd = mb_strtolower($arr[$password3]);
 									}
 								}
 							else
 								{
-								$pwd = $password1;
+								$pwd = mb_strtolower(bab_rp('password1'));
 								}
 							$replace = array( " " => "", "-" => "");
 							$hashname = md5(mb_strtolower(strtr($arr[$GLOBALS['givenname']].$arr[$GLOBALS['mn']].$arr[$GLOBALS['sn']], $replace)));
@@ -2294,7 +2294,7 @@ function processImportDbFile( $pfile, $id, $separ )
 							
 							if (false !== $pwd)
 							{
-								$query .= ", password='".$babDB->db_escape_string($pwd)."' ";
+								$query .= ", password='".$babDB->db_escape_string(md5($pwd))."' ";
 							}
 								
 							$query .= " where id='".$babDB->db_escape_string($rrr['id'])."'";
@@ -2410,16 +2410,16 @@ function processImportDbFile( $pfile, $id, $separ )
 							$replace = array( " " => "", "-" => "");
 							$hashname = md5(mb_strtolower(strtr($arr[$GLOBALS['givenname']].$arr[$GLOBALS['mn']].$arr[$GLOBALS['sn']], $replace)));
 							$hash=md5($arr[$GLOBALS['nickname']].$GLOBALS['BAB_HASH_VAR']);
-							if( $GLOBALS['password3'] !== '' && mb_strlen($arr[$GLOBALS['password3']]) >= 6)
+							if( bab_rp('password3') !== '' && mb_strlen($arr[bab_rp('password3')]) >= 6)
 								{
-								$pwd=md5(mb_strtolower($arr[$GLOBALS['password3']]));
+								$pwd = mb_strtolower($arr[bab_rp('password3')]);
 								}
 							else
 								{
-								$pwd = $password1;
+								$pwd = mb_strtolower(bab_rp('password1'));
 								}
 
-							$babDB->db_query("insert into ".BAB_USERS_TBL." set nickname='".$babDB->db_escape_string($arr[$GLOBALS['nickname']])."', firstname='".$babDB->db_escape_string($arr[$GLOBALS['givenname']])."', lastname='".$babDB->db_escape_string($arr[$GLOBALS['sn']])."', email='".$babDB->db_escape_string($arr[$GLOBALS['email']])."', hashname='".$hashname."', password='".$babDB->db_escape_string($pwd)."', confirm_hash='".$babDB->db_escape_string($hash)."', date=now(), is_confirmed='1', changepwd='1', lang=''");
+							$babDB->db_query("insert into ".BAB_USERS_TBL." set nickname='".$babDB->db_escape_string($arr[$GLOBALS['nickname']])."', firstname='".$babDB->db_escape_string($arr[$GLOBALS['givenname']])."', lastname='".$babDB->db_escape_string($arr[$GLOBALS['sn']])."', email='".$babDB->db_escape_string($arr[$GLOBALS['email']])."', hashname='".$hashname."', password='".$babDB->db_escape_string(md5($pwd))."', confirm_hash='".$babDB->db_escape_string($hash)."', date=now(), is_confirmed='1', changepwd='1', lang=''");
 							$iduser = $babDB->db_insert_id();
 							$babDB->db_query("insert into ".BAB_CALENDAR_TBL." (owner, type, actif) values ('".$babDB->db_escape_string($iduser)."', '1', ".$babDB->quote($pcalendar).")");
 							$babDB->db_query("update ".BAB_DBDIR_ENTRIES_TBL." set id_user='".$babDB->db_escape_string($iduser)."' where id='".$babDB->db_escape_string($idu)."'");
