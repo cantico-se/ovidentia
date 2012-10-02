@@ -1340,10 +1340,11 @@ class bab_siteMap {
 
 	/**
 	 * Select current node from the rewrite url and extract sitemap node url parameters in an array
-	 * @param	string	$rewrite
+	 * @param	string	$rewrite		Rewrite string (ex : babrw variable)
+	 * @param	bool	$setPosition	if set to true, the current page will be associated to the corresponding sitemap node
 	 * @return array
 	 */
-	public static function extractNodeUrlFromRewrite($rewrite)
+	public static function extractNodeUrlFromRewrite($rewrite, $setPosition = false)
 	{
 		$root = bab_siteMap::getFromSite();
 		$nodeId = $root->getNodeIdFromRewritePath($rewrite);
@@ -1353,7 +1354,10 @@ class bab_siteMap {
 			return false;
 		}
 		
-		bab_siteMap::setPosition($nodeId);
+		if ($setPosition)
+		{
+			bab_siteMap::setPosition($nodeId);
+		}
 
 
 		$node = $root->getNodeById($nodeId);
