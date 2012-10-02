@@ -702,7 +702,7 @@ function printBody()
 
 if (isset($_GET['babrw']))
 {
-	if (false !== $arr = bab_siteMap::extractNodeUrlFromRewrite($_GET['babrw']))
+	if (false !== $arr = bab_siteMap::extractNodeUrlFromRewrite($_GET['babrw'], true))
 	{
 		$_GET += $arr;
 		$_REQUEST += $arr;
