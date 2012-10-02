@@ -1250,6 +1250,34 @@ class bab_siteMap {
 		return self::$current_page;
 	}
 
+	
+	/**
+	 * Returns the position in sitemap for current page as a sitemapItem object. 
+	 * follow target in sitemap item
+	 * 
+	 * @since 7.8.92
+	 *
+	 * @return bab_SitemapItem
+	 */
+	public static function getRealPosition() {
+		
+		global $babBody;
+		
+		$position = self::getPosition();
+		$sitemap = self::getByUid($babBody->babsite['sitemap']);
+		if (isset($sitemap))
+		{
+			$node = $sitemap->getNodeById($position);
+		
+			if (isset($node)) {
+				$sitemapItem = $node->getData();
+				/*@var $sitemapItem bab_SitemapItem */
+				return $sitemapItem->getTarget();
+			}
+		}
+		
+		return null;
+	}
 
 
 
