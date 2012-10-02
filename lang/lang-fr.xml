@@ -3316,4 +3316,5 @@
 <string id="%s is unavailable from %s to %s with %s as substitute">%s n'est pas disponible du %s au %s avec %s comme suppléant</string>
 <string id="This substitute is not available for this period">Ce suppléant n'est pas disponible pour cette période</string>
 <string id="This page does not exists">Cette page n'existe pas</string>
+<string id="The groupe of this directory have delegate administration. If you want to update rights on it you should probably contact the delegate administrator.">Cette anuaire est rataché à un groupe dont l'administration est délégué. Si vous voulez modifier les droits sur ce dernier vous devriez prendre contact avec l'administrateur délégué.</string>
 </fr>

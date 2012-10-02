@@ -36,6 +36,29 @@ function isDirectoryGroup($id)
 	return $id_group;
 }
 
+/**
+ * Return an array containing id of delegate groupe.
+ * @param string $all If you want child groupe.
+ * @return array
+ */
+function bab_getDelegateGroupe($all = false)
+{
+	global $babDB;
+	
+	$res = $babDB->db_query("select id_group from ".BAB_DG_GROUPS_TBL." where id_group!='0'");
+	$id_group = array();
+	while($arr = $babDB->db_fetch_array($res)){
+		$id_group[$arr['id_group']] = $arr['id_group'];
+		if($all){
+			$subGroup = bab_getGroups($arr['id_group']);
+			foreach($subGroup['id'] as $val){
+				$id_group[$val] = $val;
+			}
+		}
+	}
+	return $id_group;
+}
+
 function getDirectoryFieldName($fxid)
 {
 	global $babDB;
@@ -103,7 +126,12 @@ function listAds()
 			$this->db				= $GLOBALS['babDB'];
 			$this->resldap			= $this->db->db_query("select * from ".BAB_LDAP_DIRECTORIES_TBL." where id_dgowner='".$this->db->db_escape_string($babBody->currentAdmGroup)."' ORDER BY name");
 			$this->countldap		= $this->db->db_num_rows($this->resldap);
-			$this->resdb			= $this->db->db_query("select * from ".BAB_DB_DIRECTORIES_TBL." where id_dgowner='".$this->db->db_escape_string($babBody->currentAdmGroup)."' ORDER BY name");
+			$where = '';
+			if($babBody->currentAdmGroup){
+				$groups = bab_getGroups();
+				$where = " WHERE id_group IN(".$this->db->quote($groups['id']).") ";
+			}
+			$this->resdb			= $this->db->db_query("select * from ".BAB_DB_DIRECTORIES_TBL . $where . " ORDER BY name");
 			$this->countdb			= $this->db->db_num_rows($this->resdb);
 		}
 
@@ -2095,6 +2123,13 @@ switch($idx)
 	case 'db_rights':
 		$babBody->title = getDirectoryName($id, BAB_DB_DIRECTORIES_TBL);
 		$idgroup =  isDirectoryGroup($id);
+		
+		if($idgroup && $babBody->currentAdmGroup == "0"){
+			$delegateGroups = bab_getDelegateGroupe(true);
+			if(isset($delegateGroups[$idgroup])){
+				$babBody->addError(bab_translate("The groupe of this directory have delegate administration. If you want to update rights on it you should probably contact the delegate administrator."));
+			}
+		}
 
 		$macl = new macl('admdir', 'list', $id, 'aclview');
         $macl->addtable( BAB_DBDIRVIEW_GROUPS_TBL, bab_translate("View"));
