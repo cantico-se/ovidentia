@@ -760,6 +760,7 @@ CREATE TABLE bab_cal_events (
   bprivate enum('Y','N') NOT NULL default 'N',
   block enum('Y','N') NOT NULL default 'N',
   bfree enum('Y','N') NOT NULL default 'N',
+  created datetime NOT NULL default '0000-00-00 00:00:00',
   date_modification datetime NOT NULL default '0000-00-00 00:00:00',
   id_modifiedby int(11) unsigned NOT NULL default '0',
   uuid varchar(255) NOT NULL,

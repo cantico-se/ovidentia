@@ -348,6 +348,7 @@ class bab_cal_OviEventUpdate
 					block,
 					bfree,
 					hash,
+					created,
 					date_modification,
 					id_modifiedby,
 					uuid,
@@ -368,6 +369,7 @@ class bab_cal_OviEventUpdate
 				".$babDB->quote($block).",
 				".$babDB->quote($free).",
 				".$babDB->quote($hash).",
+				now(),
 				now(),
 				".$babDB->quote($id_owner).",
 				".$babDB->quote($period->getProperty('UID')).",
@@ -909,6 +911,12 @@ class bab_cal_OviEventSelect
 			$collection->hash = $arr['hash'];
 		}
 
+		if ('0000-00-00 00:00:00' !== $arr['created']) {
+			$created = BAB_DateTime::fromIsoDateTime($arr['created'])->getICal(true);
+			$event->setProperty('DTSTAMP', $created);
+			$event->setProperty('CREATED', $created);
+		}
+		
 		$event->setProperty('LAST-MODIFIED', BAB_DateTime::fromIsoDateTime($arr['date_modification'])->getICal(true));
 
 

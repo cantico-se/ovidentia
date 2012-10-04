@@ -6850,6 +6850,12 @@ function ovidentia_upgrade($version_base,$version_ini) {
 		$babDB->db_query("INSERT INTO bab_image_library_view_groups (id_object, id_group) values ('1', '1')");
 	}
 	
+	
+	if (!bab_isTableField('bab_cal_events', 'created'))
+	{
+		$babDB->db_query("ALTER TABLE bab_cal_events ADD created datetime NOT NULL default '0000-00-00 00:00:00'");
+	}
+	
 	return true;
 
 

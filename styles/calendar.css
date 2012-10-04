@@ -76,6 +76,7 @@ table.bab_calendar {
 	border-collapse:collapse;
 	border:#000 1px solid;
 	background-color:#fff;
+	color:#000;
 	}
 
 
@@ -172,6 +173,7 @@ a img {
 	border: 1px solid #444;
 	padding: .3em;
 	background-color: white;
+	color:black;
 	visibility: hidden;
 	z-index: 100;
 	text-align:left;
