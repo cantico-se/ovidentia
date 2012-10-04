@@ -3326,4 +3326,15 @@
 <string id="Send email notifications to the imported users">Envoi des notifications vers les utilisateurs importés</string>
 <string id="Send an email for each created or updated account">Envoi d'un email pour chaque compte créé ou mis à jour</string>
 <string id="The groupe of this directory have delegate administration. If you want to update rights on it you should probably contact the delegate administrator.">Cette anuaire est rataché à un groupe dont l'administration est délégué. Si vous voulez modifier les droits sur ce dernier vous devriez prendre contact avec l'administrateur délégué.</string>
+
+
+
+<string id="Publication options">Options de la publication</string>
+<string id="Access to shared image library">Accès à la bibliothèque d'images partagées</string>
+<string id="How can select images from library?">Qui peut sélectionner des images de la bibliothèque ?</string>
+<string id="How can upload images to the library?">Qui peut charger des images dans la bibliothèque ?</string>
+<string id="Topics and article view">Vue des articles et des thèmes d'articles</string>
+<string id="Display topic title">Afficher le titre du thème</string>
+<string id="Display topic menu in article view">Afficher le menu du thème sur la page de l'article</string>
+
 </fr>

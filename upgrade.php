@@ -6813,6 +6813,43 @@ function ovidentia_upgrade($version_base,$version_ini) {
 	$res = $babDB->db_query("UPDATE `bab_oc_roles` SET ordering = `type` WHERE `type` IN('1','2','3') AND ordering = '0'");
 	$res = $babDB->db_query("UPDATE `bab_oc_roles` SET ordering = '4' WHERE `type` NOT IN('1','2','3') AND ordering = '0'");
 
+	
+	
+	/**
+	 * Upgrade to 7.8.92
+	 */
+	
+	if (!bab_isTable('bab_image_library_edit_groups'))
+	{
+		$babDB->db_query("
+		CREATE TABLE IF NOT EXISTS bab_image_library_edit_groups (
+				id int(11) unsigned NOT NULL auto_increment,
+				id_object int(11) unsigned NOT NULL default '0',
+				id_group int(11) unsigned NOT NULL default '0',
+				PRIMARY KEY  (id),
+				KEY id_object (id_object),
+				KEY id_group (id_group)
+		)");
+		
+		$babDB->db_query("INSERT INTO bab_image_library_edit_groups (id_object, id_group) values ('1', '3')");
+	}
+	
+	
+	if (!bab_isTable('bab_image_library_view_groups'))
+	{
+		$babDB->db_query("
+		CREATE TABLE IF NOT EXISTS bab_image_library_view_groups (
+				id int(11) unsigned NOT NULL auto_increment,
+				id_object int(11) unsigned NOT NULL default '0',
+				id_group int(11) unsigned NOT NULL default '0',
+				PRIMARY KEY  (id),
+				KEY id_object (id_object),
+				KEY id_group (id_group)
+		)");
+		
+		$babDB->db_query("INSERT INTO bab_image_library_view_groups (id_object, id_group) values ('1', '1')");
+	}
+	
 	return true;
 
 

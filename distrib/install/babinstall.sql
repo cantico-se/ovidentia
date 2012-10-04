@@ -4278,3 +4278,31 @@ INSERT INTO `bab_fm_headers` (`fmh_name`, `fmh_description`, fmh_order) VALUES
 ('version', 		'Version', 			'0'),
 ('size', 			'Size', 			'2'),
 ('hits', 			'Hits', 			'5');
+
+
+
+
+
+
+
+CREATE TABLE bab_image_library_edit_groups (
+  id int(11) unsigned NOT NULL auto_increment,
+  id_object int(11) unsigned NOT NULL default '0',
+  id_group int(11) unsigned NOT NULL default '0',
+  PRIMARY KEY  (id),
+  KEY id_object (id_object),
+  KEY id_group (id_group)
+);
+
+INSERT INTO bab_image_library_edit_groups (id_object, id_group) values ('1', '3');
+
+CREATE TABLE bab_image_library_view_groups (
+  id int(11) unsigned NOT NULL auto_increment,
+  id_object int(11) unsigned NOT NULL default '0',
+  id_group int(11) unsigned NOT NULL default '0',
+  PRIMARY KEY  (id),
+  KEY id_object (id_object),
+  KEY id_group (id_group)
+);
+
+INSERT INTO bab_image_library_view_groups (id_object, id_group) values ('1', '1');

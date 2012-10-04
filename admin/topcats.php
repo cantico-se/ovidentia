@@ -869,7 +869,64 @@ function bab_controlDatasRecordedByCategories() {
 	$babBody->babecho($html);
 }
 
+
+
+/**
+ * publication options
+ */
+function bab_pubOptions()
+{
+	require_once dirname(__FILE__).'/acl.php';
+	require_once dirname(__FILE__).'/../utilit/urlincl.php';
+	
+	$registry = bab_getRegistryInstance();
+	$registry->changeDirectory('/bab/articles/');
+	
+	
+	if (!empty($_POST))
+	{
+		$registry->setKeyValue('topic_title', (bool) bab_pp('topic_title'));
+		$registry->setKeyValue('topic_menu', (bool) bab_pp('topic_menu'));
+		
+		aclSetRightsString('bab_image_library_view_groups', 1, bab_pp('viewImageLibrary'));
+		aclSetRightsString('bab_image_library_edit_groups', 1, bab_pp('editImageLibrary'));
+		
+		bab_url::get_request('tg')->location();
+	}
+	
+	$W = bab_Widgets();
+	$form = $W->Form(null, $W->VBoxLayout()->setVerticalSpacing(1,'em'))
+		->setSelfPageHiddenFields()
+		->addItem($W->Title(bab_translate('Access to shared image library'), 3))
+		->addItem($W->Acl()->setTitle(bab_translate('How can select images from library?'))->setName('viewImageLibrary'))
+		->addItem($W->Acl()->setTitle(bab_translate('How can upload images to the library?'))->setName('editImageLibrary'))
+		
+		->addItem($W->Title(bab_translate('Topics and article view'), 3))
+		->addItem($W->HBoxItems($W->CheckBox()->setName('topic_title'), $W->Label(bab_translate('Display topic title')))->setVerticalAlign('middle'))
+		->addItem($W->HBoxItems($W->CheckBox()->setName('topic_menu'), $W->Label(bab_translate('Display topic menu in article view')))->setVerticalAlign('middle'))
+		
+		->addItem($W->SubmitButton()->setLabel(bab_translate('Save')))
+	;
+	
+	$form->setValues(array(
+		'viewImageLibrary' 	=> aclGetRightsString('bab_image_library_view_groups', 1),
+		'editImageLibrary' 	=> aclGetRightsString('bab_image_library_edit_groups', 1),
+		'topic_title' 		=> $registry->getValue('topic_title', true),
+		'topic_menu'		=> $registry->getValue('topic_menu', true)
+	));
+	
+	$page = $W->BabPage()->addItem($form);
+	
+	$page->displayHtml();
+	
+}
+
+
+
 /* main */
+
+bab_requireCredential();
+
 if( !$babBody->isSuperAdmin && $babBody->currentDGGroup['articles'] != 'Y')
 {
 	$babBody->msgerror = bab_translate("Access denied");
@@ -951,11 +1008,18 @@ switch($idx)
 		$babBody->addItemMenu("List", bab_translate("Categories"), $GLOBALS['babUrlScript']."?tg=topcats");
 		$babBody->addItemMenu("Create", bab_translate("Create"), $GLOBALS['babUrlScript']."?tg=topcats&idx=Create&idp=".$idp);
 		break;
+		
+	case 'options':
+		$babBody->setTitle(bab_translate("Publication options"));
+		bab_pubOptions();
+		break;
+		
 	case "List":
 	default:
 		$babBody->title = bab_translate("Categories and topics");
 		
 		$babBody->addItemMenu("List", bab_translate("Categories"), $GLOBALS['babUrlScript']."?tg=topcats&idx=List&idp=".$idp);
+		$babBody->addItemMenu("options", bab_translate("Options"), $GLOBALS['babUrlScript']."?tg=topcats&idx=options");
 		$oArtTV = new bab_AdmArticleTreeView('oArtTV');
 		$oArtTV->setAttributes(BAB_ARTICLE_TREE_VIEW_SHOW_CATEGORIES | BAB_ARTICLE_TREE_VIEW_SHOW_TOPICS | 
 			BAB_TREE_VIEW_MEMORIZE_OPEN_NODES | BAB_ARTICLE_TREE_VIEW_SHOW_ROOT_NODE | BAB_ARTICLE_TREE_VIEW_HIDE_DELEGATIONS

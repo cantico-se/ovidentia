@@ -1214,7 +1214,15 @@ function viewArticle($article)
 function articles_init($topics)
 {
 	global $babDB;
-	$arrret = array();
+	
+	
+	$registry = bab_getRegistryInstance();
+	$registry->changeDirectory('/bab/articles/');
+	
+	$arrret = array(
+		'topic_title' 		=> $registry->getValue('topic_title', true),
+		'topic_menu'		=> $registry->getValue('topic_menu', true)
+	);
 
 	$res = $babDB->db_query("select count(*) from ".BAB_ARTICLES_TBL." where id_topic='".$babDB->db_escape_string($topics)."' and archive='Y'");
 	list($arrret['nbarchive']) = $babDB->db_fetch_row($res);
@@ -1396,17 +1404,23 @@ switch($idx)
 		break;
 
 	case "More":
-		$babBody->title = bab_getCategoryTitle($topics);
+		$arr = articles_init($topics);
+		if ($arr['topic_title'])
+		{
+			$babBody->setTitle(bab_getCategoryTitle($topics));
+		}
 		$article = bab_gp('article');
 		readMore($topics, $article);
 		bab_siteMap::setPosition('bab', 'ArticleTopic_'.$topics);
-		$arr = articles_init($topics);
-		$babBody->addItemMenu("Articles",bab_translate("Articles"),$GLOBALS['babUrlScript']."?tg=articles&idx=Articles&topics=".$topics);
-		$babBody->addItemMenu("More",bab_translate("Article"),$GLOBALS['babUrlScript']."?tg=articles&idx=More&topics=".$topics."&article=".$article);
-		if( $arr['nbarchive'] )
-			{
-			$babBody->addItemMenu("larch", bab_translate("Archives"), $GLOBALS['babUrlScript']."?tg=articles&idx=larch&topics=".$topics);
-			}
+		if ($arr['topic_menu'])
+		{
+			$babBody->addItemMenu("Articles",bab_translate("Articles"),$GLOBALS['babUrlScript']."?tg=articles&idx=Articles&topics=".$topics);
+			$babBody->addItemMenu("More",bab_translate("Article"),$GLOBALS['babUrlScript']."?tg=articles&idx=More&topics=".$topics."&article=".$article);
+			if( $arr['nbarchive'] )
+				{
+				$babBody->addItemMenu("larch", bab_translate("Archives"), $GLOBALS['babUrlScript']."?tg=articles&idx=larch&topics=".$topics);
+				}
+		}
 		break;
 
 	case 'Submit':
@@ -1495,7 +1509,7 @@ switch($idx)
 		break;
 
 	case "larch":
-		$babBody->title = bab_translate("List of old articles");
+		$babBody->setTitle(bab_translate("List of old articles"));
 		$pos = bab_rp('pos', 0);
 		listArchiveArticles($topics, $pos);
 		$babBody->addItemMenu("Articles",bab_translate("Articles"),$GLOBALS['babUrlScript']."?tg=articles&idx=Articles&topics=".$topics);
@@ -1504,10 +1518,14 @@ switch($idx)
 
 	default:
 	case "Articles":
-		$babBody->title = bab_getCategoryTitle($topics);
+		$arr = articles_init($topics);
+		if ($arr['topic_title'])
+		{
+			$babBody->setTitle(bab_getCategoryTitle($topics));
+		}
 		bab_siteMap::setPosition('bab', 'ArticleTopic_'.$topics);
 		listArticles($topics);
-		$arr = articles_init($topics);
+		
 		if( $arr['nbarchive'] )
 			{
 			$babBody->addItemMenu("Articles",bab_translate("Articles"),$GLOBALS['babUrlScript']."?tg=articles&idx=Articles&topics=".$topics);

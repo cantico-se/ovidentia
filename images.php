@@ -21,13 +21,25 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307,*
  * USA.																	*
 ************************************************************************/
-/**
-* @internal SEC1 NA 26/01/2007 FULL
-*/
+
 include_once 'base.php';
 
 include_once $babInstallPath.'utilit/tempfile.php';
 include_once $babInstallPath.'utilit/imgincl.php';
+
+
+
+function bab_imgLibWrite()
+{
+	return bab_isAccessValid('bab_image_library_edit_groups', 1);
+}
+
+function bab_imgLibRead()
+{
+	return bab_isAccessValid('bab_image_library_view_groups', 1);
+}
+
+
 
 function put_text($txt,$limit=12,$limitmot=15)
 {
@@ -72,10 +84,10 @@ function listImages($path='')
 			
 			/*
 			 * on peut uploader des images liees en tant que utilsateur enregistree
-			 * on peut uploader des images de la librairie en tant qu'administrateur
+			 * 
 			 */
-			$this->upload = ($GLOBALS['BAB_SESS_LOGGED'] && $this->linked_images) || bab_isUserAdministrator();
-			$this->badmin = bab_isUserAdministrator();
+			$this->upload = ($GLOBALS['BAB_SESS_LOGGED'] && $this->linked_images) || bab_imgLibWrite();
+			$this->badmin = bab_imgLibWrite();
 			
 			$this->file = bab_translate("File");
 			$this->add = bab_translate("Add");
@@ -111,38 +123,16 @@ function listImages($path='')
 				bab_mkdir(BAB_IUD_COMMON, $GLOBALS['babMkdirMode']);
 			if( !is_dir(BAB_IUD_ARTICLES))
 				bab_mkdir(BAB_IUD_ARTICLES, $GLOBALS['babMkdirMode']);
+			
+			
 			$tf = new babTempFiles(BAB_IUD_TMP, BAB_FILE_TIMEOUT);
-			$h = opendir(BAB_IUD_COMMON);
-			$this->arrcfile = array();
-			while (($f = readdir($h)) != false)
-				{
-				if ($f != "." and $f != "..") 
-					{
-					if (is_file(BAB_IUD_COMMON.$f) && @getimagesize(BAB_IUD_COMMON.$f))
-						{
-						$this->arrcfile[] = BAB_IUD_COMMON.$f;
-						}
-					}
-				}
-			closedir($h);
-			$res = $babDB->db_query("select * from ".BAB_IMAGES_TEMP_TBL." where id_owner='".$babDB->db_escape_string($GLOBALS['BAB_SESS_USERID'])."'");
-			if( $res && $babDB->db_num_rows($res) > 0 )
-				{
-				while( $arr = $babDB->db_fetch_array($res))
-					{
-					if( is_file(BAB_IUD_TMP.$arr['name']))
-						$this->arrufile[] = BAB_IUD_TMP.$arr['name'];
-					else
-						$babDB->db_query("delete from ".BAB_IMAGES_TEMP_TBL." where id='".$babDB->db_escape_string($arr['id'])."'");
-					}
-				}
 
 			$this->uifiles = 0;
 			$this->cifiles = 0;
 			$this->refurl = $GLOBALS['babUrlScript']."?tg=images&linked_images=".$this->linked_images;
 			$this->list_img_url = $GLOBALS['babUrlScript']."?tg=images&idx=iframe&path=".$this->path;
 			$this->list_img_url_prev = $GLOBALS['babUrlScript']."?tg=images&idx=iframe&path=";
-
+			
 			}
 
 		}
@@ -182,7 +172,7 @@ function iframe($path="")
 
 			$this->path = $path;
 			
-			$this->badmin = bab_isUserAdministrator();
+			$this->badmin = bab_imgLibWrite();
 			$this->comnum = 0;
 			
 			$this->msg_delfile = bab_translate("WARNING!: If you delete this file, the articles containing the picture will be corrupted. Do really whant to delete this file")."?";
@@ -197,21 +187,39 @@ function iframe($path="")
 			if( !is_dir(BAB_IUD_ARTICLES))
 				bab_mkdir(BAB_IUD_ARTICLES, $GLOBALS['babMkdirMode']);
 			$tf = new babTempFiles(BAB_IUD_TMP, BAB_FILE_TIMEOUT);
-			$h = opendir(BAB_IUD_COMMON.$path);
+			
 			$this->arrcfile = array();
-			while (($f = readdir($h)) != false)
-				{
-				if ($f != "." and $f != "..") 
+			$this->subdir = array();
+			$this->countsubdir = 0;
+			
+			if (bab_imgLibRead())
+			{
+				$h = opendir(BAB_IUD_COMMON.$path);
+				while (($f = readdir($h)) != false)
 					{
-					if (is_file(BAB_IUD_COMMON.$path.$f) && @getimagesize(BAB_IUD_COMMON.$path.$f))
+					if ($f != "." and $f != "..") 
 						{
-						$this->arrcfile[] = BAB_IUD_COMMON.$path.$f;
+						if (is_dir(BAB_IUD_COMMON.$path.$f) ) {
+								$this->subdir[] = $f ;
+								$this->countsubdir++ ;
+							}
+							
+						if (is_file(BAB_IUD_COMMON.$path.$f) && @getimagesize(BAB_IUD_COMMON.$path.$f))
+							{
+							$this->arrcfile[] = BAB_IUD_COMMON.$path.$f;
+							}
 						}
 					}
-				}
-			closedir($h);
-			/* Alphabetical sorting of the names of files */
-			bab_sort::natcasesort($this->arrcfile);
+				closedir($h);
+				
+				/* Alphabetical sorting of the names of files */
+				bab_sort::natcasesort($this->arrcfile);
+				/* Alphabetical sorting of the names of subfolders */
+				bab_sort::natcasesort($this->subdir);
+				$this->subdir = array_values($this->subdir);
+			}
+			
+			
 			$this->arrcfile = array_values($this->arrcfile);
 			$res = $babDB->db_query("select * from ".BAB_IMAGES_TEMP_TBL." where id_owner='".$babDB->db_escape_string($GLOBALS['BAB_SESS_USERID'])."'");
 			if( $res && $babDB->db_num_rows($res) > 0 )
@@ -228,18 +236,8 @@ function iframe($path="")
 			$this->uifiles = 0;
 			$this->cifiles = 0;
 			$this->gdi = extension_loaded('gd');
-			$this->countsubdir = 0;
-			$reper = opendir(BAB_IUD_COMMON.$path);
-			$this->subdir = array();
-			while($dir = readdir($reper) ) {
-				if (($dir != ".") && ($dir != "..") && is_dir(BAB_IUD_COMMON.$path.$dir) ) {
-					$this->subdir[] = $dir ;
-					$this->countsubdir++ ; 
-				}
-			}
-			/* Alphabetical sorting of the names of subfolders */
-			bab_sort::natcasesort($this->subdir);
-			$this->subdir = array_values($this->subdir);
+			
+			
 		}
 
 		function geturls($filename)
@@ -427,7 +425,7 @@ function saveImage($file, $size, $tmpfile)
 	if( is_uploaded_file($tmpfile) )
 		{
 		$tf = new babTempFiles(BAB_IUD_TMP, BAB_FILE_TIMEOUT);
-		if($share == 'Y' && bab_isUserAdministrator())
+		if($share == 'Y' && bab_imgLibWrite())
 			{
 			if( is_file(BAB_IUD_COMMON.$path.$file))
 				{
@@ -466,7 +464,7 @@ function delImage($com, $f)
 	switch($com)
 		{
 		case 1:
-			if (bab_isUserAdministrator() && is_file(BAB_IUD_COMMON.$f))
+			if (bab_imgLibWrite() && is_file(BAB_IUD_COMMON.$f))
 				@unlink(BAB_IUD_COMMON.$f);
 			break;
 		case 0:
@@ -501,7 +499,7 @@ function rename_item($path, $old_name, $new_name)
 		{
 		$new_name = '';
 		}
-	if ( $old_name != '' && $new_name != '' && $old_name!=$new_name && bab_isUserAdministrator() )
+	if ( $old_name != '' && $new_name != '' && $old_name!=$new_name && bab_imgLibWrite() )
 		{
 		if ( mb_substr($path, -1) != "/" ) $p = $path."/";
 		else $p = $path;
@@ -526,6 +524,7 @@ function rename_item($path, $old_name, $new_name)
 
 
 /* main */
+
 $idx = bab_rp('idx', 'list');
 $path = bab_rp('path', '');
 
@@ -545,7 +544,7 @@ if( $addf == 'add')
 	}
 }
 
-if ( '' != ($directory = bab_pp('directory')) && bab_isUserAdministrator() )
+if ( '' != ($directory = bab_pp('directory')) && bab_imgLibWrite() )
 	{
 	if ( mb_substr($path, -1) != "/" ) $p = $path."/";
 	else $p = $path;
@@ -577,7 +576,7 @@ switch($idx)
 		rename_popup(bab_gp('old_name'),bab_gp('path'));
 		break;
 	case 'deltree':
-		if ($path != '' && bab_isUserAdministrator() ) 
+		if ($path != '' && bab_imgLibWrite() ) 
 		{
 			deldir(BAB_IUD_COMMON.$path);
 		}
