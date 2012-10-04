@@ -168,7 +168,17 @@ class bab_cal_OviEventUpdate
 		$data = $period->getData();
 		$private = !$period->isPublic() ? 'Y' : 'N';
 		$free = 'TRANSPARENT' === $period->getProperty('TRANSP') ? 'Y' : 'N';
-		$block = $data['block'] ? 'Y' : 'N';
+		$block = isset($data['block']) && 'Y' === $data['block'] ? 'Y' : 'N';
+		
+		if (isset($data['description']) && isset($data['description_format']))
+		{
+			$description = $data['description'];
+			$description_format = $data['description_format'];
+		} else {
+			$description = $period->getProperty('DESCRIPTION');
+			$description_format = 'text';
+		}
+		
 
 		$cat = bab_getCalendarCategory($period->getProperty('CATEGORIES'));
 
@@ -181,7 +191,7 @@ class bab_cal_OviEventUpdate
 			id_cat				=".$babDB->quote((int) $cat['id']).",
 			color				=".$babDB->quote($period->getProperty('X-CTO-COLOR')).",
 			bprivate			=".$babDB->quote($private).",
-			block				=".$babDB->quote($data['block']).",
+			block				=".$babDB->quote($block).",
 			bfree				=".$babDB->quote($free).",
 			date_modification	=now(),
 			id_modifiedby		=".$babDB->quote($GLOBALS['BAB_SESS_USERID'])."
