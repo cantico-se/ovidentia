@@ -492,9 +492,9 @@ class bab_replace {
 			$match['linkcontent'] = $match[3];
 		}
 		
-		$match['reference'] = bab_unhtmlentities($match['reference']);
+		$decoded_reference = bab_unhtmlentities($match['reference']);
 		
-		$ref = explode('?', $match['reference']);
+		$ref = explode('?', $decoded_reference);
 		try {
 			$reference = new bab_Reference($ref[0]);
 		} catch(Exception $e)
