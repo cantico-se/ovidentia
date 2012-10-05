@@ -265,6 +265,14 @@ class bab_siteMapItem {
 	 * @var bool
 	 */
 	public $menuIgnore = false;
+	
+	
+	/**
+	 * Specify if a node should be ignored in a displayed sitemap position path
+	 * @see bab_siteMap::getBreadCrumb
+	 * @var bool
+	 */
+	public $breadCrumbIgnore = false;
 
 
 	/**
@@ -1381,7 +1389,10 @@ class bab_siteMap {
 
 		$breadCrumbs = array($node);
 		while (($node->getId() !== $baseNodeId) && ($node = $node->parentNode())) {
-			array_unshift($breadCrumbs, $node);
+			if (false === $node->getData()->breadCrumbIgnore)
+			{
+				array_unshift($breadCrumbs, $node);
+			}
 		}
 
 		return $breadCrumbs;
