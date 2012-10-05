@@ -931,3 +931,240 @@ class bab_OvmlFileReferenceDescription extends bab_ReferenceDescriptionImpl
 	}
 }
 
+
+
+
+
+
+
+/**
+ * Sitemap entry reference description
+ * ovidentia:///sitemap/node/nodeId
+ * ovidentia:///sitemap/url/url?param1=value1&param2=value2
+ */
+abstract class bab_SitemapEntryReferenceDescription extends bab_ReferenceDescriptionImpl
+{
+	
+	protected $sitemapItem;
+	
+	
+	public function getType()
+	{
+		return bab_translate('Sitemap entry');
+	}
+	
+	protected function getRootNode()
+	{
+		global $babBody;
+		return bab_sitemap::getByUid($babBody->babsite['sitemap']);
+	}
+	
+	/**
+	 * @return bab_SitemapItem
+	 */
+	abstract protected function getSitemapItem();
+
+
+	/**
+	 * cached version of getSitemapItem
+	 * @return bab_siteMapItem
+	 */
+	public function item()
+	{
+		if (null === $this->sitemapItem)
+		{
+			$this->sitemapItem = $this->getSitemapItem();
+		}
+		
+		return $this->sitemapItem;
+	}
+	
+
+	/**
+	 * @return string
+	 */
+	public function getDescription() {
+		
+		$sitemapItem = $this->item();
+		if (null === $sitemapItem) {
+			return '';
+		}
+		
+		return $sitemapItem->description;
+	}
+
+	/**
+	 * @return string
+	 */
+	public function getUrl() {
+		
+		$sitemapItem = $this->item();
+		if (null === $sitemapItem) {
+			return '';
+		}
+		
+		return $sitemapItem->getRwUrl();
+	}
+
+
+}
+
+/**
+ * 
+ * ovidentia:///sitemap/node/nodeId
+ *
+ */
+class bab_SitemapNodeReferenceDescription extends bab_SitemapEntryReferenceDescription
+{
+	/**
+	 * @return bab_SitemapItem
+	 */
+	protected function getSitemapItem()
+	{
+		
+		$rootNode = parent::getRootNode();
+		
+		if (null === $rootNode)
+		{
+			return null;
+		}
+		
+		$nodeId = $this->getReference()->getObjectId();
+		
+		$node = $rootNode->getNodeById($nodeId);
+		
+		if (null === $node)
+		{
+			return null;
+		}
+		
+		return $node->getData();
+	}
+	
+	
+	/**
+	 * @return string
+	 */
+	public function getTitle() {
+	
+		$sitemapItem = $this->item();
+		if (null === $sitemapItem) {
+			return $this->getReference()->getObjectId();
+		}
+	
+		return $sitemapItem->name;
+	}
+	
+	
+	/**
+	 * @throws Exception if not a valid file
+	 * @return bool
+	 */
+	public function isAccessValid()
+	{
+		if (null !== $this->item())
+		{
+			return true;
+		}
+	
+		return false;
+	}
+}
+
+
+/**
+ * Sitemap url, allways accessible
+ * if item is found in sitemap, use 
+ *
+ * ovidentia:///sitemap/url/index.php?param1=value1&param2=value2
+ *
+ */
+class bab_SitemapUrlReferenceDescription extends bab_SitemapEntryReferenceDescription
+{
+	private $inputUrl;
+	
+	
+	protected function getInputUrl()
+	{
+		if (!isset($this->inputUrl))
+		{
+			$url = new bab_url($this->getReference()->getObjectId());
+			foreach($this->getParameters() as $name => $value)
+			{
+				$url->$name = $value;
+			}
+			
+			$this->inputUrl = $url->toString();
+		}
+		
+		return $this->inputUrl;
+	}
+	
+	
+	/**
+	 * @return bab_SitemapItem
+	 */
+	protected function getSitemapItem()
+	{
+		
+		
+		$rootNode = parent::getRootNode();
+		
+		if (null === $rootNode)
+		{
+			return null;
+		}
+		
+		$nodes = $rootNode->getNodesByIndex('url', $this->getInputUrl());
+		
+		if (empty($nodes))
+		{
+			return null;
+		}
+		
+		$node = reset($nodes);
+		return $node->getData();
+	}
+	
+	
+	
+	/**
+	 * @return string
+	 */
+	public function getTitle() {
+	
+		$sitemapItem = $this->item();
+		if (null === $sitemapItem) {
+			return $this->getInputUrl();
+		}
+	
+		return $sitemapItem->name;
+	}
+	
+	
+	/**
+	 * @return string
+	 */
+	public function getUrl() {
+		
+		$sitemapItem = $this->item();
+		
+		if (null === $sitemapItem)
+		{
+			return $this->getInputUrl();
+		}
+
+		return $sitemapItem->getRwUrl();
+	}
+	
+	
+	/**
+	 * @throws Exception if not a valid file
+	 * @return bool
+	 */
+	public function isAccessValid()
+	{
+		return true;
+	}
+}
+

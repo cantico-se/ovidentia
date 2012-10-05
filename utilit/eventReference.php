@@ -77,6 +77,8 @@ function bab_onReference(bab_eventReference $oEvent)
 	handlePublicationRequest($oEvent, 'files.folder'			, 'bab_FolderReferenceDescription');
 	handlePublicationRequest($oEvent, 'files.personnalfolder'	, 'bab_PersonnalFolderReferenceDescription');
 	handlePublicationRequest($oEvent, 'ovml.file'				, 'bab_OvmlFileReferenceDescription');
+	handlePublicationRequest($oEvent, 'sitemap.node'			, 'bab_SitemapNodeReferenceDescription');
+	handlePublicationRequest($oEvent, 'sitemap.url'				, 'bab_SitemapUrlReferenceDescription');
 }
 
 
