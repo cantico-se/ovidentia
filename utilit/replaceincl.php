@@ -525,8 +525,6 @@ class bab_replace {
 		{
 			if ($access)
 			{
-				bab_debug(bab_toHtml($match[0]));
-				bab_debug(bab_toHtml($match['reference']));
 				return str_replace($match['reference'], bab_toHtml($refDesc->getUrl()), $match[0]);
 			} else {
 				return $match['linkcontent'];
