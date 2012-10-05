@@ -492,9 +492,9 @@ class bab_replace {
 			$match['linkcontent'] = $match[3];
 		}
 		
-		$match['reference'] = bab_unhtmlentities($match['reference']);
+		$decoded_reference = bab_unhtmlentities($match['reference']);
 		
-		$ref = explode('?', $match['reference']);
+		$ref = explode('?', $decoded_reference);
 		try {
 			$reference = new bab_Reference($ref[0]);
 		} catch(Exception $e)
@@ -506,7 +506,7 @@ class bab_replace {
 		
 		if (!isset($refDesc) || !($refDesc instanceof IReferenceDescription))
 		{
-			return sprintf('<span style="color:red">%s</span>', bab_toHtml(sprintf(bab_translate('Missing target API for %s'), $match['reference'])));
+			return sprintf('<span style="color:red">%s</span>', bab_toHtml(sprintf(bab_translate('Missing target API for %s'), $decoded_reference)));
 		}
 		
 		if (isset($ref[1]))
@@ -525,6 +525,8 @@ class bab_replace {
 		{
 			if ($access)
 			{
+				bab_debug(bab_toHtml($match[0]));
+				bab_debug(bab_toHtml($match['reference']));
 				return str_replace($match['reference'], bab_toHtml($refDesc->getUrl()), $match[0]);
 			} else {
 				return $match['linkcontent'];
