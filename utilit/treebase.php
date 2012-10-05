@@ -91,18 +91,18 @@ $GLOBALS['BAB_NODE_NULL'] = null;
  */
 class bab_Node
 {
-/**#@+
- * @access private
- */	
-	var $_id;
-	var $_data;
-	var $_nextSibling;
-	var $_previousSibling;
-	var $_parent;
-	var $_firstChild;
-	var $_lastChild;
-	var $_tree;
-/**#@-*/
+
+	private $_index;
+	
+	public $_id;
+	public $_data;
+	public $_nextSibling;
+	public $_previousSibling;
+	public $_parent;
+	public $_firstChild;
+	public $_lastChild;
+	public $_tree;
+
 	
 	/**
 	 * @param bab_RootNode | null $rootNode
@@ -112,6 +112,7 @@ class bab_Node
 	function __construct($rootNode, $id = null)
 	{
 		$this->_id = $id;
+		$this->_index = array();
 		$this->_data = null;
 		$this->_nextSibling = bab_Node::NULL_NODE();
 		$this->_previousSibling = bab_Node::NULL_NODE();
@@ -158,6 +159,39 @@ class bab_Node
 	public function getId()
 	{
 		return $this->_id;
+	}
+	
+	/**
+	 * get a list of key value to store in index
+	 * @return array
+	 */
+	public function getIndex()
+	{
+		return $this->_index;
+	}
+	
+	/**
+	 * Set index of node
+	 * @see bab_Node::addIndex
+	 * @param array $index
+	 * @return bab_Node
+	 */
+	public function setIndex(Array $index)
+	{
+		$this->_index = $index;
+		return $this;
+	}
+	
+	/**
+	 * Add a name value pair in index
+	 * @param string $name
+	 * @param mixed $value
+	 * @return bab_Node
+	 */
+	public function addIndex($name, $value)
+	{
+		$this->_index[$name] = $value;
+		return $this;
 	}
 
 	/**
@@ -579,11 +613,17 @@ class bab_Node
  */
 class bab_RootNode extends bab_Node
 {
-	/**#@+
-	 * @access private
+	/**
+	 * @var array
 	 */	
-	var $_ids;
-	/**#@-*/
+	public $_ids;
+
+	/**
+	 * 
+	 * @var array
+	 */
+	private $_index = array();
+	
 	
 	public function __construct()
 	{
@@ -610,8 +650,29 @@ class bab_RootNode extends bab_Node
 		if (!is_null($newNode->getId())) {
 			$this->_ids[$newNode->getId()] = $newNode;
 		}
+		
+		
+		
 		return $newNode;
 	}
+	
+	/**
+	 * add indexes of a node to root node index list
+	 * @param	bab_Node $newNode
+	 */
+	protected function addIndexes(bab_Node $newNode)
+	{
+		foreach($newNode->getIndex() as $name => $value)
+		{
+			if (!isset($this->_index[$name][$value]))
+			{
+				$this->_index[$name][$value] = array();
+			}
+		
+			$this->_index[$name][$value][] = $newNode;
+		}
+	}
+	
 	
 	/**
 	 * Returns an iterator starting from the node $root.
@@ -631,12 +692,27 @@ class bab_RootNode extends bab_Node
 	 * @param string $id
 	 * @return bab_Node | null
 	 */
-	function getNodeById($id)
+	public function getNodeById($id)
 	{
 		if (array_key_exists($id, $this->_ids)) {
 			return $this->_ids[$id];
 		}
 		return bab_Node::NULL_NODE();
+	}
+	
+	
+	/**
+	 * Returns the nodes where the name value pair exists in tree index
+	 * @return array
+	 */
+	public function getNodesByIndex($name, $value)
+	{
+		if (array_key_exists($name, $this->_index)) {
+			if (array_key_exists($value, $this->_index[$name])) {
+				return $this->_index[$name][$value];
+			}
+		}
+		return array();
 	}
 
 }
@@ -779,17 +855,22 @@ class bab_OrphanRootNode extends bab_RootNode
 	 * will be created.
 	 * 
 	 * @param bab_Node $newNode
-	 * @param string $id
+	 * @param string $id			parent node ID
 	 * @return boolean
 	 */
 	public function appendChild(bab_Node $newNode, $id = null)
 	{
+		
+		
 		if (!($newNode instanceof bab_Node))
 			return false;
+		
+		parent::addIndexes($newNode);
 
 		if (is_null($id)) {
 			return parent::appendChild($newNode);
 		}
+		
 		$newNodeId = $newNode->getId();
 		if (array_key_exists($newNodeId, $this->_orphans)) {
 			return false;
