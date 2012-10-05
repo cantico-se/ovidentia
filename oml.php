@@ -65,7 +65,6 @@ if (null === bab_sitemap::getPosition() && isset($_SERVER['QUERY_STRING']))
 			$node = reset($nodes);
 			$sitemapItem = $node->getData();
 			bab_sitemap::setPosition($sitemapItem->id_function);
-			bab_debug($sitemapItem->id_function);
 		}
 	}
 }

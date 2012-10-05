@@ -821,3 +821,71 @@ class Func_Ovml_Function_SitemapMenu extends Func_Ovml_Function {
 	}
 }
 
+
+
+
+
+
+
+
+
+
+/**
+ * Return the rewriten url if available in sitemap or the url in parameter
+ * <OFSitemapUrl [sitemap="sitemapName"] url="">
+ *
+ * - The sitemap attribute is optional.
+ * 		The default value is the sitemap selected in Administration > Sites > Site configuration.
+ * 
+ */
+class Func_Ovml_Function_SitemapUrl extends Func_Ovml_Function
+{
+
+
+
+	/**
+	 *
+	 * @return string
+	 */
+	public function toString()
+	{
+		$args = $this->args;
+
+		$sitemap_uid = empty($args['sitemap']) ? null : $args['sitemap'];
+		$url = empty($args['url']) ? null : $args['url'];
+		
+		if (null === $sitemap_uid)
+		{
+			global $babBody;
+			$sitemap_uid = $babBody->babsite['sitemap'];
+		}
+
+		$rootNode = bab_sitemap::getByUid($sitemap_uid);
+		
+		if (isset($args['sitemap']))
+		{
+			unset($args['sitemap']);
+		}
+		
+		unset($args['url']);
+		
+		if (!isset($rootNode)) {
+			bab_debug(sprintf('incorrect sitemap used in OVML %s sitemap="%s"', get_class($this), $sitemap_uid));
+			return $this->format_output($url, $args);
+		}
+		
+		
+		if ($nodes = $rootNode->getNodesByIndex('url', $url))
+		{
+			$node = reset($nodes);
+			$sitemapItem = $node->getData();
+			/*@var $sitemapItem bab_SitemapItem */
+			$url = $sitemapItem->getRwUrl();
+		}
+
+		return $this->format_output($url, $args);
+	}
+}
+
+
+
