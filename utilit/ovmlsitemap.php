@@ -286,18 +286,21 @@ class Func_Ovml_Container_SitemapPath extends Ovml_Container_Sitemap
 					// we try to find if a descendant of this node has
 					// a target to the current position.
 					$baseNode = $this->sitemap->getNodeById($baseNodeId);
-					
+
 					if (null === $baseNode)
 					{
 						trigger_error(sprintf('the basenode="%s" attribute has been specified in ovml file %s but the node has not been found in the sitemap',$baseNodeId, (string) $ctx->debug_location));
 						bab_debug((string) $this->sitemap);
 					} else {
-					
+
 						$nodes = $this->sitemap->createNodeIterator($baseNode);
-	
+
 						while ($node = $nodes->nextNode()) {
 							$sitemapItem = $node->getData();
 							$target = $sitemapItem->target;
+							if ($target instanceof bab_SitemapItem) {
+								$target = $target->id_function;
+							}
 							if ($target === $nodeId) {
 								$nodeId = $sitemapItem->id_function;
 								break;
@@ -324,7 +327,7 @@ class Func_Ovml_Container_SitemapPath extends Ovml_Container_Sitemap
 
 			if ($nodeId) {
 				$node = $this->sitemap->getNodeById($nodeId);
-				
+
 
 				if (empty($baseNodeId))
 				{
@@ -341,7 +344,7 @@ class Func_Ovml_Container_SitemapPath extends Ovml_Container_Sitemap
 					$tmp['url'] = $item->getRwUrl();
 					$tmp['text'] = $item->name;
 					$tmp['description'] = $item->description;
-					$tmp['id'] = $item->id_function; 
+					$tmp['id'] = $item->id_function;
 					if ($baseNodeId === $item->id_function)
 					{
 						$baseNodeFound = true;
@@ -428,9 +431,9 @@ class Func_Ovml_Function_SitemapPosition extends Func_Ovml_Function
 		} else {
 			$keepLastKnown = $args['keeplastknown'];
 		}
-		
-		
-		
+
+
+
 
 		if (null === $breadcrumb) {
 
@@ -444,12 +447,12 @@ class Func_Ovml_Function_SitemapPosition extends Func_Ovml_Function
 				return '';
 			}
 		}
-		
+
 		if (empty($breadcrumb))
 		{
 			return '';
 		}
-		
+
 
 //		$html = '<ul class="sitemap-position">'."\n";
 		$html = '';
@@ -469,14 +472,18 @@ class Func_Ovml_Function_SitemapPosition extends Func_Ovml_Function
 				continue;
 			}
 
+
+
+
 			if ($sitemapItem->url) {
 
-				$html .= sprintf('<li class="sitemap-%s"><a href="%s">%s</a></li>'."\n",
-
-					$node->getId(),
-					$sitemapItem->getRwUrl(),
-					$sitemapItem->name
-				);
+				if ($sitemapItem->onclick) {
+					$onclick = ' onclick="'.bab_toHtml($sitemapItem->onclick).'"';
+				} else {
+					$onclick = '';
+				}
+ 				$html .= '<li class="sitemap-' . $node->getId() .'"><a href="' . $sitemapItem->getRwUrl() . '" ' . $onclick . '>'
+ 					. $sitemapItem->name . '</a></li>'."\n";
 
 			} else {
 
@@ -496,8 +503,8 @@ class Func_Ovml_Function_SitemapPosition extends Func_Ovml_Function
 		if ($keepLastKnown) {
 			$_SESSION['bab_sitemap_lastknownposition'] = $html;
 		}
-		
-		
+
+
 
 		return $html;
 	}
@@ -585,7 +592,7 @@ class Func_Ovml_Function_SitemapMenu extends Func_Ovml_Function {
 			return $return;
 		}
 		
-		
+
 		if (!empty($siteMapItem->iconClassnames)) {
 			$icon = 'icon '.$siteMapItem->iconClassnames;
 		} else {
@@ -756,6 +763,9 @@ class Func_Ovml_Function_SitemapMenu extends Func_Ovml_Function {
 				while ($node = $nodes->nextNode()) {
 					$sitemapItem = $node->getData();
 					$target = $sitemapItem->target;
+					if ($target instanceof bab_SitemapItem) {
+						$target = $target->id_function;
+					}
 					if ($target === $selectedNodeId) {
 						$selectedNodeId = $sitemapItem->id_function;
 						break;
