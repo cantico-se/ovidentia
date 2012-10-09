@@ -143,6 +143,7 @@ function updateFixedVacation($id_user, $id_right, $datebegin , $dateend, $total)
 function removeFixedVacation($id_entry)
 {
 	global $babDB;
+	require_once dirname(__FILE__).'/dateTime.php';
 	
 	$res = $babDB->db_query("select id_user, date_begin, date_end FROM ".BAB_VAC_ENTRIES_TBL." where id=".$babDB->quote($id_entry));
 	$arr = $babDB->db_fetch_array($res);
