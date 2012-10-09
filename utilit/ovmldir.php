@@ -43,14 +43,15 @@ class Func_Ovml_Container_DbDirectories extends Func_Ovml_Container
 		$sDelegation = ' ';	
 		if(0 != $delegationid)	
 		{
-			$sDelegation = ' AND id_dgowner = \'' . $babDB->db_escape_string($delegationid). '\' ';
+			$groupsId = bab_getDelegateGroupe(true, $delegationid);
+			$sDelegation = " AND (id_dgowner = '" . $babDB->db_escape_string($delegationid). "' OR id_group IN(".$babDB->quote($groupsId).") )";
 		}
 
 		if( $directoryid === false || $directoryid === '' )
 			{
 			if( $directorytype === false || !in_array($directorytype, array('database', 'group')) )
 				{
-				$res = $babDB->db_query("select * from ".BAB_DB_DIRECTORIES_TBL. ((0 != $delegationid) ? ' where id_dgowner = \'' . $babDB->db_escape_string($delegationid) . '\' ' : ' ') .  " order by name asc");
+				$res = $babDB->db_query("select * from ".BAB_DB_DIRECTORIES_TBL. ((0 != $delegationid) ? " where (id_dgowner = '" . $babDB->db_escape_string($delegationid) . "' OR id_group IN(".$babDB->quote($groupsId)."))" : ' ') .  " order by name asc");
 				}
 			elseif ('database' == $directorytype)
 				{

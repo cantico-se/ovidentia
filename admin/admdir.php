@@ -36,29 +36,6 @@ function isDirectoryGroup($id)
 	return $id_group;
 }
 
-/**
- * Return an array containing id of delegate groupe.
- * @param string $all If you want child groupe.
- * @return array
- */
-function bab_getDelegateGroupe($all = false)
-{
-	global $babDB;
-	
-	$res = $babDB->db_query("select id_group from ".BAB_DG_GROUPS_TBL." where id_group!='0'");
-	$id_group = array();
-	while($arr = $babDB->db_fetch_array($res)){
-		$id_group[$arr['id_group']] = $arr['id_group'];
-		if($all){
-			$subGroup = bab_getGroups($arr['id_group']);
-			foreach($subGroup['id'] as $val){
-				$id_group[$val] = $val;
-			}
-		}
-	}
-	return $id_group;
-}
-
 function getDirectoryFieldName($fxid)
 {
 	global $babDB;

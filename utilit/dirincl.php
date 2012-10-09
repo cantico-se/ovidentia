@@ -263,6 +263,35 @@ function UBrowseDbDirectory($id, $pos, $xf, $cb)
 	echo bab_printTemplate($temp, "directory.html", "uadbrowse");
 }
 
+/**
+ * Return an array containing id of delegate groupe.
+ * @param string 	$all 		If you want child groupe.
+ * @param int 		$delegId 	Specify a delegation id.
+ * @return array
+ */
+function bab_getDelegateGroupe($all = false, $delegId = false)
+{
+	global $babDB;
+	
+	$sql = "select id_group from ".BAB_DG_GROUPS_TBL." where id_group!='0'";
+	if($delegId !== false){
+		$sql .= " AND id = " . $babDB->quote($delegId);
+	}
+	
+	$res = $babDB->db_query($sql);
+	$id_group = array();
+	while($arr = $babDB->db_fetch_array($res)){
+		$id_group[$arr['id_group']] = $arr['id_group'];
+		if($all){
+			$subGroup = bab_getGroups($arr['id_group']);
+			foreach($subGroup['id'] as $val){
+				$id_group[$val] = $val;
+			}
+		}
+	}
+	return $id_group;
+}
+
 
 /**
  * Checks if the photo field is disabled.
