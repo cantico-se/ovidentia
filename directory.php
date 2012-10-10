@@ -3485,7 +3485,7 @@ switch($idx)
 	case 'dbmap':
 		$id = $id;
 		$pos = bab_pp('pos', 'A');
-		$wsepar = bab_pp('wsepar', 1);
+		$wsepar = bab_pp('wsepar');
 		$separ = bab_pp('separ');
 		$babBody->title = bab_translate("Import file to").": ".getDirectoryName($id,BAB_DB_DIRECTORIES_TBL);
 		$babBody->addItemMenu('list', bab_translate("Directories"), $GLOBALS['babUrlScript']."?tg=directory&idx=list");
