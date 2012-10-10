@@ -858,7 +858,7 @@ function readMore($topics, $article)
 
 				$this->tags = $this->getTags($this->arr['id']);
 				$this->btags = 0 < count($this->tags);
-				
+
 				if ($imgurl = $this->getImageUrl($this->arr['id']))
 				{
 					$this->imageurl = bab_toHtml($imgurl->toString());
@@ -1410,8 +1410,8 @@ switch($idx)
 			$babBody->setTitle(bab_getCategoryTitle($topics));
 		}
 		$article = bab_gp('article');
-		readMore($topics, $article);
 		bab_siteMap::setPosition('bab', 'ArticleTopic_'.$topics);
+		readMore($topics, $article);
 		if ($arr['topic_menu'])
 		{
 			$babBody->addItemMenu("Articles",bab_translate("Articles"),$GLOBALS['babUrlScript']."?tg=articles&idx=Articles&topics=".$topics);
@@ -1427,24 +1427,24 @@ switch($idx)
 		require_once dirname(__FILE__).'/utilit/arteditincl.php';
 		$form = new bab_ArticleDraftEditor;
 		$form->fromTopic(bab_rp('topics'));
-		
+
 		$backUrl = null;
-		
+
 		if (!empty($_SERVER['HTTP_REFERER'])) {
 			$referer = new bab_url($_SERVER['HTTP_REFERER']);
 			$self = bab_url::get_request_gp();
-		
+
 			if ($referer->checksum() !== $self->checksum()) {
 				$backUrl = $referer;
 			}
 		}
-		
+
 		if (!isset($backUrl)) {
 			$backUrl = bab_url::get_request('tg', 'topics');
 		}
-		
+
 		$form->setBackUrl($backUrl);
-		
+
 		$form->display();
 		break;
 
