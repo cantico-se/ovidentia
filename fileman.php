@@ -3546,7 +3546,7 @@ function zipFolder()
 		$destPath->createDir();
 		$destPath->push($sDirName.'.zip');
 
-		$sql = "SELECT * FROM " . BAB_FILES_TBL . " WHERE confirmed = 'N' AND iIdDgOwner = '".bab_getCurrentUserDelegation."'";
+		$sql = "SELECT * FROM " . BAB_FILES_TBL . " WHERE confirmed = 'N' AND iIdDgOwner = '".bab_getCurrentUserDelegation()."'";
 		$res = $babDB->db_query($sql);
 		$notApproveFile = array();
 		while($arr = $babDB->db_fetch_assoc($res)){
