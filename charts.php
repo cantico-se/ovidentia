@@ -32,7 +32,7 @@ function listOrgCharts()
 		var $name;
 		var $urlname;
 		var $description;
-				
+
 		var $arr = array();
 		var $db;
 		var $count;
@@ -155,7 +155,8 @@ if(bab_orgchartAccess())
 			else
 				{
 				$babDB->db_query("update ".BAB_ORG_CHARTS_TBL." set edit='N' where id='".$babDB->db_escape_string($ocid)."'");
-				Header("Location: ". $GLOBALS['babUrlScript']."?tg=charts&disp=".$disp);
+				$location = $GLOBALS['babUrlScript']."?tg=charts&disp=".$disp;
+				Header("Location: ". $location);
 				exit;
 				}
 			}
@@ -164,12 +165,13 @@ if(bab_orgchartAccess())
 			if( $idx == "edit" )
 				{
 				$babDB->db_query("update ".BAB_ORG_CHARTS_TBL." set edit='Y', edit_author='".$babDB->db_escape_string($BAB_SESS_USERID)."', edit_date=now() where id='".$babDB->db_escape_string($ocid)."'");
-				Header("Location: ". $GLOBALS['babUrlScript']."?tg=chart&ocid=".$ocid."&disp=".$disp);
+				Header("Location: ". $GLOBALS['babUrlScript']."?tg=chart&mode=edit&ocid=".$ocid."&disp=".$disp);
 				exit;
 				}
 			else
 				{
-				Header("Location: ". $GLOBALS['babUrlScript']."?tg=charts");
+				$location = $GLOBALS['babUrlScript']."?tg=charts";
+				Header("Location: ". $location);
 				exit;
 				}
 			}

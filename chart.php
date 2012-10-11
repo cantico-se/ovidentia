@@ -34,6 +34,8 @@ function OrgChartPage($ocid, $oeid, $iduser, $disp)
 
 			$this->sContent		= 'text/html; charset=' . bab_charset::getIso();
 
+			$this->mode = bab_rp('mode', null) === 'edit' ? 'edit' : 'view';
+
 			$this->frurl = $GLOBALS['babUrlScript']."?tg=frchart&ocid=".$ocid."&oeid=".$oeid."&iduser=".$iduser."&disp=".$disp;
 			$this->frturl = $GLOBALS['babUrlScript']."?tg=frchart&idx=frt&ocid=".$ocid."&oeid=".$oeid."&iduser=".$iduser."&disp=".$disp;
 			$this->flturl = $GLOBALS['babUrlScript']."?tg=fltchart&ocid=".$ocid."&oeid=".$oeid."&iduser=".$iduser;
