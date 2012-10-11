@@ -230,6 +230,46 @@ class BAB_DateTime
 	
 	
 	/**
+	 * @see http://www.w3.org/Protocols/rfc2616/rfc2616-sec3.html#sec3.3.1
+	 * 
+	 * @todo DO not accept other formats than the allowed
+	 * 
+	 * Sun, 06 Nov 1994 08:49:37 GMT  ; RFC 822, updated by RFC 1123
+     * Sunday, 06-Nov-94 08:49:37 GMT ; RFC 850, obsoleted by RFC 1036
+     * Sun Nov  6 08:49:37 1994       ; ANSI C's asctime() format
+	 */
+	public static function fromHttp($httpdate)
+	{
+		return self::fromTimeStamp(strtotime($httpdate)); 
+	}
+	
+	
+	
+	/**
+	 * Return a datetime string as an HTTP-date
+	 * @see http://www.w3.org/Protocols/rfc2616/rfc2616-sec3.html#sec3.3.1
+	 * 
+	 * RFC 822, updated by RFC 1123
+	 * 
+	 * @return string
+	 */
+	public function getHttp()
+	{
+		$offset = $this->getTimeZoneOffset('UTC');
+		if (0 !== $offset)
+		{
+			$datetime = $this->cloneDate();
+			$datetime->add($offset, BAB_DATETIME_SECOND);
+			return gmdate("D, d M Y H:i:s", $datetime->getTimeStamp()) . " GMT";
+		}
+
+		return gmdate("D, d M Y H:i:s", $this->getTimeStamp()) . " GMT";
+	}
+	
+	
+	
+	
+	/**
 	 * @return int
      * 
 	 */
