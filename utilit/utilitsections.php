@@ -970,7 +970,7 @@ var $babCalendarStartDay;
 	
 	private function cacheMonthEvents()
 	{
-		if (isset($this->currmonthevents)) {
+		if (isset($this->currmonthevents) || !bab_isUserLogged()) {
 			return;
 		}
 		
