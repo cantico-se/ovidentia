@@ -120,7 +120,7 @@ function makeFlowInstance($idsch, $extra, $user = 0)
 					}
 				}
 			}
-		return $id;
+		return (int) $id;
 		}
 	return 0;
 }
