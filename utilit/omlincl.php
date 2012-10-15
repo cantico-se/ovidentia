@@ -4857,7 +4857,7 @@ class Func_Ovml_Container_Calendars extends Func_Ovml_Container
 			$this->Entries[] = $calendar;
 		}
 
-
+		bab_Sort::sortObjects($this->Entries, 'getName');//sort by name
 
 		$this->count = count($this->Entries);
 		$this->ctx->curctx->push('CCount', $this->count);
