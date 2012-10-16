@@ -3349,7 +3349,11 @@ function bab_downloadFile(bab_Path $path, $filename = null, $inline = true, $exi
 		bab_setTimeLimit(3600);
 
 		if (mb_strtolower(bab_browserAgent()) == 'msie') {
-			header('Cache-Control: public');
+			// header('Cache-Control: public');
+			
+			// IE8 + https bug : http://stackoverflow.com/questions/1242900/problems-with-header-when-displaying-a-pdf-file-in-ie8
+			header("Cache-Control: must-revalidate, post-check=0, pre-check=0");
+			header("Pragma: public");
 		}
 
 		if ($inline) {
