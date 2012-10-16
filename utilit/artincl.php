@@ -2086,7 +2086,7 @@ function bab_getDocumentArticle( $idf )
 
 	$fullpath .= $arr['id_article'].",".$file;
 
-	bab_downloadFile(new bab_Path($fullpath), $file, bab_getFileContentDisposition());
+	bab_downloadFile(new bab_Path($fullpath), $file, (1 === bab_getFileContentDisposition()));
 }
 
 /**
