@@ -146,6 +146,7 @@ function listVacationRequestsb()
 			$req = BAB_VAC_ENTRIES_TBL.' e, '.BAB_USERS_TBL.' u WHERE ';
 			
 			$aaareq[] = 'u.id=e.id_user';
+			$aaareq[] = 'e.date_end>u.date';
 			
 			if( $idstatus != "" || $userid != "" || $dateb != "" || $datee != "")
 				{
