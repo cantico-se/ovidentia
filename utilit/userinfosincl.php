@@ -47,7 +47,8 @@ class bab_userInfos {
 				disabled,
 				password,
 				changepwd,
-				is_confirmed 
+				is_confirmed, 
+				date 
 			FROM 
 				'.BAB_USERS_TBL.' 
 			WHERE id='.$babDB->quote($id_user)
@@ -80,6 +81,22 @@ class bab_userInfos {
 			'changepwd'		=> $row['changepwd'],
 			'is_confirmed'	=> $row['is_confirmed']
 		);
+	}
+	
+	/**
+	 * Creation date of account
+	 * @param	int		$id_user
+	 * @return string ISO datetime
+	 */
+	public static getCreationDate($id_user)
+	{
+		$row = self::getRow($id_user);
+		
+		if (false === $row) {
+			return null;
+		}
+		
+		return $row['date'];
 	}
 
 
