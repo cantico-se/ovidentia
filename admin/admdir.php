@@ -1967,7 +1967,7 @@ if( isset($modify))
 					{
 					$fields_values = isset($_POST['fields_values']) ? $_POST['fields_values'] : array();
 
-					updateFieldsExtraValues($id, $fxid, $fields_values, $fvdef, $value, $mvyn);
+					updateFieldsExtraValues($id, $fxid, $fields_values, $fvdef, bab_pp('value'), $mvyn);
 					}
 				if( isset($adfsav) || isset($adfdel))
 					{
