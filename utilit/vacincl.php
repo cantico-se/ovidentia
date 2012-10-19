@@ -1153,7 +1153,7 @@ function listVacationRequests($id_user)
 			$this->personal = $id_user == $GLOBALS['BAB_SESS_USERID'];
 			$this->pos = isset($_REQUEST['pos']) ? $_REQUEST['pos'] : 0;
 
-			$req = "".BAB_VAC_ENTRIES_TBL." where id_user IN(".$babDB->quote($uarr).")";
+			$req = "".BAB_VAC_ENTRIES_TBL." e, bab_users u where e.id_user IN(".$babDB->quote($uarr).") AND u.id=e.id_user AND u.date<e.date_end ";
 
 			list($total) = $babDB->db_fetch_row($babDB->db_query("select count(*) as total from ".$req));
 			if( $total > VAC_MAX_REQUESTS_LIST )
@@ -1193,7 +1193,7 @@ function listVacationRequests($id_user)
 					}
 				}
 
-			$req .= " order by date desc";
+			$req .= " order by e.date desc";
 			if( $total > VAC_MAX_REQUESTS_LIST)
 				{
 				$req .= " limit ".$babDB->db_escape_string($this->pos).",".VAC_MAX_REQUESTS_LIST;
