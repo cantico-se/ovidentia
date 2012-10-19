@@ -88,7 +88,7 @@ class bab_userInfos {
 	 * @param	int		$id_user
 	 * @return string ISO datetime
 	 */
-	public static getCreationDate($id_user)
+	public static function getCreationDate($id_user)
 	{
 		$row = self::getRow($id_user);
 		
