@@ -38,6 +38,16 @@ include_once "base.php";
 function addFixedVacation($id_user, $id_right, $datebegin , $dateend, $remarks, $total)
 {
 	global $babDB;
+	require_once dirname(__FILE__).'/userinfosincl.php';
+	
+	$creationdate = bab_userInfos::getCreationDate($id_user);
+	
+	if ($creationdate >= $dateend)
+	{
+		// ignore fixed vacation because the user does not exists at that time
+		return;
+	}
+	
 
 
 	$babDB->db_query("insert into ".BAB_VAC_ENTRIES_TBL." 
@@ -87,6 +97,9 @@ function addFixedVacation($id_user, $id_right, $datebegin , $dateend, $remarks, 
 function updateFixedVacation($id_user, $id_right, $datebegin , $dateend, $total)
 {
 	global $babDB;
+	require_once dirname(__FILE__).'/userinfosincl.php';
+	
+	$creationdate = bab_userInfos::getCreationDate($id_user);
 
 	$res = $babDB->db_query("select 
 		vet.id as entry, 
@@ -107,22 +120,33 @@ function updateFixedVacation($id_user, $id_right, $datebegin , $dateend, $total)
 
 	while( $arr = $babDB->db_fetch_array($res))
 	{
-		$babDB->db_query("
-		UPDATE ".BAB_VAC_ENTRIES_TBL." 
-			SET 
-			date_begin	=".$babDB->quote($datebegin).", 
-			date_end	=".$babDB->quote($dateend)." 
+		if ($creationdate >= $dateend)
+		{
+			removeFixedVacation($arr['entry']);
 			
-		WHERE 
-			id=".$babDB->quote($arr['entry'])."
-		");
-
-		$babDB->db_query("update ".BAB_VAC_ENTRIES_ELEM_TBL." 
-		set 
-		quantity=".$babDB->quote($total)." 
-			where id=".$babDB->quote($arr['entryelem']));
-
-		bab_vac_updateEventCalendar($arr['entry']);
+		} else {
+		
+		
+			$babDB->db_query("
+			UPDATE ".BAB_VAC_ENTRIES_TBL." 
+				SET 
+				date_begin	=".$babDB->quote($datebegin).", 
+				date_end	=".$babDB->quote($dateend)." 
+				
+			WHERE 
+				id=".$babDB->quote($arr['entry'])."
+			");
+	
+			$babDB->db_query("update ".BAB_VAC_ENTRIES_ELEM_TBL." 
+					set 
+					quantity=".$babDB->quote($total)." 
+				where 
+					id=".$babDB->quote($arr['entryelem'])
+			);
+	
+			bab_vac_updateEventCalendar($arr['entry']);
+		
+		}
 	
 	
 		$begin = BAB_DateTime::fromIsoDateTime($arr['date_begin']);
