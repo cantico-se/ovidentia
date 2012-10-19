@@ -76,6 +76,7 @@ class bab_userInfos {
 		}
 
 		return array(
+			'nickname'		=> $row['nickname'],
 			'disabled' 		=> $row['disabled'],
 			'password_md5'	=> $row['password'],
 			'changepwd'		=> $row['changepwd'],

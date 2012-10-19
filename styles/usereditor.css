@@ -1,0 +1,26 @@
+
+.bab-user-editor {
+	margin: 1em auto;
+	max-width:80em;
+	background:#fefefe;
+	padding:.8em;
+}
+
+.bab-user-editor .dir-label {
+	width:14em;
+	text-align:right;
+}
+
+.bab-user-editor .dir-row {
+	margin:1em 0;
+}
+
+.bab-user-editor .labeledfield .widget-layout-flow-item {
+	vertical-align:top;
+}
+
+.bab-user-editor .labeledfield input,
+.bab-user-editor .labeledfield textarea,
+.bab-user-editor .labeledfield select {
+	margin-left:.3em;
+}

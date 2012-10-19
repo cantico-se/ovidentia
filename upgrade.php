@@ -6856,8 +6856,20 @@ function ovidentia_upgrade($version_base,$version_ini) {
 		$babDB->db_query("ALTER TABLE bab_cal_events ADD created datetime NOT NULL default '0000-00-00 00:00:00'");
 	}
 	
-	return true;
+	
 
+	
+	
+	/**
+	 * Upgrade to 7.8.93
+	 */
+	
+	$functionalities->register('UserEditor'		, $GLOBALS['babInstallPath'].'utilit/usereditor.php');
+	
+	
+	
+	
+	return true;
 
 }
 

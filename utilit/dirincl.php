@@ -799,6 +799,7 @@ class bab_dirEntryPhoto {
 function getDirEntry($id, $type, $id_directory, $accessCtrl) 
 	{
 	global $babDB;
+	require_once dirname(__FILE__).'/iterator/iterator.php';
 
 	if (BAB_DIR_ENTRY_ID_USER === $type && false === $id) {
 		$id = &$GLOBALS['BAB_SESS_USERID'];
@@ -874,7 +875,18 @@ function getDirEntry($id, $type, $id_directory, $accessCtrl)
 		}
 
 
-	$res = $babDB->db_query("select * from ".BAB_DBDIR_FIELDSEXTRA_TBL." where id_directory='".$babDB->db_escape_string($id_fieldextra_directory)."' AND disabled='N' order by list_ordering asc");
+	$res = $babDB->db_query("select 
+			e.*, 
+			v.field_value default_value_text 
+		
+	from ".BAB_DBDIR_FIELDSEXTRA_TBL." e 
+		LEFT JOIN bab_dbdir_fieldsvalues v ON v.id=e.default_value 
+			
+	where 
+			id_directory='".$babDB->db_escape_string($id_fieldextra_directory)."' 
+			AND disabled='N' 
+				order by list_ordering asc
+	");
 
 	$entries = array();
 	$leftjoin = array();
@@ -884,19 +896,53 @@ function getDirEntry($id, $type, $id_directory, $accessCtrl)
 		{
 		if( $arr['id_field'] < BAB_DBDIR_MAX_COMMON_FIELDS )
 			{
+			
 			$rr = $babDB->db_fetch_array($babDB->db_query("select description, name from ".BAB_DBDIR_FIELDS_TBL." where id='".$babDB->db_escape_string($arr['id_field'])."'"));
-			$entries[$rr['name']] = array('name' => translateDirectoryField($rr['description']) , 'value' => '' );
-			}
+			$fieldname = $rr['name'];
+			$entries[$fieldname] = array('name' => translateDirectoryField($rr['description']) , 'value' => '' );
+		}
 		else
 			{
+			$fieldname = "babdirf".$arr['id'];
 			$rr = $babDB->db_fetch_array($babDB->db_query("select name from ".BAB_DBDIR_FIELDS_DIRECTORY_TBL." where id='".$babDB->db_escape_string(($arr['id_field'] - BAB_DBDIR_MAX_COMMON_FIELDS))."'"));
-			$entries["babdirf".$arr['id']] = array('name' => translateDirectoryField($rr['name']) , 'value' => '' );
+			$entries[$fieldname] = array('name' => translateDirectoryField($rr['name']) , 'value' => '' );
 
 			$leftjoin[] = ' LEFT JOIN '.BAB_DBDIR_ENTRIES_EXTRA_TBL.' lj'.$arr['id']." ON lj".$arr['id'].".id_fieldx='".$arr['id']."' AND e.id=lj".$arr['id'].".id_entry";
 
 			$leftjoin_col[] ='lj'.$arr['id'].'.field_value babdirf'.$arr['id'];
-			}
 		}
+			
+		if (isset($arr['default_value_text']))
+		{
+			$entries[$fieldname]['default_value_text'] = $arr['default_value_text'];
+		}
+		
+		if ('Y' === $arr['modifiable'])
+		{
+			$entries[$fieldname]['modifiable'] = true;
+		}
+		
+		if ('Y' === $arr['required'])
+		{
+			$entries[$fieldname]['required'] = true;
+		}
+		
+		if ('Y' === $arr['multilignes'])
+		{
+			$entries[$fieldname]['multilignes'] = true;
+		}
+		
+		if ('Y' === $arr['multi_values'])
+		{
+			$options = new bab_QueryIterator;
+			$options->setQuery('SELECT * FROM bab_dbdir_fieldsvalues WHERE id_fieldextra='.$babDB->quote($arr['id']));
+			
+			$entries[$fieldname]['multi_values'] = array(
+				'default_value' => (int) $arr['default_value'],
+				'options' => $options
+			);
+		}
+	}
 
 	
 

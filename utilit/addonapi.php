@@ -1494,7 +1494,7 @@ function bab_getUserId($name = null)
 	if( $babDB->db_num_rows($res) > 0)
 	{
 		$arr = $babDB->db_fetch_array($res);
-		return $arr['id'];
+		return (int) $arr['id'];
 	}
 	
 	return 0;

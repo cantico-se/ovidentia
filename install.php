@@ -41,6 +41,7 @@ $functionalities->register('Archive/Zip/Zlib'		, $GLOBALS['babInstallPath'].'uti
 $functionalities->register('Archive/Zip/ZipArchive'	, $GLOBALS['babInstallPath'].'utilit/archiveincl.php');
 $functionalities->register('CalendarBackend'		, $GLOBALS['babInstallPath'].'utilit/cal.backend.class.php');
 $functionalities->register('CalendarBackend/Ovi'	, $GLOBALS['babInstallPath'].'utilit/cal.backend.ovi.class.php');
+$functionalities->register('UserEditor'				, $GLOBALS['babInstallPath'].'utilit/usereditor.php');
 
 
 $func_to_register = $functionalities->parseFile(dirname(__FILE__).'/utilit/omlincl.php');

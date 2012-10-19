@@ -288,3 +288,32 @@ abstract class bab_MySqlIterator extends BAB_MySqlResultIterator
 	}
 }
 
+
+/**
+ * Simple query iterator
+ *
+ */
+class bab_QueryIterator extends BAB_MySqlResultIterator
+{
+	protected $sQuery = null;
+	
+	public function setQuery($sQuery)
+	{
+		$this->sQuery = $sQuery;
+		return $this;
+	}
+	
+	
+	public function getObject($aDatas)
+	{
+		return $aDatas;
+	}
+	
+	function executeQuery()
+	{
+		if(is_null($this->_oResult))
+		{
+			$this->setMySqlResult($this->getDataBaseAdapter()->db_query($this->sQuery));
+		}
+	}
+}
