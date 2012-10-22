@@ -808,12 +808,21 @@ switch($idx) {
 			 * $grp : filter for the list of the users when you attach a user in a group (id of a group or nothing)
 			 */
 			modifyUser($item, $pos, $grp);
+			
+			//$babPage = bab_Widgets()->BabPage();
+			//$babPage->addStyleSheet($GLOBALS['babInstallPath'].'styles/usereditor.css');
+			//$editor = bab_functionality::get('UserEditor')->getForm($item);
+			//$babPage->addItem($editor);
+			
 			changeNickname($item, $pos, $grp);
 			changePassword($item, $pos, $grp);
+			
 			$babBody->addItemMenu('List', bab_translate("Users"), $GLOBALS['babUrlScript']."?tg=users&idx=List&pos=".$pos."&grp=".$grp);
 			$babBody->addItemMenu('Modify', bab_translate("Modify"), $GLOBALS['babUrlScript']."?tg=user&idx=Modify&item=".$item."&pos=".$pos."&grp=".$grp);
 			$babBody->addItemMenu('Groups', bab_translate("Groups"), $GLOBALS['babUrlScript']."?tg=user&idx=Groups&item=".$item."&pos=".$pos."&grp=".$grp);
 			$babBody->addItemMenu('unav', bab_translate("Unavailability"), $GLOBALS['babUrlScript']."?tg=options&idx=unav&iduser=".$item);
+			
+			// $babPage->displayHtml();
 		}
 		break;
 

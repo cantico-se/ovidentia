@@ -683,6 +683,7 @@ class bab_dirEntryPhoto {
 	private $id_entry = NULL;
 	
 	private $photo_data = NULL;
+	private $photo_type = null;
 	private $last_update = NULL;
 
 	public function __construct($id_entry) {
@@ -761,6 +762,7 @@ class bab_dirEntryPhoto {
 			$arr = $babDB->db_fetch_assoc($res);
 			
 			$this->photo_data = $arr['photo_data'];
+			$this->photo_type = $arr['photo_type'];
 			$this->last_update = $arr['date_modification'];
 		}
 		
@@ -778,6 +780,18 @@ class bab_dirEntryPhoto {
 		}
 		
 		return $this->last_update;
+	}
+	
+	/**
+	 * Get photo type
+	 * @return string
+	 */
+	public function getType() {
+		if (NULL === $this->photo_type) {
+			$this->getData();
+		}
+		
+		return $this->photo_type;
 	}
 }
 

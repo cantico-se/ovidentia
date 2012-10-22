@@ -1,9 +1,10 @@
 
 .bab-user-editor {
 	margin: 1em auto;
-	max-width:80em;
+	max-width:40em;
 	background:#fefefe;
 	padding:.8em;
+	
 }
 
 .bab-user-editor .dir-label {

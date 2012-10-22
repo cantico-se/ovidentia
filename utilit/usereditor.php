@@ -49,7 +49,18 @@ class Func_UserEditor extends bab_functionality {
 	 */
 	private $directory = null;
 	
+	/**
+	 * @see Func_UserEditor::getDirectoryFields() 
+	 * @var array
+	 */
+	private $fields = null;
 	
+	
+	/**
+	 * 
+	 * @var Widget_ImagePicker
+	 */
+	private $imagePicker = null;
 	
 	
 
@@ -297,6 +308,41 @@ class Func_UserEditor extends bab_functionality {
 	
 	
 	/**
+	 * 
+	 * @return Ambigous <multitype:, boolean, multitype:multitype:number bab_QueryIterator  , bab_dirEntryPhoto, unknown, multitype:number bab_QueryIterator >
+	 */
+	protected function getDirectoryFields()
+	{
+		if (null === $this->fields)
+		{
+			$directory = $this->getDirectory();
+			$this->fields = bab_admGetDirEntry($directory['id'], BAB_DIR_ENTRY_ID_DIRECTORY, $directory['id']);
+		}
+		
+		return $this->fields;
+	}
+	
+	
+	
+	protected function getPhotoFrame()
+	{
+		$fields = $this->getDirectoryFields();
+		
+		if (!isset($fields['jpegphoto']))
+		{
+			return null;
+		}
+		
+		$W = bab_Widgets();
+		
+		$this->imagePicker = $W->ImagePicker()->setDimensions(400, 400)->setName('jpegphoto')->oneFileMode();
+
+		
+		return $this->imagePicker;
+	}
+
+	
+	/**
 	 * Get fields relative to bab_dbdir_entries
 	 * @return Widget_Frame
 	 */
@@ -307,8 +353,7 @@ class Func_UserEditor extends bab_functionality {
 		$frame = $W->Frame(null, $W->VBoxLayout())->addClass('directory');
 		if (null === $fields)
 		{
-			$directory = $this->getDirectory();
-			$fields = bab_admGetDirEntry($directory['id'], BAB_DIR_ENTRY_ID_DIRECTORY, $directory['id']);
+			$fields = $this->getDirectoryFields();
 		}
 		
 		foreach($fields as $fieldname => $f)
@@ -382,10 +427,19 @@ class Func_UserEditor extends bab_functionality {
 	{
 		$W = bab_Widgets();
 		
+		$Icons = bab_functionality::get('Icons');
+		/*@var $Icons Func_Icons */
+		$Icons->includeCss();
+		
 		$form = $W->Form();
 		$form->colon();
 		$form->setName('user');
 		$form->addClass('bab-user-editor');
+		
+		if ((null === $id_user && $this->canAddDirectoryEntry()) || $this->canEditDirectoryEntry($id_user))
+		{
+			$form->addItem($this->getPhotoFrame());
+		}
 		
 		
 		$form->addItem($this->getUserFrame($id_user));
@@ -400,6 +454,7 @@ class Func_UserEditor extends bab_functionality {
 		
 		if (null !== $id_user)
 		{
+			$form->setHiddenValue('user[id]', $id_user);
 			$form->setValues(array('user' => $this->getValues($id_user)));
 		}
 		
@@ -414,9 +469,57 @@ class Func_UserEditor extends bab_functionality {
 	 */
 	protected function getValues($id_user)
 	{
-		$values = bab_getUserInfos($id_user);
+		include_once $GLOBALS['babInstallPath'].'utilit/dirincl.php';
+		include_once $GLOBALS['babInstallPath'].'utilit/userinfosincl.php';
+	
+		$directory = getDirEntry($id_user, BAB_DIR_ENTRY_ID_USER, NULL, false);
+	
+		if (!$directory) {
+			throw new Exception(sprintf('No directory entry for user %d', $id_user));
+		}
+	
+		$infos = bab_userInfos::getForDirectoryEntry($id_user);
+	
+		if (!$infos) {
+			throw new Exception(sprintf('Failed to get user infos for id user %d', $id_user));
+		}
+	
+		foreach($directory as $field => $arr) {
+			$infos[$field] = $arr['value'];
+		}
 
-		return $values;
+		
+		if (isset($this->imagePicker) && isset($directory['jpegphoto']['photo']))
+		{
+			$photo = $directory['jpegphoto']['photo'];
+			/*@var $photo bab_dirEntryPhoto */
+			
+			$tmpPath = $this->imagePicker->getFolder();
+			$tmpPath->deleteDir();
+			$tmpPath->createDir();
+			$tmpPath->push('photo.jpg');
+			
+			
+			file_put_contents($tmpPath->tostring(), $photo->getData());
+			
+			$tmpPath->pop();
+
+		}
+
+		return $infos;
+	}
+	
+	/**
+	 * Save form posted array
+	 * return id_user
+	 * 
+	 * @throws Exception
+	 * 
+	 * @return int
+	 */
+	public function save(Array $user)
+	{
+		
 	}
 	
 
