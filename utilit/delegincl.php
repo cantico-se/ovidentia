@@ -591,7 +591,6 @@ function bab_deleteDelegation($id_delegation, $deleteObjects)
 		$babDB->db_query("update ".BAB_ORG_CHARTS_TBL." set id_dgowner='0' where id_dgowner='".$idsafe."'");
 		$babDB->db_query("update ".BAB_CAL_RESOURCES_TBL." set id_dgowner='0' where id_dgowner='".$idsafe."'");
 		$babDB->db_query("update ".BAB_CAL_PUBLIC_TBL." set id_dgowner='0' where id_dgowner='".$idsafe."'");
-	
 	}
 	
 	
