@@ -335,7 +335,12 @@ class Func_UserEditor extends bab_functionality {
 		
 		$W = bab_Widgets();
 		
-		$this->imagePicker = $W->ImagePicker()->setDimensions(400, 400)->setName('jpegphoto')->oneFileMode();
+		$this->imagePicker = $W->ImagePicker()
+			->setDimensions(400, 400)
+			->setName('jpegphoto')
+			->oneFileMode()
+			->setEncodingMethod(null)
+		;
 
 		
 		return $this->imagePicker;
@@ -417,6 +422,21 @@ class Func_UserEditor extends bab_functionality {
 	
 	
 	
+	/**
+	 * @return Widget_Displayable_Interface
+	 */
+	protected function getButtons()
+	{
+		$W = bab_Widgets();
+		
+		$frame = $W->Frame()->addClass('buttons');
+		$frame->addItem($W->SubmitButton()->setLabel(bab_translate('Save')));
+		
+		return $frame;
+	}
+	
+	
+	
 	
 	
 	/**
@@ -451,6 +471,7 @@ class Func_UserEditor extends bab_functionality {
 			$form->addItem($this->getDefaultDirectoryFrame());
 		}
 		
+		$form->addItem($this->getButtons());
 		
 		if (null !== $id_user)
 		{
@@ -495,7 +516,11 @@ class Func_UserEditor extends bab_functionality {
 			/*@var $photo bab_dirEntryPhoto */
 			
 			$tmpPath = $this->imagePicker->getFolder();
-			$tmpPath->deleteDir();
+			try {
+				$tmpPath->deleteDir();
+			} catch(bab_FolderAccessRightsException $e) {
+				
+			}
 			$tmpPath->createDir();
 			$tmpPath->push('photo.jpg');
 			
@@ -519,7 +544,27 @@ class Func_UserEditor extends bab_functionality {
 	 */
 	public function save(Array $user)
 	{
+		$id_user = isset($user['id']) ? ((int) $user['id']) : null;
 		
+		
+		if (!isset($id_user))
+		{
+			if (false === $id_user = bab_registerUser($user['sn'], $user['givenname'], '', $user['email'], $user['nickname'], $user['password1'], $user['password2'], $confirmed, $error))
+			{
+				throw new Exception($error);
+			}
+		
+		}
+		
+		
+		
+		if (!bab_updateUserById($id_user, $user, $error))
+		{
+			throw new Exception($error);
+			return false;
+		}
+		
+		return true;
 	}
 	
 
