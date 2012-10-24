@@ -83,13 +83,14 @@ class displayAttendeesCls extends displayEventCls
 		$this->t_reject = bab_translate("Reject");
 
 		$this->period = $this->getPeriod();
-		
+
 		if (!$this->period)
 		{
+			$backend = self::$calendar->getBackend();
 			throw new Exception('Event not found backend='.get_class($backend).' UID='.$evtid.' DTSTART='.$dtstart);
 		}
-		
-		
+
+
 
 		$this->attendees = $this->period->getAllAttendees();
 
@@ -128,15 +129,15 @@ class displayAttendeesCls extends displayEventCls
 				{
 					switch($attendee['AttendeeBackend']->getRealPartstat())
 					{
-						
+
 						case 'ACCEPTED':
 							$this->statusarray = array('DECLINED');
 							break;
-							
+
 						case 'DECLINED':
 							$this->statusarray = array('ACCEPTED');
 							break;
-							
+
 						default:
 						case 'NEEDS-ACTION':
 							$this->statusarray = array('ACCEPTED','DECLINED');
@@ -184,7 +185,7 @@ class displayAttendeesCls extends displayEventCls
 			$this->altbg = !$this->altbg;
 			$this->fullname = isset($arr['CN']) ? bab_toHtml($arr['CN']) : bab_toHtml($arr['email']);
 
-			
+
 			$partstat = $arr['AttendeeBackend']->getRealPartstat();
 			$this->external = false;
 			if (!isset($arr['calendar']))
@@ -364,43 +365,43 @@ class displayApprobCalendarCls
 		$this->idcal = $idcal;
 		$this->relation = $relation;
 		$this->dtstart = $dtstart;
-		
+
 		$this->commenttxt = bab_translate("Reason");
 		$this->updatetxt = bab_translate("Update");
-		
+
 		$this->statusarray = array(
 			BAB_CAL_STATUS_DECLINED => bab_translate('Reject'),
 			BAB_CAL_STATUS_ACCEPTED => bab_translate('Accept')
 		);
-		
+
 
 		$calendar = bab_getICalendars()->getEventCalendar($idcal);
-		
-		
-		
+
+
+
 		if (null === $calendar)
 		{
 			// the main calendar is not accessible, but the user must approve an event in it
 			$calendar = bab_getICalendars()->getEventCalendar($relation);
-			
+
 			if (null === $calendar)
 			{
 				$babBody->addError(bab_translate('The calendar is not accessible'));
 			}
 		}
-		
+
 		$this->brepetitive = false;
 		$this->approbstatus = false;
-		
+
 		if (isset($calendar))
 		{
 			$backend = $calendar->getBackend();
 			$period = $backend->getPeriod($backend->CalendarEventCollection($calendar), $evtid);
-	
+
 			$this->approbstatus = bab_toHtml(sprintf(bab_translate("Approbation for %s"), $calendar->getName()));
 
 			$collection = $period->getCollection();
-	
+
 			if( !empty($collection->hash))
 			{
 				$this->repetitivetxt = bab_translate("This is recurring event. Do you want to update this occurence or series?");
@@ -435,7 +436,7 @@ class displayApprobCalendarCls
 		{
 			return '';
 		}
-		
+
 		return bab_printTemplate($this, "calendar.html", "approbcalendar");
 	}
 }
@@ -449,43 +450,43 @@ class displayApprobCalendarCls
 class displayEventCls
 {
 	/**
-	 * 
+	 *
 	 * @var bab_EventCalendar
 	 */
 	protected static $calendar;
-	
+
 	/**
-	 * 
+	 *
 	 * @var bab_EventCalendar
 	 */
 	private static $calendarPeriod;
-	
+
 	public $evtid;
 	public $dtstart;
-	
-	
+
+
 	public function __construct($evtid, $dtstart, $idcal)
 	{
 		global $babBody;
 		
 		$this->evtid = $evtid;
 		$this->dtstart = $dtstart;
-		
+
 		if (!isset(self::$calendar))
 		{
 			self::$calendar = bab_getICalendars()->getEventCalendar($idcal);
-			
+
 			if (!self::$calendar) {
 				$babBody->addError(bab_translate("Access denied to the calendar"));
 				return;
 			}
 		}
-		
+
 	}
-	
-	
+
+
 	/**
-	 * 
+	 *
 	 * @param string $evtid
 	 * @param string $dtstart
 	 */
@@ -493,11 +494,11 @@ class displayEventCls
 	{
 		if (!isset(self::$calendarPeriod))
 		{
-		
+
 			$backend = self::$calendar->getBackend();
 			self::$calendarPeriod = $backend->getPeriod($backend->CalendarEventCollection(self::$calendar), $this->evtid, $this->dtstart);
 		}
-		
+
 		return self::$calendarPeriod;
 	}
 }
@@ -512,7 +513,7 @@ class displayEventDetailCls extends displayEventCls
 	public function __construct($evtid, $dtstart, $idcal)
 	{
 		parent::__construct($evtid, $dtstart, $idcal);
-		
+
 		require_once $GLOBALS['babInstallPath'].'utilit/dateTime.php';
 		global  $babBody, $babDB;
 		$this->access = false;
@@ -522,7 +523,7 @@ class displayEventDetailCls extends displayEventCls
 		{
 			return;
 		}
-		
+
 
 		$calendarPeriod = $this->getPeriod();
 
@@ -625,9 +626,9 @@ class displayEventNotesCls extends displayEventCls
 
 	public function __construct($evtid, $idcal)
 		{
-			
+
 		parent::__construct($evtid, null, $idcal);
-		
+
 		global $babBody, $babDB;
 		$this->access = false;
 
@@ -636,12 +637,12 @@ class displayEventNotesCls extends displayEventCls
 		{
 			return;
 		}
-		
+
 		if (!($calendar instanceof bab_OviEventCalendar))
 		{
 			return;
 		}
-		
+
 
 		$calendarPeriod = $this->getPeriod();
 
@@ -1448,11 +1449,11 @@ switch($idx)
 	case "unload":
 		include_once $babInstallPath."utilit/uiutil.php";
 		$popupmessage = bab_translate("Your event has been updated");
-		if( isset($reload)) { 
+		if( isset($reload)) {
 			$autoclose = false;
-		} 
-		else { 
-			$reload = false; 
+		}
+		else {
+			$reload = false;
 			$autoclose = !isset($_COOKIE['bab_debug']) || !isset($GLOBALS['bab_debug_messages']);
 		}
 		popupUnload($popupmessage, '', $reload, $autoclose);
