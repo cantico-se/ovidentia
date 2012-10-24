@@ -723,12 +723,36 @@ function bab_deleteDelegation($id_delegation, $deleteObjects)
 	}
 	else
 	{
+		require_once $GLOBALS['babInstallPath']."utilit/path.class.php";
+		require_once $GLOBALS['babInstallPath']."utilit/iterator/iterator.php";
+		require_once $GLOBALS['babInstallPath']."utilit/fmset.class.php";
+		$pathTo = new bab_path(BAB_FmFolderHelper::getUploadPath(), 'fileManager', 'collectives', 'DG0');
+		$pathsFrom = new bab_path(BAB_FmFolderHelper::getUploadPath(), 'fileManager', 'collectives', 'DG'.$idsafe);
+		
+		$moveArray = array();
+		/* @var $pathFrom bab_path */
+		foreach($pathsFrom as $pathFrom){
+			if($pathFrom->isDir()){
+				$dirname = $pathFrom->getBasename();
+				$pathsToExist = new bab_path($pathTo->tostring(),$dirname);
+				if($pathsToExist->fileExists()){
+					throw new ErrorException('Delete not done, a folder with this name already exist');
+				}
+				$moveArray[] = array('from' => $pathFrom->tostring(), 'to' => $pathsToExist->tostring());
+			}
+		}
+		
+		foreach($moveArray as $move){
+			rename($move['from'], $move['to']);
+		}
+		
 		$babDB->db_query("update ".BAB_SECTIONS_TBL." set id_dgowner='0' where id_dgowner='".$idsafe."'");
 		$babDB->db_query("update ".BAB_TOPICS_CATEGORIES_TBL." set id_dgowner='0' where id_dgowner='".$idsafe."'");
 		$babDB->db_query("update ".BAB_FLOW_APPROVERS_TBL." set id_dgowner='0' where id_dgowner='".$idsafe."'");
 		$babDB->db_query("update ".BAB_FORUMS_TBL." set id_dgowner='0' where id_dgowner='".$idsafe."'");
 		$babDB->db_query("update ".BAB_FAQCAT_TBL." set id_dgowner='0' where id_dgowner='".$idsafe."'");
 		$babDB->db_query("update ".BAB_FM_FOLDERS_TBL." set id_dgowner='0' where id_dgowner='".$idsafe."'");
+		$babDB->db_query("update ".BAB_FILES_TBL." set iIdDgOwner='0' where iIdDgOwner='".$idsafe."'");
 		$babDB->db_query("update ".BAB_LDAP_DIRECTORIES_TBL." set id_dgowner='0' where id_dgowner='".$idsafe."'");
 		$babDB->db_query("update ".BAB_DB_DIRECTORIES_TBL." set id_dgowner='0' where id_dgowner='".$idsafe."'");
 		$babDB->db_query("update ".BAB_ORG_CHARTS_TBL." set id_dgowner='0' where id_dgowner='".$idsafe."'");
