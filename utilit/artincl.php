@@ -1741,7 +1741,7 @@ function acceptWaitingArticle($idart)
 			$escapeArticleId = $babDB->db_escape_string($articleid);
 			$idSite = $babDB->db_escape_string($babBody->babsite['id']);
 			$private = $arr['hpage_private'];
-			$public = $arr['hpage_private'];
+			$public = $arr['hpage_public'];
 			
 			
 			if( $private == "Y")
