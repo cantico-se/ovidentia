@@ -547,6 +547,11 @@ function printBody()
 				$this->menutext = $this->menuvals[$i]['text'];
 				if( $this->menuvals[$i]['enabled'] == false) {
 					$this->enabled = 0;
+					if (!empty($this->menuvals[$i]['attributes'])) {
+						$this->menuattribute = $this->menuvals[$i]['attributes'];
+					} else {
+						$this->menuattribute = "";
+					}
 				} else {
 					$this->enabled = 1;
 					if (!empty($this->menuvals[$i]['attributes'])) {
