@@ -452,6 +452,17 @@ class bab_Path implements SeekableIterator, Countable {
 	{
 		return is_dir($this->toString());
 	}
+	
+	
+	/**
+	 * Test if the file exists
+	 * @since 7.8.10
+	 * @return boolean
+	 */
+	public function fileExists()
+	{
+		return file_exists($this->toString());
+	}
 
 
 
