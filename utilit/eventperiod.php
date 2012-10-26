@@ -533,7 +533,7 @@ function bab_onCalendarEvent(bab_eventCalendarEvent $event)
 			break;
 
 		case $event instanceof bab_eventAfterEventUpdate:
-			cal_notify($event, bab_translate("Appointment modifed by ").$GLOBALS['BAB_SESS_USER'], bab_translate("The following appointment has been modified"));
+			cal_notify($event, bab_translate("Appointment modified by ").$GLOBALS['BAB_SESS_USER'], bab_translate("The following appointment has been modified"));
 			break;
 
 		case $event instanceof bab_eventAfterEventDelete:

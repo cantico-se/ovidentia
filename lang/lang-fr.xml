@@ -1082,6 +1082,7 @@
 <string id="User 4">Utilisateur 4</string>
 <string id="Web Page">Page Web</string>
 <string id="Photo">Photo</string>
+<string id="Set the photo">Définir la photo</string>
 <string id="Common Name">Surnom</string>
 <string id="Groupes">Groupes</string>
 <string id="Retype Password">Retapez le mot de passe</string>
@@ -1743,7 +1744,7 @@
 <string id="New waiting event">Nouvel événement en attente</string>
 <string id="Appointment canceled by ">Evénement refusé par </string>
 <string id="The following appointment has been canceled">L'événement suivant a été refusé</string>
-<string id="Appointment modifed by ">Evénement modifié par </string>
+<string id="Appointment modified by ">Evénement modifié par </string>
 <string id="The following appointment has been modified">L'événement suivant a été modifié</string>
 <string id="The following appointment has been validated">L'événement suivant a été approuvé</string>
 <string id="The following resource has been validated">La ressource suivante a été approuvée</string>
