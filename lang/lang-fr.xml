@@ -1442,6 +1442,7 @@
 <string id="Registration">Inscription</string>
 <string id="You don't have rights to modify this article">Vous n'avez pas le droit de modifier cet article</string>
 <string id="At least 6 characters">Au moins 6 caractères</string>
+<string id="Password must have at least 6 characters">Le mot de passe doit contenir au moins 6 caractères</string>
 <string id="I have read and accept the agreement">J'ai lu et j'accepte l'avis de non-responsabilité</string>
 <string id="Read">Lire</string>
 <string id="Disclaimer/Privacy statement">Avis de non-responsabilité</string>

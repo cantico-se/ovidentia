@@ -184,6 +184,11 @@ class Func_UserEditor extends bab_functionality {
 	 */
 	protected function canEditDirectoryEntry($id_user)
 	{
+		if (null === $id_user)
+		{
+			return false;
+		}
+		
 		if (!$this->access_control && !isset($this->id_directory))
 		{
 			return true;
@@ -685,7 +690,7 @@ class Func_UserEditor extends bab_functionality {
 	 */
 	public function save(Array $user)
 	{
-		
+		global $babBody;
 		
 		$id_user = isset($user['id']) ? ((int) $user['id']) : null;
 		
@@ -702,6 +707,11 @@ class Func_UserEditor extends bab_functionality {
 		
 		if (!isset($id_user))
 		{
+			if (mb_strlen($user['password1']) < 6)
+			{
+				throw new Exception(bab_translate('Password must have at least 6 characters'));
+			}
+			
 			if (false === $id_user = bab_registerUser($user['sn'], $user['givenname'], '', $user['email'], $user['nickname'], $user['password1'], $user['password2'], 1, $error))
 			{
 				throw new Exception($error);
@@ -714,12 +724,29 @@ class Func_UserEditor extends bab_functionality {
 			{
 				bab_attachUserToGroup($id_user, $directory['id_group']);
 			}
-		
+			
+			
+			// delegated administrator, add the created user in the main delegation group
+			if($babBody->currentAdmGroup != 0 &&
+					$babBody->currentDGGroup['id_group'] != BAB_ALLUSERS_GROUP &&
+					$babBody->currentDGGroup['id_group'] != BAB_REGISTERED_GROUP &&
+					$babBody->currentDGGroup['id_group'] != BAB_UNREGISTERED_GROUP &&
+					$babBody->currentDGGroup['users'] == 'Y')
+			{
+				bab_attachUserToGroup($id_user, $babBody->currentDGGroup['id_group']);
+			}
 		}
 		
 		
 		if (isset($user['setpwd']) && $user['setpwd'])
 		{
+			if (mb_strlen($user['password1']) < 6)
+			{
+				throw new Exception(bab_translate('Password must have at least 6 characters'));
+			}
+			
+			
+			
 			if ($user['password1'] !== $user['password2'])
 			{
 				throw new Exception(bab_translate('ERROR: Passwords not match !!'));
@@ -785,6 +812,10 @@ class Func_UserEditor extends bab_functionality {
 			throw new Exception($error);
 			return false;
 		}
+		
+		
+		
+		
 		
 		
 		// notifications

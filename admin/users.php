@@ -450,65 +450,20 @@ function deleteUsers($users)
 	$tempa = new tempa($users);
 	$babBody->babecho(	bab_printTemplate($tempa,"warning.html", "warningyesno"));
 	return true;
-	}	
-	
-function userCreate($grp = '')
-	{
-	global $babBody;
-	class temp
-		{
-		var $firstname;
-		var $lastname;
-		var $nickname;
-		var $email;
-		var $password;
-		var $repassword;
-		var $adduser;
-		var $firstnameval;
-		var $lastnameval;
-		var $nicknameval;
-		var $emailval;
-		var $notifyuser;
-		var $sendpassword;
-		var $yes;
-		var $no;
-		var $grp;
-
-		function temp($grp)
-			{
-			$this->grp = bab_toHtml($grp);
-			$this->firstnameval 	= bab_toHtml(bab_pp('firstname'));
-			$this->middlenameval 	= bab_toHtml(bab_pp('middlename'));
-			$this->lastnameval 		= bab_toHtml(bab_pp('lastname'));
-			$this->nicknameval 		= bab_toHtml(bab_pp('nickname'));
-			$this->emailval 		= bab_toHtml(bab_pp('email'));
-			$this->firstname = bab_translate("First Name");
-			$this->lastname = bab_translate("Last Name");
-			$this->middlename = bab_translate("Middle Name");
-			$this->nickname = bab_translate("Login ID");
-			$this->email = bab_translate("Email");
-			$this->password = bab_translate("Password");
-			$this->repassword = bab_translate("Retype Password");
-			$this->notifyuser = bab_translate("Notify user");
-			$this->sendpassword = bab_translate("Send password with email");
-			$this->yes = bab_translate("Yes");
-			$this->no = bab_translate("No");
-			$this->adduser = bab_translate("Confirm");
-	
-			$minPasswordLengh = 6;
-			if(ISSET($GLOBALS['babMinPasswordLength']) && is_numeric($GLOBALS['babMinPasswordLength'])){
-				$minPasswordLengh = $GLOBALS['babMinPasswordLength'];
-				if($minPasswordLengh < 1){
-					$minPasswordLengh = 1;
-				}
-			}
-			$this->string_6_chr = sprintf(bab_translate("Password must be at least %s characters !!"),$minPasswordLengh);
-			}
-		}
-
-	$temp = new temp($grp);
-	$babBody->babecho(bab_printTemplate($temp, 'users.html', 'usercreate'));
 	}
+
+	
+	
+	
+function userCreate()
+{
+	require_once $GLOBALS['babInstallPath'].'utilit/urlincl.php';
+	$list = bab_url::get_request('grp');
+	$list->tg = 'users';
+	
+	$usereditor = bab_functionality::get('UserEditor');
+	$usereditor->getAsPage(null, $list)->displayHtml();
+}
 
 
 function utilit($grp = '')
@@ -669,45 +624,6 @@ if( !isset($grp) || empty($grp))
 
 
 
-if( isset($adduser) && ($babBody->isSuperAdmin || $babBody->currentDGGroup['users'] == 'Y'))
-{
-	$iduser = registerUser( stripslashes($firstname), stripslashes($lastname), stripslashes($middlename), $email, $nickname, $password1, $password2, true);
-	if(!$iduser)
-	{
-		$idx = "Create";
-	}
-	else
-	{
-		if($babBody->currentAdmGroup != 0 &&
-			$babBody->currentDGGroup['id_group'] != BAB_ALLUSERS_GROUP &&
-			$babBody->currentDGGroup['id_group'] != BAB_REGISTERED_GROUP &&
-			$babBody->currentDGGroup['id_group'] != BAB_UNREGISTERED_GROUP &&
-			$babBody->currentDGGroup['users'] == 'Y')
-		{
-			bab_addUserToGroup($iduser, $babBody->currentDGGroup['id_group']);
-		}
-
-		switch($babBody->nameorder[0])
-		{
-			case "L":
-				$pos = mb_strtoupper(mb_substr($lastname,0,1));
-			break;
-			case "F":
-			default:
-				$pos = '-'.mb_strtoupper(mb_substr($firstname,0,1));
-			break;
-		}
-		
-		$idx = "List";
-		if( $notifyuser == "Y" )
-		{
-
-			notifyAdminUserRegistration(bab_composeUserName($firstname , $lastname), $email, $nickname, $sendpwd == "Y"? $password1: "" );
-		}
-
-	}
-}
-
 if( mb_strlen($pos) > 0 && $pos[0] == "-" ){
 	$babBody->nameorder[0] = 'F';
 	$babBody->nameorder[1] = 'L';
@@ -780,7 +696,7 @@ switch($idx)
 	case "Create":
 		$babBody->title = bab_translate("Create a user");
 
-		userCreate($grp);
+		userCreate();
 		if ($displayMembersItemMenu)
 			{
 			$babBody->addItemMenu("Members", bab_translate("Members"),$GLOBALS['babUrlScript']."?tg=group&idx=Members&item=".bab_rp('grp'));
