@@ -74,10 +74,27 @@ function cal_notify(bab_eventCalendarEvent $event, $subject, $body = null)
 		{
 			$body = $subject;
 		}
+		
+		
+		$description	= bab_toHtml($period->getProperty('DESCRIPTION'));
+		
+		$data = $period->getData();
+		
+		// html from WYSIWYG if any :
+		
+		if (isset($data['description']) && isset($data['description_format']) && 'html' === $data['description_format']) {
+			include_once $GLOBALS['babInstallPath']."utilit/editorincl.php";
+			$editor = new bab_contentEditor('bab_calendar_event');
+			$editor->setContent($data['description']);
+			$editor->setFormat($data['description_format']);
+		
+			$description = $editor->getHtml();
+		}
+		
 
 		$tempc = new clsNotifyEvent(
 			$period->getProperty('SUMMARY'),
-			$period->getProperty('DESCRIPTION'),
+			$description,
 			$period->getProperty('LOCATION'),
 			bab_longDate($period->ts_begin),
 			bab_longDate($period->ts_end),
