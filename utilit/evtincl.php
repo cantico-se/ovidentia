@@ -1457,7 +1457,7 @@ function notifyEventUpdate($evtid, $bdelete, $exclude)
 		}
 	else
 		{
-		$subject = bab_translate("Appointment modifed by ");
+		$subject = bab_translate("Appointment modified by ");
 		$tempc->message = bab_translate("The following appointment has been modified");
 		}
 
