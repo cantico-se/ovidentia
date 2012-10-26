@@ -697,473 +697,524 @@ function summaryLdapContact($id, $cn)
 
 
 
-function modifyDbContact($id, $idu, $fields, $refresh)
+class bab_modifyDbContact
 {
-	global $babBody;
+	var $refresh;
 
-	class temp
+	public function __construct($id, $idu, $fields, $refresh)
+	{
+		global $babBody, $babDB;
+		$this->helpfields = bab_translate("Those fields must be filled");
+		$this->file = bab_translate("Photo");
+		$this->update = bab_translate("Update");
+		$this->id = bab_toHtml($id);
+
+		$this->fields = $fields;
+		$this->what = 'dbc';
+		$this->badd = bab_isAccessValid(BAB_DBDIRADD_GROUPS_TBL, $id);
+		$this->bupd = bab_isAccessValid(BAB_DBDIRUPDATE_GROUPS_TBL, $id);
+		$this->buserinfo = false;
+		$this->refresh = bab_toHtml($refresh);
+
+		if( !empty($babBody->msgerror))
 		{
-		var $refresh;
+			$this->msgerror = $babBody->msgerror;
+			$this->error = true;
+		}
 
-		function temp($id, $idu, $fields, $refresh)
+		$arr = $babDB->db_fetch_array($babDB->db_query("select id_group from ".BAB_DB_DIRECTORIES_TBL." where id='".$babDB->db_escape_string($id)."'"));
+		$this->idgroup = $arr['id_group'];
+		$arr = $babDB->db_fetch_array($babDB->db_query("select user_update from ".BAB_DB_DIRECTORIES_TBL." where id_group=".$babDB->quote(BAB_REGISTERED_GROUP)));
+		$allowuu = $arr['user_update'];
+
+		$personnal = false;
+
+		if (false === $idu)
+		{
+			$req = "select id from ".BAB_DBDIR_ENTRIES_TBL." where id_user='".$babDB->db_escape_string($GLOBALS['BAB_SESS_USERID'])."'";
+			list($idu) = $babDB->db_fetch_array($babDB->db_query($req));
+			$personnal = true;
+		}
+		else
+		{
+			$req = "select id from ".BAB_DBDIR_ENTRIES_TBL." where id='".$babDB->db_escape_string($idu)."' AND id_user='".$babDB->db_escape_string($GLOBALS['BAB_SESS_USERID'])."'";
+			$res =$babDB->db_query($req);
+			$personnal = $babDB->db_num_rows($res) > 0;
+		}
+
+		$this->idu = bab_toHtml($idu);
+
+
+		$this->res = $babDB->db_query("select * from ".BAB_DBDIR_FIELDSEXTRA_TBL." where id_directory='".($this->idgroup != 0? 0: $babDB->db_escape_string($this->id))."' and disabled='N' order by list_ordering asc");
+		$this->fxidaccess = array();
+		if( $this->res && $babDB->db_num_rows($this->res) > 0)
+		{
+			$this->count = $babDB->db_num_rows($this->res);
+			while($arr = $babDB->db_fetch_array($this->res))
 			{
-			global $babBody, $babDB;
-			$this->helpfields = bab_translate("Those fields must be filled");
-			$this->file = bab_translate("Photo");
-			$this->update = bab_translate("Update");
-			$this->id = bab_toHtml($id);
-			
-			$this->fields = $fields;
-			$this->what = 'dbc';
-			$this->badd = bab_isAccessValid(BAB_DBDIRADD_GROUPS_TBL, $id);
-			$this->bupd = bab_isAccessValid(BAB_DBDIRUPDATE_GROUPS_TBL, $id);
-			$this->buserinfo = false;
-			$this->refresh = bab_toHtml($refresh);
-
-			if( !empty($babBody->msgerror))
+				if( $this->bupd || (!$this->bupd && $allowuu == 'Y' && $personnal) || bab_isAccessValid(BAB_DBDIRFIELDUPDATE_GROUPS_TBL, $arr['id']))
 				{
-				$this->msgerror = $babBody->msgerror;
-				$this->error = true;
+					$this->fxidaccess[$arr['id']] = true;
 				}
-	
-			$arr = $babDB->db_fetch_array($babDB->db_query("select id_group from ".BAB_DB_DIRECTORIES_TBL." where id='".$babDB->db_escape_string($id)."'"));
-			$this->idgroup = $arr['id_group'];
-			$arr = $babDB->db_fetch_array($babDB->db_query("select user_update from ".BAB_DB_DIRECTORIES_TBL." where id_group=".$babDB->quote(BAB_REGISTERED_GROUP)));
-			$allowuu = $arr['user_update'];
-
-			$personnal = false;
-
-			if (false === $idu)
-				{
-				$req = "select id from ".BAB_DBDIR_ENTRIES_TBL." where id_user='".$babDB->db_escape_string($GLOBALS['BAB_SESS_USERID'])."'";
-				list($idu) = $babDB->db_fetch_array($babDB->db_query($req));
-				$personnal = true;
-				}
-			else
-				{
-				$req = "select id from ".BAB_DBDIR_ENTRIES_TBL." where id='".$babDB->db_escape_string($idu)."' AND id_user='".$babDB->db_escape_string($GLOBALS['BAB_SESS_USERID'])."'";
-				$res =$babDB->db_query($req);
-				$personnal = $babDB->db_num_rows($res) > 0;
-				}
-
-			$this->idu = bab_toHtml($idu);
-
-
-			$this->res = $babDB->db_query("select * from ".BAB_DBDIR_FIELDSEXTRA_TBL." where id_directory='".($this->idgroup != 0? 0: $babDB->db_escape_string($this->id))."' and disabled='N' order by list_ordering asc");
-			$this->fxidaccess = array();
-			if( $this->res && $babDB->db_num_rows($this->res) > 0)
-				{
-				$this->count = $babDB->db_num_rows($this->res);
-				while($arr = $babDB->db_fetch_array($this->res))
-					{
-					if( $this->bupd || (!$this->bupd && $allowuu == 'Y' && $personnal) || bab_isAccessValid(BAB_DBDIRFIELDUPDATE_GROUPS_TBL, $arr['id']))
-						{
-						$this->fxidaccess[$arr['id']] = true;
-						}
-					}
-				$babDB->db_data_seek($this->res, 0);
-				}
-			else
-				{
-				$this->count = 0;
-				}
-
-			if ( count($this->fxidaccess) == 0 )
-				{
-				die( bab_translate('Access denied'));
-				}
-
-			$this->showph = false;
-			$res = $babDB->db_query("select *, LENGTH(photo_data) as plen from ".BAB_DBDIR_ENTRIES_TBL." where id_directory='".($this->idgroup != 0? 0: $babDB->db_escape_string($this->id))."' and id='".$babDB->db_escape_string($idu)."'");
-			if( $res && $babDB->db_num_rows($res) > 0)
-				{
-				$this->arr = $babDB->db_fetch_array($res);
-				$res = $babDB->db_query("select * from ".BAB_DBDIR_ENTRIES_EXTRA_TBL." where id_entry='".$babDB->db_escape_string($idu)."'");
-				while( $arr = $babDB->db_fetch_array($res))
-					{
-					$this->arr['babdirf'.$arr['id_fieldx']] = $arr['field_value'];
-					}
-
-				$this->name = stripslashes($this->arr['givenname']. " ". $this->arr['sn']);
-				$this->name = bab_toHtml($this->name);
-				if( $this->arr['plen'] > 0 )
-					{
-					$this->showph = true;
-					$this->urlimg = bab_toHtml($GLOBALS['babUrlScript']."?tg=directory&idx=getimg&id=".$id."&idu=".$idu);
-					$this->delete = bab_translate("Delete this picture");
-					}
-				
-				}
-			else
-				{
-				$this->name = '';
-				$this->urlimg = '';
-				}
-
-			$res = $babDB->db_query("select dft.id, dft.modifiable, dft.required from ".BAB_DBDIR_FIELDSEXTRA_TBL." dft join ".BAB_DBDIR_FIELDS_TBL." where id_directory='".($this->idgroup != 0? 0: $babDB->db_escape_string($this->id))."' and id_field=".BAB_DBDIR_FIELDS_TBL.".id and ".BAB_DBDIR_FIELDS_TBL.".name='jpegphoto' and disabled ='N'");
-
-			$this->modify = false;
-			$this->phrequired = false;
-			$this->delph = false;
-			if( $res && $babDB->db_num_rows($res) > 0)
-				{
-				$arr = $babDB->db_fetch_array($res);
-				if( isset($this->fxidaccess[$arr['id']]) && $arr['modifiable'] == "Y")
-					{
-					$this->modify = true;
-					$this->delph = true;
-					}
-
-				if ($arr['required'] == 'Y')
-					{
-					$this->phrequired = true;
-					$this->delph = false;
-					}
-				}
-
-			
 			}
-		
-		function getnextfield(&$skip)
+			$babDB->db_data_seek($this->res, 0);
+		}
+		else
+		{
+			$this->count = 0;
+		}
+
+		if ( count($this->fxidaccess) == 0 )
+		{
+			die( bab_translate('Access denied'));
+		}
+
+		$this->showph = false;
+		$res = $babDB->db_query("select *, LENGTH(photo_data) as plen from ".BAB_DBDIR_ENTRIES_TBL." where id_directory='".($this->idgroup != 0? 0: $babDB->db_escape_string($this->id))."' and id='".$babDB->db_escape_string($idu)."'");
+		if( $res && $babDB->db_num_rows($res) > 0)
+		{
+			$this->arr = $babDB->db_fetch_array($res);
+			$res = $babDB->db_query("select * from ".BAB_DBDIR_ENTRIES_EXTRA_TBL." where id_entry='".$babDB->db_escape_string($idu)."'");
+			while( $arr = $babDB->db_fetch_array($res))
 			{
-			global $babDB;
-			static $i = 0;
-			if( $i < $this->count)
-				{
-				$arr = $babDB->db_fetch_array($this->res);
-				if( $arr['id_field'] < BAB_DBDIR_MAX_COMMON_FIELDS )
-					{
-					$res = $babDB->db_query("select description, name from ".BAB_DBDIR_FIELDS_TBL." where id='".$babDB->db_escape_string($arr['id_field'])."'");
-					$rr = $babDB->db_fetch_array($res);
-					$this->fieldn = bab_toHtml(translateDirectoryField($rr['description']));
-					$this->fieldv = bab_toHtml($rr['name']);
-					}
-				else
-					{
-					$rr = $babDB->db_fetch_array($babDB->db_query("select * from ".BAB_DBDIR_FIELDS_DIRECTORY_TBL." where id='".$babDB->db_escape_string(($arr['id_field'] - BAB_DBDIR_MAX_COMMON_FIELDS))."'"));
-					$this->fieldn = bab_toHtml(translateDirectoryField($rr['name']));
-					$this->fieldv = "babdirf".$arr['id'];
-					}
-
-				if( $this->fieldv == 'jpegphoto' )
-					{
-					$skip = true;
-					$i++;
-					return true;
-					}
-
-				if( isset($this->fields[$this->fieldv]) )
-					{
-					$this->fvalue = stripslashes($this->fields[$this->fieldv]);
-					}
-				else
-					{
-					$this->fvalue = isset($this->arr[$this->fieldv])? stripslashes($this->arr[$this->fieldv]): '';
-					}
-
-				$this->foriginalvalue = $this->fvalue;
-				$this->fvalue = bab_toHtml($this->fvalue);
-
-				$this->resfxv = $babDB->db_query("select field_value from ".BAB_DBDIR_FIELDSVALUES_TBL." where id_fieldextra='".$babDB->db_escape_string($arr['id'])."' ORDER BY field_value");
-				$this->countfxv = $babDB->db_num_rows($this->resfxv); 
-
-				$this->required = $arr['required'];
-				if( $this->countfxv == 0  )
-					{
-					$this->multivalues = false;
-					}
-				elseif( $this->countfxv > 1  )
-					{
-					$this->multivalues = true;
-					}
-				else
-					{
-					$this->multivalues = $arr['multi_values'] == 'Y'? true: false;
-					}
-				$this->fieldt = $arr['multilignes'];
-
-				if( $this->badd || (isset($this->fxidaccess[$arr['id']]) && $arr['modifiable'] == "Y"))
-					{
-					$this->modify = true;
-					}
-				else
-					{
-					$this->modify = false;
-					if( empty($this->fvalue))
-						{
-						$skip =true;
-						$i++;
-						return true;
-						}
-					}
-
-
-				$i++;
-				return true;
-				}
-			else
-				return false;
+				$this->arr['babdirf'.$arr['id_fieldx']] = $arr['field_value'];
 			}
 
-		function getnextfxv()
+			$this->name = stripslashes($this->arr['givenname']. " ". $this->arr['sn']);
+			$this->name = bab_toHtml($this->name);
+			if( $this->arr['plen'] > 0 )
 			{
-			global $babDB;
-			static $i = 0;
-			if( $i < $this->countfxv)
-				{
-				$arr = $babDB->db_fetch_array($this->resfxv);
-				$this->fxvvalue = bab_toHtml($arr['field_value']);
-				if( $this->foriginalvalue == $arr['field_value'] )
-					{
-					$this->selected = 'selected';
-					}
-				else
-					{
-					$this->selected = '';
-					}
-				$i++;
-				return true;
-				}
-			else
-				{
-				$i = 0;
-				return false;
-				}
+				$this->showph = true;
+				$this->urlimg = bab_toHtml($GLOBALS['babUrlScript']."?tg=directory&idx=getimg&id=".$id."&idu=".$idu);
+				$this->delete = bab_translate("Delete this picture");
+			}
+
+		}
+		else
+		{
+			$this->name = '';
+			$this->urlimg = '';
+		}
+
+		$res = $babDB->db_query("select dft.id, dft.modifiable, dft.required from ".BAB_DBDIR_FIELDSEXTRA_TBL." dft join ".BAB_DBDIR_FIELDS_TBL." where id_directory='".($this->idgroup != 0? 0: $babDB->db_escape_string($this->id))."' and id_field=".BAB_DBDIR_FIELDS_TBL.".id and ".BAB_DBDIR_FIELDS_TBL.".name='jpegphoto' and disabled ='N'");
+
+		$this->modify = false;
+		$this->phrequired = false;
+		$this->delph = false;
+		if( $res && $babDB->db_num_rows($res) > 0)
+		{
+			$arr = $babDB->db_fetch_array($res);
+			if( isset($this->fxidaccess[$arr['id']]) && $arr['modifiable'] == "Y")
+			{
+				$this->modify = true;
+				$this->delph = true;
+			}
+
+			if ($arr['required'] == 'Y')
+			{
+				$this->phrequired = true;
+				$this->delph = false;
 			}
 		}
 
-	$temp = new temp($id, $idu, $fields, $refresh);
-	$babBody->babPopup(bab_printTemplate($temp, "directory.html", "modifycontact"));
+
+	}
+
+	public function getnextfield(&$skip)
+	{
+		global $babDB;
+		static $i = 0;
+		if( $i < $this->count)
+		{
+			$arr = $babDB->db_fetch_array($this->res);
+			if( $arr['id_field'] < BAB_DBDIR_MAX_COMMON_FIELDS )
+			{
+				$res = $babDB->db_query("select description, name from ".BAB_DBDIR_FIELDS_TBL." where id='".$babDB->db_escape_string($arr['id_field'])."'");
+				$rr = $babDB->db_fetch_array($res);
+				$this->fieldn = bab_toHtml(translateDirectoryField($rr['description']));
+				$this->fieldv = bab_toHtml($rr['name']);
+			}
+			else
+			{
+				$rr = $babDB->db_fetch_array($babDB->db_query("select * from ".BAB_DBDIR_FIELDS_DIRECTORY_TBL." where id='".$babDB->db_escape_string(($arr['id_field'] - BAB_DBDIR_MAX_COMMON_FIELDS))."'"));
+				$this->fieldn = bab_toHtml(translateDirectoryField($rr['name']));
+				$this->fieldv = "babdirf".$arr['id'];
+			}
+
+			if( $this->fieldv == 'jpegphoto' )
+			{
+				$skip = true;
+				$i++;
+				return true;
+			}
+
+			if( isset($this->fields[$this->fieldv]) )
+			{
+				$this->fvalue = stripslashes($this->fields[$this->fieldv]);
+			}
+			else
+			{
+				$this->fvalue = isset($this->arr[$this->fieldv])? stripslashes($this->arr[$this->fieldv]): '';
+			}
+
+			$this->foriginalvalue = $this->fvalue;
+			$this->fvalue = bab_toHtml($this->fvalue);
+
+			$this->resfxv = $babDB->db_query("select field_value from ".BAB_DBDIR_FIELDSVALUES_TBL." where id_fieldextra='".$babDB->db_escape_string($arr['id'])."' ORDER BY field_value");
+			$this->countfxv = $babDB->db_num_rows($this->resfxv);
+
+			$this->required = $arr['required'];
+			if( $this->countfxv == 0  )
+			{
+				$this->multivalues = false;
+			}
+			elseif( $this->countfxv > 1  )
+			{
+				$this->multivalues = true;
+			}
+			else
+			{
+				$this->multivalues = $arr['multi_values'] == 'Y'? true: false;
+			}
+			$this->fieldt = $arr['multilignes'];
+
+			if( $this->badd || (isset($this->fxidaccess[$arr['id']]) && $arr['modifiable'] == "Y"))
+			{
+				$this->modify = true;
+			}
+			else
+			{
+				$this->modify = false;
+				if( empty($this->fvalue))
+				{
+					$skip =true;
+					$i++;
+					return true;
+				}
+			}
+
+
+			$i++;
+			return true;
+		}
+		else
+			return false;
+	}
+
+	public function getnextfxv()
+	{
+		global $babDB;
+		static $i = 0;
+		if( $i < $this->countfxv)
+		{
+			$arr = $babDB->db_fetch_array($this->resfxv);
+			$this->fxvvalue = bab_toHtml($arr['field_value']);
+			if( $this->foriginalvalue == $arr['field_value'] )
+			{
+				$this->selected = 'selected';
+			}
+			else
+			{
+				$this->selected = '';
+			}
+			$i++;
+			return true;
+		}
+		else
+		{
+			$i = 0;
+			return false;
+		}
+	}
 }
+
+
+
+function modifyDbContact($id, $idu, $fields, $refresh)
+{
+	require_once $GLOBALS['babInstallPath'].'utilit/urlincl.php';
+	global $babBody, $babDB;
+	
+	if (false === $idu)
+	{
+		$id_user = bab_getUserId();
+	} else {
+		list($id_user) = $babDB->db_fetch_array($babDB->db_query("select id_user from ".BAB_DBDIR_ENTRIES_TBL." where id='".$babDB->db_escape_string($idu)."'"));
+	}
+	
+	if ($id_user)
+	{
+		$unload = bab_url::get_request('tg');
+		$unload->idx = 'dbcunload';
+		$unload->msg = bab_translate("Your contact has been updated");
+
+		$usereditor = bab_functionality::get('UserEditor');
+		/*@var $usereditor Func_UserEditor */
+		$usereditor->setDirectory($id);
+		$page = $usereditor->getAsPage($id_user, $unload);
+		/*@var $page Widget_BabPage */
+		$page->setEmbedded(false);
+		$page->displayHtml();
+	} else {
+
+		$temp = new bab_modifyDbContact($id, $idu, $fields, $refresh);
+		$babBody->babPopup(bab_printTemplate($temp, "directory.html", "modifycontact"));
+	}
+}
+
+
+
+class bab_addDbContact 
+{
+	var $helpfields;
+	var $file;
+	var $update;
+	var $id;
+	var $idu;
+	var $fields;
+	var $what;
+	var $modify;
+	var $showph;
+	var $msgerror;
+	var $error;
+	var $db;
+	var $res;
+	var $count;
+	var $name;
+	var $urlimg;
+	var $idgroup;
+
+	/**
+	 * The directory contain users or not
+	 * @var bool
+	 */
+	public $buserinfo;
+
+	var $nickname;
+	var $password;
+	var $repassword;
+	var $notifyuser;
+	var $sendpassword;
+	var $yes;
+	var $no;
+	var $fieldn;
+	var $fieldv;
+	var $fvalue;
+	var $fieldt;
+	var $required;
+	var $refresh;
+
+	public function __construct($id, $fields)
+	{
+		global $babBody, $babDB;
+		$this->helpfields = bab_translate("Those fields must be filled");
+		$this->file = bab_translate("Photo");
+		$this->update = bab_translate("Update");
+		$this->id = $id;
+		$this->idu = '';
+		$this->fields = $fields;
+		$this->what = 'dbac';
+		$this->modify = true;
+		$this->showph = false;
+		$this->refresh = '';
+
+		if( !empty($babBody->msgerror))
+		{
+			$this->msgerror = $babBody->msgerror;
+			$this->error = true;
+		}
+
+		$this->name = '';
+		$this->urlimg = bab_toHtml($GLOBALS['babUrlScript']."?tg=directory&idx=getimg&id=".$id."&idu=");
+		$this->name = bab_translate("Add new contact");
+
+
+
+
+		list($this->idgroup) = $babDB->db_fetch_array($babDB->db_query("select id_group from ".BAB_DB_DIRECTORIES_TBL." where id='".$babDB->db_escape_string($id)."'"));
+		if( $this->idgroup >= 1 )
+		{
+			$iddir = 0;
+			$this->buserinfo = true;
+			$this->nickname = bab_translate("Login ID");
+			$this->password = bab_translate("Password");
+			$this->repassword = bab_translate("Retype Password");
+			$this->notifyuser = bab_translate("Notify user");
+			$this->sendpassword = bab_translate("Send password with email");
+			$this->yes = bab_translate("Yes");
+			$this->no = bab_translate("No");
+		}
+		else
+		{
+			$iddir = $id;
+			$this->buserinfo = false;
+		}
+
+
+		$this->phrequired = false;
+
+		$res = $babDB->db_query("
+				select
+				modifiable, required
+				from
+				".BAB_DBDIR_FIELDSEXTRA_TBL."
+				join ".BAB_DBDIR_FIELDS_TBL." f
+
+				where
+				id_directory='".($this->idgroup > 0 ? 0 : $babDB->db_escape_string($this->id))."'
+				and id_field=f.id
+				and f.name='jpegphoto'
+				AND disabled ='N'
+				");
+
+		if( $res && $babDB->db_num_rows($res) > 0)
+		{
+			$arr = $babDB->db_fetch_assoc($res);
+			$this->phrequired = &$arr['required'];
+			$this->modify = true;
+		}
+		else
+			$this->modify = false;
+
+		$this->res = $babDB->db_query("select * from ".BAB_DBDIR_FIELDSEXTRA_TBL." where id_directory='".$babDB->db_escape_string($iddir)."' and disabled='N' order by list_ordering asc");
+		if( $this->res && $babDB->db_num_rows($this->res) > 0)
+		{
+			$this->count = $babDB->db_num_rows($this->res);
+		}
+		else
+		{
+			$this->count = 0;
+		}
+
+	}
+
+	public function getnextfield(&$skip)
+	{
+		global $babDB;
+		static $i = 0;
+		if( $i < $this->count)
+		{
+			$this->modify = true;
+			$arr = $babDB->db_fetch_array($this->res);
+			if( $arr['id_field'] < BAB_DBDIR_MAX_COMMON_FIELDS )
+			{
+				$res = $babDB->db_query("select description, name from ".BAB_DBDIR_FIELDS_TBL." where id='".$babDB->db_escape_string($arr['id_field'])."'");
+				$rr = $babDB->db_fetch_array($res);
+				$this->fieldn = bab_toHtml(translateDirectoryField($rr['description']));
+				$this->fieldv = bab_toHtml($rr['name']);
+			}
+			else
+			{
+				$rr = $babDB->db_fetch_array($babDB->db_query("select * from ".BAB_DBDIR_FIELDS_DIRECTORY_TBL." where id='".$babDB->db_escape_string(($arr['id_field'] - BAB_DBDIR_MAX_COMMON_FIELDS))."'"));
+				$this->fieldn = bab_toHtml(translateDirectoryField($rr['name']));
+				$this->fieldv = "babdirf".$arr['id'];
+			}
+
+			if( $this->fieldv == 'jpegphoto' )
+			{
+				$skip = true;
+				$i++;
+				return true;
+			}
+
+			if( isset($this->fields[$this->fieldv]) )
+			{
+				$this->fvalue = $this->fields[$this->fieldv];
+			}
+			else
+			{
+				$this->fvalue = '';
+			}
+
+			$this->resfxv = $babDB->db_query("select field_value from ".BAB_DBDIR_FIELDSVALUES_TBL." where id_fieldextra='".$babDB->db_escape_string($arr['id'])."' ORDER BY field_value");
+			$this->countfxv = $babDB->db_num_rows($this->resfxv);
+
+			$this->required = $arr['required'];
+			if( $this->countfxv == 0  )
+			{
+				$this->multivalues = false;
+			}
+			elseif( $this->countfxv > 1  )
+			{
+				$this->multivalues = true;
+			}
+			else
+			{
+				$this->multivalues = $arr['multi_values'] == 'Y'? true: false;
+			}
+
+			$this->fieldt = $arr['multilignes'];
+			if( !empty( $arr['default_value'] ) && empty($this->fvalue) && $this->countfxv > 0)
+			{
+				$rr = $babDB->db_fetch_array($babDB->db_query("select field_value from ".BAB_DBDIR_FIELDSVALUES_TBL." where id='".$babDB->db_escape_string($arr['default_value'])."'"));
+				$this->fvalue = $rr['field_value'];
+			}
+			$this->ofvalue = $this->fvalue;
+			$this->fvalue = bab_toHtml($this->fvalue);
+			$i++;
+			return true;
+		}
+		else
+			return false;
+	}
+
+	public function getnextfxv()
+	{
+		global $babDB;
+		static $i = 0;
+		if( $i < $this->countfxv)
+		{
+			$arr = $babDB->db_fetch_array($this->resfxv);
+			$this->fxvvalue = $arr['field_value'];
+			if( $this->ofvalue == $this->fxvvalue )
+			{
+				$this->selected = 'selected';
+			}
+			else
+			{
+				$this->selected = '';
+			}
+			$this->fxvvalue = bab_toHtml($this->fxvvalue);
+			$i++;
+			return true;
+		}
+		else
+		{
+			$i = 0;
+			return false;
+		}
+	}
+
+}
+
+
 
 function addDbContact($id, $fields)
 {
-	global $babBody;
+	global $babBody, $babDB;
 
-	class temp
-		{
-		var $helpfields;
-		var $file;
-		var $update;
-		var $id;
-		var $idu;
-		var $fields;
-		var $what;
-		var $modify;
-		var $showph;
-		var $msgerror;
-		var $error;
-		var $db;
-		var $res;
-		var $count;
-		var $name;
-		var $urlimg;
-		var $idgroup;
-		
-		/**
-		 * The directory contain users or not
-		 * @var bool
-		 */
-		public $buserinfo;
-		
-		var $nickname;
-		var $password;
-		var $repassword;
-		var $notifyuser;
-		var $sendpassword;
-		var $yes;
-		var $no;
-		var $fieldn;
-		var $fieldv;
-		var $fvalue;
-		var $fieldt;
-		var $required;
-		var $refresh;
-
-		function temp($id, $fields)
-			{
-			global $babBody, $babDB;
-			$this->helpfields = bab_translate("Those fields must be filled");
-			$this->file = bab_translate("Photo");
-			$this->update = bab_translate("Update");
-			$this->id = $id;
-			$this->idu = '';
-			$this->fields = $fields;
-			$this->what = 'dbac';
-			$this->modify = true;
-			$this->showph = false;
-			$this->refresh = '';
-
-			if( !empty($babBody->msgerror))
-				{
-				$this->msgerror = $babBody->msgerror;
-				$this->error = true;
-				}
-
-			$this->name = '';
-			$this->urlimg = bab_toHtml($GLOBALS['babUrlScript']."?tg=directory&idx=getimg&id=".$id."&idu=");
-			$this->name = bab_translate("Add new contact");
-
-
+	$res = $babDB->db_query('SELECT id_group FROM bab_db_directories WHERE id='.$babDB->quote($id));
+	if ($arr = $babDB->db_fetch_assoc($res))
+	{
+		if ($arr['id_group'] > 0) {
 			
-
-			list($this->idgroup) = $babDB->db_fetch_array($babDB->db_query("select id_group from ".BAB_DB_DIRECTORIES_TBL." where id='".$babDB->db_escape_string($id)."'"));
-			if( $this->idgroup >= 1 )
-				{
-				$iddir = 0;
-				$this->buserinfo = true;
-				$this->nickname = bab_translate("Login ID");
-				$this->password = bab_translate("Password");
-				$this->repassword = bab_translate("Retype Password");
-				$this->notifyuser = bab_translate("Notify user");
-				$this->sendpassword = bab_translate("Send password with email");
-				$this->yes = bab_translate("Yes");
-				$this->no = bab_translate("No");
-				}
-			else
-				{
-				$iddir = $id;
-				$this->buserinfo = false;
-				}
-
-
-			$this->phrequired = false;
+			$unload = bab_url::get_request('tg');
+			$unload->idx = 'dbcunload';
+			$unload->msg = bab_translate("Your contact has been created");
 			
-			$res = $babDB->db_query("
-				select 
-					modifiable, required 
-				from 
-					".BAB_DBDIR_FIELDSEXTRA_TBL." 
-				join ".BAB_DBDIR_FIELDS_TBL." f 
-					
-				where 
-					id_directory='".($this->idgroup > 0 ? 0 : $babDB->db_escape_string($this->id))."' 
-					and id_field=f.id 
-					and f.name='jpegphoto' 
-					AND disabled ='N' 
-				");
-
-			if( $res && $babDB->db_num_rows($res) > 0)
-				{
-				$arr = $babDB->db_fetch_assoc($res);
-				$this->phrequired = &$arr['required'];
-				$this->modify = true;
-				}
-			else
-				$this->modify = false;
-
-			$this->res = $babDB->db_query("select * from ".BAB_DBDIR_FIELDSEXTRA_TBL." where id_directory='".$babDB->db_escape_string($iddir)."' and disabled='N' order by list_ordering asc");
-			if( $this->res && $babDB->db_num_rows($this->res) > 0)
-				{
-				$this->count = $babDB->db_num_rows($this->res);
-				}
-			else
-				{
-				$this->count = 0;
-				}
+			$usereditor = bab_functionality::get('UserEditor');
+			$usereditor->setDirectory($id);
+			/*@var $usereditor Func_UserEditor */
+			$page = $usereditor->getAsPage(null, $unload);
+			/*@var $page Widget_BabPage */
+			$page->setEmbedded(false);
+			$page->displayHtml();
 			
-			}
-		
-		function getnextfield(&$skip)
-			{
-			global $babDB;
-			static $i = 0;
-			if( $i < $this->count)
-				{
-				$this->modify = true;
-				$arr = $babDB->db_fetch_array($this->res);
-				if( $arr['id_field'] < BAB_DBDIR_MAX_COMMON_FIELDS )
-					{
-					$res = $babDB->db_query("select description, name from ".BAB_DBDIR_FIELDS_TBL." where id='".$babDB->db_escape_string($arr['id_field'])."'");
-					$rr = $babDB->db_fetch_array($res);
-					$this->fieldn = bab_toHtml(translateDirectoryField($rr['description']));
-					$this->fieldv = bab_toHtml($rr['name']);
-					}
-				else
-					{
-					$rr = $babDB->db_fetch_array($babDB->db_query("select * from ".BAB_DBDIR_FIELDS_DIRECTORY_TBL." where id='".$babDB->db_escape_string(($arr['id_field'] - BAB_DBDIR_MAX_COMMON_FIELDS))."'"));
-					$this->fieldn = bab_toHtml(translateDirectoryField($rr['name']));
-					$this->fieldv = "babdirf".$arr['id'];
-					}
-
-				if( $this->fieldv == 'jpegphoto' )
-					{
-					$skip = true;
-					$i++;
-					return true;
-					}
-
-				if( isset($this->fields[$this->fieldv]) )
-					{
-					$this->fvalue = $this->fields[$this->fieldv];
-					}
-				else
-					{
-					$this->fvalue = '';
-					}
-
-				$this->resfxv = $babDB->db_query("select field_value from ".BAB_DBDIR_FIELDSVALUES_TBL." where id_fieldextra='".$babDB->db_escape_string($arr['id'])."' ORDER BY field_value");
-				$this->countfxv = $babDB->db_num_rows($this->resfxv); 
-
-				$this->required = $arr['required'];
-				if( $this->countfxv == 0  )
-					{
-					$this->multivalues = false;
-					}
-				elseif( $this->countfxv > 1  )
-					{
-					$this->multivalues = true;
-					}
-				else
-					{
-					$this->multivalues = $arr['multi_values'] == 'Y'? true: false;
-					}
-
-				$this->fieldt = $arr['multilignes'];
-				if( !empty( $arr['default_value'] ) && empty($this->fvalue) && $this->countfxv > 0)
-					{
-					$rr = $babDB->db_fetch_array($babDB->db_query("select field_value from ".BAB_DBDIR_FIELDSVALUES_TBL." where id='".$babDB->db_escape_string($arr['default_value'])."'"));
-					$this->fvalue = $rr['field_value'];
-					}
-				$this->ofvalue = $this->fvalue;
-				$this->fvalue = bab_toHtml($this->fvalue);
-				$i++;
-				return true;
-				}
-			else
-				return false;
-			}
-
-		function getnextfxv()
-			{
-			global $babDB;
-			static $i = 0;
-			if( $i < $this->countfxv)
-				{
-				$arr = $babDB->db_fetch_array($this->resfxv);
-				$this->fxvvalue = $arr['field_value'];
-				if( $this->ofvalue == $this->fxvvalue )
-					{
-					$this->selected = 'selected';
-					}
-				else
-					{
-					$this->selected = '';
-					}
-				$this->fxvvalue = bab_toHtml($this->fxvvalue);
-				$i++;
-				return true;
-				}
-			else
-				{
-				$i = 0;
-				return false;
-				}
-			}
-
 		}
+	}
+	
 
-	$temp = new temp($id, $fields);
+	$temp = new bab_addDbContact($id, $fields);
 	$babBody->babPopup(bab_printTemplate($temp, "directory.html", "modifycontact"));
 }
 
@@ -1196,7 +1247,7 @@ function importDbFile($id)
 		}
 
 	$temp = new temp($id);
-	$babBody->babecho(	bab_printTemplate($temp,"directory.html", "dbimpfile"));
+	$babBody->babecho(bab_printTemplate($temp,"directory.html", "dbimpfile"));
 	}
 
 function exportDbFile($id)
@@ -3351,8 +3402,8 @@ switch($idx)
 
 	case 'dbmod':
 		modifyDbContact($id, bab_rp('idu', false), bab_rp('fields', array()), bab_rp('refresh'));
-		exit;
 		break;
+		
 	case 'getimg':
 		getDbContactImage(bab_gp('idu'));
 		exit;

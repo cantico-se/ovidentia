@@ -7,6 +7,10 @@
 	
 }
 
+.bab-user-editor td {
+	color:#000;
+}
+
 .bab-user-editor .dir-label {
 	width:14em;
 	text-align:right;

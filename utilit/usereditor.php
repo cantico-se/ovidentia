@@ -276,31 +276,39 @@ class Func_UserEditor extends bab_functionality {
 		
 		$frame = $W->Frame(null, $W->VBoxLayout())->addClass('user');
 		
-		$frame->addItem($this->labeledField($W->LineEdit()->setMaxSize(255)->setMandatory()->setName('nickname'), bab_translate('Login ID')));
-		
-		$password1 = $this->labeledField($W->LineEdit()->obfuscate()->setMandatory()->setName('password1'), bab_translate('Password'));
-		$password2 = $this->labeledField($W->LineEdit()->obfuscate()->setMandatory()->setName('password2'), bab_translate('Retype Password'));
-		$sendpwd = $this->boolField($W->CheckBox()->setName('sendpwd'), bab_translate('Send an e-mail to the user with its new password'));
-		
-		if (null !== $id_user)
+		if (null === $id_user || $this->canEditNickname($id_user))
 		{
-			$frame->addItem($this->boolField($W->CheckBox()
-					->setAssociatedDisplayable($password1, array(1))
-					->setAssociatedDisplayable($password2, array(1))
-					->setAssociatedDisplayable($sendpwd, array(1))
-					->setName('changepwd'), bab_translate('Change password')));
+			$frame->addItem($this->labeledField($W->LineEdit()->setMaxSize(255)->setMandatory()->setName('nickname'), bab_translate('Login ID')));
 		}
 		
-		$frame->addItem($password1);
-		$frame->addItem($password2);
-		
-		
-		if (null === $id_user)
+		if (null === $id_user || $this->canEditPassword($id_user))
 		{
-			$frame->addItem($this->boolField($W->CheckBox()->setName('notifyuser'), bab_translate('Notify user')));
-			$frame->addItem($this->boolField($W->CheckBox()->setName('sendpwd'), bab_translate('Send password with email')));
-		} else {
-			$frame->addItem($sendpwd);
+		
+			$password1 = $this->labeledField($W->LineEdit()->obfuscate()->setMandatory()->setName('password1')->setAutoComplete(false), bab_translate('Password'));
+			$password2 = $this->labeledField($W->LineEdit()->obfuscate()->setMandatory()->setName('password2')->setAutoComplete(false), bab_translate('Retype Password'));
+			$sendpwd = $this->boolField($W->CheckBox()->setName('sendpwd'), bab_translate('Send an e-mail to the user with its new password'));
+			
+			if (null !== $id_user)
+			{
+				$frame->addItem($this->boolField($W->CheckBox()
+						->setAssociatedDisplayable($password1, array(1))
+						->setAssociatedDisplayable($password2, array(1))
+						->setAssociatedDisplayable($sendpwd, array(1))
+						->setName('setpwd'), bab_translate('Change password')));
+			}
+			
+			$frame->addItem($password1);
+			$frame->addItem($password2);
+			
+			
+			if (null === $id_user)
+			{
+				$frame->addItem($this->boolField($W->CheckBox()->setName('notifyuser'), bab_translate('Notify user')));
+				$frame->addItem($this->boolField($W->CheckBox()->setName('sendpwd'), bab_translate('Send password with email')));
+			} else {
+				$frame->addItem($sendpwd);
+			}
+			
 		}
 		
 		return $frame;
@@ -336,12 +344,15 @@ class Func_UserEditor extends bab_functionality {
 		$W = bab_Widgets();
 		
 		$this->imagePicker = $W->ImagePicker()
-			->setDimensions(400, 400)
+			->setDimensions(300, 300)
 			->setName('jpegphoto')
 			->oneFileMode()
 			->setEncodingMethod(null)
+			->setTitle(bab_translate(bab_translate('Set the photo')))
 		;
 
+		// empty temporary image path
+		$this->imagePicker->cleanup();
 		
 		return $this->imagePicker;
 	}
@@ -436,6 +447,121 @@ class Func_UserEditor extends bab_functionality {
 	}
 	
 	
+	/**
+	 * Test if a user can be created
+	 * admin or access right in creation in a group directory
+	 * @return bool
+	 */
+	protected function canCreateUser()
+	{
+		if (!$this->access_control)
+		{
+			return true;
+		}
+		
+		if (bab_isUserAdministrator())
+		{
+			return true;
+		}
+		
+		$directory = $this->getDirectory();
+		if ($directory['id_group'] > 0 && bab_isAccessValid(BAB_DBDIRADD_GROUPS_TBL, $directory['id']))
+		{
+			return true;
+		}
+		
+		return false;
+	}
+	
+	
+	/**
+	 * Test if a user can be modified
+	 * @param int $id_user
+	 * @return bool
+	 */
+	protected function canEditUser($id_user)
+	{
+		if (!$this->access_control)
+		{
+			return true;
+		}
+		
+		if (bab_isUserAdministrator())
+		{
+			return true;
+		}
+		
+		$directory = $this->getDirectory();
+		if ($directory['id_group'] > 0 && bab_isAccessValid(BAB_DBDIRUPDATE_GROUPS_TBL, $directory['id']))
+		{
+			return true;
+		}
+		
+		if ('Y' === $directory['user_update'] && $id_user === bab_getUserId())
+		{
+			return true;
+		}
+		
+		return false;
+	}
+	
+	
+	/**
+	 * Test if the password of user can be modified
+	 * @param int $id_user
+	 */
+	protected function canEditPassword($id_user)
+	{
+		if (!$this->access_control)
+		{
+			return true;
+		}
+		
+		if (bab_isUserAdministrator())
+		{
+			return true;
+		}
+		
+		global $babBody;
+		/*@var $babBody babBody */
+
+		if ('Y' === $babBody->babsite['change_password'] && $id_user === bab_getUserId())
+		{
+			return true;
+		}
+		
+		return false;
+	}
+	
+	
+	
+	/**
+	 * Test if the nickname of user can be modified
+	 * @param int $id_user
+	 */
+	protected function canEditNickname($id_user)
+	{
+		if (!$this->access_control)
+		{
+			return true;
+		}
+	
+		if (bab_isUserAdministrator())
+		{
+			return true;
+		}
+	
+		global $babBody;
+		/*@var $babBody babBody */
+	
+		if ('Y' === $babBody->babsite['change_nickname'] && $id_user === bab_getUserId())
+		{
+			return true;
+		}
+	
+		return false;
+	}
+	
 	
 	
 	
@@ -445,6 +571,17 @@ class Func_UserEditor extends bab_functionality {
 	 */
 	public function getForm($id_user = null) 
 	{
+		if (null === $id_user && !$this->canCreateUser())
+		{
+			throw new Exception(bab_translate('Access denied'));
+		}
+		
+		if (null !== $id_user && !$this->canEditUser($id_user))
+		{
+			throw new Exception(bab_translate('Access denied'));
+		}
+		
+		
 		$W = bab_Widgets();
 		
 		$Icons = bab_functionality::get('Icons');
@@ -510,24 +647,27 @@ class Func_UserEditor extends bab_functionality {
 		}
 
 		
-		if (isset($this->imagePicker) && isset($directory['jpegphoto']['photo']))
+		if (isset($this->imagePicker))
 		{
-			$photo = $directory['jpegphoto']['photo'];
-			/*@var $photo bab_dirEntryPhoto */
-			
-			$tmpPath = $this->imagePicker->getFolder();
-			try {
-				$tmpPath->deleteDir();
-			} catch(bab_FolderAccessRightsException $e) {
+			if (isset($directory['jpegphoto']['photo']))
+			{
+				$photo = $directory['jpegphoto']['photo'];
+				/*@var $photo bab_dirEntryPhoto */
 				
+				$tmpPath = $this->imagePicker->getFolder();
+				try {
+					$tmpPath->deleteDir();
+				} catch(bab_FolderAccessRightsException $e) {
+					
+				}
+				$tmpPath->createDir();
+				$tmpPath->push('photo.jpg');
+				
+				
+				file_put_contents($tmpPath->tostring(), $photo->getData());
+				
+				$tmpPath->pop();
 			}
-			$tmpPath->createDir();
-			$tmpPath->push('photo.jpg');
-			
-			
-			file_put_contents($tmpPath->tostring(), $photo->getData());
-			
-			$tmpPath->pop();
 
 		}
 
@@ -535,7 +675,8 @@ class Func_UserEditor extends bab_functionality {
 	}
 	
 	/**
-	 * Save form posted array
+	 * Save from posted array
+	 * and send the notifications if necessary
 	 * return id_user
 	 * 
 	 * @throws Exception
@@ -544,18 +685,99 @@ class Func_UserEditor extends bab_functionality {
 	 */
 	public function save(Array $user)
 	{
+		
+		
 		$id_user = isset($user['id']) ? ((int) $user['id']) : null;
+		
+		if (null === $id_user && !$this->canCreateUser())
+		{
+			throw new Exception(bab_translate('Access denied'));
+		}
+		
+		if (null !== $id_user && !$this->canEditUser($id_user))
+		{
+			throw new Exception(bab_translate('Access denied'));
+		}
 		
 		
 		if (!isset($id_user))
 		{
-			if (false === $id_user = bab_registerUser($user['sn'], $user['givenname'], '', $user['email'], $user['nickname'], $user['password1'], $user['password2'], $confirmed, $error))
+			if (false === $id_user = bab_registerUser($user['sn'], $user['givenname'], '', $user['email'], $user['nickname'], $user['password1'], $user['password2'], 1, $error))
 			{
 				throw new Exception($error);
+			}
+			
+			// if in group directory, attach user to group
+			
+			$directory = $this->getDirectory();
+			if ($directory['id_group'] > BAB_REGISTERED_GROUP)
+			{
+				bab_attachUserToGroup($id_user, $directory['id_group']);
 			}
 		
 		}
 		
+		
+		if (isset($user['setpwd']) && $user['setpwd'])
+		{
+			if ($user['password1'] !== $user['password2'])
+			{
+				throw new Exception(bab_translate('ERROR: Passwords not match !!'));
+			}
+			
+			// set the password key for modification
+			
+			$user['password'] = $user['password1'];
+			
+			unset($user['password1']);
+			unset($user['password2']);
+			unset($user['setpwd']);
+		}
+		
+		
+		if ((!isset($user['id']) && $this->canAddDirectoryEntry()) || $this->canEditDirectoryEntry($id_user))
+		{
+			$user['jpegphoto'] = ''; // delete photo
+			
+			// update photo
+			
+			$W = bab_Widgets();
+			$imagePicker = $W->ImagePicker();
+			$files = $imagePicker->getTemporaryFiles('jpegphoto');
+			if (isset($files))
+			{
+				foreach($files as $filePickerItem)
+				{
+					/*@var $filePickerItem Widget_FilePickerItem */
+					$user['jpegphoto'] = bab_fileHandler::move($filePickerItem->getFilePath()->tostring());
+					break;
+				}
+			}
+		} else {
+			
+			// only user fields can be modified
+			
+			$allowed_fields = array('sn' => 1, 'givenname' => 1, 'email' => 1);
+			
+			if (!isset($user['id']) || $this->canEditPassword($id_user))
+			{
+				$allowed_fields['password'] = 1;
+			}
+			
+			if (!isset($user['id']) || $this->canEditNickname($id_user))
+			{
+				$allowed_fields['nickname'] = 1;
+			}
+			
+			foreach($user as $key => $value)
+			{
+				if (!isset($allowed_fields[$key]))
+				{
+					unset($user[$key]);
+				}
+			}
+			
+		}
 		
 		
 		if (!bab_updateUserById($id_user, $user, $error))
@@ -564,8 +786,56 @@ class Func_UserEditor extends bab_functionality {
 			return false;
 		}
 		
-		return true;
+		
+		// notifications
+		
+		if (!isset($user['id']) && !empty($user['notifyuser']))
+		{
+			// notify the user about creation of the account
+			bab_registerUserNotify($user['sn'].' '.$user['givenname'], $user['email'], $user['nickname'], (empty($user['sendpwd']) ? null : $user['password1']));
+		}
+		
+		if (isset($user['id']) && !empty($user['sendpwd']))
+		{
+			// send the new password by email
+			require_once $GLOBALS['babInstallPath'].'admin/register.php';
+			notifyUserPassword($user['password'], $user['email'], bab_getUserNickname($id_user));
+		}
+		
+		return $id_user;
 	}
 	
+	
+	
+	/**
+	 * Get editor as a babPage widget
+	 * @param 	int			$id_user
+	 * @param	bab_url		$backurl
+	 * 
+	 * @return Widget_BabPage
+	 */
+	public function getAsPage($id_user, bab_url $backurl)
+	{
+		$babPage = bab_Widgets()->BabPage();
+		$babPage->addStyleSheet($GLOBALS['babInstallPath'].'styles/usereditor.css');
+		
+		if (isset($_POST['user']))
+		{
+			try {
+				if ($this->save($_POST['user']))
+				{
+					$backurl->location();
+				}
+			} catch(Exception $e)
+			{
+				$babPage->addError($e->getMessage());
+			}
+		}
+		$editor = $this->getForm($id_user);
+		$editor->setSelfPageHiddenFields();
+		$babPage->addItem($editor);
+		
+		return $babPage;
+	}
 
 }

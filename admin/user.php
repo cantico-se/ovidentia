@@ -203,11 +203,15 @@ function deleteUser($id)
 }
 
 
-/* 
+/** 
  * Display the form for modify nickname of a user
  * $item : id of the user who must be modify
  * $pos : filter for the list of the users when you clic a letter (a letter (A, B...) or nothing (all letters))
  * $grp : filter for the list of the users when you attach a user in a group (id of a group or nothing)
+ * 
+ * 
+ * @deprecated use the userEditor functionality instead
+ * 
  */
 function changeNickname($item, $pos, $grp)
 {
@@ -240,11 +244,14 @@ function changeNickname($item, $pos, $grp)
 
 
 
-/* 
+/** 
  * Display the form for modify password of a user
  * $userId : id of the user who must be modify
  * $pos : filter for the list of the users when you clic a letter (a letter (A, B...) or nothing (all letters))
  * $grp : filter for the list of the users when you attach a user in a group (id of a group or nothing)
+ * 
+ * 
+ * @deprecated use the userEditor functionality instead
  */
 function changePassword($userId, $pos, $grp)
 {
@@ -709,6 +716,25 @@ if (isset($update) && $update == 'password') {
 	}
 }
 
+
+
+function bab_adm_userEditor()
+{
+	require_once $GLOBALS['babInstallPath'].'utilit/urlincl.php';
+	$list = bab_url::get_request('pos', 'grp');
+	$list->tg = 'users';
+	
+	
+	$usereditor = bab_functionality::get('UserEditor');
+	
+	$usereditor->getAsPage(bab_rp('item'), $list)->displayHtml();
+}
+
+
+
+// main
+
+
 if (isset($update) && $update == 'nickname') {
 	if(!updateNickname($item, $newnick)) {
 		$idx = 'Modify';
@@ -809,20 +835,18 @@ switch($idx) {
 			 */
 			modifyUser($item, $pos, $grp);
 			
-			//$babPage = bab_Widgets()->BabPage();
-			//$babPage->addStyleSheet($GLOBALS['babInstallPath'].'styles/usereditor.css');
-			//$editor = bab_functionality::get('UserEditor')->getForm($item);
-			//$babPage->addItem($editor);
 			
+			/*
 			changeNickname($item, $pos, $grp);
 			changePassword($item, $pos, $grp);
+			*/
 			
 			$babBody->addItemMenu('List', bab_translate("Users"), $GLOBALS['babUrlScript']."?tg=users&idx=List&pos=".$pos."&grp=".$grp);
 			$babBody->addItemMenu('Modify', bab_translate("Modify"), $GLOBALS['babUrlScript']."?tg=user&idx=Modify&item=".$item."&pos=".$pos."&grp=".$grp);
 			$babBody->addItemMenu('Groups', bab_translate("Groups"), $GLOBALS['babUrlScript']."?tg=user&idx=Groups&item=".$item."&pos=".$pos."&grp=".$grp);
 			$babBody->addItemMenu('unav', bab_translate("Unavailability"), $GLOBALS['babUrlScript']."?tg=options&idx=unav&iduser=".$item);
 			
-			// $babPage->displayHtml();
+			bab_adm_userEditor();
 		}
 		break;
 
