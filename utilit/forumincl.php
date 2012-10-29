@@ -110,6 +110,22 @@ function bab_get_forums() {
 
 
 
+function bab_getForumDelegationId($id)
+	{
+	global $babDB;
+	$query = "select id_dgowner from ".BAB_FORUMS_TBL." where id='".$babDB->db_escape_string($id)."'";
+	$res = $babDB->db_query($query);
+	if( $res && $babDB->db_num_rows($res) > 0)
+		{
+		$arr = $babDB->db_fetch_array($res);
+		return $arr['id_dgowner'];
+		}
+	else
+		{
+		return '';
+		}
+	}
+
 function bab_getForumName($id)
 	{
 	global $babDB;

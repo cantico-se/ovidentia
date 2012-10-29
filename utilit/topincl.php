@@ -233,7 +233,7 @@ function bab_getArticleTopicsAsTextTree($parentid = 0, $delegationid = false, $r
 	}
 	
 	//INITIALISE RIGHTS
-	if(!isset($idcategoriesbyrights[$rightaccesstable])){
+	if(!isset($idcategoriesbyrights[$rightaccesstable]) && $rightaccesstable !== false){
 		//Accessibles topics
 		$idtopicsbyrights = bab_getUserIdObjects($rightaccesstable);
 		
