@@ -102,6 +102,7 @@ if (!isset($babUrl)) {
 
 /* Management of WSSESSIONID for Web Services */
 if (isset($_REQUEST['WSSESSIONID'])) {
+	require_once $GLOBALS['babInstallPath'].'utilit/addonapi.php';
 	session_name(sprintf("OV%u", crc32($babUrl)));
 	session_id($_REQUEST['WSSESSIONID']);
 	session_start();
