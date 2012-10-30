@@ -268,31 +268,36 @@
 								td_list[k].title = '';
 								}
 							
+							console.debug(periods);
+							console.debug(tds);
+							
 							for(var j = 0; j < periods.length; j++) {
 								var hours = periods[j].split('-');
 	
 								var begin = hours[0];
 								var end = hours[1];
 								
+								
+								
 								if (!tds[begin])
 									{
-									alert(begin);
 									return;
 									}
-								
-								if (!tds[end])
-								{
-									alert(end);
-									return;
-								}
 								
 								bab_calopt_click_td(tds[begin]);
 								
-								prev = tds[end].previousSibling;
-								while(prev.nodeType != 1)
-									{
-									prev = prev.previousSibling
-									}
+								if ('24:00:00' === end)
+								{
+									end = '23:30:00';
+									prev = tds[end];
+								} else {
+								
+									prev = tds[end].previousSibling;
+									while(prev.nodeType != 1)
+										{
+										prev = prev.previousSibling
+										}
+								}
 								
 								bab_calopt_click_td(prev);
 							}
