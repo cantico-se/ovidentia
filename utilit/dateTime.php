@@ -899,7 +899,7 @@ class BAB_DateTime
 			return 0;
 		}
 		
-		if (class_exists('DateTimeZone') && class_exists('DateTime') && false) {
+		if (class_exists('DateTimeZone') && class_exists('DateTime')) {
 
 			$origin_tz = date_default_timezone_get();
 			
@@ -915,7 +915,7 @@ class BAB_DateTime
 	   	 		return $offset;
 			}
 			
-		} elseif ('UTC' === $tzid && 'Europe/Berlin' === date_default_timezone_get()) {
+		} elseif ('UTC' === $tzid && ('Europe/Berlin' === date_default_timezone_get() || 'Europe/Paris' === date_default_timezone_get())) {
 
 			// ce cas specifique est gere en dur pour conserver la compatibilite php 5.1 si le serveur est en france
 			// il est utilises dans des evenements d'agenda meme sans caldav sur la propriete LAST-MODIFIED qui est toujours en UTC
