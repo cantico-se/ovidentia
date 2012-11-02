@@ -208,7 +208,7 @@ class bab_fileHandler {
 		if ($this->import($temporaryPathToFile)) {
 			$this->source	= $temporaryPathToFile;
 			$this->type		= BAB_FILEHANDLER_MOVE;
-			$obj->mime		= bab_getFileMimeType($temporaryPathToFile);
+			$this->mime		= bab_getFileMimeType($temporaryPathToFile);
 			return $temporaryPathToFile;
 		}
 
