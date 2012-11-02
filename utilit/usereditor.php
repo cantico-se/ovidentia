@@ -622,6 +622,8 @@ class Func_UserEditor extends bab_functionality {
 		}
 		
 		
+		
+		
 		return $form;
 	}
 	
@@ -672,12 +674,19 @@ class Func_UserEditor extends bab_functionality {
 				file_put_contents($tmpPath->tostring(), $photo->getData());
 				
 				$tmpPath->pop();
+				
+				
+				
 			}
 
 		}
 
 		return $infos;
 	}
+	
+	
+
+	
 	
 	/**
 	 * Save from posted array
@@ -865,6 +874,11 @@ class Func_UserEditor extends bab_functionality {
 		$editor = $this->getForm($id_user);
 		$editor->setSelfPageHiddenFields();
 		$babPage->addItem($editor);
+		
+		if (isset($_POST['user']))
+		{
+			$editor->setValues(array('user' => bab_pp('user')));
+		}
 		
 		return $babPage;
 	}
