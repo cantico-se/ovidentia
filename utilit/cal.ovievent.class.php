@@ -883,12 +883,6 @@ class bab_cal_OviEventSelect
 		$event->setDates($begin, $end);
 		$collection->addPeriod($event);
 
-		include_once $GLOBALS['babInstallPath']."utilit/editorincl.php";
-		$editor = new bab_contentEditor('bab_calendar_event');
-		$editor->setContent($arr['description']);
-		$editor->setFormat($arr['description_format']);
-		$arr['description']	= $editor->getHtml();
-
 
 		if (!$arr['uuid'])
 		{
