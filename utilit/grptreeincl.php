@@ -23,6 +23,7 @@
 ************************************************************************/
 include_once "base.php";
 include_once $GLOBALS['babInstallPath']."utilit/treeincl.php";
+include_once $GLOBALS['babInstallPath']."utilit/defines.php";
 
 class bab_grptree extends bab_dbtree
 {

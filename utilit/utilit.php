@@ -508,7 +508,6 @@ function babBody()
 	$this->isSuperAdmin = false;
 	$this->currentAdmGroup = 0;
 	$this->currentDGGroup = array('id' => 0);
-	$this->dgAdmGroups = array();
 	$this->saarray = array();
 	$this->babaddons = array();
 	$this->waitapprobations = false;
@@ -1071,7 +1070,7 @@ function bab_getICalendars() {
 function bab_updateUserSettings()
 {
 	global $babDB, $babBody,$BAB_SESS_USERID;
-
+	require_once dirname(__FILE__).'/delegincl.php';
 
 	$babBody->isSuperAdmin = false;
 
@@ -1141,11 +1140,6 @@ function bab_updateUserSettings()
 						setcookie('bab_debug', $_GET['debug'], time() + 31536000); // 1 year
 					}
 				}
-			}
-
-			$res = $babDB->db_query("SELECT dg.id FROM ".BAB_DG_ADMIN_TBL." da,".BAB_DG_GROUPS_TBL." dg where da.id_user='".$babDB->db_escape_string($BAB_SESS_USERID)."' AND da.id_dg=dg.id AND dg.id_group >= '0'");
-			while( $arr = $babDB->db_fetch_array($res) ) {
-				$babBody->dgAdmGroups[] = $arr['id'];
 			}
 
 		}
@@ -1246,10 +1240,12 @@ class bab_UsersLog
 			if( !empty($BAB_SESS_USERID))
 			{
 				$userid = $BAB_SESS_USERID;
-				if( !$babBody->isSuperAdmin && count($babBody->dgAdmGroups) > 0 )
+				$dgAdmGroups = bab_getDgAdmGroups();
+				
+				if( !$babBody->isSuperAdmin && count($dgAdmGroups) > 0 )
 				{
-					$babBody->currentAdmGroup = $babBody->dgAdmGroups[0];
-					$babBody->currentDGGroup = $babDB->db_fetch_array($babDB->db_query("select dg.* from ".BAB_DG_GROUPS_TBL." dg where dg.id_group='".$babDB->db_escape_string($babBody->dgAdmGroups[0])."'"));
+					$babBody->currentAdmGroup = $dgAdmGroups[0];
+					$babBody->currentDGGroup = $babDB->db_fetch_array($babDB->db_query("select dg.* from ".BAB_DG_GROUPS_TBL." dg where dg.id_group='".$babDB->db_escape_string($dgAdmGroups[0])."'"));
 				}
 			}
 			else
@@ -1319,16 +1315,19 @@ function bab_setUserPasswordVariable($id, $cpw, $id_user)
 function bab_setCurrentDelegation($id_dg)
 {
 	global $babBody, $babDB;
+	require_once dirname(__FILE__).'/delegincl.php';
+	
+	$dgAdmGroups = bab_getDgAdmGroups();
 
-	if( 0 != $id_dg && count($babBody->dgAdmGroups) > 0 && in_array($id_dg, $babBody->dgAdmGroups ))
+	if( 0 != $id_dg && count($dgAdmGroups) > 0 && in_array($id_dg, $dgAdmGroups ))
 	{
 		$babBody->currentDGGroup = $babDB->db_fetch_array($babDB->db_query("select dg.*, g.lf, g.lr from ".BAB_DG_GROUPS_TBL." dg, ".BAB_GROUPS_TBL." g where g.id=dg.id_group AND dg.id='".$babDB->db_escape_string($id_dg)."'"));
 		$babBody->currentAdmGroup = &$babBody->currentDGGroup['id'];
 
 	}
-	else if( !$babBody->isSuperAdmin && count($babBody->dgAdmGroups) > 0 )
+	else if( !$babBody->isSuperAdmin && count($dgAdmGroups) > 0 )
 	{
-		$babBody->currentDGGroup = $babDB->db_fetch_array($babDB->db_query("select dg.*, g.lf, g.lr from ".BAB_DG_GROUPS_TBL." dg, ".BAB_GROUPS_TBL." g where g.id=dg.id_group AND dg.id='".$babDB->db_escape_string($babBody->dgAdmGroups[0])."'"));
+		$babBody->currentDGGroup = $babDB->db_fetch_array($babDB->db_query("select dg.*, g.lf, g.lr from ".BAB_DG_GROUPS_TBL." dg, ".BAB_GROUPS_TBL." g where g.id=dg.id_group AND dg.id='".$babDB->db_escape_string($dgAdmGroups[0])."'"));
 		$babBody->currentAdmGroup = &$babBody->currentDGGroup['id'];
 	}
 }

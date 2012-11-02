@@ -136,9 +136,9 @@ function bab_sitemap_adminSection(bab_eventBeforeSiteMapCreated $event) {
 		
 		$event->addFolder($item);
 		
-	
+		$dgAdmGroups = bab_getDgAdmGroups();
 		
-		if( count($babBody->dgAdmGroups) > 0) {
+		if( count($dgAdmGroups) > 0) {
 
 			$item = $event->createItem($dg_prefix.'AdminDelegChange');
 			$item->setLabel(bab_translate("Change administration"));

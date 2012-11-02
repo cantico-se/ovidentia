@@ -954,7 +954,7 @@ switch(bab_rp('tg'))
 	case "delegusr":
 		$babLevelOne = bab_translate("Administration");
 		$babLevelTwo = bab_translate("Delegation");
-		if( isset($BAB_SESS_LOGGED) && $BAB_SESS_LOGGED && $babBody->dgAdmGroups > 0)
+		if( isset($BAB_SESS_LOGGED) && $BAB_SESS_LOGGED)
 			$incl = "delegusr";
 		break;
 

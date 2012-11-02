@@ -2998,14 +2998,14 @@ function haveRightOn($sPath, $sTableName, $oFileMgrEnv = null)
 /* A utiliser seulement pour les fonction haveRightxxx quand on est � la racine*/
 function haveAdministratorRight()
 {
-	global $babBody;
 	if(0 === bab_getCurrentUserDelegation())
 	{
 		return bab_isUserAdministrator();
 	}
 	else
 	{
-		return array_key_exists(bab_getCurrentUserDelegation(), array_flip($babBody->dgAdmGroups));
+		$dgAdmGroups = bab_getDgAdmGroups();
+		return array_key_exists(bab_getCurrentUserDelegation(), array_flip($dgAdmGroups));
 	}
 }
 
@@ -3174,10 +3174,12 @@ function bab_getUserFmVisibleDelegations()
 			$bMainSite = true;
 		}
 
-		global $babBody;
-		if(is_array($babBody->dgAdmGroups) && count($babBody->dgAdmGroups) > 0)
+		
+		$dgAdmGroups = bab_getDgAdmGroups();
+		
+		if(is_array($dgAdmGroups) && count($dgAdmGroups) > 0)
 		{
-			foreach($babBody->dgAdmGroups as $iKey => $iIdDelegation)
+			foreach($dgAdmGroups as $iKey => $iIdDelegation)
 			{
 				$aProcessedDelegation[$iIdDelegation] = $iIdDelegation;
 			}

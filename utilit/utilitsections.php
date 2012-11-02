@@ -277,7 +277,9 @@ function babAdminSection($close)
 				);
 			}
 			
-			if( count($babBody->dgAdmGroups) > 0) {
+			$dgAdmGroups = bab_getDgAdmGroups();
+			
+			if( count($dgAdmGroups) > 0) {
 			
 				$this->links[] = array(
 						'url' 			=> $GLOBALS['babUrlScript'].'?tg=delegusr',

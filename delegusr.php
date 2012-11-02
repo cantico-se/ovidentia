@@ -27,6 +27,9 @@
 
 include_once 'base.php';
 require_once dirname(__FILE__).'/utilit/registerglobals.php';
+require_once dirname(__FILE__).'/utilit/delegincl.php';
+
+
 
 function changeAdmGroup()
 	{
@@ -53,8 +56,9 @@ function changeAdmGroup()
 				{
 				$this->delegat[0] = bab_translate("All site");
 				}
-
-			$res = $babDB->db_query("SELECT id,name FROM ".BAB_DG_GROUPS_TBL." WHERE id IN(".$babDB->quote($babBody->dgAdmGroups).") ORDER BY name ASC");
+			
+			$dgAdmGroups = bab_getDgAdmGroups();
+			$res = $babDB->db_query("SELECT id,name FROM ".BAB_DG_GROUPS_TBL." WHERE id IN(".$babDB->quote($dgAdmGroups).") ORDER BY name ASC");
 			while ($arr = $babDB->db_fetch_assoc($res))
 				{
 				$this->delegat[$arr['id']] = $arr['name'];
@@ -118,7 +122,9 @@ function updateAdmGroup($grpdg)
 }
 
 /* main */
-if( count($babBody->dgAdmGroups) < 1)
+
+$dgAdmGroups = bab_getDgAdmGroups();
+if( count($dgAdmGroups) < 1)
 	{
 	$babBody->title = bab_translate("Access denied");
 	return;

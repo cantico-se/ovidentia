@@ -768,6 +768,8 @@ class bab_dirEntryPhoto {
 		
 		return $this->photo_data;
 	}
+	
+
 
 	
 	/**

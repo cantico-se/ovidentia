@@ -766,3 +766,30 @@ function bab_deleteDelegation($id_delegation, $deleteObjects)
 	
 	return true;
 }
+
+
+
+
+
+/**
+ * list delegation groups where i am administrator
+ * this function remplace the $babBody->dgAdmGroups variable
+ * @return array
+ */
+function bab_getDgAdmGroups()
+{
+	static $groups = null;
+	
+	if (null === $groups)
+	{
+		global $babDB;
+		$res = $babDB->db_query("SELECT dg.id FROM ".BAB_DG_ADMIN_TBL." da,".BAB_DG_GROUPS_TBL." dg where da.id_user='".$babDB->db_escape_string(bab_getUserId())."' AND da.id_dg=dg.id AND dg.id_group >= '0'");
+		while( $arr = $babDB->db_fetch_array($res) ) {
+			$groups[] = $arr['id'];
+		}
+	}
+	
+	return $groups;
+}
+
+

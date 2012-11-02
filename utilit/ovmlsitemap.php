@@ -710,7 +710,8 @@ class Func_Ovml_Function_SitemapMenu extends Func_Ovml_Function {
 					$this->delegAdmin[$babBody->currentAdmGroup]['bab'.$link[2]] = true;
 				}
 			}
-			if( count($babBody->dgAdmGroups) > 0) {
+			$dgAdmGroups = bab_getDgAdmGroups();
+			if( count($dgAdmGroups) > 0) {
 				$this->delegAdmin[$babBody->currentAdmGroup]['babAdminDelegChange'] = true;
 			}
 			$this->delegAdmin[$babBody->currentAdmGroup]['babAdminGroups'] = true;
