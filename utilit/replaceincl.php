@@ -36,26 +36,31 @@ include_once "base.php";
 class bab_replace {
 
 	/**
-	* @access private
-	*/
-	var $ext_url;
+	 * use external url for remplacement instead of relatives URLs
+	 * null or true
+	 * @var bool
+	 */
+	private $ext_url;
+	
+	/**
+	 * 
+	 * @var array
+	 */
 	var $ignore_macro = array();
 	
 
 	
 	/**
-	* @static
-	* @access private
-	*/
-	function _var(&$txt,$var,$new)
-		{
+	 * 
+	 */
+	private static function _var(&$txt,$var,$new) {
 		$txt = preg_replace("/".preg_quote($var,"/")."/", $new, $txt);
-		}
+	}
 		
 	/**
-	* @access private
-	*/
-	function _make_link($url,$text,$popup = 0,$url_popup = false,$classname = false)
+	 * 
+	 */
+	private function _make_link($url,$text,$popup = 0,$url_popup = false,$classname = false)
 		{
 		if (isset($this->ext_url)) {
 			$url = $GLOBALS['babUrlScript']."?tg=login&cmd=detect&referer=".urlencode($url);
@@ -78,28 +83,28 @@ class bab_replace {
 		}
 		
 	/**
-	* @access public
+	* 
 	* @param	string	$macro			ex : OVML
 	*/
-	function addIgnoreMacro($macro) {
+	public function addIgnoreMacro($macro) {
 		$this->ignore_macro[$macro] = 1;
 	}
 	
 	/**
-	* @access public
+	* 
 	* @param	string	$macro			ex : OVML
 	*/
-	function removeIgnoreMacro($macro) {
+	public function removeIgnoreMacro($macro) {
 		unset($this->ignore_macro[$macro]);
 	}
 	
 	/**
 	 * Test ignored macro, a macro is ignored if the test is done more than 5 time
-	 * @access private
+	 * 
 	 * @param	string	$macro			ex : OVML
 	 * @return	boolean
 	 */
-	function isMacroIgnored($macro, $params) {
+	private function isMacroIgnored($macro, $params) {
 		static $ignore_stack = array();
 		
 		if (isset($this->ignore_macro[$macro])) {
@@ -121,7 +126,7 @@ class bab_replace {
 
 	/**
 	* external links for email
-	* @access public
+	* 
 	* @param	string	&$txt
 	*/
 	function email(&$txt)
@@ -137,9 +142,9 @@ class bab_replace {
 	* @access public
 	* @param	string	&$txt
 	*/
-	function ref(&$txt)
+	public function ref(&$txt)
 	{
-	self::ovidentia_ref($txt);
+	$this->ovidentia_ref($txt);
 		
 	global $babBody, $babDB;
 	
@@ -471,9 +476,9 @@ class bab_replace {
 	 *  @see IReferenceDescription::getDescription()
 	 *
 	 */
-	private static function ovidentia_ref(&$html)
+	private function ovidentia_ref(&$html)
 	{
-		$html = preg_replace_callback('/<(?P<tag>a|img)[^>]+(?:href|longdesc)="(?P<reference>ovidentia:\/\/[\w\/\.\-\?&=%;+]+)"[^>]*(?:>(?P<linkcontent>[^<]+)<\/a>|>)/', array('bab_replace', 'ovrefreplace'), $html);
+		$html = preg_replace_callback('/<(?P<tag>a|img)[^>]+(?:href|longdesc)="(?P<reference>ovidentia:\/\/[\w\/\.\-\?&=%;+]+)"[^>]*(?:>(?P<linkcontent>[^<]+)<\/a>|>)/', array($this, 'ovrefreplace'), $html);
 	}
 	
 	/**
@@ -481,7 +486,7 @@ class bab_replace {
 	 * @param array $match
 	 * @return unknown_type
 	 */
-	private static function ovrefreplace(Array $match)
+	private function ovrefreplace(Array $match)
 	{
 		require_once dirname(__FILE__).'/reference.class.php';
 		
@@ -506,12 +511,18 @@ class bab_replace {
 		
 		if (!isset($refDesc) || !($refDesc instanceof IReferenceDescription))
 		{
-			return sprintf('<span style="color:red">%s</span>', bab_toHtml(sprintf(bab_translate('Missing target API for %s'), $match['reference'])));
+			return sprintf('<span style="color:red">%s</span>', bab_toHtml(sprintf(bab_translate('Missing target API for %s'), $decoded_reference)));
 		}
 		
 		if (isset($ref[1]))
 		{
 			parse_str($ref[1], $arr);
+			
+			if (isset($this->ext_url) && isset($arr['popup'])) {
+				// remove popup parameter for external url
+				unset($arr['popup']);
+			}
+			
 			$refDesc->setParameters($arr);
 		}
 		
@@ -525,7 +536,13 @@ class bab_replace {
 		{
 			if ($access)
 			{
-				return str_replace($match['reference'], bab_toHtml($refDesc->getUrl()), $match[0]);
+				$url = $refDesc->getUrl();
+				
+				if (isset($this->ext_url)) {
+					$url = $GLOBALS['babUrlScript']."?tg=login&cmd=detect&referer=".urlencode($url);
+				}
+				
+				return str_replace($match['reference'], bab_toHtml($url), $match[0]);
 			} else {
 				return $match['linkcontent'];
 			}
