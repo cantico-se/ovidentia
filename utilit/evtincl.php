@@ -83,12 +83,17 @@ function cal_notify(bab_eventCalendarEvent $event, $subject, $body = null)
 		// html from WYSIWYG if any :
 		
 		if (isset($data['description']) && isset($data['description_format']) && 'html' === $data['description_format']) {
+			
+			// do not use the editor API for email because of url replacement
+			
+			/*
 			include_once $GLOBALS['babInstallPath']."utilit/editorincl.php";
 			$editor = new bab_contentEditor('bab_calendar_event');
 			$editor->setContent($data['description']);
 			$editor->setFormat($data['description_format']);
-		
-			$description = $editor->getHtml();
+			*/
+			
+			$description = $data['description'];
 		}
 		
 
