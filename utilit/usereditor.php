@@ -340,8 +340,8 @@ class Func_UserEditor extends bab_functionality {
 	protected function getPhotoFrame()
 	{
 		$fields = $this->getDirectoryFields();
-		
-		if (!isset($fields['jpegphoto']))
+	
+		if (!isset($fields['jpegphoto']) || !isset($fields['jpegphoto']['modifiable']) || false === $fields['jpegphoto']['modifiable'])
 		{
 			return null;
 		}
@@ -614,7 +614,10 @@ class Func_UserEditor extends bab_functionality {
 		
 		if ((null === $id_user && $this->canAddDirectoryEntry()) || $this->canEditDirectoryEntry($id_user))
 		{
-			$form->addItem($this->getPhotoFrame());
+			if ($photo = $this->getPhotoFrame())
+			{
+				$form->addItem($photo);
+			}
 		}
 		
 		
@@ -727,6 +730,19 @@ class Func_UserEditor extends bab_functionality {
 			throw new Exception(bab_translate('Access denied'));
 		}
 		
+		// verify directory mandatory fields
+		$fields = $this->getDirectoryFields();
+		foreach($fields as $fieldname => $f) {
+			if (isset($f['modifiable']) && isset($f['required']) && true === $f['modifiable'] && true === $f['required'])
+			{
+				if (!isset($user[$fieldname]) || '' === $user[$fieldname])
+				{
+					throw new Exception(sprintf(bab_translate('The fields %s is mandatory'), $f['name']));
+				}
+			}
+		}
+		
+		
 		
 		if (!isset($id_user))
 		{
@@ -787,22 +803,28 @@ class Func_UserEditor extends bab_functionality {
 		
 		if ((!isset($user['id']) && $this->canAddDirectoryEntry()) || $this->canEditDirectoryEntry($id_user))
 		{
-			$user['jpegphoto'] = ''; // delete photo
 			
-			// update photo
-			
-			$W = bab_Widgets();
-			$imagePicker = $W->ImagePicker();
-			$files = $imagePicker->getTemporaryFiles('jpegphoto');
-			if (isset($files))
+			if (isset($fields['jpegphoto']['modifiable']) && true === $fields['jpegphoto']['modifiable'])
 			{
-				foreach($files as $filePickerItem)
+			
+				$user['jpegphoto'] = ''; // delete photo
+				
+				// update photo
+				
+				$W = bab_Widgets();
+				$imagePicker = $W->ImagePicker();
+				$files = $imagePicker->getTemporaryFiles('jpegphoto');
+				if (isset($files))
 				{
-					/*@var $filePickerItem Widget_FilePickerItem */
-					$user['jpegphoto'] = bab_fileHandler::move($filePickerItem->getFilePath()->tostring());
-					break;
+					foreach($files as $filePickerItem)
+					{
+						/*@var $filePickerItem Widget_FilePickerItem */
+						$user['jpegphoto'] = bab_fileHandler::move($filePickerItem->getFilePath()->tostring());
+						break;
+					}
 				}
 			}
+			
 		} else {
 			
 			// only user fields can be modified

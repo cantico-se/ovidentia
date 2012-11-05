@@ -3338,5 +3338,6 @@
 <string id="Topics and article view">Vue des articles et des thèmes d'articles</string>
 <string id="Display topic title">Afficher le titre du thème</string>
 <string id="Display topic menu in article view">Afficher le menu du thème sur la page de l'article</string>
+<string id="The fields %s is mandatory">Le champ %s est obligatoire</string>
 
 </fr>
