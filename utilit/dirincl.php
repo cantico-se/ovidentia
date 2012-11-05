@@ -933,7 +933,7 @@ function getDirEntry($id, $type, $id_directory, $accessCtrl)
 			$entries[$fieldname]['default_value_text'] = $arr['default_value_text'];
 		}
 		
-		if ('Y' === $arr['modifiable'])
+		if ('Y' === $arr['modifiable'] || bab_isAccessValid(BAB_DBDIRFIELDUPDATE_GROUPS_TBL, $arr['id']))
 		{
 			$entries[$fieldname]['modifiable'] = true;
 		}

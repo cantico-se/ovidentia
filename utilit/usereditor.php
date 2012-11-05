@@ -379,6 +379,12 @@ class Func_UserEditor extends bab_functionality {
 		
 		foreach($fields as $fieldname => $f)
 		{
+			if (!isset($f['modifiable']) || true !== $f['modifiable'])
+			{
+				continue;
+			}
+			
+			
 			if ('jpegphoto' === $fieldname)
 			{
 				continue;
@@ -387,15 +393,23 @@ class Func_UserEditor extends bab_functionality {
 			if (isset($f['multilignes']) && $f['multilignes'])
 			{
 				$widget = $W->TextEdit();
+				
 			} elseif(isset($f['multi_values'])) {
 				$widget = $W->Select();
 				$widget->addOption('', '');
+				$values = array();
+				$default = $f['multi_values']['default_value'];
+				
 				foreach($f['multi_values']['options'] as $arr)
 				{
-					$widget->addOption($arr['id'], $arr['field_value']);
+					$values[$arr['id']] = $arr['field_value'];
+					$widget->addOption($arr['field_value'], $arr['field_value']);
 				}
 				
-				$widget->setValue($f['multi_values']['default_value']);
+				if (isset($values[$default]))
+				{
+					$widget->setValue($values[$default]);
+				}
 				
 			} else {
 				$widget = $W->LineEdit();
