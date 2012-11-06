@@ -673,9 +673,6 @@ function modifyEvent($idcal, $collection, $evtid, $dtstart, $cci, $view, $date)
 
 			$this->bdelete = $calendar->canDeleteEvent($event);
 
-
-			$babBodyPopup->title = bab_toHtml(bab_translate("Calendar"). ":  ". $calendar->getName());
-
 			$collection = $event->getCollection();
 
 			if (!empty($collection->hash) || $event->getProperty('RRULE')) {
