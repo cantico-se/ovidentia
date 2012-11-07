@@ -336,7 +336,7 @@ function viewgroups()
 
 			$req = '
 				SELECT 
-					g.name,
+					g.id,
 					g.description  
 				FROM 
 					'.BAB_USERS_GROUPS_TBL.' u, 
@@ -356,7 +356,7 @@ function viewgroups()
 	
 			if ($arr = $babDB->db_fetch_assoc($this->res)) {
 				$this->altbg = !$this->altbg;
-				$this->name = bab_toHtml($arr['name']);
+				$this->name = bab_toHtml(bab_getGroupName($arr['id']));
 				$this->description = bab_toHtml($arr['description']);
 				return true;
 			}
