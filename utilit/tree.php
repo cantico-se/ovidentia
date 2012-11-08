@@ -1848,6 +1848,7 @@ class bab_FileTreeView extends bab_TreeView
         if ($path . $sEndSlash !== '')
         {
             $aWhereClauseItem[]    = 'file.path LIKE ' . $babDB->quote($path . $sEndSlash . '%');
+            $aWhereClauseItem[]    = 'file.path NOT LIKE \'%//%\'';//fix an issue with some folder
         }
 
         $aWhereClauseItem[]    = 'file.state<>\'D\'';
