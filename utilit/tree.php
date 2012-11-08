@@ -1892,8 +1892,14 @@ class bab_FileTreeView extends bab_TreeView
 
         $oRelativePath = $folders->aField['sRelativePath'];
         $oName = $folders->aField['sName'];
-
+        
+        $allFiles = array();
         while ($file = $babDB->db_fetch_array($files)) {
+        	if(isset($allFiles[$file['name'].$file['path'].$file['id_owner'].$file['bgroup']])){//does not display same files
+        		continue;
+        	}else{
+        		$allFiles[$file['name'].$file['path'].$file['id_owner'].$file['bgroup']] = true;
+        	}
            $filePath = removeFirstPath($file['path']);
             //$filePath = $file['path'];
             $subdirs = explode('/', $filePath);
