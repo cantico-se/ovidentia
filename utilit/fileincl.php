@@ -695,7 +695,6 @@ function bab_addUploadedFile(bab_fileHandler $fmFile, $count, $id, $gr, $sRelati
 
 	}
 	
-	bab_notifyAdminQuota($sRelativePath);
 	if($GLOBALS['babQuotaFM']
 			&& ($FMTotalSize <= $GLOBALS['babMaxTotalSize']*$GLOBALS['babQuotaFM'])
 			&& ($fmFile->size +  $FMTotalSize > $GLOBALS['babMaxTotalSize']*$GLOBALS['babQuotaFM'])){
