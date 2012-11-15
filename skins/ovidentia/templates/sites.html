@@ -606,6 +606,18 @@ function validateNum(field)
 			</td>
 		</tr>
 		<tr>
+			<td>{ notif_quota_total }</td>
+            <td> 
+				<input type="text" name="quota_total" size="20" maxlength="10" value="{ arr[quota_total] }" onKeyUp="validateNum(this)" /> { t_pc }
+			</td>
+		</tr>
+		<tr>
+			<td>{ notif_quota_folder }</td>
+            <td> 
+				<input type="text" name="quota_folder" size="20" maxlength="10" value="{ arr[quota_folder] }" onKeyUp="validateNum(this)" /> { t_pc }
+			</td>
+		</tr>
+		<tr>
 			<td colspan="2" align="center">
 			<br />
 			<input type="submit" name="Submit" value="{ t_record }" />
@@ -1174,7 +1186,7 @@ function hideShowCnx()
 		<td colspan="2"><input type="checkbox" name="ldpapchkcnx" value="Y" { ldpachkcnxchecked } />&nbsp;{ ldpachkcnxtxt }</td>
 	</tr>
 	<tr> 
-		<td colspan="2"><input type="checkbox" name="ldpapchknotif" value="Y" { ldpachknotifchecked } />&nbsp;{ ldpachknotifyadmintxt }</td>
+		<td colspan="2"><input type="checkbox" name="ldpapchknotif" value="Y" { ldpachknotifchecked } />&nbsp;{ ldpachknotifyadmintxt } <a href="?tg=users&idx=notif" class="BabSiteAdminListLink">{ ldpachkviewnotifyadmintxt }</a></td>
 	</tr>
 	<tr> 
 		<td align="right">&nbsp;</td>

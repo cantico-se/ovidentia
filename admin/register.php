@@ -260,19 +260,11 @@ function notifyAdminRegistration($name, $useremail, $warning)
 		return;
 	$mailBCT = 'mail'.$babBody->babsite['mail_fieldaddress'];
 
-	$sql = "select * from ".BAB_USERS_GROUPS_TBL." where id_group='3'";
-	$result=$babDB->db_query($sql);
-	if( $result && $babDB->db_num_rows($result) > 0 )
-		{
-		while( $arr = $babDB->db_fetch_array($result))
-			{
-			$sql = "select email, firstname, lastname, disabled from ".BAB_USERS_TBL." where id='".$babDB->db_escape_string($arr['id_object'])."'";
-			$res=$babDB->db_query($sql);
-			$r = $babDB->db_fetch_array($res);
-			if( $r['disabled'] != 1 )
-				$mail->$mailBCT($r['email'], bab_composeUserName($r['firstname'] , $r['lastname']));
-			}
-		}
+	$users = aclGetAccessUsers(BAB_LDAP_LOGGIN_NOTIFY_GROUPS_TBL, 1);
+	
+	foreach($users as $user){
+		$mail->$mailBCT($user['email'], $user['name']);
+	}
     $mail->mailFrom($babAdminEmail, $GLOBALS['babAdminName']);
     $mail->mailSubject(bab_translate("Inscription notification"));
 

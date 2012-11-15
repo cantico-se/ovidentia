@@ -1018,6 +1018,8 @@ CREATE TABLE `bab_sites` (
   `mass_mailing` enum('Y','N') NOT NULL default 'N',
   `sitemap` varchar(255) NOT NULL default 'core',
   `auth_multi_session` tinyint(1) unsigned NOT NULL default '0',
+  `quota_total` int(11) unsigned NOT NULL default '0',
+  `quota_folder` int(11) unsigned NOT NULL default '0',
   PRIMARY KEY  (`id`),
   KEY `name` (`name`)
 );
@@ -4307,3 +4309,14 @@ CREATE TABLE bab_image_library_view_groups (
 );
 
 INSERT INTO bab_image_library_view_groups (id_object, id_group) values ('1', '1');
+
+CREATE TABLE bab_ldap_loggin_notify_groups (
+	id int(11) unsigned NOT NULL auto_increment,
+	id_object int(11) unsigned NOT NULL default '0',
+	id_group int(11) unsigned NOT NULL default '0',
+	PRIMARY KEY  (id),
+	KEY id_object (id_object),
+	KEY id_group (id_group)
+);
+
+INSERT INTO bab_ldap_loggin_notify_groups (id_object, id_group) values ('1', '3');

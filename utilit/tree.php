@@ -1848,6 +1848,7 @@ class bab_FileTreeView extends bab_TreeView
         if ($path . $sEndSlash !== '')
         {
             $aWhereClauseItem[]    = 'file.path LIKE ' . $babDB->quote($path . $sEndSlash . '%');
+            $aWhereClauseItem[]    = 'file.path NOT LIKE \'%//%\'';//fix an issue with some folder
         }
 
         $aWhereClauseItem[]    = 'file.state<>\'D\'';
@@ -1892,7 +1893,13 @@ class bab_FileTreeView extends bab_TreeView
         $oRelativePath = $folders->aField['sRelativePath'];
         $oName = $folders->aField['sName'];
 
+        $allFiles = array();
         while ($file = $babDB->db_fetch_array($files)) {
+        	if(isset($allFiles[$file['name'].$file['path'].$file['id_owner'].$file['bgroup']])){//does not display same files
+        		continue;
+        	}else{
+        		$allFiles[$file['name'].$file['path'].$file['id_owner'].$file['bgroup']] = true;
+        	}
            $filePath = removeFirstPath($file['path']);
             //$filePath = $file['path'];
             $subdirs = explode('/', $filePath);

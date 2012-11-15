@@ -435,6 +435,233 @@ function updateDisplayFileManager()
 		}
 }
 
+function bab_selectPurgeFolder()
+{
+	global $babBody;
+	
+	class temp
+	{
+		var $name;
+		var $path;
+		var $select;
+		var $delegation;
+		var $altbg = true;
+		var $add = '';
+		var $oFmFolderSet = null;
+		var $sAddUrl = '';
+	
+		function temp()
+		{
+			global $babDB;
+				
+			$this->name		= bab_translate("Folders");
+			$this->path		= bab_translate("Path");
+			$this->select	= bab_translate("Select");
+			$this->delegation	= bab_translate("Delegation");
+				
+			$sql = "SELECT * FROM ".BAB_FM_FOLDERS_TBL." ORDER BY folder ASC";
+			$this->res = $babDB->db_query($sql);
+		}
+	
+		function getnext()
+		{
+			global $babDB;
+			static $end = true;
+			
+			if($end){
+				$end = false;
+				
+				$this->foldername = bab_translate('All personnal folders');
+				$this->folderpath = '';
+				$this->dgowner = '';
+				$this->folderid = '-1';
+				
+				return true;
+			}
+							
+			while($this->res && $arr = $babDB->db_fetch_array($this->res))
+			{
+				$this->foldername = $arr['folder'];
+				$this->folderpath = $arr['sRelativePath'];
+				if($arr['id_dgowner'] == 0){
+					$this->dgowner = bab_translate('All site');
+				}else{
+					$this->dgowner = 'DG ' . $arr['id_dgowner'];
+				}
+				$this->folderid = $arr['id'];
+				return true;
+			}
+			return false;
+		}
+	}
+	
+	$temp = new temp();
+	$babBody->babecho(bab_printTemplate($temp, "admfms.html", "purgetrashs"));
+}
+
+function bab_actionPurgeFolder(){
+	global $babBody;
+	
+	class temp
+	{
+		var $name;
+		var $path;
+		var $select;
+		var $delegation;
+		var $altbg = true;
+		var $add = '';
+		var $oFmFolderSet = null;
+		var $sAddUrl = '';
+	
+		function temp()
+		{
+			global $babDB;
+	
+			$this->notify			= bab_translate("Notify all managers of public folder and/or user withe personnal folder.");
+			$this->purge			= bab_translate("Purge all trashs from all selected folders.");
+			$this->notify_confirm	= bab_translate("Proceed to the notification?");
+			$this->purge_confirm	= bab_translate("Proceed to the purge?");
+			
+			$arrayIds = bab_pp('selects', array());
+			$ids = '';
+			foreach($arrayIds as $k => $v){
+				if($ids == ''){
+					$ids = $k;
+				}else{
+					$ids.= '.'.$k;
+				}
+			}
+			
+			$this->notifyurl		= bab_toHtml($GLOBALS['babUrlScript'] . '?tg=admfms&idx=list&action=notify&folder=' . $ids);
+			$this->purgeurl		= bab_toHtml($GLOBALS['babUrlScript'] . '?tg=admfms&idx=list&action=purge&folder=' . $ids);
+		}
+	}
+	
+	$temp = new temp();
+	$babBody->babecho(bab_printTemplate($temp, "admfms.html", "actionpurgetrashs"));
+}
+
+function bab_notifyPurgeTrashs()
+{
+	require_once $GLOBALS['babInstallPath'] . 'utilit/mailincl.php';
+	require_once $GLOBALS['babInstallPath'] . 'admin/acl.php';
+	
+	global $babDB;
+	
+	$fid = bab_gp('folder', '');
+	$fid = explode('.', $fid);
+	
+	$sql = "SELECT * FROM ".BAB_FM_FOLDERS_TBL." ORDER BY folder ASC";
+	$res = $babDB->db_query($sql);
+	$folders = array();
+	while($res && $arr = $babDB->db_fetch_assoc($res))
+	{
+		$folders[$arr['id']] = $arr;
+	}
+
+	$usersToNotifyPublic = array();
+	$usersToNotifyPrivate = array();
+	foreach($fid as $id){
+		if($id == '-1'){
+			$sql = "SELECT * FROM ".BAB_GROUPS_TBL." WHERE id NOT IN('0','2') AND ustorage = 'Y'";
+			$res = $babDB->db_query($sql);
+			$groupsId = array();
+			
+			while($res && $gp = $babDB->db_fetch_assoc($res))
+			{
+				$groupsId[] = $gp['id'];
+			}
+			
+			$usersToNotifyPrivate = bab_getGroupsMembers($groupsId);
+			if(!$usersToNotifyPrivate){
+				$usersToNotifyPrivate = array();
+			}
+		}else{
+			$tempArray = aclGetAccessUsers(BAB_FMMANAGERS_GROUPS_TBL, $id);
+			foreach($tempArray as $k => $v){
+				if(!isset($usersToNotifyPublic[$k])){
+					$usersToNotifyPublic[$k] = $v;
+				}
+				$usersToNotifyPublic[$k]['folders'][] = '(DG ' .$folders[$id]['id_dgowner']. ') ' . $folders[$id]['sRelativePath'].$folders[$id]['folder'];
+			}
+		}
+	}
+	bab_debug($usersToNotifyPublic);
+	foreach($usersToNotifyPublic as $user){//Public folder
+		$babMail = bab_mail();
+		$babMail->mailFrom($GLOBALS['babAdminEmail'], $GLOBALS['babAdminName']);
+		$babMail->mailBcc($user['email'], $user['name']);
+		
+		$folderStr = '';
+		foreach($user['folders'] as $folder){
+			$folderStr.="\r\n".$folder;
+		}
+		
+		$babMail->mailSubject(bab_translate('Purge trashs'));
+		$babMail->mailBody(
+			sprintf(
+				bab_translate('_MAILPURGEPUBLICTRASHS_'),
+				$folderStr
+			)
+		);
+		$babMail->send();
+	}
+	
+	if(!empty($usersToNotifyPrivate)){//User folder
+		$babMail = bab_mail();
+		$babMail->mailFrom($GLOBALS['babAdminEmail'], $GLOBALS['babAdminName']);
+		foreach($usersToNotifyPrivate as $user){
+			$babMail->mailBcc($user['email'], $user['name']);
+		}
+		
+		$babMail->mailSubject(bab_translate('Purge trashs'));
+		$babMail->mailBody(bab_translate('_MAILPURGEUSERTRASHS_'));
+		$babMail->send();
+	}
+}
+
+function bab_purgeTrashs()
+{
+
+	require_once $GLOBALS['babInstallPath'] . 'utilit/fmset.class.php';
+
+	global $babDB;
+
+	$fid = bab_gp('folder', '');
+	$fid = explode('.', $fid);
+
+	$filesID = array();
+	if(in_array('-1', $fid)){
+		$sql = "SELECT * FROM ".BAB_FILES_TBL."
+				WHERE bgroup = 'N' AND state = 'D' ";
+		
+		$res = $babDB->db_query($sql);
+		$folders = array();
+		while($res && $arr = $babDB->db_fetch_assoc($res))
+		{
+			$filesID[] = $arr['id'];
+		}
+	}
+	
+	if(count($fid) > 1 || (count($fid) > 0 && empty($filesID))){
+		$sql = "SELECT * FROM ".BAB_FILES_TBL."
+				WHERE bgroup = 'Y' AND state = 'D' AND id_owner IN (".$babDB->quote($fid).")";
+		$res = $babDB->db_query($sql);
+		$folders = array();
+		while($res && $arr = $babDB->db_fetch_assoc($res))
+		{
+			$filesID[] = $arr['id'];
+		}
+	}
+	
+	if(!empty($filesID)){
+		$oFolderFileSet = new BAB_FolderFileSet();
+		$oId =& $oFolderFileSet->aField['iId'];
+		$oFolderFileSet->remove($oId->in($filesID));
+	}
+}
+
+
 /* main */
 if(!$babBody->isSuperAdmin && $babBody->currentDGGroup['filemanager'] != 'Y')
 {
@@ -473,8 +700,34 @@ elseif(isset($update) && $update == 'displayfm')
 	updateDisplayFileManager();
 }
 
+$action = bab_gp('action', '');
+if($action == 'notify')
+{
+	bab_notifyPurgeTrashs();
+	$babBody->msgerror = bab_translate("Notification done");
+}
+elseif($action == 'purge')
+{
+	bab_purgeTrashs();
+	$babBody->msgerror = bab_translate("Purge done");
+}
+
 switch($idx)
 {
+	case 'purgefm':
+		$babBody->title = bab_translate("Purge trashs");
+		$babBody->addItemMenu('list', bab_translate("Folders"), $GLOBALS['babUrlScript'].'?tg=admfms&idx=list');
+		$babBody->addItemMenu('purgefm', bab_translate("Purge trashs"), $GLOBALS['babUrlScript'].'?tg=admfms&idx=purgefm');
+		bab_selectPurgeFolder();
+		break;
+		
+	case 'actionpurgefm':
+		$babBody->title = bab_translate("Purge trashs");
+		$babBody->addItemMenu('list', bab_translate("Folders"), $GLOBALS['babUrlScript'].'?tg=admfms&idx=list');
+		$babBody->addItemMenu('actionpurgefm', bab_translate("Purge trashs"), $GLOBALS['babUrlScript'].'?tg=admfms&idx=purgefm');
+		bab_actionPurgeFolder();
+		break;
+		
 	case 'addf':
 		$babBody->title = bab_translate("Add a new folder");
 		$babBody->addItemMenu('list', bab_translate("Folders"), $GLOBALS['babUrlScript'].'?tg=admfms&idx=list');
@@ -485,7 +738,7 @@ switch($idx)
 	case 'dispfm':
 		$babBody->title = bab_translate("File manager");
 		$babBody->addItemMenu('list', bab_translate("Folders"), $GLOBALS['babUrlScript'].'?tg=admfms&idx=list');
-		$babBody->addItemMenu('addf', bab_translate("Add"), $GLOBALS['babUrlScript'].'?tg=admfms&idx=addf');
+		$babBody->addItemMenu('dispfm', bab_translate("Display"), $GLOBALS['babUrlScript'].'?tg=admfms&idx=dispfm');
 		DisplayFileManager();
 		break;
 	
@@ -495,7 +748,9 @@ switch($idx)
 		if(listFolders() > 0)
 		{
 			$babBody->addItemMenu('list', bab_translate("Folders"), $GLOBALS['babUrlScript'].'?tg=admfms&idx=list');
+			$babBody->addItemMenu('addf', bab_translate("Add"), $GLOBALS['babUrlScript'].'?tg=admfms&idx=addf');
 			$babBody->addItemMenu('dispfm', bab_translate("Display"), $GLOBALS['babUrlScript'].'?tg=admfms&idx=dispfm');
+			$babBody->addItemMenu('purgefm', bab_translate("Purge trashs"), $GLOBALS['babUrlScript'].'?tg=admfms&idx=purgefm');
 		}
 		break;
 }

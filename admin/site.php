@@ -383,7 +383,10 @@ function site_menu4($id)
 			$this->folder_diskspace_title = bab_translate("File manager max group directory size");
 			$this->user_diskspace_title = bab_translate("File manager max user directory size");
 			$this->total_diskspace_title = bab_translate("File manager max total size");
+			$this->notif_quota_total = bab_translate("Notification when this quota is exceeded for the file manager");
+			$this->notif_quota_folder = bab_translate("Notification when this quota is exceeded for group directory");
 			$this->t_mb = bab_translate("Mb");
+			$this->t_pc = '%';
 			
 			$this->site_configuration_cls($id);
 			}
@@ -970,7 +973,8 @@ function siteAuthentification($id)
 				$this->adminpwd1txt = bab_translate("Admin password");
 				$this->adminpwd2txt = bab_translate("Re-type admin password");
 				$this->ldpachkcnxtxt = bab_translate("Allow administrators to connect if LDAP authentification fails");
-				$this->ldpachknotifyadmintxt = bab_translate("Notify administrators when a new user is registered");
+				$this->ldpachknotifyadmintxt = bab_translate("Notify selected group when a new user is registered");
+				$this->ldpachkviewnotifyadmintxt = bab_translate("(View selected group)");
 				$this->remember_login_title = bab_translate("Automatic connection");
 				$this->login_only = bab_translate("Login ID only");
 				$this->email_password_title = bab_translate("Display option 'Lost Password'");
@@ -1934,7 +1938,7 @@ function siteUpdate_menuUpload()
 	}
 	
 	
-	if (!is_numeric($_POST['maxzipsize']) || !is_numeric($_POST['maxfilesize']) || !is_numeric($_POST['folder_diskspace']) || !is_numeric($_POST['user_diskspace']) || !is_numeric($_POST['total_diskspace'])) {
+	if (!is_numeric($_POST['quota_total']) || !is_numeric($_POST['quota_folder']) || !is_numeric($_POST['maxzipsize']) || !is_numeric($_POST['maxfilesize']) || !is_numeric($_POST['folder_diskspace']) || !is_numeric($_POST['user_diskspace']) || !is_numeric($_POST['total_diskspace'])) {
 		$babBody->addError(bab_translate("ERROR: You must provide all file manager size limits."));
 		$errors = true;
 	}
@@ -1955,7 +1959,9 @@ function siteUpdate_menuUpload()
 		folder_diskspace='".$babDB->db_escape_string($_POST['folder_diskspace'])."', 
 		user_diskspace='".$babDB->db_escape_string($_POST['user_diskspace'])."', 
 		total_diskspace='".$babDB->db_escape_string($_POST['total_diskspace'])."' , 
-		maxzipsize='".$babDB->db_escape_string($_POST['maxzipsize'])."'  
+		maxzipsize='".$babDB->db_escape_string($_POST['maxzipsize'])."'  , 
+		quota_total='".$babDB->db_escape_string($_POST['quota_total'])."'  , 
+		quota_folder='".$babDB->db_escape_string($_POST['quota_folder'])."'  
 	where id='".$babDB->db_escape_string($_POST['item'])."'";
 	$babDB->db_query($req);
 

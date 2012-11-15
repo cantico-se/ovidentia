@@ -1498,6 +1498,9 @@ function bab_updateSiteSettings()
 		$GLOBALS['babMaxZipSize'] = $GLOBALS['babMaxFileSize'];
 		}
 
+	$GLOBALS['babQuotaFM'] = $arr['quota_total'];
+	$GLOBALS['babQuotaFolder'] = $arr['quota_folder'];
+	
 	if( !empty($arr['uploadpath']))
 		{
 		$GLOBALS['babUploadPath'] = $arr['uploadpath'];

@@ -674,6 +674,12 @@ if( $idx == "Create" && !$babBody->isSuperAdmin && $babBody->currentDGGroup['use
 	return;
 }
 
+if( isset($aclnotif))
+{
+	require_once $babInstallPath."admin/acl.php";
+	maclGroups();
+}
+
 switch($idx)
 	{
 	case "dirv": 
@@ -749,6 +755,7 @@ switch($idx)
 			if( $babBody->isSuperAdmin && $babBody->currentAdmGroup == 0 )
 				{
 				$babBody->addItemMenu("utilit", bab_translate("Utilities"), $GLOBALS['babUrlScript']."?tg=users&idx=utilit&grp=".bab_rp('grp'));
+				$babBody->addItemMenu("notif", bab_translate("Notices"),$GLOBALS['babUrlScript']."?tg=users&idx=notif");
 				}
 			}
 		else
@@ -756,6 +763,23 @@ switch($idx)
 			$babBody->msgerror = bab_translate("Access denied");
 			}
 		break;
+
+		case "notif":
+			if ($babBody->isSuperAdmin && $babBody->currentAdmGroup == 0)
+			{
+				require_once $babInstallPath."admin/acl.php";
+				
+				$babBody->title = bab_translate("Notices");
+				$macl = new macl("users", "notif", 1, "aclnotif");
+		        $macl->addtable(BAB_LDAP_LOGGIN_NOTIFY_GROUPS_TBL, bab_translate("Who is notified when an account is created when a user first loggin on a LDAP directory?"));
+				$macl->filter(0,0,0,1,0);
+		        $macl->babecho();
+				
+				$babBody->addItemMenu("List", bab_translate("Users"),$GLOBALS['babUrlScript']."?tg=users&idx=List&pos=".$pos."&grp=".bab_rp('grp'));
+				$babBody->addItemMenu("notif", bab_translate("Notices"),$GLOBALS['babUrlScript']."?tg=users&idx=notif");
+			}
+			break;
+			
 	case "utilit":
 		if ($babBody->isSuperAdmin && $babBody->currentAdmGroup == 0)
 			{

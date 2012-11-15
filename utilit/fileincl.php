@@ -44,6 +44,91 @@ bab_translate("Unedit file"), bab_translate("Commit file"));
 
 
 
+function bab_notifyAdminQuota($folder = false)
+{
+	if($folder === false){
+		return false;
+	}elseif($folder === true){
+		global $babDB;
+		$res = $babDB->db_query("
+			select *
+			from ".BAB_FILES_TBL."
+			where bgroup ='Y'
+		");
+		
+		$deleteSize = 0;
+		$notDeleteSize = 0;
+		while($arr = $babDB->db_fetch_array($res)){
+			if($arr['state'] == 'D'){
+				$deleteSize+= $arr['size'];
+			}else{
+				$notDeleteSize+= $arr['size'];
+			}
+		}
+		
+		$maxSize = $GLOBALS['babMaxTotalSize'];
+		$quota = $GLOBALS['babQuotaFM'];
+		
+		$mailTos = bab_getGroupsMembers(BAB_ADMINISTRATOR_GROUP);
+		$title = bab_translate('File manager size quota exceed');
+	}else{
+		
+		global $babDB;
+		$res = $babDB->db_query("
+			select *
+			from ".BAB_FILES_TBL."
+			where bgroup ='Y'	
+			and path LIKE ".$babDB->quote($folder.'%')."
+		");
+		
+		$deleteSize = 0;
+		$notDeleteSize = 0;
+		while($arr = $babDB->db_fetch_array($res)){
+			$dgOwner = $arr['iIdDgOwner'];
+			if($arr['state'] == 'D'){
+				$deleteSize+= $arr['size'];
+			}else{
+				$notDeleteSize+= $arr['size'];
+			}
+		}
+		
+		$maxSize = $GLOBALS['babMaxGroupSize'];
+		$quota = $GLOBALS['babQuotaFolder'];
+		if($dgOwner != 0){
+			$delegAdmin = bab_getAdministratorsDelegation($dgOwner);
+		}else{
+			$delegAdmin = array();
+		}
+		$mailTos = bab_getGroupsMembers(BAB_ADMINISTRATOR_GROUP);
+		$mailTos = array_merge($mailTos, $delegAdmin);
+		$title = sprintf(bab_translate("'%s' folder size quota exceed"),$folder);
+	}
+	
+	$babMail = bab_mail();
+	$babMail->mailFrom($GLOBALS['babAdminEmail'], $GLOBALS['babAdminName']);
+
+	foreach($mailTos as $mailTo){
+		$babMail->mailBcc($mailTo['email'], $mailTo['name']);
+	}
+	$babMail->mailSubject($title);
+	$babMail->mailBody(
+		sprintf(
+			bab_translate('_MAILQUOTA_'),
+			$title,
+			number_format($deleteSize/1000, 0, '.' ,' '),
+			number_format(($deleteSize*100/$maxSize),2, '.' ,' ').' %',
+			number_format($notDeleteSize/1000,0, '.' ,' '),
+			number_format(($notDeleteSize*100/$maxSize),2, '.' ,' ').' %',
+			number_format(($deleteSize+$notDeleteSize)/1000,0, '.' ,' '),
+			number_format((($deleteSize+$notDeleteSize)*100/$maxSize),2, '.' ,' ').' %',
+			number_format($maxSize/1000,0, '.' ,' '),
+			$quota.' %'
+		)
+	);
+	$babMail->send();
+	
+	return true;
+}
 
 function getDirSize( $dir )
 {
@@ -414,10 +499,6 @@ function bab_addUploadedFile(bab_fileHandler $fmFile, $count, $id, $gr, $sRelati
 	}
 
 
-
-
-
-
 	if(empty($GLOBALS['BAB_SESS_USERID']))
 	{
 		$idcreator = 0;
@@ -613,6 +694,20 @@ function bab_addUploadedFile(bab_fileHandler $fmFile, $count, $id, $gr, $sRelati
 
 
 	}
+	
+	bab_notifyAdminQuota($sRelativePath);
+	if($GLOBALS['babQuotaFM']
+			&& ($FMTotalSize <= $GLOBALS['babMaxTotalSize']*$GLOBALS['babQuotaFM'])
+			&& ($fmFile->size +  $FMTotalSize > $GLOBALS['babMaxTotalSize']*$GLOBALS['babQuotaFM'])){
+		bab_notifyAdminQuota(true);//notify when exceed the quota on FILE MANAGER
+	}
+	
+	if($GLOBALS['babQuotaFolder']
+			&& $gr == "Y"
+			&& ($totalsize <= $GLOBALS['babMaxGroupSize']*$GLOBALS['babQuotaFolder'])
+			&& ($fmFile->size +  $totalsize > $GLOBALS['babMaxGroupSize']*$GLOBALS['babQuotaFolder'])){
+		bab_notifyAdminQuota($sRelativePath);//notify when exceed the quota on Group Folder
+	}
 
 
 	return $idf;
@@ -762,7 +857,6 @@ function saveFile($fmFiles, $id, $gr, $path, $description, $keywords, $readonly,
 	{
 		bab_fireEvent($eventfiles);
 	}
-
 
 	return true;
 }

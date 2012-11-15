@@ -229,6 +229,7 @@ define("BAB_INDEX_FILES_TBL", "bab_index_files");
 define("BAB_INDEX_ACCESS_TBL", "bab_index_access");
 define("BAB_INDEX_SPOOLER_TBL", "bab_index_spooler");
 define("BAB_LDAP_DIRECTORIES_TBL", "bab_ldap_directories");
+define("BAB_LDAP_LOGGIN_NOTIFY_GROUPS_TBL", "bab_ldap_loggin_notify_groups");
 define("BAB_LDAPDIRVIEW_GROUPS_TBL", "bab_ldapdirview_groups");
 define("BAB_LDAP_SITES_FIELDS_TBL", "bab_ldap_sites_fields");
 define("BAB_MAIL_ACCOUNTS_TBL", "bab_mail_accounts");

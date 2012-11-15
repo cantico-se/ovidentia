@@ -2457,6 +2457,14 @@ function unzipFile()
 				if($unzipSize +  $oFileManagerEnv->getFMTotalSize() > $GLOBALS['babMaxTotalSize']){
 					$babBody->addError(bab_translate("The file size exceed the limit configured for the file manager"));
 				}else{
+					if($GLOBALS['babQuotaFM']!= 0
+							&& ( ($unzipSize +  $oFileManagerEnv->getFMTotalSize()) > ($GLOBALS['babMaxTotalSize']*$GLOBALS['babQuotaFM']/100))
+							&& ( ($oFileManagerEnv->getFMTotalSize()) < ($GLOBALS['babMaxTotalSize']*$GLOBALS['babQuotaFM']/100))){
+						bab_notifyAdminQuota();
+					}
+					if($GLOBALS['babQuotaFM']!= 0 && ( ($unzipSize +  $oFileManagerEnv->getFMTotalSize()) > ($GLOBALS['babMaxTotalSize']*$GLOBALS['babQuotaFM']/100))){
+						bab_notifyAdminQuota(true);
+					}
 					bab_moveUnzipFolder($babPath, $oFolderFile->getPathName(), $oFileManagerEnv->getRootFmPath());
 					header('location: '. $GLOBALS['babUrl'] . 'index.php?tg=fileman&idx=list&id=' . bab_rp('id') . '&gr=' . bab_rp('gr') . '&path=' . bab_rp('path'));
 				}

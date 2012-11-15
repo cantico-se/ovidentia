@@ -386,6 +386,45 @@ function bab_getUserAdministratorDelegations($id_user = NULL) {
 
 
 
+/**
+ * Get administrators of a specified delegation
+ * 
+ * @param	int	$id_user
+ * @since	7.8.93
+ *
+ * @return 	array
+ */
+function bab_getAdministratorsDelegation($deleg_id) {
+
+	global $babDB;
+	
+	
+	$res = $babDB->db_query('
+		SELECT 
+			id_user
+		
+		FROM 
+			'.BAB_DG_ADMIN_TBL.'
+		WHERE 
+			id_dg = '.$babDB->quote($deleg_id).'
+	');
+	
+	$users = array();
+	while ($arr = $babDB->db_fetch_assoc($res)) {
+		$user = bab_getUserInfos($arr['id_user']);
+		$users[]['id'] = $user['id'];
+		$users[]['name'] = bab_composeUserName($user['firstname'],$user['lastname']);
+		$users[]['email'] = $user['email'];
+	}
+	
+	return $users;
+}
+
+
+
+
+
+
 
 
 /**

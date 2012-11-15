@@ -199,6 +199,77 @@
 </form>
 <!--#end folderlist -->
 
+<!--#begin purgetrashs -->
+<form method="post" action="{ babPhpSelf }" name="listform">
+	<input type="hidden" name="tg" value="admfms" />
+	<input type="hidden" name="idx" value="actionpurgefm" />
+	<table border="0" width="90%" cellpadding="2" cellspacing="0" align="center">
+		<tr> 
+			<td class="BabLoginCadreBackground"> 
+				<table class="BabMailBackground" border="0" width="100%" cellpadding="2" cellspacing="0">
+					<tr class="BabSiteAdminTitleFontBackground"> 
+						<td>{ name } </td>
+						<td>{ path }</td>
+						<td>{ delegation }</td>
+						<td align="center">{ select }</td>
+					</tr>
+				<!--#in getnext -->
+				<!--#if altbg -->
+					<tr valign="middle" class="BabSiteAdminFontBackground">
+				<!--#else altbg -->
+					<tr valign="middle" class="BabForumBackground1">
+				<!--#endif altbg -->
+						<td>{ foldername }</td>
+						<td>{ folderpath }</td>
+						<td>{ dgowner }</td>
+						<td width="0%" align="center"><input type="checkbox" name="selects[{ folderid }]" /></td>
+					</tr>        
+				<!--#endin getnext -->
+					<tr class="BabSiteAdminTitleFontBackground"> 
+						<td>&nbsp;</td>
+						<td>&nbsp;</td>
+						<td>&nbsp;</td>
+						<td width="1%" align="center">
+							<a style="text-decoration: none;" href="#" onclick="onCheckAll('selects', true)">
+								<img src="{ babSkinPath }images/Puces/Pucecheked.gif" alt="{ checkall }" width="10" height="10" border="0" />
+							</a>
+							<a style="text-decoration: none;" href="#" onclick="onCheckAll('selects', false)">
+								<img src="{ babSkinPath }images/Puces/PuceUncheked.gif" alt="{ uncheckall }" width="10" height="10" border="0" />
+							</a>
+						</td>
+					</tr>
+				</table>
+			</td>
+		</tr>
+	</table>
+	<br />
+	<div align="center">
+		<input type="submit" name="submit" value="{ select }" />
+	</div>
+	<br />
+</form>
+<!--#end purgetrashs -->
+
+<!--#begin actionpurgetrashs -->
+<form method="post" action="{ babPhpSelf }" name="listform">
+	<input type="hidden" name="tg" value="admfms" />
+	<input type="hidden" name="idx" value="actionpurgefm" />
+	<table border="0" width="90%" cellpadding="2" cellspacing="0" align="center">
+		<tr>
+			<td class="BabWarningBodyBackground" align="center">
+				<a onclick="return confirm('{ notify_confirm }')" href="{ notifyurl }">{ notify }</a>
+			</td>
+		</tr>
+		<tr>
+			<td class="BabWarningBodyBackground" align="center">
+				<a onclick="return confirm('{ purge_confirm }')" href="{ purgeurl }">{ purge }</a>
+			</td>
+		</tr>
+	</table>
+	<br />
+</form>
+<!--#end actionpurgetrashs -->
+
 <!--#begin foldermodify -->
 <script type="text/javascript">
 //<![CDATA[

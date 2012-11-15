@@ -1618,9 +1618,35 @@
 <string id="Access to the site">Access to the site</string>
 <string id="Event title">Title</string>
 <string id="Event location">location</string>
-<string id=""></string>
-<string id=""></string>
-<string id=""></string>
+<string id="_MAILQUOTA_">Hi
+
+%s
+
+Deleted files takes: %skB(%s)
+Not deleted files takes: %skB(%s)
+All file takes: %skB(%s)
+The max folder size is: %skB
+The quota is: %s
+
+Cordially,
+
+The administrator</string>
+<string id="_MAILPURGEPUBLICTRASHS_">Hi,
+
+Warning, some of your managed folder's trashes will soon be purged.
+Those folders are:
+%s
+
+Cordially
+
+The administrator</string>
+<string id="_MAILPURGEUSERTRASHS_">Hi,
+
+Warning, your personnal folder's trashes will soon be purged.
+
+Cordially
+
+The administrator</string>
 <string id=""></string>
 <string id=""></string>
 <string id=""></string>

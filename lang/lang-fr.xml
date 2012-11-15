@@ -2647,6 +2647,7 @@
 <string id="Max number of recipients by notification email">Nombre maximum de destinataires par envoi de notifications</string>
 <string id="Field to use when sending notification email">Champ à utiliser lors de l'envoi des notifications</string>
 <string id="Notify administrators when a new user is registered">Notifier les administrateurs quand un nouvel utilisateur est enregistré</string>
+<string id="Notify selected group when a new user is registered">Notifier les groupes sélectionnés quand un nouvel utilisateur est enregistré</string>
 <string id="Field(s) list">Liste des champs</string>
 <string id="You can select up to 15 fields">Vous pouvez sélectionner jusqu'à 15 champs</string>
 <string id="Selectable fields">Champs sélectionnables</string>
@@ -3340,4 +3341,47 @@
 <string id="Display topic menu in article view">Afficher le menu du thème sur la page de l'article</string>
 <string id="The fields %s is mandatory">Le champ %s est obligatoire</string>
 
+<string id="Notification when this quota is exceeded for group directory">Quota d'occupation des répertoires partagés pour l'envoie de la notification aux administrateurs</string>
+<string id="Notification when this quota is exceeded for the file manager">Quota d'occupation gestionnaire de fichiers pour l'envoie de la notification aux administrateurs</string>
+<string id="_MAILQUOTA_">Bonjour
+
+%s
+
+Les fichier dans la corbeille prennent: %skB(%s)
+Les fichier qui ne sont pas dans la corbeille prennent: %skB(%s)
+Tous les fichiers prennent: %skB(%s)
+La capacité maximum configuré est: %skB
+Le quota de notification est: %s
+
+Cordiallement,
+
+L'administrateur</string>
+<string id="File manager size quota exceed">Le quota d'occupation du gestionnaire du fichier a été dépassé.</string>
+<string id="'%s' folder size quota exceed">Le quota d'occupation du répertoire '%s' a été dépassé.</string>
+<string id="Purge trashs">Purge des corbeilles</string>
+<string id="All personnal folders">Tous les répertoires utilisateurs</string>
+<string id="Notify all managers of public folder and/or user withe personnal folder.">Notifier les gestionnaires de répertoires partagés et/ou les détenteurs de répertoires personnels.</string>
+<string id="Purge all trashs from all selected folders.">Purger toutes les corbeilles des répertoires sélectionnés.</string>
+<string id="Proceed to the notification?">Procéder à la notification ?</string>
+<string id="Proceed to the purge?">Procéder à la purge ?</string>
+<string id="Notification done">Notification effectuée</string>
+<string id="Purge done">Purge effectuée</string>
+<string id="_MAILPURGEPUBLICTRASHS_">Bonjour,
+
+Attention, les corbeilles de certains de vos répertoires dont vous avez la gestion vont bientôt être purgés.
+Ces répertoires sont:
+%s
+
+Cordiallement,
+
+L'administrateur</string>
+<string id="_MAILPURGEUSERTRASHS_">Bonjour,
+
+Attention, les corbeilles de votre répertoire utilisateur vont bientôt être purgés.
+
+Cordiallement,
+
+L'administrateur</string>
+<string id="Who is notified when an account is created when a user first loggin on a LDAP directory?">Qui est notifiés à la création d'un compte lors de la première authentification sur un annuaire LDAP ?</string>
+<string id="(View selected group)">(Voir les groupes sélectionnés)</string>
 </fr>

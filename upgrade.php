@@ -6865,6 +6865,32 @@ function ovidentia_upgrade($version_base,$version_ini) {
 	 */
 	
 	$functionalities->register('UserEditor'		, $GLOBALS['babInstallPath'].'utilit/usereditor.php');
+
+
+
+	// Add field to manage quota & notification on file manager
+	if (!bab_isTableField(BAB_SITES_TBL, 'quota_total')) {
+		$babDB->db_query("ALTER TABLE `".BAB_SITES_TBL."` ADD `quota_total` int(11) unsigned NOT NULL default '0'");
+	}
+	if (!bab_isTableField(BAB_SITES_TBL, 'quota_folder')) {
+		$babDB->db_query("ALTER TABLE `".BAB_SITES_TBL."` ADD `quota_folder` int(11) unsigned NOT NULL default '0'");
+	}
+	
+	
+	if (!bab_isTable('bab_ldap_loggin_notify_groups'))
+	{//notifications to users when a user first loggin on a LDAP directory
+		$babDB->db_query("
+		CREATE TABLE IF NOT EXISTS bab_ldap_loggin_notify_groups (
+				id int(11) unsigned NOT NULL auto_increment,
+				id_object int(11) unsigned NOT NULL default '0',
+				id_group int(11) unsigned NOT NULL default '0',
+				PRIMARY KEY  (id),
+				KEY id_object (id_object),
+				KEY id_group (id_group)
+		)");
+		
+		$babDB->db_query("INSERT INTO bab_ldap_loggin_notify_groups (id_object, id_group) values ('1', '3')");
+	}
 	
 	
 	
