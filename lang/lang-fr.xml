@@ -3341,19 +3341,19 @@
 <string id="Display topic menu in article view">Afficher le menu du thème sur la page de l'article</string>
 <string id="The fields %s is mandatory">Le champ %s est obligatoire</string>
 
-<string id="Notification when this quota is exceeded for group directory">Quota d'occupation des répertoires partagés pour l'envoie de la notification aux administrateurs</string>
-<string id="Notification when this quota is exceeded for the file manager">Quota d'occupation gestionnaire de fichiers pour l'envoie de la notification aux administrateurs</string>
+<string id="Notification when this quota is exceeded for group directory">Quota d'occupation des répertoires partagés pour l'envoi de la notification aux administrateurs</string>
+<string id="Notification when this quota is exceeded for the file manager">Quota d'occupation gestionnaire de fichiers pour l'envoi de la notification aux administrateurs</string>
 <string id="_MAILQUOTA_">Bonjour
 
 %s
 
-Les fichier dans la corbeille prennent: %skB(%s)
-Les fichier qui ne sont pas dans la corbeille prennent: %skB(%s)
+Les fichiers dans la corbeille prennent: %skB(%s)
+Les fichiers qui ne sont pas dans la corbeille prennent: %skB(%s)
 Tous les fichiers prennent: %skB(%s)
-La capacité maximum configuré est: %skB
+La capacité maximum configurée est: %skB
 Le quota de notification est: %s
 
-Cordiallement,
+Cordialement,
 
 L'administrateur</string>
 <string id="File manager size quota exceed">Le quota d'occupation du gestionnaire du fichier a été dépassé.</string>
@@ -3368,20 +3368,26 @@ L'administrateur</string>
 <string id="Purge done">Purge effectuée</string>
 <string id="_MAILPURGEPUBLICTRASHS_">Bonjour,
 
-Attention, les corbeilles de certains de vos répertoires dont vous avez la gestion vont bientôt être purgés.
+Attention, les corbeilles de certains de vos répertoires dont vous avez la gestion vont bientôt être purgées.
 Ces répertoires sont:
 %s
 
-Cordiallement,
+Cordialement,
 
 L'administrateur</string>
 <string id="_MAILPURGEUSERTRASHS_">Bonjour,
 
-Attention, les corbeilles de votre répertoire utilisateur vont bientôt être purgés.
+Attention, les corbeilles de votre répertoire utilisateur vont bientôt être purgées.
 
-Cordiallement,
+Cordialement,
 
 L'administrateur</string>
 <string id="Who is notified when an account is created when a user first loggin on a LDAP directory?">Qui est notifiés à la création d'un compte lors de la première authentification sur un annuaire LDAP ?</string>
 <string id="(View selected group)">(Voir les groupes sélectionnés)</string>
+<string id="Domains">Domaines</string>
+<string id=""></string>
+<string id=""></string>
+<string id=""></string>
+<string id=""></string>
+<string id=""></string>
 </fr>
