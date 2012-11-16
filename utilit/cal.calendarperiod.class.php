@@ -635,7 +635,7 @@ class bab_CalendarPeriod extends bab_ICalendarObject {
 			
 		} else {
 			
-			list(,$email) = explode(':', $value);
+			list(,$email) = explode(':', $organizer);
 			
 			return array(
 				'name' => null,
