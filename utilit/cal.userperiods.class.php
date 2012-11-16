@@ -726,20 +726,17 @@ class bab_UserPeriods implements Countable, seekableIterator {
 	 */
 	public function setAvailability($period, $available) {
 
-		if (!isset($this->boundaries[$period->ts_begin]))
+		$return = false;
+		foreach($this->boundaries as $tskey => $boundary)
 		{
-			// No boundary found for event
-			return false;
-		}
-
-		$boundary = $this->boundaries[$period->ts_begin];
-		foreach($boundary as $key => $tmp_evt) {
-			if ($tmp_evt->getProperty('UID') === $period->getProperty('UID')) {
-				$this->boundaries[$period->ts_begin][$key]->available = $available;
-				return true;
+			foreach($boundary as $key => &$tmp_evt) {
+				if ($tmp_evt->getProperty('UID') === $period->getProperty('UID')) {
+					$this->boundaries[$tskey][$key]->available = $available;
+					$return = true;
+				}
 			}
 		}
-		return false;
+		return $return;
 	}
 
 
@@ -1067,7 +1064,8 @@ class bab_UserPeriods implements Countable, seekableIterator {
 				$tmp_begin 	= $previous < $test_begin ? $test_begin : $previous;
 				$tmp_end 	= $ts > $test_end ? $test_end : $ts;
 
-				if (!isset($availabilityReply->available_periods[$tmp_begin.'.'.$tmp_end]) && $tmp_begin != $tmp_end) {
+				if (!isset($availabilityReply->available_periods[$tmp_begin.'.'.$tmp_end]) && $tmp_begin < $tmp_end) {
+					
 					$period = new bab_calendarPeriod($tmp_begin, $tmp_end);
 					$collection->addPeriod($period);
 					$availabilityReply->available_periods[$tmp_begin.'.'.$tmp_end] = $period;

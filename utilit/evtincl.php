@@ -303,7 +303,11 @@ function bab_createCalendarPeriod(Func_CalendarBackend $backend, $args, bab_Peri
 		$calendar = bab_getICalendars()->getEventCalendar($args['calid']);
 
 		$period = $backend->getPeriod($backend->CalendarEventCollection($calendar), $args['evtid'], $args['dtstart']);
-		bab_debug('<h1>$backend->getPeriod()</h1>'. $period->toHtml(), DBG_TRACE, 'CalendarBackend');
+		if (null === $period)
+		{
+			throw new ErrorException(sprintf('The period UID=%s, DTSTART=%s does not exists in backend %s', $args['evtid'], $args['dtstart'], $backend->getUrlIdentifier()));
+		}
+		
 
 		$begin 	= bab_event_posted::getDateTime($args['startdate'], $period->ts_begin);
 		$end 	= bab_event_posted::getDateTime($args['enddate'], $period->ts_end);
@@ -1726,7 +1730,6 @@ class bab_event_posted {
 	private $calendarPeriod;
 
 
-
 	/**
 	 *
 	 * @var Func_CalendarBackend
@@ -2093,6 +2096,12 @@ class bab_event_posted {
 			$backend = $calendar->getBackend();
 
 			$period = $backend->getPeriod($backend->CalendarEventCollection($calendar), $this->args['evtid']);
+			
+			if (!isset($period))
+			{
+				$msgerror = bab_translate('The event does not exists');
+				return false;
+			}
 
 			$begin 	= bab_event_posted::getDateTime($this->args['startdate'], $period->ts_begin);
 			$end 	= bab_event_posted::getDateTime($this->args['enddate'], $period->ts_end);
@@ -2203,11 +2212,15 @@ class bab_event_posted {
 					$period = bab_createCalendarPeriod($backend, $this->args, $collection, $createinstance);
 					
 					$period->setProperty('STATUS', 'CANCELLED');
-					$backend->savePeriod($period, 'CANCEL');
+					$period->cancelFromAllBackends();
 				
 					
 					$this->args['evtid'] = null;
-				} 
+					
+					
+					
+					
+				}
 			} 
 
 			
@@ -2530,6 +2543,8 @@ class bab_event_posted {
 			{
 				// Event not found within boundaries
 				// it is possible when a new calendar is added to event
+				
+				bab_debug(sprintf('Failed to set the current event %s as an available event for the availability test, the event may conflict with himself', $period->getProperty('UID')));
 			}
 		}
 		
@@ -2579,6 +2594,8 @@ class bab_event_posted {
 				// si il y a une periode dispo, l'afficher
 				reset($AvaReply->available_periods);
 				$calPeriod = current($AvaReply->available_periods);
+				/*@var $calPeriod bab_CalendarPeriod */
+				
 				$availability_msg_list[] = sprintf(
 					bab_translate('There is a conflict with working hours, the next available period is : %s to %s'),
 					bab_shortDate($calPeriod->ts_begin),

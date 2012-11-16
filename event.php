@@ -1227,6 +1227,9 @@ function confirmDeleteEvent($calid, $bupdrec, $notify)
 	}
 	
 	
+	
+	
+	
 	$calendarPeriod->setProperty('STATUS', 'CANCELLED');
 
 	$collection = $calendarPeriod->getCollection();
@@ -1248,9 +1251,8 @@ function confirmDeleteEvent($calid, $bupdrec, $notify)
 	bab_debug('<h1>$backend->SavePeriod()</h1>'. $calendarPeriod->toHtml(), DBG_TRACE, 'CalendarBackend');
 	
 	try {
-
-		// if organizer is not in attendees, cancel the event of the main calendar
-		$backend->savePeriod($calendarPeriod, 'CANCEL');
+		
+		$calendarPeriod->cancelFromAllBackends();
 		
 	} catch(ErrorException $e)
 	{
@@ -1259,7 +1261,6 @@ function confirmDeleteEvent($calid, $bupdrec, $notify)
 		return false;
 	}
 	
-	// $calendarPeriod->commitEvent();
 	
 
 	include_once $GLOBALS['babInstallPath'].'utilit/eventperiod.php';
@@ -1502,6 +1503,17 @@ switch($idx)
 		$babBody->msgerror = $message;
 		newEvent();
 		break;
+		
+		
+	case 'test':
+	
+		$calendar = bab_getICalendars()->getEventCalendar($calid);
+		$backend = $calendar->getBackend();
+		$period = $backend->getPeriod($backend->CalendarEventCollection($calendar), 'b6444487-430e-4121-9cc4-0056a845d828', '20130101T090000');
+		if (null !== $period)
+		{
+			$babBody->babEcho($period->toHtml());
+		}
 
 	default:
 		break;

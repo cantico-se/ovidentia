@@ -143,7 +143,7 @@ class bab_cal_OviEventUpdate
 		global $babBody, $babDB;
 
 		$evtinfo = $babDB->db_fetch_assoc($babDB->db_query("
-			SELECT hash, start_date, end_date from ".BAB_CAL_EVENTS_TBL." where id='".$babDB->db_escape_string($id_event)."'
+			SELECT hash, start_date, end_date, parent_calendar from ".BAB_CAL_EVENTS_TBL." where id='".$babDB->db_escape_string($id_event)."'
 		"));
 
 		$arrupdate = array();
@@ -179,7 +179,16 @@ class bab_cal_OviEventUpdate
 			$description_format = 'text';
 		}
 
+		$parent_calendar = $evtinfo['parent_calendar'];
 		$cat = bab_getCalendarCategory($period->getProperty('CATEGORIES'));
+		
+		if ($parents = $period->getRelations('PARENT'))
+		{
+			foreach($parents as $parent_urlidentifier => $pcal)
+			{
+				$parent_calendar = $parent_urlidentifier;
+			}
+		}
 
 		$req = "UPDATE ".BAB_CAL_EVENTS_TBL."
 		SET
@@ -192,6 +201,7 @@ class bab_cal_OviEventUpdate
 			bprivate			=".$babDB->quote($private).",
 			block				=".$babDB->quote($block).",
 			bfree				=".$babDB->quote($free).",
+			parent_calendar		=".$babDB->quote($parent_calendar).",
 			date_modification	=now(),
 			id_modifiedby		=".$babDB->quote($GLOBALS['BAB_SESS_USERID'])."
 		";
