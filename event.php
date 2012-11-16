@@ -1503,17 +1503,6 @@ switch($idx)
 		$babBody->msgerror = $message;
 		newEvent();
 		break;
-		
-		
-	case 'test':
-	
-		$calendar = bab_getICalendars()->getEventCalendar($calid);
-		$backend = $calendar->getBackend();
-		$period = $backend->getPeriod($backend->CalendarEventCollection($calendar), 'b6444487-430e-4121-9cc4-0056a845d828', '20130101T090000');
-		if (null !== $period)
-		{
-			$babBody->babEcho($period->toHtml());
-		}
 
 	default:
 		break;
