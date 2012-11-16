@@ -859,7 +859,7 @@ class BAB_DateTime
 			return 0;
 		}
 		
-		if (class_exists('DateTimeZone') && class_exists('DateTime') && false) {
+		if (class_exists('DateTimeZone') && class_exists('DateTime')) {
 
 			$origin_tz = date_default_timezone_get();
 			
