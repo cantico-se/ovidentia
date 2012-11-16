@@ -1250,8 +1250,7 @@ function confirmDeleteEvent($calid, $bupdrec, $notify)
 	
 	try {
 
-		// if organizer is not in attendees, cancel the event of the main calendar
-		$backend->savePeriod($calendarPeriod, 'CANCEL');
+		$calendarPeriod->cancelFromAllBackends();
 		
 	} catch(ErrorException $e)
 	{
@@ -1259,8 +1258,6 @@ function confirmDeleteEvent($calid, $bupdrec, $notify)
 		bab_debug($e->getMessage());
 		return false;
 	}
-	
-	// $calendarPeriod->commitEvent();
 	
 
 	include_once $GLOBALS['babInstallPath'].'utilit/eventperiod.php';

@@ -180,8 +180,17 @@ class bab_cal_OviEventUpdate
 		}
 		
 
+		$parent_calendar = $evtinfo['parent_calendar'];
 		$cat = bab_getCalendarCategory($period->getProperty('CATEGORIES'));
 
+		if ($parents = $period->getRelations('PARENT'))
+		{
+			foreach($parents as $parent_urlidentifier => $pcal)
+			{
+				$parent_calendar = $parent_urlidentifier;
+			}
+		}
+		
 		$req = "UPDATE ".BAB_CAL_EVENTS_TBL."
 		SET
 			title				=".$babDB->quote($period->getProperty('SUMMARY')).",
@@ -193,6 +202,7 @@ class bab_cal_OviEventUpdate
 			bprivate			=".$babDB->quote($private).",
 			block				=".$babDB->quote($block).",
 			bfree				=".$babDB->quote($free).",
+			parent_calendar		=".$babDB->quote($parent_calendar).",
 			date_modification	=now(),
 			id_modifiedby		=".$babDB->quote($GLOBALS['BAB_SESS_USERID'])."
 		";
