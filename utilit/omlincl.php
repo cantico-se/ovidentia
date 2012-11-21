@@ -8625,3 +8625,256 @@ function bab_rel2abs($relative, $url)
     return sprintf('%s://%s%s/%s', $url['scheme'], $url['host'], $dir, $relative);
 }
 
+
+
+
+
+class Func_Ovml_Function_PreviousOrNextArticle extends Func_Ovml_Function {
+	
+	protected $articleid = null;
+	protected $topicid = null;
+	protected $excludetopicid = null;
+	protected $delegationid = null;	
+	protected $archive = null;
+	protected $orderby = null;
+	protected $order = null;
+	protected $topicorder = false;
+	protected $minrating = null;
+	protected $articles = null;
+
+
+
+	/**
+	 * @return string
+	 */
+	public function toString()
+	{
+		return '';
+	}
+
+
+
+	public function init()
+	{
+	
+		global $babDB;
+		$args = $this->args;
+
+		if (isset($args['articleid'])) {
+			$this->articleid = $args['articleid'];
+		}
+
+		if (isset($args['topicid'])) {
+			$this->topicid = $args['topicid'];
+		}
+
+		if (isset($args['excludetopicid'])) {
+			$this->excludetopicid = $args['excludetopicid'];
+		}
+
+		if (isset($args['delegationid'])) {
+			$this->topicid = $args['delegationid'];
+		}
+
+		if (isset($args['orderby'])) {
+			$this->orderby = $args['orderby'];
+		}
+
+		if (isset($args['order'])) {
+			$this->order = $args['order'];
+		} else {
+			$this->order = 'asc';
+		}
+
+		if (isset($args['topicorder'])) {
+			$this->topicorder = $args['topicorder'];
+			$this->topicorder = (mb_strtoupper($forder) === 'YES');
+		}
+
+		if (isset($args['archive'])) {
+			$this->archive = $args['archive'];
+		}
+
+		if (isset($args['minrating'])) {
+			$this->minrating = $args['minrating'];
+		}
+
+		$sDelegation = ' ';
+		$sLeftJoin = ' ';
+		if (0 != $this->delegationid) {
+			$sLeftJoin =
+				'LEFT JOIN ' .
+					BAB_TOPICS_TBL . ' t ON t.id = at.id_topic ' .
+				'LEFT JOIN ' .
+					BAB_TOPICS_CATEGORIES_TBL . ' tpc ON tpc.id = t.id_cat ';
+
+			$sDelegation = ' AND tpc.id_dgowner = \'' . $babDB->db_escape_string($delegationid) . '\' ';
+		}
+
+		if ($this->topicid === null || $this->topicid === '' ) {
+			$this->topicid = bab_getUserIdObjects(BAB_TOPICSVIEW_GROUPS_TBL);
+		} else {
+			$this->topicid = array_intersect(array_keys(bab_getUserIdObjects(BAB_TOPICSVIEW_GROUPS_TBL)), explode(',', $this->topicid));
+		}
+
+		if (count($this->topicid) == 0) {
+			return false;
+		}
+
+		switch(mb_strtoupper($this->archive)) {
+			case 'NO': $this->archive = " AND archive='N' "; break;
+			case 'YES': $this->archive = " AND archive='Y' "; break;
+			default: $this->archive = ''; break;
+		}
+
+		if (!is_numeric($this->minrating)) {
+			 $this->minrating = 0;
+			 $ratingGroupBy = ' GROUP BY at.id ';
+		} else {
+			 $ratingGroupBy = ' GROUP BY at.id HAVING average_rating >= ' . $babDB->quote($this->minrating) . ' ';
+		}
+
+		$req = '
+			SELECT at.id, at.restriction, AVG(c.article_rating) AS average_rating, COUNT(c.article_rating) AS nb_ratings
+			FROM ' . BAB_ARTICLES_TBL . ' AS at
+			LEFT JOIN ' . BAB_COMMENTS_TBL . ' c ON c.id_article=at.id AND c.article_rating > 0
+			' . $sLeftJoin . '
+
+			WHERE at.id_topic IN (' . $babDB->quote($this->topicid) . ')
+			AND (at.date_publication=' . $babDB->quote('0000-00-00 00:00:00') . ' OR at.date_publication <= NOW())'
+				. $this->archive
+				. $sDelegation
+				. $ratingGroupBy
+			;
+
+
+		if ($this->orderby === null || $this->orderby === '') {
+			$this->orderby = 'at.date';
+		} else {
+			switch (mb_strtolower($this->orderby )) {
+				case 'rating':
+					$this->orderby = 'average_rating';
+					break;
+				case 'creation':
+					$this->orderby = 'at.date';
+					break;
+				case 'publication':
+					$this->orderby = 'at.date_publication';
+					break;
+				case 'modification':
+				default:
+					$this->orderby = 'at.date_modification';
+					break;
+			}
+		}
+
+
+		switch (mb_strtoupper($this->order)) {
+			case 'ASC':
+				if ($this->topicorder) { /* topicorder=yes : order defined by managers */
+					$this->order = 'at.ordering ASC, at.date_modification desc';
+				} else {
+					$this->order = $this->orderby.' ASC';
+				}
+				break;
+				case 'RAND':
+				$this->order = 'rand()';
+				break;
+
+			case 'DESC':
+			default:
+				if ($this->topicorder) { /* topicorder=yes : order defined by managers */
+					$this->order = 'at.ordering DESC, at.date_modification ASC';
+				} else {
+					$this->order = $this->orderby.' DESC';
+				}
+				break;
+		}
+
+		$req .=  'ORDER BY ' . $this->order;
+		$res = $babDB->db_query($req);
+		while ($arr = $babDB->db_fetch_assoc($res)) {
+			if ($arr['restriction'] == '' || bab_articleAccessByRestriction($arr['restriction'])) {
+				$this->IdEntries[] = $arr['id'];
+			}
+		}
+
+		$this->count = count($this->IdEntries);
+		if ($this->count == 0) {
+			return false;
+		}
+
+		$req = '
+			SELECT at.id
+			FROM ' . BAB_ARTICLES_TBL . ' AS at
+			WHERE at.id IN ('.$babDB->quote($this->IdEntries).')
+			ORDER BY ' . $this->order;
+
+		$this->articles = $babDB->db_query($req);
+
+		return true;
+	}
+	
+}
+
+
+
+
+class Func_Ovml_Function_NextArticle extends Func_Ovml_Function_PreviousOrNextArticle {
+
+	/**
+	 * @return string
+	 */
+	public function toString()
+	{
+		global $babDB;
+
+		if (!parent::init()) {
+			return '';
+		}
+
+		$nextArticleId = '';
+		while ($arr = $babDB->db_fetch_assoc($this->articles)) {
+			if ($arr['id'] == $this->articleid) {
+				if ($arr = $babDB->db_fetch_assoc($this->articles)) {
+					$nextArticleId = $arr['id'];
+				}
+				break;
+			}
+		}
+
+		return $nextArticleId;				
+	}
+	
+}
+
+
+
+class Func_Ovml_Function_PreviousArticle extends Func_Ovml_Function_PreviousOrNextArticle {
+
+	/**
+	 * @return string
+	 */
+	public function toString()
+	{
+		global $babDB;
+
+		if (!parent::init()) {
+			return '';
+		}
+		
+		$previousArticleId = '';
+		while ($arr = $babDB->db_fetch_assoc($this->articles)) 
+		{
+			if ($arr['id'] == $this->articleid) {
+				break;
+			}
+			$previousArticleId = $arr['id'];
+		}
+
+		return $previousArticleId;
+	}
+	
+}
+
+
