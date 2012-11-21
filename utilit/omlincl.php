@@ -8642,6 +8642,7 @@ class Func_Ovml_Function_PreviousOrNextArticle extends Func_Ovml_Function {
 	protected $minrating = null;
 	protected $articles = null;
 
+	protected $saveas = null;
 
 
 	/**
@@ -8660,6 +8661,10 @@ class Func_Ovml_Function_PreviousOrNextArticle extends Func_Ovml_Function {
 		global $babDB;
 		$args = $this->args;
 
+		if (isset($args['saveas'])) {
+			$this->saveas = $args['saveas'];
+		}
+		
 		if (isset($args['articleid'])) {
 			$this->articleid = $args['articleid'];
 		}
@@ -8843,6 +8848,10 @@ class Func_Ovml_Function_NextArticle extends Func_Ovml_Function_PreviousOrNextAr
 			}
 		}
 
+		if ($this->saveas) {
+			$this->gctx->push($this->saveas, $nextArticleId);
+			return;
+		}
 		return $nextArticleId;				
 	}
 	
@@ -8871,7 +8880,12 @@ class Func_Ovml_Function_PreviousArticle extends Func_Ovml_Function_PreviousOrNe
 			}
 			$previousArticleId = $arr['id'];
 		}
-
+		
+		
+		if ($this->saveas) {
+			$this->gctx->push($this->saveas, $previousArticleId);
+			return;
+		}
 		return $previousArticleId;
 	}
 	
