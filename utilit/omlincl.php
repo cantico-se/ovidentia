@@ -4948,22 +4948,7 @@ class Func_Ovml_Container_CalendarCategories extends Func_Ovml_Container
 			return false;
 		}
 	}
-}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-/**
+}/**
  * Return a list of calendar events
  *
  * calendarid 			: coma separated calendars id
@@ -5346,6 +5331,7 @@ class Func_Ovml_Container_CalendarEvents extends Func_Ovml_Container
 
 			$this->ctx->curctx->push('CIndex'					, $this->idx);
 			$this->ctx->curctx->push('EventId'					, $id_event);
+			$this->ctx->curctx->push('EventCalendarId'			, $arr['id_cal']);
 			$this->ctx->curctx->push('EventTitle'				, $summary);
 
 			if (isset($arr['description']) && isset($arr['description_format'])) {
@@ -5387,6 +5373,83 @@ class Func_Ovml_Container_CalendarEvents extends Func_Ovml_Container
 
 			$this->idx++;
 			$this->index = $this->idx;
+			return true;
+		}
+		else
+		{
+			$this->idx=0;
+			return false;
+		}
+	}
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/**
+ * Return a list of domain
+ *
+ * calendarid 			: complete calendar id (ex: public/3), should be <OVEventCalendarId<OVEventId>>
+ * eventid				: uid of an event, should be <OVEventId>
+ * dtstart 				: <OVEventBeginDate>
+ *
+ * <OCCalendarEvents calendarid="" eventid="" dtstart="">
+ *
+ * 	<OVDomainName>
+ * 	<OVDomainValue>
+ *
+ * </OCCalendarEvents>
+ *
+ */
+class Func_Ovml_Container_CalendarEventDomains extends Func_Ovml_Container
+{
+	var $count;
+
+	public function setOvmlContext(babOvTemplate $ctx)
+	{
+		global $babBody, $babDB;
+		parent::setOvmlContext($ctx);
+
+		$calendarid = $ctx->get_value('calendarid');
+		$eventid = $ctx->get_value('eventid');
+		$dtstart = $ctx->get_value('dtstart');
+		
+		$calendar = bab_getICalendars()->getEventCalendar($calendarid);
+		
+		$backend = $calendar->getBackend();
+		
+		$collection = $backend->CalendarEventCollection($calendar);
+
+		$period = $backend->getPeriod($backend->CalendarEventCollection($calendar), $eventid, $dtstart);
+		
+		$domsStr = $period->getDomains();
+				
+		if ($domsStr){
+			$this->doms = bab_getDomains($domsStr);
+		}
+
+		$this->count = count($this->doms);
+		$this->ctx->curctx->push('CCount', $this->count);
+	}
+
+
+	public function getnext()
+	{
+		global $babBody,$babDB;
+		if(!empty($this->doms) && $dom = array_shift($this->doms))
+		{
+			$this->ctx->curctx->push('DomainName'	, $dom['domain']);
+			$this->ctx->curctx->push('DomainValue'	, $dom['value']);
 			return true;
 		}
 		else

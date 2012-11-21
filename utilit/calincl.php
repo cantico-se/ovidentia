@@ -151,6 +151,45 @@ function bab_getCalendarCategory($nameorid)
 }
 
 
+/**
+ * Search a category by name
+ * @param	string | int	$domsid
+ * @return array | null
+ */
+function bab_getDomains($domsid, $tree = false)
+{
+	global $babDB;
+	
+	if (empty($domsid))
+	{
+		return null;
+	}
+	$domsid = explode(',', $domsid);
+	
+	$sql = 'SELECT v.name as value, d.name as domain, v.id as vid, d.id as did
+			FROM '.BAB_CAL_DOMAINS_TBL.' as v,  '.BAB_CAL_DOMAINS_TBL.' as d
+			WHERE v.id_parent = d.id
+			AND v.id IN('.$babDB->quote($domsid).')
+			ORDER BY d.order ASC, v.order ASC';
+	
+	$res = $babDB->db_query($sql);
+	if (0 === $babDB->db_num_rows($res)) {
+		return null;
+	}
+	
+	$return = array();
+	while($arr = $babDB->db_fetch_assoc($res)){
+		if($tree){
+			$return[$arr['did']][$arr['vid']] = array('domain' => $arr['domain'], 'value' => $arr['value']);	
+		}else{
+			$return[] = array('domain' => $arr['domain'], 'value' => $arr['value']);
+		}
+	}
+	
+	return $return;
+}
+
+
 
 
 
@@ -568,7 +607,8 @@ function bab_deleteCalendar($idcal)
 		{
 		$babDB->db_query("delete from ".BAB_CAL_EVENTS_TBL." where id='".$babDB->db_escape_string($arr['id_event'])."'");	
 		$babDB->db_query("delete from ".BAB_CAL_EVENTS_NOTES_TBL." where id_event='".$babDB->db_escape_string($arr['id_event'])."'");	
-		$babDB->db_query("delete from ".BAB_CAL_EVENTS_REMINDERS_TBL." where id_event='".$babDB->db_escape_string($arr['id_event'])."'");	
+		$babDB->db_query("delete from ".BAB_CAL_EVENTS_REMINDERS_TBL." where id_event='".$babDB->db_escape_string($arr['id_event'])."'");
+		$babDB->db_query("delete from ".BAB_CAL_EVENTS_DOMAIN_TBL." where id='".$babDB->db_escape_string($arr['id_event'])."'");	
 		}
 	$babDB->db_query("delete from ".BAB_CAL_EVENTS_OWNERS_TBL." where id_cal='".$babDB->db_escape_string($idcal)."'");	
 	$babDB->db_query("delete from ".BAB_CALENDAR_TBL." where id='".$babDB->db_escape_string($idcal)."'");	

@@ -335,6 +335,18 @@ class bab_CalendarPeriod extends bab_ICalendarObject {
 
 
 
+
+	/**
+	 *
+	 * @return string
+	 */
+	public function getDomains()
+	{
+		return $this->getProperty('X-CTO-DOMAIN');
+	}
+
+
+
 	/**
 	 * get duration beetwen the two dates
 	 * @return int (seconds)

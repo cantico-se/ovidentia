@@ -606,8 +606,23 @@ class displayEventDetailCls extends displayEventCls
 					$this->updateauthor = bab_toHtml(bab_getUserName($data['id_modifiedby']));
 			}
 		}
+		
+		$this->doms = bab_getDomains($calendarPeriod->getProperty('X-CTO-DOMAIN'), true);
 	}
 
+	public function getnextdomains()
+	{
+		if($this->doms && $arr = array_shift($this->doms)){
+			$doms = array();
+			foreach($arr as $dom){
+				$this->domlabel = $dom['domain'];
+				$doms[] = $dom['value'];
+			}
+			$this->domvalues = implode(',', $doms);
+			return true;
+		}
+		return false;
+	}
 
 	public function getHtml()
 	{

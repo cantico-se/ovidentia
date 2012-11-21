@@ -358,6 +358,17 @@ function bab_createCalendarPeriod(Func_CalendarBackend $backend, $args, bab_Peri
 			$period->setProperty('X-CTO-COLOR', $args['color']);
 		}
 	}
+	if ($args['domain'] && is_array($args['domain']))
+	{
+		$domainStr = '';
+		foreach($args['domain'] as $domains){
+			$domain[] = implode(',', $domains);
+		}
+		$domainStr = implode(',', $domain);
+		if($domainStr){
+			$period->setProperty('X-CTO-DOMAIN', $domainStr);
+		}
+	}
 
 	// organizer is set directly from libcadav ?
 	// $period->setProperty('ORGANIZER;CN='. , 'MAILTO:'.);
@@ -1905,6 +1916,10 @@ class bab_event_posted {
 
 		$this->args['category'] = empty($data['category']) ? '0' : $data['category'];
 		$this->args['color'] = empty($data['color']) ? '' : $data['color'];
+		$this->args['domain'] = '';
+		if(isset($data['domain'])){
+			$this->args['domain'] = empty($data['domain']) ? '' : $data['domain'];
+		}
 
 		$this->args['startdate']['year'] = isset($data['yearbegin']) ? $data['yearbegin'] : null;
 		$this->args['startdate']['month'] = isset($data['monthbegin']) ? $data['monthbegin'] : null;

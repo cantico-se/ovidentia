@@ -4320,3 +4320,18 @@ CREATE TABLE bab_ldap_loggin_notify_groups (
 );
 
 INSERT INTO bab_ldap_loggin_notify_groups (id_object, id_group) values ('1', '3');
+
+CREATE TABLE bab_cal_domains (
+	id int(11) unsigned NOT NULL auto_increment,
+	id_parent int(11) unsigned NOT NULL default '0',
+	name varchar(255) NOT NULL default '',
+	`order` int(11) unsigned NOT NULL default '0',
+	PRIMARY KEY (id)
+)
+
+CREATE TABLE bab_cal_events_domains (
+	id int(11) unsigned NOT NULL auto_increment,
+	id_event int(11) unsigned NOT NULL default '0',
+	id_domain int(11) unsigned NOT NULL default '0',
+	PRIMARY KEY (id)
+);

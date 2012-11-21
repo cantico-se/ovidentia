@@ -146,16 +146,16 @@ class bab_cal_event
 
 
 function newEvent()
-	{
+{
 	global $babBody;
 	class temp extends bab_cal_event
-		{
+	{
 		var $arrresname = array();
 		var $arrresid = array();
 
 		function temp()
-			{
-			global $babBody;
+		{
+			global $babBody, $babDB;
 
 			$this->bab_cal_event();
 
@@ -218,7 +218,6 @@ function newEvent()
 
 			$editor = new bab_contentEditor('bab_calendar_event');
 			$editor->setContent($editor->getContent());
-//			$editor->setFormat('html');
 			$editor->setParameters(array('height' => 150));
 			$this->editor = $editor->getEditor();
 
@@ -247,29 +246,32 @@ function newEvent()
 
 			$this->groupe_notiftxt = bab_translate("Send the notification");
 
-			if( isset($GLOBALS['babEmailReminder']) &&  $GLOBALS['babEmailReminder'])
-				{
+			if( isset($GLOBALS['babEmailReminder']) &&  $GLOBALS['babEmailReminder']){
 				$this->remailtxt = bab_translate("Use email reminder");
-				}
-			else
-				{
+			}else{
 				$this->remailtxt = "";
-				}
+			}
 
 			$this->arr['repeat_n_1'] = '';
 			$this->arr['repeat_n_2'] = '';
 			$this->arr['repeat_n_3'] = '';
 			$this->arr['repeat_n_4'] = '';
 
-			if (isset($_POST) && count($_POST) > 0)
-				{
-				foreach($_POST as $k => $v)
-					{
+			if (isset($_POST) && count($_POST) > 0){
+				foreach($_POST as $k => $v){
 					$this->arr[$k] = bab_pp($k);
-					}
+				}
 
 				$this->arr['title'] = bab_toHtml($this->arr['title']);
 				$this->arr['location'] = bab_toHtml($this->arr['location']);
+				
+				if(isset($this->arr['domain'])){
+					foreach($this->arr['domain'] as $id => $domains){
+						foreach($domains as $domain){
+							$this->arr['domain'][$id][$domain] = $domain;
+						}
+					}
+				}
 
 				$this->daytypechecked = isset($this->arr['daytype']) ? 'checked' : '';
 				$this->daysel = $this->arr['daybegin'];
@@ -284,9 +286,7 @@ function newEvent()
 				$this->arralert['day'] = isset($this->arr['rday']) ? $this->arr['rday'] : '';
 				$this->arralert['hour'] = isset($this->arr['rhour']) ? $this->arr['rhour'] : '';
 				$this->arralert['minute'] = isset($this->arr['rminute']) ? $this->arr['rminute'] : '';
-				}
-			else
-				{
+			}else{
 				$this->arr['title'] = '';
 				$this->arr['location'] = '';
 				$this->arr['repeat_n_1'] = '';
@@ -302,13 +302,12 @@ function newEvent()
 				$this->arr['bprivate'] = 'N';
 				$this->arr['block'] = 'N';
 				$this->arr['bfree'] = 'N';
-				}
+			}
 
 
-			foreach (array('SU', 'MO', 'TU', 'WE', 'TH', 'FR', 'SA') as $i)
-				{
+			foreach (array('SU', 'MO', 'TU', 'WE', 'TH', 'FR', 'SA') as $i){
 				$this->repeat_wd_checked[$i] = isset($this->arr['repeat_wd']) && in_array($i,$this->arr['repeat_wd']) ? 'checked' : '';
-				}
+			}
 
 			$this->availability_msg_list = bab_event_posted::availabilityConflictsStore('MSG');
 			$this->display_availability_message = 0 < count($this->availability_msg_list);
@@ -319,8 +318,52 @@ function newEvent()
 			$registry = bab_getRegistryInstance();
 			$registry->changeDirectory('/bab/calendar/');
 			$this->notify = $registry->getValue('notify', true);
-			}
+			
 
+			$res = $babDB->db_query("select * FROM ".BAB_CAL_DOMAINS_TBL." ORDER BY `order` ASC, name ASC");
+			$this->domaines = array(0 => array());
+			$this->nbdomain = 0;
+			while($res && $arr = $babDB->db_fetch_assoc($res)){
+				$this->domaines[$arr['id_parent']][] = array('name' => $arr['name'], 'id' => $arr['id']);
+			}
+			foreach($this->domaines[0] as $domaine){
+				if(isset($this->domaines[$domaine['id']]) && count($this->domaines[$domaine['id']]) > 0){
+					$this->nbdomain++;
+				}
+			}
+			
+			$J = bab_jQuery();
+			$babBody->addStyleSheet($J->getStyleSheetUrl());
+			$this->selected_text = bab_translate('# selected');
+			$this->select_text = bab_translate('Select options');
+		}
+
+		function getnextdomain()
+		{
+			while($dom = array_shift($this->domaines[0])){
+				if(isset($this->domaines[$dom['id']]) && count($this->domaines[$dom['id']]) > 0){
+					$this->currentDom = $dom['id'];
+					$this->domainname = $dom['name'];
+					return true;
+				}
+			}
+			return false;
+		}
+
+		function getnextdomainvalue()
+		{
+			if($dom = array_shift($this->domaines[$this->currentDom])){
+				$this->domvalueid = $dom['id'];
+				$this->domvaluename = $dom['name'];
+				$this->domvalueselected = '';
+				if(isset($this->arr['domain']) && isset($this->arr['domain'][$this->currentDom]) && isset($this->arr['domain'][$this->currentDom][$dom['id']])){
+					$this->domvalueselected = 'selected="selected"';
+				}
+				return true;
+			}
+			return false;
+		}
+		
 		function getnextday()
 			{
 			static $i = 1, $k=0;
@@ -559,6 +602,7 @@ function newEvent()
 	$temp = new temp();
 	$babBody->addStyleSheet('calendar.css');
 	$babBody->babecho(bab_printTemplate($temp,"event.html", "scripts"));
+	$babBody->babecho(bab_printTemplate($temp,"jquery-ui-multiselect-widget.html", "script"));
 	$babBody->babpopup(bab_printTemplate($temp,"event.html", "newevent"));
 	}
 
@@ -668,8 +712,6 @@ function modifyEvent($idcal, $collection, $evtid, $dtstart, $cci, $view, $date)
 				'block' 				=> isset($data['block']) ? $data['block'] : '',
 				'bfree' 				=> 'TRANSPARENT' === $event->getProperty('TRANSP') ? 'Y' : 'N'
 			);
-
-
 
 			$this->bdelete = $calendar->canDeleteEvent($event);
 
@@ -829,7 +871,67 @@ function modifyEvent($idcal, $collection, $evtid, $dtstart, $cci, $view, $date)
 
 			$registry = bab_getRegistryInstance();
 			$registry->changeDirectory('/bab/calendar/');
+			
+			$this->selectedDomain = array();
+			if($XDOMAIN = $event->getProperty('X-CTO-DOMAIN')){
+				$this->selectedDomain = explode(',', $XDOMAIN);
+				foreach($this->selectedDomain as $val){
+					$this->selectedDomain[$val] = $val;
+				}
+			}
+			$postDomains = bab_rp('domain');
+			if($postDomains && is_array($postDomains)){
+				$this->selectedDomain = array();
+				foreach($postDomains as $postDomain){
+					foreach($postDomain as $val){
+						$this->selectedDomain[$val] = $val;
+					}
+				}
+			}
+			
 			$this->notify = $registry->getValue('notify', true);
+			$res = $babDB->db_query("select * FROM ".BAB_CAL_DOMAINS_TBL." ORDER BY `order` ASC, name ASC");
+			$this->domaines = array(0 => array());
+			$this->nbdomain = 0;
+			while($res && $arr = $babDB->db_fetch_assoc($res)){
+				$this->domaines[$arr['id_parent']][] = array('name' => $arr['name'], 'id' => $arr['id']);
+			}
+			foreach($this->domaines[0] as $domaine){
+				if(isset($this->domaines[$domaine['id']]) && count($this->domaines[$domaine['id']]) > 0){
+					$this->nbdomain++;
+				}
+			}
+			
+			$J = bab_jQuery();
+			$babBody->addStyleSheet($J->getStyleSheetUrl());
+			$this->selected_text = bab_translate('# selected');
+			$this->select_text = bab_translate('Select options');
+		}
+
+		function getnextdomain()
+		{
+			while($dom = array_shift($this->domaines[0])){
+				if(isset($this->domaines[$dom['id']]) && count($this->domaines[$dom['id']]) > 0){
+					$this->currentDom = $dom['id'];
+					$this->domainname = $dom['name'];
+					return true;
+				}
+			}
+			return false;
+		}
+
+		function getnextdomainvalue()
+		{
+			if($dom = array_shift($this->domaines[$this->currentDom])){
+				$this->domvalueid = $dom['id'];
+				$this->domvaluename = $dom['name'];
+				$this->domvalueselected = '';
+				if(isset($this->selectedDomain[$dom['id']])){
+					$this->domvalueselected = 'selected="selected"';
+				}
+				return true;
+			}
+			return false;
 		}
 
 		function getNextRule()
@@ -1055,6 +1157,7 @@ function modifyEvent($idcal, $collection, $evtid, $dtstart, $cci, $view, $date)
 	$temp = new temp($calendar, $cci, $view, $date, $event);
 	$babBody->addStyleSheet('calendar.css');
 	$babBody->babecho(bab_printTemplate($temp,"event.html", "scripts"));
+	$babBody->babecho(bab_printTemplate($temp,"jquery-ui-multiselect-widget.html", "script"));
 	$babBody->babpopup(bab_printTemplate($temp,"event.html", "modifyevent"));
 	}
 

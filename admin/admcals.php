@@ -209,6 +209,292 @@ function calendarsPublic()
 	$babBody->babecho( bab_printTemplate($temp, "admcals.html", "calendarslist"));
 	}
 
+
+function bab_orderDomain(){
+	global $babBody, $babDB;
+	$domainslist = bab_pp('domainslist');
+	
+	if($domainslist){
+		for($i=0; $i < count($domainslist); $i++)
+		{
+			$babDB->db_query("update ".BAB_CAL_DOMAINS_TBL." set `order`='".($i+1)."' where id='".$domainslist[$i]."'");
+		}
+		$babBody->addError(bab_translate('Ordering done'));
+		return true;
+	}
+	$babBody->addError(bab_translate('Error, order lost'));
+	return false;
+}
+
+function bab_calendarsOrderDomains()
+{
+	global $babBody;
+	class temp
+	{		
+
+		var $sorta;
+		var $sortd;
+		var $id;
+
+		function temp()
+		{
+			global $babBody, $babDB, $BAB_SESS_USERID;
+			
+			$id = bab_gp('id');
+			if(!$id){
+				$id = 0;
+				$domainname = bab_translate('Domains');
+			}else{
+				$sql = "select * FROM ".BAB_CAL_DOMAINS_TBL." WHERE id = ".$babDB->quote($id);
+				$res = $babDB->db_query($sql);
+				if($res && $arr = $babDB->db_fetch_assoc($res)){
+					$domainname = $arr['name'];
+				}else{
+					$id = 0;
+					$domainname = bab_translate('Domains');
+				}
+			}
+			
+			$this->id = $id;
+			$this->topdomainname = "---- ".$domainname." ----";
+			$this->moveup = bab_translate("Move Up");
+			$this->movedown = bab_translate("Move Down");
+			$this->sorta = bab_translate("Sort ascending");
+			$this->sortd = bab_translate("Sort descending");
+			$this->create = bab_translate("Modify");
+			$this->db = $GLOBALS['babDB'];
+			
+			$req = "select * FROM ".BAB_CAL_DOMAINS_TBL." WHERE id_parent = ".$babDB->quote($id)." ORDER BY `order` ASC, name ASC";
+			$this->res = $this->db->db_query($req);
+			$this->count = $this->db->db_num_rows($this->res);
+		}
+
+		function getnext()
+		{
+			static $i = 0;
+			if( $i < $this->count){
+				$arr = $this->db->db_fetch_array($this->res);
+				
+				$this->iddomain = bab_toHtml($arr['id']);
+				$this->domainname = bab_toHtml($arr['name']);
+				$i++;
+				return true;
+			}else{
+				return false;
+			}
+		}
+	}
+	$temp = new temp();
+	$babBody->babecho(bab_printTemplate($temp, "sites.html", "scripts"));
+	$babBody->babecho(bab_printTemplate($temp,"domain.html", "domainorder"));
+	return $temp->count;
+}
+
+function bab_rmDomain()
+{
+	global $babDB, $babBody;
+	
+	$id = bab_gp('id');
+	if($id){
+		$sql = "DELETE FROM ".BAB_CAL_DOMAINS_TBL." WHERE id = ".$babDB->quote($id)." OR ( id_parent=".$babDB->quote($id)." AND id_parent != '0')";
+		$babDB->db_query($sql);
+		
+		$babBody->addError(bab_translate('Deletion done'));
+		return true;
+	}
+	return false;	
+}
+
+function bab_saveDomain()
+{
+	global $babDB, $babBody;
+	
+	$id = bab_pp('id');
+	$name = bab_pp('name');
+	$id_parent = bab_pp('id_parent', 0);
+	
+	if($name){
+		$name = str_replace(array(',', ':', '/'), '', $name);//Those chars a forbiden due to caldav backend
+		if($id_parent != 0){
+			$sql = "select * FROM ".BAB_CAL_DOMAINS_TBL." WHERE id = ".$babDB->quote($id_parent);
+			$res = $babDB->db_query($sql);
+			if($res && $arr = $babDB->db_fetch_assoc($res)){
+				if($arr['id_parent'] != 0){
+					$babBody->addError(bab_translate('Error in the insertion'));
+					return false;
+				}
+			}else{
+				$id_parent = 0;
+			}
+		}
+		if($id){
+			$babDB->db_query("
+				UPDATE ".BAB_CAL_DOMAINS_TBL."
+				SET name = ".$babDB->quote($name).",
+					id_parent = ".$babDB->quote($id_parent)."
+				WHERE id = ".$babDB->quote($id)
+			);
+			
+			$babBody->addError(bab_translate('Update done'));
+		}else{
+			$babDB->db_query("
+				INSERT INTO ".BAB_CAL_DOMAINS_TBL." (name, id_parent)
+				VALUES (".$babDB->quote($name).", ".$babDB->quote($id_parent).")"
+			);
+			
+			$babBody->addError(bab_translate('Addition done'));
+		}
+		return true;
+	}
+	return false;	
+}
+
+function bab_calendarsEditDomain()
+{
+	global $babDB, $babBody;
+	$W = bab_Widgets();
+	$W->includeCss();
+	
+	$page = $W->BabPage();
+	$page->addStyleSheet($GLOBALS['babInstallPath'].'styles/domain.css');
+	
+	$Form = $W->Form()->setId('bab-domaine-form')
+		->setHiddenValue('tg', bab_rp('tg'))
+		->setHiddenValue('idx', 'domain')
+		->setHiddenValue('action', 'saveDomain')
+		->addItem(
+			$W->VBoxItems(
+				$W->FlowItems(
+					$tmplbl = $W->Label(bab_translate('Label'))->colon(),
+					$label = $W->LineEdit()->setName('name')->setMandatory(true, bab_translate('The label is mandatory'))
+				)->setHorizontalSpacing(.5,'em'),
+				$W->SubmitButton()->validate(true)->setLabel(bab_translate('Save'))
+			)->setVerticalSpacing(1,'em')
+		);
+	
+	$id = bab_gp('id');
+	$idParent = bab_gp('idparent');
+	if($id){
+		$res = $babDB->db_query("select * FROM ".BAB_CAL_DOMAINS_TBL." WHERE id = ".$babDB->quote($id));
+		if($res && $arr = $babDB->db_fetch_assoc($res)){
+			$idParent = $arr['id_parent'];
+			$label->setValue($arr['name']);
+			$Form->setHiddenValue('id', $arr['id']);
+		}else{
+			$idParent = '0';
+		}
+	}
+	if($idParent){
+		$babBody->title = bab_translate("Value");
+		$Form->setHiddenValue('id_parent', $idParent);
+	}
+	if($idParent === '0'){
+		$babBody->title = bab_translate("Domain");
+		$Form->setHiddenValue('id_parent', $idParent);
+	}
+	
+	$page->addItem($Form);
+	
+	
+	$page->displayHtml();
+}
+
+function bab_calendarsDomain()
+{
+	global $babDB;
+	$W = bab_Widgets();
+	$W->includeCss();
+	
+	$page = $W->BabPage();
+	
+	$treeView = $W->SimpleTreeView('bab-domain-tree');
+	$treeView->setPersistent(true);
+	
+	$res = $babDB->db_query("select * FROM ".BAB_CAL_DOMAINS_TBL." ORDER BY `order` ASC, name ASC");
+	
+	$domaines = array();
+	while($res && $arr = $babDB->db_fetch_assoc($res)){
+		$domaines[$arr['id_parent']][] = array('name' => $arr['name'], 'id' => $arr['id']);
+	}
+	//var_dump($domaines);
+	$element =& $treeView->createElement(0, '', bab_translate('Domains'), '', '');
+	$element->setIcon($GLOBALS['babSkinPath'] . 'images/nodetypes/folder.png');
+	$element->addAction(
+		'addDomain',
+		bab_translate('Add a domain'),
+		$GLOBALS['babSkinPath'] . 'images/Puces/edit_add.png',
+		'?tg=admcals&idx=adddomain&idparent=0',
+		''
+	);
+	$element->addAction(
+		'orderDomain',
+		bab_translate('Order domains'),
+		$GLOBALS['babSkinPath'] . 'images/Puces/a-z.gif',
+		'?tg=admcals&idx=orderdomain',
+		''
+	);
+	$treeView->appendElement($element, null);
+	
+	foreach($domaines as $idparent => $domainesParent){
+		foreach($domainesParent as $order => $domaine){
+			$element =& $treeView->createElement($domaine['id'], '', $domaine['name'], '', '');
+			
+			if($idparent == 0){
+				$element->setIcon($GLOBALS['babSkinPath'] . 'images/Puces/folder_add.png');
+				$element->addAction(
+						'editDomain',
+						bab_translate('Edit this domain'),
+						$GLOBALS['babSkinPath'] . 'images/Puces/edit.png',
+						'?tg=admcals&idx=editdomain&id='.$domaine['id'],
+						''
+				);
+				$element->addAction(
+						'addValueDomain',
+						bab_translate('Add a value'),
+						$GLOBALS['babSkinPath'] . 'images/Puces/edit_add.png',
+						'?tg=admcals&idx=addvalue&idparent='.$domaine['id'],
+						''
+				);
+				$element->addAction(
+						'orderValueDomain',
+						bab_translate('Order values'),
+						$GLOBALS['babSkinPath'] . 'images/Puces/a-z.gif',
+						'?tg=admcals&idx=ordervalue&id='.$domaine['id'],
+						''
+				);
+				$element->addAction(
+						'rmDomain',
+						bab_translate('Remove this domain'),
+						$GLOBALS['babSkinPath'] . 'images/Puces/edit_remove.png',
+						'?tg=admcals&idx=domain&action=rmDomain&id='.$domaine['id'],
+						"return confirm('".bab_translate('This will remove this domain and all those values?')."')"
+				);
+			}else{
+				$element->setIcon($GLOBALS['babSkinPath'] . 'images/Puces/check-green.gif');
+				$element->addAction(
+						'editValue',
+						bab_translate('Edit this value'),
+						$GLOBALS['babSkinPath'] . 'images/Puces/edit.png',
+						'?tg=admcals&idx=editvalue&id='.$domaine['id'],
+						''
+				);
+				$element->addAction(
+						'rmDomainValue',
+						bab_translate('Remove this value'),
+						$GLOBALS['babSkinPath'] . 'images/Puces/edit_remove.png',
+						'?tg=admcals&idx=domain&action=rmDomain&id='.$domaine['id'],
+						"return confirm('".bab_translate('This will remove this value?')."')"
+				);
+			}
+			$treeView->appendElement($element, $idparent);
+		}
+	}
+	
+	$page->addItem($treeView);
+	
+	$page->displayHtml();
+}
+
 function calendarsResource()
 	{
 	global $babBody;
@@ -630,6 +916,15 @@ elseif("Yes" == bab_rp('action'))
 		exit;
 	}
 }
+elseif("saveDomain" == bab_pp('action')){
+	bab_saveDomain();
+}
+elseif("rmDomain" == bab_gp('action')){
+	bab_rmDomain();
+}
+elseif("orderDomain" == bab_pp('action')){
+	bab_orderDomain();
+}
 elseif( "addcat" == bab_rp('add') && $babBody->isSuperAdmin)
 {
 	if( !addCategoryCalendar(bab_rp('catname'), bab_rp('catdesc'), bab_rp('bgcolor')))
@@ -643,22 +938,24 @@ switch($idx)
 	case "addc":
 		if( $babBody->isSuperAdmin )
 		{
-		calendarsAddCategory(bab_rp('catname'), bab_rp('catdesc'), bab_rp('bgcolor'));
-		$babBody->title = bab_translate("Add event category");
-		$babBody->addItemMenu("pub", bab_translate("Public"), $GLOBALS['babUrlScript']."?tg=admcals&idx=pub");
-		$babBody->addItemMenu("res", bab_translate("Resources"), $GLOBALS['babUrlScript']."?tg=admcals&idx=res");
-		$babBody->addItemMenu("cats", bab_translate("Categories"), $GLOBALS['babUrlScript']."?tg=admcals&idx=cats");
-		$babBody->addItemMenu("addc", bab_translate("Add"), $GLOBALS['babUrlScript']."?tg=admcals&idx=addc");
+			calendarsAddCategory(bab_rp('catname'), bab_rp('catdesc'), bab_rp('bgcolor'));
+			$babBody->title = bab_translate("Add event category");
+			$babBody->addItemMenu("pub", bab_translate("Public"), $GLOBALS['babUrlScript']."?tg=admcals&idx=pub");
+			$babBody->addItemMenu("res", bab_translate("Resources"), $GLOBALS['babUrlScript']."?tg=admcals&idx=res");
+			$babBody->addItemMenu("cats", bab_translate("Categories"), $GLOBALS['babUrlScript']."?tg=admcals&idx=cats");
+			$babBody->addItemMenu("domain", bab_translate("Domains"), $GLOBALS['babUrlScript']."?tg=admcals&idx=domain");
+			$babBody->addItemMenu("addc", bab_translate("Add"), $GLOBALS['babUrlScript']."?tg=admcals&idx=addc");
 		}
 		break;
 	case "cats":
 		if( $babBody->isSuperAdmin )
 		{
-		calendarsCategories();
-		$babBody->title = bab_translate("Calendar categories list");
-		$babBody->addItemMenu("pub", bab_translate("Public"), $GLOBALS['babUrlScript']."?tg=admcals&idx=pub");
-		$babBody->addItemMenu("res", bab_translate("Resources"), $GLOBALS['babUrlScript']."?tg=admcals&idx=res");
-		$babBody->addItemMenu("cats", bab_translate("Categories"), $GLOBALS['babUrlScript']."?tg=admcals&idx=cats");
+			calendarsCategories();
+			$babBody->title = bab_translate("Calendar categories list");
+			$babBody->addItemMenu("pub", bab_translate("Public"), $GLOBALS['babUrlScript']."?tg=admcals&idx=pub");
+			$babBody->addItemMenu("res", bab_translate("Resources"), $GLOBALS['babUrlScript']."?tg=admcals&idx=res");
+			$babBody->addItemMenu("cats", bab_translate("Categories"), $GLOBALS['babUrlScript']."?tg=admcals&idx=cats");
+			$babBody->addItemMenu("domain", bab_translate("Domains"), $GLOBALS['babUrlScript']."?tg=admcals&idx=domain");
 		/*$babBody->addItemMenu("addc", bab_translate("Add"), $GLOBALS['babUrlScript']."?tg=admcals&idx=addc");*/
 		}
 		break;
@@ -671,7 +968,8 @@ switch($idx)
 		$babBody->addItemMenu("delr", bab_translate("Del"), $GLOBALS['babUrlScript']."?tg=admcals&idx=delp");
 		if( $babBody->isSuperAdmin )
 		{
-		$babBody->addItemMenu("cats", bab_translate("Categories"), $GLOBALS['babUrlScript']."?tg=admcals&idx=cats");
+			$babBody->addItemMenu("cats", bab_translate("Categories"), $GLOBALS['babUrlScript']."?tg=admcals&idx=cats");
+			$babBody->addItemMenu("domain", bab_translate("Domains"), $GLOBALS['babUrlScript']."?tg=admcals&idx=domain");
 		}
 		break;
 
@@ -683,7 +981,8 @@ switch($idx)
 		$babBody->addItemMenu("res", bab_translate("Resources"), $GLOBALS['babUrlScript']."?tg=admcals&idx=res");
 		if( $babBody->isSuperAdmin )
 		{
-		$babBody->addItemMenu("cats", bab_translate("Categories"), $GLOBALS['babUrlScript']."?tg=admcals&idx=cats");
+			$babBody->addItemMenu("cats", bab_translate("Categories"), $GLOBALS['babUrlScript']."?tg=admcals&idx=cats");
+			$babBody->addItemMenu("domain", bab_translate("Domains"), $GLOBALS['babUrlScript']."?tg=admcals&idx=domain");
 		}
 		break;
 
@@ -695,7 +994,8 @@ switch($idx)
 		$babBody->addItemMenu("addr", bab_translate("Add"), $GLOBALS['babUrlScript']."?tg=admcals&idx=addr");
 		if( $babBody->isSuperAdmin )
 		{
-		$babBody->addItemMenu("cats", bab_translate("Categories"), $GLOBALS['babUrlScript']."?tg=admcals&idx=cats");
+			$babBody->addItemMenu("cats", bab_translate("Categories"), $GLOBALS['babUrlScript']."?tg=admcals&idx=cats");
+			$babBody->addItemMenu("domain", bab_translate("Domains"), $GLOBALS['babUrlScript']."?tg=admcals&idx=domain");
 		}
 		break;
 	case "addp":
@@ -706,7 +1006,8 @@ switch($idx)
 		$babBody->addItemMenu("res", bab_translate("Resources"), $GLOBALS['babUrlScript']."?tg=admcals&idx=res");
 		if( $babBody->isSuperAdmin )
 		{
-		$babBody->addItemMenu("cats", bab_translate("Categories"), $GLOBALS['babUrlScript']."?tg=admcals&idx=cats");
+			$babBody->addItemMenu("cats", bab_translate("Categories"), $GLOBALS['babUrlScript']."?tg=admcals&idx=cats");
+			$babBody->addItemMenu("domain", bab_translate("Domains"), $GLOBALS['babUrlScript']."?tg=admcals&idx=domain");
 		}
 		break;
 	case "res":
@@ -717,7 +1018,45 @@ switch($idx)
 		/*$babBody->addItemMenu("addr", bab_translate("Add"), $GLOBALS['babUrlScript']."?tg=admcals&idx=addr");*/
 		if( $babBody->isSuperAdmin )
 		{
-		$babBody->addItemMenu("cats", bab_translate("Categories"), $GLOBALS['babUrlScript']."?tg=admcals&idx=cats");
+			$babBody->addItemMenu("cats", bab_translate("Categories"), $GLOBALS['babUrlScript']."?tg=admcals&idx=cats");
+			$babBody->addItemMenu("domain", bab_translate("Domains"), $GLOBALS['babUrlScript']."?tg=admcals&idx=domain");
+		}
+		break;
+	case "domain":
+		if( $babBody->isSuperAdmin )
+		{
+			bab_calendarsDomain();
+			$babBody->title = bab_translate("Domains");
+			$babBody->addItemMenu("pub", bab_translate("PublicCalendar"), $GLOBALS['babUrlScript']."?tg=admcals&idx=pub");
+			$babBody->addItemMenu("res", bab_translate("Resources"), $GLOBALS['babUrlScript']."?tg=admcals&idx=res");
+			$babBody->addItemMenu("cats", bab_translate("Categories"), $GLOBALS['babUrlScript']."?tg=admcals&idx=cats");
+			$babBody->addItemMenu("domain", bab_translate("Domains"), $GLOBALS['babUrlScript']."?tg=admcals&idx=domain");
+		}
+		break;
+	case "adddomain":
+	case "addvalue":
+	case "editdomain":
+	case "editvalue":
+		if( $babBody->isSuperAdmin )
+		{
+			bab_calendarsEditDomain();
+			$babBody->addItemMenu("pub", bab_translate("PublicCalendar"), $GLOBALS['babUrlScript']."?tg=admcals&idx=pub");
+			$babBody->addItemMenu("res", bab_translate("Resources"), $GLOBALS['babUrlScript']."?tg=admcals&idx=res");
+			$babBody->addItemMenu("cats", bab_translate("Categories"), $GLOBALS['babUrlScript']."?tg=admcals&idx=cats");
+			$babBody->addItemMenu($idx, bab_translate("Domains"), $GLOBALS['babUrlScript']."?tg=admcals&idx=".$idx);
+		}
+		break;
+	case "ordervalue":
+	case "orderdomain":
+		if( $babBody->isSuperAdmin )
+		{
+			bab_calendarsOrderDomains();
+			$babBody->title = bab_translate("Domains");
+			$babBody->addItemMenu("pub", bab_translate("PublicCalendar"), $GLOBALS['babUrlScript']."?tg=admcals&idx=pub");
+			$babBody->addItemMenu("res", bab_translate("Resources"), $GLOBALS['babUrlScript']."?tg=admcals&idx=res");
+			$babBody->addItemMenu("cats", bab_translate("Categories"), $GLOBALS['babUrlScript']."?tg=admcals&idx=cats");
+			$babBody->addItemMenu("domain", bab_translate("Domains"), $GLOBALS['babUrlScript']."?tg=admcals&idx=domain");
+			$babBody->addItemMenu($idx, bab_translate("Order Domains"), $GLOBALS['babUrlScript']."?tg=admcals&idx=".$idx);
 		}
 		break;
 	case "pub":
@@ -729,7 +1068,8 @@ switch($idx)
 		$babBody->addItemMenu("res", bab_translate("Resources"), $GLOBALS['babUrlScript']."?tg=admcals&idx=res");
 		if( $babBody->isSuperAdmin )
 		{
-		$babBody->addItemMenu("cats", bab_translate("Categories"), $GLOBALS['babUrlScript']."?tg=admcals&idx=cats");
+			$babBody->addItemMenu("cats", bab_translate("Categories"), $GLOBALS['babUrlScript']."?tg=admcals&idx=cats");
+			$babBody->addItemMenu("domain", bab_translate("Domains"), $GLOBALS['babUrlScript']."?tg=admcals&idx=domain");
 		}
 		break;
 	}

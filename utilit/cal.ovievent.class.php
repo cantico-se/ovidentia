@@ -236,6 +236,8 @@ class bab_cal_OviEventUpdate
 
 
 		$this->applyAlarm($period, $id_event);
+		
+		$this->insertDomain($id_event, $period->getProperty('X-CTO-DOMAIN'));
 
 		return true;
 	}
@@ -401,14 +403,41 @@ class bab_cal_OviEventUpdate
 
 		$id_event = $babDB->db_insert_id();
 
-
-
+		$this->insertDomain($id_event, $period->getProperty('X-CTO-DOMAIN'));
 
 		return $id_event;
 	}
-
-
-
+	
+	
+	
+	private function insertDomain($idevent, $domains)
+	{
+		global $babDB;
+		
+		$babDB->db_query("
+			delete from ".BAB_CAL_EVENTS_DOMAINS_TBL."
+			where id_event = ".$babDB->quote($idevent)
+		);
+		
+		if($domains)
+		{
+			$domains = explode(',', $domains);
+			foreach($domains as $domain){
+				$babDB->db_query("
+					insert into ".BAB_CAL_EVENTS_DOMAINS_TBL."
+					(
+						id_event,
+						id_domain
+					)
+					values
+					(
+						".$babDB->quote($idevent).",
+						".$babDB->quote($domain)."
+					)
+				");
+			}
+		}
+	}
 
 
 
@@ -729,6 +758,7 @@ class bab_cal_OviEventUpdate
 		if( count($arrcals) == 0 )
 		{
 			$babDB->db_query("delete from ".BAB_CAL_EVENTS_TBL." where id=".$babDB->quote($id_event));
+			$this->insertDomain($id_event, false);
 		}
 	}
 
@@ -907,6 +937,23 @@ class bab_cal_OviEventSelect
 		$event->setProperty('LOCATION'												, $arr['location']);
 		$event->setProperty('CATEGORIES'											, $arr['category']);
 		$event->setProperty('X-CTO-COLOR'											, $arr['color']);
+		
+		$resdom = $babDB->db_query('
+			SELECT id_domain
+			FROM '.BAB_CAL_EVENTS_DOMAINS_TBL.'
+			WHERE id_event = '.$babDB->quote($arr['id']).'
+		');
+		
+		$domain = array();
+		while($domains = $babDB->db_fetch_assoc($resdom))
+		{
+			$domain[] = $domains['id_domain'];
+		}
+		if(!empty($domain)){
+			$domain = implode(',', $domain);
+			$event->setProperty('X-CTO-DOMAIN', $domain);
+		}
+		
 		$event->setProperty('ORGANIZER;CN='.bab_getUserName($arr['id_creator'])		, 'MAILTO:'.bab_getUserEmail($arr['id_creator']));
 
 
@@ -1090,6 +1137,25 @@ class bab_cal_OviEventSelect
 				bab_setAlarmProperties($alarm, $event, $day, $hour, $minute, $email);
 				break;
 			}
+		}
+		
+		// add DOMAINS infos
+		
+		$resdom = $babDB->db_query('SELECT id_domain
+	
+				FROM '.BAB_CAL_EVENTS_DOMAINS_TBL.'
+	
+				WHERE id_event = '.$babDB->quote($arr['id']).'
+		');
+	
+		$domain = array();
+		while($domains = $babDB->db_fetch_assoc($resdom))
+		{
+			$domain[] = $domains['id_domain'];
+		}
+		if(!empty($domain)){
+			$domain = implode(',', $domain);
+			$event->setProperty('X-CTO-DOMAIN', $domain);
 		}
 
 
@@ -1688,6 +1754,8 @@ class bab_cal_OviEventSelect
 		$babDB->db_query("delete from ".BAB_CAL_EVENTS_OWNERS_TBL." where id_event='".$babDB->db_escape_string($id_event)."'");
 		$babDB->db_query("delete from ".BAB_CAL_EVENTS_NOTES_TBL." where id_event='".$babDB->db_escape_string($id_event)."'");
 		$babDB->db_query("delete from ".BAB_CAL_EVENTS_REMINDERS_TBL." where id_event='".$babDB->db_escape_string($id_event)."'");
+
+		$this->insertDomain($id_event, false);
 
 		return true;
 	}

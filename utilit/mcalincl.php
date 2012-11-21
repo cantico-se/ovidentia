@@ -762,6 +762,7 @@ class cal_wmdbaseCls
 		$this->t_location = bab_translate("Location");
 		$this->t_alert = bab_translate("Reminder");
 		$this->t_notifier = bab_translate("Open notifier");
+		$this->t_domain = bab_translate('Domain(s)');
 
 
 		$backurl = "?tg=".$tg."&date=".$date."&calid=";
@@ -943,6 +944,17 @@ class cal_wmdbaseCls
 			$this->bgcolor = $calPeriod->getProperty('X-CTO-COLOR');
 		} else {
 			$this->bgcolor = '';
+		}
+		
+		$doms = $calPeriod->getProperty('X-CTO-DOMAIN');
+		if($doms){
+			$doms = bab_getDomains($doms);
+			$implodeDoms = array();
+			foreach($doms as $dom){
+				$implodeDoms[] = implode(': ', $dom);
+			}
+			$implodeDoms = implode(', ', $implodeDoms);
+			$this->domains = bab_toHtml($implodeDoms);
 		}
 
 		$this->starttime = bab_toHtml(bab_time($calPeriod->ts_begin));

@@ -250,6 +250,23 @@
 		</td>
 	</tr>
 	
+	<!--#if nbdomain "> 0" -->
+	<tr> 
+		<td colspan="2" align="center">
+		<!--#in getnextdomain -->
+			<div style="display: inline-block; margin-right: 1em; margin-bottom: .25em;">
+				<label align="right" style="white-space: nowrap;">{ domainname }:</label>
+				<select class="drop-down-checklist" multiple="multiple" name="domain[{ currentDom }][]">
+					<!--#in getnextdomainvalue -->
+					<option value="{ domvalueid }" { domvalueselected }>{ domvaluename }</option>
+					<!--#endin getnextdomainvalue -->
+				</select>
+			</div>
+		<!--#endin getnextdomain -->
+		</td>
+	<tr> 
+	<!--#endif nbdomain -->
+	
 	<tr> 
 		<td colspan="2" align="center">
 		
@@ -612,6 +629,23 @@ bab_event_alert_ed();
 			<!--#endif usebgcolor -->
 		</td>
 	</tr>
+	
+	<!--#if nbdomain "> 0" -->
+	<tr> 
+		<td colspan="2" align="center">
+		<!--#in getnextdomain -->
+			<div style="display: inline-block; margin-right: 1em; margin-bottom: .25em;">
+				<label align="right" style="white-space: nowrap;">{ domainname }:</label>
+				<select class="drop-down-checklist" multiple="multiple" name="domain[{ currentDom }][]">
+					<!--#in getnextdomainvalue -->
+					<option value="{ domvalueid }" { domvalueselected }>{ domvaluename }</option>
+					<!--#endin getnextdomainvalue -->
+				</select>
+			</div>
+		<!--#endin getnextdomain -->
+		</td>
+	<tr> 
+	<!--#endif nbdomain -->
 
 	<tr> 
 		<td colspan="2" align="center">

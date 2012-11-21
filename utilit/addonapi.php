@@ -3591,6 +3591,16 @@ function bab_Widgets()
 }
 
 
+
+/**
+ * @return Func_Jquery
+ */
+function bab_jQuery()
+{
+	return bab_functionality::get('Jquery');
+}
+
+
 /**
  * Strip tags and add spaces
  * @param string $str

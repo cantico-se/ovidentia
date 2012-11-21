@@ -6876,7 +6876,6 @@ function ovidentia_upgrade($version_base,$version_ini) {
 		$babDB->db_query("ALTER TABLE `".BAB_SITES_TBL."` ADD `quota_folder` int(11) unsigned NOT NULL default '0'");
 	}
 	
-	
 	if (!bab_isTable('bab_ldap_loggin_notify_groups'))
 	{//notifications to users when a user first loggin on a LDAP directory
 		$babDB->db_query("
@@ -6890,6 +6889,29 @@ function ovidentia_upgrade($version_base,$version_ini) {
 		)");
 		
 		$babDB->db_query("INSERT INTO bab_ldap_loggin_notify_groups (id_object, id_group) values ('1', '3')");
+	}
+	
+	if (!bab_isTable('bab_cal_domains'))
+	{//Domain list table
+		$babDB->db_query("
+		CREATE TABLE IF NOT EXISTS bab_cal_domains (
+				id int(11) unsigned NOT NULL auto_increment,
+				id_parent int(11) unsigned NOT NULL default '0',
+				name varchar(255) NOT NULL default '',
+ 				`order` int(11) unsigned NOT NULL default '0',
+				PRIMARY KEY (id)
+		)");
+	}
+	
+	if (!bab_isTable('bab_cal_events_domains'))
+	{//Domain associate to event for ovi backend
+		$babDB->db_query("
+		CREATE TABLE IF NOT EXISTS bab_cal_events_domains (
+				id int(11) unsigned NOT NULL auto_increment,
+				id_event int(11) unsigned NOT NULL default '0',
+				id_domain int(11) unsigned NOT NULL default '0',
+				PRIMARY KEY (id)
+		)");
 	}
 	
 	
