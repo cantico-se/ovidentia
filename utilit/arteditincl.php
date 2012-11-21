@@ -280,7 +280,7 @@ class bab_ArticleDraftEditor {
 
 		$LeftFrame = $W->VBoxLayout()->setVerticalSpacing(10,'px');
 
-
+		/*
 		$topicList = bab_getArticleTopicsAsTextTree(0, false, BAB_TOPICSSUB_GROUPS_TBL);
 
 		$topic = $W->Select('bab-article-topic');
@@ -300,7 +300,7 @@ class bab_ArticleDraftEditor {
 		{
 			$topic->addOption($topic->SelectOption($this->draft->id_topic, bab_getTopicTitle($this->draft->id_topic)));
 		}
-
+		*/
 
 		$LeftFrame->addItem(
 			$W->Section(
@@ -563,7 +563,7 @@ class bab_ArticleDraftEditor {
 			$W->Frame()->addItem(
 				$W->Section(
 					$W->Html(bab_translate('Article topic') . ' (' . $currentTopic . ')'),
-					$W->FlowItems($topic->setName('id_topic')),
+					$W->DelayedItem($W->Action()->fromUrl('?tg=artedit&idx=artedittopic&id_topic='.$values['id_topic'])),
 					3
 				)->setFoldable(true, $topicIdFolded)
 			),
@@ -661,6 +661,9 @@ class bab_ArticleDraftEditor {
 				$time_archiving->setValue($date_archiving[1]);
 			}
 		}
+		
+		
+		bab_debug($values);
 
 
 		$FormArticle = $W->Form('article-form',$globalFrame)
@@ -672,11 +675,61 @@ class bab_ArticleDraftEditor {
 			->setHiddenValue('ajaxpath', $GLOBALS['babUrlScript'])
 			->setHiddenValue('submitUrl', bab_pp('submitUrl', $this->submitUrl))
 			->setHiddenValue('cancelUrl', bab_pp('cancelUrl', $this->cancelUrl))
-			->setHiddenValue('babpopup', false);
+			->setHiddenValue('babpopup', false)
+			->setHiddenValue('id_topic_db', $values['id_topic']);
 
 
 		$page->addItem($FormArticle);
 
 		$page->displayHtml();
+	}
+	
+	
+	
+	
+	public static function topic($idDraft = null, $id_topic = null)
+	{
+		$W = bab_Widgets();
+		
+		if (null !== $idDraft)
+		{
+			if (!bab_isDraftModifiable($idDraft))
+			{
+				die(bab_translate('Error, this draft is not modifiable'));
+			}
+			
+			$draft = new bab_ArtDraft;
+			$draft->getFromIdDraft($idDraft);
+		} 
+		
+		
+		$topicList = bab_getArticleTopicsAsTextTree(0, false, BAB_TOPICSSUB_GROUPS_TBL);
+		
+		$topic = $W->Select('bab-article-topic');
+		
+		foreach($topicList as $topcat){
+		
+			$topcat['name'] = bab_abbr($topcat['name'], BAB_ABBR_FULL_WORDS, 50);
+		
+			if($topcat['category']){
+				$topic->addOption($topic->SelectOption('cat-'.$topcat['id_object'], $topcat['name'])->disable()->addClass('category'));
+			} else {
+				$topic->addOption($topic->SelectOption($topcat['id_object'], $topcat['name']));
+			}
+		}
+		
+		if (isset($draft) && $draft->id_topic)
+		{
+			$topic->addOption($topic->SelectOption($draft->id_topic, bab_getTopicTitle($draft->id_topic)));
+		}
+		
+		$topic->setName('id_topic');
+		
+		if (isset($id_topic))
+		{
+			$topic->setValue($id_topic);
+		}
+		
+		die($topic->display($W->HtmlCanvas()));
 	}
 }

@@ -24,8 +24,11 @@ function bab_setTopicSettings(){
 	
 	jQuery('.bab-article-approbation').hide();
 	
-
-	id_topic = jQuery('#bab-article-topic').val();
+	if (jQuery('#bab-article-topic').length == 0) {
+		id_topic = jQuery('[name="id_topic_db"]').val();
+	} else {
+		id_topic = jQuery('#bab-article-topic').val();
+	}
 	id_draft = jQuery('[name=iddraft]').val();
 	
 	jQuery.ajax({

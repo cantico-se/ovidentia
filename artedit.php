@@ -1094,7 +1094,14 @@ function bab_saveArticle(){
 	} else {
 		$submitUrl = $_POST['submitUrl'];
 		
-		$id_topic = (int) bab_pp('id_topic',0);
+		$id_topic = bab_pp('id_topic', null);
+		
+		if (null === $id_topic)
+		{
+			$id_topic = (int) bab_pp('id_topic_db', 0);
+		} else {
+			$id_topic = (int) $id_topic;
+		}
 		
 		if (0 === $id_topic)
 		{
@@ -1474,6 +1481,11 @@ switch($idx)
 			$form->fromDraft($iddraft);
 		}
 		$form->display();
+		break;
+		
+	case 'artedittopic':
+		require_once dirname(__FILE__).'/utilit/arteditincl.php';
+		bab_ArticleDraftEditor::topic(bab_rp('iddraft', null), bab_rp('id_topic', null));
 		break;
 		
 	case 'suggesttag':
