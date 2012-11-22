@@ -876,6 +876,14 @@ function bab_formatDate($format, $time)
 				case 'T': /* user time format  */
 					$val = bab_time($time);
 					break;
+				case 'r': /* relative short date  */
+					require_once dirname(__FILE__).'/dateTime.php';
+					$val = BAB_DateTimeUtil::relativeDate(date('Y-m-d H:i:s', $time), false, false);
+					break;
+				case 'R': /* relative long date  */
+					require_once dirname(__FILE__).'/dateTime.php';
+					$val = BAB_DateTimeUtil::relativeDate(date('Y-m-d H:i:s', $time), true, false);
+					break;
 				}
 			if( isset($val))
 				{
