@@ -281,7 +281,7 @@ class Func_Ovml_Container_SitemapPath extends Ovml_Container_Sitemap
 			if ($nodeId === false || empty($nodeId)) {
 				$nodeId = bab_Sitemap::getPosition();
 
-				if ($baseNodeId) {
+				if ($baseNodeId && $nodeId) {
 					// if base node (parameter 'basenode') has been specified,
 					// we try to find if a descendant of this node has
 					// a target to the current position.
@@ -808,7 +808,7 @@ class Func_Ovml_Function_SitemapMenu extends Func_Ovml_Function {
 		$return = '';
 
 		if (!isset($args['outerul'])) {
-			// If keeplastknown is not specified, active by default
+			// If outerul is not specified, active by default
 			$outerUl = 1;
 		} else {
 			$outerUl = $args['outerul'];
