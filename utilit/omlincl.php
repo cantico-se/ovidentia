@@ -1132,27 +1132,44 @@ class Func_Ovml_Container_ArticleTopic extends Func_Ovml_Container
 		$this->imageheightmax	= (int) $ctx->get_value('imageheightmax');
 		$this->imagewidthmax	= (int) $ctx->get_value('imagewidthmax');
 
-		if( $this->topicid === false || $this->topicid === '' )
+		if( $this->topicid === false || $this->topicid === '' ){
 			$this->IdEntries = bab_getUserIdObjects(BAB_TOPICSVIEW_GROUPS_TBL);
-		else
+		}else{
 			$this->IdEntries = array_values(array_intersect(array_keys(bab_getUserIdObjects(BAB_TOPICSVIEW_GROUPS_TBL)), explode(',', $this->topicid)));
+		}
 		$this->count = count($this->IdEntries);
 
 		if( $this->count > 0 )
-			{
-
-			$req = "select t.*, u.id_user unsubscribed
-				from ".BAB_TOPICS_TBL." t
-					LEFT JOIN bab_topics_unsubscribe u ON t.id=u.id_topic AND u.id_user=".$babDB->quote($GLOBALS['BAB_SESS_USERID'])."
-				where t.id IN (".$babDB->quote($this->IdEntries).")";
+		{
+			$req = "
+				SELECT t.*, u.id_user unsubscribed
+				FROM ".BAB_TOPICS_TBL." t
+				
+				LEFT JOIN bab_topics_unsubscribe u
+				ON t.id=u.id_topic AND u.id_user=".$babDB->quote($GLOBALS['BAB_SESS_USERID'])."
+				WHERE t.id IN (".$babDB->quote($this->IdEntries).")
+			";
 			if( $this->topicname !== false && $this->topicname !== '' )
-				{
+			{
 				$req .= " and t.category like '".$babDB->db_escape_like($this->topicname)."'";
-				}
+			}
 
 			$this->res = $babDB->db_query($req);
 			$this->count = $babDB->db_num_rows($this->res);
-			}
+			
+			$req = 'SELECT at.id_topic as id, count(at.id) as nb
+					FROM ' . BAB_ARTICLES_TBL . ' AS at
+			
+					WHERE at.id_topic IN (' . $babDB->quote($this->IdEntries) . ')
+					AND (at.date_publication=' . $babDB->quote('0000-00-00 00:00:00') . ' OR at.date_publication <= NOW())
+					AND archive="N"
+					GROUP BY at.id_topic';
+			
+			$res = $babDB->db_query($req);
+			while($arr = $babDB->db_fetch_array($res)){
+				$this->nbarticles[$arr['id']] = $arr['nb'];
+			} 
+		}
 		$this->ctx->curctx->push('CCount', $this->count);
 	}
 
@@ -1170,6 +1187,10 @@ class Func_Ovml_Container_ArticleTopic extends Func_Ovml_Container
 			$this->pushEditor('TopicDescription', $arr['description'], $arr['description_format'], 'bab_topic');
 			$this->ctx->curctx->push('TopicId', $arr['id']);
 			$this->ctx->curctx->push('TopicLanguage', $arr['lang']);
+			if(!isset($this->nbarticles[$arr['id']])){
+				$this->nbarticles[$arr['id']] = 0;
+			}
+			$this->ctx->curctx->push('TopicArticleNumber', $this->nbarticles[$arr['id']]);
 			$this->ctx->curctx->push('ArticlesListUrl', $GLOBALS['babUrlScript']."?tg=articles&topics=".$arr['id']);
 			if( bab_isAccessValid(BAB_TOPICSSUB_GROUPS_TBL, $arr['id']) )
 			{
@@ -1196,7 +1217,6 @@ class Func_Ovml_Container_ArticleTopic extends Func_Ovml_Container
 			$this->ctx->curctx->push('TopicCategoryId', $arr['id_cat']);
 			$this->ctx->curctx->push('TopicCategoryTitle', $cattitle);
 			$this->ctx->curctx->push('TopicCategoryDelegationId', $iddgowner);
-
 
 			/**
 			 * @see bab_TopicNotificationSubscription()
