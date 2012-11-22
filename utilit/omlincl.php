@@ -8718,6 +8718,8 @@ class Func_Ovml_Function_PreviousOrNextArticle extends Func_Ovml_Function {
 
 		if (isset($args['archive'])) {
 			$this->archive = $args['archive'];
+		} else {
+			$this->archive = 'NO';
 		}
 
 		if (isset($args['minrating'])) {
@@ -8747,9 +8749,15 @@ class Func_Ovml_Function_PreviousOrNextArticle extends Func_Ovml_Function {
 		}
 
 		switch(mb_strtoupper($this->archive)) {
-			case 'NO': $this->archive = " AND archive='N' "; break;
-			case 'YES': $this->archive = " AND archive='Y' "; break;
-			default: $this->archive = ''; break;
+			case 'YES':
+				$this->archive = " AND archive='Y' ";
+				break;
+			case 'NO':
+				 $this->archive = " AND archive='N' ";
+				 break;
+			default:
+				$this->archive = " ";
+				break;
 		}
 
 		if (!is_numeric($this->minrating)) {
