@@ -1103,7 +1103,12 @@ function bab_debug_print_backtrace($echo = false)
 								$val = get_class($val);
 							}
 
-							$param_str .= $key.' = '.((string) $val)."\n";
+							if (is_array($val))
+							{
+								$param_str .=$key." = Array\n";
+							} else {
+								$param_str .= $key.' = '.((string) $val)."\n";
+							}
 						}
 					}
 					$parent = bab_getParentsClasses($param);
@@ -1122,7 +1127,7 @@ function bab_debug_print_backtrace($echo = false)
 					$param = get_class($param);
 				}
 
-				$params .= '<span title="' . bab_toHtml('[' . $param . ']') . '" style="cursor: pointer" onclick="s=document.getElementById(\'' . $spanId . '\'); s.style.display==\'none\'?s.style.display=\'\':s.style.display=\'none\'">[+]</span>'
+				$params .= '<span title="' . bab_toHtml('[' . (is_array($param) ? 'Array' : $param) . ']') . '" style="cursor: pointer" onclick="s=document.getElementById(\'' . $spanId . '\'); s.style.display==\'none\'?s.style.display=\'\':s.style.display=\'none\'">[+]</span>'
 						.  '<div style="display: none; background-color: #EEEECC" id="' . $spanId . '">' . bab_toHtml('[' . $param_str . ']') . '</div>';
 				$nbParam++;
 			}
