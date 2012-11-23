@@ -118,6 +118,7 @@ abstract class Ovml_Container_Sitemap extends Func_Ovml_Container
 		$this->ctx->curctx->push('SitemapEntryPageKeywords', $this->IdEntries[$this->idx]['pageKeywords']);
 		$this->ctx->curctx->push('SitemapEntryClassnames', $this->IdEntries[$this->idx]['classnames']);
 		$this->ctx->curctx->push('SitemapEntryMenuIgnore', $this->IdEntries[$this->idx]['menuIgnore']);
+		$this->ctx->curctx->push('SitemapEntryBreadCrumbIgnore', $this->IdEntries[$this->idx]['breadCrumbIgnore']);
 		$this->idx++;
 		$this->index = $this->idx;
 		return true;
@@ -170,6 +171,7 @@ class Func_Ovml_Container_SitemapEntries extends Ovml_Container_Sitemap
 					$tmp['pageKeywords'] = $item->getPageKeywords();
 					$tmp['classnames'] = $item->getIconClassnames();
 					$tmp['menuIgnore'] = $item->menuIgnore;
+					$tmp['breadCrumbIgnore'] = $item->breadCrumbIgnore;
 					$this->IdEntries[] = $tmp;
 					$node = $node->nextSibling();
 				}
@@ -229,6 +231,7 @@ class Func_Ovml_Container_SitemapEntry extends Ovml_Container_Sitemap
 				$tmp['pageKeywords'] = $item->getPageKeywords();
 				$tmp['classnames'] = $item->getIconClassnames();
 				$tmp['menuIgnore'] = $item->menuIgnore;
+				$tmp['breadCrumbIgnore'] = $item->breadCrumbIgnore;
 				$this->IdEntries[] = $tmp;
 			}
 
@@ -356,6 +359,8 @@ class Func_Ovml_Container_SitemapPath extends Ovml_Container_Sitemap
 					$tmp['pageKeywords'] = $item->getPageKeywords();
 					$tmp['classnames'] = $item->getIconClassnames();
 					$tmp['menuIgnore'] = $item->menuIgnore;
+					$tmp['breadCrumbIgnore'] = $item->breadCrumbIgnore;
+								
 					array_unshift($this->IdEntries, $tmp);
 					if ($item->id_function === $baseNodeId) {
 						break;
