@@ -3082,6 +3082,7 @@ function bab_printCachedOvmlTemplate($file, $args = array())
  */
 function bab_printOvmlTemplate($file, $args=array())
 {
+	$start = microtime();
 	global $babInstallPath, $babSkinPath, $babOvmlPath;
 
 	/* Skin local path */
@@ -3110,7 +3111,10 @@ function bab_printOvmlTemplate($file, $args=array())
 	$GLOBALS['babWebStat']->addOvmlFile($filepath);
 	include_once $babInstallPath.'utilit/omlincl.php';
 	$tpl = new babOvTemplate($args);
-	return $tpl->printout(implode('', file($filepath)), $filepath);
+	$template = $tpl->printout(implode('', file($filepath)), $filepath);
+	$end = microtime();
+	bab_debug($filepath. '(start: '.$start.', end:'.$end.', total:'.($end-$start).')');
+	return $template;
 }
 
 

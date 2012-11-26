@@ -34,12 +34,39 @@ define("BAB_ART_STATUS_OK"	, 2); /* Used with BAB_ART_DRAFTS_TBL table in column
 define("BAB_ART_STATUS_NOK"	, 3); /* Used with BAB_ART_DRAFTS_TBL table in column result : article draft is non-approved */
 
 function bab_printOvml($content, $args)
-	{
+{
 	include_once $GLOBALS['babInstallPath']."utilit/omlincl.php";
 	$tpl = new babOvTemplate($args);
 	return $tpl->printout($content);
+}
+
+function bab_printCachedOvml($name, $content, $args = array())
+{
+	$uidargs = $args;
+	if (isset($uidargs['babCurrentDate']))
+	{
+		unset($uidargs['babCurrentDate']);
 	}
 
+	// We create a unique id based on the filename and named arguments.
+	$ovmlId = $name . ':' . http_build_query($uidargs);
+
+
+	if (!isset($_SESSION['ovml_cache'][$ovmlId])) {
+		$_SESSION['ovml_cache'][$ovmlId] = array();
+	}
+	$ovmlCache =& $_SESSION['ovml_cache'][$ovmlId];
+
+	// We check if there the specified ovml is in the cache and the cache is
+	// less than 1 hour (or the specified duration) old.
+	if (!isset($ovmlCache['timestamp'])
+			|| !isset($ovmlCache['content'])
+			|| (time() - $ovmlCache['timestamp'] > (isset($args['_ovml_cache_duration']) ? $args['_ovml_cache_duration'] : 3600))) {
+		$ovmlCache['timestamp'] = time();
+		$ovmlCache['content'] = bab_printOvml($content, $args);
+	}
+	return $ovmlCache['content'];
+}
 
 
 
@@ -947,7 +974,7 @@ function bab_replace_get() {
 * 								used
 * 
 * @since	6.7.0
-* @author	Zébina Samuel
+* @author	Zï¿½bina Samuel
 * 
 * @return	boolean	True if the session for the given user is in bab_user_logs,
 * 					false othewise
