@@ -69,6 +69,9 @@
 
 <!--#begin treeview -->
 <div id="{ t_treeViewId }" class="bab_tree { t_classes } <!--#if t_showToolbar -->bab-show-toolbar<!--#endif t_showToolbar --> BabLoginCadreBackground">
+	<!--#if t_warnzone -->
+	<div class="bab_treeToolbar BabSiteAdminTitleFontBackground" style="text-align: center;"><img  style="vertical-align: middle;" src="{ babSkinPath }images/Puces/PuceFileWaitConfirm.gif" width="13" height="13" alt="Warning" />&nbsp;{ t_warnzone }</div>
+	<!--#endif t_warnzone -->
 	<div class="tree BabLoginMenuBackground" style="position: relative">
 		<script type="text/javascript">document.getElementById("{ t_treeViewId }").getElementsByTagName('DIV')[0].style.display='none'</script>
 		{ t_subtree }

@@ -1603,6 +1603,8 @@ class bab_FileTreeView extends bab_TreeView
 		$this->setStartPath(null, '');
 		$this->setUpdateBaseUrl('');
 
+		$this->t_warnzone = bab_translate('Warning: Only not empty folder are displaid.');
+		
 		$this->_directories = array();
 	}
 

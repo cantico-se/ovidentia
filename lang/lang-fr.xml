@@ -3403,7 +3403,7 @@ L'administrateur</string>
 <string id="# selected"># séléctionné(s)</string>
 <string id="Select options">À saisir ...</string>
 <string id="Domain(s)">Domaine(s)</string>
-<string id=""></string>
+<string id="Warning: Only not empty folder are displaid.">Attention: Les répertoires vide ne sont pas affichés.</string>
 <string id=""></string>
 <string id=""></string>
 </fr>
