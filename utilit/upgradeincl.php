@@ -335,7 +335,7 @@ function bab_upgrade($core_dir, &$ret, $forceUpgrade = false)
 
 
 	//TODO Should be replaced with a proper function (at this stage bab_isUserAdministrator does not work).
-	$isUserAdministrator = isset($_SESSION['bab_groupAccess']['usergroups'][BAB_ADMINISTRATOR_GROUP]);
+	$isUserAdministrator = isset($_SESSION['bab_groupAccess']['ovgroups'][BAB_ADMINISTRATOR_GROUP]['member']) && 'Y' === $_SESSION['bab_groupAccess']['ovgroups'][BAB_ADMINISTRATOR_GROUP]['member'];
 
 	if (!($forceUpgrade && $isUserAdministrator) && ($ver_from == $ini->getVersion())) {
 		$ret = bab_translate('You site is already up to date');
