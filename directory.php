@@ -668,7 +668,9 @@ function summaryLdapContact($id, $cn)
 				$this->entries = $this->ldap->search($arr['basedn'],"(|(cn=".bab_ldapEncode(ldap_escapefilter($cn), $this->ldapdecodetype)."))");
 				$this->ldap->close();
 				$this->name = bab_toHtml(bab_ldapDecode($this->entries[0]['cn'][0], $this->ldapdecodetype));
-				$this->urlimg = bab_toHtml($GLOBALS['babUrlScript']."?tg=directory&idx=getimgl&id=".$id."&cn=".urlencode($cn));
+				
+				$photo = new bab_dirEntryPhoto($id);
+				$this->urlimg = bab_toHtml($photo->getUrl());
 				}
 			$this->bfieldv = true;
 			$this->showph = true;
@@ -785,7 +787,8 @@ class bab_modifyDbContact
 			if( $this->arr['plen'] > 0 )
 			{
 				$this->showph = true;
-				$this->urlimg = bab_toHtml($GLOBALS['babUrlScript']."?tg=directory&idx=getimg&id=".$id."&idu=".$idu);
+				$photo = new bab_dirEntryPhoto($idu);
+				$this->urlimg = bab_toHtml($photo->getUrl());
 				$this->delete = bab_translate("Delete this picture");
 			}
 
@@ -1025,7 +1028,7 @@ class bab_addDbContact
 		}
 
 		$this->name = '';
-		$this->urlimg = bab_toHtml($GLOBALS['babUrlScript']."?tg=directory&idx=getimg&id=".$id."&idu=");
+		$this->urlimg = '';
 		$this->name = bab_translate("Add new contact");
 
 
@@ -2519,11 +2522,13 @@ function processImportDbFile( $pfile, $id, $separ )
  * Display directory entry image
  * @param	int	$idu	directory entry ID
  * @see bab_dirEntryPhoto::getUrl()
+ * 
  */
 function getDbContactImage($idu)
 	{
+
 	global $babDB;
-	$res = $babDB->db_query("select photo_data, photo_type from ".BAB_DBDIR_ENTRIES_TBL." where id='".$babDB->db_escape_string($idu)."'");
+	$res = $babDB->db_query("select photo_data, photo_type, date_modification from ".BAB_DBDIR_ENTRIES_TBL." where id='".$babDB->db_escape_string($idu)."'");
 	if( $res && $babDB->db_num_rows($res) > 0 )
 		{
 		$arr = $babDB->db_fetch_assoc($res);

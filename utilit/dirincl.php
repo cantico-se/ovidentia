@@ -375,8 +375,9 @@ function bab_viewDirectoryUser($id)
 				$this->showph = true;
 				}
 
-
-			$this->urlimg = bab_toHtml($GLOBALS['babUrlScript']."?tg=directory&idx=getimg&id=".$arr['id_directory']."&idu=".$id);
+				
+			$photo = new bab_dirEntryPhoto($id);
+			$this->urlimg = bab_toHtml($photo->getUrl());
 
 			$res = $babDB->db_query("select * from ".BAB_DBDIR_FIELDSEXTRA_TBL." where id_directory='".$babDB->db_escape_string($arr['id_directory'])."' AND disabled='N' order by list_ordering asc");
 			while( $row = $babDB->db_fetch_array($res))
@@ -469,8 +470,8 @@ function summaryDbContact($id, $idu, $update=true)
 					$this->showph = true;
 					}
 
-				
-				$this->urlimg = bab_toHtml($GLOBALS['babUrlScript']."?tg=directory&idx=getimg&id=".$id."&idu=".$idu);
+				$photo = new bab_dirEntryPhoto($idu);
+				$this->urlimg = bab_toHtml($photo->getUrl());
 
 				$this->unassign = bab_isAccessValid(BAB_DBDIRUNBIND_GROUPS_TBL, $id);
 				$this->del = bab_isAccessValid(BAB_DBDIRDEL_GROUPS_TBL, $id);
@@ -685,15 +686,45 @@ class bab_dirEntryPhoto {
 	private $photo_data = NULL;
 	private $photo_type = null;
 	private $last_update = NULL;
+	
+	private $thumbWidth = 400;
+	private $thumbHeight = 400;
+	
 
 	public function __construct($id_entry) {
 		$this->id_entry = $id_entry;
 	}
+	
+	
+	public function setThumbSize($width, $height)
+	{
+		$this->thumbWidth = $width;
+		$this->thumbHeight = $height;
+	}
+
 
 	/**
 	 * Get Url to display image
 	 */
 	public function getUrl() {
+		
+		if ($T = @bab_functionality::get('Thumbnailer'))
+		{
+			/*@var $T Func_Thumbnailer */
+			
+			$data = $this->getData();
+			
+			if (null === $data || '' === $data)
+			{
+				$T->setSourceFile($GLOBALS['babSkinPath'].'/images/nophoto.jpg');
+			} else {
+				$T->setSourceBinary($data, $this->lastUpdate());
+			}
+			
+			return $T->getThumbnail($this->thumbWidth, $this->thumbHeight);
+		}
+		
+		
 		return $GLOBALS['babUrlScript']."?tg=directory&idx=getimg&idu=".$this->id_entry;
 	}
 

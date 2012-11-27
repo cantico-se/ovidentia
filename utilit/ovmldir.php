@@ -423,7 +423,8 @@ class Func_Ovml_Container_DbDirectoryMembers extends Func_Ovml_Container
 				$this->ctx->curctx->push($this->IdEntries[$k]['xname']."Name", $this->IdEntries[$k]['name']);
 				if( $this->IdEntries[$k]['xname'] == 'jpegphoto')
 					{
-					$this->ctx->curctx->push($this->IdEntries[$k]['xname'].'Value', $GLOBALS['babUrlScript']."?tg=directory&idx=getimg&id=".$this->directoryid."&idu=".$this->memberfields['id']);
+					$photo = new bab_dirEntryPhoto($this->memberfields['id']);
+					$this->ctx->curctx->push($this->IdEntries[$k]['xname'].'Value', $photo->getUrl());
 					}
 				else
 					{
@@ -598,7 +599,8 @@ class Func_Ovml_Container_DbDirectoryEntry extends Func_Ovml_Container
 					{
 					if( $this->IdEntries[$k]['xname'] == 'jpegphoto' && $this->arrentries['plen'] != 0 )
 						{
-						$this->ctx->curctx->push($this->IdEntries[$k]['xname'].'Value', $GLOBALS['babUrlScript']."?tg=directory&idx=getimg&id=".$this->directoryid."&idu=".$this->arrentries['id']);
+						$photo = new bab_dirEntryPhoto($this->arrentries['id']);
+						$this->ctx->curctx->push($this->IdEntries[$k]['xname'].'Value', $photo->getUrl());
 						}
 					else
 						{
@@ -655,7 +657,8 @@ class Func_Ovml_Container_DbDirectoryEntryFields extends Func_Ovml_Container
 				{
 				if( $this->handler->IdEntries[$this->idx]['xname'] == 'jpegphoto' && $this->handler->arrentries['plen'] != 0 )
 					{
-					$this->ctx->curctx->push('DirectoryFieldValue', $GLOBALS['babUrlScript']."?tg=directory&idx=getimg&id=".$this->handler->directoryid."&idu=".$this->handler->arrentries['id']);
+					$photo = new bab_dirEntryPhoto($this->handler->arrentries['id']);
+					$this->ctx->curctx->push('DirectoryFieldValue', $photo->getUrl());
 					}
 				else
 					{
