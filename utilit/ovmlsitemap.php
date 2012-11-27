@@ -95,6 +95,25 @@ abstract class Ovml_Container_Sitemap extends Func_Ovml_Container
 		}
 
 	}
+	
+	
+	/**
+	 * Get base node ID from attribute or from visible root node
+	 * @return string
+	 */
+	public function getBaseNode()
+	{
+		$baseNodeId = $this->ctx->get_value('basenode');
+		if (empty($baseNodeId))
+		{
+			$baseNodeId = bab_Sitemap::getVisibleRootNodeByUid($this->sitemap_name);
+		}
+		
+		
+		return $baseNodeId;
+	}
+	
+	
 
 	/**
 	 * (non-PHPdoc)
@@ -275,8 +294,7 @@ class Func_Ovml_Container_SitemapPath extends Ovml_Container_Sitemap
 	{
 		parent::setOvmlContext($ctx);
 
-		$baseNodeId = $ctx->get_value('basenode');
-
+		$baseNodeId = $this->getBaseNode();
 		$nodeId = $ctx->get_value('node');
 
 		if (isset($this->sitemap)) {
@@ -296,19 +314,11 @@ class Func_Ovml_Container_SitemapPath extends Ovml_Container_Sitemap
 						bab_debug((string) $this->sitemap);
 					} else {
 
-						$nodes = $this->sitemap->createNodeIterator($baseNode);
-
-						while ($node = $nodes->nextNode()) {
-							$sitemapItem = $node->getData();
-							$target = $sitemapItem->target;
-							if ($target instanceof bab_SitemapItem) {
-								$target = $target->id_function;
-							}
-							if ($target === $nodeId) {
-								$nodeId = $sitemapItem->id_function;
-								break;
-							}
+						if ($customNode = $this->sitemap->getNodeByTargetId($baseNodeId, $nodeId))
+						{
+							$nodeId = $customNode->getId();
 						}
+						
 					}
 				}
 			}
@@ -332,10 +342,7 @@ class Func_Ovml_Container_SitemapPath extends Ovml_Container_Sitemap
 				$node = $this->sitemap->getNodeById($nodeId);
 
 
-				if (empty($baseNodeId))
-				{
-					$baseNodeId = bab_Sitemap::getVisibleRootNodeByUid($this->sitemap_name);
-				}
+				
 
 				$baseNodeFound = false;
 
@@ -735,14 +742,10 @@ class Func_Ovml_Function_SitemapMenu extends Func_Ovml_Function {
 		{
 			$args['basenode'] = bab_siteMap::getVisibleRootNodeByUid($sitemap_name);
 		}
-
-		if (isset($args['basenode']) && (!empty($args['basenode']))) {
-			$home = $sitemap->getNodeById($args['basenode']);
-			$baseNodeId = $args['basenode'];
-		} else {
-			$home = $dg_node->firstChild();
-			$baseNodeId = null;
-		}
+		
+		$home = $sitemap->getNodeById($args['basenode']);
+		$baseNodeId = $args['basenode'];
+		
 
 		if (!($home instanceOf bab_Node)) {
 			return '';
@@ -759,25 +762,15 @@ class Func_Ovml_Function_SitemapMenu extends Func_Ovml_Function {
 		if (!isset($selectedNodeId)) {
 			$selectedNodeId = bab_Sitemap::getPosition();
 
-			if (isset($baseNodeId)) {
-				// if base node (parameter 'basenode') has been specified,
-				// we try to find if a descendant of this node has
-				// a target to the current position.
-				$baseNode = $this->sitemap->getNodeById($baseNodeId);
-				$nodes = $this->sitemap->createNodeIterator($baseNode);
-
-				while ($node = $nodes->nextNode()) {
-					$sitemapItem = $node->getData();
-					$target = $sitemapItem->target;
-					if ($target instanceof bab_SitemapItem) {
-						$target = $target->id_function;
-					}
-					if ($target === $selectedNodeId) {
-						$selectedNodeId = $sitemapItem->id_function;
-						break;
-					}
-				}
+			
+			// if base node (parameter 'basenode') has been specified,
+			// we try to find if a descendant of this node has
+			// a target to the current position.
+			if ($customNode = $this->sitemap->getNodeByTargetId($baseNodeId, $selectedNodeId))
+			{
+				$selectedNodeId = $customNode->getId();
 			}
+			
 		}
 
 		if (!isset($args['keeplastknown'])) {

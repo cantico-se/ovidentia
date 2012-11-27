@@ -206,6 +206,38 @@ class bab_siteMapOrphanRootNode extends bab_OrphanRootNode {
 		bab_debug("the rewrite name $first has no id_function in index");
 		return null;
 	}
+	
+	
+	
+	/**
+	 * Get the first node found under $baseNodeId with a target to $targetId
+	 * @param	string	$baseNodeId
+	 * @param	string	$targetId
+	 *
+	 * @return bab_Node
+	 */
+	public function getNodeByTargetId($baseNodeId, $targetId)
+	{
+		$customNodes = $this->getNodesByIndex('target', $targetId);
+		foreach($customNodes as $customNode)
+		{
+			/*@var $customNode bab_Node */
+	
+			// get the first custom node under baseNode
+			$testNode = $customNode->parentNode();
+			/*@var $testNode bab_Node */
+			do {
+	
+				if ($baseNodeId === $testNode->getId())
+				{
+					return $customNode;
+				}
+	
+			} while($testNode = $testNode->parentNode());
+		}
+	
+		return null;
+	}
 }
 
 /**
@@ -676,6 +708,7 @@ class bab_siteMap {
 	{
 		return $this->visibleRootNode;
 	}
+	
 
 
 	/**
@@ -829,6 +862,14 @@ class bab_siteMap {
 				// add url in index
 				$node->addIndex('url', $data->url);
 			}
+			
+			
+			if ($data->target)
+			{
+				// add target in index
+				$node->addIndex('target', $data->target->id_function);
+			}
+			
 
 			if (null === $node) {
 				// bab_debug((string) $rootNode);

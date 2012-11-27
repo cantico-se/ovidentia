@@ -185,7 +185,7 @@ class bab_Node
 	/**
 	 * Add a name value pair in index
 	 * @param string $name
-	 * @param mixed $value
+	 * @param string | int $value
 	 * @return bab_Node
 	 */
 	public function addIndex($name, $value)
