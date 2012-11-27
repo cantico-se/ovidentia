@@ -1750,7 +1750,7 @@ function bab_getUserIdObjects($table)
 		$groupAccess = $session->bab_groupAccess;
 	}
 	
-	if(isset($groupAccess) || !isset($groupAccess['acltables'][$table]))
+	if(!isset($groupAccess['acltables'][$table]))
 	{
 		$groupAccess['acltables'][$table] = array();
 	
