@@ -1201,6 +1201,8 @@ function addDbContact($id, $fields)
 	{
 		if ($arr['id_group'] > 0) {
 			
+			require_once dirname(__FILE__).'/utilit/urlincl.php';
+			
 			$unload = bab_url::get_request('tg');
 			$unload->idx = 'dbcunload';
 			$unload->msg = bab_translate("Your contact has been created");
