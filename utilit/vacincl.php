@@ -1198,7 +1198,7 @@ function listVacationRequests($id_user)
 				{
 				$req .= " limit ".$babDB->db_escape_string($this->pos).",".VAC_MAX_REQUESTS_LIST;
 				}
-			$this->res = $babDB->db_query("select * from ".$req);
+			$this->res = $babDB->db_query("select e.* from ".$req);
 			$this->count = $babDB->db_num_rows($this->res);
 			$this->statarr = array(bab_translate("Waiting"), bab_translate("Accepted"), bab_translate("Refused"));
 			}
