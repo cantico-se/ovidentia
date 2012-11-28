@@ -687,8 +687,8 @@ class bab_dirEntryPhoto {
 	private $photo_type = null;
 	private $last_update = NULL;
 	
-	private $thumbWidth = 400;
-	private $thumbHeight = 400;
+	private $thumbWidth = null;
+	private $thumbHeight = null;
 	
 
 	public function __construct($id_entry) {
@@ -708,7 +708,7 @@ class bab_dirEntryPhoto {
 	 */
 	public function getUrl() {
 		
-		if ($T = @bab_functionality::get('Thumbnailer'))
+		if ($T = @bab_functionality::get('Thumbnailer') && null !== $this->thumbWidth && null !== $this->thumbHeight)
 		{
 			/*@var $T Func_Thumbnailer */
 			
