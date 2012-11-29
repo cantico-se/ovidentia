@@ -2318,7 +2318,7 @@ class bab_event_posted {
 
 			if (!$calendar->canUpdateEvent($oldevent))
 			{
-				$message = bab_translate(sprintf('Modification of this event on calendar %s is not allowed', $calendar->getName()));
+				$message = sprintf(bab_translate('Modification of this event on calendar %s is not allowed'), $calendar->getName());
 				return false;
 			}
 
@@ -2328,7 +2328,7 @@ class bab_event_posted {
 
 		if (!$uid && !$calendar->canAddEvent())
 		{
-			$message = bab_translate(sprintf('Creation of an event on calendar %s is not allowed', $calendar->getName()));
+			$message = sprintf(bab_translate('Creation of an event on calendar %s is not allowed'), $calendar->getName());
 			return false;
 		}
 

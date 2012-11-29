@@ -1150,7 +1150,8 @@ function modifyEvent($idcal, $collection, $evtid, $dtstart, $cci, $view, $date)
 
 	if (!$calendar->canUpdateEvent($event))
 	{
-		throw new Exception('Access denied to event modification');
+		$babBody->addError(bab_translate('Access denied to event modification'));
+		$babBody->babpopup('');
 	}
 
 
