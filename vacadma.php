@@ -1818,12 +1818,17 @@ function modifyVacationRightPersonnel($idvr, $userids, $nuserids)
 	$count = sizeof($userids);
 
 	$arrright = $babDB->db_fetch_array($babDB->db_query("select * from ".BAB_VAC_RIGHTS_TBL." where id=".$babDB->quote($idvr)));
+	
+	if (!$arrright)
+	{
+		throw new Exception('This vacation right does not exists');
+	}
 
 	for( $i = 0; $i < sizeof($nuserids); $i++)
 		{
 		if( $nuserids[$i] != "" && ( $count == 0 || !in_array($nuserids[$i], $userids)))
 			{
-			if( $arrright['date_begin_fixed'] != '0000-00-00' )
+			if( $arrright['date_begin_fixed'] != '0000-00-00 00:00:00' )
 				{
 				$res = $babDB->db_query("select vet.*, veet.quantity from ".BAB_VAC_ENTRIES_ELEM_TBL." veet left join ".BAB_VAC_ENTRIES_TBL." vet on veet.id_entry=vet.id where veet.id_right=".$babDB->quote($idvr)." and vet.id_user=".$babDB->quote($nuserids[$i]));
 				$arr = $babDB->db_fetch_array($res);
@@ -1841,7 +1846,7 @@ function modifyVacationRightPersonnel($idvr, $userids, $nuserids)
 		if( !in_array($userids[$i], $nuserids) )
 			{
 			$babDB->db_query("insert into ".BAB_VAC_USERS_RIGHTS_TBL." (id_user, id_right) values (".$babDB->quote($userids[$i]).", ".$babDB->quote($idvr).")");
-			if( $arrright['date_begin_fixed'] != '0000-00-00' )
+			if( $arrright['date_begin_fixed'] != '0000-00-00 00:00:00' )
 				{
 				addFixedVacation($userids[$i], $idvr, $arrright['date_begin_fixed'] , $arrright['date_end_fixed'], '', $arrright['quantity']);
 				$arrnotif[] = $userids[$i];
