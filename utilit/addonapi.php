@@ -3595,6 +3595,9 @@ function bab_downloadFile(bab_Path $path, $filename = null, $inline = true, $exi
 
 
 /**
+ * Instanciates the Widgets functionality.
+ *
+ * @since 7.6
  * @return Func_Widgets
  */
 function bab_Widgets()
@@ -3605,11 +3608,14 @@ function bab_Widgets()
 
 
 /**
+ * Instanciates the jquery functionality.
+ *
+ * @since 7.9
  * @return Func_Jquery
  */
 function bab_jQuery()
 {
-	return bab_functionality::get('Jquery');
+	return bab_functionality::get('jquery');
 }
 
 
