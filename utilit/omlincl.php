@@ -5324,8 +5324,15 @@ class Func_Ovml_Container_CalendarEvents extends Func_Ovml_Container
 
 			$collection = $p->getCollection();
 			$calendar = $collection->getCalendar();
+			
+			
+			if (!$calendar)
+			{
+				$calendar = reset($p->getCalendars());
+			}
+			
 
-			if ($calendar)
+			if (!$calendar)
 			{
 				/* @var $calendar bab_EventCalendar */
 				$arr['id_cal'] = $calendar->getUrlIdentifier();
