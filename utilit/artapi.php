@@ -26,7 +26,7 @@
 */
 include_once 'base.php';
 include_once $GLOBALS['babInstallPath'].'utilit/artincl.php';
-
+require_once dirname(__FILE__).'/defines.php';
 
 
 
@@ -1801,8 +1801,10 @@ function bab_isArticleModifiable($id_article)
 		return false;
 	}
 	
+	$user_id = bab_getUserId();
 	
-	if( bab_isAccessValid(BAB_TOPICSMOD_GROUPS_TBL, $arr['id_topic']) || ( $arr['allow_update'] != '0' && $arr['id_author'] == $GLOBALS['BAB_SESS_USERID']) || ( $arr['allow_manupdate'] != '0' && bab_isAccessValid(BAB_TOPICSMAN_GROUPS_TBL, $arr['id_topic'])))
+	
+	if( bab_isAccessValid(BAB_TOPICSMOD_GROUPS_TBL, $arr['id_topic']) || ( $arr['allow_update'] != '0' && $arr['id_author'] == $user_id) || ( $arr['allow_manupdate'] != '0' && bab_isAccessValid(BAB_TOPICSMAN_GROUPS_TBL, $arr['id_topic'])))
 	{
 		return true;
 	}

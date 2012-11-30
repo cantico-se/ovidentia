@@ -2107,11 +2107,9 @@ function bab_onBeforeSiteMapCreated(bab_eventBeforeSiteMapCreated $event) {
 	// build user node
 	bab_sitemap_userSection($event);
 
-	// $logged_status = empty($BAB_SESS_LOGGED) ? 'FALSE' : 'TRUE';
-	// $isSuperAdmin  =  $babBody->isSuperAdmin ? 'TRUE'  : 'FALSE';
 
 	// build admin node
-	if( isset($BAB_SESS_LOGGED) && $BAB_SESS_LOGGED && ($babBody->isSuperAdmin || $babBody->currentAdmGroup != 0)) {
+	if( isset($BAB_SESS_LOGGED) && $BAB_SESS_LOGGED && (bab_isUserAdministrator() || $babBody->currentAdmGroup != 0)) {
 		include_once $GLOBALS['babInstallPath'].'admin/admmenu.php';
 		bab_sitemap_adminSection($event);
 	}

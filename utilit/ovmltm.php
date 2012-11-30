@@ -51,10 +51,7 @@ class Func_Ovml_Container_TmSpaces extends Func_Ovml_Container
 
 		$oTmCtx =& getTskMgrContext();
 		$conditions = array();
-		//		if(($babBody->isSuperAdmin && $babBody->currentAdmGroup == 0) || $babBody->currentDGGroup['taskmanager'] == 'Y') {
-		//		if ($babBody->currentAdmGroup) {
-			//			$conditions[] = 'idDelegation = ' . $babDB->quote($babBody->currentAdmGroup);
-			//		}
+
 		$conditions[] = 'id IN(' . $babDB->quote(array_keys($oTmCtx->getVisualisedIdProjectSpace())) . ')';
 		$query = "
 				SELECT

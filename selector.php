@@ -177,7 +177,7 @@ function selectFiles($folderId = null, $path = '')
 
 	list($attributes, $urlAttributes) = getAttributesFromRp($params);
 
-	$treeView = new bab_FileTreeView('bab_tv_file', $GLOBALS['babBody']->isSuperAdmin);
+	$treeView = new bab_FileTreeView('bab_tv_file', bab_isUserAdministrator());
 
 	$treeView->setUpdateBaseUrl('?tg=selector&idx=files' . $urlAttributes);
 

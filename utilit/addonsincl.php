@@ -65,13 +65,13 @@ class bab_addonsInfos {
 		$access_control = isset($arr_ini['addon_access_control']) ? (int) $arr_ini['addon_access_control'] : 1;
 	
 		$access = false;
-		if (0 === $access_control || bab_isAccessValid(BAB_ADDONS_GROUPS_TBL, $id_addon)) {
+		if (0 === $access_control || bab_isAccessValid('bab_addons_groups', $id_addon)) {
 			if($ini->getVersion()) {
 				if ($ini->getVersion() == $version) {
 					$access = true;
 				}
 				else {
-					$babDB->db_query("UPDATE ".BAB_ADDONS_TBL." SET installed='N' WHERE id='".$babDB->db_escape_string($id_addon)."'");
+					$babDB->db_query("UPDATE bab_addons SET installed='N' WHERE id='".$babDB->db_escape_string($id_addon)."'");
 				}
 			}
 		}

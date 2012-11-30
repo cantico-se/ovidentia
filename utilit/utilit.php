@@ -477,6 +477,11 @@ var $lastlog; /* date of user last log */
 /* all topics categories : $babBody->get_topcats() */
 
 var $calaccess;
+
+/**
+ * @deprecated user bab_isUserAdministrator() instead
+ * @var bool
+ */
 var $isSuperAdmin;
 var $currentAdmGroup; /* current group administrated by current user */
 var $currentDGGroup; /* contains database row of current delegation groups */
@@ -673,7 +678,7 @@ function loadSections()
 					switch($sectionid)
 						{
 							case 1: // admin
-								if( isset($BAB_SESS_LOGGED) && $BAB_SESS_LOGGED && ($babBody->isSuperAdmin || $babBody->currentAdmGroup != 0))
+								if( isset($BAB_SESS_LOGGED) && $BAB_SESS_LOGGED && (bab_isUserAdministrator() || $babBody->currentAdmGroup != 0))
 									{
 										$sec = new babAdminSection($arrsectioninfo['close']);
 										$arrsections[$objectid] = $sec;
@@ -1242,7 +1247,7 @@ class bab_UsersLog
 				$userid = $BAB_SESS_USERID;
 				$dgAdmGroups = bab_getDgAdmGroups();
 				
-				if( !$babBody->isSuperAdmin && count($dgAdmGroups) > 0 )
+				if( !bab_isUserAdministrator() && count($dgAdmGroups) > 0 )
 				{
 					$babBody->currentAdmGroup = $dgAdmGroups[0];
 					$babBody->currentDGGroup = $babDB->db_fetch_array($babDB->db_query("select dg.* from ".BAB_DG_GROUPS_TBL." dg where dg.id_group='".$babDB->db_escape_string($dgAdmGroups[0])."'"));
@@ -1325,7 +1330,7 @@ function bab_setCurrentDelegation($id_dg)
 		$babBody->currentAdmGroup = &$babBody->currentDGGroup['id'];
 
 	}
-	else if( !$babBody->isSuperAdmin && count($dgAdmGroups) > 0 )
+	else if( !bab_isUserAdministrator() && count($dgAdmGroups) > 0 )
 	{
 		$babBody->currentDGGroup = $babDB->db_fetch_array($babDB->db_query("select dg.*, g.lf, g.lr from ".BAB_DG_GROUPS_TBL." dg, ".BAB_GROUPS_TBL." g where g.id=dg.id_group AND dg.id='".$babDB->db_escape_string($dgAdmGroups[0])."'"));
 		$babBody->currentAdmGroup = &$babBody->currentDGGroup['id'];

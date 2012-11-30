@@ -1180,14 +1180,24 @@ function bab_translate($str, $folder = "", $lang="")
  */
 function bab_isUserAdministrator()
 {
+	require_once dirname(__FILE__).'/defines.php';
 	global $babBody;
 	
-	if (!isset($babBody->isSuperAdmin))
+
+	
+	if (isset($babBody) && isset($babBody->isSuperAdmin))
 	{
-		return bab_isMemberOfGroup(BAB_ADMINISTRATOR_GROUP);
+		return $babBody->isSuperAdmin;
 	}
 	
-	return $babBody->isSuperAdmin;
+	static $admin = null;
+	
+	if (!isset($admin))
+	{
+		$admin = bab_isMemberOfGroup(BAB_ADMINISTRATOR_GROUP);
+	}
+	
+	return $admin;
 }
 
 
@@ -2479,7 +2489,7 @@ function bab_canCurrentUserUpdateUser($userId) {
 	/* Verify the right admin */
 	if ($babBody->currentAdmGroup) {
 		$dg = $babBody->currentAdmGroup;
-	} elseif ($babBody->isSuperAdmin) {
+	} elseif (bab_isUserAdministrator()) {
 		return true;
 	} else {
 		return false;

@@ -194,7 +194,7 @@ if(!isset($userid))
 	return;
 if(  $userid == 0 )
 	{
-	if( !$babBody->isSuperAdmin && $babBody->currentDGGroup['mails'] != 'Y' )
+	if( !bab_isUserAdministrator() && $babBody->currentDGGroup['mails'] != 'Y' )
 		{
 		$babBody->msgerror = bab_translate("Access denied");
 		return;
