@@ -143,7 +143,7 @@ class bab_cal_OviEventUpdate
 		global $babBody, $babDB;
 
 		$evtinfo = $babDB->db_fetch_assoc($babDB->db_query("
-			SELECT hash, start_date, end_date from ".BAB_CAL_EVENTS_TBL." where id='".$babDB->db_escape_string($id_event)."'
+			SELECT hash, start_date, end_date, parent_calendar from ".BAB_CAL_EVENTS_TBL." where id='".$babDB->db_escape_string($id_event)."'
 		"));
 
 		$arrupdate = array();
