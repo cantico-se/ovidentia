@@ -923,8 +923,7 @@ switch(bab_rp('tg'))
 	case "addons":
 		$babLevelOne = bab_translate("Administration");
 		$babLevelTwo = bab_translate("Add-ons");
-		if( isset($BAB_SESS_LOGGED) && $BAB_SESS_LOGGED && bab_isUserAdministrator())
-			$incl = "admin/addons";
+		$incl = "admin/addons";
 		break;
 	case "admdir":
 		$babLevelOne = bab_translate("Administration");

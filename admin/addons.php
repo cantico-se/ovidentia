@@ -1448,6 +1448,9 @@ function chosetheme() {
 
 /* main */
 
+bab_requireCredential();
+
+
 if( !bab_isUserAdministrator() )
 {
 	$babBody->msgerror = bab_translate("Access denied");
