@@ -5460,7 +5460,8 @@ class Func_Ovml_Container_CalendarEventDomains extends Func_Ovml_Container
 		$period = $backend->getPeriod($backend->CalendarEventCollection($calendar), $eventid, $dtstart);
 		
 		$domsStr = $period->getDomains();
-				
+		
+		$this->doms = array();
 		if ($domsStr){
 			$this->doms = bab_getDomains($domsStr);
 		}

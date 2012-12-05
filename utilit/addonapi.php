@@ -2123,6 +2123,25 @@ function bab_getFileMimeType($file)
 }
 
 /* API Directories */
+/**
+ * Get the directory id from the user id
+ * 
+ * @since 7.8.95
+ * 
+ * @param	int		$userId
+ * @return  int
+ */
+function bab_getUserDirEntryId($userId)
+{
+	global $babDB;
+	
+	$query = "select id from ".BAB_DBDIR_ENTRIES_TBL." where id_user='".$babDB->db_escape_string($userId)."'";
+	$res = $babDB->db_query($query);
+	if( $res && $arr = $babDB->db_fetch_assoc($res)) {
+		return $arr['id'];
+	}
+	return false;
+}
 
 /**
  * @deprecated this function does not return extra fields
