@@ -144,25 +144,23 @@ function bab_cal_getPersonalCalendars($access_user, $calendars = null)
 
 	$query = "
 		select 
-			cut.*, 
-			ct.owner, 
-			u.firstname,
-			u.lastname 
+			ct.owner id_user, 
+			o.calendar_backend  
 
-		from ".BAB_CALACCESS_USERS_TBL." cut 
-			,".BAB_CALENDAR_TBL." ct
+		from ".BAB_CALENDAR_TBL." ct
 			,".BAB_USERS_TBL." u
+			,bab_cal_user_options o 
 		where 
-			ct.id=cut.id_cal 
-			and u.id=ct.owner 
+			u.id=ct.owner 
 			and ct.actif='Y' 
-			and disabled='0'
+			and u.disabled='0' 
+			AND u.id=o.id_user 
 	";
 	$res = $babDB->db_query($query);
 	
 	if (null === $calendars)
 	{
-		$query .= " id_user=".$babDB->db_quote($access_user);
+		$query .= " ct.owner=".$babDB->db_quote($access_user);
 	} else 
 	{
 		$query .= " AND ct.id IN(".$babDB->quote($calendars).")";
@@ -173,18 +171,25 @@ function bab_cal_getPersonalCalendars($access_user, $calendars = null)
 	$return = array();
 	while( $arr = $babDB->db_fetch_assoc($res))
 	{
-		$data = array(
+		$id_user = (int) $arr['id_user'];
+		$backendName = empty($arr['calendar_backend']) ? 'Ovi' : $arr['calendar_backend'];
 		
-			'idcal' 		=> $arr['id_cal'],
-			'name' 			=> bab_composeUserName($arr['firstname'], $arr['lastname']),
-			'description' 	=> '',
-			'idowner' 		=> $arr['owner'],
-			'access' 		=> $arr['bwrite']
+		$backend = bab_functionality::get('CalendarBackend/'.$backendName);
+		/*@var $backend Func_CalendarBackend */ 
 		
-		);
+		
+		if (!$backend)
+		{
+			continue;
+		}
 
-		$calendar = new bab_OviPersonalCalendar;
-		$calendar->init($access_user, $data);
+		$calendar = $backend->PersonalCalendar($id_user);
+		
+		if (!$calendar)
+		{
+			continue;
+		}
+		
 		$return[] = $calendar;
 	}
 
