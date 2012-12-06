@@ -1369,6 +1369,7 @@ class bab_siteMap {
 		}
 		
 		if (!isset($sitemap)) {
+			bab_debug(sprintf('Breadcrumb : empty breadcrumb because sitemap not found %s', $sitemap_uid), DBG_ERROR);
 			return array();
 		}
 
@@ -1389,29 +1390,64 @@ class bab_siteMap {
 		$baseNode = $sitemap->getNodeById($baseNodeId);
 		if (!isset($baseNode)) {
 			// basenode not found
+			bab_debug(sprintf('Breadcrumb : empty breadcrumb because baseNodeId=%s not found in sitemap %s', $baseNodeId, $sitemap_uid), DBG_ERROR);
 			return array();
 		}
 
 
 		// verify if the $nodeId or target is under baseNode
-
-		$subNodes = new bab_NodeIterator($baseNode);
-
+		
+		
+		$currentNode = $sitemap->getNodeById($nodeId);
 		$matchingNodes = array();
-		while (($node = $subNodes->nextNode()) && (count($matchingNodes) < 2)) {
-			
-			/* @var $node bab_Node */
-			if ($node->getId() === $nodeId) {
-				$matchingNodes[] = $node;
-				continue;
-			}
-			/* @var $sitemapItem bab_SitemapItem */
-			$sitemapItem = $node->getData();
-			$sitemapItem = $sitemapItem->getTarget();
-			if ($sitemapItem->id_function === $nodeId) {
-				$matchingNodes[] = $node;
-			}
+		
+		
+		if (!isset($currentNode)) {
+			// nodeId not found
+			bab_debug(sprintf('Breadcrumb : empty breadcrumb because nodeId=%s not found in sitemap %s', $nodeId, $sitemap_uid), DBG_ERROR);
+			return array();
 		}
+		
+
+		
+		// test if current node is under baseNode
+		
+		
+		$testNode = $currentNode->parentNode();
+		do {
+		
+			if ($baseNodeId === $testNode->getId())
+			{
+				$matchingNodes[] = $currentNode;
+				break;
+			}
+		
+		} while($testNode = $testNode->parentNode());
+		
+		
+		// test if a target to current node is under basenode
+		
+		$customNodes = $sitemap->getNodesByIndex('target', $nodeId);
+		foreach($customNodes as $customNode)
+		{
+			/*@var $customNode bab_Node */
+		
+			// get the first custom node under baseNode
+			$testNode = $customNode->parentNode();
+			/*@var $testNode bab_Node */
+			do {
+		
+				if ($baseNodeId === $testNode->getId())
+				{
+					$matchingNodes[] = $customNode;
+					break;
+				}
+		
+			} while($testNode = $testNode->parentNode());
+		}
+		
+		
+		
 		
 		if (count($matchingNodes) === 0) {
 		
@@ -1435,6 +1471,9 @@ class bab_siteMap {
 				array_unshift($breadCrumbs, $node);
 			}
 		}
+		
+		
+		
 
 		return $breadCrumbs;
 	}
