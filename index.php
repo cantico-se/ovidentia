@@ -1360,9 +1360,9 @@ switch(bab_rp('tg'))
 				if ($addon->hasAccessControl() && $addon->isInstalled() && !$addon->isDisabled())
 				{
 					bab_requireAccess('bab_addons_groups', $arr[1], bab_translate('You must be logged in to access this page.'));
-				} else {
-					$babBody->addError(bab_translate("Access denied"));
 				}
+				
+				$babBody->addError(bab_translate("Access denied"));
 				
 			} else {
 				
