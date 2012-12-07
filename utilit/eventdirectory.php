@@ -37,11 +37,11 @@ class bab_eventDirectory extends bab_event {
 	
 	function getDirEntry() {
 
-		if (isset($id_entry)) {
-			$id = $id_entry;
+		if (isset($this->id_entry)) {
+			$id = $this->id_entry;
 			$type = BAB_DIR_ENTRY_ID;
 		} else {
-			$id = $id_user;
+			$id = $this->id_user;
 			$type = BAB_DIR_ENTRY_ID_USER;
 		}
 		
