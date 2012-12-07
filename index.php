@@ -1344,15 +1344,28 @@ switch(bab_rp('tg'))
 		$babWebStat->module($incl);
 		$arr = explode("/", bab_rp('tg'));
 		if( sizeof($arr) == 3 && $arr[0] == "addon")
-			{
+		{
 			include_once $GLOBALS['babInstallPath'].'utilit/addonsincl.php';
 
 			if (!is_numeric($arr[1]))
+			{
+				$arr[1] = bab_addonsInfos::getAddonIdByName($arr[1], false);
+			}
+				
+			
+			if(!bab_isAddonAccessValid($arr[1])) {
+				$addon_row = bab_addonsInfos::getDbRow($arr[1]);
+				$addon = bab_getAddonInfosInstance($addon_row['title']);
+				
+				if ($addon->hasAccessControl() && $addon->isInstalled() && !$addon->isDisabled())
 				{
-				$arr[1] = bab_addonsInfos::getAddonIdByName($arr[1]);
+					bab_requireAccess('bab_addons_groups', $arr[1], bab_translate('You must be logged in to access this page.'));
+				} else {
+					$babBody->addError(bab_translate("Access denied"));
 				}
-			if(bab_isAddonAccessValid($arr[1]))
-				{
+				
+			} else {
+				
 				$row = bab_addonsInfos::getDbRow($arr[1]);
 				$incl = "addons/".$row['title'];
 				$module = "/".preg_replace("/[^A-Za-z0-9_\-]/", "", $arr[2]);
@@ -1360,30 +1373,28 @@ switch(bab_rp('tg'))
 				$babWebStat->addon($row['title']);
 				$babWebStat->module($module);
 				$incl .= $module;
-				}
-			else
-				$babBody->msgerror = bab_translate("Access denied");
 			}
+		}
 		else
 		{
 			bab_siteMap::setPosition(bab_siteMap::getSitemapRootNode());
 			if( $BAB_SESS_LOGGED)
-				{
+			{
 				$file = "private.html";
-				}
+			}
 			else
-				{
+			{
 				$file = "public.html";
-				}
+			}
 
 			if( file_exists($GLOBALS['babOvmlPath'].$file))
-				{
+			{
 				$incl = "oml";
-				}
+			}
 			else
-				{
+			{
 				$incl = "entry";
-				}
+			}
 		}
 		break;
 	}
