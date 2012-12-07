@@ -931,8 +931,8 @@ function getDirEntry($id, $type, $id_directory, $accessCtrl)
 			
 	where 
 			id_directory='".$babDB->db_escape_string($id_fieldextra_directory)."' 
-			AND disabled='N' 
-				order by list_ordering asc
+	AND disabled='N' 
+	order by list_ordering asc, v.field_value asc
 	");
 
 	$entries = array();
@@ -982,7 +982,7 @@ function getDirEntry($id, $type, $id_directory, $accessCtrl)
 		if ('Y' === $arr['multi_values'])
 		{
 			$options = new bab_QueryIterator;
-			$options->setQuery('SELECT * FROM bab_dbdir_fieldsvalues WHERE id_fieldextra='.$babDB->quote($arr['id']));
+			$options->setQuery('SELECT * FROM bab_dbdir_fieldsvalues WHERE id_fieldextra='.$babDB->quote($arr['id']).' ORDER BY field_value ASC');
 			
 			$entries[$fieldname]['multi_values'] = array(
 				'default_value' => (int) $arr['default_value'],
