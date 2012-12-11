@@ -486,6 +486,7 @@ function bab_getDelegationById($id)
 	{
 		while(false !== ($aDatas = $babDB->db_fetch_assoc($oResult)))
 		{
+	bab_debug($aDatas);
 			$aDG[] = $aDatas;
 		}
 	}

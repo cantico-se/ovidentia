@@ -459,7 +459,19 @@ function bab_selectPurgeFolder()
 			$this->select	= bab_translate("Select");
 			$this->delegation	= bab_translate("Delegation");
 				
-			$sql = "SELECT * FROM ".BAB_FM_FOLDERS_TBL." ORDER BY folder ASC";
+			$sql = "SELECT
+						fm.id as fmid,
+						fm.folder as folder,
+						fm.sRelativePath as sRelativePath,
+						fm.id_dgowner as id_dgowner,
+						dgr.id as dgrid,
+						dgr.name as name
+					FROM ".BAB_FM_FOLDERS_TBL." as fm
+					
+					LEFT JOIN ".BAB_DG_GROUPS_TBL." as dgr
+					ON fm.id_dgowner = dgr.id
+					
+					ORDER BY name ASC, folder ASC, sRelativePath ASC";
 			$this->res = $babDB->db_query($sql);
 		}
 	
@@ -486,9 +498,9 @@ function bab_selectPurgeFolder()
 				if($arr['id_dgowner'] == 0){
 					$this->dgowner = bab_translate('All site');
 				}else{
-					$this->dgowner = 'DG ' . $arr['id_dgowner'];
+					$this->dgowner = $arr['name'];
 				}
-				$this->folderid = $arr['id'];
+				$this->folderid = $arr['fmid'];
 				return true;
 			}
 			return false;
@@ -551,7 +563,20 @@ function bab_notifyPurgeTrashs()
 	$fid = bab_gp('folder', '');
 	$fid = explode('.', $fid);
 	
-	$sql = "SELECT * FROM ".BAB_FM_FOLDERS_TBL." ORDER BY folder ASC";
+	$sql = "SELECT
+			fm.id as id,
+			fm.folder as folder,
+			fm.sRelativePath as sRelativePath,
+			fm.id_dgowner as id_dgowner,
+			dgr.id as dgrid,
+			dgr.name as name
+		FROM ".BAB_FM_FOLDERS_TBL." as fm
+		
+		LEFT JOIN ".BAB_DG_GROUPS_TBL." as dgr
+		ON fm.id_dgowner = dgr.id
+		
+		ORDER BY name ASC, folder ASC, sRelativePath ASC";
+	
 	$res = $babDB->db_query($sql);
 	$folders = array();
 	while($res && $arr = $babDB->db_fetch_assoc($res))
@@ -582,7 +607,7 @@ function bab_notifyPurgeTrashs()
 				if(!isset($usersToNotifyPublic[$k])){
 					$usersToNotifyPublic[$k] = $v;
 				}
-				$usersToNotifyPublic[$k]['folders'][] = '(DG ' .$folders[$id]['id_dgowner']. ') ' . $folders[$id]['sRelativePath'].$folders[$id]['folder'];
+				$usersToNotifyPublic[$k]['folders'][] = '(' .$folders[$id]['name']. ') ' . $folders[$id]['sRelativePath'].$folders[$id]['folder'];
 			}
 		}
 	}
@@ -715,6 +740,11 @@ elseif($action == 'purge')
 switch($idx)
 {
 	case 'purgefm':
+		if(!$babBody->isSuperAdmin)
+		{
+			$babBody->msgerror = bab_translate("Access denied");
+			return;
+		}
 		$babBody->title = bab_translate("Purge trashs");
 		$babBody->addItemMenu('list', bab_translate("Folders"), $GLOBALS['babUrlScript'].'?tg=admfms&idx=list');
 		$babBody->addItemMenu('purgefm', bab_translate("Purge trashs"), $GLOBALS['babUrlScript'].'?tg=admfms&idx=purgefm');
@@ -722,6 +752,11 @@ switch($idx)
 		break;
 		
 	case 'actionpurgefm':
+		if(!$babBody->isSuperAdmin)
+		{
+			$babBody->msgerror = bab_translate("Access denied");
+			return;
+		}
 		$babBody->title = bab_translate("Purge trashs");
 		$babBody->addItemMenu('list', bab_translate("Folders"), $GLOBALS['babUrlScript'].'?tg=admfms&idx=list');
 		$babBody->addItemMenu('actionpurgefm', bab_translate("Purge trashs"), $GLOBALS['babUrlScript'].'?tg=admfms&idx=purgefm');

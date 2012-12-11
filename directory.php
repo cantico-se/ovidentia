@@ -863,7 +863,7 @@ class bab_modifyDbContact
 			$this->foriginalvalue = $this->fvalue;
 			$this->fvalue = bab_toHtml($this->fvalue);
 
-			$this->resfxv = $babDB->db_query("select field_value from ".BAB_DBDIR_FIELDSVALUES_TBL." where id_fieldextra='".$babDB->db_escape_string($arr['id'])."' ORDER BY field_value");
+			$this->resfxv = $babDB->db_query("select field_value from ".BAB_DBDIR_FIELDSVALUES_TBL." where id_fieldextra='".$babDB->db_escape_string($arr['id'])."' ORDER BY field_value ASC");
 			$this->countfxv = $babDB->db_num_rows($this->resfxv);
 
 			$this->required = $arr['required'];
@@ -1129,7 +1129,7 @@ class bab_addDbContact
 				$this->fvalue = '';
 			}
 
-			$this->resfxv = $babDB->db_query("select field_value from ".BAB_DBDIR_FIELDSVALUES_TBL." where id_fieldextra='".$babDB->db_escape_string($arr['id'])."' ORDER BY field_value");
+			$this->resfxv = $babDB->db_query("select field_value from ".BAB_DBDIR_FIELDSVALUES_TBL." where id_fieldextra='".$babDB->db_escape_string($arr['id'])."' ORDER BY field_value ASC");
 			$this->countfxv = $babDB->db_num_rows($this->resfxv);
 
 			$this->required = $arr['required'];
@@ -1149,7 +1149,7 @@ class bab_addDbContact
 			$this->fieldt = $arr['multilignes'];
 			if( !empty( $arr['default_value'] ) && empty($this->fvalue) && $this->countfxv > 0)
 			{
-				$rr = $babDB->db_fetch_array($babDB->db_query("select field_value from ".BAB_DBDIR_FIELDSVALUES_TBL." where id='".$babDB->db_escape_string($arr['default_value'])."'"));
+				$rr = $babDB->db_fetch_array($babDB->db_query("select field_value from ".BAB_DBDIR_FIELDSVALUES_TBL." where id='".$babDB->db_escape_string($arr['default_value'])."' ORDER BY field_value ASC"));
 				$this->fvalue = $rr['field_value'];
 			}
 			$this->ofvalue = $this->fvalue;

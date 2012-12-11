@@ -3360,7 +3360,7 @@ L'administrateur</string>
 <string id="'%s' folder size quota exceed">Le quota d'occupation du répertoire '%s' a été dépassé.</string>
 <string id="Purge trashs">Purge des corbeilles</string>
 <string id="All personnal folders">Tous les répertoires utilisateurs</string>
-<string id="Notify all managers of public folder and/or user withe personnal folder.">Notifier les gestionnaires de répertoires partagés et/ou les détenteurs de répertoires personnels.</string>
+<string id="Notify all managers of public folder and/or user withe personnal folder.">Pour les répertoires sélectionnés : Notifier les gestionnaires de répertoires partagés et/ou les détenteurs de répertoires personnels.</string>
 <string id="Purge all trashs from all selected folders.">Purger toutes les corbeilles des répertoires sélectionnés.</string>
 <string id="Proceed to the notification?">Procéder à la notification ?</string>
 <string id="Proceed to the purge?">Procéder à la purge ?</string>
