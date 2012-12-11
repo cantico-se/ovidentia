@@ -614,9 +614,11 @@ switch($idx)
 		$babBody->title = bab_translate("Move group");
 		break;
 
+	// Attempts to repair the group tree in database.
 	case 'treecreate':
-		if ($babBody->isSuperAdmin)	
+		if ($babBody->isSuperAdmin)	{
 			bab_grpTreeCreate(NULL, 1);
+		}
 		die();
 
 	case "List":
