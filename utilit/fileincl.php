@@ -696,18 +696,17 @@ function bab_addUploadedFile(bab_fileHandler $fmFile, $count, $id, $gr, $sRelati
 	}
 	
 	if($GLOBALS['babQuotaFM']
-			&& ($FMTotalSize <= $GLOBALS['babMaxTotalSize']*$GLOBALS['babQuotaFM'])
-			&& ($fmFile->size +  $FMTotalSize > $GLOBALS['babMaxTotalSize']*$GLOBALS['babQuotaFM'])){
+			&& ($FMTotalSize <= $GLOBALS['babMaxTotalSize']*$GLOBALS['babQuotaFM']/100)
+			&& ($fmFile->size +  $FMTotalSize > $GLOBALS['babMaxTotalSize']*$GLOBALS['babQuotaFM']/100)){
 		bab_notifyAdminQuota(true);//notify when exceed the quota on FILE MANAGER
 	}
 	
 	if($GLOBALS['babQuotaFolder']
 			&& $gr == "Y"
-			&& ($totalsize <= $GLOBALS['babMaxGroupSize']*$GLOBALS['babQuotaFolder'])
-			&& ($fmFile->size +  $totalsize > $GLOBALS['babMaxGroupSize']*$GLOBALS['babQuotaFolder'])){
+			&& ($totalsize <= $GLOBALS['babMaxGroupSize']*$GLOBALS['babQuotaFolder']/100)
+			&& ($fmFile->size +  $totalsize > $GLOBALS['babMaxGroupSize']*$GLOBALS['babQuotaFolder']/100)){
 		bab_notifyAdminQuota($sRelativePath);//notify when exceed the quota on Group Folder
 	}
-
 
 	return $idf;
 }
