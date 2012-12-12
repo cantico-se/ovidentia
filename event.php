@@ -874,8 +874,8 @@ function modifyEvent($idcal, $collection, $evtid, $dtstart, $cci, $view, $date)
 			
 			$this->selectedDomain = array();
 			if($XDOMAIN = $event->getProperty('X-CTO-DOMAIN')){
-				$this->selectedDomain = explode(',', $XDOMAIN);
-				foreach($this->selectedDomain as $val){
+				$selectedDomain = explode(',', $XDOMAIN);
+				foreach($selectedDomain as $val){
 					$this->selectedDomain[$val] = $val;
 				}
 			}

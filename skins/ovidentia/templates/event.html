@@ -251,20 +251,20 @@
 	</tr>
 	
 	<!--#if nbdomain "> 0" -->
+	<!--#in getnextdomain -->
 	<tr> 
-		<td colspan="2" align="center">
-		<!--#in getnextdomain -->
-			<div style="display: inline-block; margin-right: 1em; margin-bottom: .25em;">
-				<label align="right" style="white-space: nowrap;">{ domainname }:</label>
-				<select class="drop-down-checklist" multiple="multiple" name="domain[{ currentDom }][]">
-					<!--#in getnextdomainvalue -->
-					<option value="{ domvalueid }" { domvalueselected }>{ domvaluename }</option>
-					<!--#endin getnextdomainvalue -->
-				</select>
-			</div>
-		<!--#endin getnextdomain -->
+		<td align="right">
+			<label align="right" style="white-space: nowrap;">{ domainname }:</label>
 		</td>
-	<tr> 
+		<td>
+			<select class="drop-down-checklist" multiple="multiple" name="domain[{ currentDom }][]">
+				<!--#in getnextdomainvalue -->
+				<option value="{ domvalueid }" { domvalueselected }>{ domvaluename }</option>
+				<!--#endin getnextdomainvalue -->
+			</select>
+		</td>
+	<tr>
+	<!--#endin getnextdomain -->
 	<!--#endif nbdomain -->
 	
 	<tr> 
@@ -631,20 +631,20 @@ bab_event_alert_ed();
 	</tr>
 	
 	<!--#if nbdomain "> 0" -->
+	<!--#in getnextdomain -->
 	<tr> 
-		<td colspan="2" align="center">
-		<!--#in getnextdomain -->
-			<div style="display: inline-block; margin-right: 1em; margin-bottom: .25em;">
-				<label align="right" style="white-space: nowrap;">{ domainname }:</label>
-				<select class="drop-down-checklist" multiple="multiple" name="domain[{ currentDom }][]">
-					<!--#in getnextdomainvalue -->
-					<option value="{ domvalueid }" { domvalueselected }>{ domvaluename }</option>
-					<!--#endin getnextdomainvalue -->
-				</select>
-			</div>
-		<!--#endin getnextdomain -->
+		<td align="right">
+			<label align="right" style="white-space: nowrap;">{ domainname }:</label>
 		</td>
-	<tr> 
+		<td>
+			<select class="drop-down-checklist" multiple="multiple" name="domain[{ currentDom }][]">
+				<!--#in getnextdomainvalue -->
+				<option value="{ domvalueid }" { domvalueselected }>{ domvaluename }</option>
+				<!--#endin getnextdomainvalue -->
+			</select>
+		</td>
+	<tr>
+	<!--#endin getnextdomain -->
 	<!--#endif nbdomain -->
 
 	<tr> 
