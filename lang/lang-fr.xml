@@ -3347,10 +3347,10 @@
 
 %s
 
-Les fichiers dans la corbeille prennent: %skB(%s)
-Les fichiers qui ne sont pas dans la corbeille prennent: %skB(%s)
-Tous les fichiers prennent: %skB(%s)
-La capacité maximum configurée est: %skB
+Les fichiers dans la corbeille prennent: %s kB ( %s )
+Les fichiers qui ne sont pas dans la corbeille prennent: %s kB ( %s )
+Tous les fichiers prennent: %s kB ( %s )
+La capacité maximum configurée pour un répertoire partagé est: %s kB
 Le quota de notification est: %s
 
 Cordialement,
