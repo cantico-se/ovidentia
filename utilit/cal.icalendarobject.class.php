@@ -705,6 +705,55 @@ abstract class bab_ICalendarObject
 		
 		return null;
 	}
+	
+	
+	/**
+	 * Parse iCalendar property
+	 * @param string $property
+	 * @return array
+	 */
+	public function parseProperty($property)
+	{
+		$o = new bab_ICalendarProperty;
+	
+	
+		if (preg_match('/^([^:^;]+)/', $property, $m))
+		{
+			$o->name = $m[1];
+		}
+	
+		if (preg_match('/^[^;]+;(.+)$/', $property, $m))
+		{
+			$o->parameters = preg_split('/\s*;\s*/', $m[1]);
+	
+			foreach($o->parameters as $key => $p)
+			{
+				if (preg_match('/^([^=]+)=(?:([^"][^:]+)|(?:"([^"]+)"))/', $p, $m))
+				{
+					$pname = $m[1];
+					if (isset($m[3]))
+					{
+						$pvalue = $m[3];
+					} else {
+						$pvalue = $m[2];
+					}
+	
+					$o->value = mb_substr($p, (1 + mb_strlen($m[0])));
+	
+					$o->parameters[$key] = array('name' => $pname, 'value' => $pvalue);
+				}
+			}
+	
+		} else {
+	
+			$colonPos = mb_strpos($property, ':');
+			$o->value = substr($property, $colonPos + 1);
+		}
+	
+	
+	
+		return $o;
+	}
 }
 
 
@@ -804,4 +853,34 @@ class bab_CalAttendeeBackend
 		
 		return $real_attendee['PARTSTAT'];
 	}
+	
+	
+	
+	
+	
+}
+
+
+
+
+
+class bab_ICalendarProperty 
+{
+	/**
+	 * 
+	 * @var string
+	 */
+	public $name;
+	
+	/**
+	 * 
+	 * @var string
+	 */
+	public $value;
+	
+	/**
+	 * 
+	 * @var array
+	 */
+	public $parameters = array();	
 }
