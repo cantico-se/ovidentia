@@ -100,8 +100,7 @@ abstract class bab_ICalendarObject
 	
 	/**
 	 * define a property with a icalendar property name
-	 * the value is not compliant with the icalendar format
-	 * Dates are defined as ISO datetime
+	 * 
 	 *
 	 * @param	string	$icalProperty
 	 * @param	mixed	$value
@@ -121,7 +120,7 @@ abstract class bab_ICalendarObject
 			$propparam = $icalProperty;
 			$icalProperty = mb_substr($icalProperty, 0, $pos);
 		}
-		
+
 		$this->properties[$icalProperty][$propparam] = $value;
 		return $this;
 	}
@@ -735,8 +734,12 @@ abstract class bab_ICalendarObject
 		{
 			$o->name = $m[1];
 		}
+		
+		
+		$property = substr($property, strlen($o->name));
+		
 	
-		if (preg_match('/^[^;]+;(.+)$/', $property, $m))
+		if (preg_match('/^;(.+)$/', $property, $m))
 		{
 			$o->parameters = preg_split('/\s*;\s*/', $m[1]);
 	
@@ -752,7 +755,7 @@ abstract class bab_ICalendarObject
 						$pvalue = $m[2];
 					}
 	
-					$o->value = mb_substr($p, (1 + mb_strlen($m[0])));
+					$o->value = substr($p, (1 + strlen($m[0])));
 	
 					$o->parameters[$key] = array('name' => $pname, 'value' => $pvalue);
 				}
@@ -760,8 +763,7 @@ abstract class bab_ICalendarObject
 	
 		} else {
 	
-			$colonPos = mb_strpos($property, ':');
-			$o->value = substr($property, $colonPos + 1);
+			$o->value = substr($property, 1);
 		}
 	
 		return $o;
@@ -816,6 +818,14 @@ class bab_CalAttendeeBackend
 			}
 			
 			$sourceCollection = $this->period->getCollection();
+			
+			if (null == $sourceCollection)
+			{
+				bab_debug(sprintf('Collection not found for event %s (%s), use attendee instead of real attendee', $this->period->getProperty('UID'), $this->period->getProperty('SUMMARY')));
+				$this->real_attendee = $this->attendee;
+				return $this->real_attendee; 
+			}
+			
 			$sourceCalendar = $sourceCollection->getCalendar();
 			
 			if (isset($sourceCalendar) && $sourceCalendar->getUrlIdentifier() === $this->attendee['calendar']->getUrlIdentifier())

@@ -87,7 +87,11 @@ class bab_CalendarPeriod extends bab_ICalendarObject {
 	private $uiIdentifier = null;
 
 
-
+	/**
+	 * 
+	 * @var bab_CalendarEventCollection
+	 */
+	private $collection;
 
 
 	/**
