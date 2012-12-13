@@ -2228,7 +2228,7 @@ class bab_event_posted {
 					$period = bab_createCalendarPeriod($backend, $this->args, $collection, $createinstance);
 					
 					$period->setProperty('STATUS', 'CANCELLED');
-					$period->cancelFromAllBackends();
+					$period->cancelFromAllCalendars();
 				
 					
 					$this->args['evtid'] = null;

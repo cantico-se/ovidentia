@@ -1354,7 +1354,7 @@ function confirmDeleteEvent($calid, $bupdrec, $notify)
 	
 	try {
 
-		$calendarPeriod->cancelFromAllBackends();
+		$calendarPeriod->cancelFromAllCalendars();
 		
 	} catch(ErrorException $e)
 	{

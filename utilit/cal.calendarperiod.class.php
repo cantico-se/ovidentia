@@ -710,32 +710,28 @@ class bab_CalendarPeriod extends bab_ICalendarObject {
 	 * @throws ErrorException backend specific errors
 	 * @return bool
 	 */
-	public function cancelFromAllBackends()
+	public function cancelFromAllCalendars()
 	{
 		$result = true;
 		
 		$currentCollection = $this->getCollection();
 		
 		$calendars = $this->getCalendars();
-		$backends = array();
+
 		foreach($calendars as $calendar)
 		{
 			$backend = $calendar->getBackend();
 			/*@var $backend Func_CalendarBackend */
 			
 			$urlidentifier = $backend->getUrlIdentifier();
-			
-			if (!isset($backends[$urlidentifier]))
-			{
-				$backends[$urlidentifier] = $backend;
 
-				$this->setCollection($backend->CalendarEventCollection($calendar));
-				
-				if (false === $backend->savePeriod($this, 'CANCEL'))
-				{
-					$result = false;
-				}
+			$this->setCollection($backend->CalendarEventCollection($calendar));
+			
+			if (false === $backend->savePeriod($this, 'CANCEL'))
+			{
+				$result = false;
 			}
+			
 		}
 		
 		$this->setCollection($currentCollection);
