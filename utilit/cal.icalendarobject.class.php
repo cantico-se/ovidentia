@@ -195,8 +195,21 @@ abstract class bab_ICalendarObject
 		$cn = bab_getUserName($id_user);
 		$email = bab_getUserEmail($id_user);
 		
-		$attendeekey = $this->attendeeKey($role, $partstat, $cn, $rsvp);
+		if (empty($email))
+		{
+			bab_debug('Attendee ignored for iduser='.$id_user);
+			
+			require_once dirname(__FILE__).'/devtools.php';
+			bab_debug_print_backtrace();
+			return;
+		}
 		
+		if (empty($cn))
+		{
+			$cn = null;
+		}
+		
+		$attendeekey = $this->attendeeKey($role, $partstat, $cn, $rsvp);
 		$this->properties['ATTENDEE'][$attendeekey] = 'MAILTO:'.$email;
 	}
 	
@@ -714,6 +727,7 @@ abstract class bab_ICalendarObject
 	 */
 	public function parseProperty($property)
 	{
+		
 		$o = new bab_ICalendarProperty;
 	
 	
@@ -749,8 +763,6 @@ abstract class bab_ICalendarObject
 			$colonPos = mb_strpos($property, ':');
 			$o->value = substr($property, $colonPos + 1);
 		}
-	
-	
 	
 		return $o;
 	}
