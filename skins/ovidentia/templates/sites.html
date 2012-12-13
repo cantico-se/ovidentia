@@ -946,7 +946,7 @@ document.forms.formsite_bloc3[edit].value = obj.value;
 <script language="JavaScript">
 <!--
 function move(bDir, el)
-	{
+{
 	var idx = el.selectedIndex
 	if (idx !=-1 && idx != 0) 
 	{
@@ -960,10 +960,21 @@ function move(bDir, el)
 		if ( nxidx>=el.length) nxidx=0
 		var oldVal = el[idx].value
 		var oldText = el[idx].text
+		var oldTitle = el[idx].title
 		el[idx].value = el[nxidx].value
 		el[idx].text = el[nxidx].text
+		if(el[nxidx].title){
+			el[idx].title = el[nxidx].title
+		}else if(el[idx].title){
+			el[idx].title = null
+		}
 		el[nxidx].value = oldVal
 		el[nxidx].text = oldText
+		if(oldTitle){
+			el[nxidx].title = oldTitle
+		}else if(el[nxidx].title){
+			el[nxidx].title = null
+		}
 		el.selectedIndex = nxidx
 	}
 }
@@ -1057,14 +1068,22 @@ function sortList(sortType, list)
 	sortTypes["sortDA"] = sortDA;
 	sortTypes["sortDD"] = sortDD;
 	a = new Array();
-	for (var i = 0; i < list.length - 1; i++)
-		a[i] = list.options[i+1].text + "|" + list.options[i+1].value;
+	for (var i = 0; i < list.length - 1; i++){
+		a[i] = list.options[i+1].text + "||" + list.options[i+1].value + "|" + list.options[i+1].title;
+	}
 	a.sort(sortTypes[sortType]);
 	for (var i = 0; i < list.length - 1; i++)
 	{
-		idx = a[i].lastIndexOf("|");
-		list.options[i+1].text = a[i].substring(0, idx);
-		list.options[i+1].value = a[i].substring(idx + 1, a[i].length);
+		idx1 = a[i].lastIndexOf("|");
+		idx2 = a[i].lastIndexOf("||");
+		list.options[i+1].text = a[i].substring(0, idx2);
+		list.options[i+1].value = a[i].substring(idx2 + 2, idx1);
+		title = a[i].substring(idx1 + 1, a[i].length);
+		if(title){
+			list.options[i+1].title = title;
+		}else if(list.options[i+1].title){
+			list.options[i+1].title = null
+		}
 	}
 }
 //-->

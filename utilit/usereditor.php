@@ -229,7 +229,7 @@ class Func_UserEditor extends bab_functionality {
 	 *
 	 * @return Widget_Displayable_Interface
 	 */
-	protected function labeledField(Widget_InputWidget $widget, $label) {
+	function labeledField(Widget_InputWidget $widget, $label) {
 		$W = bab_Widgets();
 	
 		$layout = $W->FlowLayout();

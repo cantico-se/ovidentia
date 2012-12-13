@@ -543,7 +543,7 @@ function orderArticles($id)
 			if( $i < $this->count)
 				{
 				$arr = $babDB->db_fetch_array($this->res);
-				$this->articletitle = $arr['title'];
+				$this->articletitle = bab_toHtml($arr['title']);
 				$this->articleid = $arr['id'];
 				$i++;
 				return true;
