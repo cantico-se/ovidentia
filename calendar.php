@@ -489,6 +489,8 @@ class displayEventCls
 	 *
 	 * @param string $evtid
 	 * @param string $dtstart
+	 * 
+	 * @return bab_CalendarPeriod
 	 */
 	protected function getPeriod()
 	{
