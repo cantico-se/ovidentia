@@ -3054,7 +3054,7 @@ function bab_getFileContentDisposition() {
  * Eg.: $OVMLCACHE(example.ovml,param1=12,_ovml_cache_duration=86400) for a
  * cache duration of 24h.
  *
- * The actual caching is done in $_SESSION so it will be lost after the session
+ * The default caching is done in $_SESSION so it will be lost after the session
  * is destroyed. The cache is stored in a $_SESSION['ovml_cache'] array. It has
  * the following structure:
  *
@@ -3066,39 +3066,41 @@ function bab_getFileContentDisposition() {
  * 			['timestamp'] => timestamp of cached content creation
  * 			['content'] => parsed ovml content
  *      ...
+ *      
+ *      
+ * for other cacheing method, use the _ovml_cache_type parameter, the value can be :
+ * 	session : cache in session variable (default)
+ * 	sitemap : cache in file based on sitemap profile UID
+ * 	file : cache in file
+ * 
+ * @example $OVMLCACHE(menu.html,_ovml_cache_duration=120,_ovml_cache_type=sitemap)
+ * 
  *
  * @since 7.1.94
+ * 
  * @param	string	$file
  * @param	array	$args
+ * 
  * @return	string	html
  */
 function bab_printCachedOvmlTemplate($file, $args = array())
 {
-	$uidargs = $args;
-	if (isset($uidargs['babCurrentDate']))
+	require_once dirname(__FILE__).'/ovmlcache.php';
+	
+	$cache = new bab_ovml_cache($file, $args);
+
+	$cache_type = 'session';
+	if (isset($args['_ovml_cache_type']))
 	{
-		unset($uidargs['babCurrentDate']);
+		$cache_type = $args['_ovml_cache_type'];
 	}
 	
+	if (isset($args['_ovml_cache_duration']))
+	{
+		$cache->setCacheDuration((int) $args['_ovml_cache_duration']);
+	}	
 	
-	// We create a unique id based on the filename and named arguments.
-	$ovmlId = $file . ':' . http_build_query($uidargs);
-	
-
-	if (!isset($_SESSION['ovml_cache'][$ovmlId])) {
-		$_SESSION['ovml_cache'][$ovmlId] = array();
-	}
-	$ovmlCache =& $_SESSION['ovml_cache'][$ovmlId];
-
-	// We check if there the specified ovml is in the cache and the cache is
-	// less than 1 hour (or the specified duration) old.
-	if (!isset($ovmlCache['timestamp'])
-	|| !isset($ovmlCache['content']) 
-	|| (time() - $ovmlCache['timestamp'] > (isset($args['_ovml_cache_duration']) ? $args['_ovml_cache_duration'] : 3600))) {
-		$ovmlCache['timestamp'] = time();
-		$ovmlCache['content'] = bab_printOvmlTemplate($file, $args);
-	}
-	return $ovmlCache['content'];
+	return $cache->$cache_type();
 }
 
 
