@@ -588,12 +588,10 @@ class bab_AclGroups
 		$allowedChildren = array();
 
 
-		$req = "SELECT t.id_group  
-					FROM ".$babDB->backTick(BAB_DG_ACL_GROUPS_TBL)." t 
-				WHERE t.id_object='".$babDB->db_escape_string($id_delegation)."'  
-				";
-		
-		$res = $babDB->db_query($req);
+		$res = $babDB->db_query("SELECT t.id_group, g.lf, g.lr, g.nb_groups FROM ".$babDB->backTick(BAB_DG_ACL_GROUPS_TBL)." t
+				left join ".BAB_GROUPS_TBL." g on g.id=t.id_group
+				WHERE t.id_object='".$babDB->db_escape_string($id_delegation)."'
+				");
 
 		if (0 === $babDB->db_num_rows($res))
 		{
