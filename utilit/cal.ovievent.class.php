@@ -1759,6 +1759,37 @@ class bab_cal_OviEventSelect
 
 		return true;
 	}
+	
+	
+	
+	private function insertDomain($idevent, $domains)
+	{
+		global $babDB;
+		
+		$babDB->db_query("
+			delete from ".BAB_CAL_EVENTS_DOMAINS_TBL."
+			where id_event = ".$babDB->quote($idevent)
+		);
+		
+		if($domains)
+		{
+			$domains = explode(',', $domains);
+			foreach($domains as $domain){
+				$babDB->db_query("
+					insert into ".BAB_CAL_EVENTS_DOMAINS_TBL."
+					(
+						id_event,
+						id_domain
+					)
+					values
+					(
+						".$babDB->quote($idevent).",
+						".$babDB->quote($domain)."
+					)
+				");
+			}
+		}
+	}
 
 
 
