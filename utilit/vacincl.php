@@ -1149,7 +1149,7 @@ function listVacationRequests($id_user)
 			else
 				$uarr = $id_user;
 
-			$this->calurl = bab_toHtml($GLOBALS['babUrlScript']."?tg=vacuser&idx=cal&idu=".$id_user."&popup=1");
+			$this->calurl = bab_toHtml($GLOBALS['babUrlScript']."?tg=vacuser&idx=cal&idu=".implode(',', $uarr)."&popup=1");
 			$this->personal = $id_user == $GLOBALS['BAB_SESS_USERID'];
 			$this->pos = isset($_REQUEST['pos']) ? $_REQUEST['pos'] : 0;
 
