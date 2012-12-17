@@ -488,7 +488,7 @@ function bab_OCSelectEntityCollaborators($entityId)
 	$sql .= ' LEFT JOIN ' . BAB_DBDIR_ENTRIES_TBL . ' AS dir_entries ON users.id_user = dir_entries.id';
 	$sql .= ' LEFT JOIN ' . BAB_USERS_TBL . ' AS babusers ON dir_entries.id_user = babusers.id';
 	$sql .= ' WHERE roles.id_entity = ' . $babDB->quote($entityId);
-	$sql .= ' ORDER BY (roles.type - 1 % 4) ASC, '; // We want role types to appear in the order 1,2,3,0
+	$sql .= ' ORDER BY FIND_IN_SET(roles.type, \'1,2,3,0\') ASC, '; // We want role types to appear in the order 1,2,3,0
 	$sql .= ($babBody->nameorder[0] === 'F') ?
 					' dir_entries.givenname ASC, dir_entries.sn ASC'
 					: ' dir_entries.sn ASC, dir_entries.givenname ASC';
