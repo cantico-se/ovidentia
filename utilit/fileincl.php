@@ -53,7 +53,6 @@ function bab_notifyAdminQuota($folder = false)
 		$res = $babDB->db_query("
 			select *
 			from ".BAB_FILES_TBL."
-			where bgroup ='Y'
 		");
 		
 		$deleteSize = 0;
