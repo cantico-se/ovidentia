@@ -588,7 +588,10 @@ function getWaitingApproversFlowInstance($idschi, $notify=false)
 					if( count($arroles) > 0 )
 						{
 						$rr =  bab_getOrgChartRoleUsers($arroles);
-						$ret[] = $rr['iduser'][0];
+						foreach($rr['iduser'] as $role_id_user)
+							{
+							$ret[] = $role_id_user;
+							}
 						}
 					if( isset($rr1['iduser']) && count($rr1['iduser']) > 0 )
 						{
@@ -618,7 +621,6 @@ function getWaitingApproversFlowInstance($idschi, $notify=false)
 				}
 			}
 		}
-
 	if( count($result) > 0 )
 	{
 	$res = $babDB->db_query("select id_user, id_substitute from ".BAB_USERS_UNAVAILABILITY_TBL." where curdate() between start_date and end_date and id_user in (".$babDB->quote($result).")");
