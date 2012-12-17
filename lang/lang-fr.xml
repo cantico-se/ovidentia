@@ -3406,5 +3406,5 @@ L'administrateur</string>
 <string id="Warning: Only not empty folder are displaid.">Attention: Les répertoires vide ne sont pas affichés.</string>
 <string id="Your contact has been created">Votre contact a été créé</string>
 <string id="Access denied to event modification">Accès refusé à la modification de l'événement</string>
-<string id=""></string>
+<string id="(%d approbators)">(%d approbateurs)</string>
 </fr>

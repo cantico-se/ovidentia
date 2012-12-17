@@ -164,15 +164,21 @@ function getApprovalSchemaName($id)
 		}
 }
 
+
+/**
+ * 
+ * @param unknown_type $id
+ * @return string
+ */
 function getRoleName($id)
 {
 	global $babDB;
-	$query = "select name from ".BAB_OC_ROLES_TBL." where id='".$babDB->db_escape_string($id)."'";
+	$query = "select r.name role, e.name entity from ".BAB_OC_ROLES_TBL." r LEFT JOIN bab_oc_entities e ON e.id=r.id_entity WHERE r.id='".$babDB->db_escape_string($id)."'";
 	$res = $babDB->db_query($query);
 	if( $res && $babDB->db_num_rows($res) > 0)
 		{
 		$arr = $babDB->db_fetch_array($res);
-		return $arr['name'];
+		return $arr['entity'].', '.$arr['role'];
 		}
 	else
 		{
@@ -355,13 +361,20 @@ function schemaCreate($formula, $idsch, $schname, $schdesc, $order, $bdel, $ocid
 								{
 								$name = getRoleName($this->arrf[$j]);
 								$rr = bab_getOrgChartRoleUsers($this->arrf[$j]);
+								bab_debug($rr);
 								if( count($rr) == 0 )
 									{
-									$name .= "(?)";
+									$name .= " (?)";
 									}
 								else
 									{
-									$name .= "(".$rr['name'][0].")";
+										if (1 === count($rr['name']))
+										{
+											$name .= " (".$rr['name'][0].")";
+										} else {
+											$name .= ' '. sprintf(bab_translate("(%d approbators)"), count($rr['name']));
+										}
+
 									}
 								}
 							break;
