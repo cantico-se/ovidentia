@@ -994,6 +994,7 @@ CREATE TABLE `bab_sites` (
   `ldap_groups` varchar(255) NOT NULL default '',
   `ldap_groups_create` tinyint(1) unsigned NOT NULL default '0',
   `ldap_groups_remove` tinyint(1) unsigned NOT NULL default '0',
+  `ldap_usercreate_test` tinyint(1) unsigned NOT NULL default '1',
   `date_longformat` varchar(255) NOT NULL default '',
   `date_shortformat` varchar(255) NOT NULL default '',
   `time_format` varchar(255) NOT NULL default '',

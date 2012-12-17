@@ -3407,4 +3407,5 @@ L'administrateur</string>
 <string id="Your contact has been created">Votre contact a été créé</string>
 <string id="Access denied to event modification">Accès refusé à la modification de l'événement</string>
 <string id="(%d approbators)">(%d approbateurs)</string>
+<string id="Test user field validity to login (lastname, firstname, email)">Tester la validité des champs de l'utilisateur lors de la connexion (nom, prénom, email)</string>
 </fr>

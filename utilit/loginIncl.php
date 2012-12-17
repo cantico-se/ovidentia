@@ -564,19 +564,27 @@ class Func_PortalAuthentication_AuthOvidentia extends Func_PortalAuthentication
 		$attribute_for_mn			= isset($aUpdateAttributes['mn'])			? $aUpdateAttributes['mn']			: '';
 		$attribute_for_mail			= isset($aUpdateAttributes['email'])		? $aUpdateAttributes['email'] 		: 'mail';
 		
+		
+		$test_fields = (bool) $babBody->babsite['ldap_usercreate_test'];
+		
+		
 		if (isset($aEntries[0][$attribute_for_givenname][0])) {
 			$sGivenname	= bab_ldapDecode($aEntries[0][$attribute_for_givenname][0]);
-		} else {
+		} else if ($test_fields) {
 			$this->addError(bab_translate('Error, registration of user is impossible, the givenname is missing'));
 			return false;
+		} else {
+			$sGivenname = '';
 		}
 
 
 		if (isset($aEntries[0][$attribute_for_sn][0])) {
 			$sSn	= bab_ldapDecode($aEntries[0][$attribute_for_sn][0]);
-		} else {
+		} else if ($test_fields) {
 			$this->addError(bab_translate('Error, registration of user is impossible, the lastname is missing'));
 			return false;
+		} else {
+			$sSn = '';
 		}
 
 		if ($attribute_for_mn && isset($aEntries[0][$attribute_for_mn][0])) {
@@ -587,9 +595,11 @@ class Func_PortalAuthentication_AuthOvidentia extends Func_PortalAuthentication
 
 		if (isset($aEntries[0][$attribute_for_mail][0])) {
 			$sMail	= bab_ldapDecode($aEntries[0][$attribute_for_mail][0]);
-		} else {
+		} else if ($test_fields) {
 			$this->addError(bab_translate('Error, registration of user is impossible, the email is missing'));
 			return false;
+		} else {
+			$sMail = '';
 		}
 		
 

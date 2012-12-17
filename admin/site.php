@@ -975,6 +975,7 @@ function siteAuthentification($id)
 				$this->ldpachkcnxtxt = bab_translate("Allow administrators to connect if LDAP authentification fails");
 				$this->ldpachknotifyadmintxt = bab_translate("Notify selected group when a new user is registered");
 				$this->ldpachkviewnotifyadmintxt = bab_translate("(View selected group)");
+				$this->ldap_usercreate_test_txt = bab_translate("Test user field validity to login (lastname, firstname, email)");
 				$this->remember_login_title = bab_translate("Automatic connection");
 				$this->login_only = bab_translate("Login ID only");
 				$this->email_password_title = bab_translate("Display option 'Lost Password'");
@@ -1016,6 +1017,15 @@ function siteAuthentification($id)
 				else
 					{
 					$this->ldpachknotifchecked = '';
+					}
+					
+				if( $arr['ldap_usercreate_test']  == 1 )
+					{
+						$this->ldap_usercreate_test_checked = 'checked';
+					}
+					else
+					{
+						$this->ldap_usercreate_test_checked = '';
 					}
 
 				$this->resf = $babDB->db_query("select * from ".BAB_LDAP_SITES_FIELDS_TBL." where id_site='".$babDB->db_escape_string($id)."'");

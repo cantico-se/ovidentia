@@ -6917,6 +6917,15 @@ function ovidentia_upgrade($version_base,$version_ini) {
 	
 	
 	
+	/**
+	 * Upgrade to 7.8.95
+	 */
+	
+	if (!bab_isTableField(BAB_SITES_TBL, 'ldap_usercreate_test'))
+	{
+		$babDB->db_query("ALTER TABLE `".BAB_SITES_TBL."` ADD `ldap_usercreate_test` tinyint(1) unsigned NOT NULL default '1'");
+	}
+	
 	return true;
 
 }
