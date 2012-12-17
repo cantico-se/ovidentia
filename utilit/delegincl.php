@@ -588,10 +588,12 @@ class bab_AclGroups
 		$allowedChildren = array();
 
 
-		$res = $babDB->db_query("SELECT t.id_group, g.lf, g.lr, g.nb_groups FROM ".$babDB->backTick(BAB_DG_ACL_GROUPS_TBL)." t
-				left join ".BAB_GROUPS_TBL." g on g.id=t.id_group
-				WHERE t.id_object='".$babDB->db_escape_string($id_delegation)."'
-				");
+		$req = "SELECT t.id_group  
+					FROM ".$babDB->backTick(BAB_DG_ACL_GROUPS_TBL)." t 
+				WHERE t.id_object='".$babDB->db_escape_string($id_delegation)."'  
+				";
+		
+		$res = $babDB->db_query($req);
 
 		if (0 === $babDB->db_num_rows($res))
 		{
@@ -620,16 +622,18 @@ class bab_AclGroups
 
 
 
-
+		// there is an ACL definition on the delegation
 		while ($arr = $babDB->db_fetch_assoc($res)) {
 
 			if ($arr['id_group'] >= BAB_ACL_GROUP_TREE )
 			{
 				$arr['id_group'] -= BAB_ACL_GROUP_TREE;
 
-				// if one of the left checked group is upper or equal to id_parent, return the predefined list
+				// if one of the left checked group is upper or equal to id_parent, return the predefined list, all fields allowed
+				
+				$checked_group = bab_Groups::get($arr['id_group']);
 
-				if ($id_parent == $arr['id_group'] || ($parent['lf'] > $arr['lf'] && $parent['lr'] < $arr['lr']))
+				if ($id_parent == $arr['id_group'] || ($parent['lf'] > $checked_group['lf'] && $parent['lr'] < $checked_group['lr']))
 				{
 					return $this->getList($id_parent);
 				}
