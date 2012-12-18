@@ -178,7 +178,7 @@ function displayRegistration($nickname, $fields, $cagree)
 				$this->bphoto = false;
 				}
 
-			$this->res = $babDB->db_query("select sfrt.*, sfxt.id as idfx from ".BAB_SITES_FIELDS_REGISTRATION_TBL." sfrt left join ".BAB_DBDIR_FIELDSEXTRA_TBL." sfxt on sfxt.id_field=sfrt.id_field WHERE sfrt.id_site='".$babDB->db_escape_string($babBody->babsite['id'])."' and sfrt.registration='Y' and sfxt.id_directory='0'");
+			$this->res = $babDB->db_query("select sfrt.*, sfxt.id as idfx, sfxt.default_value as default_value from ".BAB_SITES_FIELDS_REGISTRATION_TBL." sfrt left join ".BAB_DBDIR_FIELDSEXTRA_TBL." sfxt on sfxt.id_field=sfrt.id_field WHERE sfrt.id_site='".$babDB->db_escape_string($babBody->babsite['id'])."' and sfrt.registration='Y' and sfxt.id_directory='0'");
 
 			$this->count = $babDB->db_num_rows($this->res);
 
@@ -228,7 +228,7 @@ function displayRegistration($nickname, $fields, $cagree)
 					$this->fieldval = '';
 					}
 
-				$this->resfxv = $babDB->db_query("select field_value from ".BAB_DBDIR_FIELDSVALUES_TBL." where id_fieldextra='".$babDB->db_escape_string($arr['idfx'])."'");
+				$this->resfxv = $babDB->db_query("select field_value from ".BAB_DBDIR_FIELDSVALUES_TBL." where id_fieldextra='".$babDB->db_escape_string($arr['idfx'])."' ORDER BY field_value ASC");
 				$this->countfxv = $babDB->db_num_rows($this->resfxv);
 
 				$this->required = $arr['required'];

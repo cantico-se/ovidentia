@@ -260,6 +260,7 @@ function notifyAdminRegistration($name, $useremail, $warning)
 		return;
 	$mailBCT = 'mail'.$babBody->babsite['mail_fieldaddress'];
 
+	require_once $GLOBALS['babInstallPath'].'admin/acl.php';
 	$users = aclGetAccessUsers(BAB_LDAP_LOGGIN_NOTIFY_GROUPS_TBL, 1);
 	
 	foreach($users as $user){

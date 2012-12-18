@@ -284,8 +284,10 @@ function bab_getDelegateGroupe($all = false, $delegId = false)
 		$id_group[$arr['id_group']] = $arr['id_group'];
 		if($all){
 			$subGroup = bab_getGroups($arr['id_group']);
-			foreach($subGroup['id'] as $val){
-				$id_group[$val] = $val;
+			if(isset($subGroup['id'])){
+				foreach($subGroup['id'] as $val){
+					$id_group[$val] = $val;
+				}
 			}
 		}
 	}
