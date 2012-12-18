@@ -502,6 +502,9 @@ class bab_AclGroups
 {
 
 	private $id_delegation = 0;
+	
+	
+	private $delegation_acl_definition = null;
 
 	/**
 	 *
@@ -510,6 +513,65 @@ class bab_AclGroups
 	public function __construct($id_delegation)
 	{
 		$this->id_delegation = $id_delegation;
+	}
+	
+	
+	/**
+	 * number of ancestors in ACL definition of delegation
+	 * @param int $id_parent
+	 * @return number
+	 */
+	private function ancestorsInAcl($id_parent)
+	{
+		global $babDB;
+		
+		$ancestors = bab_Groups::getAncestors($id_parent);
+		$ancestors = array_keys($ancestors);
+		$ancestors[] = $id_parent;
+		
+		foreach($ancestors as &$a)
+		{
+			$a += BAB_ACL_GROUP_TREE;
+		}
+		
+		// check if one of the ancestors is in acl definition
+		
+		$req = "SELECT t.id
+			FROM
+				".BAB_DG_ACL_GROUPS_TBL." t
+			WHERE
+				t.id_group IN(".$babDB->quote($ancestors).")
+				AND t.id_object='".$babDB->db_escape_string($this->id_delegation)."'
+		";
+		$res = $babDB->db_query($req);
+		return $babDB->db_num_rows($res);
+	}
+	
+	
+	/**
+	 * number of groups in ACL definition of delegation for one group (the group or one of the childnodes)
+	 * @param int $id_group
+	 * @return int
+	 */
+	private function groupsInAcl($id_group)
+	{
+		$group = bab_Groups::get($id_group);
+		
+		global $babDB;
+		
+		$req = "SELECT g.id
+		FROM
+			".BAB_DG_ACL_GROUPS_TBL." t,
+			".BAB_GROUPS_TBL." g
+		WHERE
+			((t.id_group <".BAB_ACL_GROUP_TREE." AND g.id=t.id_group) OR (t.id_group >".BAB_ACL_GROUP_TREE." AND (t.id_group - g.id) = ".BAB_ACL_GROUP_TREE."))
+			AND g.lf >=".$babDB->quote($group['lf'])." 
+			AND g.lr <= ".$babDB->quote($group['lr'])." 
+			AND t.id_object='".$babDB->db_escape_string($this->id_delegation)."'
+		";
+		$res = $babDB->db_query($req);
+		return $babDB->db_num_rows($res);
+		
 	}
 
 
@@ -520,10 +582,33 @@ class bab_AclGroups
 	 */
 	private function getList($id_parent, Array $allowedChildren = null, Array $allowed = null)
 	{
+		if ($this->id_delegation && !isset($this->delegation_acl_definition))
+		{
+			trigger_error('missing information');
+		}
+		
+		
 		$groups = bab_getGroups($id_parent, false);
+		
+		// get ancestors
+		
+		if ($this->id_delegation && true === $this->delegation_acl_definition)
+		{
+			$ancestors = $this->ancestorsInAcl($id_parent);
+		}
+		
 
 		$list = array();
 		foreach ($groups['id'] as $key => $id) {
+			
+			
+			// if delegation, if ACL defined on delegation, if no childnode in ACL, if no "checked with childnodes" in ancestors : ignore
+			
+			if ($this->id_delegation && true === $this->delegation_acl_definition && 0 === $ancestors && 0 === $this->groupsInAcl($id))
+			{
+				continue;
+			}
+			
 
 			$list[$id] = array(
 					'name'				=> $groups['name'][$key],
@@ -588,7 +673,7 @@ class bab_AclGroups
 		$allowedChildren = array();
 
 
-		$res = $babDB->db_query("SELECT t.id_group, g.lf, g.lr, g.nb_groups FROM ".$babDB->backTick(BAB_DG_ACL_GROUPS_TBL)." t
+		$res = $babDB->db_query("SELECT t.id_group, g.nb_groups FROM ".$babDB->backTick(BAB_DG_ACL_GROUPS_TBL)." t
 				left join ".BAB_GROUPS_TBL." g on g.id=t.id_group
 				WHERE t.id_object='".$babDB->db_escape_string($id_delegation)."'
 				");
@@ -596,6 +681,7 @@ class bab_AclGroups
 		if (0 === $babDB->db_num_rows($res))
 		{
 			// no ACL definition, get the delegation group as allowed root
+			$this->delegation_acl_definition = false;
 
 			list($delegation) = bab_getDelegationById($id_delegation);
 			$delegation_group = bab_Groups::get($delegation['id_group']);
@@ -616,47 +702,50 @@ class bab_AclGroups
 				// simplify the ACL treeview ...
 				return $this->getGroup($delegation['id_group']);
 			}
-		}
-
-
-
-		// there is an ACL definition on the delegation
-		while ($arr = $babDB->db_fetch_assoc($res)) {
-
-			if ($arr['id_group'] >= BAB_ACL_GROUP_TREE )
-			{
-				$arr['id_group'] -= BAB_ACL_GROUP_TREE;
-
-				// if one of the left checked group is upper or equal to id_parent, return the predefined list, all fields allowed
-				
-				$checked_group = bab_Groups::get($arr['id_group']);
-
-				if ($id_parent == $arr['id_group'] || ($parent['lf'] > $checked_group['lf'] && $parent['lr'] < $checked_group['lr']))
+			
+		} else {
+			
+			$this->delegation_acl_definition = true;
+			
+			// there is an ACL definition on the delegation
+			while ($arr = $babDB->db_fetch_assoc($res)) {
+			
+				if ($arr['id_group'] >= BAB_ACL_GROUP_TREE )
 				{
-					return $this->getList($id_parent);
-				}
-
-				$allowed[$arr['id_group']] = 1;
-				$allowedChildren[$arr['id_group']] = 1;
-			}
-			else
-			{
-				if( $arr['nb_groups'] !== null )
-				{
-					// set of groups
-
-					$rs=$babDB->db_query("select id_group from ".BAB_GROUPS_SET_ASSOC_TBL." where id_set=".$babDB->quote($arr['id_group']));
-					while( $rr = $babDB->db_fetch_array($rs))
+					$arr['id_group'] -= BAB_ACL_GROUP_TREE;
+			
+					// if one of the left checked group is upper or equal to id_parent, return the predefined list, all fields allowed
+			
+					$checked_group = bab_Groups::get($arr['id_group']);
+			
+					if ($id_parent == $arr['id_group'] || ($parent['lf'] > $checked_group['lf'] && $parent['lr'] < $checked_group['lr']))
 					{
-						$allowed[$rr['id_group']] = 1;
+						return $this->getList($id_parent);
 					}
+			
+					$allowed[$arr['id_group']] = 1;
+					$allowedChildren[$arr['id_group']] = 1;
 				}
 				else
 				{
-					$allowed[$arr['id_group']] = 1;
+					if( $arr['nb_groups'] !== null )
+					{
+						// set of groups
+			
+						$rs=$babDB->db_query("select id_group from ".BAB_GROUPS_SET_ASSOC_TBL." where id_set=".$babDB->quote($arr['id_group']));
+						while( $rr = $babDB->db_fetch_array($rs))
+						{
+							$allowed[$rr['id_group']] = 1;
+						}
+					}
+					else
+					{
+						$allowed[$arr['id_group']] = 1;
+					}
 				}
 			}
 		}
+
 
 		return $this->getList($id_parent, $allowedChildren, $allowed);
 

@@ -187,6 +187,8 @@ class bab_Groups
 	{
 		global $babDB;
 		
+		$ancestors = array();
+		
 		$res = $babDB->db_query("SELECT a.id, a.name FROM ".BAB_GROUPS_TBL." a, ".BAB_GROUPS_TBL." g WHERE g.id=".$babDB->quote($id_group)." AND a.lf < g.lf AND a.lr > g.lr ORDER BY a.lf");
 		while( $arr = $babDB->db_fetch_array($res))
 		{
