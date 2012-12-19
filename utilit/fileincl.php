@@ -3096,6 +3096,9 @@ function haveAdministratorRight()
 	else
 	{
 		$dgAdmGroups = bab_getDgAdmGroups();
+		if($dgAdmGroups === null){
+			$dgAdmGroups = array();
+		}
 		return array_key_exists(bab_getCurrentUserDelegation(), array_flip($dgAdmGroups));
 	}
 }
