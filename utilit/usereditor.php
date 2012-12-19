@@ -717,7 +717,7 @@ class Func_UserEditor extends bab_functionality {
 	public function save(Array $user)
 	{
 		global $babBody;
-		
+
 		$id_user = isset($user['id']) ? ((int) $user['id']) : null;
 		
 		if (null === $id_user && !$this->canCreateUser())
@@ -731,13 +731,17 @@ class Func_UserEditor extends bab_functionality {
 		}
 		
 		// verify directory mandatory fields
-		$fields = $this->getDirectoryFields();
-		foreach($fields as $fieldname => $f) {
-			if (isset($f['modifiable']) && isset($f['required']) && true === $f['modifiable'] && true === $f['required'])
-			{
-				if (!isset($user[$fieldname]) || '' === $user[$fieldname])
+		
+		if ((null === $id_user && $this->canAddDirectoryEntry()) || $this->canEditDirectoryEntry($id_user))
+		{
+			$fields = $this->getDirectoryFields();
+			foreach($fields as $fieldname => $f) {
+				if (isset($f['modifiable']) && isset($f['required']) && true === $f['modifiable'] && true === $f['required'])
 				{
-					throw new Exception(sprintf(bab_translate('The fields %s is mandatory'), $f['name']));
+					if (!isset($user[$fieldname]) || '' === $user[$fieldname])
+					{
+						throw new Exception(sprintf(bab_translate('The fields %s is mandatory'), $f['name']));
+					}
 				}
 			}
 		}
