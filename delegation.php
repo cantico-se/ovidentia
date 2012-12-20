@@ -56,7 +56,7 @@ function getImage()
 		return '';
 	}
 	if(bab_gp('realFile','') == 1){
-		header('Content-type: ' . bab_getFileMimeType($sPath, $subtype));
+		header('Content-type: ' . bab_getFileMimeType($sPath));
 		readfile($sPath);
 		die;
 	}
