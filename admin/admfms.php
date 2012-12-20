@@ -453,7 +453,7 @@ function bab_selectPurgeFolder()
 		function temp()
 		{
 			global $babDB;
-				
+			
 			$this->name		= bab_translate("Folders");
 			$this->path		= bab_translate("Path");
 			$this->select	= bab_translate("Select");
@@ -473,6 +473,13 @@ function bab_selectPurgeFolder()
 					
 					ORDER BY name ASC, folder ASC, sRelativePath ASC";
 			$this->res = $babDB->db_query($sql);
+			
+			$fid = bab_gp('folder', '');
+			$fid = explode('.', $fid);
+			$this->fid = array();
+			foreach($fid as $id){
+				$this->fid[$id] = $id;
+			}
 		}
 	
 		function getnext()
@@ -487,6 +494,11 @@ function bab_selectPurgeFolder()
 				$this->folderpath = '';
 				$this->dgowner = '';
 				$this->folderid = '-1';
+				if(isset($this->fid[$this->folderid])){
+					$this->checked = ' checked="checked" ';
+				}else{
+					$this->checked = '';
+				}
 				
 				return true;
 			}
@@ -501,6 +513,13 @@ function bab_selectPurgeFolder()
 					$this->dgowner = $arr['name'];
 				}
 				$this->folderid = $arr['fmid'];
+				
+				if(isset($this->fid[$this->folderid])){
+					$this->checked = ' checked="checked" ';
+				}else{
+					$this->checked = '';
+				}
+				
 				return true;
 			}
 			return false;
@@ -533,8 +552,16 @@ function bab_actionPurgeFolder(){
 			$this->purge			= bab_translate("Purge all trashs from all selected folders.");
 			$this->notify_confirm	= bab_translate("Proceed to the notification?");
 			$this->purge_confirm	= bab_translate("Proceed to the purge?");
+			$this->name				= bab_translate("Folders");
+			$this->path				= bab_translate("Path");
+			$this->select			= bab_translate("Select");
+			$this->delegation		= bab_translate("Delegation");
+			
+			$this->personnal = false;
 			
 			$arrayIds = bab_pp('selects', array());
+			$arrayIdReal = array();
+			
 			$ids = '';
 			foreach($arrayIds as $k => $v){
 				if($ids == ''){
@@ -542,10 +569,61 @@ function bab_actionPurgeFolder(){
 				}else{
 					$ids.= '.'.$k;
 				}
+				$arrayIdReal[] = $k;
+				if($k == -1){
+					$this->personnal = true;
+				}
 			}
 			
-			$this->notifyurl		= bab_toHtml($GLOBALS['babUrlScript'] . '?tg=admfms&idx=list&action=notify&folder=' . $ids);
-			$this->purgeurl		= bab_toHtml($GLOBALS['babUrlScript'] . '?tg=admfms&idx=list&action=purge&folder=' . $ids);
+			$this->notifyurl		= bab_toHtml($GLOBALS['babUrlScript'] . '?tg=admfms&idx=purgefm&action=notify&folder=' . $ids);
+			$this->purgeurl		= bab_toHtml($GLOBALS['babUrlScript'] . '?tg=admfms&idx=purgefm&action=purge&folder=' . $ids);
+			
+			$sql = "SELECT
+				fm.id as fmid,
+				fm.folder as folder,
+				fm.sRelativePath as sRelativePath,
+				fm.id_dgowner as id_dgowner,
+				dgr.id as dgrid,
+				dgr.name as name
+			FROM ".BAB_FM_FOLDERS_TBL." as fm
+			
+			LEFT JOIN ".BAB_DG_GROUPS_TBL." as dgr
+			ON fm.id_dgowner = dgr.id
+			
+			WHERE fm.id IN(".$babDB->quote($arrayIdReal).")
+			
+			ORDER BY name ASC, folder ASC, sRelativePath ASC";
+			$this->res = $babDB->db_query($sql);
+		}
+	
+		function getnext()
+		{
+			global $babDB;
+			static $end = true;
+			
+			if($end && $this->personnal){
+				$end = false;
+				$this->foldername = bab_translate('All personnal folders');
+				$this->folderpath = '';
+				$this->dgowner = '';
+				
+				return true;
+			}
+
+			$end = false;
+			
+			while($this->res && $arr = $babDB->db_fetch_array($this->res))
+			{
+				$this->foldername = $arr['folder'];
+				$this->folderpath = $arr['sRelativePath'];
+				if($arr['id_dgowner'] == 0){
+					$this->dgowner = bab_translate('All site');
+				}else{
+					$this->dgowner = $arr['name'];
+				}
+				return true;
+			}
+			return false;
 		}
 	}
 	
@@ -582,6 +660,9 @@ function bab_notifyPurgeTrashs()
 	while($res && $arr = $babDB->db_fetch_assoc($res))
 	{
 		$folders[$arr['id']] = $arr;
+		if($arr['dgrid'] == 0){
+			$folders[$arr['id']]['name'] = bab_translate('All site');
+		}
 	}
 
 	$usersToNotifyPublic = array();
