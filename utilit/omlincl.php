@@ -7117,7 +7117,7 @@ class bab_OvmlAttributes
 
 		switch($v)
 			{
-			case '0': // disable auto htmlentites
+			case '0': // disable auto htmlentities
 				break;
 
 			case '1':
