@@ -801,7 +801,7 @@ class bab_UserPeriods implements Countable, seekableIterator {
 
 					}
 
-					$r[$uid] = $event;
+					$r[] = $event;
 				}
 			}
 		}
