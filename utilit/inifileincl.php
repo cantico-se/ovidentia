@@ -1377,20 +1377,15 @@ class bab_inifile {
 			'recommended' => $optional
 		);
 	}
-
-
-
-
-	/**
-	 * The list of requirements specified in the ini file
-	 * @return array
-	 */
-	function getRequirements() {
-
+	
+	
+	
+	private function getUnsortedRequirements()
+	{
 		$return = array();
-
+		
 		$requirementsObj = new bab_inifile_requirements();
-
+		
 		foreach($this->inifile as $keyword => $value) {
 			$keyword = 'require_'.$keyword;
 			if (method_exists ( $requirementsObj, $keyword )) {
@@ -1401,15 +1396,15 @@ class bab_inifile {
 					} else {
 						$arr['required'] = bab_translate($value);
 					}
-				 	$arr['required'] = bab_translate($value);
-				 	$arr['recommended'] = false;
-				 	$return[] = $arr;
+					$arr['required'] = bab_translate($value);
+					$arr['recommended'] = false;
+					$return[] = $arr;
 				}
 			}
 		}
-
-
-
+		
+		
+		
 		foreach($this->recommendations as $keyword => $value) {
 			$keyword = 'require_'.$keyword;
 			//bab_debug($keyword);
@@ -1427,77 +1422,90 @@ class bab_inifile {
 				}
 			}
 		}
-
-
-
+		
+		
+		
 		$return = array_merge($return, $this->getAddonsRequirements());
-
-
+		
+		
 		
 		if ($this->functionalities) {
-
+		
 			foreach($this->functionalities as $name => $value) {
-
+		
 				// value can be "Available" or "Recommended"
-
+		
 				$obj = bab_functionality::get($name);
-
+		
 				switch(mb_strtolower($value)) {
 					case 'available':
 						$required = bab_translate('Available');
 						$recommended = false;
 						break;
-
+		
 					case 'recommended':
 						$required = false;
 						$recommended = bab_translate('Available');
 						break;
 				}
-
+		
 				if (false === $obj) {
 					$return[] = array(
-						'description'	=> bab_translate('Library').' : '.$name,
-						'required'		=> $required,
-						'recommended'	=> $recommended,
-						'current'		=> bab_translate('Not installed or disabled'),
-						'result'		=> false
+							'description'	=> bab_translate('Library').' : '.$name,
+							'required'		=> $required,
+							'recommended'	=> $recommended,
+							'current'		=> bab_translate('Not installed or disabled'),
+							'result'		=> false
 					);
 				} else {
 					$return[] = array(
-						'description'	=> bab_translate('Library').' : '.$name,
-						'required'		=> $required,
-						'recommended'	=> $recommended,
-						'current'		=> bab_translate('Available'),
-						'result'		=> true
+							'description'	=> bab_translate('Library').' : '.$name,
+							'required'		=> $required,
+							'recommended'	=> $recommended,
+							'current'		=> bab_translate('Available'),
+							'result'		=> true
 					);
 				}
 			}
 		}
 		
-
-
-
+		
+		
+		
 		if ($this->customscript) {
 			foreach($this->customscript as $prerequisit) {
 				$return[] = $prerequisit;
 			}
 		}
+		
+		
+		return $return;
+		
+	}
 
 
 
 
+	/**
+	 * The list of requirements specified in the ini file
+	 * @return array
+	 */
+	function getRequirements() {
 
+		
+		$return = $this->getUnsortedRequirements();
+		
 		$order = array();
 		foreach($return as $key => $value) {
 			$order[$key] = $value['description'];
 		}
-
-
-
+		
+		
+		
 		if (class_exists('bab_sort')) {
 			bab_sort::natcasesort($order);
 		}
-
+		
 		$return_ordered = array();
 		foreach($order as $key => $value) {
 			$return_ordered[] = $return[$key];
@@ -1612,7 +1620,7 @@ class bab_inifile {
 			return false;
 		}		
 		
-		$requirements = $this->getRequirements();
+		$requirements = $this->getUnsortedRequirements();
 		foreach($requirements as $arr) {
 			if (false === $arr['result'] && false !== $arr['required']) {
 				return false;
