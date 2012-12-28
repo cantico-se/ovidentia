@@ -1052,8 +1052,8 @@ function doExportVacationRequests($dateb, $datee, $idstatus, $wsepar, $separ, $s
 		$users_with_requests[] = $row['id_user'];
 		
 		$line = array();
-		$line[] = $row['firstname'];
 		$line[] = $row['lastname'];
+		$line[] = $row['firstname'];
 		$line[] = bab_shortDate($row['date_begin'], true);
 		$line[] = bab_shortDate($row['date_end'], true);
 
