@@ -1395,7 +1395,7 @@ CREATE TABLE bab_fmunzip_groups (
 CREATE TABLE bab_db_directories (
   id int(11) unsigned NOT NULL auto_increment,
   name varchar(255) NOT NULL default '',
-  description varchar(255) NOT NULL default '',
+  description text,
   id_group int(11) unsigned NOT NULL default '0',
   id_dgowner int(11) unsigned NOT NULL default '0',
   user_update enum('N','Y') NOT NULL default 'N',

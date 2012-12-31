@@ -61,9 +61,18 @@
 <table width="99%" border="0" cellspacing="0" cellpadding="2" align="center">
 <tr> 
 	<td class="BabLoginCadreBackground"> 
-		<table width="100%" border="0" cellspacing="0" cellpadding="1" align="center">
+		<table width="100%" border="0" cellspacing="0" cellpadding="5" align="center">
+		
+		<!--#if description -->
+		<tr>
+			<td class="BabLoginMenuBackground">
+				{ description }
+			</td>
+		</tr>
+		<!--#endif description -->
+		
 		<tr valign="middle"> 
-			<td colspan="3" class="BabLetterlists"> 
+			<td class="BabLetterlists"> 
 			<!--#if allselected "== 1" -->
 			{ allname }&nbsp;  
 			<!--#else allselected -->
@@ -83,7 +92,7 @@
 			<a class="BabAlphabetLink" href="{ assignurl }" onclick="Start(this.href, '', 'width=550,height=500,status=no,resizable=yes,top=50,left=200,scrollbars=yes');return false;">{ assignname }</a>
 			<!--#endif bassign -->
 			</td>
-			<td align="right" class="BabLetterlists">&nbsp;</td>
+			
 		</tr>
 		</table>
 	</td>

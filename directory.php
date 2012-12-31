@@ -95,7 +95,7 @@ function listUserAds()
 				{
 				$this->altbg = !$this->altbg;
 				$arr = $babDB->db_fetch_array($babDB->db_query("select name, description from ".BAB_LDAP_DIRECTORIES_TBL." where id='".$babDB->db_escape_string($this->ldapid[$i])."'"));
-				$this->description = bab_toHtml($arr['description']);
+				$this->description = bab_toHtml($arr['description'], BAB_HTML_ALL ^ BAB_HTML_P);
 				$this->url = bab_toHtml($GLOBALS['babUrlScript']."?tg=directory&idx=sldap&id=".$this->ldapid[$i]);
 				$this->urlname = bab_toHtml($arr['name']);
 				$i++;
@@ -113,7 +113,7 @@ function listUserAds()
 				{
 				$this->altbg = !$this->altbg;
 				$arr = $babDB->db_fetch_array($babDB->db_query("select name, description, id_group from ".BAB_DB_DIRECTORIES_TBL." where id='".$babDB->db_escape_string($this->dbid[$i])."'"));
-				$this->description = bab_toHtml($arr['description']);
+				$this->description = bab_toHtml($arr['description'], BAB_HTML_ALL ^ BAB_HTML_P);
 				$this->adminurl = bab_toHtml($GLOBALS['babUrlScript']."?tg=directory&idx=sdb&id=".$this->dbid[$i]);
 				$this->url = bab_toHtml($GLOBALS['babUrlScript']."?tg=directory&idx=sdbovml&directoryid=".$this->dbid[$i]);
 				$this->urlname = bab_toHtml($arr['name']);
@@ -362,7 +362,13 @@ function browseDbDirectory($id, $pos, $xf, $badd, $disable_email='N')
 				}
 			$this->addurl = bab_toHtml($GLOBALS['babUrlScript']."?tg=directory&idx=adbc&id=".urlencode($id));
 			$this->count = 0;
-			$arr = $babDB->db_fetch_array($babDB->db_query("select id_group from ".BAB_DB_DIRECTORIES_TBL." where id='".$babDB->db_escape_string($id)."'"));
+			$arr = $babDB->db_fetch_array($babDB->db_query("select description, id_group from ".BAB_DB_DIRECTORIES_TBL." where id='".$babDB->db_escape_string($id)."'"));
+			if ($arr['description'])
+			{
+				$this->description = bab_toHtml($arr['description'], BAB_HTML_ALL ^ BAB_HTML_P);
+			} else {
+				$this->description = false;
+			}
 			$this->idgroup = $arr['id_group'];
 			if(bab_isAccessValid(BAB_DBDIRVIEW_GROUPS_TBL, $id))
 				{

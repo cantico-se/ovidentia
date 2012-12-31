@@ -160,7 +160,7 @@ function listAds()
 					$this->group = '';
 				}
 				
-				$this->description	= bab_toHtml($arr['description']);
+				$this->description	= bab_toHtml($arr['description'], BAB_HTML_ALL ^ BAB_HTML_P);
 				$this->url			= bab_toHtml($GLOBALS['babUrlScript'].'?tg=admdir&idx=mdb&id='.$arr['id']);
 				$this->urlname		= bab_toHtml($arr['name']);
 				$this->grightsurl	= bab_toHtml($GLOBALS['babUrlScript'].'?tg=admdir&idx=db_rights&id='.$arr['id']);

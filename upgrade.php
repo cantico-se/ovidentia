@@ -6926,6 +6926,16 @@ function ovidentia_upgrade($version_base,$version_ini) {
 		$babDB->db_query("ALTER TABLE `".BAB_SITES_TBL."` ADD `ldap_usercreate_test` tinyint(1) unsigned NOT NULL default '1'");
 	}
 	
+	$res = $babDB->db_query('DESCRIBE `bab_db_directories` description');
+	$sessid = $babDB->db_fetch_assoc($res);
+	
+	if ($sessid['Type'] != 'text')
+	{
+		$babDB->db_query("ALTER TABLE `bab_db_directories` CHANGE `description` `description` TEXT");
+	}
+	
+	
+	
 	return true;
 
 }

@@ -322,20 +322,19 @@
 <td> 
 <table class="BabLoginMenuBackground" width="100%" border="0" cellspacing="0" cellpadding="5" align="center">
 <tr> 
-<td align="right">{ name }</td>
+<td align="right">{ name } :</td>
 <td>
-<input type="text" name="adname" size="30" value="{ vname }">
+<input type="text" name="adname" size="40" maxsize="255" value="{ vname }">
 </td>
 </tr>
 <tr> 
-<td align="right">{ description }</td>
-<td valign="middle">
-<input type="text" name="description" size="45" value="{ vdescription }">
+<td align="left" colspan="2">{ description } : <br />
+
+<textarea name="description" style="width:100%" rows="4">{ vdescription }</textarea>
 </td>
 </tr>
 <tr> 
-<td align="right">{ displayinfoupdate }?</td>
-<td valign="middle">
+<td align="left" colspan="2">{ displayinfoupdate }&nbsp;
 <select name="displayiu">
 <option value="N" { noduselected }>{ no }</option>
 <option value="Y" { yesduselected }>{ yes }</option>
@@ -344,8 +343,7 @@
 </tr>
 <!--#if ballowuserupdate -->
 <tr> 
-<td align="right">{ allowuserupdate }</td>
-<td valign="middle">
+<td align="left" colspan="2">{ allowuserupdate }&nbsp;
 <select name="allowuu">
 <option value="N" { noselected }>{ no }</option>
 <option value="Y" { yesselected }>{ yes }</option>
