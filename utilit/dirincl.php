@@ -1557,3 +1557,43 @@ function bab_getDirectorySearchHeaders($id_directory = null) {
 
 	return $return;
 }
+
+
+
+
+/**
+ * Create a directory from a group if not exists
+ * @param 	int $id_group
+ * @param	int	$id_delegation
+ * @return int  id_directory
+ */
+function bab_setGroupDirectory($id_group, $id_delegation)
+{
+	global $babDB;
+	
+	$babDB->db_query("update ".BAB_GROUPS_TBL." set directory='Y' where id='".$babDB->db_escape_string($id_group)."'");
+	
+	$res = $babDB->db_query("select id from ".BAB_DB_DIRECTORIES_TBL." where id_group=".$babDB->quote($id_group));
+	
+	if( !$res || $babDB->db_num_rows($res) == 0 )
+	{
+		$babDB->db_query("insert into ".BAB_DB_DIRECTORIES_TBL." (name, description, id_group, id_dgowner) 
+				values (
+					'".$babDB->db_escape_string(bab_getGroupName($id_group, false))."',
+					'',
+					'".$babDB->db_escape_string($id_group)."',
+					'".$babDB->db_escape_string($id_delegation)."'
+		)");
+		
+		$id = (int) $babDB->db_insert_id();
+	}
+	else
+	{
+		$arr = $babDB->db_fetch_array($res);
+		$id = (int) $arr['id'];
+		
+		$babDB->db_query("update ".BAB_DB_DIRECTORIES_TBL." set id_dgowner=".$babDB->quote($id_delegation)." where id_group='".$babDB->db_escape_string($id_group)."'");
+	}
+	
+	return $id;
+}

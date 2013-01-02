@@ -1842,22 +1842,9 @@ function updateDirGroups($dirgrpids) // enregistrement des modifications aux ann
 	$dirids = array();
 	for( $i=0; $i < count($dirgrpids); $i++)
 	{
-		$babDB->db_query("update ".BAB_GROUPS_TBL." set directory='Y' where id='".$babDB->db_escape_string($dirgrpids[$i])."'");
-
-		$res = $babDB->db_query("select id from ".BAB_DB_DIRECTORIES_TBL." where id_group='".$dirgrpids[$i]."'");
-		if( !$res || $babDB->db_num_rows($res) == 0 )
-		{
-			$babDB->db_query("insert into ".BAB_DB_DIRECTORIES_TBL." (name, description, id_group, id_dgowner) values ('".$babDB->db_escape_string(bab_getGroupName($dirgrpids[$i], false))."','','".$babDB->db_escape_string($dirgrpids[$i])."', '".$babBody->currentAdmGroup."')");
-			$id = $babDB->db_insert_id();
-			$dirids[$id] = $id;
-		}
-		else
-		{
-			$arr = $babDB->db_fetch_array($res);
-			$babDB->db_query("update ".BAB_DB_DIRECTORIES_TBL." set id_dgowner=".$babDB->quote($babBody->currentAdmGroup)." where id_group='".$babDB->db_escape_string($dirgrpids[$i])."'");
-			$dirids[$arr['id']] = $arr['id'];
-		}
-		}
+		$id = bab_setGroupDirectory($dirgrpids[$i], $babBody->currentAdmGroup);
+		$dirids[$id] = $id;
+	}
 		
 	$res = $babDB->db_query("select id from ".BAB_DB_DIRECTORIES_TBL." where id_group not in ('0', '".BAB_REGISTERED_GROUP."') and id_dgowner=".$babDB->quote($babBody->currentAdmGroup));
 	while($arr = $babDB->db_fetch_array($res))
