@@ -882,6 +882,19 @@ function bab_ajaxTopicRow() {
 		return;
 	}
 	
+	if (!$idTopic)
+	{
+		$topicList = bab_getArticleTopicsAsTextTree(0, false, BAB_TOPICSSUB_GROUPS_TBL);
+		foreach($topicList as $item) {
+			if (!$item['category'])
+			{
+				$idTopic = $item['id_object'];
+				break;
+			}
+		}
+	}
+	
+	
 	if (!$idDraft && !bab_isAccessValid(BAB_TOPICSSUB_GROUPS_TBL, $idTopic))
 	{
 		// no draft
@@ -905,6 +918,8 @@ function bab_ajaxTopicRow() {
 	
 	$W = bab_Widgets();
 	$W->HtmlCanvas();
+	
+	
 
 	global $babDB;
 	$res = $babDB->db_query(
