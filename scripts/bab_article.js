@@ -1,6 +1,9 @@
 
-
-function bab_setTopicSettings(){
+/**
+ * 
+ * @param int editor_delay Delay before access to the editor
+ */
+function bab_setTopicSettings(editor_delay){
 	jQuery('[name="restriction"]').attr('disabled','disabled');
 	jQuery('[name="restriction"]').closest('.bab-article-restriction').hide();
 	
@@ -100,36 +103,40 @@ function bab_setTopicSettings(){
 			
 			// dynamic template work only with ckeditor
 			
-			if (null != CKEDITOR && null != settings.template)
-			{
-				if (CKEDITOR.instances['bab_article_head'] && settings.template['head'])
+			setTimeout(function() {
+			
+				if (null != CKEDITOR && null != settings.template)
 				{
-					jQuery('#bab_articlehead_section .widget-section-content').show('fast', function() {
+					if (CKEDITOR.instances['bab_article_head'] && settings.template['head'])
+					{
+						jQuery('#bab_articlehead_section .widget-section-content').show('fast', function() {
+						
+							var head = CKEDITOR.instances['bab_article_head'];
+							var data = head.getData();
+							if ('' == data)
+							{
+								head.insertHtml(settings.template['head']);
+							}
+						
+						});
+					}
 					
-						var head = CKEDITOR.instances['bab_article_head'];
-						var data = head.getData();
-						if ('' == data)
-						{
-							head.insertHtml(settings.template['head']);
-						}
-					
-					});
+					if (CKEDITOR.instances['bab_article_body'] && settings.template['body'])
+					{
+						jQuery('#bab_articlebody_section .widget-section-content').show('fast', function() {
+						
+							var body = CKEDITOR.instances['bab_article_body'];
+							var data = body.getData();
+							if ('' == data)
+							{
+								body.insertHtml(settings.template['body']);
+							}
+						
+						});
+					}
 				}
-				
-				if (CKEDITOR.instances['bab_article_body'] && settings.template['body'])
-				{
-					jQuery('#bab_articlebody_section .widget-section-content').show('fast', function() {
-					
-						var body = CKEDITOR.instances['bab_article_body'];
-						var data = body.getData();
-						if ('' == data)
-						{
-							body.insertHtml(settings.template['body']);
-						}
-					
-					});
-				}
-			}
+			
+			}, editor_delay);
 		}
 	});
 }
@@ -215,10 +222,10 @@ jQuery(document).ready(function() {
 			return;
 		}
 		
-		bab_setTopicSettings();
+		bab_setTopicSettings(1000);
 		
 		jQuery('#bab-article-topic').change(function(){
-			bab_setTopicSettings();
+			bab_setTopicSettings(0);
 		});
 		
 		clearInterval(timer);
