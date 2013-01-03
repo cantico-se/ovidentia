@@ -199,9 +199,24 @@ window.babArticle.filesAttachments = function()
 
 jQuery(document).ready(function() {
 	bab_setTopicSettings();
-	jQuery('#bab-article-topic').change(function(){
-		bab_setTopicSettings();
-	});
+	
+	
+	var timer = setInterval(function(){
+		
+		if (jQuery('#bab-article-topic').length == 0)
+		{
+			return;
+		}
+		
+		jQuery('#bab-article-topic').change(function(){
+			bab_setTopicSettings();
+		});
+		
+		clearInterval(timer);
+		
+	},500);
+
+	
 	
 	
 	
