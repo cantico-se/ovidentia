@@ -198,7 +198,6 @@ window.babArticle.filesAttachments = function()
 
 
 jQuery(document).ready(function() {
-	bab_setTopicSettings();
 	
 	
 	var timer = setInterval(function(){
@@ -207,6 +206,8 @@ jQuery(document).ready(function() {
 		{
 			return;
 		}
+		
+		bab_setTopicSettings();
 		
 		jQuery('#bab-article-topic').change(function(){
 			bab_setTopicSettings();
