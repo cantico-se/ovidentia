@@ -329,7 +329,9 @@ class bab_ArticleDraftEditor {
 				$tempLab = $W->Label(bab_translate('Introduction'))->addClass('widget-label-mandatory'),
 				$W->Frame('intro')->addItem(
 					$W->Html($headEditor->getEditor())
-				)
+				),
+				3,
+				'bab_articlehead_section'
 			)->setFoldable(true)
 		);
 
@@ -350,7 +352,9 @@ class bab_ArticleDraftEditor {
 				bab_translate('Body'),
 				$W->Frame()->addItem(
 					$W->Html($bodyEditor->getEditor())
-				)
+				),
+				3,
+				'bab_articlebody_section'
 			)->setFoldable(true)
 		);
 
