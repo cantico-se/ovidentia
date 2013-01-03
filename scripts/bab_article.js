@@ -114,11 +114,11 @@ function bab_setTopicSettings(){
 				
 				if (CKEDITOR.instances['bab_article_body'] && settings.template['body'])
 				{
-					var head = CKEDITOR.instances['bab_article_body'];
-					var data = head.getData();
+					var body = CKEDITOR.instances['bab_article_body'];
+					var data = body.getData();
 					if ('' == data)
 					{
-						head.insertHtml(settings.template['body']);
+						body.insertHtml(settings.template['body']);
 					}
 				}
 			}
