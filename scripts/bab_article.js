@@ -104,22 +104,30 @@ function bab_setTopicSettings(){
 			{
 				if (CKEDITOR.instances['bab_article_head'] && settings.template['head'])
 				{
-					var head = CKEDITOR.instances['bab_article_head'];
-					var data = head.getData();
-					if ('' == data)
-					{
-						head.insertHtml(settings.template['head']);
-					}
+					jQuery('#bab_articlehead_section .widget-section-content').show('fast', function() {
+					
+						var head = CKEDITOR.instances['bab_article_head'];
+						var data = head.getData();
+						if ('' == data)
+						{
+							head.insertHtml(settings.template['head']);
+						}
+					
+					});
 				}
 				
 				if (CKEDITOR.instances['bab_article_body'] && settings.template['body'])
 				{
-					var body = CKEDITOR.instances['bab_article_body'];
-					var data = body.getData();
-					if ('' == data)
-					{
-						body.insertHtml(settings.template['body']);
-					}
+					jQuery('#bab_articlebody_section .widget-section-content').show('fast', function() {
+					
+						var body = CKEDITOR.instances['bab_article_body'];
+						var data = body.getData();
+						if ('' == data)
+						{
+							body.insertHtml(settings.template['body']);
+						}
+					
+					});
 				}
 			}
 		}
