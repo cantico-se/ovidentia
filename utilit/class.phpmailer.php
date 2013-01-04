@@ -140,6 +140,13 @@ class PHPMailer
      *  @var string
      */
     var $Hostname          = "";
+    
+    
+    /**
+     * Set after send, uniq ID used for Message-Id header
+     * @var string
+     */
+    var $uniq_id = null;
 
 
     /////////////////////////////////////////////////
@@ -762,6 +769,10 @@ class PHPMailer
         
         // Set the boundaries
         $uniq_id = md5(uniqid(time()));
+        
+        $this->uniq_id = $uniq_id;
+        
+        
         $this->boundary[1] = "b1_" . $uniq_id;
         $this->boundary[2] = "b2_" . $uniq_id;
 

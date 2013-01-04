@@ -566,6 +566,19 @@ class babMail
 	{
 		$this->mail->ClearAttachments();
 	}
+	
+	/**
+	 * Add custom header
+	 * 
+	 * @param	string	$name
+	 * @param	string	$value
+	 */
+	public function AddCustomHeader($name, $value)
+	{
+		$this->mail->CustomHeader[] = array($name, $value);
+	}
+	
+	
 
 	/**
 	 * Send message
@@ -596,6 +609,16 @@ class babMail
 		$this->hash = null;
 
 		return $this->sent_status; 
+	}
+	
+	
+	/**
+	 * Get the Message-ID header value after mail sent
+	 * @return string
+	 */
+	public function getMessageId()
+	{
+		return sprintf("<%s@%s>", $this->mail->uniq_id, $this->mail->ServerHostname());
 	}
 
 
