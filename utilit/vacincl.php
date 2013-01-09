@@ -2822,12 +2822,22 @@ function bab_vac_onModifyPeriod($event) {
 		$babDB->db_query("TRUNCATE bab_vac_calendar");
 		return;
 	}
+	
+	
+	bab_vac_clearUserCalendar($event->id_user);
+	return;
+	
+	// le code si dessous existait pour optimiser le cache mais dans de rares cas cela ne fonctionne pas
+	// la modification d'une periode peut entrainer des changement de couleurs sur une autre periode qui n'a pas 
+	// ete modifiee
 
+	/*
 	if (false === $event->begin || false === $event->end) {
 		bab_vac_clearUserCalendar($event->id_user);
 		return;
 	}
 
+	
 	include_once $GLOBALS['babInstallPath']."utilit/dateTime.php";
 
 	$date_begin = BAB_DateTime::fromTimeStamp($event->begin);
@@ -2840,6 +2850,8 @@ function bab_vac_onModifyPeriod($event) {
 		bab_vac_updateCalendar($event->id_user, $year, $month);
 		$date_begin->add(1, BAB_DATETIME_MONTH);
 	}
+	
+	*/
 }
 
 
