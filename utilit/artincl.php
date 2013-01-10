@@ -1308,8 +1308,15 @@ function notifyArticleGroupMembers(bab_eventArticle $event, $msg)
 
 				//bab_replace()
 				$replace = bab_replace_get();
+
 				$replace->email($head);
 				$replace->email($body);
+				/*
+				// pas necessaaire avec ckeditor ??
+				$head = preg_replace('/href="(?:index.php)?\?/', 'href="' . $GLOBALS['babUrlScript'] . '?', $head);
+				$body = preg_replace('/href="(?:index.php)?\?/', 'href="' . $GLOBALS['babUrlScript'] . '?', $body);
+				*/
+
 				$this->babtpl_articlehead = preg_replace('/src="images/', 'src="' . $GLOBALS['babUrl'] . 'images', $head);
 				$this->babtpl_articlebody = preg_replace('/src="images/', 'src="' . $GLOBALS['babUrl'] . 'images', $body);
 				}
