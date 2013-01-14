@@ -230,6 +230,12 @@ function bab_hideActions()
 }
 
 
+function bab_initSearchDelay(id){
+	document.getElementById(id).tree.initSearch();
+	window.setTimeout('bab_initSearchDelay("' + id + '");', 800);
+}
+
+
 function bab_initTree(div)
 {
 	if (div.getElementsByTagName('UL').length == 0) {
@@ -241,7 +247,7 @@ function bab_initTree(div)
 	tree.hideNonMatchingItems = hasClass(div, 'bab-hide-non-matching-items');
 	tree.expandMatchingItemsSubTree = hasClass(div, 'bab-expand-matching-items-sub-tree');
 
-	window.setTimeout('document.getElementById("' + div.id + '").tree.initSearch();', 800);
+	window.setTimeout('bab_initSearchDelay("' + div.id + '");', 800);
 
 	var showToolbar = hasClass(div, 'bab-show-toolbar');
 	if (showToolbar) {
