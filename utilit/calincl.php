@@ -608,7 +608,7 @@ function bab_deleteCalendar($idcal)
 		$babDB->db_query("delete from ".BAB_CAL_EVENTS_TBL." where id='".$babDB->db_escape_string($arr['id_event'])."'");	
 		$babDB->db_query("delete from ".BAB_CAL_EVENTS_NOTES_TBL." where id_event='".$babDB->db_escape_string($arr['id_event'])."'");	
 		$babDB->db_query("delete from ".BAB_CAL_EVENTS_REMINDERS_TBL." where id_event='".$babDB->db_escape_string($arr['id_event'])."'");
-		$babDB->db_query("delete from ".BAB_CAL_EVENTS_DOMAIN_TBL." where id='".$babDB->db_escape_string($arr['id_event'])."'");	
+		$babDB->db_query("delete from ".BAB_CAL_EVENTS_DOMAINS_TBL." where id='".$babDB->db_escape_string($arr['id_event'])."'");	
 		}
 	$babDB->db_query("delete from ".BAB_CAL_EVENTS_OWNERS_TBL." where id_cal='".$babDB->db_escape_string($idcal)."'");	
 	$babDB->db_query("delete from ".BAB_CALENDAR_TBL." where id='".$babDB->db_escape_string($idcal)."'");	
