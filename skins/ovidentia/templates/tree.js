@@ -230,6 +230,11 @@ function bab_hideActions()
 }
 
 
+function bab_initSearchDelay(id){
+	document.getElementById(id).tree.initSearch();
+	window.setTimeout('bab_initSearchDelay("' + id + '");', 800);
+}
+
 function bab_initTree(div)
 {
 	if (div.getElementsByTagName('UL').length == 0) {
@@ -241,7 +246,7 @@ function bab_initTree(div)
 	tree.hideNonMatchingItems = hasClass(div, 'bab-hide-non-matching-items');
 	tree.expandMatchingItemsSubTree = hasClass(div, 'bab-expand-matching-items-sub-tree');
 
-	window.setTimeout('document.getElementById("' + div.id + '").tree.initSearch();', 800);
+	window.setTimeout('bab_initSearchDelay("' + div.id + '");', 800);
 
 	var showToolbar = hasClass(div, 'bab-show-toolbar');
 	if (showToolbar) {
@@ -471,8 +476,8 @@ bab_Tree.prototype.expand = function()
 
 bab_Tree.prototype.initSearch = function()
 {
-	if (this.initDone)
-		return;
+	//if (this.initDone)
+	//	return;
 	var listItems = this.rootList.getElementsByTagName('LI');
 	var nbListItems = listItems.length;
 	for (var i = 0; i < nbListItems; i++) {
@@ -492,7 +497,7 @@ bab_Tree.prototype.initSearch = function()
 			span.onclick = bab_onElementClick;
 		}
 	}
-	this.initDone = true;
+	//this.initDone = true;
 };
 
 function bab_initSubTreeSearch(rootList)

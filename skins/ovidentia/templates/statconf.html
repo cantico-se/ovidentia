@@ -322,13 +322,14 @@ page_select_fill();
 var currentInput = null;
 
 function co_selectItem(tab) {
-
-var d = document.getElementById('ibcname'); 
-if (d)
-	d.value = tab['content'];
-d = document.getElementById('ibcid'); 
-if (d)
-	d.value = tab['id'];
+	var d = document.getElementById('ibcname'); 
+	if (d){
+		d.value = tab['content'];
+	}
+	d = document.getElementById('ibcid'); 
+	if (d){
+		d.value = tab['id'];
+	}
 }
 
 //-->
