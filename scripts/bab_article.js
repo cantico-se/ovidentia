@@ -214,21 +214,40 @@ window.babArticle.filesAttachments = function()
 
 jQuery(document).ready(function() {
 	
+	var inittopic = false;
+	var initselect = false;
 	
 	var timer = setInterval(function(){
 		
-		if (jQuery('#bab-article-topic').length == 0)
+		var id_topic = 0;
+		if (jQuery('#bab-article-topic').length == 0) {
+			id_topic = parseInt(jQuery('[name="id_topic_db"]').val());
+		} 
+		
+		if (jQuery('#bab-article-topic').length == 0 && id_topic == 0)
 		{
 			return;
 		}
 		
-		bab_setTopicSettings(1000);
+		if (false === inittopic)
+		{
+			inittopic = true;
+			// console.debug('init Topic');
+			bab_setTopicSettings(1000);
+		}
 		
-		jQuery('#bab-article-topic').change(function(){
-			bab_setTopicSettings(0);
-		});
-		
-		clearInterval(timer);
+		if (false === initselect && jQuery('#bab-article-topic').length > 0)
+		{
+			initselect = true;
+			// console.debug('init Select');
+			
+			jQuery('#bab-article-topic').change(function(){
+				bab_setTopicSettings(0);
+			});
+			
+			// clearInterval(timer);
+		}
+
 		
 	},500);
 

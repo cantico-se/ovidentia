@@ -665,9 +665,7 @@ class bab_ArticleDraftEditor {
 				$time_archiving->setValue($date_archiving[1]);
 			}
 		}
-		
-		
-		bab_debug($values);
+
 
 
 		$FormArticle = $W->Form('article-form',$globalFrame)
