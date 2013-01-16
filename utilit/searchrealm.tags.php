@@ -140,7 +140,13 @@ class bab_SearchRealmTags extends bab_SearchRealm {
 			if (is_object($oReferenceDescription) 
 				&& in_array('IReferenceDescription', class_implements($oReferenceDescription))) {
 
-				if ($oReferenceDescription->isAccessValid()) {
+				try {
+					$accessValid = $oReferenceDescription->isAccessValid();
+				} catch (Exception $e) {
+					bab_debug($e->getMessage());
+					$accessValid = false;
+				}
+				if ($accessValid) {
 
 					$result[] = array(
 						'ov_reference' 	=> $reference,
