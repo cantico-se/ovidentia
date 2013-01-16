@@ -182,11 +182,11 @@ class bab_functionalities {
 
 
 	/**
-	 * @access	private
-	 * @param	array $func_path
+	 * 
+	 * @param	string  $func_path
 	 * @return 	array
 	 */
-	function getChildren($func_path) {
+	public function getChildren($func_path) {
 
 		$func_path = trim($func_path, '/ ');
 
