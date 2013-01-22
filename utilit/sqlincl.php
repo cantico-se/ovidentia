@@ -211,7 +211,7 @@ class bab_sqlExport
 			}
 
 		if ($sub_part > 1) {
-			$this->key_index[$kname][] = $row['Column_name'] . '(' . $sub_part . ')';
+			$this->key_index[$kname][] = $row['Column_name'] . '(`' . $sub_part . '`)';
 			}
 		else {
 			$this->key_index[$kname][] = $row['Column_name'];
