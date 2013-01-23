@@ -236,6 +236,9 @@ function bab_addGroup($name, $description, $managerid, $grpdg, $parent = 1)
 				id='".$babDB->db_escape_string($id)."'
 			");
 		
+		include_once $GLOBALS['babInstallPath']."utilit/groupsincl.php";
+		bab_Groups::clearCache();
+		
 		include_once $GLOBALS['babInstallPath'].'utilit/addonsincl.php';
 		bab_callAddonsFunction('onGroupCreate', $id);
 		return $id;
