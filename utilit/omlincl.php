@@ -2514,6 +2514,9 @@ class Func_Ovml_Container_Files extends Func_Ovml_Container
 	var $sEncodedPath = '';
 	var $iIdDelegation = 0;
 
+	var $imageheightmax;
+	var $imagewidthmax;
+
 	public function setOvmlContext(babOvTemplate $ctx)
 	{
 		global $babBody, $babDB;
@@ -2523,6 +2526,9 @@ class Func_Ovml_Container_Files extends Func_Ovml_Container
 		$folderid		= (int) $ctx->get_value('folderid');
 		$this->sPath	= (string) $ctx->get_value('path');
 		$iLength		= mb_strlen(trim($this->sPath));
+
+		$this->imageheightmax	= (int) $ctx->get_value('imageheightmax');
+		$this->imagewidthmax	= (int) $ctx->get_value('imagewidthmax');
 
 		if($iLength && '/' === $this->sPath{$iLength - 1})
 		{
@@ -2627,7 +2633,20 @@ class Func_Ovml_Container_Files extends Func_Ovml_Container
 			if(null !== ($oFolderFile = $this->oFolderFileSet->next()))
 			{
 				$iIdAuthor = (0 === $oFolderFile->getModifierId() ? $oFolderFile->getAuthorId() : $oFolderFile->getModifierId());
-
+				
+				$oFileManagerEnv =& getEnvObject();
+				$sUploadPath = '';
+				$sUploadPath = $oFileManagerEnv->getCollectiveRootFmPath();
+			
+				$sFullPathName = $sUploadPath . $oFolderFile->getPathName() . $oFolderFile->getName();
+				$mime = mime_content_type($sFullPathName);
+				if(substr($mime, 0, 5) == "image"){ 
+					setImageInfo($this->ctx, $this->imageheightmax, $this->imagewidthmax, $sFullPathName);
+				}else{
+					$this->ctx->curctx->push('ImageUrl', '');
+					$this->ctx->curctx->push('FileIsImage', 0);
+				}
+				
 				$this->ctx->curctx->push('CIndex', $this->idx);
 				$this->ctx->curctx->push('FileName', $oFolderFile->getName());
 				$this->ctx->curctx->push('FileDescription', $oFolderFile->getDescription());
@@ -6547,6 +6566,48 @@ function setTopicAssociatedImageInfo($oCtx, $iMaxImageHeight, $iMaxImageWidth, $
 		$oCtx->curctx->push('ImageHeight', 0);
 		$oCtx->curctx->push('ResizedImageWidth', 0);
 		$oCtx->curctx->push('ResizedImageHeight', 0);
+	}
+}
+
+
+
+/**
+ * @param babOvTemplate $oCtx
+ * @param int           $iMaxImageHeight
+ * @param int           $iMaxImageWidth
+ * @param int           $iIdCategory
+ * @param int           $iIdTopic
+ * @return void
+ */
+function setImageInfo($oCtx, $iMaxImageHeight, $iMaxImageWidth, $path)
+{
+	require_once dirname(__FILE__) . '/gdiincl.php';
+	require_once dirname(__FILE__) . '/artapi.php';
+	require_once dirname(__FILE__) . '/pathUtil.class.php';
+
+	$bProcessed		= false;
+		
+	$iHeight			= $iMaxImageHeight ? $iMaxImageHeight : 2048;
+	$iWidth				= $iMaxImageWidth ? $iMaxImageWidth : 2048;
+	$sFullPathName		= $path;
+
+	$T = @bab_functionality::get('Thumbnailer');
+	$thumbnailUrl = null;
+
+	if ($T && $iWidth && $iHeight) {
+		// The thumbnailer functionality is available.
+		$T->setSourceFile($sFullPathName);
+		$thumbnailUrl = $T->getThumbnail($iWidth, $iHeight);
+	}
+	if ($thumbnailUrl) {
+		// The thumbnailer functionality was able to create a thumbnail.
+		$oCtx->curctx->push('FileIsImage', 1);
+		$oCtx->curctx->push('ImageUrl', $thumbnailUrl);
+		$bProcessed = true;
+	}
+	if (false === $bProcessed) {
+		$oCtx->curctx->push('FileIsImage', 0);
+		$oCtx->curctx->push('ImageUrl', '');
 	}
 }
 
