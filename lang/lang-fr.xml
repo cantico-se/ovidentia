@@ -3408,4 +3408,6 @@ L'administrateur</string>
 <string id="Access denied to event modification">Accès refusé à la modification de l'événement</string>
 <string id="(%d approbators)">(%d approbateurs)</string>
 <string id="Test user field validity to login (lastname, firstname, email)">Tester la validité des champs de l'utilisateur lors de la connexion (nom, prénom, email)</string>
+<string id="In addition to the access rights, the users directory is accessible in creation / modification by administrators.">En plus des droits d'accès, l'annuaire des utilisateurs est accessible en création/modification par les administrateurs.</string>
+
 </fr>

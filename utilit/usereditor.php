@@ -169,6 +169,11 @@ class Func_UserEditor extends bab_functionality {
 			return true;
 		}
 		
+		if (BAB_REGISTERED_GROUP === (int) $directory['id_group'] && bab_isUserAdministrator())
+		{
+			return true;
+		}
+		
 		return false;
 	}
 	
@@ -213,6 +218,11 @@ class Func_UserEditor extends bab_functionality {
 		}
 		
 		if (((int) $id_user) === bab_getUserId() && 'Y' === $directory['user_update'])
+		{
+			return true;
+		}
+		
+		if (BAB_REGISTERED_GROUP === (int) $directory['id_group'] && bab_isUserAdministrator())
 		{
 			return true;
 		}

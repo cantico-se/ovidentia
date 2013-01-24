@@ -2094,6 +2094,11 @@ switch($idx)
 				$babBody->addError(bab_translate("The groupe of this directory have delegate administration. If you want to update rights on it you should probably contact the delegate administrator."));
 			}
 		}
+		
+		if (BAB_REGISTERED_GROUP === (int) $idgroup)
+		{
+			$babBody->babEcho(bab_toHtml(bab_translate('In addition to the access rights, the users directory is accessible in creation / modification by administrators.'), BAB_HTML_ALL));
+		}
 
 		$macl = new macl('admdir', 'list', $id, 'aclview');
         $macl->addtable( BAB_DBDIRVIEW_GROUPS_TBL, bab_translate("View"));
