@@ -771,8 +771,19 @@ class bab_UserPeriods implements Countable, seekableIterator {
 					continue;
 				}
 
-				$uid = $event->getProperty('UID');
+				$calendar_uid = '';
+				if ($collection = $event->getCollection())
+				{
+					if ($calendar = $collection->getCalendar())
+					{
+						$calendar_uid = $calendar->getUrlIdentifier();
+					}
+				}
 
+				$uid = $event->getProperty('UID');
+				$u_key = $calendar_uid.'/'.$uid;
+				
+				
 				if ('' === $uid) {
 					// bab_debug('event ignored because the is no UID property ('.$event->getProperty('SUMMARY').')', DBG_ERROR, 'alert');
 					continue;
@@ -782,7 +793,7 @@ class bab_UserPeriods implements Countable, seekableIterator {
 
 				if ($event->ts_end > $start && $event->ts_begin < $end) {
 
-					if (null !== $filter && !isset($r[$uid])) {
+					if (null !== $filter && !isset($r[$u_key])) {
 
 						$collection = $event->getCollection();
 
@@ -801,7 +812,7 @@ class bab_UserPeriods implements Countable, seekableIterator {
 
 					}
 
-					$r[] = $event;
+					$r[$u_key] = $event;
 				}
 			}
 		}
