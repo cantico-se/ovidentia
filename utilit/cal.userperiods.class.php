@@ -770,8 +770,18 @@ class bab_UserPeriods implements Countable, seekableIterator {
 					// Ignore cancelled events
 					continue;
 				}
+				
+				$calendar_uid = '';
+				if ($collection = $event->getCollection())
+				{
+					if ($calendar = $collection->getCalendar())
+					{
+						$calendar_uid = $calendar->getUrlIdentifier();
+					}
+				}
 
 				$uid = $event->getProperty('UID');
+				$u_key = $calendar_uid.'/'.$uid;
 
 				if ('' === $uid) {
 					// bab_debug('event ignored because the is no UID property ('.$event->getProperty('SUMMARY').')', DBG_ERROR, 'alert');
@@ -782,7 +792,7 @@ class bab_UserPeriods implements Countable, seekableIterator {
 
 				if ($event->ts_end > $start && $event->ts_begin < $end) {
 
-					if (null !== $filter && !isset($r[$uid])) {
+					if (null !== $filter && !isset($r[$u_key])) {
 
 						$collection = $event->getCollection();
 
@@ -800,11 +810,14 @@ class bab_UserPeriods implements Countable, seekableIterator {
 						}
 
 					}
-
-					$r[] = $event;
+	
+					// permettre d'avoir le meme UID dans deux agendas differents
+					// ne pas permettre d'avoir le meme UID dans le meme agenda
+					$r[$u_key] = $event;
 				}
 			}
 		}
+		
 		return $r;
 	}
 
