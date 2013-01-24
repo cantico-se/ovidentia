@@ -335,6 +335,16 @@ mm(sksel);
 				              <input type="text" name="smtpport" size="5" maxlength="10" value="{ arr[smtpport] }" onKeyUp="validateNum(this)" />
 							</td>
 							</tr>
+                          <tr> 
+				            <td>{ security }</td>
+				            <td> 
+				              <select name="smtpsecurity">
+				              	 <option value="" <!--#if arr[smtpsecurity] "== " -->selected="selected"<!--#endif arr[smtpsecurity -->>{ security_none }</option>
+				              	 <option value="ssl" <!--#if arr[smtpsecurity] "== ssl" -->selected="selected"<!--#endif arr[smtpsecurity -->>{ security_ssl }</option>
+				              	 <option value="tls" <!--#if arr[smtpsecurity] "== tls" -->selected="selected"<!--#endif arr[smtpsecurity -->>{ security_tls }</option>
+				              </select>
+							</td>
+							</tr>
 				          <tr> 
 				            <td>{ smtpuser }</td>
 				            <td> 

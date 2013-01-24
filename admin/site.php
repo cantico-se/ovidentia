@@ -289,19 +289,29 @@ function site_menu1()
 }
 
 
+
+/**
+ * Email server configuration.
+ * 
+ * @param int $id
+ */
 function site_menu2($id)
+{
+	global $babBody;
+
+	class email_site_configuration_cls extends site_configuration_cls
 	{
 
-	global $babBody;
-	class temp extends site_configuration_cls
+		public function __construct($id)
 		{
-
-		function temp($id)
-			{
 			$this->disabled = bab_translate("Disabled");
 			$this->mailfunction = bab_translate("Mail function");
 			$this->server = bab_translate("Smtp server");
 			$this->serverport = bab_translate("Server port");
+			$this->security = bab_translate("Connection security");
+			$this->security_none = bab_translate("No security");
+			$this->security_ssl = bab_translate("SSL");
+			$this->security_tls = bab_translate("TLS");
 			$this->none = bab_translate("None");
 			$this->smtpuser = bab_translate("SMTP username");
 			$this->smtppass = bab_translate("SMTP password");
@@ -318,22 +328,27 @@ function site_menu2($id)
 			
 			$this->site_configuration_cls($id);
 			
-				$addon = bab_getAddonInfosInstance('mailspooler');
-				if (false === $addon)
-				{
-					$this->mailspooler = false;
-				} else {
-					$this->mailspooler = $addon->isAccessValid();
-				}
-			
+// 			switch ($this->arr['smtpsecurity']) {
+// 				case 'ssl':
+// 					$this->security__selected = 
+// 			}	
+		
+			$addon = bab_getAddonInfosInstance('mailspooler');
+			if (false === $addon)
+			{
+				$this->mailspooler = false;
+			} else {
+				$this->mailspooler = $addon->isAccessValid();
 			}
+			
+		}
 
 
-		} // class temp
+	} // class temp
 
-	$temp = new temp($id);
-	$babBody->babecho(	bab_printTemplate($temp, "sites.html", "menu2"));
-	}
+	$temp = new email_site_configuration_cls($id);
+	$babBody->babecho(bab_printTemplate($temp, 'sites.html', 'menu2'));
+}
 
 
 function site_menu3($id)
@@ -1882,7 +1897,8 @@ function siteUpdate_menu2()
 	$req = "UPDATE ".BAB_SITES_TBL." SET 
 			mailfunc = '".$babDB->db_escape_string($_POST['mailfunc'])."', 
 			smtpserver = '".$babDB->db_escape_string($_POST['smtpserver'])."', 
-			smtpport = '".$babDB->db_escape_string($_POST['smtpport'])."', 
+			smtpport = '".$babDB->db_escape_string($_POST['smtpport'])."',
+			smtpsecurity = '".$babDB->db_escape_string($_POST['smtpsecurity'])."', 
 			smtpuser = '".$babDB->db_escape_string($_POST['smtpuser'])."', 
 			smtppassword=ENCODE(\"".$babDB->db_escape_string($_POST['smtppass'])."\",\"".$babDB->db_escape_string($GLOBALS['BAB_HASH_VAR'])."\") 
 		where id='".$babDB->db_escape_string($_POST['item'])."'";

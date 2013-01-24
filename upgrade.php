@@ -6935,6 +6935,17 @@ function ovidentia_upgrade($version_base,$version_ini) {
 	}
 	
 	
+	/**
+	 * Upgrade to 7.8.96
+	 */
+
+	if (!bab_isTableField('bab_sites', 'smtpsecurity'))
+	{
+		$babDB->db_query("ALTER TABLE `bab_sites` ADD `smtpsecurity` VARCHAR(10) NOT NULL default '' AFTER smtpport");
+	}
+	
+		
+	
 	
 	return true;
 

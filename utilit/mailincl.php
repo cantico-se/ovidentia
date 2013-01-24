@@ -575,7 +575,7 @@ class babMail
 	 */
 	public function AddCustomHeader($name, $value)
 	{
-		$this->mail->CustomHeader[] = array($name, $value);
+		$this->mail->AddCustomHeader($name, $value);
 	}
 	
 	
@@ -618,7 +618,15 @@ class babMail
 	 */
 	public function getMessageId()
 	{
-		return sprintf("<%s@%s>", $this->mail->uniq_id, $this->mail->ServerHostname());
+		if (!empty($this->mail->Hostname)) {
+      		$hostname = $this->Hostname;
+		} elseif (isset($_SERVER['SERVER_NAME'])) {
+			$hostname = $_SERVER['SERVER_NAME'];
+    	} else {
+			$hostname = 'localhost.localdomain';
+    	}
+    	
+    	return sprintf("<%s@%s>", $this->mail->uniq_id, $hostname);
 	}
 
 
@@ -694,6 +702,8 @@ function bab_mail()
 			$mail->mail->IsSMTP();
 			$mail->mail->Host = $babBody->babsite['smtpserver'];
 			$mail->mail->Port = $babBody->babsite['smtpport'];
+			$mail->mail->SMTPSecure = $babBody->babsite['smtpsecurity'];
+
 			if( $babBody->babsite['smtpuser'] != '' ||  $babBody->babsite['smtppass'] != '')
 				{
 				$mail->mail->SMTPAuth = true;
