@@ -956,6 +956,7 @@ CREATE TABLE `bab_sites` (
   `mailfunc` varchar(20) NOT NULL default 'mail',
   `smtpserver` varchar(255) NOT NULL default '',
   `smtpport` varchar(20) NOT NULL default '25',
+  `smtpsecurity` VARCHAR(10) NOT NULL default '',
   `imgsize` int(11) unsigned NOT NULL default '0',
   `idgroup` int(11) unsigned NOT NULL default '0',
   `smtpuser` varchar(255) NOT NULL default '',
