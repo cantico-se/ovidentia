@@ -95,12 +95,17 @@ function bab_f_toHtml($pee, $opt) {
 		{
 			// 					euro		apostrophe 	apostrophe	apostrophe				oe			OE
 			//								CP1252		CP1252		ISO-8859-1
-			$_source 	= array(chr(0x80),	chr(0x91),	chr(0x92),	chr(0xB4),	chr(0x9C),	chr(0x8C),	chr(0x93),	chr(0x94),	chr(0x85),	chr(0x96),	chr(0x97),	chr(0x88),	chr(0x99),		chr(0x8B),	chr(0x9B),	chr(0x84),	chr(0x95),	chr(0x89),	chr(0x83),	chr(0x86));
-			$_replace	= array(chr(0xA4),	"'",		"'",		"'",		chr(0xBD),	chr(0xBC),	'"',		'"',		'...',		'-',		'-',		'^',		'<sup>TM</sup>',	'&lsaquo;',	'&rsaquo;',	'&bdquo;',	'&bull;',	'&permil;',	'&fnof;',	'&dagger;');
+			$_source 	= array(chr(0x80),	chr(0x91),	chr(0x92),	chr(0xB4),	chr(0x9C),	chr(0x8C),	chr(0x93),	chr(0x94),	chr(0x85),	chr(0x96),	chr(0x97),	chr(0x88),	chr(0x99),	chr(0x8B),	chr(0x9B),	chr(0x84),	chr(0x95),	chr(0x89),	chr(0x83),	chr(0x86));
+			$_replace	= array(chr(0xA4),	"'",		"'",		"'",		chr(0xBD),	chr(0xBC),	'"',		'"',		'...',		'-',		'-',		'^',		'&trade;',	'&lsaquo;',	'&rsaquo;',	'&bdquo;',	'&bull;',	'&permil;',	'&fnof;',	'&dagger;');
 		}
 		
 		
 		$pee = str_replace($_source, $_replace	, $pee);
+		
+		// double encodage du caractere TM en exposant
+		// le caractere TM n'est pas supporte par ISO-8859-15, si il est saisie dans un champ texte il arrive de cette facon dans la base
+		$pee = str_replace('&amp;#8482;', '&trade;'	, $pee);
+		
 		
 	}
 
