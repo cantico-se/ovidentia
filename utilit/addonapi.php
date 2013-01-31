@@ -3144,7 +3144,7 @@ function bab_printOvmlTemplate($file, $args=array())
 	$tpl = new babOvTemplate($args);
 	$template = $tpl->printout(implode('', file($filepath)), $filepath);
 	$end = microtime();
-	bab_debug($filepath. '(start: '.$start.', end:'.$end.', total:'.($end-$start).')');
+	//bab_debug($filepath. '(start: '.$start.', end:'.$end.', total:'.($end-$start).')');
 	return $template;
 }
 
