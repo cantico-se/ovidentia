@@ -1074,6 +1074,7 @@ class bab_vac_saveVacation
 			// if no approvers, delete instance
 			deleteFlowInstance($idfai);
 			notifyOnRequestChange($id);
+			bab_vac_notifyManagers::send($id_request);
 		}
 		else
 		{
@@ -1088,6 +1089,11 @@ class bab_vac_saveVacation
 			);
 
 			notifyVacationApprovers($id, $nfusers, !empty($id_request));
+			
+			if (!empty($id_request))
+			{
+				bab_vac_notifyManagers::send($id_request);
+			}
 		}
 
 		return true;

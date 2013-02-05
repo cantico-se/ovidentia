@@ -126,7 +126,6 @@ function notifyOnRequestChange($id, $delete = false)
 			$this->username = bab_toHtml(bab_getUserName($row['id_user']));
 			$this->begindate = bab_longDate(bab_mktime($row['date_begin']));
 			$this->enddate = bab_longDate(bab_mktime($row['date_end']));
-			list($this->quantity) = $babDB->db_fetch_row($babDB->db_query("select sum(quantity) from ".BAB_VAC_ENTRIES_ELEM_TBL." where id_entry =".$babDB->quote($row['id'])));
 			$this->comment = bab_toHtml($row['comment']);
 			}
 		}
@@ -158,7 +157,104 @@ function notifyOnRequestChange($id, $delete = false)
 		}
 	}
 	
+
+/**
+ * Notification for the manager when a request is deleted/modified
+ * 
+ * 
+ */
+class bab_vac_notifyManagers
+{
+	private $res;
 	
+	public function __construct(Array $row, $msg)
+	{
+		global $babDB;
+		
+		
+		$this->message = $msg;
+		$this->fromuser = bab_translate("User");
+		$this->from = bab_translate("from");
+		$this->until = bab_translate("until");
+		$this->username = bab_toHtml(bab_getUserName($row['id_user']));
+		$this->begindate = bab_longDate(bab_mktime($row['date_begin']));
+		$this->enddate = bab_longDate(bab_mktime($row['date_end']));
+		$this->res = $babDB->db_query("select 
+					r.description,
+					e.quantity, 
+					r.quantity_unit 
+				from 
+					bab_vac_entries_elem e, 
+					bab_vac_rights r 
+				where 
+					e.id_right=r.id  
+					AND e.id_entry =".$babDB->quote($row['id'])
+		);
+		$this->comment = bab_toHtml($row['comment']);
+	}
+	
+	
+	public function getnextelem()
+	{
+		global $babDB;
+		
+		if ($arr = $babDB->db_fetch_assoc($this->res))
+		{
+			$this->description = bab_toHtml($arr['description']);
+			$this->descriptiontxt = $arr['description'];
+			$this->quantity = bab_toHtml(bab_vac_quantity($arr['quantity'], $arr['quantity_unit']));
+			return true;
+		}
+		
+		return false;
+	}
+	
+	
+	public static function send($id, $delete = false)
+	{
+
+		$mail = bab_mail();
+		if( $mail == false )
+		{
+			return;
+		}
+		
+		global $babDB, $BAB_SESS_EMAIL, $BAB_SESS_USER;
+		
+		
+		$row = $babDB->db_fetch_array($babDB->db_query("select * from ".BAB_VAC_ENTRIES_TBL." where id='".$babDB->db_escape_string($id)."'"));
+		
+		if (!$row)
+		{
+			return;
+		}
+		
+		$mail->mailFrom($BAB_SESS_EMAIL, $BAB_SESS_USER);
+		
+		$res = $babDB->db_query('SELECT u.email, u.lastname, u.firstname FROM bab_vac_managers m, bab_users u WHERE u.id=m.id_user');
+		while ($arr = $babDB->db_fetch_assoc($res))
+		{
+			$mail->mailTo($arr['email'], bab_composeUserName($arr['firstname'], $arr['lastname']));
+		}
+		
+		$msg = $delete ? bab_translate("Vacation request has been deleted") : bab_translate("Vacation request has been modified");
+		$mail->mailSubject($msg);
+		
+		$tempb = new bab_vac_notifyManagers($row, $msg);
+		$message = $mail->mailTemplate(bab_printTemplate($tempb,"mailinfo.html", "vacmanager"));
+		$mail->mailBody($message, "html");
+		
+		$message = bab_printTemplate($tempb,"mailinfo.html", "vacmanagertxt");
+		$mail->mailAltBody($message);
+		
+		$mail->send();
+		
+		if ($mail->ErrorInfo())
+		{
+			trigger_error($mail->ErrorInfo());
+		}
+	}
+}
 	
 	
 	
@@ -2124,7 +2220,7 @@ function changeucol($id_user,$newcol)
 			if (list($this->id,$this->right) = each($this->rights))
 				{
 				$this->altbg = !$this->altbg;
-				$default = (isset($this->right['quantity_new']) && $this->right['quantity_available'] > $this->right['quantity_new']) || !is_numeric($this->right['quantity_available']) ? $this->right['quantity_new'] : $this->right['quantitydays'];
+				$default = (isset($this->right['quantity_new']) && $this->right['quantity_available'] > $this->right['quantity_new']) || !is_numeric($this->right['quantity_available']) ? $this->right['quantity_new'] : $this->right['quantity_available'];
 				$this->newrightvalue = isset($_POST['right_'.$this->id]) ? $_POST['right_'.$this->id] : $default;
 				if (!isset($this->right['quantity_new']))
 					$this->right['quantity_new'] = '';
@@ -3197,6 +3293,7 @@ function bab_vac_delete_request($id_request)
 {
 	
 	notifyOnRequestChange($id_request, true);
+	bab_vac_notifyManagers::send($id_request, true);
 
 	global $babDB;
 	
