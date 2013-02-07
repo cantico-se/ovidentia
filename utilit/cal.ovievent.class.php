@@ -1818,13 +1818,17 @@ class bab_cal_OviEventSelect
 			// add final non-working period
 			if ($endts > $previous_end->getTimeStamp()) {
 
-				$p = new bab_calendarPeriod;
-				$p->setDates($previous_end, $end);
-				$p->setProperty('SUMMARY'		, bab_translate('Non-working period'));
-				$p->setData(array('id_user' => $id_user));
-
-				$nwp_collection->addPeriod($p);
-				$userperiods->addPeriod($p);
+				foreach($users as $id_user) {
+				
+					$p = new bab_calendarPeriod;
+					$p->setDates($previous_end, $end);
+					$p->setProperty('SUMMARY'		, bab_translate('Non-working period'));
+					$p->setData(array('id_user' => $id_user));
+	
+					$nwp_collection->addPeriod($p);
+					$userperiods->addPeriod($p);
+				
+				}
 			}
 		}
 	}
