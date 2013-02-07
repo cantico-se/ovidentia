@@ -5351,7 +5351,7 @@ class Func_Ovml_Container_CalendarEvents extends Func_Ovml_Container
 			}
 			
 
-			if (!$calendar)
+			if ($calendar)
 			{
 				/* @var $calendar bab_EventCalendar */
 				$arr['id_cal'] = $calendar->getUrlIdentifier();
