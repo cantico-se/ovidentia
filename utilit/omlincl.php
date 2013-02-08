@@ -1392,6 +1392,7 @@ class Func_Ovml_Container_Articles extends Func_Ovml_Container
 				{
 				switch(mb_strtolower($orderby))
 					{
+					case 'title': $orderby = 'at.title'; break;
 					case 'rating': $orderby = 'average_rating'; break;
 					case 'creation': $orderby = 'at.date'; break;
 					case 'publication': $orderby = 'at.date_publication'; break;
@@ -3134,6 +3135,7 @@ class Func_Ovml_Container_RecentArticles extends Func_Ovml_Container
 			} else {
 				switch(mb_strtolower($orderby))
 					{
+					case 'title': $orderby = 'at.title'; break;
 					case 'rating': $orderby = 'average_rating'; break;
 					case 'creation': $orderby = 'at.date'; break;
 					case 'publication': $orderby = 'at.date_publication'; break;
@@ -8854,6 +8856,9 @@ class Func_Ovml_Function_PreviousOrNextArticle extends Func_Ovml_Function {
 			$this->orderby = 'at.date';
 		} else {
 			switch (mb_strtolower($this->orderby )) {
+				case 'title': 
+					$this->orderby = 'at.title';
+					break;
 				case 'rating':
 					$this->orderby = 'average_rating';
 					break;
