@@ -437,7 +437,7 @@ class bab_SearchRealmDirectories extends bab_SearchRealm {
 
 		
 
-		$req = "SELECT ";
+		$req = "SELECT DISTINCT ";
 
 		$fields = array();
 		foreach($this->getFields() as $field) {
