@@ -532,7 +532,7 @@ function listWaitingVacations()
 			if( count($arrschi) > 0 )
 				{
 				include_once $GLOBALS['babInstallPath']."utilit/vacincl.php";
-				$this->res = $babDB->db_query("select * from ".BAB_VAC_ENTRIES_TBL." where idfai IN (".$babDB->quote($arrschi).") order by date desc");
+				$this->res = $babDB->db_query("select * from ".BAB_VAC_ENTRIES_TBL." where idfai IN (".$babDB->quote($arrschi).") order by date_begin asc");
 				$this->wvacationscount = $babDB->db_num_rows($this->res);
 				$this->waitingvacationstxt = bab_translate("Request vacations waiting to be validate");
 				$this->validationtxt = bab_translate("Validation");
