@@ -3411,4 +3411,5 @@ L'administrateur</string>
 <string id="In addition to the access rights, the users directory is accessible in creation / modification by administrators.">En plus des droits d'accès, l'annuaire des utilisateurs est accessible en création/modification par les administrateurs.</string>
 <string id="Connection security">Sécurité de la connexion</string>
 <string id="No security">Aucune</string>
+<string id="This vacation request does not exists">Cette demande de congés n'existe pas</string>
 </fr>

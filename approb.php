@@ -946,7 +946,7 @@ function confirmWaitingVacation($id)
 	$row = $babDB->db_fetch_array($babDB->db_query("select * from ".BAB_VAC_ENTRIES_TBL." where id='".$babDB->db_escape_string($id)."'"));
 
 	if (!$row) {
-		$babBody->addError(bab_translate("Access denied"));
+		$babBody->addError(bab_translate("This vacation request does not exists"));
 		$babBody->babpopup('');
 		return 0;
 	}
