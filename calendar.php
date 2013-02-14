@@ -969,10 +969,16 @@ function displayEventDetailUpd($evtid, $dtstart, $idcal)
 
 
 	$details = new displayEventDetailCls($evtid, $dtstart, $idcal);
-	$notes = new displayEventNotesCls($evtid, $idcal);
-	$alert = new displayEventAlertCls($evtid, $dtstart, $idcal);
 
-	$babBody->babPopup($details->getHtml().$notes->getHtml().$alert->getHtml());
+	$html = $details->getHtml();
+	if($GLOBALS['BAB_SESS_LOGGED'])
+	{
+		$notes = new displayEventNotesCls($evtid, $idcal);
+		$alert = new displayEventAlertCls($evtid, $dtstart, $idcal);
+		$html.=$notes->getHtml().$alert->getHtml();
+	}
+	
+	$babBody->babPopup($html);
 }
 
 
