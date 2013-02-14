@@ -1854,6 +1854,7 @@ class bab_FileTreeView extends bab_TreeView
         }
 
         $aWhereClauseItem[]    = 'file.state<>\'D\'';
+        $aWhereClauseItem[]    = 'file.confirmed=\'Y\'';
 
         
         $directoryType = 'folder';
