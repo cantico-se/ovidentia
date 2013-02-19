@@ -728,6 +728,7 @@ class Func_UserEditor extends bab_functionality {
 	{
 		global $babBody;
 		$id_user = isset($user['id']) ? ((int) $user['id']) : null;
+		$id_user_original = $id_user;
 		$send_pwd = isset($user['sendpwd']) ? $user['sendpwd'] : null;
 		
 		if (null === $id_user && !$this->canCreateUser())
@@ -879,13 +880,13 @@ class Func_UserEditor extends bab_functionality {
 		
 		// notifications
 		
-		if (!$id_user && !empty($user['notifyuser']))
+		if (!$id_user_original && !empty($user['notifyuser']))
 		{
 			// notify the user about creation of the account
 			bab_registerUserNotify($user['sn'].' '.$user['givenname'], $user['email'], $user['nickname'], (empty($user['sendpwd']) ? null : $user['password1']));
 		}
 		
-		if ($id_user && !empty($send_pwd))
+		if ($id_user_original && !empty($send_pwd))
 		{
 			// send the new password by email
 			require_once $GLOBALS['babInstallPath'].'admin/register.php';	
