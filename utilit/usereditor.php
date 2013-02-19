@@ -152,6 +152,8 @@ class Func_UserEditor extends bab_functionality {
 	 */
 	protected function canAddDirectoryEntry()
 	{
+		global $babBody;
+		
 		if (!$this->access_control && !isset($this->id_directory))
 		{
 			return true;
@@ -169,7 +171,7 @@ class Func_UserEditor extends bab_functionality {
 			return true;
 		}
 		
-		if (BAB_REGISTERED_GROUP === (int) $directory['id_group'] && bab_isUserAdministrator())
+		if (BAB_REGISTERED_GROUP === (int) $directory['id_group'] && (bab_isUserAdministrator() || 'Y' === $babBody->currentDGGroup['users']))
 		{
 			return true;
 		}
@@ -189,6 +191,8 @@ class Func_UserEditor extends bab_functionality {
 	 */
 	protected function canEditDirectoryEntry($id_user)
 	{
+		global $babBody;
+		
 		if (null === $id_user)
 		{
 			return false;
@@ -222,7 +226,8 @@ class Func_UserEditor extends bab_functionality {
 			return true;
 		}
 		
-		if (BAB_REGISTERED_GROUP === (int) $directory['id_group'] && bab_isUserAdministrator())
+		
+		if (BAB_REGISTERED_GROUP === (int) $directory['id_group'] && (bab_isUserAdministrator() || $babBody->currentAdmGroup != 0))
 		{
 			return true;
 		}
@@ -483,6 +488,8 @@ class Func_UserEditor extends bab_functionality {
 	 */
 	protected function canCreateUser()
 	{
+		global $babBody;
+		
 		if (!$this->access_control)
 		{
 			return true;
@@ -493,7 +500,13 @@ class Func_UserEditor extends bab_functionality {
 			return true;
 		}
 		
+		if ('Y' === $babBody->currentDGGroup['users'])
+		{
+			return true;
+		}
+
 		$directory = $this->getDirectory();
+		
 		if ($directory['id_group'] > 0 && bab_isAccessValid(BAB_DBDIRADD_GROUPS_TBL, $directory['id']))
 		{
 			return true;
@@ -510,6 +523,8 @@ class Func_UserEditor extends bab_functionality {
 	 */
 	protected function canEditUser($id_user)
 	{
+		global $babBody;
+		
 		if (!$this->access_control)
 		{
 			return true;
@@ -519,6 +534,12 @@ class Func_UserEditor extends bab_functionality {
 		{
 			return true;
 		}
+		
+		if ($babBody->currentAdmGroup != 0)
+		{
+			return true;
+		}
+		
 		
 		$directory = $this->getDirectory();
 		if ($directory['id_group'] > 0 && bab_isAccessValid(BAB_DBDIRUPDATE_GROUPS_TBL, $directory['id']))
@@ -602,12 +623,12 @@ class Func_UserEditor extends bab_functionality {
 	{
 		if (null === $id_user && !$this->canCreateUser())
 		{
-			throw new Exception(bab_translate('Access denied'));
+			throw new Exception('Access denied');
 		}
 		
 		if (null !== $id_user && !$this->canEditUser($id_user))
 		{
-			throw new Exception(bab_translate('Access denied'));
+			throw new Exception('Access denied');
 		}
 		
 		
