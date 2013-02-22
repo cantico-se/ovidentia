@@ -807,6 +807,7 @@ function bab_initOrgChart(orgChartDiv)
 			levelSelect.appendChild(option);
 		}
 		levelSelect.onchange = bab_setLevel;
+		levelSelect.onclick = function() { this.focus(); };
 		
 		levelWidget.appendChild(levelSelect);
 		
@@ -830,6 +831,7 @@ function bab_initOrgChart(orgChartDiv)
 			thresholdSelect.appendChild(option);
 		}
 		thresholdSelect.onchange = bab_setThreshold;
+		thresholdSelect.onclick = function() { this.focus(); };
 		
 		thresholdWidget.appendChild(thresholdSelect);
 		
@@ -983,12 +985,12 @@ function getCursorPosition(e) {
 function cleanStringDiacritics(text)
 {
 	try {
-		text = text.replace(/à|â|ä/g, "a");
-		text = text.replace(/é|è|ê|ë/g, "e");
-		text = text.replace(/ì|î|ï/g, "i");
-		text = text.replace(/ò|ô|ö/g, "o");
-		text = text.replace(/ù|û|ü/g, "u");
-		text = text.replace(/ç/g, "c");
+		text = text.replace(/ï¿½|ï¿½|ï¿½/g, "a");
+		text = text.replace(/ï¿½|ï¿½|ï¿½|ï¿½/g, "e");
+		text = text.replace(/ï¿½|ï¿½|ï¿½/g, "i");
+		text = text.replace(/ï¿½|ï¿½|ï¿½/g, "o");
+		text = text.replace(/ï¿½|ï¿½|ï¿½/g, "u");
+		text = text.replace(/ï¿½/g, "c");
 	} catch (e) {
 		text = '';
 	}
