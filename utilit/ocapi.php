@@ -27,7 +27,7 @@ include_once $GLOBALS['babInstallPath'].'utilit/treeincl.php';
 
 /**
  * Returns the primary org chart id.
- * 
+ *
  * @todo remove the idprimaryoc on babBody
  *
  * @return int	or null.
@@ -54,7 +54,7 @@ function bab_OCgetPrimaryOcId()
 
 
 /**
- * 
+ *
  * @param int $idoc
  * @return array
  */
@@ -338,8 +338,8 @@ function bab_OCGetTemporaryEmployees($idoc='')
 
 /**
  * entity collaborators
- * 
- * @see bab_OCSelectEntityCollaborators() 
+ *
+ * @see bab_OCSelectEntityCollaborators()
  * @param int $identity
  * @return multitype:multitype:
  */
@@ -365,25 +365,67 @@ function bab_OCGetCollaborators($identity)
 	return $ret;
 }
 
-function bab_OCGetUserEntities($iduser, $idoc='')
+
+
+/**
+ * Returns the array of organizational charts where the specified user
+ * is member of at least one entity.
+ *
+ * @param 	int		$iduser
+ * @return	multitype:string
+ */
+function bab_OCGetUserOrgCharts($iduser)
+{
+	global $babDB;
+
+	$sql = '
+		SELECT distinct oct.name, oct.id, oct.id_directory
+		FROM '.BAB_ORG_CHARTS_TBL.' oct
+		LEFT JOIN '.BAB_OC_ROLES_TBL.' ocrt ON oct.id=ocrt.id_oc
+		LEFT JOIN '.BAB_OC_ROLES_USERS_TBL.' ocrut ON ocrt.id=ocrut.id_role
+		WHERE ocrut.id_user='.$babDB->quote($iduser);
+
+	$orgChartRes = $babDB->db_query($sql);
+
+	$orgCharts = array();
+	while ($orgChart = $babDB->db_fetch_array($orgChartRes)) {
+		$orgCharts[$orgChart['id']] = $orgChart['name'];
+	}
+
+	return $orgCharts;
+}
+
+
+
+
+/**
+ * Returns the entities the specified user is associated to in the specified organizational chart,
+ * or in the main organizational chart if $idoc is not specificied.
+ *
+ * @param int	$iduser
+ * @param int	$idoc
+ * @return array
+ */
+function bab_OCGetUserEntities($iduser, $idoc = '')
 {
 	global $babBody, $babDB;
 
-	$ret = array();
-	$ret['superior'] = array();
-	$ret['temporary'] = array();
-	$ret['members'] = array();
+	$ret = array(
+		'superior' => array(),
+		'temporary' => array(),
+		'members' => array(),
+	);
 
-	if( empty($idoc))
+	if (empty($idoc))
 	{
-		if( !empty($babBody->idprimaryoc))
+		if (!empty($babBody->idprimaryoc))
 		{
 			$idoc = $babBody->idprimaryoc;
 		}
 		else
 		{
 			$res = $babDB->db_query("select oct.id from ".BAB_ORG_CHARTS_TBL." oct LEFT JOIN ".BAB_DB_DIRECTORIES_TBL." ddt on oct.id_directory=ddt.id where ddt.id_group='1' and oct.isprimary='Y'");
-			if( $res && $babDB->db_num_rows($res) > 0 )
+			if ($res && $babDB->db_num_rows($res) > 0)
 			{
 				$ocinfo = $babDB->db_fetch_array($res);
 				$idoc = $ocinfo['id'];
@@ -396,30 +438,50 @@ function bab_OCGetUserEntities($iduser, $idoc='')
 		}
 	}
 
-	$res = $babDB->db_query("SELECT ocrt.id_entity, ocet.name as entity_name, ocet.description as entity_description, type  FROM ".BAB_OC_ROLES_TBL." ocrt LEFT JOIN ".BAB_OC_ROLES_USERS_TBL." ocrut ON ocrt.id = ocrut.id_role  left join ".BAB_OC_ENTITIES_TBL." ocet on ocet.id=ocrt.id_entity LEFT JOIN ".BAB_DBDIR_ENTRIES_TBL." det ON det.id=ocrut.id_user WHERE det.id_user='".$iduser."' and ocrt.id_oc='".$idoc."'");
-	if( $res && $babDB->db_num_rows($res) > 0 )
+
+	$sql = '
+		SELECT ocrt.id_entity, ocet.name AS entity_name, ocrt.id AS role_id, ocrt.name AS role_name, ocet.description AS entity_description, type
+		FROM '.BAB_OC_ROLES_TBL.' ocrt
+		LEFT JOIN '.BAB_OC_ROLES_USERS_TBL.' ocrut ON ocrt.id = ocrut.id_role
+		LEFT JOIN '.BAB_OC_ENTITIES_TBL.' ocet ON ocet.id = ocrt.id_entity
+		LEFT JOIN '.BAB_DBDIR_ENTRIES_TBL.' det ON det.id = ocrut.id_user
+		WHERE det.id_user = '.$babDB->quote($iduser).' AND ocrt.id_oc = '.$babDB->quote($idoc);
+
+
+	$res = $babDB->db_query($sql);
+
+	if ($res && $babDB->db_num_rows($res) > 0)
 	{
-		while( $arr = $babDB->db_fetch_array($res))
+		while ($arr = $babDB->db_fetch_array($res))
+		{
+			$entities = array(
+				'id'=> $arr['id_entity'],
+				'name' => $arr['entity_name'],
+				'description' => $arr['entity_description'],
+				'role_id' => $arr['role_id'],
+				'role_name' => $arr['role_name'],
+			);
+
+			switch ($arr['type'])
 			{
-			$rr = array( 'id'=> $arr['id_entity'], 'name' => $arr['entity_name'] , 'description' => $arr['entity_description'] );
-			switch($arr['type'])
-				{
 				case '1':
-					$ret['superior'][] = $rr;
+					$ret['superior'][] = $entities;
 					break;
+
 				case '2':
-					$ret['temporary'][] = $rr;
+					$ret['temporary'][] = $entities;
 					break;
+
 				default:
-					$ret['members'][] = $rr;
+					$ret['members'][] = $entities;
 					break;
-				}
 			}
+		}
 	}
 
 	return $ret;
-
 }
+
 
 
 
@@ -1482,7 +1544,7 @@ class bab_OrgChartUtil
 
 
 	/**
-	 * 
+	 *
 	 * @param int $iIdEntity
 	 * @return array
 	 */
@@ -1536,10 +1598,10 @@ class bab_OrgChartUtil
 
 
 	/**
-	 * 
+	 *
 	 * @param int $iIdUser
 	 * @param array $aRoleType
-	 * 
+	 *
 	 * @return array
 	 */
 	function getUserEntities($iIdUser, $aRoleType = null)
@@ -1615,7 +1677,7 @@ class bab_OrgChartUtil
 
 
 	/**
-	 * 
+	 *
 	 * @param unknown_type $iIdEntity
 	 * @param unknown_type $sName
 	 * @param unknown_type $sDescription
@@ -1866,7 +1928,7 @@ class bab_OrgChartUtil
 
 
 	/**
-	 * 
+	 *
 	 * @param unknown_type $iIdRole
 	 * @return array | false
 	 */
