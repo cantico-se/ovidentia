@@ -577,6 +577,19 @@ class Func_Ovml_Container_DbDirectoryEntry extends Func_Ovml_Container
 
 				$this->ctx->curctx->push('DirectoryEntryMemberUrl', $GLOBALS['babUrlScript']."?tg=directory&idx=ddbovml&directoryid=".$this->directoryid."&userid=".$this->arrentries['id']);
 
+				if (bab_isAccessValid(BAB_DBDIRUPDATE_GROUPS_TBL, $this->directoryid)) {
+					$this->ctx->curctx->push('DirectoryEntryEditUrl', $GLOBALS['babUrlScript']."?tg=directory&idx=dbmod&id=".$this->directoryid."&idu=".$this->arrentries['id']);
+				} else {
+					$this->ctx->curctx->push('DirectoryEntryEditUrl', '');
+				}
+
+				if (bab_isAccessValid(BAB_DBDIRDEL_GROUPS_TBL, $this->directoryid)) {
+					$this->ctx->curctx->push('DirectoryEntryDeleteUrl', $GLOBALS['babUrlScript']."?tg=directory&idx=deldbc&id=".$this->directoryid."&idu=".$this->arrentries['id']);
+				} else {
+					$this->ctx->curctx->push('DirectoryEntryDeleteUrl', '');
+				}
+
+
 				$this->count = 1;
 				}
 			}
