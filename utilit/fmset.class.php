@@ -965,6 +965,12 @@ class BAB_FolderFileSet extends BAB_BaseSet
 
 		while(null !== ($oFolderFile = $this->next()))
 		{
+			$sUploadPath = $GLOBALS['babUploadPath'].'/fileManager';
+			if($oFolderFile->aDatas['sGroup'] == 'Y'){
+				$sUploadPath.='/collectives/DG'.$oFolderFile->aDatas['iIdDgOwner'].'/';
+			}else{
+				$sUploadPath.='/users/U'.$oFolderFile->aDatas['iIdOwner'].'/';
+			}
 			$sFullPathName = $sUploadPath . $oFolderFile->getPathName() . $oFolderFile->getName();
 			if(file_exists($sFullPathName))
 			{
