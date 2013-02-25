@@ -12,6 +12,7 @@
 	border-left:#000 1px dashed;
 	cursor:pointer;
 	width:8px;
+	padding:0;
 }
 
 #bab_calopt_days td:nth-child(even) {
