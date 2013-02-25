@@ -536,7 +536,7 @@ class bab_SearchDefaultForm {
 				return array_intersect($primary, $secondary);
 
 			case 'NOT':
-				return ($primary - $secondary);
+				return array_diff_assoc($primary, $secondary);
 
 			case 'OR':
 			default:
