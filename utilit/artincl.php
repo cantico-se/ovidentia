@@ -1568,7 +1568,6 @@ function acceptWaitingArticle($idart)
 			$articleid = $arr['id_article'];
 			$req = "update ".BAB_ARTICLES_TBL." set
 				id_topic=".$babDB->quote($arr['id_topic']).",
-				id_modifiedby='".$babDB->db_escape_string($arr['id_author'])."',
 				date_archiving='".$babDB->db_escape_string($arr['date_archiving'])."',
 				date_publication='".$babDB->db_escape_string($arr['date_publication'])."',
 				restriction='".$babDB->db_escape_string($arr['restriction'])."',
@@ -1576,6 +1575,7 @@ function acceptWaitingArticle($idart)
 			if( $arr['update_datemodif'] != 'N')
 				{
 				$req .= ", date_modification=now()";
+				$req .= ", id_modifiedby='".$babDB->db_escape_string($arr['id_author']);
 				}
 			$req .= " where id='".$babDB->db_escape_string($articleid)."'";
 			$babDB->db_query($req);
