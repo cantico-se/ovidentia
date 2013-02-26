@@ -114,6 +114,13 @@ abstract class bab_SearchRealmTopic extends bab_SearchRealm {
 				$return = bab_getTopicsFromCategory($id_category);
 			}
 		}
+		
+		// list only allowed topics
+		if ($return)
+		{
+			$topview = bab_getUserIdObjects(BAB_TOPICSVIEW_GROUPS_TBL);
+			$return = array_intersect($return, $topview);
+		}
 
 		return $return;
 	}
@@ -152,6 +159,8 @@ abstract class bab_SearchRealmTopic extends bab_SearchRealm {
 		
 		if ($topics = self::getRequestedTopics()) {
 			$criteria = $criteria->_AND_($this->id_topic->in($topics));
+		} else {
+			$criteria = $criteria->_AND_($this->id_topic->in(bab_getUserIdObjects(BAB_TOPICSVIEW_GROUPS_TBL)));
 		}
 		
 
