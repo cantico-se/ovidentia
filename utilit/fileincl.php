@@ -2305,33 +2305,15 @@ function isStringSupportedByFileSystem($sName)
 	$oFileMgrEnv		= getEnvObject();
 	$bCreatable			= false;
 	$sFmTempPath		= $oFileMgrEnv->getTempPath();
-	$sFmUserTempPath	= $sFmTempPath . session_id() . '/';
-	$sFullPath			= $sFmUserTempPath . $sName;
+	$sFmUserTempPath	= $sFmTempPath . session_id() ;
+	$fullPath			= new bab_Path($sFmUserTempPath, $sName);
 
-	if(!is_dir($sFmTempPath))
-	{
-		if(!@bab_mkdir($sFmTempPath, $GLOBALS['babMkdirMode']))
-		{
-			return false;
-		}
-	}
 
-	if(!is_dir($sFmUserTempPath))
+	if(!$fullPath->isDir())
 	{
-		if(!@bab_mkdir($sFmUserTempPath, $GLOBALS['babMkdirMode']))
+		if($fullPath->createDir())
 		{
-			return false;
-		}
-	}
-
-	if(!is_dir($sFullPath))
-	{
-		if(@bab_mkdir($sFullPath, $GLOBALS['babMkdirMode']))
-		{
-			if(is_dir($sFullPath))
-			{
-				$bCreatable	= true;
-			}
+			$bCreatable	= true;
 		}
 	}
 
