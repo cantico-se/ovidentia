@@ -44,7 +44,7 @@ function bab_getDelegationsObjects()
 	
 	if (null === $objects)
 	{
-		bab_functionality::includefile('Icons');
+		bab_functionality::includeOriginal('Icons');
 		
 		$objects = array(
 			array("users"		, bab_translate("Create a new user")	, null				, null											, null, null),
