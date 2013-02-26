@@ -942,6 +942,8 @@ class bab_import_package {
 		if ($install->install($ini)) {
 			if (unlink($install->getArchive())) {
 				return true;
+			} else {
+				bab_installWindow::message(sprintf(bab_translate('Failed to delete the temporary package %s'), $install->getArchive()));
 			}
 		}
 

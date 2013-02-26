@@ -3412,4 +3412,6 @@ L'administrateur</string>
 <string id="Connection security">Sécurité de la connexion</string>
 <string id="No security">Aucune</string>
 <string id="This vacation request does not exists">Cette demande de congés n'existe pas</string>
+<string id="Failed to delete the temporary package %s">Echec de la suppression de l'archive temporaire %s</string>
+
 </fr>
