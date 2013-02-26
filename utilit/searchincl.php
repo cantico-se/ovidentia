@@ -555,13 +555,21 @@ class bab_SearchDefaultForm {
 	 */
 	public static function getCriteria(bab_SearchTestable $testable) {
 
+		$crit = new bab_SearchInvariant;
+		
+		$criteria = self::addFromCriterions($crit, $testable);
+		
 		if ($testable instanceOf bab_SearchRealm) {
-			$crit = $testable->getDefaultCriteria();
-		} else {
-			$crit = new bab_SearchInvariant;
-		}
-
-		return self::addFromCriterions($crit, $testable);
+			$x = $testable->getDefaultCriteria();
+			
+			if (!($x instanceof bab_SearchInvariant))
+			{
+				$criteria = $criteria->_AND_($x);
+			}
+		} 
+		
+		
+		return $criteria;
 	}
 
 
