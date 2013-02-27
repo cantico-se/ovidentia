@@ -819,7 +819,10 @@ class Func_Ovml_Function_SitemapMenu extends Func_Ovml_Function {
 			}
 
 			do {
-				$return .= $this->getHtml($node, 'sitemap-main-menu');
+				if (!$node->getData()->menuIgnore)
+				{
+					$return .= $this->getHtml($node, 'sitemap-main-menu');
+				}
 			} while ($node = $node->nextSibling());
 
 			if ($outerUl) {
