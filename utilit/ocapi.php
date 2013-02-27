@@ -541,13 +541,16 @@ function bab_OCGetEntityTypes($entityId)
  * 		'sn' =>	The member's surname (last name)
  * 		'givenname' => The member's given name (first name)
  * )
- * The result set is ordered by role types (in order 1,2,3,0) and by user name (according to ovidentia name ordering rules).
+ * The result set is ordered by role ordering (which is by default type
+ * in order 1,2,3,0 but can be manually reordered) and by user name
+ * (according to ovidentia name ordering rules by default).
  *
- * @param int $entityId			Id of orgchart entity.
+ * @param int  $entityId			Id of orgchart entity.
+ * @param bool $useNameOrder		If FALSE always order members by their lastname, if TRUE takes global name order into consideration. 
  *
  * @return resource		The mysql resource or FALSE on error
  */
-function bab_OCSelectEntityCollaborators($entityId)
+function bab_OCSelectEntityCollaborators($entityId, $useNameOrder = true)
 {
 	global $babDB, $babBody;
 
@@ -565,9 +568,13 @@ function bab_OCSelectEntityCollaborators($entityId)
 	$sql .= ' LEFT JOIN ' . BAB_USERS_TBL . ' AS babusers ON dir_entries.id_user = babusers.id';
 	$sql .= ' WHERE roles.id_entity = ' . $babDB->quote($entityId);
 	$sql .= ' ORDER BY roles.ordering ASC, '; // We want role types to appear in the order 1,2,3,0
-	$sql .= ($babBody->nameorder[0] === 'F') ?
-					' dir_entries.givenname ASC, dir_entries.sn ASC'
-					: ' dir_entries.sn ASC, dir_entries.givenname ASC';
+	if ($useNameOrder) {
+		$sql .= ($babBody->nameorder[0] === 'F') ?
+						' dir_entries.givenname ASC, dir_entries.sn ASC'
+						: ' dir_entries.sn ASC, dir_entries.givenname ASC';
+	} else {
+		$sql .= ' dir_entries.sn ASC, dir_entries.givenname ASC';
+	}
 
 	$members = $babDB->db_query($sql);
 

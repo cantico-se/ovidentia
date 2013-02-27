@@ -567,7 +567,7 @@ class bab_OvidentiaOrgChart extends bab_OrgChart
 		require_once $GLOBALS['babInstallPath'].'utilit/ocapi.php';
 		global $babDB;
 
-		$members = bab_OCselectEntityCollaborators($entityId);
+		$members = bab_OCselectEntityCollaborators($entityId, false);
 		while ($member = $babDB->db_fetch_array($members)) {
 			if ($member['user_disabled'] !== '1' && $member['user_confirmed'] !== '0') { // We don't display disabled and unconfirmed users
 				$memberDirectoryEntryId = $member['id_dir_entry'];
