@@ -1575,7 +1575,7 @@ function acceptWaitingArticle($idart)
 			if( $arr['update_datemodif'] != 'N')
 				{
 				$req .= ", date_modification=now()";
-				$req .= ", id_modifiedby='".$babDB->db_escape_string($arr['id_author']);
+				$req .= ", id_modifiedby='".$babDB->db_escape_string($arr['id_author'])."'";
 				}
 			$req .= " where id='".$babDB->db_escape_string($articleid)."'";
 			$babDB->db_query($req);
