@@ -4329,7 +4329,7 @@ CREATE TABLE bab_cal_domains (
 	name varchar(255) NOT NULL default '',
 	`order` int(11) unsigned NOT NULL default '0',
 	PRIMARY KEY (id)
-)
+);
 
 CREATE TABLE bab_cal_events_domains (
 	id int(11) unsigned NOT NULL auto_increment,
