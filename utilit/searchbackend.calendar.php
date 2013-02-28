@@ -74,7 +74,7 @@ class bab_SearchCalendarBackEnd extends bab_SearchBackEnd
 	
 	public function notCriteria(bab_SearchCriteria $oCriteria)
 	{
-		throw new bab_SearchNotImplementedException(__FUNCTION__.' Not implemented');
+		return $oCriteria->_NOT_();
 	}
 	
 	/**
