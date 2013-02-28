@@ -48,19 +48,47 @@ class bab_SearchCalendarBackEnd extends bab_SearchBackEnd
 	 */
 	public function andCriteria(bab_SearchCriteria $oLeftCriteria, bab_SearchCriteria $oRightCriteria)
 	{
-		return $oLeftCriteria->_AND_($oRightCriteria);
+		$left = $oLeftCriteria->toString($this);
+		
+		if (!($left instanceof bab_PeriodCriteria))
+		{
+			var_dump($left);
+			throw new Exception('transformation failed for leftCriteria');
+		}
+		
+		$right = $oRightCriteria->toString($this);
+		
+		if (!($right instanceof bab_PeriodCriteria))
+		{
+			throw new Exception('transformation failed for rightCriteria');
+		}
+		
+		return $left->_AND_($right);
 	}
 
 	
+	/**
+	 * @todo not implemented in bab_PeriodCriteria
+	 * 
+	 * (non-PHPdoc)
+	 * @see bab_SearchBackEnd::orCriteria()
+	 */
 	public function orCriteria(bab_SearchCriteria $oLeftCriteria, bab_SearchCriteria $oRightCriteria)
 	{
 		return $this->andCriteria($oLeftCriteria, $oRightCriteria);
 	}
 
-	
+	/**
+	 * @todo not implemented in bab_PeriodCriteria
+	 * 
+	 * (non-PHPdoc)
+	 * @see bab_SearchBackEnd::notCriteria()
+	 */
 	public function notCriteria(bab_SearchCriteria $oCriteria)
 	{
-		return $oCriteria->_NOT_();
+		$periodCriteria = $oCriteria->toString($this);
+		/*@var $periodCriteria bab_PeriodCriteria */
+		return $periodCriteria;
 	}
 	
 	/**
