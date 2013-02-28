@@ -549,13 +549,14 @@ function bab_newInstall() {
 
 		exit;
 	}
+	
+	
+	
+	include_once $GLOBALS['babInstallPath'].'install.php';
 
 
 	if (bab_upgradeAddonsFromInstall(true, null))
 	{
-		include_once $GLOBALS['babInstallPath'].'install.php';
-
-
 		$iniVersion = $ini->getVersion();
 		$arr = explode('.', $iniVersion);
 
