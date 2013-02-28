@@ -2731,25 +2731,7 @@ function bab_toHtml($str, $option = BAB_HTML_ENTITIES) {
  */
 function bab_unhtmlentities($string)
 {
-	if( bab_charset::getDatabase() == "utf8")
-	{//Because this character cause display issue
-		$string = str_replace('&nbsp;', ' ', $string);
-	}
-	
-	// special quote : htmlarea &#8217; and fckeditor &rsquo;
-	$string = preg_replace('~&#8217;~', '\'', $string);
-	
-	// replace numeric entities
-	$string = preg_replace('~&#x([0-9a-f]+);~ei', 'chr(hexdec("\\1"))', $string);
-	$string = preg_replace('~&#([0-9]+);~e', 'chr("\\1")', $string);
-	
-	// replace literal entities
-	$trans_tbl = get_html_translation_table(HTML_ENTITIES);
-	$trans_tbl = array_flip($trans_tbl);
-			
-	$trans_tbl['&rsquo;'] = "'";
-	
-	return strtr($string, $trans_tbl);
+	return html_entity_decode($string, ENT_COMPAT, bab_charset::getIso());
 }
 
 
