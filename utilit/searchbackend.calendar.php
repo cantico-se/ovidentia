@@ -48,21 +48,7 @@ class bab_SearchCalendarBackEnd extends bab_SearchBackEnd
 	 */
 	public function andCriteria(bab_SearchCriteria $oLeftCriteria, bab_SearchCriteria $oRightCriteria)
 	{
-		$left = $oLeftCriteria->toString($this);
-		
-		if (!($left instanceof bab_PeriodCriteria))
-		{
-			throw new Exception('transformation failed');
-		}
-		
-		$right = $oRightCriteria->toString($this);
-		
-		if (!($right instanceof bab_PeriodCriteria))
-		{
-			throw new Exception('transformation failed');
-		}
-		
-		return $left->_AND_($right);
+		return $oLeftCriteria->_AND_($oRightCriteria);
 	}
 
 	
