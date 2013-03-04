@@ -529,8 +529,13 @@ class bab_ArtDraft
 
 				$target = clone $targetPath;
 				$target->push($filePickerItem->toString());
-
-				if (rename($filePickerItem->getFilePath()->toString(), $target->toString()))
+				$returnRename = rename($filePickerItem->getFilePath()->toString(), $target->toString());
+				if(!$returnRename){//needed on some windows environement
+					$returnRename = copy($filePickerItem->getFilePath()->toString(), $target->toString());
+					unlink($filePickerItem->getFilePath()->toString());
+				}
+				
+				if ($returnRename)
 				{
 					$sRelativePath = mb_substr($targetPath->toString(), 1 + mb_strlen($GLOBALS['babUploadPath']));
 					bab_addImageToDraftArticle($this->id, $filePickerItem->toString(), $sRelativePath.'/');
