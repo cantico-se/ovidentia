@@ -142,15 +142,16 @@ function listAds()
 					if($this->bshow == 'Y')
 					{
 						$this->altbg = !$this->altbg;
-					}
 					
-					if($arr['id_group'] == BAB_REGISTERED_GROUP)
-					{
-						$this->group = bab_toHtml(bab_getGroupName($arr['id_group'], false));
-					}
-					else
-					{
-						$this->group = bab_toHtml(bab_getGroupName($arr['id_group']));
+						if($arr['id_group'] == BAB_REGISTERED_GROUP)
+						{
+							$this->group = bab_toHtml(bab_getGroupName($arr['id_group'], false));
+						}
+						else
+						{
+							$this->group = bab_toHtml(bab_getGroupName($arr['id_group']));
+						}
+					
 					}
 				}
 				else
