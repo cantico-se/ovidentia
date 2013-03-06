@@ -305,11 +305,20 @@ function search_options()
 			return '';
 		}
 
-		function getnext()
+		function getnext(&$skip = false)
 			{
 			if ($this->arr = $this->db->db_fetch_array($this->resdb))
 				{
 				$this->arr['description'] = translateDirectoryField($this->arr['description']);
+					
+					
+				if (isset($this->arrdf[$this->arr['id']]))
+				{
+					$skip = true;
+					return true;
+				}
+					
+				
 				return true;
 				}
 			
@@ -324,10 +333,14 @@ function search_options()
 
 		function getnextsortfs(&$skip)
 			{
+				$dummy = false;
+				
 				if ($this->arr) {
 					
+					
+					
 					if (true === $this->arr) {
-						$this->getnext();
+						$this->getnext($dummy);
 						$skip = true;
 						return true;
 					}
@@ -335,13 +348,29 @@ function search_options()
 					$this->sortid = (int) $this->arr['id'];
 					if ($this->sortid > 0) {
 						
+						if (isset($this->arrsortf[$this->arr['id']]))
+						{
+							$this->arr['id'] = -1 * $this->arr['id'];
+							$skip = true;
+							return true;
+						}
+						
 						$this->description = bab_toHtml($this->arr['description'].' '.bab_translate('ascending'));
 						$this->arr['id'] = -1 * $this->arr['id'];
 						
 					} else {
+						
+						
+						if (isset($this->arrsortf[$this->arr['id']]))
+						{
+							$this->arr['id'] = abs($this->sortid);
+							$skip = true;
+							return true;
+						}
+						
 						$this->description = bab_toHtml($this->arr['description'].' '.bab_translate('descending'));
 						$this->arr['id'] = abs($this->sortid);
-						if (!$this->getnext()) {
+						if (!$this->getnext($dummy)) {
 							static $end = true;
 						}
 					}
