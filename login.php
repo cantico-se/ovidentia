@@ -106,277 +106,296 @@ function userCreate($firstname, $middlename, $lastname, $nickname, $email)
 
 function displayRegistration($nickname, $fields, $cagree)
 	{
-
-	global $babBody, $babDB;
-	class temp
-		{
-
-		function temp($nickname, $fields, $cagree)
+	if(bab_rp('original_register') == 1){
+		global $babBody, $babDB;
+		class temp
 			{
-
-			global $babBody, $babDB;
-			$this->nickname = bab_translate("Login ID");
-			$this->password = bab_translate("Password");
-			$this->repassword = bab_translate("Retype Password");
-			$this->adduser = bab_translate("Register");
-
-			$this->requiredtxt = bab_translate("Those fields are required");
-			$this->passwordlengthtxt = bab_translate("At least 6 characters");
-
-			list($email_confirm) = $babDB->db_fetch_array($babDB->db_query("select email_confirm FROM ".BAB_SITES_TBL." where id='".$babDB->db_escape_string($babBody->babsite['id'])."'"));
-
-			if ($email_confirm == 'Y')
+	
+			function temp($nickname, $fields, $cagree)
 				{
-				$this->infotxt1 = bab_translate("Please provide a valid email.");
-				$this->infotxt2 = bab_translate("We will send you an email for confirmation before you can use our services");
-				}
-			else
-				{
-				if($babBody->babsite['email_confirm'] == 2)
+	
+				global $babBody, $babDB;
+				$this->nickname = bab_translate("Login ID");
+				$this->password = bab_translate("Password");
+				$this->repassword = bab_translate("Retype Password");
+				$this->adduser = bab_translate("Register");
+	
+				$this->requiredtxt = bab_translate("Those fields are required");
+				$this->passwordlengthtxt = bab_translate("At least 6 characters");
+	
+				list($email_confirm) = $babDB->db_fetch_array($babDB->db_query("select email_confirm FROM ".BAB_SITES_TBL." where id='".$babDB->db_escape_string($babBody->babsite['id'])."'"));
+	
+				if ($email_confirm == 'Y')
 					{
-					$this->infotxt1 = '';
-					$this->infotxt2 = '';
+					$this->infotxt1 = bab_translate("Please provide a valid email.");
+					$this->infotxt2 = bab_translate("We will send you an email for confirmation before you can use our services");
 					}
 				else
 					{
-					$this->infotxt1 = '';
-					$this->infotxt2 = bab_translate("Your account will be activated only after validation");
-					}
-				}
-
-			if( $babBody->babsite['display_disclaimer'] == "Y" )
-				{
-				$this->disclaimer = bab_translate("I have read and accept the agreement");
-				$this->readtxt = bab_translate("Read");
-				$this->urlshowdp = bab_toHtml($GLOBALS['babUrlScript']."?tg=login&cmd=showdp");
-				$this->bagree = true;
-				}
-			else
-				{
-				$this->bagree = false;
-				}
-
-			$this->nicknameval = bab_toHtml($nickname);
-			$this->fields = $fields;
-
-			if( $cagree == 'Y' )
-				{
-				$this->cagreechecked = "checked";
-				}
-			else
-				{
-				$this->cagreechecked = "";
-				}
-
-			list($jpegphoto) = $babDB->db_fetch_array($babDB->db_query("select registration from ".BAB_SITES_FIELDS_REGISTRATION_TBL." where id_site='".$babDB->db_escape_string($babBody->babsite['id'])."' and id_field='5'"));
-			if( $jpegphoto == "Y" )
-				{
-				$this->bphoto = true;
-				}
-			else
-				{
-				$this->bphoto = false;
-				}
-
-			$this->res = $babDB->db_query("select sfrt.*, sfxt.id as idfx, sfxt.default_value as default_value from ".BAB_SITES_FIELDS_REGISTRATION_TBL." sfrt left join ".BAB_DBDIR_FIELDSEXTRA_TBL." sfxt on sfxt.id_field=sfrt.id_field WHERE sfrt.id_site='".$babDB->db_escape_string($babBody->babsite['id'])."' and sfrt.registration='Y' and sfxt.id_directory='0'");
-
-			$this->count = $babDB->db_num_rows($this->res);
-
-			$this->respf = $babDB->db_query("select * from ".BAB_PROFILES_TBL." where inscription='Y'");
-			$this->countpf = $babDB->db_num_rows($this->respf);
-			$this->altbg = true;
-
-			$oCaptcha = @bab_functionality::get('Captcha');
-			$this->bUseCaptcha = false;
-			if(false !== $oCaptcha)
-				{
-					$this->bUseCaptcha = true;
-					$this->sCaptchaCaption1 = bab_translate("Word Verification");
-					$this->sCaptchaSecurityData = $oCaptcha->getGetSecurityHtmlData();
-					$this->sCaptchaCaption2 = bab_translate("Enter the letters in the image above");
-				}
-			}
-
-		function getnextfield(&$skip)
-			{
-			global $babDB;
-			static $i = 0;
-			if( $i < $this->count)
-				{
-				$arr = $babDB->db_fetch_array($this->res);
-				if( $arr['id_field'] < BAB_DBDIR_MAX_COMMON_FIELDS )
-					{
-					$res = $babDB->db_query("select description, name from ".BAB_DBDIR_FIELDS_TBL." where id='".$babDB->db_escape_string($arr['id_field'])."'");
-					$rr = $babDB->db_fetch_array($res);
-					$this->fieldname = bab_toHtml(translateDirectoryField($rr['description']));
-					$this->fieldv = $rr['name'];
-					}
-				else
-					{
-					$rr = $babDB->db_fetch_array($babDB->db_query("select * from ".BAB_DBDIR_FIELDS_DIRECTORY_TBL." where id='".$babDB->db_escape_string(($arr['id_field'] - BAB_DBDIR_MAX_COMMON_FIELDS))."'"));
-					$this->fieldname = bab_toHtml(translateDirectoryField($rr['name']));
-					$this->fieldv = "babdirf".$arr['id'];
-					}
-
-				$this->bfieldphoto = false;
-				if( isset($this->fields[$this->fieldv]))
-					{
-					$this->fieldval = bab_toHtml($this->fields[$this->fieldv]);
-					}
-				else
-					{
-					$this->fieldval = '';
-					}
-
-				$this->resfxv = $babDB->db_query("select field_value from ".BAB_DBDIR_FIELDSVALUES_TBL." where id_fieldextra='".$babDB->db_escape_string($arr['idfx'])."' ORDER BY field_value ASC");
-				$this->countfxv = $babDB->db_num_rows($this->resfxv);
-
-				$this->required = $arr['required'];
-				if( $this->countfxv == 0  )
-					{
-					$this->multivalues = false;
-					}
-				elseif( $this->countfxv > 1  )
-					{
-					$this->multivalues = true;
-					}
-				else
-					{
-					$this->multivalues = $arr['multi_values'] == 'Y'? true: false;
-					}
-
-				$this->fieldt = $arr['multilignes'];
-				if( !empty( $arr['default_value'] ) && empty($this->fvalue) && $this->countfxv > 0)
-					{
-					$rr = $babDB->db_fetch_array($babDB->db_query("select field_value from ".BAB_DBDIR_FIELDSVALUES_TBL." WHERE id='".$babDB->db_escape_string($arr['default_value'])."'"));
-
-					$this->fieldval = bab_toHtml($rr['field_value']);
-					}
-
-				if( $this->bphoto && $this->fieldv == "jpegphoto" )
-					{
-					$this->bfieldphoto = true;
-					}
-
-				$i++;
-				return true;
-				}
-			else
-				return false;
-			}
-
-		function getnextfxv()
-			{
-			global $babDB;
-			static $i = 0;
-			if( $i < $this->countfxv)
-				{
-				$arr = $babDB->db_fetch_array($this->resfxv);
-				$this->fxvvalue = bab_toHtml($arr['field_value']);
-				if( $this->fieldval == $this->fxvvalue )
-					{
-					$this->selected = 'selected';
-					}
-				else
-					{
-					$this->selected = '';
-					}
-				$i++;
-				return true;
-				}
-			else
-				{
-				$i = 0;
-				return false;
-				}
-			}
-
-		function getnextprofile()
-			{
-			global $babDB;
-			static $j = 0;
-			if( $j < $this->countpf)
-				{
-				$arr = $babDB->db_fetch_array($this->respf);
-				$this->pname = bab_toHtml($arr['name']);
-				$this->pdesc =  bab_toHtml($arr['description']);
-				$this->idprofile = $arr['id'];
-				if( $arr['multiplicity'] == 'Y' )
-					{
-					$this->bmultiplicity = true;
-					}
-				else
-					{
-					$this->bmultiplicity = false;
-					}
-				if( $arr['required'] == "Y")
-					{
-					$this->brequired = true;
-					}
-				else
-					{
-					$this->brequired = false;
-					}
-				$this->resgrp = $babDB->db_query("
-					SELECT
-						gt.*
-					FROM
-						".BAB_PROFILES_GROUPSSET_TBL." pgt
-						LEFT JOIN ".BAB_GROUPS_TBL." gt on pgt.id_group=gt.id
-					WHERE
-						pgt.id_object ='".$babDB->db_escape_string($arr['id'])."'
-					");
-				$this->countgrp = $babDB->db_num_rows($this->resgrp);
-				$j++;
-				return true;
-				}
-			else
-				{
-				$j = 0;
-				return false;
-				}
-			}
-
-		function getnextgrp()
-			{
-			global $babBody, $babDB;
-			static $i = 0;
-			if( $i < $this->countgrp)
-				{
-				$arr = $babDB->db_fetch_array($this->resgrp);
-				$this->altbg = !$this->altbg;
-				$this->grpid = $arr['id'];
-				$this->grpname = bab_toHtml($arr['name']);
-				$this->grpdesc = empty($arr['description']) ? bab_toHtml($arr['name']) : bab_toHtml($arr['description']);
-				if( isset($GLOBALS["grpids".$this->idprofile]) && count($GLOBALS["grpids".$this->idprofile]) > 0 && in_array($arr['id'] , $GLOBALS["grpids".$this->idprofile]))
-					{
-					if( $this->bmultiplicity == true )
+					if($babBody->babsite['email_confirm'] == 2)
 						{
-						$this->grpcheck = 'checked';
+						$this->infotxt1 = '';
+						$this->infotxt2 = '';
 						}
 					else
 						{
-						$this->grpcheck = 'selected';
+						$this->infotxt1 = '';
+						$this->infotxt2 = bab_translate("Your account will be activated only after validation");
 						}
+					}
+	
+				if( $babBody->babsite['display_disclaimer'] == "Y" )
+					{
+					$this->disclaimer = bab_translate("I have read and accept the agreement");
+					$this->readtxt = bab_translate("Read");
+					$this->urlshowdp = bab_toHtml($GLOBALS['babUrlScript']."?tg=login&cmd=showdp");
+					$this->bagree = true;
 					}
 				else
 					{
-					$this->grpcheck = '';
+					$this->bagree = false;
 					}
-				$i++;
-				return true;
+	
+				$this->nicknameval = bab_toHtml($nickname);
+				$this->fields = $fields;
+	
+				if( $cagree == 'Y' )
+					{
+					$this->cagreechecked = "checked";
+					}
+				else
+					{
+					$this->cagreechecked = "";
+					}
+	
+				list($jpegphoto) = $babDB->db_fetch_array($babDB->db_query("select registration from ".BAB_SITES_FIELDS_REGISTRATION_TBL." where id_site='".$babDB->db_escape_string($babBody->babsite['id'])."' and id_field='5'"));
+				if( $jpegphoto == "Y" )
+					{
+					$this->bphoto = true;
+					}
+				else
+					{
+					$this->bphoto = false;
+					}
+	
+				$this->res = $babDB->db_query("select sfrt.*, sfxt.id as idfx, sfxt.default_value as default_value from ".BAB_SITES_FIELDS_REGISTRATION_TBL." sfrt left join ".BAB_DBDIR_FIELDSEXTRA_TBL." sfxt on sfxt.id_field=sfrt.id_field WHERE sfrt.id_site='".$babDB->db_escape_string($babBody->babsite['id'])."' and sfrt.registration='Y' and sfxt.id_directory='0'");
+	
+				$this->count = $babDB->db_num_rows($this->res);
+	
+				$this->respf = $babDB->db_query("select * from ".BAB_PROFILES_TBL." where inscription='Y'");
+				$this->countpf = $babDB->db_num_rows($this->respf);
+				$this->altbg = true;
+	
+				$oCaptcha = @bab_functionality::get('Captcha');
+				$this->bUseCaptcha = false;
+				if(false !== $oCaptcha)
+					{
+						$this->bUseCaptcha = true;
+						$this->sCaptchaCaption1 = bab_translate("Word Verification");
+						$this->sCaptchaSecurityData = $oCaptcha->getGetSecurityHtmlData();
+						$this->sCaptchaCaption2 = bab_translate("Enter the letters in the image above");
+					}
 				}
-			else
+	
+			function getnextfield(&$skip)
 				{
-				$i = 0;
-				return false;
+				global $babDB;
+				static $i = 0;
+				if( $i < $this->count)
+					{
+					$arr = $babDB->db_fetch_array($this->res);
+					if( $arr['id_field'] < BAB_DBDIR_MAX_COMMON_FIELDS )
+						{
+						$res = $babDB->db_query("select description, name from ".BAB_DBDIR_FIELDS_TBL." where id='".$babDB->db_escape_string($arr['id_field'])."'");
+						$rr = $babDB->db_fetch_array($res);
+						$this->fieldname = bab_toHtml(translateDirectoryField($rr['description']));
+						$this->fieldv = $rr['name'];
+						}
+					else
+						{
+						$rr = $babDB->db_fetch_array($babDB->db_query("select * from ".BAB_DBDIR_FIELDS_DIRECTORY_TBL." where id='".$babDB->db_escape_string(($arr['id_field'] - BAB_DBDIR_MAX_COMMON_FIELDS))."'"));
+						$this->fieldname = bab_toHtml(translateDirectoryField($rr['name']));
+						$this->fieldv = "babdirf".$arr['id'];
+						}
+	
+					$this->bfieldphoto = false;
+					if( isset($this->fields[$this->fieldv]))
+						{
+						$this->fieldval = bab_toHtml($this->fields[$this->fieldv]);
+						}
+					else
+						{
+						$this->fieldval = '';
+						}
+	
+					$this->resfxv = $babDB->db_query("select field_value from ".BAB_DBDIR_FIELDSVALUES_TBL." where id_fieldextra='".$babDB->db_escape_string($arr['idfx'])."' ORDER BY field_value ASC");
+					$this->countfxv = $babDB->db_num_rows($this->resfxv);
+	
+					$this->required = $arr['required'];
+					if( $this->countfxv == 0  )
+						{
+						$this->multivalues = false;
+						}
+					elseif( $this->countfxv > 1  )
+						{
+						$this->multivalues = true;
+						}
+					else
+						{
+						$this->multivalues = $arr['multi_values'] == 'Y'? true: false;
+						}
+	
+					$this->fieldt = $arr['multilignes'];
+					if( !empty( $arr['default_value'] ) && empty($this->fvalue) && $this->countfxv > 0)
+						{
+						$rr = $babDB->db_fetch_array($babDB->db_query("select field_value from ".BAB_DBDIR_FIELDSVALUES_TBL." WHERE id='".$babDB->db_escape_string($arr['default_value'])."'"));
+	
+						$this->fieldval = bab_toHtml($rr['field_value']);
+						}
+	
+					if( $this->bphoto && $this->fieldv == "jpegphoto" )
+						{
+						$this->bfieldphoto = true;
+						}
+	
+					$i++;
+					return true;
+					}
+				else
+					return false;
+				}
+	
+			function getnextfxv()
+				{
+				global $babDB;
+				static $i = 0;
+				if( $i < $this->countfxv)
+					{
+					$arr = $babDB->db_fetch_array($this->resfxv);
+					$this->fxvvalue = bab_toHtml($arr['field_value']);
+					if( $this->fieldval == $this->fxvvalue )
+						{
+						$this->selected = 'selected';
+						}
+					else
+						{
+						$this->selected = '';
+						}
+					$i++;
+					return true;
+					}
+				else
+					{
+					$i = 0;
+					return false;
+					}
+				}
+	
+			function getnextprofile()
+				{
+				global $babDB;
+				static $j = 0;
+				if( $j < $this->countpf)
+					{
+					$arr = $babDB->db_fetch_array($this->respf);
+					$this->pname = bab_toHtml($arr['name']);
+					$this->pdesc =  bab_toHtml($arr['description']);
+					$this->idprofile = $arr['id'];
+					if( $arr['multiplicity'] == 'Y' )
+						{
+						$this->bmultiplicity = true;
+						}
+					else
+						{
+						$this->bmultiplicity = false;
+						}
+					if( $arr['required'] == "Y")
+						{
+						$this->brequired = true;
+						}
+					else
+						{
+						$this->brequired = false;
+						}
+					$this->resgrp = $babDB->db_query("
+						SELECT
+							gt.*
+						FROM
+							".BAB_PROFILES_GROUPSSET_TBL." pgt
+							LEFT JOIN ".BAB_GROUPS_TBL." gt on pgt.id_group=gt.id
+						WHERE
+							pgt.id_object ='".$babDB->db_escape_string($arr['id'])."'
+						");
+					$this->countgrp = $babDB->db_num_rows($this->resgrp);
+					$j++;
+					return true;
+					}
+				else
+					{
+					$j = 0;
+					return false;
+					}
+				}
+	
+			function getnextgrp()
+				{
+				global $babBody, $babDB;
+				static $i = 0;
+				if( $i < $this->countgrp)
+					{
+					$arr = $babDB->db_fetch_array($this->resgrp);
+					$this->altbg = !$this->altbg;
+					$this->grpid = $arr['id'];
+					$this->grpname = bab_toHtml($arr['name']);
+					$this->grpdesc = empty($arr['description']) ? bab_toHtml($arr['name']) : bab_toHtml($arr['description']);
+					if( isset($GLOBALS["grpids".$this->idprofile]) && count($GLOBALS["grpids".$this->idprofile]) > 0 && in_array($arr['id'] , $GLOBALS["grpids".$this->idprofile]))
+						{
+						if( $this->bmultiplicity == true )
+							{
+							$this->grpcheck = 'checked';
+							}
+						else
+							{
+							$this->grpcheck = 'selected';
+							}
+						}
+					else
+						{
+						$this->grpcheck = '';
+						}
+					$i++;
+					return true;
+					}
+				else
+					{
+					$i = 0;
+					return false;
+					}
 				}
 			}
-		}
+	
+		$temp = new temp($nickname, $fields, $cagree);
+		$babBody->babecho(bab_printTemplate($temp,"login.html", "registration"));
+	}else{
+		global $babBody, $babDB;
+	
+		require_once dirname(__FILE__).'/utilit/urlincl.php';
+		
+		$unload = bab_url::get_request('tg');
+		$unload->idx = 'dbcunload';
+		$unload->msg = bab_translate("Your contact has been created");
+		
+		/*@var $usereditor Func_UserEditor */
+		$usereditor = bab_functionality::get('UserEditor');
+		
+		$usereditor->setRegister($babBody->babsite['display_disclaimer']=='Y'?true:false);
 
-	$temp = new temp($nickname, $fields, $cagree);
-	$babBody->babecho(bab_printTemplate($temp,"login.html", "registration"));
+		/*@var $page Widget_BabPage */
+		$page = $usereditor->getAsPage(null, $unload);
+		$page->setEmbedded(true);
+		$page->displayHtml();
 	}
+}
 
 function displayDisclaimer()
 {
@@ -736,9 +755,16 @@ switch($cmd)
 		break;
 
 	case 'displayMessage':
-		require_once $GLOBALS['babInstallPath'] . 'utilit/baseFormProcessingClass.php';
-
 		global $babBody;
+		require_once $GLOBALS['babInstallPath'] . 'utilit/baseFormProcessingClass.php';
+		
+		$babBody->msgerror = bab_translate("Thank You For Registering at our site") ."<br />";
+		$fullname = bab_composeUserName($firstname , $lastname);
+		if( $babBody->babsite['email_confirm'] == 2){
+		}elseif( $babBody->babsite['email_confirm'] == 1 ){
+		}else{
+			$babBody->msgerror .= bab_translate("You will receive an email which let you confirm your registration.");
+		}
 
 		$oForm = new BAB_BaseFormProcessing();
 

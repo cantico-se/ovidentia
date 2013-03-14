@@ -1405,7 +1405,6 @@ hideShowCnx();
 	<tr class="BabSiteAdminTitleFontBackground"> 
 		<td width="80%" align="left" nowrap>{ field }</td>
 		<td width="10%" align="left" nowrap>{ required }</td>
-		<td width="10%" align="left" nowrap>{ multilignes }</td>
 	</tr>
 	<!--#in getnextfield -->
 	<!--#if altbg --><tr class="BabSiteAdminFontBackground"><!--#else altbg --><tr class="BabForumBackground1"><!--#endif altbg -->
@@ -1416,15 +1415,10 @@ hideShowCnx();
 			<!--#if reqchecked -->
 			<input type="hidden" name="req[]" value="{ fieldid }" /></td>
 			<!--#endif reqchecked -->
-		<td><input type="checkbox" { mlchecked } disabled />
-			<!--#if mlchecked -->
-			<input type="hidden" name="ml[]" value="{ fieldid }" />
-			<!--#endif mlchecked -->
-		</td>
+		
 		<!--#else disabled -->
 		<td><input type="checkbox" name="rw[]" { rwchecked } value="{ fieldid }" />&nbsp;{ fieldn }</td>
 		<td><input type="checkbox" name="req[]" { reqchecked } value="{ fieldid }" /></td>
-		<td><input type="checkbox" name="ml[]" { mlchecked } value="{ fieldid }" /></td>
 	<!--#endif disabled -->
 	</tr>
 	<!--#endin getnextfield -->

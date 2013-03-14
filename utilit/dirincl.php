@@ -1418,7 +1418,7 @@ function bab_getDirectoriesFields($directories) {
 	}
 
 
-	$req = "select id, id_field, id_directory from ".BAB_DBDIR_FIELDSEXTRA_TBL." 
+	$req = "select id, id_field, id_directory, list_ordering, multi_values, multilignes from ".BAB_DBDIR_FIELDSEXTRA_TBL." 
 			WHERE disabled='N' AND id_directory IN(".$babDB->quote($filter).")";
 
 	$rescol = $babDB->db_query($req);
@@ -1455,7 +1455,10 @@ function bab_getDirectoriesFields($directories) {
 				'id'			=> $row['id'],
 				'name' 			=> $rr['name'],
 				'description'	=> translateDirectoryField($rr['description']),
-				'table'			=> BAB_DBDIR_ENTRIES_TBL
+				'table'			=> BAB_DBDIR_ENTRIES_TBL,
+				'order'			=> $row['list_ordering'],
+				'multival'		=> $row['multi_values'],
+				'multilignes'	=> $row['multilignes']
 				);
 		}
 		else
@@ -1469,7 +1472,10 @@ function bab_getDirectoriesFields($directories) {
 				'id'			=> $row['id'],
 				'name' 			=> 'babdirf'.$row['id'],
 				'description'	=> translateDirectoryField($rr['name']),
-				'table'			=> BAB_DBDIR_ENTRIES_EXTRA_TBL
+				'table'			=> BAB_DBDIR_ENTRIES_EXTRA_TBL,
+				'order'			=> $row['list_ordering'],
+				'multival'			=> $row['multi_values'],
+				'multilignes'	=> $row['multilignes']
 				);
 				
 		}

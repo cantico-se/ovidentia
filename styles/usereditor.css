@@ -35,3 +35,15 @@
 	text-align:center;
 	margin-top:2em;
 }
+
+.bab-user-editor-center{
+	text-align: center;
+}
+
+.bab-user-editor a{
+	font-weight: bold;
+}
+
+.bab-user-editor a:hover{
+	text-decoration: underline;
+}

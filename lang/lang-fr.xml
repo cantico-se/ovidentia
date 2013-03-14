@@ -3412,6 +3412,8 @@ L'administrateur</string>
 <string id="Connection security">Sécurité de la connexion</string>
 <string id="No security">Aucune</string>
 <string id="This vacation request does not exists">Cette demande de congés n'existe pas</string>
+<string id="You must fill the security code">Vous devez remplir code de sécurité</string>
+<string id="You have to accept the agreement">Vous devez accepter l'avis de non-responsabilité</string>
+<string id="The security code is not correct">Le code de sécurité est incorrecte</string>
 <string id="Failed to delete the temporary package %s">Echec de la suppression de l'archive temporaire %s</string>
-
 </fr>
