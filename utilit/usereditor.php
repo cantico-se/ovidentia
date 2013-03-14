@@ -738,7 +738,7 @@ class Func_UserEditor extends bab_functionality {
 						$W->HBoxItems(
 							$tmp = $W->CheckBox()->setMandatory(true, bab_translate('You have to accept the agreement'))->setCheckedValue('1')->setName('checkCondition'),
 							$W->Label(bab_translate("I have read and accept the agreement").' ('),
-							$W->Link(bab_translate("Read"), "javascript: Start('http://a/trash/index.php?tg=login&cmd=showdp', 'OviRegisterDP', 'width=600,height=1000,status=no,resizable=yes,top=10,left=200,scrollbars=yes');")->addClass($className),
+							$W->Link(bab_translate("Read"), "javascript: Start('?tg=login&cmd=showdp', 'OviRegisterDP', 'width=600,height=1000,status=no,resizable=yes,top=10,left=200,scrollbars=yes');")->addClass($className),
 							$W->Label(')')->setAssociatedWidget($tmp)
 						)->setHorizontalSpacing(5),
 						$W->Label('')
