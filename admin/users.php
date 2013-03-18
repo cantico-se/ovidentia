@@ -316,7 +316,11 @@ function listUsers($pos, $grp, $deleteAction)
 			//bab_debug($sQuery);
 			$this->res = $babDB->db_query($sQuery);
 			
-			$this->fullname = bab_toHtml(bab_composeUserName(bab_translate("Lastname"),bab_translate("Firstname")));
+			if( !$this->ord == "-" ){
+				$this->fullname = bab_toHtml(bab_translate("Lastname") . ' ' . bab_translate("Firstname"));
+			}else{
+				$this->fullname = bab_toHtml(bab_translate("Firstname") . ' ' . bab_translate("Lastname"));
+			}
 			$this->fullnameurl = bab_toHtml($GLOBALS['babUrlScript'].'?tg=users&idx=chg&pos='.
 				urlencode($this->ord.$this->pos).'&grp='.urlencode($this->grp).
 				'&sSearchText='.urlencode($this->sSearchText));
