@@ -40,13 +40,9 @@ div.entity .members {
 	margin-top: 0.4em;
 	padding: 0.5em 0.1em 0.1em 1em;
 	font-weight: normal;
-	background-position: 0.4em 0.4em;
-	background-repeat: no-repeat;
-/*	background-image: url("../skins/ovidentia/images/nodetypes/collective_folder.png"); */
-	background-color: #FFFFFF;
+	background: #FFFFFF;
+	background: rgba(255,255,255,0.5);
 	color: #000000;
-	opacity: 0.5;
-	filter: alpha(opacity=50);
 }
 
 div.entity .members .member_role {
