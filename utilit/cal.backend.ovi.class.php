@@ -243,6 +243,71 @@ class Func_CalendarBackend_Ovi extends Func_CalendarBackend
 	
 	
 	
+	
+	
+	
+	/**
+	 * Update the relation status after approbation
+	 * This method will also remove the X-CTO-WFINSTANCE
+	 *
+	 * @param bab_CalendarPeriod 	$period
+	 * @param array 				$relation		The relation to update
+	 * @param string	 			$status			new status for relation		ACCEPTED | DECLINED
+	 * @return bool
+	 */
+	public function setRelationStatus(bab_CalendarPeriod $period, Array $relation, $status)
+	{
+		
+		// the parent method do a savePeriod
+		// the savePeriod remove unaccessibles attendees and relations
+		
+		$uid = $period->getProperty('UID');
+		
+		$calendar = $relation['calendar'];
+		
+		/*@var $calendar bab_OviResourceCalendar  */
+		
+		$id_calendar = $calendar->getUid();
+		
+		switch($status)
+		{
+			case 'ACCEPTED': 	$db_status = BAB_CAL_STATUS_ACCEPTED; 	break;
+			case 'DECLINED': 	$db_status = BAB_CAL_STATUS_DECLINED; 	break; 
+			default: 			$db_status = BAB_CAL_STATUS_NONE; 		break; 
+		}
+		
+		
+		global $babDB;
+		
+		$res = $babDB->db_query('SELECT id FROM bab_cal_events WHERE uuid='.$babDB->quote($uid));
+		$arr = $babDB->db_fetch_assoc($res);
+		
+		if (!$arr)
+		{
+			return false;
+		}
+		
+		$id_event = (int) $arr['id'];
+		
+		
+		$babDB->db_query('
+			UPDATE bab_cal_events_owners 
+			SET status='.$babDB->quote($db_status).", idfai='0' 
+			WHERE 
+				id_event=".$babDB->quote($id_event)." 
+				AND id_cal=".$babDB->quote($id_calendar)
+		);
+		
+		return true;
+	}
+	
+	
+	
+	
+	
+	
+	
+	
 	/**
 	 * Update an attendee PARTSTAT value of a calendar event
 	 * a user can modifiy his participation status without modifing the full event, before triggering this method, the access right will be checked with the
