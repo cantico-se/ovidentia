@@ -47,12 +47,12 @@ class bab_OrgChartElement extends bab_TreeViewElement
 	}
 
 	
-	function addMember($memberName, $role = '')
+	function addMember($memberName, $role = '', $url = '')
 	{
 		if (!isset($this->_members[$role])) {
 			$this->_members[$role] = array();
 		}
-		$this->_members[$role][] = $memberName;
+		$this->_members[$role][] = array('name' => $memberName, 'url' => $url);
 	}
 
 	/**
@@ -331,13 +331,27 @@ class bab_OrgChart extends bab_TreeView
 
 	function getNextMemberName()
 	{
-		if (list(,$memberName) = each($this->_members)) {
+		if (list(,$member) = each($this->_members)) {
 			$this->t_memberName = $memberName;
 			return true;
 		}
 		reset($this->_members);
 		return false;
 	}
+	
+	
+	function getNextMember()
+	{
+		if (list(,$member) = each($this->_members)) {
+			$this->t_memberName = $member['name'];
+			$this->t_memberUrl = $member['url'];
+			return true;
+		}
+		reset($this->_members);
+		return false;
+	}
+	
+	
 	/**#@-*/
 }
 
@@ -596,11 +610,16 @@ class bab_OvidentiaOrgChart extends bab_OrgChart
 						}
 						$element->setInfo($memberName);
 						$element->setLink('javascript:'
-												. "flbhref('" . $GLOBALS['babUrlScript'] . "?tg=fltchart&idx=detr&ocid=" . $this->_orgChartId . "&oeid=" . $entityId . "&iduser=" . $memberDirectoryEntryId . "');"
-												. "changestyle('ENT" . $entityId . "','BabLoginMenuBackground','BabTopicsButtonBackground');"
-												. "bab_updateFltFrame('" . $GLOBALS['babUrlScript'] . "?tg=fltchart&rf=0&ocid=" . $this->_orgChartId . "&oeid=" . $entityId . "&idx=listr');");
+							. "flbhref('" . $GLOBALS['babUrlScript'] . "?tg=fltchart&idx=detr&ocid=" . $this->_orgChartId . "&oeid=" . $entityId . "&iduser=" . $memberDirectoryEntryId . "');"
+							. "changestyle('ENT" . $entityId . "','BabLoginMenuBackground','BabTopicsButtonBackground');"
+							. "bab_updateFltFrame('" . $GLOBALS['babUrlScript'] . "?tg=fltchart&rf=0&ocid=" . $this->_orgChartId . "&oeid=" . $entityId . "&idx=listr');");
 					}
-					$element->addMember($memberName, $member['role_name']);
+					
+					$memberUrl = 'javascript:'
+						. "flbhref('" . $GLOBALS['babUrlScript'] . "?tg=fltchart&idx=detr&ocid=" . $this->_orgChartId . "&oeid=" . $entityId . "&iduser=" . $memberDirectoryEntryId . "');"
+						. "bab_updateFltFrame('" . $GLOBALS['babUrlScript'] . "?tg=fltchart&rf=0&ocid=" . $this->_orgChartId . "&oeid=" . $entityId . "&idx=listr');";
+					
+					$element->addMember($memberName, $member['role_name'], $memberUrl);
 				}
 			}
 		}

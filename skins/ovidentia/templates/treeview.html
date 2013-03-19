@@ -560,9 +560,9 @@ document.write('</div>');
    <div class="members">
   <!--#in getNextMemberRole -->
     <div class="member_role">{ t_memberRole }</div>
-  <!--#in getNextMemberName -->
-    <div class="member">{ t_memberName }</div>
-  <!--#endin getNextMemberName -->
+  <!--#in getNextMember -->
+    <a class="member" href="{ t_memberUrl }">{ t_memberName }</a>
+  <!--#endin getNextMember -->
   <!--#endin getNextMemberRole -->
    </div>
   <!--#endif t_nbMembers -->
@@ -610,9 +610,9 @@ document.write('</div>');
   <div class="members">
   <!--#in getNextMemberRole -->
   <div class="member_role">{ t_memberRole }</div>
-  <!--#in getNextMemberName -->
-  <div class="member">{ t_memberName }</div>
-  <!--#endin getNextMemberName -->
+  <!--#in getNextMember -->
+  <a class="member" href="{ t_memberUrl }">{ t_memberName }</a>
+  <!--#endin getNextMember -->
   <!--#endin getNextMemberRole -->
   </div>
   <!--#endif t_nbMembers -->

@@ -53,6 +53,10 @@ div.entity .members .member {
 	display: list-item;
 	list-style: none;
 	margin-left: 1em;
+	color: #000000;
+}
+div.entity .members a.member:hover {
+	text-decoration: underline;
 }
 
 
