@@ -424,7 +424,7 @@ class bab_Registry
 
 				");
 		}
-
+		
 		if ($arr = $babDB->db_fetch_assoc($r[$this->dir])) {
 			return $arr['dirkey'];
 		}

@@ -463,22 +463,24 @@ function bab_getDelegationByName($name)
 /**
 * Return a delegation array
 *
-* @param mixed $id Array of id or id of the delegation to return
+* @param mixed $id Array of id or id of the delegation to return, or nothing if you want all delegations
 * @since 6.7.0
 * @author Zebina Samuel
 * 
 * @return array The matching delegation
 */
-function bab_getDelegationById($id)
+function bab_getDelegationById($id=null)
 {
 	global $babDB;
 	$sQuery = 
 		'SELECT  
 			* 
 		FROM ' . 
-			BAB_DG_GROUPS_TBL . ' 
-		WHERE  
+			BAB_DG_GROUPS_TBL; 
+	if($id !== null){
+		$sQuery.= ' WHERE  
 			id IN(' . $babDB->quote($id) . ')';
+	}
 
 	$aDG = array();
 	$oResult = $babDB->db_query($sQuery);
@@ -486,7 +488,6 @@ function bab_getDelegationById($id)
 	{
 		while(false !== ($aDatas = $babDB->db_fetch_assoc($oResult)))
 		{
-	bab_debug($aDatas);
 			$aDG[] = $aDatas;
 		}
 	}
