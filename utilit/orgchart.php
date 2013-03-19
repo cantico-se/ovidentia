@@ -329,10 +329,13 @@ class bab_OrgChart extends bab_TreeView
 		return false;
 	}
 
+	/**
+	 * @deprecated use getNextMember instead.
+	 */
 	function getNextMemberName()
 	{
 		if (list(,$member) = each($this->_members)) {
-			$this->t_memberName = $memberName;
+			$this->t_memberName = $member['name'];
 			return true;
 		}
 		reset($this->_members);
