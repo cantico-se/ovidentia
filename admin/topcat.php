@@ -118,14 +118,28 @@ function topcatModify($id)
 			$this->sImageModifyMessage	= bab_translate('Changes affecting the image will be taken into account after having saved');
 			
 			
-			//Si on ne vient pas d'un post alors r�cup�rer l'image
+		//Si on ne vient pas d'un post alors recuperer l'image
 			if(!array_key_exists('sImgName', $_POST))
 			{
-				$aImageInfo	= bab_getImageCategory($id);
-				if(false !== $aImageInfo)
-				{
-					$this->sImgName = $aImageInfo['name'];
-					$this->bHaveAssociatedImage = true;
+				$fileExiste = true;
+				if($id){
+					global $babBody;
+					$fileExiste = false;
+					$oEnvObj = bab_getInstance('bab_PublicationPathsEnv');
+					
+					$oEnvObj->setEnv($babBody->currentAdmGroup);
+					$sPath = $oEnvObj->getCategoryImgPath($id);
+					if(file_exists($sPath)){
+						$fileExiste = true;
+					}
+				}
+				if($fileExiste){
+					$aImageInfo	= bab_getImageCategory($id);
+					if(false !== $aImageInfo)
+					{
+						$this->sImgName = $aImageInfo['name'];
+						$this->bHaveAssociatedImage = true;
+					}
 				}
 			}
 			
