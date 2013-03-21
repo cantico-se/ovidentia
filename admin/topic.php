@@ -326,11 +326,7 @@ function modifyCategory($id, $cat, $category, $description, $saart, $sacom, $sau
 					if(false !== $iIdDelegation)
 					{
 						$oEnvObj->setEnv($iIdDelegation);
-						$sPath = '';
-						if(0 !== $id)
-						{
-							$sPath = $oEnvObj->getTopicImgPath($id);
-						}
+						$sPath = $oEnvObj->getTopicImgPath($id);
 						if(file_exists($sPath)){
 							$fileExiste = true;
 						}
