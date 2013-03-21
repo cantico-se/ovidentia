@@ -317,11 +317,32 @@ function modifyCategory($id, $cat, $category, $description, $saart, $sacom, $sau
 			//Si on ne vient pas d'un post alors recuperer l'image
 			if(!array_key_exists('sImgName', $_POST))
 			{
-				$aImageInfo	= bab_getImageTopic($id);
-				if(false !== $aImageInfo)
-				{
-					$this->sImgName = $aImageInfo['name'];
-					$this->bHaveAssociatedImage = true;
+				$fileExiste = true;
+				if($id){
+					$fileExiste = false;
+					$oEnvObj = bab_getInstance('bab_PublicationPathsEnv');
+					
+					$iIdDelegation = bab_getTopicDelegationId($id);
+					if(false !== $iIdDelegation)
+					{
+						$oEnvObj->setEnv($iIdDelegation);
+						$sPath = '';
+						if(0 !== $id)
+						{
+							$sPath = $oEnvObj->getTopicImgPath($id);
+						}
+						if(file_exists($sPath)){
+							$fileExiste = true;
+						}
+					}
+				}
+				if($fileExiste){
+					$aImageInfo	= bab_getImageTopic($id);
+					if(false !== $aImageInfo)
+					{
+						$this->sImgName = $aImageInfo['name'];
+						$this->bHaveAssociatedImage = true;
+					}
 				}
 			}
 
