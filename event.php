@@ -1312,6 +1312,8 @@ function updateEvent(&$message)
  */
 function confirmDeleteEvent($calid, $bupdrec, $notify)
 {
+	global $babBody;
+	
 	$evtid = bab_rp('evtid');
 	$dtstart = bab_rp('dtstart');
 	$calendar = bab_getICalendars()->getEventCalendar($calid);
@@ -1353,13 +1355,13 @@ function confirmDeleteEvent($calid, $bupdrec, $notify)
 	bab_debug('<h1>$backend->SavePeriod()</h1>'. $calendarPeriod->toHtml(), DBG_TRACE, 'CalendarBackend');
 	
 	try {
-
-		$calendarPeriod->cancelFromAllCalendars();
+		
+		$calendarPeriod->cancelFromAllCalendars($calendar);
 		
 	} catch(ErrorException $e)
 	{
 		// get backend specific errors
-		bab_debug($e->getMessage());
+		$babBody->addError($e->getMessage());
 		return false;
 	}
 	
