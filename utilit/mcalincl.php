@@ -110,16 +110,26 @@ class bab_mcalendars
 
 
 
-
+	/**
+	 * 
+	 * @param string $idcal
+	 * @param string $startdate
+	 * @param string $enddate
+	 * @param array $arr
+	 * 
+	 * @return	int		The number of events returned in $arr.
+	 */
 	public function getEvents($idcal, $startdate, $enddate, &$arr)
 	{
 		if (!isset($this->objcals[$idcal])) {
 			return 0;
 		}
 		
-		/*@var $this->objcals[$idcal] bab_icalendar */
+		$icalendar = $this->objcals[$idcal];
 		
-		return $this->objcals[$idcal]->getEvents($startdate, $enddate, $arr);
+		/*@var $icalendar bab_icalendar */
+		
+		return $icalendar->getEvents($startdate, $enddate, $arr);
 	}
 
 
@@ -519,37 +529,32 @@ class bab_icalendar extends bab_icalendarEventsSource
 	 */
 	public function getEvents($startdate, $enddate, &$arr)
 	{
-		$duplicheck = array();
 		$arr = array();
-		$events = $this->whObj->getEventsBetween(bab_mktime($startdate), bab_mktime($enddate));
+		$events = $this->whObj->getEventsBetween(bab_mktime($startdate), bab_mktime($enddate)); 
 
 		foreach ($events as $event) {
+			
+			/*@var $event bab_CalendarPeriod */
 
 			if ('CANCELLED' === $event->getProperty('STATUS'))
 			{
 				// ignore canceled events
 				continue;
 			}
-			
-			
-			$duplikey = $event->getProperty('UID').$event->getProperty('DTSTART');
-			if (isset($duplicheck[$duplikey]))
-			{
-				continue;
-			}
-			
-			$duplicheck[$duplikey] = true;
-			
-			
-			/* @var $event bab_CalendarPeriod */
 
+			
 			$calendar = $event->getCollection()->getCalendar();
 
-
-
+			
 
 			if ($calendar) {
 				// $calendar is the main calendar of event
+				
+				if ($calendar->getUrlIdentifier() !== $this->calendar->getUrlIdentifier())
+				{
+					// $this->whObj can be a request with mutiple calendars, ignore events not in this object calendar
+					continue;
+				}
 
 				if ($calendar->displayEventInCalendarUi($this->calendar, $event)) {
 					$ui_event = clone $event;
