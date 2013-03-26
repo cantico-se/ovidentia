@@ -696,39 +696,61 @@ class bab_CalendarPeriod extends bab_ICalendarObject {
 	/**
 	 * cancel the events in all backends
 	 * @throws ErrorException backend specific errors
+	 * 
+	 * @param	$userCalendar	The calendar of the user doing the cancel, event in this calendar will be canceled at last if all cancel are successfull in other backends
+	 * 
 	 * @return bool
 	 */
-	public function cancelFromAllBackends()
+	public function cancelFromAllCalendars(bab_EventCalendar $userCalendar)
 	{
-		$result = true;
+		$failure = array();
 		
 		$currentCollection = $this->getCollection();
 		
 		$calendars = $this->getCalendars();
-		$backends = array();
+
 		foreach($calendars as $calendar)
 		{
+			/*@var $calendar bab_EventCalendar */
+			
+			// ignore the user calendar
+			
+			if ($calendar->getUrlIdentifier() === $userCalendar->getUrlIdentifier())
+			{
+				continue;
+			}
+			
+			
 			$backend = $calendar->getBackend();
 			/*@var $backend Func_CalendarBackend */
 			
 			$urlidentifier = $backend->getUrlIdentifier();
-			
-			if (!isset($backends[$urlidentifier]))
-			{
-				$backends[$urlidentifier] = $backend;
 
-				$this->setCollection($backend->CalendarEventCollection($calendar));
-				
-				if (false === $backend->savePeriod($this, 'CANCEL'))
-				{
-					$result = false;
-				}
+			$this->setCollection($backend->CalendarEventCollection($calendar));
+			
+			if (false === $backend->savePeriod($this, 'CANCEL'))
+			{
+				$failure[] = $calendar->getName();
 			}
+			
 		}
 		
 		$this->setCollection($currentCollection);
 		
-		return $result;
+		
+		
+		if (!empty($failure))
+		{
+			throw new ErrorException(sprintf('Failed to delete the event in : %s', implode(', ', $failure)));
+			return false;
+		}
+		
+		// events has been deleted from calendars others than the user calendar
+		
+		$backend = $userCalendar->getBackend();
+		/*@var $backend Func_CalendarBackend */
+
+		return $backend->savePeriod($this, 'CANCEL');
 	}
 }
 

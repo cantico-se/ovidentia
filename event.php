@@ -1208,6 +1208,8 @@ function updateEvent(&$message)
  */
 function confirmDeleteEvent($calid, $bupdrec, $notify)
 {
+	global $babBody;
+	
 	$evtid = bab_rp('evtid');
 	$dtstart = bab_rp('dtstart');
 	$calendar = bab_getICalendars()->getEventCalendar($calid);
@@ -1226,10 +1228,7 @@ function confirmDeleteEvent($calid, $bupdrec, $notify)
 	{
 		throw new Exception('Event not found');
 	}
-	
-	
-	
-	
+
 	
 	$calendarPeriod->setProperty('STATUS', 'CANCELLED');
 
@@ -1253,15 +1252,14 @@ function confirmDeleteEvent($calid, $bupdrec, $notify)
 	
 	try {
 		
-		$calendarPeriod->cancelFromAllBackends();
+		$calendarPeriod->cancelFromAllCalendars($calendar);
 		
 	} catch(ErrorException $e)
 	{
 		// get backend specific errors
-		bab_debug($e->getMessage());
+		$babBody->addError($e->getMessage());
 		return false;
 	}
-	
 	
 
 	include_once $GLOBALS['babInstallPath'].'utilit/eventperiod.php';
