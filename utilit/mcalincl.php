@@ -519,7 +519,6 @@ class bab_icalendar extends bab_icalendarEventsSource
 	 */
 	public function getEvents($startdate, $enddate, &$arr)
 	{
-		$duplicheck = array();
 		$arr = array();
 		$events = $this->whObj->getEventsBetween(bab_mktime($startdate), bab_mktime($enddate));
 
@@ -532,15 +531,6 @@ class bab_icalendar extends bab_icalendarEventsSource
 			}
 			
 			
-			$duplikey = $event->getProperty('UID').$event->getProperty('DTSTART');
-			if (isset($duplicheck[$duplikey]))
-			{
-				continue;
-			}
-			
-			$duplicheck[$duplikey] = true;
-			
-			
 			/* @var $event bab_CalendarPeriod */
 
 			$calendar = $event->getCollection()->getCalendar();
@@ -550,6 +540,12 @@ class bab_icalendar extends bab_icalendarEventsSource
 
 			if ($calendar) {
 				// $calendar is the main calendar of event
+				
+				if ($calendar->getUrlIdentifier() !== $this->calendar->getUrlIdentifier())
+				{
+					// $this->whObj can be a request with mutiple calendars, ignore events not in this object calendar
+					continue;
+				}
 
 				if ($calendar->displayEventInCalendarUi($this->calendar, $event)) {
 					$ui_event = clone $event;
