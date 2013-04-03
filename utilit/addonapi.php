@@ -2731,7 +2731,7 @@ function bab_toHtml($str, $option = BAB_HTML_ENTITIES) {
  */
 function bab_unhtmlentities($string)
 {
-	return html_entity_decode($string, ENT_COMPAT, bab_charset::getIso());
+	return html_entity_decode($string, ENT_QUOTES, bab_charset::getIso());
 }
 
 
