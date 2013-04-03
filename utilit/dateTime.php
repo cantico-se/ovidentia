@@ -187,6 +187,18 @@ class BAB_DateTime
 		return date("Y-m-d", mktime($this->_iHours, $this->_iMinutes, 
 			$this->_iSeconds, $this->_iMonth, $this->_iDay, $this->_iYear));
 	}
+	
+	/**
+	 * Returns an french formatted date string (DD-MM-YYYY) corresponding to the BAB_DateTime.
+	 *
+	 * @return string
+     * 
+	 */
+	public function getFrenchDate()
+	{
+		return date("d-m-Y", mktime($this->_iHours, $this->_iMinutes, 
+			$this->_iSeconds, $this->_iMonth, $this->_iDay, $this->_iYear));
+	}
 
 	
 	/**
