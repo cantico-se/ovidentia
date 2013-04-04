@@ -544,7 +544,7 @@ class bab_icalendar extends bab_icalendarEventsSource
 				if ($calendar->getUrlIdentifier() !== $this->calendar->getUrlIdentifier())
 				{
 					// $this->whObj can be a request with mutiple calendars, ignore events not in this object calendar
-					continue;
+					// continue;
 				}
 
 				if ($calendar->displayEventInCalendarUi($this->calendar, $event)) {
