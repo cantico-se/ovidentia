@@ -221,7 +221,38 @@ class cal_monthCls extends cal_wmdbaseCls
 			$this->fullnameten = $this->calstr($calname, BAB_CAL_NAME_LENGTH);
 			$this->evtarr = array();
 			$this->mcals->getEvents($calendarId, $this->cdate." 00:00:00", $this->cdate." 23:59:59", $this->evtarr);
+			
+			// cas specifique qui produit des doublon uniquement en vue mois
+			// un evenements sur une ressource et sur un agenda caldav apparais 2 fois sur l'agenda caldav
+			// il faut conserver l'evenement qui est modifiable quand c'est possible
+			
 			$this->countevent = count($this->evtarr);
+			$duplicates = array();
+			foreach($this->evtarr as $key => $calperiod)
+			{
+				/*@var $calperiod bab_CalendarPeriod */
+				if (isset($duplicates[$calperiod->getUiIdentifier()]))
+				{
+					// cet evenement existe deja, conserver le plus approprie
+					if ($calperiod->getCollection()->getCalendar()->getUrlIdentifier() === $calendarId)
+					{
+						unset($this->evtarr[$duplicates[$calperiod->getUiIdentifier()]]);
+						
+					} else {
+						unset($this->evtarr[$key]);
+					}
+					
+				} else {
+					$duplicates[$calperiod->getUiIdentifier()] = $key;
+				}
+			}
+			
+			if (count($this->evtarr) !== $this->countevent)
+			{
+				$this->evtarr = array_values($this->evtarr);
+				$this->countevent = count($this->evtarr);
+			}
+			
 			$this->cindex++;
 			return true;
 		}
