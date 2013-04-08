@@ -255,6 +255,7 @@ function sectionUpdate($id, $title, $desc, $template, $lang, $opt)
 
 	if ('Y' == $arr['jscript']) {
 		$content = bab_rp('content');
+		$contentFormat = '';
 	} else {
 	
 		include_once $GLOBALS['babInstallPath']."utilit/editorincl.php";
