@@ -580,7 +580,8 @@ function modifyTopcat($oldname, $name, $description, $benabled, $id, $template, 
 			enabled='".$db->db_escape_string($benabled)."', 
 			template='".$db->db_escape_string($template)."', 
 			display_tmpl='".$db->db_escape_string($disptmpl)."', 
-			id_parent='".$db->db_escape_string($topcatid)."' 
+			id_parent='".$db->db_escape_string($topcatid)."',
+			date_modification=NOW()  
 			where id='".$db->db_escape_string($id)."'
 		";
 		$db->db_query($query);

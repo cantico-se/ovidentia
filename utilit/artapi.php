@@ -152,14 +152,15 @@ function bab_addTopicsCategory($name, $description, $benabled, $template, $dispt
 		}
 	else
 		{
-		$req = "insert into ".BAB_TOPICS_CATEGORIES_TBL." (title, description, enabled, template, id_dgowner, id_parent, display_tmpl) VALUES (
+		$req = "insert into ".BAB_TOPICS_CATEGORIES_TBL." (title, description, enabled, template, id_dgowner, id_parent, display_tmpl, date_modification) VALUES (
 		'" .$babDB->db_escape_string($name). "',
 		'" . $babDB->db_escape_string($description). "',
 		'" . $babDB->db_escape_string($benabled). "', 
 		'" . $babDB->db_escape_string($template). "',
 		'" . $babDB->db_escape_string($dgowner). "', 
 		'" . $babDB->db_escape_string($topcatid). "', 
-		'" . $babDB->db_escape_string($disptmpl). "'
+		'" . $babDB->db_escape_string($disptmpl). "',
+		NOW()
 		)";
 		$babDB->db_query($req);
 
@@ -247,6 +248,8 @@ function bab_updateTopicsCategory($id_category, $name, $description, $benabled, 
 			throw new Exception('Nothing to update in topic category');
 			return false;
 		}
+		
+		$tmp[]= "date_modification = NOW()";
 		
 		$req = "UPDATE ".BAB_TOPICS_CATEGORIES_TBL." SET ".implode(', ',$tmp)." WHERE id=".$babDB->quote($id_category)."";
 		$babDB->db_query($req);
@@ -597,7 +600,7 @@ function bab_addTopic($name, $description, $idCategory, &$error, $topicArr = arr
 	$arrdefaults['description']= $description;
 	$arrdefaults['id_cat']= $idCategory;
 	
-	$babDB->db_query("insert into ".BAB_TOPICS_TBL." (".implode(',', array_keys($arrdefaults)).") values (".$babDB->quote($arrdefaults).")");
+	$babDB->db_query("insert into ".BAB_TOPICS_TBL." (".implode(',', array_keys($arrdefaults)).", date_modification) values (".$babDB->quote($arrdefaults).", NOW())");
 	$id = $babDB->db_insert_id();
 
 	$res = $babDB->db_query("select max(ordering) from ".BAB_TOPCAT_ORDER_TBL." where id_parent='".$babDB->db_escape_string($idCategory)."'");
@@ -673,6 +676,8 @@ function bab_updateTopic($id_topic, $name, $description, $idCategory, &$error, $
 	{
 		$tmp[]= $key.'='.$babDB->quote($value);
 	}
+	
+	$tmp[]= 'date_modification = NOW()';
 
 	$babDB->db_query("UPDATE ".BAB_TOPICS_TBL." SET ".implode(', ', $tmp).' WHERE id='.$babDB->quote($id_topic));
 	

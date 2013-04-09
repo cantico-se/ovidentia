@@ -1182,7 +1182,8 @@ function updateCategory($id, $category, $cat, $saart, $sacom, $saupd, $bnotif, $
 		busetags='".$db->db_escape_string($busetags)."',
 		allow_article_rating='".$db->db_escape_string($allowarticlerating)."', 
 		allow_addImg='".$db->db_escape_string($sAllowAddImg)."', 
-		allow_unsubscribe=".$db->quote(bab_rp('allow_unsubscribe'))."
+		allow_unsubscribe=".$db->quote(bab_rp('allow_unsubscribe')).",
+		date_modification=NOW() 
 	WHERE 
 		id = '".$id."'";
 	$db->db_query($query);

@@ -6946,6 +6946,16 @@ function ovidentia_upgrade($version_base,$version_ini) {
 	
 		
 	
+	/**
+	 * Upgrade to 7.9.92
+	 */
+	if (!bab_isTableField('bab_topics_categories', 'date_modification')) {
+		$babDB->db_query("ALTER TABLE `bab_topics_categories` ADD date_modification datetime NOT NULL default '0000-00-00 00:00:00'");
+	}
+	if (!bab_isTableField('bab_topics', 'date_modification')) {
+		$babDB->db_query("ALTER TABLE `bab_topics` ADD date_modification datetime NOT NULL default '0000-00-00 00:00:00'");
+	}
+	
 	
 	return true;
 
