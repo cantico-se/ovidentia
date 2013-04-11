@@ -999,7 +999,7 @@ class bab_changeCalendarBackend
 			
 			
 			$progress = new bab_installProgressBar;
-			$progress->setTitle(bab_translate('Copy all events from old calendar'));
+			$progress->setTitle(bab_translate('Copy events from old calendar'));
 			
 			
 			$criteria = $factory->Calendar($old_calendar);
