@@ -1030,7 +1030,7 @@ CREATE TABLE `bab_sites` (
 
 
 INSERT INTO bab_sites (id, name, description, lang, adminemail,  adminname, skin, style, dispdays, startday, smtppassword , ldap_host, ldap_userdn, ldap_admindn, ldap_adminpassword, ldap_searchdn, ldap_attribute, ldap_filter ) 
-values ('1', 'Ovidentia', 'Ovidentia site', 'en', 'admin@your-domain.com', 'Ovidentia Administrator', 'theme_default', 'ovidentia.css', '1,2,3,4,5','1', '', '', '', '', '', '', '', '');
+values ('1', 'Ovidentia', 'Ovidentia site', 'en', 'admin@your-domain.com', 'Ovidentia Administrator', 'theme_ovidentia_sw', 'ovidentia.css', '1,2,3,4,5','1', '', '', '', '', '', '', '', '');
 
 
 # --------------------------------------------------------
