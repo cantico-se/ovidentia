@@ -36,7 +36,7 @@ $babFileNameTranslation = array('\\' => '_', '/' => '_', ':' => '_', '*' => '_',
  * To show the errors PHP on the site, remove comments on the following lines.
  * It is advised not to show the errors in production.
  */
-//ini_set('display_errors', 1);
-//error_reporting(E_ALL);
+ini_set('display_errors', 0);
+error_reporting(E_ALL ^ E_STRICT);
 
 ?>
