@@ -540,17 +540,17 @@ CREATE TABLE bab_topics_categories (
    title varchar(60),
    description varchar(200),
    enabled enum('Y','N') DEFAULT 'Y' NOT NULL,
-   template varchar(255),
+   template varchar(255) default '',
    id_dgowner int(11) unsigned NOT NULL default '0',
    optional enum('N','Y') NOT NULL default 'N',
    id_parent int(11) unsigned NOT NULL default '0',
-   display_tmpl varchar(255),
+   display_tmpl varchar(255) default '',
    date_modification datetime NOT NULL default '0000-00-00 00:00:00',
    PRIMARY KEY (id),
    KEY id_dgowner (id_dgowner)
 );
 
-INSERT INTO bab_topics_categories VALUES ('1', 'Default category', 'Default category', 'Y', '', '0', 'N', '0', '');
+INSERT INTO bab_topics_categories (id, title, description, enabled) VALUES ('1', 'Default category', 'Default category', 'Y');
 
 # --------------------------------------------------------
 #
