@@ -34,7 +34,7 @@ require_once $GLOBALS['babInstallPath'].'utilit/functionalityincl.php';
 class Func_PortalAuthentication extends bab_functionality
 {
 	var $loginMessage = '';
-	var $errorMessages = array();
+	public $errorMessages = array();
 
 
 
@@ -171,26 +171,44 @@ class Func_PortalAuthentication extends bab_functionality
 	 */
 	public function authenticateUser($sLogin, $sPassword)
 	{
-		global $babBody;
+		require_once dirname(__FILE__).'/settings.class.php';
+		
+		$settings = bab_getInstance('bab_Settings');
+		/*@var $settings bab_Settings */
+		
+		$babsite = $settings->getSiteSettings();
+		
+		
 		$aUser = bab_getUserByLoginPassword($sLogin, $sPassword);
 		if (!is_null($aUser) && $aUser['db_authentification'] == 'Y')
 			{
-			$babBody->babsite['authentification'] = BAB_AUTHENTIFICATION_OVIDENTIA;
+			$babsite['authentification'] = BAB_AUTHENTIFICATION_OVIDENTIA;
 			}
 
-		$iAuthenticationType = (int) $babBody->babsite['authentification'];
+		$iAuthenticationType = (int) $babsite['authentification'];
 		$AuthOvidentia = bab_functionality::get('PortalAuthentication/AuthOvidentia');
+		
+		/*@var $AuthOvidentia Func_PortalAuthentication_AuthOvidentia */
+		
+		$return = null;
 
 		switch ($iAuthenticationType)
 		{
 			case BAB_AUTHENTIFICATION_OVIDENTIA:
-				return $AuthOvidentia->authenticateUserByLoginPassword($sLogin, $sPassword);
+				$return = $AuthOvidentia->authenticateUserByLoginPassword($sLogin, $sPassword);
+				break;
 			case BAB_AUTHENTIFICATION_LDAP:
-				return $AuthOvidentia->authenticateUserByLDAP($sLogin, $sPassword);
+				$return = $AuthOvidentia->authenticateUserByLDAP($sLogin, $sPassword);
+				break;
 			case BAB_AUTHENTIFICATION_AD:
-				return $AuthOvidentia->authenticateUserByActiveDirectory($sLogin, $sPassword);
+				$return = $AuthOvidentia->authenticateUserByActiveDirectory($sLogin, $sPassword);
+				break;
 		}
-		return null;
+		
+		// copy errors messages to original object
+		$this->errorMessages = $AuthOvidentia->errorMessages;
+		
+		return $return;
 	}
 	
 	/**
@@ -331,8 +349,6 @@ class Func_PortalAuthentication_AuthOvidentia extends Func_PortalAuthentication
 	 */
 	public function authenticateUserByLoginPassword($sLogin, $sPassword)
 	{
-		global $BAB_HASH_VAR;
-		
 		$aUser = bab_getUserByLoginPassword($sLogin, $sPassword);
 		
 		if (null == $aUser )
@@ -344,11 +360,12 @@ class Func_PortalAuthentication_AuthOvidentia extends Func_PortalAuthentication
 		
 		// test confirm hash, this is done only for authentication tu prevent a succes on login without a logged status
 
-		if ($aUser['confirm_hash'] !== md5($sLogin.$BAB_HASH_VAR))
+		if ($aUser['confirm_hash'] !== md5($sLogin.bab_getHashVar()))
 		{
 			$this->addError(bab_translate("Account encryption does not match with credentials"));
 			return null;
 		}
+		
 		
 
 		return (int) $aUser['id'];
@@ -1462,8 +1479,15 @@ function bab_getLdapExtraFieldIdAndUpdateAttributes(&$aAttributes, &$aUpdateAttr
 
 function bab_logUserConnectionToStat($iIdUser)
 {
+	require_once dirname(__FILE__).'/settings.class.php';
+	
+	$settings = bab_getInstance('bab_Settings');
+	/*@var $settings bab_Settings */
+	
+	$babsite = $settings->getSiteSettings();
+	
 	// Here we log the connection.
-	if($GLOBALS['babStatOnOff'] == 'Y')
+	if($babsite['stat_log'] == 'Y')
 	{
 		$registry = bab_getRegistryInstance();
 		$registry->changeDirectory('/bab/statistics');
@@ -1576,7 +1600,11 @@ function bab_setUserSessionInfo($iIdUser)
 		$GLOBALS['BAB_SESS_USERID'] 	= $_SESSION['BAB_SESS_USERID'];
 		$GLOBALS['BAB_SESS_HASHID'] 	= $_SESSION['BAB_SESS_HASHID'];
 		
-		bab_Groups::clearCache();
+		if (session_id())
+		{
+			require_once dirname(__FILE__).'/groupsincl.php';
+			bab_Groups::clearCache();
+		}
 
 		// empty approbation cache
 		if (isset($_SESSION['bab_waitingApprobations'])) {
