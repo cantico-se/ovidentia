@@ -983,64 +983,20 @@ function printout()
 	return $this->content;
 }
 
-
-function get_topcats() {
-		static $topcats = null;
-		if (!is_null($topcats))
-			return $topcats;
-
-		global $babDB;
-
-		$res = $babDB->db_query("select id, title, description, id_parent from ".BAB_TOPICS_CATEGORIES_TBL."");
-		while($arr = $babDB->db_fetch_array($res))
-			{
-			$topcats[$arr['id']]['parent'] = $arr['id_parent'];
-			$topcats[$arr['id']]['title'] = $arr['title'];
-			$topcats[$arr['id']]['description'] = $arr['description'];
-			}
-
-		return $topcats;
+	/**
+	 * @deprecated Use bab_getArticleCategories()
+	 */
+	public function get_topcats() {
+		require_once dirname(__FILE__).'/artapi.php';
+		return bab_getArticleCategories();
 	}
 
-
-function get_topcatview() {
-		static $topcatview = null;
-		if (!is_null($topcatview))
-			return $topcatview;
-
-		global $babDB;
-
-		$topcatview = array();
-
-		$topview = bab_getUserIdObjects(BAB_TOPICSVIEW_GROUPS_TBL);
-
-		$res = $babDB->db_query("select id_cat from ".BAB_TOPICS_TBL." where id in(".$babDB->quote(array_keys($topview)).")");
-		while( $row = $babDB->db_fetch_array($res))
-			{
-			if( !isset($topcatview[$row['id_cat']]))
-				{
-				$topcatview[$row['id_cat']] = 1;
-				}
-			}
-
-		if(!empty($topcatview))
-			{
-			$topcatsview_tmp = $topcatview;
-			$topcats = $this->get_topcats();
-			foreach( $topcatsview_tmp as $cat => $val)
-				{
-				while(isset($topcats[$cat]) && $topcats[$cat]['parent'] != 0 )
-					{
-					if( !isset($topcatview[$topcats[$cat]['parent']]))
-						{
-						$topcatview[$topcats[$cat]['parent']] = 1;
-						}
-					$cat = $topcats[$cat]['parent'];
-					}
-				}
-			}
-
-		return $topcatview;
+	/**
+	 * @deprecated Use bab_getReadableArticleCategories()
+	 */
+	public function get_topcatview() {
+		require_once dirname(__FILE__).'/artapi.php';
+		return bab_getReadableArticleCategories();
 	}
 
 

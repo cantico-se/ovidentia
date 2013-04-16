@@ -299,6 +299,78 @@ function bab_getArticleDelegationId($iIdArticle)
 	}
 	return false;
 }
+
+
+/**
+ * Get all article categories with cache
+ * @return array
+ */
+function bab_getArticleCategories()
+{
+	static $topcats = null;
+	if (!is_null($topcats))
+		return $topcats;
+
+	global $babDB;
+
+	$res = $babDB->db_query("select id, title, description, id_parent from ".BAB_TOPICS_CATEGORIES_TBL."");
+	while($arr = $babDB->db_fetch_array($res))
+	{
+		$topcats[$arr['id']]['parent'] = $arr['id_parent'];
+		$topcats[$arr['id']]['title'] = $arr['title'];
+		$topcats[$arr['id']]['description'] = $arr['description'];
+	}
+
+	return $topcats;
+}
+
+
+/**
+ * Get readable article categories with cache
+ * @return array
+ */
+function bab_getReadableArticleCategories()
+{
+	static $topcatview = null;
+	if (!is_null($topcatview))
+		return $topcatview;
+	
+	global $babDB;
+	
+	$topcatview = array();
+	
+	$topview = bab_getUserIdObjects(BAB_TOPICSVIEW_GROUPS_TBL);
+	
+	$res = $babDB->db_query("select id_cat from ".BAB_TOPICS_TBL." where id in(".$babDB->quote(array_keys($topview)).")");
+	while( $row = $babDB->db_fetch_array($res))
+	{
+		if( !isset($topcatview[$row['id_cat']]))
+		{
+			$topcatview[$row['id_cat']] = 1;
+		}
+	}
+	
+	if(!empty($topcatview))
+	{
+		$topcatsview_tmp = $topcatview;
+		$topcats = bab_getArticleCategories();
+		foreach( $topcatsview_tmp as $cat => $val)
+		{
+			while(isset($topcats[$cat]) && $topcats[$cat]['parent'] != 0 )
+			{
+				if( !isset($topcatview[$topcats[$cat]['parent']]))
+				{
+					$topcatview[$topcats[$cat]['parent']] = 1;
+				}
+				$cat = $topcats[$cat]['parent'];
+			}
+		}
+	}
+	
+	return $topcatview;
+}
+
+
 	
 	
 /**
@@ -319,9 +391,7 @@ function bab_getArticleDelegationId($iIdArticle)
  * @return 	resource|false : first childs of $parentid
  */
 function bab_getArticleCategoriesRes($parentid, $delegationid = false, $rightaccesstable = BAB_TOPICSVIEW_GROUPS_TBL) {
-	global $babBody, $babDB;
-	
-	/* @var $babBody babBody */
+	global $babDB;
 	
 	// Verify the type array of $parentid 
 	if (!is_array($parentid)) {
@@ -367,7 +437,7 @@ function bab_getArticleCategoriesRes($parentid, $delegationid = false, $rightacc
 			
 			if (BAB_TOPICSVIEW_GROUPS_TBL === $rightaccesstable) {
 				// if tested access is topic view use cached values
-				$idcategoriesbyrights = $babBody->get_topcatview();
+				$idcategoriesbyrights = bab_getReadableArticleCategories();
 
 			} else {
 			
@@ -445,7 +515,7 @@ function bab_getArticleCategoriesRes($parentid, $delegationid = false, $rightacc
  * @return 	array : array indexed by id categories, categories are childs of $parentid
  */
 function bab_getChildrenArticleCategoriesInformation($parentid, $delegationid = false, $rightaccesstable = BAB_TOPICSVIEW_GROUPS_TBL) {
-	global $babBody, $babDB;
+	global $babDB;
 	
 	/* Verify the type array of $parentid */
 	if (!is_array($parentid)) {
@@ -478,6 +548,7 @@ function bab_getChildrenArticleCategoriesInformation($parentid, $delegationid = 
  */
 function bab_getParentsArticleCategory($categoryid, $reverse=false) {
 	global $babBody, $babDB;
+	/*@var $babBody babBody */
 	
 	$categories = array();
 	
