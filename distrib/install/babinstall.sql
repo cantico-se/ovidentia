@@ -82,37 +82,41 @@ VALUES (1, 1, 1, NOW(), NOW(), NOW(), 'Ovidentia',  '<p> <strong>OVIDENTIA</stro
 INSERT INTO bab_articles 
 	(id, id_topic, id_author, date, date_publication, date_modification, title, head, head_format, body, body_format, lang) 
 	
-VALUES (2, 1, 1, NOW(), NOW(), NOW(), 'Ovidentia',  '<p><strong>OVIDENTIA</strong>
-	est un outil permettant de publier avec une grande aise et très rapidement un portail intranet, extranet ou internet.
-       En commencant par ses fonctions de Système de gestion de contenus (CMS) telles : </p>
-  <ul>
-	<li>publier des informations (éditeur WYSIWYG, arbre d''articles, 
-	  catégorisation), </li>
-	<li>Mise en place de circuits d''approbations (permettant de définir des schémas d''approbations, 
-	  du plus simple au plus complexe), </li>
-	<li>Un moteur de recherche,</li>
-	<li> ...</li>
-  </ul>
-  <p>
-	... <strong>OVIDENTIA</strong>
-	intègre aussi de puissants outils de travail collaboratif</p>
-
-  <ul>
-	<li> Gestion des utilisateurs, agenda partagés, notifications, annuaires, 
-	</li>
-	<li>Un gestionnaire de fichiers (avec gestion du versioning)</li>
-	<li>Forums,</li>
-	<li>FAQ, </li>
-	<li>Gestionnaire de congés (avec circuit de validation)</li>
-	<li>Possibilité de gérer des groupes avec administrations déléguée (dans un certain perimètre et pour certaines fonctions uniquement)</li>
-	<li>... </li>
-  </ul>
-
-  <p>Son architecture, complètement modulaire, permet d''y installer des modules développés par la communauté <strong>OVIDENTIA</strong></p>
-
-  <p>
-	Pour plus d''informations : <a href="http://www.ovidentia.org">http://www.ovidentia.org </a>
-  </p>', 'html', '', 'html', 'fr'); 
+VALUES (2, 1, 1, NOW(), NOW(), NOW(), 'Ovidentia',  '<p> <strong>OVIDENTIA</strong> est un outil permettant
+  de publier avec une grande aisance et très rapidement
+  un portail intranet, extranet ou internet. En
+  commencant par ses fonctions de système de gestion de
+  contenus (CMS) telles que : </p>
+<ul>
+  <li>publier des informations (éditeur WYSIWYG,
+    arborescence d''articles, catégorisation), </li>
+  <li>Mise en place de circuits d''approbations
+    (permettant de définir des schémas d''approbations,
+    du plus simple au plus complexe), </li>
+  <li>Un moteur de recherche,</li>
+  <li> ...</li>
+</ul>
+<p> ... <strong>OVIDENTIA</strong> intègre aussi de
+  puissants outils de travail collaboratif :<br>
+</p>
+<ul>
+  <li> Gestion des utilisateurs, agendas partagés,
+    notifications, annuaires, </li>
+  <li>Un gestionnaire de fichiers (avec gestion du
+    versioning)</li>
+  <li>Forums,</li>
+  <li>FAQ, </li>
+  <li>Gestionnaire de congés (avec circuit de
+    validation)</li>
+  <li>Possibilité de gérer des groupes avec
+    administration déléguée (dans un certain perimètre
+    et pour certaines fonctions uniquement)</li>
+  <li>... </li>
+</ul>
+<p>Son architecture, complètement modulaire, permet d''y
+  installer des modules développés par la communauté <strong>OVIDENTIA</strong></p>
+<p> Pour plus d''informations : <a href="http://www.ovidentia.org">http://www.ovidentia.org</a>
+</p>', 'html', '', 'html', 'fr'); 
   
 
 
