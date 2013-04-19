@@ -1160,6 +1160,8 @@ CREATE TABLE bab_homepages (
 
 INSERT INTO bab_homepages (id_article, id_site, id_group, status, ordering) VALUES (1, 1, 1, 'Y', 1);
 INSERT INTO bab_homepages (id_article, id_site, id_group, status, ordering) VALUES (1, 1, 2, 'Y', 1);
+INSERT INTO bab_homepages (id_article, id_site, id_group, status, ordering) VALUES (2, 1, 1, 'Y', 1);
+INSERT INTO bab_homepages (id_article, id_site, id_group, status, ordering) VALUES (2, 1, 2, 'Y', 1);
 
 # --------------------------------------------------------
 #
