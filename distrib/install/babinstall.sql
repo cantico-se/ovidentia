@@ -37,6 +37,86 @@ CREATE TABLE bab_articles (
 );
 
 
+INSERT INTO bab_articles 
+	(id, id_topic, id_author, date, date_publication, date_modification, title, head, head_format, body, body_format, lang) 
+	
+VALUES (1, 1, 1, NOW(), NOW(), NOW(), 'Ovidentia',  '<p> <strong>OVIDENTIA</strong>
+	is a toolbox allowing to publish with extreme ease and very 
+	fast an intranet, extranet or internet portal. Starting with 
+	the classic functions of a Content Management System (CMS) 
+	such as: </p>
+  <ul>
+	<li>publishing of information (WYSIWYG editor, article tree, 
+	  categorization), </li>
+	<li>validation workflow (allowing to define approbation schemes, 
+	  from simple ones to the most complex), </li>
+	<li>a search engine,</li>
+	<li> ...</li>
+  </ul>
+  <p>
+	... <strong>OVIDENTIA</strong>
+	also has powerful collaborative functions</p>
+
+  <ul>
+	<li> Profile manager, shared agendas, mail interface, directories, 
+	</li>
+	<li>file manager (with version management)</li>
+	<li>Forums,</li>
+	<li>FAQ, </li>
+	<li>Management of vacation requests (with workflow)</li>
+	<li>Possibility to delegate administration functions (within 
+	  a given perimeter and for a defined set of functions)</li>
+	<li>... </li>
+  </ul>
+
+  <p>Its architecture, completely modular, allows to plug in additional 
+	extension modules developed by the <strong>OVIDENTIA</strong> 
+	community. </p>
+
+  <p>
+	For more information : <a href="http://www.ovidentia.org">http://www.ovidentia.org </a>
+  </p>', 'html', '', 'html', 'en');
+  
+ 
+ 
+INSERT INTO bab_articles 
+	(id, id_topic, id_author, date, date_publication, date_modification, title, head, head_format, body, body_format, lang) 
+	
+VALUES (2, 1, 1, NOW(), NOW(), NOW(), 'Ovidentia',  '<p><strong>OVIDENTIA</strong>
+	est un outil permettant de publier avec une grande aise et très rapidement un portail intranet, extranet ou internet.
+       En commencant par ses fonctions de Système de gestion de contenus (CMS) telles : </p>
+  <ul>
+	<li>publier des informations (éditeur WYSIWYG, arbre d''articles, 
+	  catégorisation), </li>
+	<li>Mise en place de circuits d''approbations (permettant de définir des schémas d''approbations, 
+	  du plus simple au plus complexe), </li>
+	<li>Un moteur de recherche,</li>
+	<li> ...</li>
+  </ul>
+  <p>
+	... <strong>OVIDENTIA</strong>
+	intègre aussi de puissants outils de travail collaboratif</p>
+
+  <ul>
+	<li> Gestion des utilisateurs, agenda partagés, notifications, annuaires, 
+	</li>
+	<li>Un gestionnaire de fichiers (avec gestion du versioning)</li>
+	<li>Forums,</li>
+	<li>FAQ, </li>
+	<li>Gestionnaire de congés (avec circuit de validation)</li>
+	<li>Possibilité de gérer des groupes avec administrations déléguée (dans un certain perimètre et pour certaines fonctions uniquement)</li>
+	<li>... </li>
+  </ul>
+
+  <p>Son architecture, complètement modulaire, permet d''y installer des modules développés par la communauté <strong>OVIDENTIA</strong></p>
+
+  <p>
+	Pour plus d''informations : <a href="http://www.ovidentia.org">http://www.ovidentia.org </a>
+  </p>', 'html', '', 'html', 'fr'); 
+  
+
+
+
 # --------------------------------------------------------
 #
 # Structure de la table 'bab_articles_images'
@@ -500,6 +580,7 @@ CREATE TABLE bab_topics (
   KEY id_cat (id_cat)
 );
 
+INSERT INTO bab_topics (id, category, id_cat, lang) VALUES ('1', 'Ovidentia', 1, '*');
 
 
 # --------------------------------------------------------
@@ -583,6 +664,7 @@ CREATE TABLE bab_topcat_order (
 );
 
 INSERT INTO bab_topcat_order (id_topcat, type, ordering) VALUES ('1', '1', '1');
+INSERT INTO bab_topcat_order (id_topcat, type, ordering) VALUES ('1', '2', '1');
 
 # --------------------------------------------------------
 #
@@ -612,6 +694,7 @@ CREATE TABLE bab_topicssub_groups (
    KEY id_group (id_group)
 );
 
+INSERT INTO bab_topicssub_groups (id_object, id_group) VALUES ('1', '3');
 
 # --------------------------------------------------------
 #
@@ -626,6 +709,9 @@ CREATE TABLE bab_topicsview_groups (
    KEY id_object (id_object),
    KEY id_group (id_group)
 );
+
+
+INSERT INTO bab_topicsview_groups (id_object, id_group) VALUES ('1', '0');
 
 
 # --------------------------------------------------------
@@ -1066,6 +1152,10 @@ CREATE TABLE bab_homepages (
     KEY id_group (id_group),
     KEY ordering (ordering)
 );
+
+
+INSERT INTO bab_homepages (id_article, id_site, id_group, status, ordering) VALUES (1, 1, 1, 'Y', 1);
+INSERT INTO bab_homepages (id_article, id_site, id_group, status, ordering) VALUES (1, 1, 2, 'Y', 1);
 
 # --------------------------------------------------------
 #
@@ -2295,6 +2385,9 @@ CREATE TABLE bab_topicsman_groups (
   KEY id_group (id_group)
 );
 
+
+INSERT INTO bab_topicsman_groups (id_object, id_group) VALUES ('1', '3');
+
 #
 # Structure de la table `bab_topicsmod_groups`
 #
@@ -2307,6 +2400,8 @@ CREATE TABLE bab_topicsmod_groups (
   KEY id_object (id_object),
   KEY id_group (id_group)
 );
+
+INSERT INTO bab_topicsmod_groups (id_object, id_group) VALUES ('1', '3');
 
 #
 # Structure de la table `bab_forumsman_groups`
