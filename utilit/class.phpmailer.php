@@ -1023,7 +1023,26 @@ class PHPMailer {
       throw new phpmailerException($this->Lang('recipients_failed') . $badaddresses);
     }
     if(!$this->smtp->Data($header . $body)) {
-      throw new phpmailerException($this->Lang('data_not_accepted'), self::STOP_CRITICAL);
+    	
+    	$_bab_message = $this->Lang('data_not_accepted');
+    	$_bab_smtperror = $this->smtp->getError();
+    	
+    	if (isset($_bab_smtperror['error']))
+    	{
+    		$_bab_message .= ' / '.$_bab_smtperror['error'];
+    	}
+    	
+    	if (isset($_bab_smtperror['smtp_code']))
+    	{
+    		$_bab_message .= ' / '.$_bab_smtperror['smtp_code'];
+    	}
+    	
+    	if (isset($_bab_smtperror['smtp_msg']))
+    	{
+    		$_bab_message .= ' / '.$_bab_smtperror['smtp_msg'];
+    	}
+    	
+      throw new phpmailerException($_bab_message, self::STOP_CRITICAL);
     }
     if($this->SMTPKeepAlive == true) {
       $this->smtp->Reset();
@@ -2828,4 +2847,5 @@ class phpmailerException extends Exception {
     return $errorMsg;
   }
 }
-?>
+
+
