@@ -742,7 +742,7 @@ if('register' === bab_pp('adduser') && $babBody->babsite['registration'] == 'Y')
 else if('send' === bab_pp('sendpassword'))
 {
 	sendPassword(bab_pp('nickname'), bab_pp('email'));
-	$cmd = 'displayMessage';
+	$cmd = 'displayMessageResetPwd';
 }
 
 
@@ -753,7 +753,24 @@ switch($cmd)
 	case 'signoff':
 		bab_signOff();
 		break;
-
+		
+	case 'displayMessageResetPwd':
+		require_once $GLOBALS['babInstallPath'] . 'utilit/baseFormProcessingClass.php';
+		
+		global $babBody;
+		
+		$oForm = new BAB_BaseFormProcessing();
+		
+		$oForm->set_data('sTg', 'login');
+		$oForm->set_data('sCmd', 'authform');
+		$oForm->set_data('sMessage', $babBody->msgerror);
+		$oForm->set_data('sBtnCaption', bab_translate("Ok"));
+		
+		$babBody->msgerror = '';
+		
+		$babBody->babecho(bab_printTemplate($oForm, 'login.html', 'displayMessage'));
+		break;
+		
 	case 'displayMessage':
 		global $babBody;
 		require_once $GLOBALS['babInstallPath'] . 'utilit/baseFormProcessingClass.php';
