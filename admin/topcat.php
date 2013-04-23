@@ -118,7 +118,7 @@ function topcatModify($id)
 			$this->sImageModifyMessage	= bab_translate('Changes affecting the image will be taken into account after having saved');
 			
 			
-		//Si on ne vient pas d'un post alors recuperer l'image
+			//Si on ne vient pas d'un post alors recuperer l'image
 			if(!array_key_exists('sImgName', $_POST))
 			{
 				$fileExiste = true;

@@ -1263,7 +1263,7 @@ function showDbFieldValuesModify($id, $idfieldx)
 			$this->js_error = bab_translate("You must enter two or more values");
 			$this->id = $id;
 			$this->idfield = $idfieldx;
-			$this->res = $babDB->db_query("select * from ".BAB_DBDIR_FIELDSVALUES_TBL." where id_fieldextra='".$babDB->db_escape_string($idfieldx)."' order by id asc");
+			$this->res = $babDB->db_query("select * from ".BAB_DBDIR_FIELDSVALUES_TBL." where id_fieldextra='".$babDB->db_escape_string($idfieldx)."' order by field_value asc");
 			$this->count = $babDB->db_num_rows($this->res);
 			$this->fvalnum = 1;
 			$rr = $babDB->db_fetch_array($babDB->db_query("select id_field, default_value, multi_values from ".BAB_DBDIR_FIELDSEXTRA_TBL." where id='".$babDB->db_escape_string($idfieldx)."'"));
