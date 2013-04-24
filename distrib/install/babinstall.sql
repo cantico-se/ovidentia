@@ -83,38 +83,38 @@ INSERT INTO bab_articles
 	(id, id_topic, id_author, date, date_publication, date_modification, title, head, head_format, body, body_format, lang) 
 	
 VALUES (2, 1, 1, NOW(), NOW(), NOW(), 'Ovidentia',  '<p> <strong>OVIDENTIA</strong> est un outil permettant
-  de publier avec une grande aisance et très rapidement
+  de publier avec une grande aisance et trï¿½s rapidement
   un portail intranet, extranet ou internet. En
-  commencant par ses fonctions de système de gestion de
+  commencant par ses fonctions de systï¿½me de gestion de
   contenus (CMS) telles que : </p>
 <ul>
-  <li>publier des informations (éditeur WYSIWYG,
-    arborescence d''articles, catégorisation), </li>
+  <li>publier des informations (ï¿½diteur WYSIWYG,
+    arborescence d''articles, catï¿½gorisation), </li>
   <li>Mise en place de circuits d''approbations
-    (permettant de définir des schémas d''approbations,
+    (permettant de dï¿½finir des schï¿½mas d''approbations,
     du plus simple au plus complexe), </li>
   <li>Un moteur de recherche,</li>
   <li> ...</li>
 </ul>
-<p> ... <strong>OVIDENTIA</strong> intègre aussi de
+<p> ... <strong>OVIDENTIA</strong> intï¿½gre aussi de
   puissants outils de travail collaboratif :<br>
 </p>
 <ul>
-  <li> Gestion des utilisateurs, agendas partagés,
+  <li> Gestion des utilisateurs, agendas partagï¿½s,
     notifications, annuaires, </li>
   <li>Un gestionnaire de fichiers (avec gestion du
     versioning)</li>
   <li>Forums,</li>
   <li>FAQ, </li>
-  <li>Gestionnaire de congés (avec circuit de
+  <li>Gestionnaire de congï¿½s (avec circuit de
     validation)</li>
-  <li>Possibilité de gérer des groupes avec
-    administration déléguée (dans un certain perimètre
+  <li>Possibilitï¿½ de gï¿½rer des groupes avec
+    administration dï¿½lï¿½guï¿½e (dans un certain perimï¿½tre
     et pour certaines fonctions uniquement)</li>
   <li>... </li>
 </ul>
-<p>Son architecture, complètement modulaire, permet d''y
-  installer des modules développés par la communauté <strong>OVIDENTIA</strong></p>
+<p>Son architecture, complï¿½tement modulaire, permet d''y
+  installer des modules dï¿½veloppï¿½s par la communautï¿½ <strong>OVIDENTIA</strong></p>
 <p> Pour plus d''informations : <a href="http://www.ovidentia.org">http://www.ovidentia.org</a>
 </p>', 'html', '', 'html', 'fr'); 
   
@@ -667,8 +667,8 @@ CREATE TABLE bab_topcat_order (
   KEY id_parent (id_parent)
 );
 
-INSERT INTO bab_topcat_order (id_topcat, type, ordering) VALUES ('1', '1', '1');
-INSERT INTO bab_topcat_order (id_topcat, type, ordering) VALUES ('1', '2', '1');
+INSERT INTO bab_topcat_order (id_topcat, type, ordering, id_parent) VALUES ('1', '1', '1', '0');
+INSERT INTO bab_topcat_order (id_topcat, type, ordering, id_parent) VALUES ('1', '2', '1', '1');
 
 # --------------------------------------------------------
 #
