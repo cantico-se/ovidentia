@@ -83,38 +83,38 @@ INSERT INTO bab_articles
 	(id, id_topic, id_author, date, date_publication, date_modification, title, head, head_format, body, body_format, lang) 
 	
 VALUES (2, 1, 1, NOW(), NOW(), NOW(), 'Ovidentia',  '<p> <strong>OVIDENTIA</strong> est un outil permettant
-  de publier avec une grande aisance et tr�s rapidement
+  de publier avec une grande aisance et tr&egrave;s rapidement
   un portail intranet, extranet ou internet. En
-  commencant par ses fonctions de syst�me de gestion de
+  commencant par ses fonctions de syst&egrave;me de gestion de
   contenus (CMS) telles que : </p>
 <ul>
-  <li>publier des informations (�diteur WYSIWYG,
-    arborescence d''articles, cat�gorisation), </li>
+  <li>publier des informations (&eacute;diteur WYSIWYG,
+    arborescence d''articles, cat&eacute;gorisation), </li>
   <li>Mise en place de circuits d''approbations
-    (permettant de d�finir des sch�mas d''approbations,
+    (permettant de d&eacute;finir des sch&eacute;mas d''approbations,
     du plus simple au plus complexe), </li>
   <li>Un moteur de recherche,</li>
   <li> ...</li>
 </ul>
-<p> ... <strong>OVIDENTIA</strong> int�gre aussi de
+<p> ... <strong>OVIDENTIA</strong> int&egrave;gre aussi de
   puissants outils de travail collaboratif :<br>
 </p>
 <ul>
-  <li> Gestion des utilisateurs, agendas partag�s,
+  <li> Gestion des utilisateurs, agendas partag&eacute;s,
     notifications, annuaires, </li>
   <li>Un gestionnaire de fichiers (avec gestion du
     versioning)</li>
   <li>Forums,</li>
   <li>FAQ, </li>
-  <li>Gestionnaire de cong�s (avec circuit de
+  <li>Gestionnaire de cong&eacute;s (avec circuit de
     validation)</li>
-  <li>Possibilit� de g�rer des groupes avec
-    administration d�l�gu�e (dans un certain perim�tre
+  <li>Possibilit&eacute; de g&eacute;rer des groupes avec
+    administration d&eacute;l&eacute;gu&eacute;e (dans un certain perim&egrave;tre
     et pour certaines fonctions uniquement)</li>
   <li>... </li>
 </ul>
-<p>Son architecture, compl�tement modulaire, permet d''y
-  installer des modules d�velopp�s par la communaut� <strong>OVIDENTIA</strong></p>
+<p>Son architecture, compl&eacute;tement modulaire, permet d''y
+  installer des modules d&eacute;velopp&eacute;s par la communaut&eacute; <strong>OVIDENTIA</strong></p>
 <p> Pour plus d''informations : <a href="http://www.ovidentia.org">http://www.ovidentia.org</a>
 </p>', 'html', '', 'html', 'fr'); 
   
