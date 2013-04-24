@@ -437,7 +437,7 @@ class Func_UserEditor extends bab_functionality {
 			$widget->setValue($f['default_value_text']);
 		}
 		
-		if ( ($overideMandatory === null && ($f['required']) && $f['required']) || ($overideMandatory === true))
+		if ( ($overideMandatory === null && isset($f['required']) && $f['required']) || ($overideMandatory === true))
 		{
 			$widget->setMandatory();
 		}
