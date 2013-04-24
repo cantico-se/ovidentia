@@ -3169,7 +3169,7 @@ class Func_Ovml_Container_RecentArticles extends Func_Ovml_Container
 
 			$req .= ' ORDER BY ' . $order;
 
-			if( $this->last !== false)
+			if( !empty($this->last) && is_numeric($this->last))
 				$req .= ' LIMIT 0, ' . $babDB->db_escape_string($this->last);
 
 			$this->resarticles = $babDB->db_query($req);
