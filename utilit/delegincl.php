@@ -412,9 +412,11 @@ function bab_getAdministratorsDelegation($deleg_id) {
 	$users = array();
 	while ($arr = $babDB->db_fetch_assoc($res)) {
 		$user = bab_getUserInfos($arr['id_user']);
-		$users[]['id'] = $user['id'];
-		$users[]['name'] = bab_composeUserName($user['firstname'],$user['lastname']);
-		$users[]['email'] = $user['email'];
+		if($user && isset($user['id'])){
+			$users[]['id'] = $user['id'];
+			$users[]['name'] = bab_composeUserName($user['firstname'],$user['lastname']);
+			$users[]['email'] = $user['email'];
+		}
 	}
 	
 	return $users;
