@@ -341,6 +341,8 @@ function bab_upgrade($core_dir, &$ret, $forceUpgrade = false)
 		$ret = bab_translate('You site is already up to date');
 		return false;
 	}
+	
+	bab_setTimeLimit(120);
 
 	include_once $core_dir.'upgrade.php';
 	if (true === ovidentia_upgrade($ver_from, $ini->getVersion())) {
