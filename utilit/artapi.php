@@ -846,7 +846,7 @@ function bab_getArticleTopicsRes($categoryid, $delegationid = false, $rightacces
 			from 
 			".BAB_TOPICS_TBL." tc 
 				LEFT JOIN ".BAB_TOPCAT_ORDER_TBL." tot ON tc.id=tot.id_topcat 
-				LEFT JOIN bab_topics_unsubscribe u ON tc.id=u.id_topic AND u.id_user=".$babDB->quote($GLOBALS['BAB_SESS_USERID'])." 
+				LEFT JOIN bab_topics_unsubscribe u ON tc.id=u.id_topic AND u.id_user=".$babDB->quote(bab_getUserId())." 
 				
 			where tc.id IN (".$babDB->quote($IdEntries).") and tot.type='2' 
 			order by tot.ordering asc
