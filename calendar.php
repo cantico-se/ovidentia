@@ -86,7 +86,7 @@ class displayAttendeesCls extends displayEventCls
 		
 		if (!$this->period)
 		{
-			throw new Exception('Event not found backend='.get_class($backend).' UID='.$evtid.' DTSTART='.$dtstart);
+			throw new Exception('Event not found backend='.get_class($calendar->getBackend()).' UID='.$evtid.' DTSTART='.$dtstart);
 		}
 		
 		
