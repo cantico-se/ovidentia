@@ -50,7 +50,7 @@ class bab_eventCollectCalendarsBeforeDisplay extends bab_event
 
 	/**
 	 * Add calendar to accessible calendar list
-	 * personal calendar is get from backend witout control on the actif flag because the personal calendar can be used in a disabled state by vacation program
+	 * 
 	 */
 	public function addCalendar(bab_EventCalendar $calendar)
 	{
@@ -226,7 +226,7 @@ function bab_onCollectCalendarsBeforeDisplay(bab_eventCollectCalendarsBeforeDisp
 
 	$personal_calendar = null;
 	$access_user = $event->getAccessUser();
-	$calendar_backend = bab_getICalendars()->calendar_backend;
+	$calendar_backend = $event->getBackendName();
 
 	if( !empty($access_user) && 'Ovi' === $calendar_backend)
 	{
