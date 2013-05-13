@@ -877,8 +877,37 @@ class bab_CalAttendeeBackend
 	}
 	
 	
-	
-	
+	/**
+	 * Test if the calendar is readable
+	 * @return bool
+	 */
+	public function canView()
+	{
+		if (!isset($this->attendee['calendar']))
+		{
+			return false;
+		}
+		
+		$calendar = $this->attendee['calendar'];
+		/*@var $calendar bab_EventCalendar */
+		
+		
+		// test if calendar is in user list
+		
+		$cals = bab_getICalendars();
+		if (null === $cals->getEventCalendar($calendar->getUrlIdentifier()))
+		{
+			return false;
+		}
+		
+		
+		if (!$calendar->canView())
+		{
+			return false;
+		}
+		
+		return true;
+	}
 	
 }
 

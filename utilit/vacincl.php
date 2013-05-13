@@ -2651,7 +2651,7 @@ function bab_vac_createPeriod($id_request)
 	$row = $babDB->db_fetch_assoc($res);
 	
 		
-	$icalendars = new bab_icalendars($row['id_user']);
+	$icalendars = bab_getICalendars($row['id_user']);
 	
 	$calendar = $icalendars->getPersonalCalendar();
 	
@@ -3057,7 +3057,7 @@ function bab_vac_getHalfDaysIndex($id_user, $dateb, $datee, $vacation_is_free = 
 		)
 	);
 	
-	$icalendars = new bab_icalendars($id_user);
+	$icalendars = bab_getICalendars($id_user);
 
 	$calendar = $icalendars->getPersonalCalendar();
 	
@@ -3361,7 +3361,7 @@ function bab_vac_getPeriod($id_request, $id_user, BAB_DateTime $begin, BAB_DateT
 	require_once dirname(__FILE__).'/calincl.php';
 	global $babDB;
 		
-	$icalendars = new bab_icalendars($id_user);
+	$icalendars = bab_getICalendars($id_user);
 	
 	$calendar = $icalendars->getPersonalCalendar();
 	
