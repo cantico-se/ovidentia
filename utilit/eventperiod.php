@@ -225,7 +225,7 @@ function bab_onCollectCalendarsBeforeDisplay(bab_eventCollectCalendarsBeforeDisp
 
 	$personal_calendar = null;
 	$access_user = $event->getAccessUser();
-	$calendar_backend = bab_getICalendars()->calendar_backend;
+	$calendar_backend = $event->getBackendName();
 
 	if( !empty($access_user) && 'Ovi' === $calendar_backend)
 	{
