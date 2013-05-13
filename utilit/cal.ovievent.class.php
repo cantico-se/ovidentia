@@ -194,8 +194,8 @@ class bab_cal_OviEventUpdate
 		$req = "UPDATE ".BAB_CAL_EVENTS_TBL."
 		SET
 			title				=".$babDB->quote($period->getProperty('SUMMARY')).",
-			description			=".$babDB->quote($data['description']).",
-			description_format	=".$babDB->quote($data['description_format']).",
+			description			=".$babDB->quote($description).",
+			description_format	=".$babDB->quote($description_format).",
 			location			=".$babDB->quote($period->getProperty('LOCATION')).",
 			id_cat				=".$babDB->quote((int) $cat['id']).",
 			color				=".$babDB->quote($period->getProperty('X-CTO-COLOR')).",
