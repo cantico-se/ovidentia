@@ -187,11 +187,12 @@ class displayAttendeesCls extends displayEventCls
 
 
 			$partstat = $arr['AttendeeBackend']->getRealPartstat();
-			$this->external = false;
-			if (!isset($arr['calendar']))
+			if (null === $partstat)
 			{
-				$this->external = true;
+				$partstat = $arr['PARTSTAT'];
 			}
+			
+			$this->external = !$arr['AttendeeBackend']->canView();
 
 			if (isset($this->statusdef[$partstat]))
 			{

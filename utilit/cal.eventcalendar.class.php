@@ -812,35 +812,47 @@ class bab_OviPersonalCalendar extends bab_OviEventCalendar implements bab_Person
 			$this->init($access_user, $data);
 			return true;
 		}
+		
+		static $cache = array();
+
+		if (!isset($cache[$access_user]))
+		{
+
+			$query = "
+				select 
+					u.id id_user,
+					cut.id_cal,
+					cut.bwrite,
+					u.firstname,
+					u.lastname
+	
+				from ".BAB_CALACCESS_USERS_TBL." cut
+					,".BAB_CALENDAR_TBL." ct
+					,".BAB_USERS_TBL." u
+				where
+					ct.id=cut.id_cal
+					and u.id=ct.owner
+					and ct.actif='Y'
+					and disabled='0' 
+					and cut.id_user=".$babDB->quote($access_user);
+			
+			$res = $babDB->db_query($query);
+			
+			while ($arr = $babDB->db_fetch_assoc($res))
+			{
+				$cache[$access_user][$arr['id_user']] = $arr;
+			}
+		
+		} 
+			
+		
 
 
-
-		$query = "
-			select
-				cut.id_cal,
-				cut.bwrite,
-				u.firstname,
-				u.lastname
-
-			from ".BAB_CALACCESS_USERS_TBL." cut
-				,".BAB_CALENDAR_TBL." ct
-				,".BAB_USERS_TBL." u
-			where
-				ct.id=cut.id_cal
-				and u.id=ct.owner
-				and ct.actif='Y'
-				and disabled='0'
-				and u.id=".$babDB->quote($id_user)."
-				and cut.id_user=".$babDB->quote($access_user);
-
-
-		$res = $babDB->db_query($query);
-
-
-		if ($arr = $babDB->db_fetch_assoc($res))
+		if (isset($cache[$access_user][$id_user]))
 		{
 			// the calendar is accessible throw calendar sharing
 
+			$arr = $cache[$access_user][$id_user];
 
 			$data = array(
 
@@ -856,7 +868,7 @@ class bab_OviPersonalCalendar extends bab_OviEventCalendar implements bab_Person
 
 			return true;
 		}
-
+		
 
 		// the calendar is not accessible
 
