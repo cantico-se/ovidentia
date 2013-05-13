@@ -1197,21 +1197,23 @@ function get_topcatview() {
 
 
 
+
 /**
  * Collection of calendars
  *
  * @return bab_icalendars
  */
-function bab_getICalendars() {
+function bab_getICalendars($id_user = '') {
 
+	include_once $GLOBALS['babInstallPath'].'utilit/calincl.php';
 	static $calendars = null;
 
-	if (null === $calendars) {
-		include_once $GLOBALS['babInstallPath'].'utilit/calincl.php';
-		$calendars = new bab_icalendars();
+	if (!isset($calendars[$id_user])) {
+		
+		$calendars[$id_user] = new bab_icalendars($id_user);
 	}
 
-	return $calendars;
+	return $calendars[$id_user];
 }
 
 

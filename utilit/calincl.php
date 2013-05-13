@@ -226,11 +226,14 @@ class bab_icalendars
 		$this->user_calendarids = '';
 		if( empty($iduser) && isset($GLOBALS['BAB_SESS_USERID']))
 			{
-			$this->iduser = $GLOBALS['BAB_SESS_USERID'];
+			$this->iduser = (int) $GLOBALS['BAB_SESS_USERID'];
 			}
-		else
+		else if ($iduser)
 			{
-			$this->iduser = $iduser;
+			$this->iduser = (int) $iduser;
+			}
+		else {
+			$this->iduser = ''; // logged out
 			}
 
 
@@ -301,6 +304,9 @@ class bab_icalendars
 	 */
 	public function addCalendar(bab_EventCalendar $calendar)
 	{
+		$id_user = (int) $calendar->getIdUser();
+		
+		
 		$this->calendars[$calendar->getUrlIdentifier()] = $calendar;
 		
 			
@@ -309,14 +315,14 @@ class bab_icalendars
 			$this->default_calendar = $calendar;
 		}	
 
-		if ($this->iduser && ((int) $this->iduser === (int) $calendar->getIdUser()))
+		if ($this->iduser && ($this->iduser === $id_user))
 		{
 			$this->personal_calendar = $calendar;
 		}
 		
-		if ($calendar instanceof bab_PersonalCalendar)
+		if (!isset($this->reftype_by_user[$id_user]) && ($calendar instanceof bab_PersonalCalendar))
 		{
-			$this->reftype_by_user[$calendar->getIdUser()] = $calendar->getReferenceType();
+			$this->reftype_by_user[$id_user] = $calendar->getReferenceType();
 		}
 	}
 	
