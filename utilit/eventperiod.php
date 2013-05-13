@@ -72,7 +72,13 @@ class bab_eventCollectCalendarsBeforeDisplay extends bab_event
 		return $this->calendar_collection->getAccessUser();
 	}
 
-
+	/**
+	 * @return string
+	 */
+	public function getBackendName()
+	{
+		return $this->calendar_collection->calendar_backend;
+	}
 }
 
 
