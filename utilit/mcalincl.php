@@ -1168,6 +1168,7 @@ class bab_calendarchoice
 		
 		if (isset($period))
 		{
+			/*
 			foreach($period->getCalendars() as $key => $linked_calendar)
 			{
 				$type = $linked_calendar->getType();
@@ -1178,13 +1179,65 @@ class bab_calendarchoice
 				if (!isset($this->caltypes[$type][$key]))
 				{
 					$this->caltypes[$type][$key] = $linked_calendar;
-					$this->noaccess_arr[$linked_calendar->getUrlIdentifier()] = $linked_calendar;
+					$this->noaccess_arr[$key] = $linked_calendar;
 				}
 			}
+			*/
 			
-			// TODO add also inaccessible attendees
+			// add also inaccessible attendees
 			
-			
+			foreach($period->getAllAttendees() as $attendee)
+			{
+				
+				$ab = $attendee['AttendeeBackend'];
+				if (!$ab->canView())
+				{
+					
+					$linked_calendar = null;
+					
+					
+					if (isset($attendee['calendar']))
+					{
+						$linked_calendar = $attendee['calendar'];
+						
+						
+					} else if ($id_user = bab_getUserIdByEmailAndName($attendee['email'], $attendee['CN'])) {
+						
+						$icalendars = bab_getICalendars($id_user);
+						$reftype = null;
+						if ($id_calendar = $icalendars->getPersonalCalendarUid($id_user))
+						{
+							$reftype = $icalendars->getUserReferenceType($id_user);
+						}
+						
+						if (null !== $id_calendar && null !== $reftype)
+						{
+							$linked_calendar = $icalendars->getEventCalendar("$reftype/$id_calendar");
+						}
+					} else {
+						
+						bab_debug('Failed to get attendee in ovidentia database : '.$attendee['email']);
+					}
+					
+					
+					
+					if (null !== $linked_calendar)
+					{
+						$type = $linked_calendar->getType();
+						if (!isset($this->caltypes[$type])) {
+							$this->caltypes[$type] = array();
+						}
+						
+						$key = $linked_calendar->getUrlIdentifier();
+						
+						if (!isset($this->caltypes[$type][$key]))
+						{
+							$this->caltypes[$type][$key] = $linked_calendar;
+							$this->noaccess_arr[$key] = $linked_calendar;
+						}
+					}
+				}
+			}
 		}
 		
 		
