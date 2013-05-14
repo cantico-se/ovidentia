@@ -2640,7 +2640,9 @@ class Func_Ovml_Container_Files extends Func_Ovml_Container
 				$sUploadPath = $oFileManagerEnv->getCollectiveRootFmPath();
 			
 				$sFullPathName = $sUploadPath . $oFolderFile->getPathName() . $oFolderFile->getName();
-				$mime = mime_content_type($sFullPathName);
+
+				$mime = bab_getFileMimeType($sFullPathName);
+
 				if(substr($mime, 0, 5) == "image"){ 
 					setImageInfo($this->ctx, $this->imageheightmax, $this->imagewidthmax, $sFullPathName);
 				}else{
