@@ -381,7 +381,7 @@ function bab_getReadableArticleCategories()
  * @param   string|false   $rightaccesstable   : name of the right access table in topic. If false, categories are not filtered by user's rights 
  * 
  * Values of $rightsaccesstable :
- * 	false : administrator access (the user must be an administrator)
+ * 	false : administrator access
  *  BAB_TOPICSCOM_GROUPS_TBL : right submit comments
  *	BAB_TOPICSMAN_GROUPS_TBL : right manage topic
  *	BAB_TOPICSMOD_GROUPS_TBL : right modify articles
@@ -398,12 +398,6 @@ function bab_getArticleCategoriesRes($parentid, $delegationid = false, $rightacc
 		$parentid = array($parentid);
 	}
 	
-	if (false === $rightaccesstable) {
-		if (!bab_isUserAdministrator()) {
-			return false;
-		}
-	}
-
 
 	$sDelegation = ' ';
 	if(false !== $delegationid) {
@@ -505,7 +499,7 @@ function bab_getArticleCategoriesRes($parentid, $delegationid = false, $rightacc
  * @param   string|false   $rightaccesstable    : name of the right access table in topic. If false, categories are not filtered by user's rights 
  * 
  * Values of $rightsaccesstable :
- *   	false : administrator access (the user must be an administrator)
+ *   	false : administrator access
  *	BAB_TOPICSCOM_GROUPS_TBL : right submit comments
  *	BAB_TOPICSMAN_GROUPS_TBL : right manage topic
  *	BAB_TOPICSMOD_GROUPS_TBL : right modify articles
@@ -524,11 +518,7 @@ function bab_getChildrenArticleCategoriesInformation($parentid, $delegationid = 
 	
 	$categories = array();
 	
-	if (false === $rightaccesstable) {
-		if (!bab_isUserAdministrator()) {
-			return $categories;
-		}
-	}
+
 	
 	$res = bab_getArticleCategoriesRes($parentid, $delegationid, $rightaccesstable);
 	if ($babDB->db_num_rows($res) > 0) {
@@ -789,7 +779,7 @@ function bab_updateTopic($id_topic, $name, $description, $idCategory, &$error, $
  * @param   string|false   $rightaccesstable    : name of the right access table in topic. If false, topics are not filtered by user's rights 
  * 
  * Values of $rightsaccesstable :
- * 	false : administrator access (the user must be an administrator)
+ * 	false : administrator access
  *	BAB_TOPICSCOM_GROUPS_TBL : right submit comments
  *	BAB_TOPICSMAN_GROUPS_TBL : right manage topic
  *	BAB_TOPICSMOD_GROUPS_TBL : right modify articles
@@ -801,11 +791,7 @@ function bab_updateTopic($id_topic, $name, $description, $idCategory, &$error, $
 function bab_getArticleTopicsRes($categoryid, $delegationid = false, $rightaccesstable = BAB_TOPICSVIEW_GROUPS_TBL) {
 	global $babBody, $babDB;
 	
-	if (false === $rightaccesstable) {
-		if (!bab_isUserAdministrator()) {
-			return false;
-		}
-	}
+
 	
 	$sDelegation = ' ';
 	$sLeftJoin = ' ';
@@ -864,7 +850,7 @@ function bab_getArticleTopicsRes($categoryid, $delegationid = false, $rightacces
  * @param   string|false   $rightaccesstable    : name of the right access table in topic. If false, topics are not filtered by user's rights 
  * 
  * Values of $rightsaccesstable :
- * 	false : administrator access (the user must be an administrator)
+ * 	false : administrator access
  *	BAB_TOPICSCOM_GROUPS_TBL : right submit comments
  *	BAB_TOPICSMAN_GROUPS_TBL : right manage topic
  *	BAB_TOPICSMOD_GROUPS_TBL : right modify articles
@@ -878,11 +864,7 @@ function bab_getChildrenArticleTopicsInformation($categoryid, $delegationid = fa
 	
 	$topics = array();
 	
-	if (false === $rightaccesstable) {
-		if (!bab_isUserAdministrator()) {
-			return $topics;
-		}
-	}
+
 	
 	$res = bab_getArticleTopicsRes($categoryid, $delegationid, $rightaccesstable);
 	if ($babDB->db_num_rows($res) > 0) {
@@ -1035,7 +1017,7 @@ function bab_getArticleAuthor($article)
  * @param   string|false   $rightaccesstable    : name of the right access table in topic. If false, articles are not filtered by user's rights 
  * 
  * Values of $rightsaccesstable :
- * 	false : all rights (the user must be an administrator)
+ * 	false : all rights
  *	BAB_TOPICSCOM_GROUPS_TBL : right submit comments
  *	BAB_TOPICSMAN_GROUPS_TBL : right manage topic
  *	BAB_TOPICSMOD_GROUPS_TBL : right modify articles
@@ -1051,11 +1033,6 @@ function bab_getChildrenArticlesInformation($topicid, $fullpath = false, $articl
 	
 	$articles = array();
 	
-	if (false === $rightaccesstable) {
-		if (!bab_isUserAdministrator()) {
-			return $articles;
-		}
-	}
 	
 	if (!is_numeric($topicid)) {
 		return $articles;
