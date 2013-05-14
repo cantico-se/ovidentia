@@ -980,7 +980,7 @@ function bab_editor_record(&$str)
 	{
 
 	global $babDB;
-	$str = preg_replace("/((href|src)=['\"]?)".preg_quote($GLOBALS['babUrl'],'/i').'/', "\\1", $str);
+	$str = preg_replace("/((href|src)=['\"]?)".preg_quote($GLOBALS['babUrl'],'/').'/i', "\\1", $str);
 
 	if (!$arr = $babDB->db_fetch_array($babDB->db_query("SELECT * FROM ".BAB_SITES_EDITOR_TBL." WHERE id_site='".$babDB->db_escape_string($GLOBALS['babBody']->babsite['id'])."'")))
 		{
