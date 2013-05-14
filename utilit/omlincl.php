@@ -2640,8 +2640,10 @@ class Func_Ovml_Container_Files extends Func_Ovml_Container
 				$sUploadPath = $oFileManagerEnv->getCollectiveRootFmPath();
 			
 				$sFullPathName = $sUploadPath . $oFolderFile->getPathName() . $oFolderFile->getName();
-				$mime = mime_content_type($sFullPathName);
-				if(substr($mime, 0, 5) == "image"){ 
+
+				$mime = bab_getFileMimeType($sFullPathName);
+				
+				if(substr($mime, 0, 5) == "image"){
 					setImageInfo($this->ctx, $this->imageheightmax, $this->imagewidthmax, $sFullPathName);
 				}else{
 					$this->ctx->curctx->push('ImageUrl', '');
@@ -3169,8 +3171,9 @@ class Func_Ovml_Container_RecentArticles extends Func_Ovml_Container
 
 			$req .= ' ORDER BY ' . $order;
 
-			if( !empty($this->last) && is_numeric($this->last))
+			if (!empty($this->last) && is_numeric($this->last)) {
 				$req .= ' LIMIT 0, ' . $babDB->db_escape_string($this->last);
+			}
 
 			$this->resarticles = $babDB->db_query($req);
 			while( $arr = $babDB->db_fetch_array($this->resarticles))
