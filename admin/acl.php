@@ -571,6 +571,7 @@ function aclGetAccessUsers($table, $id_object, $activeOrderBy=NULL, $returnDisab
 function aclDuplicateRights($srcTable, $srcIdObject, $trgTable, $trgIdObject)
 {
 	global $babDB;
+	require_once dirname(__FILE__).'/../utilit/sitemap.php';
 
 	$res = $babDB->db_query('SELECT id_group FROM '.$babDB->backTick($srcTable).' WHERE id_object='.$babDB->quote($srcIdObject));
 	while ($arr = $babDB->db_fetch_assoc($res)) {
