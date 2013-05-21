@@ -181,13 +181,13 @@ function listVacationRequestsb()
 					$datee = $ar[2]."-".$ar[1]."-".$ar[0];
 					}
 
-				if( $dateb != "" )
-					{
-					$aaareq[] = "e.date_begin >= '".$babDB->db_escape_string($dateb)."'";
-					}
 				if( $datee != "" )
 					{
-					$aaareq[] = "e.date_end <= '".$babDB->db_escape_string($datee)."'";
+					$aaareq[] = "e.date_begin <= DATE_ADD('".$babDB->db_escape_string($datee)."', INTERVAL 1 DAY)";
+					}
+				if( $dateb != "" )
+					{
+					$aaareq[] = "e.date_end >= '".$babDB->db_escape_string($dateb)."'";
 					}
 				}
 
@@ -995,12 +995,16 @@ function doExportVacationRequests($dateb, $datee, $idstatus, $wsepar, $separ, $s
 			$date_end = bab_shortDate(bab_mktime($datee), false);
 			}
 
-		if( $dateb != "" && $datee != "" )
+		if( $datee != "" )
 			{
-			$aaareq[] = "((e.date_end >= '".$dateb."' AND e.date_begin < '".$dateb."') 
-						OR (e.date_begin <= '".$datee."' AND e.date_end > '".$datee."') 
-						OR (e.date_end <= '".$datee." 23:59:59' AND e.date_begin >= '".$dateb."'))";
+			$aaareq[] = "e.date_begin <= DATE_ADD('".$babDB->db_escape_string($datee)."', INTERVAL 1 DAY)";
 			}
+		if( $dateb != "" )
+			{
+			$aaareq[] = "e.date_end >= '".$babDB->db_escape_string($dateb)."'";
+			}
+			
+			
 		}
 
 	$aaareq[] = "e.id_user = u.id";
@@ -1083,6 +1087,7 @@ function doExportVacationRequests($dateb, $datee, $idstatus, $wsepar, $separ, $s
 
 		$line[] = number_format($sum['D'], 1, $sepdec, '');
 		$line[] = number_format($sum['H'], 1, $sepdec, '');
+		
 
 		foreach($types as $type)
 		{
