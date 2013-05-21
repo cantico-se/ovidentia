@@ -446,10 +446,23 @@ function printBody()
 					return $this->sitemapPosition;
 					
 					
+				case 'imageUrl':
+				
+					$head = bab_getInstance('babHead');
+					if ($imageUrl = $head->getImageUrl())
+					{
+						return bab_toHtml($imageUrl);
+					}
+					return '';
+					
+					
 				case 'canonicalUrl':
 					
 					if ( null !== $sitemapItem = $this->getSitemapItem() ) {
-						return bab_toHtml($sitemapItem->getCanonicalUrl());
+						if ($canonicalUrl = $sitemapItem->getCanonicalUrl())
+						{
+							return bab_toHtml($canonicalUrl);
+						}
 					}
 					
 					$head = bab_getInstance('babHead');
@@ -576,6 +589,7 @@ function printBody()
 				case 'pageDescription':
 				case 'pageTitle':
 				case 'canonicalUrl':
+				case 'imageUrl':
 					return true;
 			}
 			return false;

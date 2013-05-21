@@ -350,6 +350,12 @@ class babHead
 	 */
 	private $canonicalUrl = null;
 	
+	/**
+	 * 
+	 * @var string
+	 */
+	private $imageUrl = null;
+	
 	
 	/**
 	 * Get page title
@@ -403,6 +409,20 @@ class babHead
 	}
 	
 	
+	/**
+	 * An image representation for the the page (at least a 200x200 px is recomended)
+	 * this can be used in a <meta property="og:image"> tag from the opengraph API or <link rel="image_src">
+	 * @since 7.9.0
+	 * @param string $imageUrl
+	 * 
+	 * 
+	 */
+	public function setImageUrl($imageUrl)
+	{
+		$this->imageUrl = $imageUrl;
+	}
+	
+	
 	
 	/**
 	 *
@@ -421,10 +441,21 @@ class babHead
 		return $this->page_keywords;
 	}
 	
-	
+	/**
+	 * @return string
+	 */
 	public function getCanonicalUrl()
 	{
 		return $this->canonicalUrl;
+	}
+	
+	/**
+	 * @since 7.9.0
+	 * @return string
+	 */
+	public function getImageUrl()
+	{
+		return $this->imageUrl;
 	}
 }
 
