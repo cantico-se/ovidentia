@@ -240,13 +240,13 @@ class bab_dumpToDb
 		
 	function workOnQuery()
 		{
-		$reg = "/((INSERT|CREATE).*?)\;/s";
+		$reg = "/(?:INSERT|CREATE)(?:[^';]*'(?:[^']|\\\\'|'')*')*[^';]*;/";
 		if (preg_match_all($reg, $this->fileContent, $m))
 			{
-			$this->succes->add(count($m[1]).' '.$this->trans->str('query founded into dump file'));
-			for ($k = 0; $k < count($m[1]); $k++ )
+			$this->succes->add(count($m[0]).' '.$this->trans->str('query founded into dump file'));
+			for ($k = 0; $k < count($m[0]); $k++ )
 				{
-				$query = $m[1][$k];
+				$query = $m[0][$k];
 				if (!$this->db_queryWem($query))
 					{
 					$this->error->add($this->trans->str('There is an error into sql dump file at query : ')."\n\n".$query."\n".mysql_error());
