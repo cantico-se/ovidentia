@@ -115,7 +115,7 @@ class bab_dumpToDb
 		{
 			if(!empty($install->clearDb))
 			{
-				if(!$this->db_queryWem('DROP DATABASE '.$install->babDBName))
+				if(!$this->db_queryWem('DROP DATABASE `'.$install->babDBName.'`'))
 				{
 					$this->error->add($this->trans->str('Can\'t drop the database : ').$install->babDBName.$this->trans->str(' you must delete it manually'));
 					return false;
@@ -160,7 +160,7 @@ class bab_dumpToDb
 			$sQuery = '';
 			if('utf8' === $sDBCharset)
 			{
-				$sQuery = 'CREATE DATABASE ' . $install->babDBName . ' ' .
+				$sQuery = 'CREATE DATABASE `' . $install->babDBName . '` ' .
 					'CHARACTER SET utf8 ' .
 					'DEFAULT CHARACTER SET utf8 ' .
 					'COLLATE utf8_general_ci ' .
@@ -168,7 +168,7 @@ class bab_dumpToDb
 			}
 			else
 			{
-				$sQuery = 'CREATE DATABASE ' . $install->babDBName . ' ' .
+				$sQuery = 'CREATE DATABASE `' . $install->babDBName . '` ' .
 					'CHARACTER SET latin1 ' .
 					'DEFAULT CHARACTER SET latin1 ' .
 					'COLLATE latin1_swedish_ci ' .
