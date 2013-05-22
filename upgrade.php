@@ -1269,9 +1269,27 @@ function tskMgrFieldOrderUpgrade()
 		tskMgrCreateUsersAdditionalFieldContext();
 
 		//A la fin il faut supprimer la table des instances de champs car elle ne sert plus
-		//par d�faut lorsqu'une t�che est cr��e tous les champs sont cr��s aussi.
+		//par defaut lorsqu'une tache est creee tous les champs sont crees aussi.
 	}
 }
+
+
+
+
+function upgradeAddMissingUuid($tablename)
+{
+	global $babDB;
+	require_once dirname(__FILE__).'/utilit/uuid.php';
+	
+	$res = $babDB->db_query('SELECT id FROM '.$babDB->backTick($tablename)." WHERE uuid='' OR uuid IS NULL");
+	while ($arr = $babDB->db_fetch_assoc($res))
+	{
+		$babDB->db_query('UPDATE '.$babDB->backTick($tablename).' SET 
+					uuid='.$babDB->quote(bab_uuid()).' WHERE id='.$babDB->quote($arr['id']));
+	}
+}
+
+
 
 
 function upgrade553to554()
@@ -6955,6 +6973,35 @@ function ovidentia_upgrade($version_base,$version_ini) {
 	if (!bab_isTableField('bab_topics', 'date_modification')) {
 		$babDB->db_query("ALTER TABLE `bab_topics` ADD date_modification datetime NOT NULL default '0000-00-00 00:00:00'");
 	}
+	
+	
+	/**
+	 * Upgrade to 8.0.90
+	 */
+	if (!bab_isTableField('bab_topics_categories', 'uuid')) {
+		$babDB->db_query("ALTER TABLE `bab_topics_categories` ADD `uuid` char(36) NOT NULL default ''");
+		$babDB->db_query("ALTER TABLE `bab_topics_categories` ADD INDEX ( `uuid` )");
+		upgradeAddMissingUuid('bab_topics_categories');
+	}
+	
+	
+	if (!bab_isKeyExists('bab_topics_categories', 'id_parent')) {
+		$babDB->db_query("ALTER TABLE `bab_topics_categories` ADD INDEX ( `id_parent` )");
+	}
+	
+	if (!bab_isTableField('bab_topics', 'uuid')) {
+		$babDB->db_query("ALTER TABLE `bab_topics` ADD `uuid` char(36) NOT NULL default ''");
+		$babDB->db_query("ALTER TABLE `bab_topics` ADD INDEX ( `uuid` )");
+		upgradeAddMissingUuid('bab_topics');
+	}
+	
+	if (!bab_isTableField('bab_articles', 'uuid')) {
+		$babDB->db_query("ALTER TABLE `bab_articles` ADD `uuid` char(36) NOT NULL default ''");
+		$babDB->db_query("ALTER TABLE `bab_articles` ADD INDEX ( `uuid` )");
+		upgradeAddMissingUuid('bab_articles');
+	}
+	
+	
 	
 	
 	return true;

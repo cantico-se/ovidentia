@@ -1537,6 +1537,7 @@ function notifyCommentAuthor($subject, $msg, $idfrom, $to)
 function acceptWaitingArticle($idart)
 {
 	global $babBody, $babDB;
+	require_once dirname(__FILE__).'/uuid.php';
 
 	$res = $babDB->db_query("
 		select
@@ -1584,7 +1585,7 @@ function acceptWaitingArticle($idart)
 		else
 			{
 			$req = "insert into ".BAB_ARTICLES_TBL."
-				(title, head, body, id_topic, id_author, date, date_publication, date_archiving, date_modification, restriction, lang)
+				(title, head, body, id_topic, id_author, date, date_publication, date_archiving, date_modification, restriction, lang, uuid)
 				values ";
 			$req .= "('', '', '', '" .$babDB->db_escape_string($arr['id_topic']). "', '".$babDB->db_escape_string($arr['id_author']). "', now()";
 
@@ -1596,7 +1597,7 @@ function acceptWaitingArticle($idart)
 				{
 				$req .= ", '".$babDB->db_escape_string($arr['date_publication'])."'";
 				}
-			$req .= ", '".$babDB->db_escape_string($arr['date_archiving'])."', now(), '".$babDB->db_escape_string($arr['restriction'])."', '".$babDB->db_escape_string($arr['lang']). "')";
+			$req .= ", '".$babDB->db_escape_string($arr['date_archiving'])."', now(), '".$babDB->db_escape_string($arr['restriction'])."', '".$babDB->db_escape_string($arr['lang']). "', ".$babDB->db_query(bab_uuid())." )";
 			$babDB->db_query($req);
 			$articleid = $babDB->db_insert_id();
 			}

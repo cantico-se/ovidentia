@@ -10,6 +10,7 @@
 
 CREATE TABLE bab_articles (
   id int(11) unsigned NOT NULL auto_increment,
+  `uuid` char(36) NOT NULL default '',
   id_topic int(11) unsigned NOT NULL default '0',
   id_author int(11) unsigned NOT NULL default '0',
   `date` datetime default NULL,
@@ -33,14 +34,15 @@ CREATE TABLE bab_articles (
   KEY date_publication (date_publication),
   KEY date_archiving (date_archiving),
   KEY index_status (index_status),
-  KEY date (date)
+  KEY date (date),
+  KEY uuid (uuid) 
 );
 
 
 INSERT INTO bab_articles 
-	(id, id_topic, id_author, date, date_publication, date_modification, title, head, head_format, body, body_format, lang) 
+	(id, uuid, id_topic, id_author, date, date_publication, date_modification, title, head, head_format, body, body_format, lang) 
 	
-VALUES (1, 1, 1, NOW(), NOW(), NOW(), 'Ovidentia',  '<p> <strong>OVIDENTIA</strong>
+VALUES (1, '9a9bb81c-46ab-4065-af9a-30de36d7f14c', 1, 1, NOW(), NOW(), NOW(), 'Ovidentia',  '<p> <strong>OVIDENTIA</strong>
 	is a toolbox allowing to publish with extreme ease and very 
 	fast an intranet, extranet or internet portal. Starting with 
 	the classic functions of a Content Management System (CMS) 
@@ -80,9 +82,9 @@ VALUES (1, 1, 1, NOW(), NOW(), NOW(), 'Ovidentia',  '<p> <strong>OVIDENTIA</stro
  
  
 INSERT INTO bab_articles 
-	(id, id_topic, id_author, date, date_publication, date_modification, title, head, head_format, body, body_format, lang) 
+	(id, uuid, id_topic, id_author, date, date_publication, date_modification, title, head, head_format, body, body_format, lang) 
 	
-VALUES (2, 1, 1, NOW(), NOW(), NOW(), 'Ovidentia',  '<p> <strong>OVIDENTIA</strong> est un outil permettant
+VALUES (2, '3c1ca350-9254-4e8c-b221-57535d2bd8e4', 1, 1, NOW(), NOW(), NOW(), 'Ovidentia',  '<p> <strong>OVIDENTIA</strong> est un outil permettant
   de publier avec une grande aisance et tr&egrave;s rapidement
   un portail intranet, extranet ou internet. En
   commencant par ses fonctions de syst&egrave;me de gestion de
@@ -556,6 +558,7 @@ CREATE TABLE bab_threads (
 
 CREATE TABLE bab_topics (
   id int(11) unsigned NOT NULL auto_increment,
+  `uuid` char(36) NOT NULL default '',
   category varchar(60) NOT NULL default '',
   description text NOT NULL,
   description_format varchar(32) NOT NULL default 'html',
@@ -581,10 +584,11 @@ CREATE TABLE bab_topics (
   allow_unsubscribe tinyint(1) unsigned NOT NULL default '0',
   date_modification datetime NOT NULL default '0000-00-00 00:00:00',
   PRIMARY KEY  (id),
-  KEY id_cat (id_cat)
+  KEY id_cat (id_cat),
+  KEY uuid (uuid)
 );
 
-INSERT INTO bab_topics (id, category, id_cat, lang) VALUES ('1', 'Ovidentia', 1, '*');
+INSERT INTO bab_topics (id, uuid, category, id_cat, lang) VALUES ('1', '9342cd5e-858b-4203-a240-ac2c35bf5c14', 'Ovidentia', 1, '*');
 
 
 # --------------------------------------------------------
@@ -622,6 +626,7 @@ CREATE TABLE bab_topics_images (
 
 CREATE TABLE bab_topics_categories (
    id int(11) unsigned NOT NULL auto_increment,
+   `uuid` char(36) NOT NULL default '',
    title varchar(60),
    description varchar(200),
    enabled enum('Y','N') DEFAULT 'Y' NOT NULL,
@@ -632,10 +637,12 @@ CREATE TABLE bab_topics_categories (
    display_tmpl varchar(255) default '',
    date_modification datetime NOT NULL default '0000-00-00 00:00:00',
    PRIMARY KEY (id),
-   KEY id_dgowner (id_dgowner)
+   KEY id_dgowner (id_dgowner),
+   KEY id_parent (id_parent),
+   KEY uuid (uuid)
 );
 
-INSERT INTO bab_topics_categories (id, title, description, enabled) VALUES ('1', 'Default category', 'Default category', 'Y');
+INSERT INTO bab_topics_categories (id, uuid, title, description, enabled) VALUES ('1', '973c971c-4c30-4c6f-ad95-378f96a6802c', 'Default category', 'Default category', 'Y');
 
 # --------------------------------------------------------
 #

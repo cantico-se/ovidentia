@@ -36,45 +36,31 @@ require_once dirname(__FILE__).'/defines.php';
 
 
 /**
- * @deprecated
+ * Topic title
+ * @deprecated replaced by bab_getTopicTitle
  * @see	bab_getTopicTitle
  */
 function bab_getCategoryTitle($id)
-	{
-	global $babDB;
-	$query = "select category from ".BAB_TOPICS_TBL." where id='".$babDB->db_escape_string($id)."'";
-	$res = $babDB->db_query($query);
-	if( $res && $babDB->db_num_rows($res) > 0)
-		{
-		$arr = $babDB->db_fetch_array($res);
-		return $arr['category'];
-		}
-	else
-		{
-		return "";
-		}
-	}
+{
+	return bab_getTopicTitle($id);
+}
 
 /**
- * @deprecated
+ * Topic description
+ * @deprecated replaced by bab_getTopicDescription
  * @see	bab_getTopicDescription
  */	
 function bab_getCategoryDescription($id)
 	{
-	global $babDB;
-	$query = "select description from ".BAB_TOPICS_TBL." where id='".$babDB->db_escape_string($id)."'";
-	$res = $babDB->db_query($query);
-	if( $res && $babDB->db_num_rows($res) > 0)
-		{
-		$arr = $babDB->db_fetch_array($res);
-		return $arr['description'];
-		}
-	else
-		{
-		return "";
-		}
+		return bab_getTopicDescription($id);
 	}	
 
+	
+/**
+ * Get category title
+ * @param int $id
+ * @return string
+ */
 function bab_getTopicCategoryTitle($id)
 	{
 	global $babDB;
@@ -91,6 +77,11 @@ function bab_getTopicCategoryTitle($id)
 		}
 }
 
+/**
+ * Get category description
+ * @param int $id
+ * @return string
+ */
 function bab_getTopicCategoryDescription($id)
 	{
 	global $babDB;
@@ -107,6 +98,10 @@ function bab_getTopicCategoryDescription($id)
 		}
 	}	
 
+/**
+ * Get category delegation ID
+ * @param int $id
+ */
 function bab_getTopicCategoryDelegationId($id)
 	{
 	global $babDB;
@@ -121,7 +116,63 @@ function bab_getTopicCategoryDelegationId($id)
 		{
 		return false;
 		}
-	}	
+	}
+
+	
+/**
+ * Get Category array from id or UUID
+ * @param string $identifier		ID or UUID
+ * @return array
+ */
+function bab_getTopicCategoryArray($identifier)
+{
+	global $babDB;
+	$query = "select * from ".BAB_TOPICS_CATEGORIES_TBL." where ";
+	if (is_numeric($identifier))
+	{
+		$query .= "id=".$babDB->quote($identifier);
+	} else if (36 === strlen($identifier)) {
+		$query .= "uuid=".$babDB->quote($identifier);
+	} else {
+		throw new Exception('Wrong identifier');
+	}
+	$res = $babDB->db_query($query);
+	if( $res && $babDB->db_num_rows($res) > 0)
+	{
+		return $babDB->db_fetch_assoc($res);
+	}
+	
+	return null;
+}
+
+
+
+/**
+ * Get topic array from id or UUID
+ * @param string $identifier		ID or UUID
+ * @return array
+ */
+function bab_getTopicArray($identifier)
+{
+	global $babDB;
+	$query = "select * from ".BAB_TOPICS_TBL." where ";
+	if (is_numeric($identifier))
+	{
+		$query .= "id=".$babDB->quote($identifier);
+	} else if (36 === strlen($identifier)) {
+		$query .= "uuid=".$babDB->quote($identifier);
+	} else {
+		throw new Exception('Wrong identifier');
+	}
+	$res = $babDB->db_query($query);
+	if( $res && $babDB->db_num_rows($res) > 0)
+	{
+		return $babDB->db_fetch_assoc($res);
+	}
+
+	return null;
+}
+	
 	
 /**
  * 
@@ -140,6 +191,8 @@ function bab_getTopicCategoryDelegationId($id)
 function bab_addTopicsCategory($name, $description, $benabled, $template, $disptmpl, $topcatid, $dgowner=0)
 	{
 	global $babDB;
+	require_once dirname(__FILE__).'/uuid.php';
+	
 	if( empty($name))
 		{
 		throw new ErrorException(bab_translate("ERROR: You must provide a name !!"));
@@ -152,7 +205,7 @@ function bab_addTopicsCategory($name, $description, $benabled, $template, $dispt
 		}
 	else
 		{
-		$req = "insert into ".BAB_TOPICS_CATEGORIES_TBL." (title, description, enabled, template, id_dgowner, id_parent, display_tmpl, date_modification) VALUES (
+		$req = "insert into ".BAB_TOPICS_CATEGORIES_TBL." (title, description, enabled, template, id_dgowner, id_parent, display_tmpl, date_modification, uuid) VALUES (
 		'" .$babDB->db_escape_string($name). "',
 		'" . $babDB->db_escape_string($description). "',
 		'" . $babDB->db_escape_string($benabled). "', 
@@ -160,7 +213,8 @@ function bab_addTopicsCategory($name, $description, $benabled, $template, $dispt
 		'" . $babDB->db_escape_string($dgowner). "', 
 		'" . $babDB->db_escape_string($topcatid). "', 
 		'" . $babDB->db_escape_string($disptmpl). "',
-		NOW()
+		NOW(),
+		".$babDB->quote(bab_uuid())."
 		)";
 		$babDB->db_query($req);
 
@@ -596,12 +650,41 @@ function bab_getParentsArticleCategory($categoryid, $reverse=false) {
  */
 function bab_getTopicTitle($id)
 	{
-		return bab_getCategoryTitle($id);
+		global $babDB;
+		$query = "select category from ".BAB_TOPICS_TBL." where id='".$babDB->db_escape_string($id)."'";
+		$res = $babDB->db_query($query);
+		if( $res && $babDB->db_num_rows($res) > 0)
+		{
+			$arr = $babDB->db_fetch_array($res);
+			return $arr['category'];
+		}
+		else
+		{
+			return "";
+		}
 	}
 
+	
+/**
+ * Get topic description
+ * @param unknown_type $id
+ * @return string
+ */
 function bab_getTopicDescription($id)
 	{
-		return bab_getCategoryDescription($id);
+		global $babDB;
+		$query = "select description from ".BAB_TOPICS_TBL." where id='".$babDB->db_escape_string($id)."'";
+		$res = $babDB->db_query($query);
+		if( $res && $babDB->db_num_rows($res) > 0)
+		{
+			$arr = $babDB->db_fetch_array($res);
+			return $arr['description'];
+		}
+		else
+		{
+			return "";
+		}
+		
 	}
 
 
@@ -617,6 +700,8 @@ function bab_getTopicDescription($id)
 function bab_addTopic($name, $description, $idCategory, &$error, $topicArr = array())
 {
 	global $babBody, $babDB;
+	require_once dirname(__FILE__).'/uuid.php';
+	
 	$arrdefaults = array(	'idsaart'=> 0, 
 							'idsacom'=> 0, 
 							'idsa_update'=> 0, 
@@ -634,7 +719,8 @@ function bab_addTopic($name, $description, $idCategory, &$error, $topicArr = arr
 							'auto_approbation'=>'N',
 							'busetags'=>'N',
 							'allow_addImg'=>'N',
-							'allow_unsubscribe' => 0
+							'allow_unsubscribe' => 0,
+							'uuid' => bab_uuid()
 							);
 	
 	if( empty($name))
@@ -928,11 +1014,26 @@ function bab_getArticleTitle($article)
 		}
 	}
 
-// used in add-ons since 4.09
-function bab_getArticleArray($article,$fullpath = false)
+/**
+ * Get article as an array
+ * @param int | string 	$article	 article id or UUID
+ * @param bool			$fullpath	 Add CategoriesHierarchy key into array
+ * @return array
+ */ 
+function bab_getArticleArray($article, $fullpath = false)
 	{
 	global $babDB;
-	$query = "select a.*,t.category topic from ".BAB_ARTICLES_TBL." a,".BAB_TOPICS_TBL." t where a.id='".$babDB->db_escape_string($article)."' AND t.id=a.id_topic";
+
+	$query = "select a.*,t.category topic from ".BAB_ARTICLES_TBL." a,".BAB_TOPICS_TBL." t where t.id=a.id_topic AND ";
+	if (is_numeric($article))
+	{
+		$query .= "a.id='".$babDB->db_escape_string($article)."'";
+	} else if (36 === strlen($article))
+	{
+		$query .= "a.uuid='".$babDB->db_escape_string($article)."'";
+	} else {
+		throw new Exception('Wrong identifier');
+	}
 	$res = $babDB->db_query($query);
 	if( $res && $babDB->db_num_rows($res) > 0)
 		{
