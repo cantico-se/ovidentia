@@ -901,3 +901,80 @@ class Func_Ovml_Function_SitemapUrl extends Func_Ovml_Function
 
 
 
+
+
+/**
+ * Return the sitemap node ID found in the current custom sitemap with a target to the node given in parameter from the core sitemap
+ * or the nodeid if the custom node does not exists
+ * 
+ * <OFSitemapCustomNodeId nodeid="" saveas="CustomNodeId">
+ *
+ *
+ */
+class Func_Ovml_Function_SitemapCustomNodeId extends Func_Ovml_Function
+{
+	/**
+	 *
+	 * @return string
+	 */
+	public function toString()
+	{
+		$args = $this->args;
+		$nodeid = empty($args['nodeid']) ? null : $args['nodeid'];
+		
+		if (null === $nodeid)
+		{
+			trigger_error(sprintf('Missing attribute nodeid in %s#%s', (string) $this->template->debug_location, get_class($this)));
+			return $this->output('');
+		}
+		
+		
+		$coreRootNode = bab_sitemap::get(); // core sitemap
+		$node = $coreRootNode->getNodeById($nodeid);
+		
+		if (null === $node)
+		{
+			trigger_error(sprintf('Node not found in core sitemap in %s#%s nodeid="%s"', (string) $this->template->debug_location, get_class($this), $nodeid));
+			return $this->output('');
+		}
+		
+		require_once dirname(__FILE__).'/settings.class.php';
+		$settings = bab_getInstance('bab_Settings');
+		/*@var $settings bab_Settings */
+		$site = $settings->getSiteSettings();
+		
+		if ('core' === $site['sitemap'])
+		{
+			// custom sitemap is the core sitemap
+			return $this->output($nodeid);
+		}
+		
+		$customRootNode = bab_sitemap::getByUid($site['sitemap']);
+		$customNode = $customRootNode->getNodeByTargetId(bab_sitemap::getSitemapRootNode(), $nodeid);
+		
+		if (null === $customNode)
+		{
+			return $this->output($nodeid);
+		}
+		
+		return $this->output($customNode->getId());
+	}
+	
+	/**
+	 * Process function output
+	 * @param string $str
+	 */
+	private function output($str)
+	{
+		$args = $this->args;
+		$saveas = empty($args['saveas']) ? null : $args['saveas'];
+		
+		if (isset($saveas))
+		{
+			$this->gctx->push($saveas, $str);
+			return ''; // do not display value if saved
+		}
+		
+		return $str;
+	}
+}
