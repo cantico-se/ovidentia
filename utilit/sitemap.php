@@ -33,6 +33,9 @@ class bab_siteMapOrphanRootNode extends bab_OrphanRootNode {
 
 	/**
 	 * for each id_function the id parent is stored with the rewrite name
+	 * key 0 = ID function
+	 * key 1 = rewritename
+	 * 
 	 * @var array
 	 */
 	private $rewriteIndex_id = array();
@@ -175,6 +178,8 @@ class bab_siteMapOrphanRootNode extends bab_OrphanRootNode {
 			bab_debug("the rewrite name $first has no id_function in index");
 			return null;
 		}
+		
+		
 
 
 		foreach($this->rewriteIndex_rn[$first] as $nodeId) {
@@ -190,8 +195,7 @@ class bab_siteMapOrphanRootNode extends bab_OrphanRootNode {
 				// bab_debug("$nodeId parent is not $id_parent");
 				continue;
 			}
-			
-			
+
 			if (isset($this->rewriteIndex_id[$nodeId]) && $id_parent === $this->rewriteIndex_id[$nodeId][0]) {
 
 				if (0 === count($path))
@@ -199,11 +203,15 @@ class bab_siteMapOrphanRootNode extends bab_OrphanRootNode {
 					return $nodeId;
 				}
 
-				return $this->getNextRewriteNode($path, $nodeId);
+				if ($next = $this->getNextRewriteNode($path, $nodeId))
+				{
+					return $next;
+				}
 			}
 		}
 
-		bab_debug("the rewrite name $first has no id_function in index");
+		bab_debug("The rewrite name $first has no id_function in index, path : ".implode('/', $path)." , id_parent : $id_parent", DBG_WARNING);
+		
 		return null;
 	}
 	
