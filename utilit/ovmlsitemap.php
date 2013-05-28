@@ -907,7 +907,7 @@ class Func_Ovml_Function_SitemapUrl extends Func_Ovml_Function
  * Return the sitemap node ID found in the current custom sitemap with a target to the node given in parameter from the core sitemap
  * or the nodeid if the custom node does not exists
  * 
- * <OFSitemapCustomNodeId nodeid="" saveas="CustomNodeId">
+ * <OFSitemapCustomNodeId node="" [basenode=""] [saveas=""]>
  *
  *
  */
@@ -920,7 +920,8 @@ class Func_Ovml_Function_SitemapCustomNodeId extends Func_Ovml_Function
 	public function toString()
 	{
 		$args = $this->args;
-		$nodeid = empty($args['nodeid']) ? null : $args['nodeid'];
+		$nodeid = empty($args['node']) ? null : $args['node'];
+		$basenode = empty($args['basenode']) ? null : $args['basenode'];
 		
 		if (null === $nodeid)
 		{
@@ -938,6 +939,12 @@ class Func_Ovml_Function_SitemapCustomNodeId extends Func_Ovml_Function
 			return $this->output('');
 		}
 		
+		
+		if (null === $basenode)
+		{
+			$basenode = bab_sitemap::getSitemapRootNode();
+		}
+		
 		require_once dirname(__FILE__).'/settings.class.php';
 		$settings = bab_getInstance('bab_Settings');
 		/*@var $settings bab_Settings */
@@ -950,7 +957,7 @@ class Func_Ovml_Function_SitemapCustomNodeId extends Func_Ovml_Function
 		}
 		
 		$customRootNode = bab_sitemap::getByUid($site['sitemap']);
-		$customNode = $customRootNode->getNodeByTargetId(bab_sitemap::getSitemapRootNode(), $nodeid);
+		$customNode = $customRootNode->getNodeByTargetId($basenode, $nodeid);
 		
 		if (null === $customNode)
 		{
