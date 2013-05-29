@@ -716,6 +716,12 @@ class bab_Path implements SeekableIterator, Countable {
 
 		while ($folder = array_pop($removed)) {
 			$this->push($folder);
+			
+			if ($this->isDir())
+			{
+				continue;
+			}
+
 			if (!bab_mkdir($this->tostring())) {
 				return false;
 			}
