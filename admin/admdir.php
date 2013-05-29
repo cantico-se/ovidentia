@@ -130,9 +130,6 @@ function listAds()
 			if($babBody->currentAdmGroup){
 				$groups = bab_getGroups();
 				$where = " WHERE id_group IN(".$this->db->quote($groups['id']).") ";
-			}else{
-				$groups = bab_getGroups();
-				$where = " WHERE id_group IN(".$this->db->quote($groups['id']).") ";
 			}
 			$sql = "select * from ".BAB_DB_DIRECTORIES_TBL . $where . " ORDER BY name";
 			$this->resdb			= $this->db->db_query($sql);
