@@ -302,7 +302,7 @@ function bab_createCalendarPeriod(Func_CalendarBackend $backend, $args, bab_Peri
 	if ($args['evtid']) {
 		$calendar = bab_getICalendars()->getEventCalendar($args['calid']);
 
-		$period = $backend->getPeriod($backend->CalendarEventCollection($calendar), $args['evtid'], $args['dtstart']);
+		$period = clone $backend->getPeriod($backend->CalendarEventCollection($calendar), $args['evtid'], $args['dtstart']);
 		if (null === $period)
 		{
 			throw new ErrorException(sprintf('The period UID=%s, DTSTART=%s does not exists in backend %s', $args['evtid'], $args['dtstart'], $backend->getUrlIdentifier()));
