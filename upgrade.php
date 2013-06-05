@@ -7004,6 +7004,14 @@ function ovidentia_upgrade($version_base,$version_ini) {
 	
 	
 	
+	/**
+	 * Upgrade to 8.0.91
+	 */
+	
+	if (!bab_isTableField('bab_sites', 'staticurl')) {
+		$babDB->db_query("ALTER TABLE `bab_sites` ADD `staticurl` varchar(255) NOT NULL default ''");
+	}
+	
 	return true;
 
 }
