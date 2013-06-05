@@ -1597,7 +1597,7 @@ function acceptWaitingArticle($idart)
 				{
 				$req .= ", '".$babDB->db_escape_string($arr['date_publication'])."'";
 				}
-			$req .= ", '".$babDB->db_escape_string($arr['date_archiving'])."', now(), '".$babDB->db_escape_string($arr['restriction'])."', '".$babDB->db_escape_string($arr['lang']). "', ".$babDB->db_query(bab_uuid())." )";
+			$req .= ", '".$babDB->db_escape_string($arr['date_archiving'])."', now(), '".$babDB->db_escape_string($arr['restriction'])."', '".$babDB->db_escape_string($arr['lang']). "', ".$babDB->quote(bab_uuid())." )";
 			$babDB->db_query($req);
 			$articleid = $babDB->db_insert_id();
 			}
