@@ -51,6 +51,9 @@ class site_configuration_cls
 		{
 		$res = $babDB->db_query("SELECT *, DECODE(smtppassword, \"".$GLOBALS['BAB_HASH_VAR']."\") as smtppass FROM ".BAB_SITES_TBL." WHERE id='".$babDB->db_escape_string($id_site)."'");
 		$this->row = $babDB->db_fetch_assoc($res);
+		
+		bab_debug($this->row);
+		
 		$this->arr = array();
 		foreach($this->row as $k => $val)
 			{
@@ -100,6 +103,7 @@ function site_menu1()
 			$this->maxemailtxt = bab_translate("Max number of recipients by notification email");
 			$this->mailfieldaddresstxt = bab_translate("Field to use when sending notification email");
 			$this->proposemassmailingtxt = bab_translate("Propose mass mailing in directory views?");
+			$this->staticurl_title = sprintf(bab_translate("Base url to use for static content (default is %s)"), $GLOBALS['babUrl']);
 			
 			
 			$this->skselectedindex = 0;
@@ -122,7 +126,8 @@ function site_menu1()
 						'langfilter'	=> '',
 						'mail_maxperpacket'	=> '25',
 						'mail_fieldaddress'	=> 'Bcc',
-						'mass_mailing' => 'N'
+						'mass_mailing' => 'N',
+						'staticurl'		=> ''
 					);
 
 				$this->item = '';
@@ -1723,10 +1728,11 @@ function siteSave($name)
 	$statlog		= bab_pp('statlog');
 	$maxemail		= bab_pp('maxemail');
 	$mfa			= bab_pp('mfa');
+	$staticurl		= bab_pp('staticurl');
 	
 
 	$query = "insert into ".BAB_SITES_TBL." 
-		(name, description, lang, adminemail, adminname, skin, style, sitemap, stat_log,  langfilter, babslogan, name_order, mail_fieldaddress, mail_maxperpacket) 
+		(name, description, lang, adminemail, adminname, skin, style, sitemap, stat_log,  langfilter, babslogan, name_order, mail_fieldaddress, mail_maxperpacket, staticurl) 
 	VALUES 
 		(
 			'" .$babDB->db_escape_string($name). "', 
@@ -1742,7 +1748,8 @@ function siteSave($name)
 			'" . $babDB->db_escape_string($babslogan)."',
 			'" . $babDB->db_escape_string($name_order)."',
 			'" . $babDB->db_escape_string($mfa)."',
-			'" . $babDB->db_escape_string($maxemail)."'
+			'" . $babDB->db_escape_string($maxemail)."',
+			'" . $babDB->db_escape_string($staticurl)."'
 		)";
 	
 	$babDB->db_query($query);
@@ -1779,7 +1786,8 @@ function siteUpdate_menu1()
 	$skin			= &$_POST['skin'];
 	$sitemap		= bab_pp('sitemap');
 	$langfilter		= bab_getInstance('babLanguageFilter')->convertFilterToInt($_POST['langfilter']);
-	$name_order		= &$_POST['name_order'];
+	$name_order		= bab_pp('name_order');
+	$staticurl		= bab_pp('staticurl');
 	$statlog		= &$_POST['statlog'];
 	$mass_mailing	= &$_POST['mass_mailing'];
 	
@@ -1851,7 +1859,8 @@ function siteUpdate_menu1()
 			babslogan='".$babDB->db_escape_string($babslogan)."' ,
 			mail_fieldaddress='".$babDB->db_escape_string($mfa)."' ,
 			mail_maxperpacket='".$babDB->db_escape_string($maxemail)."' ,
-			mass_mailing='".$babDB->db_escape_string($mass_mailing)."' 
+			mass_mailing='".$babDB->db_escape_string($mass_mailing)."',
+			staticurl='".$babDB->db_escape_string($staticurl)."'
 			
 		where id='".$babDB->db_escape_string($_POST['item'])."'";
 

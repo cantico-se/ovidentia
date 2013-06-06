@@ -77,7 +77,6 @@ function getGlobalVariable($var)
 		case 'babIE': return (( mb_strtolower(bab_browserAgent()) == "msie") && (bab_browserOS() == "windows")) ? 1 : 0;
 		case 'babCssPath': return bab_toHtml(bab_getCssUrl());
 		case 'babScriptPath': return bab_toHtml($GLOBALS['babScriptPath']);
-		//case 'babEditorImages': return $GLOBALS['babEditorImages'];
 		case 'babOvidentiaJs': return $GLOBALS['babOvidentiaJs'];
 		case 'babOvmlPath': return bab_toHtml($GLOBALS['babOvmlPath']);
 		case 'babSkinPath': return bab_toHtml($GLOBALS['babSkinPath']);

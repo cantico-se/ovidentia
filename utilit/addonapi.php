@@ -3677,3 +3677,21 @@ function bab_nbsp()
 			return '-';
 	}
 }
+
+
+
+
+/**
+ * Get static URL or empty string
+ * @return string
+ */
+function bab_getStaticUrl()
+{
+	require_once dirname(__FILE__).'/settings.class.php';
+	$settings = bab_getInstance('bab_Settings');
+	/*@var $settings bab_Settings */
+	$site = $settings->getSiteSettings();
+
+	return $site['staticurl'];
+}
+

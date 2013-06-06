@@ -263,8 +263,7 @@ if ('version' !== bab_rp('tg') || 'upgrade' !== bab_rp('idx')) {
 }
 
 $babSkinPath = bab_getSkinPath();
-$babScriptPath = $babInstallPath."scripts/";
-$babEditorImages = $babInstallPath."scripts/".$babLanguage."/";
+$babScriptPath = bab_getStaticUrl().$babInstallPath."scripts/";
 $babOvidentiaJs = $babScriptPath."ovidentia.js";
 $babOvmlPath = "skins/".$GLOBALS['babSkin']."/ovml/";
 
@@ -701,7 +700,7 @@ function printBody()
 
 			list(,$this->styleSheet) = $babBody->getnextstylesheet();
 			if ($this->styleSheet) {
-				$this->styleSheet = $GLOBALS['babInstallPath'] . 'styles/' . $this->styleSheet;
+				$this->styleSheet = bab_getStaticUrl().$GLOBALS['babInstallPath'] . 'styles/' . bab_toHtml($this->styleSheet);
 				return true;
 			}
 			return false;

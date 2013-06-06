@@ -971,9 +971,13 @@ public function addJavascriptFile($file)
 	global $babOvidentiaJs;
 	static $jfiles = array();
 
-	if( !in_array($file, $jfiles))
+	if( !array_key_exists($file, $jfiles))
 	{
-		$jfiles[] = $file;
+		$jfiles[$file] = 1;
+		if ($GLOBALS['babInstallPath'] === mb_substr($file, 0, mb_strlen($GLOBALS['babInstallPath'])))
+		{
+			$file = bab_getStaticUrl().$file;
+		}
 		$babOvidentiaJs .= '"></script>'."\n\t".'<script type="text/javascript" src="'.$file;
 	}
 }
@@ -1365,10 +1369,8 @@ function bab_getDbVersion() {
  * @return string
  */
 function bab_getSkinPath() {
-
 	global $babInstallPath;
-
-	return $babInstallPath."skins/ovidentia/";
+	return bab_getStaticUrl().$babInstallPath."skins/ovidentia/";
 }
 
 
