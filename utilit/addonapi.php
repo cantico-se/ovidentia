@@ -3691,6 +3691,11 @@ function bab_getStaticUrl()
 	$settings = bab_getInstance('bab_Settings');
 	/*@var $settings bab_Settings */
 	$site = $settings->getSiteSettings();
+	
+	if (!isset($site['staticurl']))
+	{
+		return '';
+	}
 
 	return $site['staticurl'];
 }
