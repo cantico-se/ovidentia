@@ -640,6 +640,13 @@ class bab_siteMap {
 	 * @var string
 	 */
 	private static $current_page = null;
+	
+	/**
+	 * 
+	 * @var array
+	 */
+	private static $hitcache = array();
+	
 
 	private $siteMapName 		= '';
 	private $siteMapDescription = '';
@@ -741,6 +748,9 @@ class bab_siteMap {
 				id_sitemap_profile=\'0\'
 				WHERE id='.$babDB->quote($id_user)
 			);
+			
+			self::$hitcache = array();
+			
 		} else {
 
 			// delete profile
@@ -779,6 +789,8 @@ class bab_siteMap {
 		$babDB->db_query('DELETE FROM '.BAB_SITEMAP_FUNCTION_LABELS_TBL);
 		$babDB->db_query('UPDATE '.BAB_USERS_TBL." SET id_sitemap_profile='0'");
 		$babDB->db_query('DELETE FROM '.BAB_SITEMAP_TBL);
+		
+		self::$hitcache = array();
 
 		self::unlockTables();
 
@@ -979,21 +991,19 @@ class bab_siteMap {
 
 		include_once $GLOBALS['babInstallPath'].'utilit/delegincl.php';
 
-		static $cache = array();
-
 
 		$cachekey = null === $path ? '0' : end($path);
 		if (null !== $levels) {
 			$cachekey .= ','.$levels;
 		}
 
-		if (isset($cache[$cachekey])) {
-			return $cache[$cachekey];
+		if (isset(self::$hitcache[$cachekey])) {
+			return self::$hitcache[$cachekey];
 		}
 
-		if (isset($cache['0'])) {
+		if (isset(self::$hitcache['0'])) {
 			// if global sitemap already requested on same page, use this sitemap
-			return $cache['0'];
+			return self::$hitcache['0'];
 		}
 
 
@@ -1106,7 +1116,7 @@ class bab_siteMap {
 
 		$rootNode = self::buildFromResource($res);
 
-		$cache[$cachekey] = $rootNode;
+		self::$hitcache[$cachekey] = $rootNode;
 
 		return $rootNode;
 	}
