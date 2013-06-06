@@ -2025,12 +2025,8 @@ function bab_sitemap_articles($event) {
 
 			if ($event->loadChildNodes(array('root', $id_delegation, 'bab'.$dg.'Articles'))) {
 				
-				$res = bab_getArticleCategoriesRes(array(0), $arr['id']);
-				if (0 < $babDB->db_num_rows($res)) {
-
-					$position = array('root', $id_delegation, 'bab'.$dg.'Articles');
-					bab_sitemap_articlesCategoryLevel(0, $position, $event, $arr['id']);
-				}
+				$position = array('root', $id_delegation, 'bab'.$dg.'Articles');
+				bab_sitemap_articlesCategoryLevel(0, $position, $event, $arr['id']);
 
 			}
 
