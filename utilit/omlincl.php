@@ -2530,6 +2530,42 @@ class Func_Ovml_Container_Files extends Func_Ovml_Container
 
 		$this->imageheightmax	= (int) $ctx->get_value('imageheightmax');
 		$this->imagewidthmax	= (int) $ctx->get_value('imagewidthmax');
+		
+		$order = (string) $ctx->get_value('order');
+		switch (strtoupper(trim($order))) {
+			case 'ASC':
+			case 'DESC':
+				break;
+				
+			default:
+				$order = 'ASC';
+				break;
+		}
+
+
+		$orderBy = (string) $ctx->get_value('orderby');
+		switch ($orderBy) {
+			case 'modification':
+				$orderField = 'sModified';
+				break;
+			case 'creation':
+				$orderField = 'sCreation';
+				break;
+			case 'size':
+				$orderField = 'iSize';
+				break;
+			case 'hits':
+				$orderField = 'iHits';
+				break;
+			case 'manual':
+				$orderField = 'iDisplayPosition';
+				break;
+			case 'name':
+			default:
+				$orderField = 'sName';
+				break;
+		}
+		
 
 		if($iLength && '/' === $this->sPath{$iLength - 1})
 		{
@@ -2588,7 +2624,7 @@ class Func_Ovml_Container_Files extends Func_Ovml_Container
 
 				$oReferenceMgr = bab_getInstance('bab_ReferenceMgr');
 
-				$this->oFolderFileSet->select($oCriteria, array('sName' => 'ASC'), $aLimit);
+				$this->oFolderFileSet->select($oCriteria, array($orderField => $order), $aLimit);
 				while(null !== ($oFolderFile = $this->oFolderFileSet->next()))
 				{
 					$this->IdEntries[] = $oFolderFile->getId();
