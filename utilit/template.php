@@ -92,6 +92,7 @@ function getGlobalVariable($var)
 		case 'BAB_SESS_EMAIL': return bab_toHtml($GLOBALS['BAB_SESS_EMAIL']);
 		case 'babPhpSelf': return bab_toHtml($GLOBALS['babPhpSelf']);
 		case 'babUrl': return bab_toHtml($GLOBALS['babUrl']);
+		case 'staticUrl': return bab_toHtml(bab_getStaticUrl());
 		case 'babInstallPath': return bab_toHtml($GLOBALS['babInstallPath']);
 		case 'babUrlScript': return bab_toHtml($GLOBALS['babUrlScript']);
 		case 'babAddonUrl': return bab_toHtml($GLOBALS['babAddonUrl']);

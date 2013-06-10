@@ -141,7 +141,7 @@ function bab_getCssUrl()
 			$filepath = $babInstallPath.'skins/ovidentia/styles/ovidentia.css';
 			}
 		}
-	return $filepath;
+	return bab_getStaticUrl().$filepath;
 	}
 
 /**
