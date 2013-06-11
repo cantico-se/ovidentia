@@ -601,7 +601,7 @@ function bab_getParentsArticleCategory($categoryid, $reverse=false) {
 	}
 	
 	/* List of all categories */
-	$topcats = $babBody->get_topcats();
+	$topcats = bab_getArticleCategories();
 	/* Id categories */
 	$idcategories = array();
 	if (isset($topcats[$categoryid])) {

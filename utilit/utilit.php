@@ -543,8 +543,6 @@ class babBody
 	public $script;
 	public $lastlog; /* date of user last log */
 	
-	/* $babBody->get_topcatview() */
-	/* all topics categories : $babBody->get_topcats() */
 	
 	
 	/**

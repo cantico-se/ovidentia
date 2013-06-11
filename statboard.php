@@ -318,7 +318,9 @@ function summarySections($col, $order)
 			$req = "select tct.*, dg.name as dgname  from ".BAB_TOPICS_CATEGORIES_TBL." tct left join ".BAB_DG_GROUPS_TBL." dg on tct.id_dgowner=dg.id where tct.optional='Y'";
 			$rescat = $babDB->db_query($req);
 
-			$topcats = $babBody->get_topcats();
+
+			require_once dirname(__FILE__).'/utilit/artapi.php';
+			$topcats = bab_getArticleCategories();
 			
 			while( $arr = $babDB->db_fetch_array($rescat) )
 				{

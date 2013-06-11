@@ -838,7 +838,7 @@ class Func_Ovml_Container_ParentsArticleCategory extends Func_Ovml_Container
 
 	public function setOvmlContext(babOvTemplate $ctx)
 	{
-		global $babBody, $babDB;
+		global $babDB;
 		parent::setOvmlContext($ctx);
 		$categoryid = $ctx->get_value('categoryid');
 
@@ -849,7 +849,9 @@ class Func_Ovml_Container_ParentsArticleCategory extends Func_Ovml_Container
 			$this->count = 0;
 		else
 			{
-			$topcats = $babBody->get_topcats();
+			require_once dirname(__FILE__).'/artapi.php';
+			$topcats = bab_getArticleCategories();
+
 			while( $topcats[$categoryid]['parent'] != 0 )
 				{
 				$this->IdEntries[] = $topcats[$categoryid]['parent'];
@@ -3245,7 +3247,9 @@ class Func_Ovml_Container_RecentArticles extends Func_Ovml_Container
 
 	public function gettopics($idparent)
 		{
-		$topcats = $GLOBALS['babBody']->get_topcats();
+		require_once dirname(__FILE__).'/artapi.php';
+		$topcats = bab_getArticleCategories();
+		
 		foreach($topcats as $id => $arr) {
 				if ($idparent == $arr['parent']) {
 					$this->gettopics($id);

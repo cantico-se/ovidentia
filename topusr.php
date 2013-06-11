@@ -95,7 +95,10 @@ function listTopicCategory($cat)
 			if( $cat != 0 )
 			{
 				$this->arrparents[] = $cat;
-				$topcats = $babBody->get_topcats();
+				
+				require_once dirname(__FILE__).'/utilit/artapi.php';
+				$topcats = bab_getArticleCategories();
+				
 				while( $topcats[$cat]['parent'] != 0 )
 				{
 					$this->arrparents[] = $topcats[$cat]['parent'];
@@ -236,7 +239,10 @@ function listTopicCategory($cat)
 					$this->parentname = bab_translate("Top");
 				}
 				else {
-					$topcats = $babBody->get_topcats();
+					
+					require_once dirname(__FILE__).'/utilit/artapi.php';
+					$topcats = bab_getArticleCategories();
+					
 					$this->parentname = bab_toHtml($topcats[$this->arrparents[$i]]['title']);
 				}
 				$this->parenturl = bab_toHtml($GLOBALS['babUrlScript']."?tg=topusr&cat=".$this->arrparents[$i]);

@@ -39,7 +39,7 @@ class categoriesHierarchy
 
 	public function __construct($topics,$cat,$link)
 		{
-		global $babBody, $babDB;
+		global $babDB;
 		$this->link = $link;
 
 		if( $topics != 0 )
@@ -68,7 +68,8 @@ class categoriesHierarchy
 
 		$this->topics = $topics;
 		$this->cat = $cat;
-		$topcats = $babBody->get_topcats();
+		$topcats = bab_getArticleCategories();
+		
 		if( isset($topcats[$cat]) )
 			{
 			$this->arrparents[] = array($cat, $topcats[$cat]['title']);
@@ -86,8 +87,6 @@ class categoriesHierarchy
 
 	function getnextparent()
 		{
-		global $babBody;
-
 		static $i = 0;
 		if( $i < $this->parentscount)
 			{
