@@ -34,9 +34,11 @@ include_once $GLOBALS['babInstallPath'].'utilit/treeincl.php';
  */
 function bab_OCgetPrimaryOcId()
 {
-	global $babBody, $babDB;
+	global $babDB;
+	
+	static $idprimaryoc = null;
 
-	if (empty($babBody->idprimaryoc)) {
+	if (!isset($idprimaryoc)) {
 		$sql = 'SELECT oct.id
 				FROM ' . BAB_ORG_CHARTS_TBL . ' AS oct
 				LEFT JOIN ' . BAB_DB_DIRECTORIES_TBL . ' AS ddt ON oct.id_directory = ddt.id
@@ -44,12 +46,11 @@ function bab_OCgetPrimaryOcId()
 		$res = $babDB->db_query($sql);
 		if ($res && $babDB->db_num_rows($res) > 0) {
 			$ocinfo = $babDB->db_fetch_array($res);
-			$idoc = $ocinfo['id'];
-			$babBody->idprimaryoc = $idoc;
+			$idprimaryoc = $ocinfo['id'];
 		}
 		return null;
 	}
-	return $babBody->idprimaryoc;
+	return $idprimaryoc;
 }
 
 
@@ -61,27 +62,15 @@ function bab_OCgetPrimaryOcId()
 function bab_OCGetRootEntity($idoc='')
 {
 	static $ocrootentities = array();
-	global $babBody, $babDB;
+	global $babDB;
 
 	if( empty($idoc))
 	{
-		if( !empty($babBody->idprimaryoc))
+		$idoc = bab_OCgetPrimaryOcId();
+		
+		if(empty($idoc))
 		{
-			$idoc = $babBody->idprimaryoc;
-		}
-		else
-		{
-			$res = $babDB->db_query("select oct.id from ".BAB_ORG_CHARTS_TBL." oct LEFT JOIN ".BAB_DB_DIRECTORIES_TBL." ddt on oct.id_directory=ddt.id where ddt.id_group='1' and oct.isprimary='Y'");
-			if( $res && $babDB->db_num_rows($res) > 0 )
-			{
-				$ocinfo = $babDB->db_fetch_assoc($res);
-				$idoc = $ocinfo['id'];
-				$babBody->idprimaryoc = $idoc;
-			}
-			else
-			{
-				return array();
-			}
+			return array();
 		}
 	}
 
@@ -96,7 +85,6 @@ function bab_OCGetRootEntity($idoc='')
 	if( $res && $babDB->db_num_rows($res) > 0 )
 	{
 		$arr = $babDB->db_fetch_assoc($res);
-//		$ocrootentities[$idoc] = array('id' => $arr['id'], 'name' => $arr['name'], 'description' => $arr['description']);
 		$ocrootentities[$idoc] = $arr;
 	}
 
@@ -157,27 +145,15 @@ function bab_OCGetEntity($ide)
 
 function bab_OCGetChildsEntities($idroot='', $idoc='')
 {
-	global $babBody, $babDB;
+	global $babDB;
 
 	if( empty($idoc))
 	{
-		if( !empty($babBody->idprimaryoc))
+		$idoc = bab_OCgetPrimaryOcId();
+		
+		if( empty($idoc))
 		{
-			$idoc = $babBody->idprimaryoc;
-		}
-		else
-		{
-			$res = $babDB->db_query("select oct.id from ".BAB_ORG_CHARTS_TBL." oct LEFT JOIN ".BAB_DB_DIRECTORIES_TBL." ddt on oct.id_directory=ddt.id where ddt.id_group='1' and oct.isprimary='Y'");
-			if( $res && $babDB->db_num_rows($res) > 0 )
-			{
-				$ocinfo = $babDB->db_fetch_array($res);
-				$idoc = $ocinfo['id'];
-				$babBody->idprimaryoc = $idoc;
-			}
-			else
-			{
-				return array();
-			}
+			return array();
 		}
 	}
 
@@ -237,27 +213,15 @@ function bab_OCGetSuperior($identity)
 
 function bab_OCGetSuperiors($idoc='')
 {
-	global $babBody, $babDB;
+	global $babDB;
 
 	if( empty($idoc))
 	{
-		if( !empty($babBody->idprimaryoc))
+		$idoc = bab_OCgetPrimaryOcId();
+		
+		if( empty($idoc))
 		{
-			$idoc = $babBody->idprimaryoc;
-		}
-		else
-		{
-			$res = $babDB->db_query("select oct.id from ".BAB_ORG_CHARTS_TBL." oct LEFT JOIN ".BAB_DB_DIRECTORIES_TBL." ddt on oct.id_directory=ddt.id where ddt.id_group='1' and oct.isprimary='Y'");
-			if( $res && $babDB->db_num_rows($res) > 0 )
-			{
-				$ocinfo = $babDB->db_fetch_array($res);
-				$idoc = $ocinfo['id'];
-				$babBody->idprimaryoc = $idoc;
-			}
-			else
-			{
-				return array();
-			}
+			return array();
 		}
 	}
 
@@ -297,27 +261,15 @@ function bab_OCGetTemporaryEmployee($identity)
 
 function bab_OCGetTemporaryEmployees($idoc='')
 {
-	global $babBody, $babDB;
+	global $babDB;
 
 	if( empty($idoc))
 	{
-		if( !empty($babBody->idprimaryoc))
+		$idoc = bab_OCgetPrimaryOcId();
+		
+		if( empty($idoc))
 		{
-			$idoc = $babBody->idprimaryoc;
-		}
-		else
-		{
-			$res = $babDB->db_query("select oct.id from ".BAB_ORG_CHARTS_TBL." oct LEFT JOIN ".BAB_DB_DIRECTORIES_TBL." ddt on oct.id_directory=ddt.id where ddt.id_group='1' and oct.isprimary='Y'");
-			if( $res && $babDB->db_num_rows($res) > 0 )
-			{
-				$ocinfo = $babDB->db_fetch_array($res);
-				$idoc = $ocinfo['id'];
-				$babBody->idprimaryoc = $idoc;
-			}
-			else
-			{
-				return array();
-			}
+			return array();
 		}
 	}
 
@@ -415,28 +367,18 @@ function bab_OCGetUserEntities($iduser, $idoc = '')
 		'temporary' => array(),
 		'members' => array(),
 	);
-
-	if (empty($idoc))
+	
+	
+	if( empty($idoc))
 	{
-		if (!empty($babBody->idprimaryoc))
+		$idoc = bab_OCgetPrimaryOcId();
+	
+		if( empty($idoc))
 		{
-			$idoc = $babBody->idprimaryoc;
-		}
-		else
-		{
-			$res = $babDB->db_query("select oct.id from ".BAB_ORG_CHARTS_TBL." oct LEFT JOIN ".BAB_DB_DIRECTORIES_TBL." ddt on oct.id_directory=ddt.id where ddt.id_group='1' and oct.isprimary='Y'");
-			if ($res && $babDB->db_num_rows($res) > 0)
-			{
-				$ocinfo = $babDB->db_fetch_array($res);
-				$idoc = $ocinfo['id'];
-				$babBody->idprimaryoc = $idoc;
-			}
-			else
-			{
-				return $ret;
-			}
+			return $ret;
 		}
 	}
+
 
 
 	$sql = '

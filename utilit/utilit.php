@@ -578,13 +578,11 @@ class babBody
 	public $babsite;
 	
 	
-	public $ampm; /* true: use am/pm */
-	
-	
-	var $waitapprobations; /* true if there are waiting approbations */
-	var $acltables = array();
-	var $idprimaryoc = 0; /* id of primary organizational chart */
-	var $styleSheet = array();
+	/**
+	 * List of stylesheets
+	 * @var array
+	 */
+	public $styleSheet = array();
 	
 	
 	public function __construct()
@@ -602,7 +600,6 @@ class babBody
 		$this->currentDGGroup = array('id' => 0);
 		$this->saarray = array();
 		$this->babaddons = array();
-		$this->waitapprobations = false;
 	
 	
 		if (isset($_SERVER['REMOTE_ADDR'])) {

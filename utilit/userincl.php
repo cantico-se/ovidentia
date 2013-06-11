@@ -716,31 +716,22 @@ function bab_getOrgChartRoleUsers($idroles)
  */
 function bab_getSuperior($iduser, $idoc = '')
 {
-	global $babBody, $babDB;
+	global $babDB;
+	require_once dirname(__FILE__).'/ocapi.php';
 
 	static $supparr = array();
-
+	
+	
 	if( empty($idoc))
 	{
-		if( !empty($babBody->idprimaryoc))
+		$idoc = bab_OCgetPrimaryOcId();
+	
+		if( empty($idoc))
 		{
-			$idoc = $babBody->idprimaryoc;
-		}
-		else
-		{
-			$res = $babDB->db_query("select oct.id from ".BAB_ORG_CHARTS_TBL." oct LEFT JOIN ".BAB_DB_DIRECTORIES_TBL." ddt on oct.id_directory=ddt.id where ddt.id_group='1' and oct.isprimary='Y'");
-			if( $res && $babDB->db_num_rows($res) > 0 )
-			{
-				$ocinfo = $babDB->db_fetch_array($res);
-				$idoc = $ocinfo['id'];
-				$babBody->idprimaryoc = $idoc;
-			}
-			else
-			{
-				return array();
-			}
+			return array();
 		}
 	}
+
 
 
 	if (isset($supparr[$idoc.'.'.$iduser])) {
