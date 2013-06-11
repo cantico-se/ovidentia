@@ -241,7 +241,7 @@ function bab_getArticleTopicsAsTextTree($parentid = 0, $delegationid = false, $r
 		
 		if (BAB_TOPICSVIEW_GROUPS_TBL === $rightaccesstable) {
 			// if tested access is topic view use cached values
-			$idcategoriesbyrights[$rightaccesstable] = $babBody->get_topcatview();
+			$idcategoriesbyrights[$rightaccesstable] = bab_getReadableArticleCategories();
 		} else {
 		
 			$res2 = $babDB->db_query("

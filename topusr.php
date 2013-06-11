@@ -66,6 +66,7 @@ function listTopicCategory($cat)
 
 		function temp($cat)
 		{
+			require_once dirname(__FILE__).'/utilit/artapi.php';
 			global $babBody, $babDB, $BAB_SESS_USERID;
 			$this->articlestxt = bab_translate("Article") ."(s)";
 			$this->waitingtxt = bab_translate("Waiting");
@@ -76,7 +77,7 @@ function listTopicCategory($cat)
 			$arrtop = array();
 			$req = "select * from ".BAB_TOPCAT_ORDER_TBL." where id_parent='".$babDB->db_escape_string($cat)."' order by ordering asc";
 			$res = $babDB->db_query($req);
-			$topcatview = $babBody->get_topcatview();
+			$topcatview = bab_getReadableArticleCategories();
 			while( $row = $babDB->db_fetch_array($res))
 			{
 				if($row['type'] == '2' && bab_isAccessValid(BAB_TOPICSVIEW_GROUPS_TBL ,$row['id_topcat']))

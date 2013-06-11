@@ -779,9 +779,15 @@ class Func_Ovml_Container_ArticleCategories extends Func_Ovml_Container
 		$this->imagewidthmax	= (int) $ctx->get_value('imagewidthmax');
 
 		if( $parentid === false || $parentid === '' )
+		{
 			$parentid[] = 0;
+		}
 		else
-			$parentid = array_intersect(array_keys($babBody->get_topcatview()), explode(',', $parentid));
+		{
+			require_once dirname(__FILE__).'/artapi.php';
+			$topcatview = bab_getReadableArticleCategories();
+			$parentid = array_intersect(array_keys($topcatview), explode(',', $parentid));
+		}
 
 		$delegationid = (int) $ctx->get_value('delegationid');
 
@@ -917,11 +923,14 @@ class Func_Ovml_Container_ArticleCategory extends Func_Ovml_Container
 
 		$this->imageheightmax	= (int) $ctx->get_value('imageheightmax');
 		$this->imagewidthmax	= (int) $ctx->get_value('imagewidthmax');
+		
+		require_once dirname(__FILE__).'/artapi.php';
+		$topcatview = bab_getReadableArticleCategories();
 
 		if( $catid === false || $catid === '' )
-			$catid = array_keys($babBody->get_topcatview());
+			$catid = array_keys($topcatview);
 		else
-			$catid = array_intersect(array_keys($babBody->get_topcatview()), explode(',', $catid));
+			$catid = array_intersect(array_keys($topcatview), explode(',', $catid));
 
 		if ( count($catid) > 0 )
 		{
@@ -1030,11 +1039,14 @@ class Func_Ovml_Container_ArticleTopics extends Func_Ovml_Container
 
 		$this->imageheightmax	= (int) $ctx->get_value('imageheightmax');
 		$this->imagewidthmax	= (int) $ctx->get_value('imagewidthmax');
+		
+		require_once dirname(__FILE__).'/artapi.php';
+		$topcatview = bab_getReadableArticleCategories();
 
 		if( $catid === false || $catid === '' )
-			$catid = array_keys($babBody->get_topcatview());
+			$catid = array_keys($topcatview);
 		else
-			$catid = array_intersect(array_keys($babBody->get_topcatview()), explode(',', $catid));
+			$catid = array_intersect(array_keys($topcatview), explode(',', $catid));
 
 		include_once $GLOBALS['babInstallPath'].'utilit/artapi.php';
 		$this->res = bab_getArticleTopicsRes($catid, $delegationid);

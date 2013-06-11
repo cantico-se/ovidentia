@@ -1060,6 +1060,7 @@ class babBody
 	 */
 	public function get_topcats() {
 		require_once dirname(__FILE__).'/artapi.php';
+		trigger_error('deprecated : '.__FUNCTION__);
 		return bab_getArticleCategories();
 	}
 
@@ -1068,6 +1069,7 @@ class babBody
 	 */
 	public function get_topcatview() {
 		require_once dirname(__FILE__).'/artapi.php';
+		trigger_error('deprecated : '.__FUNCTION__);
 		return bab_getReadableArticleCategories();
 	}
 

@@ -591,7 +591,10 @@ function babTopcatSection($close)
 	$this->title = bab_translate("Topics categories");
 
 	$res = $babDB->db_query("SELECT tct.id, tct.title FROM ".BAB_TOPCAT_ORDER_TBL." tot left join ".BAB_TOPICS_CATEGORIES_TBL." tct on tot.id_topcat=tct.id WHERE tot.id_parent='0' and tot.type='1' order by tot.ordering asc");
-	$topcatview = $babBody->get_topcatview();
+	
+	require_once dirname(__FILE__).'/artapi.php';
+	
+	$topcatview = bab_getReadableArticleCategories();
 	while( $row = $babDB->db_fetch_array($res))
 		{
 		if( isset($topcatview[$row['id']]) )
@@ -653,7 +656,9 @@ function babTopicsSection($cat, $close)
 
 	$req = "select top.id topid, type, top.id_topcat id, lang, idsaart, idsacom from ".BAB_TOPCAT_ORDER_TBL." top LEFT JOIN ".BAB_TOPICS_TBL." t ON top.id_topcat=t.id and top.type=2 LEFT JOIN ".BAB_TOPICS_CATEGORIES_TBL." tc ON top.id_topcat=tc.id and top.type=1 where top.id_parent='".$babDB->db_escape_string($cat)."' order by top.ordering asc";
 	$res = $babDB->db_query($req);
-	$topcatview = $babBody->get_topcatview();
+	require_once dirname(__FILE__).'/artapi.php';
+	
+	$topcatview = bab_getReadableArticleCategories();
 	while( $arr = $babDB->db_fetch_array($res))
 		{
 		if( $arr['type'] == 2 && bab_isAccessValid(BAB_TOPICSVIEW_GROUPS_TBL, $arr['id']))

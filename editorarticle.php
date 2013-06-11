@@ -104,6 +104,7 @@ function browse($topics,$cat)
 
 		function temp($topics,$cat)
 			{
+			require_once dirname(__FILE__).'/utilit/artapi.php';
 			global $babDB;
 			$this->categoriesHierarchyPopup($topics,$cat,$GLOBALS['babUrlScript'].'?tg=editorarticle');
 
@@ -123,6 +124,8 @@ function browse($topics,$cat)
 			$this->countarticles = $babDB->db_num_rows($this->resart);
 			
 			$this->target_txt = bab_translate("popup");
+			
+			$this->topcatview = bab_getReadableArticleCategories();
 			}
 
 		function getnextcat()
@@ -132,8 +135,8 @@ function browse($topics,$cat)
 			if( $i < $this->countcat)
 				{
 				$arr = $babDB->db_fetch_array($this->rescat);
-				$topcatview = $babBody->get_topcatview();
-				if (isset($topcatview[$arr['id']]))
+				
+				if (isset($this->topcatview[$arr['id']]))
 					{
 					$this->displaycat = true;
 					$this->title = bab_toHtml(bab_getTopicCategoryTitle($arr['id']));
