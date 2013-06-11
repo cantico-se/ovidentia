@@ -162,7 +162,7 @@ class cal_weekCls extends cal_wmdbaseCls
 
 				$this->h_start = sprintf("%02d:%02d", $curhour/60, $curhour%60);
 				$this->h_end = sprintf("%02d:%02d", $endhour/60, $endhour%60);
-				if( $babBody->ampm)
+				if(bab_isAmPm())
 					{
 					$h = explode(" ", bab_toAmPm($this->h_start));
 					$hh = explode(":", $h[0]);

@@ -763,7 +763,7 @@ function viewArticleProperties($item, $idart)
 					}
 
 				$this->elapstime = 5;
-				$this->ampm = $babBody->ampm;
+				$this->ampm = bab_isAmPm();
 
 
 				$this->cdateecheck = '';

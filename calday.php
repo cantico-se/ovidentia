@@ -96,7 +96,7 @@ class cal_dayCls extends cal_wmdbaseCls
 				$curhour = $this->startwtime * 60 + $i * $this->elapstime;
 				$st = sprintf("%02d:%02d", $curhour/60, $curhour%60);
 				$this->h_start = sprintf("%02d:%02d", $curhour/60, $curhour%60);
-				if( $babBody->ampm)
+				if(bab_isAmPm())
 					{
 					$h = explode(" ", bab_toAmPm($this->h_start));
 					$hh = explode(":", $h[0]);

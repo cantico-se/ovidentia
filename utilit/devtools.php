@@ -783,7 +783,7 @@ function bab_execSqlFile($file, $fileEncoding = null) {
 
 function bab_f_getDebug() {
 
-	global $babBody;
+	
 
 	class bab_f_getDebugCls {
 		var $messages;
@@ -994,7 +994,10 @@ function bab_f_getDebug() {
 			return false;
 		}
 	}
+	
+	$babBody = bab_getInstance('babBody');
 
+	/*@var $babBody babBody */
 	$babBody->addStyleSheet('debug.css');
 
 	if (isset($GLOBALS['babBodyPopup'])) {

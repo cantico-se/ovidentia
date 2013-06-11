@@ -224,7 +224,7 @@ function newEvent()
 
 			$this->daytypechecked = $this->icalendar->allday == 'Y' ? "checked"  :'';
 			$this->elapstime = $this->icalendar->elapstime;
-			$this->ampm = 'Y' == $GLOBALS['babBody']->ampm;
+			$this->ampm = bab_isAmPm();
 			$this->calendars = calendarchoice('vacform');
 			$this->totaldays = date("t", mktime(0,0,0,$this->curmonth,$this->curday,$this->curyear));
 
@@ -469,7 +469,7 @@ function newEvent()
 			if( $i < 1440/$this->elapstime)
 				{
 				$this->timeval = sprintf("%02d:%02d", ($i*$this->elapstime)/60, ($i*$this->elapstime)%60);
-				if( $this->ampm )
+				if($this->ampm)
 					$this->time = bab_toAmPm($this->timeval);
 				else
 					$this->time = $this->timeval;
@@ -855,7 +855,7 @@ function modifyEvent($idcal, $collection, $evtid, $dtstart, $cci, $view, $date)
 			$this->editor = $editor->getEditor();
 
 			$this->elapstime = bab_getICalendars()->elapstime;
-			$this->ampm = $babBody->ampm;
+			$this->ampm = bab_isAmPm();
 			$this->colorvalue = isset($_POST['color']) ? $_POST['color'] : $this->evtarr['color'] ;
 			$this->avariability_message = bab_translate("The event is in conflict with a calendar");
 
@@ -1093,7 +1093,7 @@ function modifyEvent($idcal, $collection, $evtid, $dtstart, $cci, $view, $date)
 				$previous = $min - ($this->elapstime/2);
 				$next = $min + ($this->elapstime/2);
 
-				if( $this->ampm )
+				if($this->ampm)
 					$this->time = bab_toAmPm($this->timeval);
 				else
 					$this->time = $this->timeval;

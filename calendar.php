@@ -1413,7 +1413,7 @@ function bab_gotoCalendarView() {
 	global $babBody;
 
 	if( bab_getICalendars()->calendarAccess()) {
-		$babBody->calaccess = true;
+
 		switch(bab_getICalendars()->defaultview)
 			{
 			case BAB_CAL_VIEW_DAY: $view='calday';	break;
