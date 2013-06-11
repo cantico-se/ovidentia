@@ -1426,13 +1426,14 @@ function chosetheme() {
 
 	require_once dirname(__FILE__).'/../utilit/urlincl.php';
 	require_once dirname(__FILE__).'/../utilit/skinincl.php';
-	global $babDB;
+	global $babDB, $babBody;
 
 	$row = bab_addonsInfos::getDbRow(bab_rp('item'));
 
 	$skin = new bab_skin($row['title']);
 	if (!$skin->isAccessValid())
 	{
+		$babBody->addError(bab_translate('This theme is not accessible or the prerequisites are not fulfilled'));
 		return;
 	}
 

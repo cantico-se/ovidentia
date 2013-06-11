@@ -3416,4 +3416,5 @@ L'administrateur</string>
 <string id="You have to accept the agreement">Vous devez accepter l'avis de non-responsabilité</string>
 <string id="The security code is not correct">Le code de sécurité est incorrecte</string>
 <string id="Failed to delete the temporary package %s">Echec de la suppression de l'archive temporaire %s</string>
+<string id="This theme is not accessible or the prerequisites are not fulfilled">Ce thème n'est pas accessible ou les pré requis ne sont pas atteints</string>
 </fr>
