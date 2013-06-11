@@ -966,19 +966,34 @@ public function addStyleSheet($filename)
 	}
 }
 
-public function addJavascriptFile($file)
+
+/**
+ * Add a javscript file url to head
+ * 
+ * @param string $file	static javascript file URL
+ * @param bool $defer	Defer script loading
+ */
+public function addJavascriptFile($file, $defer = false)
 {
 	global $babOvidentiaJs;
 	static $jfiles = array();
+	
 
 	if( !array_key_exists($file, $jfiles))
 	{
 		$jfiles[$file] = 1;
+		
+		$defer_attribute = '';
+		if ($defer)
+		{
+			$defer_attribute = ' defer="defer" ';
+		}
+		
 		if ($GLOBALS['babInstallPath'] === mb_substr($file, 0, mb_strlen($GLOBALS['babInstallPath'])))
 		{
 			$file = bab_getStaticUrl().$file;
 		}
-		$babOvidentiaJs .= '"></script>'."\n\t".'<script type="text/javascript" src="'.$file;
+		$babOvidentiaJs .= '"></script>'."\n\t".'<script type="text/javascript" '.$defer_attribute.' src="'.$file;
 	}
 }
 
