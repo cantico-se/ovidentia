@@ -223,6 +223,7 @@ include $babInstallPath.'utilit/utilit.php';
 
 
 bab_initMbString();
+bab_UsersLog::check();
 $babBody = bab_getInstance('babBody');
 $BAB_HASH_VAR = bab_getHashVar();
 

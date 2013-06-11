@@ -602,36 +602,7 @@ class babBody
 		$this->babaddons = array();
 	
 	
-		if (isset($_SERVER['REMOTE_ADDR'])) {
-			$REMOTE_ADDR = $_SERVER['REMOTE_ADDR'];
-		} else {
-			$REMOTE_ADDR = '0.0.0.0';
-		}
-	
-	
-	
-		if ( session_id() && (bab_rp('tg') !== 'version' || bab_rp('idx') !== 'upgrade'))
-		{
-		$res = $babDB->db_query("select remote_addr, grp_change, schi_change from ".BAB_USERS_LOG_TBL." where sessid=".$babDB->quote(session_id()));
-		if( $res && $babDB->db_num_rows($res) > 0 )
-			{
-			$arr = $babDB->db_fetch_assoc($res);
-			if ((isset($GLOBALS['babCheckIpAddress']) && $GLOBALS['babCheckIpAddress'] === true) && $arr['remote_addr'] != $REMOTE_ADDR)
-				{
-				die(bab_translate("Access denied, your session id has been created by another ip address than yours"));
-				}
-	
-			if (1 == $arr['grp_change'] && isset($_SESSION['bab_groupAccess']))
-				{
-				unset($_SESSION['bab_groupAccess']);
-				}
-	
-			if (1 == $arr['schi_change'] && isset($_SESSION['bab_waitingApprobations']))
-				{
-				unset($_SESSION['bab_waitingApprobations']);
-				}
-			}
-		}
+		
 	
 	}
 	
@@ -1252,6 +1223,78 @@ class bab_UsersLog
 {
 	
 	/**
+	 * Get row in user log for current user
+	 * @return array | false
+	 */
+	public static function getCurrentRow()
+	{
+		global $babDB;
+		
+		static $row = null;
+		
+		if (!isset($row))
+		{
+			$query = "select id, id_dg, id_user, cpw, sessid, remote_addr, grp_change, schi_change from ".BAB_USERS_LOG_TBL." where sessid='".$babDB->db_escape_string(session_id())."'";
+			
+			if (bab_isUserLogged())
+			{
+				$query .= ' OR (id_user='.$babDB->quote($GLOBALS['BAB_SESS_USERID']).' AND sessid<>'.$babDB->quote(session_id()).') ORDER BY dateact DESC';
+			}
+			
+			$res = $babDB->db_query($query);
+			if( $res && $babDB->db_num_rows($res) > 0)
+			{
+				$row = $babDB->db_fetch_assoc($res);
+			} else {
+				$row = false;
+			}
+		}
+		
+		return $row;
+	}
+	
+	
+	
+	/**
+	 * Chech remote addr, grp_change, schi_change
+	 * cleanup session cache if necessary
+	 */
+	public static function check()
+	{
+		if (isset($_SERVER['REMOTE_ADDR'])) {
+			$REMOTE_ADDR = $_SERVER['REMOTE_ADDR'];
+		} else {
+			$REMOTE_ADDR = '0.0.0.0';
+		}
+		
+		if ( session_id() && (bab_rp('tg') !== 'version' || bab_rp('idx') !== 'upgrade'))
+		{
+		
+			$arr = bab_UsersLog::getCurrentRow();
+			if($arr)
+			{
+				if ((isset($GLOBALS['babCheckIpAddress']) && $GLOBALS['babCheckIpAddress'] === true) && $arr['remote_addr'] != $REMOTE_ADDR)
+				{
+					die(bab_translate("Access denied, your session id has been created by another ip address than yours"));
+				}
+		
+				if (1 == $arr['grp_change'] && isset($_SESSION['bab_groupAccess']))
+				{
+					unset($_SESSION['bab_groupAccess']);
+				}
+		
+				if (1 == $arr['schi_change'] && isset($_SESSION['bab_waitingApprobations']))
+				{
+					unset($_SESSION['bab_waitingApprobations']);
+				}
+			}
+		}
+	}
+	
+	
+	
+	
+	/**
 	 * Update an insert row
 	 * check for multiple connexion with same account if configured in site : auth_multi_session
 	 */
@@ -1262,18 +1305,9 @@ class bab_UsersLog
 		$HTTP_X_FORWARDED_FOR = isset($_SERVER['HTTP_X_FORWARDED_FOR']) ? $_SERVER['HTTP_X_FORWARDED_FOR'] : '0.0.0.0';
 		$REMOTE_ADDR = isset($_SERVER['REMOTE_ADDR']) ? $_SERVER['REMOTE_ADDR'] : '0.0.0.0';
 		
-		$query = "select id, id_dg, id_user, cpw, sessid from ".BAB_USERS_LOG_TBL." where sessid='".$babDB->db_escape_string(session_id())."'";
-		
-		if ($GLOBALS['BAB_SESS_LOGGED'])
+		$arr = self::getCurrentRow();
+		if($arr)
 		{
-			$query .= ' OR (id_user='.$babDB->quote($GLOBALS['BAB_SESS_USERID']).' AND sessid<>'.$babDB->quote(session_id()).') ORDER BY dateact DESC';
-		}
-		
-		$res = $babDB->db_query($query);
-		if( $res && $babDB->db_num_rows($res) > 0)
-		{
-			$arr = $babDB->db_fetch_assoc($res);
-		
 			if ($arr['sessid'] == session_id())
 			{
 				bab_setUserPasswordVariable($arr['id'], $arr['cpw'], $arr['id_user']);
