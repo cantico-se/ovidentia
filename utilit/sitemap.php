@@ -1223,8 +1223,12 @@ class bab_siteMap {
 		if (!isset($list[$uid])) {
 			return null;
 		}
-
-		return $list[$uid]->getVisibleRootNode();
+		
+		if($list[$uid]->getVisibleRootNode() !== NULL){
+			return $list[$uid]->getVisibleRootNode();
+		}else{
+			return 'DGAll';
+		}	
 	}
 	
 	
