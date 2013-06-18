@@ -728,6 +728,7 @@ class Func_Ovml_Function_SitemapMenu extends Func_Ovml_Function {
 			}
 			$this->delegAdmin[$babBody->currentAdmGroup]['babAdminGroups'] = true;
 			$this->delegAdmin[$babBody->currentAdmGroup]['babAdminUsers'] = true;
+			$this->delegAdmin[$babBody->currentAdmGroup]['babAdminSection'] = true;
 		}
 
 		$this->sitemap = $sitemap;
