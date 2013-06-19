@@ -2967,11 +2967,32 @@ function bab_searchEngineInfos() {
 function bab_getRegistryInstance() {
 	static $_inst = null;
 	if (null === $_inst) {
-		include_once $GLOBALS['babInstallPath'].'utilit/registry.php';
-		$_inst = new bab_registry();
+		$_inst = bab_getRegistry();
 	}
 
 	return $_inst;
+}
+
+
+/**
+ * Get a new registry object
+ *
+ * $instance->changeDirectory($dir)
+ * $instance->setKeyValue($key, $value)
+ * $instance->removeKey($key)
+ * $instance->getValue($key)
+ * $instance->getValueEx($key)
+ * $instance->deleteDirectory()
+ * $instance->fetchChildDir()
+ * $instance->fetchChildKey()
+ *
+ * @see bab_registry
+ *
+ * @return bab_Registry
+ */
+function bab_getRegistry() {
+	require_once $GLOBALS['babInstallPath'].'utilit/registry.php';
+	return new bab_registry();
 }
 
 /**
