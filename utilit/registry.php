@@ -76,6 +76,7 @@ class bab_Registry
 {
 
 	private $dir = '/';
+	private $r = null;
 
 	/**
 	 * This constructor should not be used directly.
@@ -412,10 +413,12 @@ class bab_Registry
 	{
 		global $babDB;
 
-		static $r = array();
-		if (!isset($r[$this->dir])) {
+		if($this->r === null){
+			$this->r = array();
+		}
+		if (!isset($this->r[$this->dir])) {
 			$l = mb_strlen($this->dir);
-			$r[$this->dir] = $babDB->db_query("
+			$this->r[$this->dir] = $babDB->db_query("
 			
 			SELECT DISTINCT 
 				LEFT(RIGHT(dirkey,LENGTH(dirkey)-'$l'), LOCATE('/',RIGHT(dirkey,LENGTH(dirkey)-'$l')) ) dirkey  
@@ -425,12 +428,12 @@ class bab_Registry
 				");
 		}
 		
-		if ($arr = $babDB->db_fetch_assoc($r[$this->dir])) {
+		if ($arr = $babDB->db_fetch_assoc($this->r[$this->dir])) {
 			return $arr['dirkey'];
 		}
 
-		if (0 < $babDB->db_num_rows($r[$this->dir])) {
-			$babDB->db_data_seek($r[$this->dir], 0);
+		if (0 < $babDB->db_num_rows($this->r[$this->dir])) {
+			$babDB->db_data_seek($this->r[$this->dir], 0);
 		}
 		return false;
 	}
