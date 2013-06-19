@@ -2298,7 +2298,7 @@ function bab_getGroupName($id, $fpn=true)
  * in each keys, a list of group is stored with ordered numeric keys
  * the default value for the $all parameter is true
  *
- * @param	int			$parent		parent group in tree | if $parent is null, retur the list of group sets
+ * @param	int			$parent		parent group in tree | if $parent is null, return the list of group sets
  * @param	boolean		$all		return one level of groups or groups from all sublevels
  * @return	array
  */
