@@ -542,7 +542,7 @@ class bab_AclGroups
 			FROM
 				".BAB_DG_ACL_GROUPS_TBL." t
 			WHERE
-				t.id_group IN(".$babDB->quote($ancestors).")
+				t.id_group IN(".$babDB->quote($ancestors).", ".$babDB->quote(BAB_ALLUSERS_GROUP).", ".$babDB->quote(BAB_REGISTERED_GROUP).")
 				AND t.id_object='".$babDB->db_escape_string($this->id_delegation)."'
 		";
 		$res = $babDB->db_query($req);
@@ -727,6 +727,10 @@ class bab_AclGroups
 			
 					$allowed[$arr['id_group']] = 1;
 					$allowedChildren[$arr['id_group']] = 1;
+				}
+				else if ($arr['id_group'] == BAB_ALLUSERS_GROUP || $arr['id_group'] == BAB_REGISTERED_GROUP)
+				{
+					return $this->getList($id_parent);
 				}
 				else
 				{
