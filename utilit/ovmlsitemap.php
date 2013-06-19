@@ -598,8 +598,11 @@ class Func_Ovml_Function_SitemapMenu extends Func_Ovml_Function {
 		$id = $node->getId();
 		$siteMapItem = $node->getData();
 		/* @var $siteMapItem bab_siteMapItem */
-		
-		if($this->admindelegation && !isset($this->delegAdmin[$babBody->currentAdmGroup][$id]) && (substr($id, 0, 8) == 'babAdmin' || $id == 'babSearchIndex') && $id != 'babAdmin')
+		$truncateId = explode('-', $id);
+		$truncateId = $truncateId[0];
+		if($this->admindelegation
+			&& !isset($this->delegAdmin[$babBody->currentAdmGroup][$truncateId])
+			&& (substr($truncateId, 0, 8) == 'babAdmin' || $truncateId == 'babSearchIndex') && $truncateId != 'babAdmin')
 		{
 			return $return;
 		}
