@@ -101,12 +101,14 @@ class bab_userModify {
 	 */
 	public static function addUser($firstname, $lastname, $middlename, $email, $nickname, $password1, $password2, $isconfirmed, &$error, $bgroup) {
 		
-		global $BAB_HASH_VAR, $babBody, $babLanguage, $babDB;
+		global $babBody, $babLanguage, $babDB;
 
 		if (!bab_userModify::testBeforeCreate($firstname, $lastname, $middlename, $email, $nickname, $password1, $password2, $error)) {
 			return false;
 		}
 	
+		$BAB_HASH_VAR = bab_getHashVar();
+		
 		$password1=mb_strtolower($password1);
 		$hash=md5($nickname.$BAB_HASH_VAR);
 		if( $isconfirmed )
