@@ -295,6 +295,72 @@ class bab_eventAfterMailSent extends bab_eventMail {
 
 
 
+
+include_once $GLOBALS['babInstallPath'].'utilit/class.phpmailer.php';
+include_once $GLOBALS['babInstallPath'].'utilit/class.smtp.php';
+
+class bab_PHPMailer extends PHPMailer
+{
+
+	/**
+	 * Set after send, uniq ID used for Message-Id header
+	 * @var string
+	 */
+	public $uniq_id = null;
+
+
+	/**
+	 * (non-PHPdoc)
+	 * @see PHPMailer::CreateHeader()
+	 */
+	public function CreateHeader() {
+
+		$result = parent::CreateHeader();
+
+		$this->uniq_id = substr($this->boundary[1], strlen('b1_'));
+
+		return $result;
+	}
+
+
+	/**
+	 * (non-PHPdoc)
+	 * @see PHPMailer::SmtpSend()
+	 */
+	protected function SmtpSend($header, $body) {
+		
+		try {
+			$result = parent::SmtpSend($header, $body);
+		} catch (phpmailerException $e) {
+			$_bab_message = $this->Lang('data_not_accepted');
+			$_bab_smtperror = $this->smtp->getError();
+			 
+			if (isset($_bab_smtperror['error']))
+			{
+				$_bab_message .= ' / '.$_bab_smtperror['error'];
+			}
+			 
+			if (isset($_bab_smtperror['smtp_code']))
+			{
+				$_bab_message .= ' / '.$_bab_smtperror['smtp_code'];
+			}
+			 
+			if (isset($_bab_smtperror['smtp_msg']))
+			{
+				$_bab_message .= ' / '.$_bab_smtperror['smtp_msg'];
+			}
+			
+			throw new phpmailerException($_bab_message, self::STOP_CRITICAL);
+		}
+		
+		return $result;
+	}
+}
+
+
+
+
+
 /**
  * Class API used to send mail via php mailer and ovidentia configuration
  * 
@@ -317,15 +383,13 @@ class babMail
 
 	public function __construct()
 	{
-		include_once $GLOBALS['babInstallPath'].'utilit/class.phpmailer.php';
-		include_once $GLOBALS['babInstallPath'].'utilit/class.smtp.php';
+
 		
-		$this->mail = new phpmailer();
+		$this->mail = new bab_PHPMailer();
 		$this->mail->CharSet = bab_charset::getIso();
 		$this->mail->PluginDir = $GLOBALS['babInstallPath'].'utilit/';
-		$this->mail->From = $GLOBALS['babAdminEmail'];
-		$this->mail->FromName = $GLOBALS['babAdminName'];
-		$this->mail->Sender = $GLOBALS['babAdminEmail'];
+		$this->mailFrom($GLOBALS['babAdminEmail'], $GLOBALS['babAdminName']);
+		$this->mailSender($GLOBALS['babAdminEmail']);
 		$this->mail->SetLanguage('en', $GLOBALS['babInstallPath'].'utilit/');
 	}
 
