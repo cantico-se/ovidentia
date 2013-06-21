@@ -1937,6 +1937,11 @@ function bab_getAvailableLanguages()
 	}
 
 
+	
+
+
+
+
 /**
  * merge a template with a class object instance
  *
@@ -1946,8 +1951,8 @@ function bab_getAvailableLanguages()
  *
  * @return string
  */
-function bab_printTemplate( &$class, $file, $section="")
-	{
+function bab_printTemplate(&$class, $file, $section = '')
+{
 	//bab_debug('Template file : '.$file.'<br />'.'Section in template file : '.$section);
 
 	global $babInstallPath, $babSkinPath;
@@ -2032,7 +2037,7 @@ function bab_printTemplate( &$class, $file, $section="")
 
 
 /**
- * Get the actives sessions
+ * Get the active sessions
  * Users currently connected to the site
  * each session is an array with keys :
  *
