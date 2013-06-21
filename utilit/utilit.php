@@ -1038,7 +1038,7 @@ class babBody
 	
 	public function printout()
 	{
-	    if (count($this->styleSheet) > 0)
+	    if (count($this->styleSheet) > 0 && false !== current($this->styleSheet))
 			{
 			$this->content = bab_printTemplate($this,'uiutil.html', 'styleSheet').$this->content;
 			}
