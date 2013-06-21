@@ -1827,7 +1827,7 @@ class bab_FileTreeView extends bab_TreeView
                // $rootPath .= $oFolder->getName() . '/';
                 $idDgOwner = $oFolder->getDelegationOwnerId();
             }
-        } elseif ($babBody->currentAdmGroup != 0 && ($this->hasAttributes(self::SHOW_ONLY_DELEGATION))) {
+        } elseif ($babBody->currentAdmGroup != 0 && ($this->hasAttributes(self::SHOW_ONLY_ADMINISTERED_DELEGATION))) {
         	$idDgOwner = $babBody->currentAdmGroup;
         } else {
         	$idDgOwner = null;
