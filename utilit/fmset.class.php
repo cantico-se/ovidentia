@@ -2209,9 +2209,11 @@ class BAB_FolderFile extends BAB_FmFolderFile
 
 	/**
 	 * Get download url
+	 * @param bool $inline (since ovientia 8.0.91).
+	 * 
 	 * @return string
 	 */
-	public function getDownloadUrl()
+	public function getDownloadUrl($inline = null)
 	{
 		if ('Y' === $this->getGroup())
 		{
@@ -2233,7 +2235,11 @@ class BAB_FolderFile extends BAB_FmFolderFile
 
 			$id = $GLOBALS['BAB_SESS_USERID'];
 		}
-		return $GLOBALS['babUrlScript'] . '?tg=fileman&id=' .$id. '&gr=' . $this->getGroup() . '&path=' . urlencode(removeEndSlashes($this->getPathName())).'&sAction=getFile&idf='.$this->getId();
+		$url = $GLOBALS['babUrlScript'] . '?tg=fileman&id=' .$id. '&gr=' . $this->getGroup() . '&path=' . urlencode(removeEndSlashes($this->getPathName())).'&sAction=getFile&idf='.$this->getId();
+		if (isset($inline)) {
+			$url .= '&inl=' . $inline;
+		}
+		return $url;
 	}
 }
 
