@@ -776,7 +776,6 @@ switch($cmd)
 		require_once $GLOBALS['babInstallPath'] . 'utilit/baseFormProcessingClass.php';
 		
 		$babBody->msgerror = bab_translate("Thank You For Registering at our site") ."<br />";
-		$fullname = bab_composeUserName($firstname , $lastname);
 		if( $babBody->babsite['email_confirm'] == 2){
 		}elseif( $babBody->babsite['email_confirm'] == 1 ){
 		}else{

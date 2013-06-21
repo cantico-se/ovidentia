@@ -954,11 +954,11 @@ class Func_UserEditor extends bab_functionality {
 				}elseif( $babBody->babsite['email_confirm'] == 1 ){
 					$warning = "( ". bab_translate("To let user log on your site, you must confirm his registration")." )";
 				}else{
-					$hash=md5($user['nickname'].$BAB_HASH_VAR);
+					$hash=md5($user['nickname'].bab_getHashVar());
 					$babBody->msgerror .= bab_translate("You will receive an email which let you confirm your registration.");
 					$link = $GLOBALS['babUrlScript']."?tg=login&cmd=confirm&hash=$hash&name=". urlencode($user['nickname']);
 					$warning = "";
-					if (!notifyUserRegistration($link, $fullname, $email))
+					if (!notifyUserRegistration($link, $fullname, $user['email']))
 					{
 						$babBody->msgerror = bab_translate("ERROR: Email message can't be sent !!");
 						$warning = "( ". bab_translate("The user has not received his confirmation email")." )";
