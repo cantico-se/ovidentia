@@ -932,9 +932,10 @@ class bab_siteMap {
 	 * Get sitemap profil UID of user
 	 * return the CRC of the list of functions accessibles to the user
 	 * 
+	 * @since 7.8.3 	
+	 *
 	 * @param	array	$path
 	 * @param	int		$levels
-	 * 
 	 * @return int (crc32) or NULL if no sitemap registered for the user
 	 */
 	public static function getProfilVersionUid($path = null, $levels = null)
