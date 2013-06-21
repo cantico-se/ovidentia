@@ -1887,9 +1887,10 @@ class bab_Directory
 		}
 
 		$sBaseName = basename($oFileInfo->getPathname());
-		$oFile = new SplFileInfo(addEndSlash($oDestPath->getPath()) . $sBaseName);
+		$oFile = new SplFileInfo(addEndSlash($oDestPath->getPathname()) . $sBaseName);
 
 		$this->destinationFolderExist($oDestPath);
+
 		$this->destinationFileExist($oFile);
 
 		$this->nameReserved($oFileInfo);
