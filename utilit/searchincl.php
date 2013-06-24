@@ -488,6 +488,8 @@ class bab_SearchDefaultForm {
 				$id_dgowner = $arr[$delegation]['id'];
 				$crit = $crit->_AND_($testable->id_dgowner->is($id_dgowner));
 			}
+			$id_dgowner = str_replace('DG', '', $delegation);
+			$crit = $crit->_AND_($testable->id_dgowner->is($id_dgowner));
 		}
 
 

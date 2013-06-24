@@ -225,6 +225,7 @@ class bab_SearchRealmArticles_SearchTemplate extends bab_SearchTemplate {
 			{
 				$id_dgowner = $arr[$delegation]['id'];
 			}
+			$id_dgowner = $delegation;
 		}
 
 		$this->arrtopicscategories = bab_getArticleTopicsAsTextTree(0, $id_dgowner);

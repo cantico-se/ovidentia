@@ -487,6 +487,7 @@ class bab_SearchRealmCalendar_SearchTemplate extends bab_SearchTemplate {
 			{
 				$id_dgowner = $arr[$delegation]['id'];
 			}
+			$id_dgowner = str_replace('DG', '', $delegation);
 		}
 
 		$this->rescal = bab_getICalendars()->getCalendars($id_dgowner);

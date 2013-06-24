@@ -339,6 +339,8 @@ class bab_SearchRealmFiles extends bab_SearchRealm {
 				$id_dgowner = $arr[$delegation]['id'];
 				$criteria = $criteria->_AND_($this->id_dgowner->is($id_dgowner));
 			}
+			$id_dgowner = str_replace('DG', '', $delegation);
+			$criteria = $criteria->_AND_($this->id_dgowner->is($id_dgowner));
 		}
 		
 		

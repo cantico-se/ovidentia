@@ -734,6 +734,7 @@ class bab_SearchRealmDirectories_SearchTemplate extends bab_SearchTemplate {
 			{
 				$id_dgowner = $arr[$delegation]['id'];
 			}
+			$id_dgowner = str_replace('DG', '', $delegation);
 		}
 
 		$this->directories = bab_getUserDirectories(true, $id_dgowner);
