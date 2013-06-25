@@ -104,6 +104,7 @@ abstract class Ovml_Container_Sitemap extends Func_Ovml_Container
 	public function getBaseNode()
 	{
 		$baseNodeId = $this->ctx->get_value('basenode');
+		$baseNodeId = str_replace(' ', '', $baseNodeId);
 		if (empty($baseNodeId))
 		{
 			$baseNodeId = bab_Sitemap::getVisibleRootNodeByUid($this->sitemap_name);
@@ -746,7 +747,7 @@ class Func_Ovml_Function_SitemapMenu extends Func_Ovml_Function {
 		{
 			$args['basenode'] = bab_siteMap::getVisibleRootNodeByUid($sitemap_name);
 		}
-		
+		$args['basenode'] = str_replace(' ', '', $args['basenode']);
 		$home = $sitemap->getNodeById($args['basenode']);
 		$baseNodeId = $args['basenode'];
 		
