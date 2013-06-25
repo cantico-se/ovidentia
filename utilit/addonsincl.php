@@ -719,9 +719,10 @@ class bab_addonInfos {
 	 */
 	public function isUpgradable() {
 
-		$ini = $this->getIni();
-
-		if (!$ini->fileExists()) {
+		try {
+			$ini = $this->getIni();
+		} catch (Exception $e) {
+			// trigger_error($e->getMessage());
 			return false;
 		}
 	
