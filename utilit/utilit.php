@@ -1478,6 +1478,54 @@ function bab_getSkinPath() {
 
 
 
+/**
+ * 
+ * @param string	$relativeFilepath	A path relative to the skin path or to the kernel's skin path.
+ * @param string	$filename
+ */
+function bab_getSkinnableFile($relativeFilepath)
+{
+	$filepath = 'skins/' . $GLOBALS['babSkin'] . '/' . $relativeFilepath;
+	if (!file_exists($filepath)) {
+		$filepath = $GLOBALS['babSkinPath'] . '/' . $relativeFilepath;
+	}
+	if (!file_exists($filepath)) {
+		return null;
+	}
+
+	return $filepath;
+}
+
+
+
+
+/**
+ * Returns the path to a template file in the kernel's template path or in
+ * the current skin's template path if it was overwritten there.
+ * 
+ * @param string	$filename
+ * @return string	The path to the template file.
+ */
+function bab_getSkinnableTemplate($filename)
+{
+	return bab_getSkinnableFile('templates/' . $filename);
+}
+
+
+
+
+/**
+ * Returns the path to an ovml file in the kernel's ovml path or in
+ * the current skin's ovml path if it was overwritten there.
+ * 
+ * @param string	$filename
+ * @return string	The path to the ovml file.
+ */
+function bab_getSkinnableOvml($filename)
+{
+	return bab_getSkinnableFile('ovml/' . $filename);
+}
+
 
 
 
