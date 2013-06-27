@@ -22,8 +22,9 @@
  * USA.																	*
 ************************************************************************/
 include_once "base.php";
-include_once $GLOBALS['babInstallPath']."utilit/delegincl.php";
+include_once $GLOBALS['babInstallPath'].'utilit/delegincl.php';
 include_once $GLOBALS['babInstallPath'].'utilit/omlincl.php';
+include_once $GLOBALS['babInstallPath'].'utilit/path.class.php';
 
 class bab_CategoryCache
 {
@@ -80,7 +81,7 @@ function setDelegationAssociatedImageInfo($oCtx, $iMaxImageHeight, $iMaxImageWid
 	require_once dirname(__FILE__) . '/gdiincl.php';
 	require_once dirname(__FILE__) . '/artapi.php';
 	require_once dirname(__FILE__) . '/pathUtil.class.php';
-
+	
 	$bProcessed		= false;
 	$sUploadPath	= BAB_PathUtil::addEndSlash(BAB_PathUtil::sanitize($GLOBALS['babUploadPath']));
 
