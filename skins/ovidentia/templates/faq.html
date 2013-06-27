@@ -2,20 +2,28 @@
 <!--#begin categorylist -->
 
 <!--#in getnext -->
-<table width="95%" border="0" cellspacing="0" cellpadding="2" align="center">
-<tr>
-<td class="BabLoginCadreBackground">
-<table class="" border="0" width="100%" cellpadding="3" cellspacing="0" align="center">
-<tr> 
-<td class="BabSiteAdminTitleFontBackground" nowrap valign="middle"><a 
-class="BabFaqLink" href="{ urlcategory }">{ namecategory }</a> </td>
-</tr>
-<tr> 
-<td class="BabTopicsBackground" valign="top">{ description } </td>
-</tr>
-</table>
-</td>
-</tr>
+<table width="95%" border="0" cellspacing="0" cellpadding="2"
+	align="center">
+	<tr>
+		<td class="BabLoginCadreBackground">
+			<table class="" border="0" width="100%" cellpadding="3"
+				cellspacing="0" align="center">
+				<tr>
+					<td class="BabSiteAdminTitleFontBackground" nowrap valign="middle">
+						<a class="BabFaqLink" href="{ urlcategory }">{ namecategory }</a>
+					</td>
+					<td width="1" class="BabSiteAdminTitleFontBackground">
+						<a title="{ txtmanage }" href="{ urlmanage }"><img src="{ babSkinPath }images/22x22/system.png" alt="{ txtmanage }" /></a>
+					</td>
+				</tr>
+				<!--#if description -->
+				<tr>
+					<td colspan="2" class="BabTopicsBackground" valign="top">{ description }</td>
+				</tr>
+				<!--#endif description -->
+			</table>
+		</td>
+	</tr>
 </table>
 <br />
 <!--#endin getnext -->
@@ -25,210 +33,204 @@ class="BabFaqLink" href="{ urlcategory }">{ namecategory }</a> </td>
 
 <!--#begin admquestioncreate -->
 <form name="qcreate" method="post" action="{ babPhpSelf }">
-<input type="hidden" name="tg" value="faq">
-<input type="hidden" name="idx" value="questions">
-<input type="hidden" name="item" value="{ idcat }">
-<input type="hidden" name="addquestion" value="addquestion">
-<table class="BabLoginCadreBackground" width="80%" border="0" cellspacing="0" cellpadding="2" align="center">
-<tr> 
-<td> 
-	<table class="BabLoginMenuBackground" width="100%" border="0" cellspacing="0" cellpadding="5" align="center">
-	<tr> 
-		<td align="center" valign="middle">{ subcattxt }</td>
-	</tr>
-	<tr> 
-		<td align="center" valign="middle"> 
-			<select name="newidscat">
-			<!--#in getnextsubcat -->
-			<option value="{ idsubcat }" { selected }>{ subcatname }</option>
-			<!--#endin getnextsubcat -->
-			</select>
-		</td>
-	</tr>
-	<tr> 
-		<td align="center" valign="middle"> { question }</td>
-	</tr>
-	<tr> 
-		<td align="center" valign="middle"> 
-			<input type="text" name="question" size="80">
-		</td>
-	</tr>
+	<input type="hidden" name="tg" value="faq"> <input
+		type="hidden" name="idx" value="questions"> <input
+		type="hidden" name="item" value="{ idcat }"> <input
+		type="hidden" name="addquestion" value="addquestion">
+	<table class="BabLoginCadreBackground" width="80%" border="0"
+		cellspacing="0" cellpadding="2" align="center">
+		<tr>
+			<td>
+				<table class="BabLoginMenuBackground" width="100%" border="0"
+					cellspacing="0" cellpadding="5" align="center">
+					<tr>
+						<td align="center" valign="middle">{ subcattxt }</td>
+					</tr>
+					<tr>
+						<td align="center" valign="middle"><select name="newidscat">
+								<!--#in getnextsubcat -->
+								<option value="{ idsubcat }"{ selected }>{ subcatname
+									}</option>
+								<!--#endin getnextsubcat -->
+						</select></td>
+					</tr>
+					<tr>
+						<td align="center" valign="middle">{ question }</td>
+					</tr>
+					<tr>
+						<td align="center" valign="middle"><input type="text"
+							name="question" size="80"></td>
+					</tr>
 
 
 
-	<tr> 
-		<td align="center" valign="middle">{ response }</td>
-	</tr>
-	<tr> 
-	<tr> 
-		<td>
-		{ editor }
-		</td>
-	</tr>
+					<tr>
+						<td align="center" valign="middle">{ response }</td>
+					</tr>
+					<tr>
+					<tr>
+						<td>{ editor }</td>
+					</tr>
 
-	<tr> 
-		<td align="center" valign="middle"> 
-			<input type="submit" name="submit" value="{ add }">
-		</td>
-	</tr>
+					<tr>
+						<td align="center" valign="middle"><input type="submit"
+							name="submit" value="{ add }"></td>
+					</tr>
+				</table>
+			</td>
+		</tr>
 	</table>
-</td>
-</tr>
-</table>
 </form>
 
 <!--#end admquestioncreate -->
 
 <!--#begin admsubcatcreate -->
 <form name="qcreate" method="post" action="{ babPhpSelf }">
-<input type="hidden" name="tg" value="faq">
-<input type="hidden" name="idx" value="questions">
-<input type="hidden" name="item" value="{ idcat }">
-<input type="hidden" name="idscat" value="{ idscat }">
-<input type="hidden" name="addsc" value="addscat">
-<table class="BabLoginCadreBackground" width="80%" border="0" cellspacing="0" cellpadding="2" align="center">
-<tr> 
-<td> 
-<table class="BabLoginMenuBackground" width="100%" border="0" cellspacing="0" cellpadding="5" align="center">
-<tr> 
-<td align="center" valign="middle">
-<select name="newidscat">
-<!--#in getnextsubcat -->
-<option value="{ idsubcat }" { selected }>{ subcatname }</option>
-<!--#endin getnextsubcat -->
-</select>
-</td>
-</tr>
-<tr> 
-<td align="center" valign="middle"> { subcat }</td>
-</tr>
-<tr> 
-<td align="center" valign="middle"> 
-<input type="text" name="subcat" size="80">
-</td>
-</tr>
-<tr> 
-<td align="center" valign="middle"> 
-<input type="submit" name="submit" value="{ add }">
-<br />
-</td>
-</tr>
-</table>
-</td>
-</tr>
-</table>
+	<input type="hidden" name="tg" value="faq"> <input
+		type="hidden" name="idx" value="questions"> <input
+		type="hidden" name="item" value="{ idcat }"> <input
+		type="hidden" name="idscat" value="{ idscat }"> <input
+		type="hidden" name="addsc" value="addscat">
+	<table class="BabLoginCadreBackground" width="80%" border="0"
+		cellspacing="0" cellpadding="2" align="center">
+		<tr>
+			<td>
+				<table class="BabLoginMenuBackground" width="100%" border="0"
+					cellspacing="0" cellpadding="5" align="center">
+					<tr>
+						<td align="center" valign="middle"><select name="newidscat">
+								<!--#in getnextsubcat -->
+								<option value="{ idsubcat }"{ selected }>{ subcatname
+									}</option>
+								<!--#endin getnextsubcat -->
+						</select></td>
+					</tr>
+					<tr>
+						<td align="center" valign="middle">{ subcat }</td>
+					</tr>
+					<tr>
+						<td align="center" valign="middle"><input type="text"
+							name="subcat" size="80"></td>
+					</tr>
+					<tr>
+						<td align="center" valign="middle"><input type="submit"
+							name="submit" value="{ add }"> <br /></td>
+					</tr>
+				</table>
+			</td>
+		</tr>
+	</table>
 </form>
 <!--#end admsubcatcreate -->
 
 <!--#begin admsubcatmodify -->
 <form name="qcreate" method="post" action="{ babPhpSelf }">
-<input type="hidden" name="tg" value="faq">
-<input type="hidden" name="idx" value="questions">
-<input type="hidden" name="item" value="{ idcat }">
-<input type="hidden" name="idscat" value="{ idscat }">
-<input type="hidden" name="ids" value="{ ids }">
-<input type="hidden" name="modsc" value="modscat">
-<table class="BabLoginCadreBackground" width="80%" border="0" cellspacing="0" cellpadding="2" align="center">
-<tr> 
-<td> 
-<table class="BabLoginMenuBackground" width="100%" border="0" cellspacing="0" cellpadding="5" align="center">
-<tr> 
-<td>&nbsp; </td>
-</tr>
-<tr> 
-<td align="center" valign="middle"> { subcat }</td>
-</tr>
-<tr> 
-<td align="center" valign="middle"> 
-<input type="text" name="subcat" size="80" value="{ subcatval }">
-</td>
-</tr>
-<tr> 
-<td align="center" valign="middle"> 
-<input type="submit" name="submit" value="{ add }">
-<!--#if bdelete -->
-<input type="submit" name="bdel" value="{ del }">
-<!--#endif bdelete -->
-<br />
-</td>
-</tr>
-</table>
-</td>
-</tr>
-</table>
+	<input type="hidden" name="tg" value="faq"> <input
+		type="hidden" name="idx" value="questions"> <input
+		type="hidden" name="item" value="{ idcat }"> <input
+		type="hidden" name="idscat" value="{ idscat }"> <input
+		type="hidden" name="ids" value="{ ids }"> <input type="hidden"
+		name="modsc" value="modscat">
+	<table class="BabLoginCadreBackground" width="80%" border="0"
+		cellspacing="0" cellpadding="2" align="center">
+		<tr>
+			<td>
+				<table class="BabLoginMenuBackground" width="100%" border="0"
+					cellspacing="0" cellpadding="5" align="center">
+					<tr>
+						<td>&nbsp;</td>
+					</tr>
+					<tr>
+						<td align="center" valign="middle">{ subcat }</td>
+					</tr>
+					<tr>
+						<td align="center" valign="middle"><input type="text"
+							name="subcat" size="80" value="{ subcatval }"></td>
+					</tr>
+					<tr>
+						<td align="center" valign="middle"><input type="submit"
+							name="submit" value="{ add }"> <!--#if bdelete --> <input
+							type="submit" name="bdel" value="{ del }"> <!--#endif bdelete -->
+							<br /></td>
+					</tr>
+				</table>
+			</td>
+		</tr>
+	</table>
 </form>
 <!--#end admsubcatmodify -->
 
 
-<br /><br /><br /><br /><br />
+<br />
+<br />
+<br />
+<br />
+<br />
 <!--#begin admquestionmodify -->
 <form name="qmod" method="post" action="{ babPhpSelf }">
-<input type="hidden" name="tg" value="faq">
-<input type="hidden" name="idx" value="questions">
-<input type="hidden" name="item" value="{ idcat }">
-<input type="hidden" name="idscat" value="{ idscat }">
-<input type="hidden" name="idq" value="{ idq }">
-<input type="hidden" name="updatequestion" value="updatequestion">
-<table class="BabLoginCadreBackground" width="80%" border="0" cellspacing="0" cellpadding="2" align="center">
-<tr> 
-<td> 
-<table class="BabLoginMenuBackground" width="100%" border="0" cellspacing="0" cellpadding="5" align="center">
-<tr> 
-<td align="center" valign="middle">{ subcattxt }</td>
-</tr>
-<tr> 
-<td align="center" valign="middle"> 
-<select name="newidscat">
-<!--#in getnextsubcat -->
-<option value="{ idsubcat }" { selected }>{ subcatname }</option>
-<!--#endin getnextsubcat -->
-</select>
-</td>
-</tr>
-<tr> 
-<td align="center" valign="middle"> { questiontxt }</td>
-</tr>
-<tr> 
-<td align="center" valign="middle"> 
-<input type="text" name="question" size="80" value="{ question }">
-</td>
-</tr>
+	<input type="hidden" name="tg" value="faq"> <input
+		type="hidden" name="idx" value="questions"> <input
+		type="hidden" name="item" value="{ idcat }"> <input
+		type="hidden" name="idscat" value="{ idscat }"> <input
+		type="hidden" name="idq" value="{ idq }"> <input type="hidden"
+		name="updatequestion" value="updatequestion">
+	<table class="BabLoginCadreBackground" width="80%" border="0"
+		cellspacing="0" cellpadding="2" align="center">
+		<tr>
+			<td>
+				<table class="BabLoginMenuBackground" width="100%" border="0"
+					cellspacing="0" cellpadding="5" align="center">
+					<tr>
+						<td align="center" valign="middle">{ subcattxt }</td>
+					</tr>
+					<tr>
+						<td align="center" valign="middle"><select name="newidscat">
+								<!--#in getnextsubcat -->
+								<option value="{ idsubcat }"{ selected }>{ subcatname
+									}</option>
+								<!--#endin getnextsubcat -->
+						</select></td>
+					</tr>
+					<tr>
+						<td align="center" valign="middle">{ questiontxt }</td>
+					</tr>
+					<tr>
+						<td align="center" valign="middle"><input type="text"
+							name="question" size="80" value="{ question }"></td>
+					</tr>
 
-<tr> 
-<td align="center" valign="middle">{ responsetxt }</td>
-</tr>
-<tr> 
-<td width="91%" align="center" valign="middle"> 
-{ editor }
-</td>
-</tr>
-<tr> 
-<td align="center" valign="middle"> 
-
-	<input type="submit" name="submit" value="{ add }">
-
-<br />
-</td>
-</tr>
-</table>
-</td>
-</tr>
-</table>
+					<tr>
+						<td align="center" valign="middle">{ responsetxt }</td>
+					</tr>
+					<tr>
+						<td width="91%" align="center" valign="middle">{ editor }</td>
+					</tr>
+					<tr>
+						<td align="center" valign="middle"><input type="submit"
+							name="submit" value="{ add }"> <br /></td>
+					</tr>
+				</table>
+			</td>
+		</tr>
+	</table>
 </form>
 
 <!--#end admquestionmodify -->
 
 <!--#begin viewquestion -->
 <br />
-<table border="0" width="95%" cellpadding="3" cellspacing="0" align="center">
-	<tr> 
+<table border="0" width="95%" cellpadding="3" cellspacing="0"
+	align="center">
+	<tr>
 		<td class="BabFaqQuestion" valign="middle">{ arr[question] }</td>
 	</tr>
-	<tr> 
-		<td class="BabSiteAdminFontBackground" valign="top">{ arr[response] }</td>
+	<tr>
+		<td class="BabSiteAdminFontBackground" valign="top">{
+			arr[response] }</td>
 	</tr>
-	<tr> 
-		<td class="BabSiteAdminTitleFontBackground" valign="top" align="right"><a class="BabFaqLink" href="{ returnurl }">{ return }</a></td>
+	<tr>
+		<td class="BabSiteAdminTitleFontBackground" valign="top" align="right"><a
+			class="BabFaqLink" href="{ returnurl }">{ return }</a></td>
 	</tr>
 </table>
 <br />
@@ -239,103 +241,84 @@ class="BabFaqLink" href="{ urlcategory }">{ namecategory }</a> </td>
 <HTML>
 <HEAD>
 <TITLE>{ babSiteName }</TITLE>
-<meta http-equiv="Content-type" content="{ sContent }"/>
-{ babMeta }
-{ babCss }
+<meta http-equiv="Content-type" content="{ sContent }" />
+{ babMeta } { babCss }
 <script type="text/javascript">
 <!--
-window.focus();
+	window.focus();
 //-->
 </script>
 </HEAD>
 <BODY class="BabTopicsAdminArticleViewFontBackground">
-<br />
-<table border="0" width="95%" cellpadding="3" cellspacing="0" align="center">
-<tr> 
-<td class="BabFaqQuestion" valign="middle">{ arr[question] }</td>
-</tr>
-<tr> 
-<td class="BabSiteAdminFontBackground" valign="top">{ arr[response] }</td>
-</tr>
-</table>
-<br />
-<center><a href="javascript:this.close()">{ close }</a></center>
-<br />
-</td>
-</tr>
-</table>
+	<br />
+	<table border="0" width="95%" cellpadding="3" cellspacing="0"
+		align="center">
+		<tr>
+			<td class="BabFaqQuestion" valign="middle">{ arr[question] }</td>
+		</tr>
+		<tr>
+			<td class="BabSiteAdminFontBackground" valign="top">{
+				arr[response] }</td>
+		</tr>
+	</table>
+	<br />
+	<center>
+		<a href="javascript:this.close()">{ close }</a>
+	</center>
+	<br />
+	</td>
+	</tr>
+	</table>
 </BODY>
 </HTML>
 <!--#end popupquestion -->
 
 <!--#begin tableofcontents -->
+{ htmlToolBar }
 <table class="BabTopicsBackground" border="0" width="99%" cellpadding="2" cellspacing="0" align="center">
-<tr><td>
-	<h3 class="BabFaqName">{ faqname }</h3>
-	<dl>
-	<!--#in getnextchild -->
-		<dt>
-			<table width="100%" border="0" cellpadding="0" cellspacing="0">
-				<tr>
-				<!--#in getnextpad -->
-					<td width="12"><img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" width="12" height="1" border="0" alt=""></td>
-				<!--#endin getnextpad -->
-					<td>
-						<h4 class="BabFaqSubCategoryName">
-							<!--#if update --><!--#if burl --><a class="BabTopicsFooterLink" href="{ modifycurl }"><img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" width="8" height="1" border="0" alt=""><img src="{ babSkinPath }images/Puces/edit.gif"  border="0" alt="{ modifytxt }" align="absmiddle"></a><!--#else burl --><!--#endif burl --><!--#else update --><!--#endif update -->&nbsp;&nbsp;<!--#if countq --><a href="{ subcaturl }">{ subcatname }</a><!--#else countq -->{ subcatname }<!--#endif countq -->
-						</h4>
-					</td>
-				</tr>
-			</table>
-		</dt>
-
-		<!--#in getnextquestion -->
-		<dd>
-			<table width="100%" border="0" cellpadding="0" cellspacing="0">
-				<tr>
-					<!--#in getnextpad -->
-					<td width="12"><img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" width="12" height="1" border="0" alt=""></td>
-					<!--#endin getnextpad -->
-					<td>
-						<h5 class="BabFaqQuestionName">
-							<!--#if update --><a class="BabTopicsFooterLink" href="{ modifyqurl }"><IMG src="{ babSkinPath }images/Puces/Space1PxTrans.gif" width="8" height="1" border="0" alt=""><img src="{ babSkinPath }images/Puces/edit.gif"  border="0" alt="{ modifytxt }" align="absmiddle"></a><!--#else update --><!--#endif update -->&nbsp;&nbsp;<a href="{ questionurl }#{ idq }">{ questionname }</a>
-						</h5>
-					</td>
-				</tr>
-			</table>
-		</dd>
-		<!--#endin getnextquestion -->
-	<!--#endin getnextchild -->
-	</dl>
-</td>
-</tr>
+	<tr>
+		<td class="bab-faq-nopuce">
+			<h3 class="BabFaqName">{ faqname }</h3>
+			{ htmltree }			
+		</td>
+	</tr>
 </table>
 <!--#end tableofcontents -->
 
 <!--#begin subcatquestions -->
-<table class="BabTopicsBackground" border="0" width="99%" cellpadding="2" cellspacing="0" align="center">
-<tr>
-<td>
-<a name="top"></a>
-	<dl>
-		<dt><h3 class="BabFaqSubCategoryName">{ subcatname }</h3></dt>
+{ htmlToolBar }
+<table class="BabTopicsBackground" border="0" width="99%"
+	cellpadding="2" cellspacing="0" align="center">
+	<tr>
+		<td><a name="top"></a>
+			<dl>
+				<dt>
+					<h3 class="BabFaqSubCategoryName">{ subcatname }</h3>
+				</dt>
 
-		   <!--#in getnext -->
-			<dd><h5 class="BabFaqQuestionName"><a href="#{ idq }">{ question }</a></h5></dd>
-			<!--#endin getnext -->
-	</dl>
+				<!--#in getnext -->
+				<dd>
+					<h5 class="BabFaqQuestionName">
+						<a href="#{ idq }">{ question }</a>
+					</h5>
+				</dd>
+				<!--#endin getnext -->
+			</dl> <br />
 
-		  <br />
-
-	<dl>
-	<!--#in getnextbis -->
-		 <dt><a name="{ idq }"></a><h4>{ question }</h4></dt>
-			<dd class="BabFaqResponse">
-				{ response }
-				<p align="right"><a href="#top">{ return }</a></p>
-			</dd>
-	<!--#endin getnextbis -->
-</tr>
+			<dl>
+				<!--#in getnextbis -->
+				<dt>
+					<a name="{ idq }"></a>
+					<h4>{ question }</h4>
+				</dt>
+				<dd class="BabFaqResponse">
+					{ response }
+					<p align="right">
+						<a href="#top">{ return }</a>
+					</p>
+				</dd>
+				<!--#endin getnextbis -->
+	</tr>
 </table>
 <!--#end subcatquestions -->
 

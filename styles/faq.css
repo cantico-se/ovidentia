@@ -1,0 +1,93 @@
+.bab-faq-name{
+	color: #444;
+}
+
+.bab-faq-subcateg{
+	position: relative;
+	font-size: 1.2em;
+	border: 1px solid transparent;
+	border-radius: 4px;
+}
+
+.bab-faq-category-text{
+	vertical-align: middle;
+	text-decoration: underline;
+	display: inline-block;
+}
+
+.bab-faq-question{
+	font-weight: bold;
+	font-size: 1.15em;
+	white-space: nowrap;
+	border: 1px solid transparent;
+	border-radius: 4px;
+	position: relative;
+}
+
+.bab-faq-question-respons{
+	font-weight: bold;
+	font-size: 1.15em;
+	white-space: nowrap;
+	border: 1px solid transparent;
+	border-radius: 4px;
+	position: relative;
+}
+
+.bab-faq-respons > div > p{
+	margin-top: 3px;
+	margin-bottom: 3px;
+}
+
+.bab-faq-question .bab-faq-actions{
+	opacity: 0.33;
+	transition-delay: 0.5s;
+	transition-duration: 0.2s;
+}
+
+.bab-faq-question:hover .bab-faq-actions{
+	transition-delay: .5s;
+	transition-duration: 0s;
+	opacity: 1;
+}
+
+.bab-faq-question-text{
+	white-space: normal;
+	display: inline-block;
+	vertical-align: middle;
+}
+
+.bab-faq-question:hover, .bab-faq-subcateg:hover{
+	background-color: #ddd;
+	border: 1px solid #ccc;
+}
+
+.bab-faq-actions a{
+	text-decoration: none;
+}
+
+.bab-faq-actions{
+	position: absolute;
+	right: 0;
+}
+
+.bab-faq-nopuce ul{
+	list-style-type: none;
+}
+
+.bab-faq-respons ul{
+	list-style-type: disc;
+}
+
+.bab-faq-travel-link{
+	text-decoration: none;
+	display: block;
+}
+
+a.bab-faq-travel-link:hover{
+	color: black;
+}
+
+
+.icon-left-24 .icon.bab-faq-question-text{
+	padding: 1px 1px 3px 32px;
+}

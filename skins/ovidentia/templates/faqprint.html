@@ -3,37 +3,47 @@
 <HTML>
 <HEAD>
 <TITLE>{ babSiteName }</TITLE>
-<meta http-equiv="Content-type" content="{ sContent }"/>
-{ babMeta }
-{ babCss }
+<meta http-equiv="Content-type" content="{ sContent }" />
+{ babMeta } { babCss }
 <script type="text/javascript">
 <!--
-window.focus();
+	window.focus();
 //-->
 </script>
 <body>
-<div class="BabTopicsBackground">
+	<div class="BabTopicsBackground">
 
-	<a name="top"></a>
-	<dl>
-		<dt><h3 class="BabFaqSubCategoryName">{ subcatname }</h3></dt>
+		<a name="top"></a>
+		<dl>
+			<dt>
+				<h3 class="BabFaqSubCategoryName">{ subcatname }</h3>
+			</dt>
 
-		   <!--#in getnext -->
-			<dd><h5 class="BabFaqQuestionName"><a href="#{ idq }">{ question }</a></h5></dd>
+			<!--#in getnext -->
+			<dd>
+				<h5 class="BabFaqQuestionName">
+					<a href="#{ idq }">{ question }</a>
+				</h5>
+			</dd>
 			<!--#endin getnext -->
-	</dl>
+		</dl>
 
-		  <br />
+		<br />
 
-	<dl>
-	<!--#in getnextbis -->
-		 <dt><a name="{ idq }"></a><h4 class="BabFaqQuestionName">{ question }</h4></dt>
+		<dl>
+			<!--#in getnextbis -->
+			<dt>
+				<a name="{ idq }"></a>
+				<h4 class="BabFaqQuestionName">{ question }</h4>
+			</dt>
 			<dd class="BabFaqResponse">
 				{ response }
-				<p align="right"><a href="#top">{ return }</a></p>
+				<p align="right">
+					<a href="#top">{ return }</a>
+				</p>
 			</dd>
-	<!--#endin getnextbis -->
-</div>
+			<!--#endin getnextbis -->
+	</div>
 </body>
 <!--#end subcategory -->
 
@@ -41,58 +51,23 @@ window.focus();
 <!--#begin contents -->
 <!--#if popup -->
 <!--#else popup -->
-<div align="right"><a href="?tg=faq&amp;idx=Print&amp;item={ item }&amp;popup=1" onclick="bab_popup(this.href,6,1);return false;"><img src="{ babSkinPath }images/Puces/Print.gif" border="0" alt="" align="absmiddle" /> { t_print }</a></div>
+<div align="right">
+	<a href="?tg=faq&amp;idx=Print&amp;item={ item }&amp;popup=1" onclick="bab_popup(this.href,6,1);return false;">
+		<img src="{ babSkinPath }images/Puces/Print.gif" border="0" alt="" align="absmiddle" /> { t_print }
+	</a>
+</div>
 <!--#endif popup -->
 <a name="top"></a>
-<table class="BabTopicsBackground" border="0" width="99%" cellpadding="2" cellspacing="0" align="center">
+<table class="bab-faq-nopuce BabTopicsBackground" border="0" width="99%"
+	cellpadding="2" cellspacing="0" align="center">
 	<tr>
-	<td>
-	<h3 class="BabFaqName">{ faqname }</h3>
-
-	<dl>
-	<!--#in getnextchild -->
-	<dt>
-		<table width="100%" border="0" cellpadding="0" cellspacing="0">
-		<tr>
-			<!--#in getnextpad -->
-			<td width="12">&nbsp;</td>
-			<!--#endin getnextpad -->
-			
-			<td><h4 class="BabFaqSubCategoryName">{ subcatname }</h4></td>
-		</tr>
-		</table>
-	</dt>
-	<!--#in getnextquestion -->
-	<dd>
-		<table width="100%" border="0" cellpadding="0" cellspacing="0">
-		<tr>
-			<!--#in getnextpad -->
-			<td width="12">&nbsp;</td>
-			<!--#endin getnextpad -->
-			<td><h5 class="BabFaqQuestionName"><a href="#{ idq }">{ questionname }</a></h5></td>
-		</tr>
-		</table>
-	</dd>
-	<!--#endin getnextquestion -->
-	<!--#endin getnextchild -->
-	</dl>
-
-<hr />
-
-	<!--#in getnextchild -->
-	<h4 class="BabFaqSubCategoryName">{ subcatname }</h4>
-	<dl>
-	<!--#in getnextquestion -->
-	<dt><a name="{ idq }"></a><h5 class="BabFaqQuestionName">{ questionname }</h5></dt>
-	<dd class="BabFaqResponse">
-		{ response }
-		<div align="right"><a href="#top">{ return }</a></div>
-	</dd>
-	<!--#endin getnextquestion -->
-	</dl>
-	<!--#endin getnextchild -->
-</td>
-</tr>
+		<td>
+			<h3 class="BabFaqName">{ faqname }</h3>
+			{ htmltree }
+			<hr />
+			{ htmltreereponse }
+		</td>
+	</tr>
 </table>
 
 <!--#end contents -->
