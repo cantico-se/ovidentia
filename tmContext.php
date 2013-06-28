@@ -252,7 +252,7 @@ class BAB_TM_Context
 	{
 		require_once($GLOBALS['babInstallPath'] . 'admin/acl.php');
 		
-		$this->m_aVisualizedIdProjectSpace = bab_getUserIdObjects(BAB_TSKMGR_DEFAULT_PROJECTS_VISUALIZERS_GROUPS_TBL);
+		$this->m_aVisualizedIdProjectSpace = bab_getUserIdObjects(BAB_TSKMGR_PROJECT_CREATOR_GROUPS_TBL);
 		
 		$this->m_aVisualizedIdProject = bab_getUserIdObjects(BAB_TSKMGR_PROJECTS_VISUALIZERS_GROUPS_TBL);
 		if(count($this->m_aVisualizedIdProject) > 0)
