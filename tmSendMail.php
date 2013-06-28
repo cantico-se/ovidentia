@@ -81,7 +81,7 @@
 			
 			$this->get_admin_info($admin_name, $admin_email);
 
-			$this->m_mail->mailFrom(mysql_escape_string($admin_email), mysql_escape_string($admin_name));
+			$this->m_mail->mailFrom($admin_email, $admin_name);
 
 			$this->m_mail->mailSubject($subject);
 
