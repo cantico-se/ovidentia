@@ -1,3 +1,52 @@
+<!--#begin projectSpaceList -->
+
+<table width="95%" border="0" cellspacing="0" cellpadding="2" align="center">
+	<tr> 
+		<td class="BabLoginCadreBackground"> 
+			<table width="100%" border="0" cellspacing="0" cellpadding="5" align="center">
+				<tr class="BabSiteAdminTitleFontBackground"> 
+					<td>{ t_projet_space }</td>
+					<td width="150">&nbsp;</td>
+					<td width="150">&nbsp;</td>
+				</tr>
+				<!--#in getnextspace -->
+				<!--#if m_is_altbg -->
+					<tr class="BabSiteAdminFontBackground"> 
+				<!--#else m_is_altbg -->
+					<tr class="BabForumBackground1">
+				<!--#endif m_is_altbg -->
+					<td style="vertical-align:top">
+						<strong><a href="{ url_edit }" >{ name }</a></strong><br />
+						<div>{ description }</div>
+						
+						<!--#if project_access -->
+						<p>
+						<a href="{ url_view_projects }"><button><img src="{ babSkinPath }images/Puces/list.png" border="0" style="vertical-align:middle;" />&nbsp;{ t_view_projects }</button></a>
+						<a href="{ url_add_project }"><button><img src="{ babSkinPath }images/Puces/edit_add.png" border="0" style="vertical-align:middle;" />&nbsp;{ t_add_project }</button></a>
+						</p>
+						<!--#endif project_access -->
+					</td>
+					<td>
+						<a href="{ url_access_rights }"><img src="{ babSkinPath }images/Puces/agent.png" border="0" style="vertical-align:middle;" />&nbsp;{ t_access_rights }</a> <br />
+						<a href="{ url_configuration }"><img src="{ babSkinPath }images/Puces/package_settings.png" border="0" style="vertical-align:middle;" />&nbsp;{ t_configuration }</a><br />
+						<a href="{ url_notices }"><img src="{ babSkinPath }images/Puces/mailreminder.png" border="0" style="vertical-align:middle;" />&nbsp;{ t_notices }</a><br />
+					</td>
+					<td>
+						<a href="{ url_specific_fields }"><img src="{ babSkinPath }images/Puces/list.png" border="0" style="vertical-align:middle;" />&nbsp;{ t_specific_fields }</a><br />
+						<a href="{ url_categories }"><img src="{ babSkinPath }images/Puces/kwikdisk.png" border="0" style="vertical-align:middle;" />&nbsp;{ t_categories }</a><br />
+						
+					</td>
+					
+				</tr>
+				<!--#endin getnextspace -->
+			</table>
+		</td>
+	</tr>
+</table>
+
+<!--#end projectSpaceList -->
+
+
 <!--#begin projectSpaceForm -->
 <script type="text/javascript">
 //<![CDATA[

@@ -57,6 +57,7 @@ function displayCategoriesList($iIdProjectSpace, $iIdProject, $iIdUser)
 				$this->set_caption('checkAll', bab_translate("Check all"));
 				$this->set_caption('deleteField', bab_translate("Click here to delete"));
 				$this->set_caption('update', bab_translate("Update"));
+				$this->set_caption('delete_selected', bab_translate("Delete"));
 				
 				$oTmCtx =& getTskMgrContext();
 				$this->set_data('iIdProjectSpace', (int) $oTmCtx->getIdProjectSpace());
@@ -288,7 +289,7 @@ function displayDeleteCategoryForm()
 		$title = '';
 		foreach($aIdCategories as $key => $aItem)
 		{
-			$title .= "\n"."-". $aItem['sCategoryName'];
+			$title .= "\n"."- ". $aItem['sCategoryName'];
 			$items[] = $aItem['iIdCategory'];
 		}
 	

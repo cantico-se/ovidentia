@@ -360,8 +360,8 @@ function on_cancel()
 			</td>
 		</tr>
 		<tr>
-			<td class="BabWarningBodyBackground">
-				<br />
+			<td class="BabWarningObjectBackground" align="left" style="padding-left:40%">
+				{ m_captions[title] }<br /><br />
 			</td>
 		</tr>
 		<tr>
@@ -369,16 +369,7 @@ function on_cancel()
 				{ m_captions[message] }
 			</td>
 		</tr>
-		<tr>
-			<td class="BabWarningBodyBackground">
-				<br />
-			</td>
-		</tr>
-		<tr>
-			<td class="BabWarningObjectBackground" align="center">
-				{ m_captions[title] }<br />
-			</td>
-		</tr>
+		
 		<tr>
 			<td class="BabWarningBodyBackground" align="center">
 				<a class="BabWarningLinkColor" href="#" onclick="on_delete()">{ m_captions[yes] }</a> | <a class="BabWarningLinkColor" href="#" onclick="on_cancel()">{ m_captions[no] }</a>
@@ -969,8 +960,6 @@ function submit_form()
 //<![CDATA[
 function suppfield()
 {
-	//{}
-	document.categoriesList.idx.value='{ m_datas[deleteCategoryIdx] }';
 	document.categoriesList.action.value='';
 	document.categoriesList.submit();
 }
@@ -1019,7 +1008,7 @@ function evtSetColor(iIdCategory, sColor)
 </script>
 <form name ="categoriesList" method="post" action="{ babPhpSelf }" onsubmit="return(submit_form())">
 	<input type="hidden" name="tg" value="{ m_datas[tg] }" />
-	<input type="hidden" name="idx" value="" />
+	<input type="hidden" name="idx" value="{ m_datas[deleteCategoryIdx] }" />
 	<input type="hidden" name="action" value="" />
 	<input type="hidden" name="iIdProjectSpace" value="{ m_datas[iIdProjectSpace] }" />
 	<input type="hidden" name="iIdProject" value="{ m_datas[iIdProject] }" />
@@ -1057,13 +1046,16 @@ function evtSetColor(iIdCategory, sColor)
 					<tr class="BabSiteAdminTitleFontBackground">
 						<td colspan="3" align="right">&nbsp;</td>
 						<td>
-							<a href="javascript:check_all('aDeletableObjects', true)"><img src="{ babSkinPath }images/Puces/Pucecheked.gif" alt="{ m_captions[checkAll] }" width="10" height="10" border="0" /></a><a href="javascript:check_all('aDeletableObjects', false)"><img src="{ babSkinPath }images/Puces/PuceUncheked.gif" alt="{ m_captions[uncheckAll] }" width="10" height="10" border="0" /></a>&nbsp;<a href="javascript:suppfield()"><img src="{ babSkinPath }images/Puces/del.gif" alt="{ m_captions[uncheckAll] }" border="0" /></a>
+							<a href="javascript:check_all('aDeletableObjects', true)"><img src="{ babSkinPath }images/Puces/Pucecheked.gif" alt="{ m_captions[checkAll] }" width="10" height="10" border="0" /></a><a href="javascript:check_all('aDeletableObjects', false)"><img src="{ babSkinPath }images/Puces/PuceUncheked.gif" alt="{ m_captions[uncheckAll] }" width="10" height="10" border="0" /></a>
 						</td>
 					</tr>
 				</table>
+				
 			</td>
 		</tr>
 	</table>
+	
+	<p align="center"><a href="javascript:suppfield()"><button><img src="{ babSkinPath }images/Puces/del.gif" alt="" border="0" /> { m_captions[delete_selected] }</button></a></p>
 </form>
 <!--#end categoriesList -->
 
