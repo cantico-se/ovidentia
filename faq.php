@@ -337,6 +337,11 @@ function FaqPrintContents($idcat)
 		function FaqPrintContentsCls($idcat)
 		{
 			global $babDB, $faqinfo;
+			
+			/* @var $I Func_Icons */
+			$I = bab_functionality::get('Icons');
+			$I->includeCss();
+			
 			$this->idcat = $idcat;
 			$this->item = bab_toHtml($idcat);
 			$this->faqname = '<span class="bab-faq-name">FAQ: </span>' . $faqinfo['category'];
