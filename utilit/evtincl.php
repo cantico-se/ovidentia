@@ -446,6 +446,7 @@ function bab_createCalendarPeriod(Func_CalendarBackend $backend, $args, bab_Peri
 						{
 							include_once $GLOBALS['babInstallPath']."utilit/afincl.php";
 							$idfai = makeFlowInstance($idsa, $attendee->getUrlIdentifier().'-'.$period->getProperty('DTSTART').'-'.$period->getProperty('SUMMARY'));
+							getWaitingApproversFlowInstance($idfai, true);
 						}
 						$status = 'NEEDS-ACTION';
 					}
@@ -2345,8 +2346,8 @@ class bab_event_posted {
 		}
 		
 		$calendarPeriod->commitEvent();
-
-
+	
+		
 		$this->notifyRelationsApprobation($calendarPeriod, $oldrelations);
 
 		if($this->args['groupe-notif']){
