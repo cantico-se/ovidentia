@@ -138,7 +138,7 @@ function cal_notify(bab_eventCalendarEvent $event, $subject, $body = null)
 		$mail->$mailBCT($arr['email'], $arr['name']);
 		$count++;
 
-		if( $count > $babBody->babsite['mail_maxperpacket'] )
+		if( $count >= $babBody->babsite['mail_maxperpacket'] )
 			{
 			$mail->send();
 			$mail->$clearBCT();
@@ -1177,7 +1177,7 @@ function notifyPublicEvent($title, $description, $location, $startdate, $enddate
 			$mail->$mailBCT($arr['email'], $arr['name']);
 			$count++;
 
-			if( $count > $babBody->babsite['mail_maxperpacket'] )
+			if( $count >= $babBody->babsite['mail_maxperpacket'] )
 				{
 				$mail->send();
 				$mail->$clearBCT();
@@ -1327,7 +1327,7 @@ function notifyResourceEvent($title, $description, $location, $startdate, $endda
 			$mail->$mailBCT($arr['email'], $arr['name']);
 			$count++;
 
-			if( $count > $babBody->babsite['mail_maxperpacket'] )
+			if( $count >= $babBody->babsite['mail_maxperpacket'] )
 				{
 				$mail->send();
 				$mail->$clearBCT();
@@ -1537,7 +1537,7 @@ function notifyEventUpdate($evtid, $bdelete, $exclude)
 				$mail->$mailBCT($row['email'], $row['name']);
 				$count++;
 
-				if( $count > $babBody->babsite['mail_maxperpacket'] )
+				if( $count >= $babBody->babsite['mail_maxperpacket'] )
 					{
 					$mail->send();
 					$mail->$clearBCT();

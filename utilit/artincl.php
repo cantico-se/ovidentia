@@ -1238,7 +1238,7 @@ function notifyArticleHomePage($top, $title, $homepage0, $homepage1)
 				$mail->$mailBCT($arr['email'], $arr['name']);
 				$count++;
 
-				if( $count > $babBody->babsite['mail_maxperpacket'] ){
+				if( $count >= $babBody->babsite['mail_maxperpacket'] ){
 					$mail->send();
 					$mail->$clearBCT();
 					$mail->clearTo();
@@ -1367,7 +1367,7 @@ function notifyArticleGroupMembers(bab_eventArticle $event, $msg)
 		$mail->$mailBCT($arr['email'], $arr['name']);
 		$count++;
 
-		if( $count > $babBody->babsite['mail_maxperpacket'] ){
+		if( $count >= $babBody->babsite['mail_maxperpacket'] ){
 			$mail->send();
 			$mail->$clearBCT();
 			$mail->clearTo();

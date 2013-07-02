@@ -315,7 +315,7 @@ function fileNotifyMembers(BAB_FolderFile $file, $users, $msg, $bnew = true)
 			$count++;
 		}
 
-		if( $count == $babBody->babsite['mail_maxperpacket'] )
+		if( $count >= $babBody->babsite['mail_maxperpacket'] )
 		{
 			$result = $mail->send();
 			$mail->$clearBCT();
