@@ -801,8 +801,8 @@ class bab_ArticleReferenceDescription extends bab_ReferenceDescriptionImpl
 			return $GLOBALS['babUrlScript'] . '?tg=articles&idx=viewa&article='.$arr['id'].'&topics='.$arr['id_topic'];
 		}
 		
-		// the topic parameter is not required but present for compatibility with old skins
-		return $GLOBALS['babUrlScript'] . '?tg=articles&idx=More&article='.$arr['id'].'&topic='.$arr['id_topic'];
+		
+		return bab_sitemap::rewrittenUrl('babArticle_'.$arr['id']);
 	}
 
 

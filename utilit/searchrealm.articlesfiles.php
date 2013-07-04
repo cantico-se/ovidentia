@@ -467,7 +467,7 @@ class bab_SearchArticlesFilesResult extends bab_searchArrayResult {
 				empty($file->description) ? bab_toHtml($file->title) : bab_toHtml($file->description),
 				bab_toHtml(bab_translate('The file is attached to article :')),
 				$arttopic,
-				bab_toHtml($GLOBALS['babUrlScript'].'?tg=articles&idx=More&topics='.$file->id_topic.'&article='.$file->id_article),
+				bab_toHtml(bab_Sitemap::rewrittenUrl('babArticle_'.$file->id_article)),
 				bab_toHtml(bab_getArticleTitle($file->id_article))
 			);
 
