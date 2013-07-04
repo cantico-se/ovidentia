@@ -718,7 +718,8 @@ function readMore($topics, $article)
 			$babDB = $GLOBALS['babDB'];
 			$req = "select * from ".BAB_ARTICLES_TBL." where id='".$babDB->db_escape_string($article)."' and (date_publication='0000-00-00 00:00:00' or date_publication <= now())";
 			$this->res = $babDB->db_query($req);
-			$this->arr = $babDB->db_fetch_array($this->res);
+			$this->arr = $babDB->db_fetch_assoc($this->res);
+			
 			$this->count = $babDB->db_num_rows($this->res);
 			$res = $babDB->db_query("select count(*) from ".BAB_ARTICLES_TBL." where id_topic='".$babDB->db_escape_string($this->topics)."' and archive='Y'");
 			list($this->nbarch) = $babDB->db_fetch_row($res);
@@ -794,6 +795,36 @@ function readMore($topics, $article)
 
 			include_once $GLOBALS['babInstallPath']."utilit/editorincl.php";
 			}
+			
+		private function setMeta()
+		{
+			$head = bab_getInstance('babHead');
+			/*@var $head babHead */
+			
+			if (empty($this->arr['page_title']))
+			{
+				$head->setTitle($this->arr['title']);
+			} else {
+				$head->setTitle($this->arr['page_title']);
+			}
+			
+			
+			if (empty($this->arr['page_description']))
+			{
+				$head->setDescription(trim(bab_unhtmlentities(strip_tags($this->head))));
+			} else {
+				$head->setDescription($this->arr['page_description']);
+			}
+			
+			
+			if (!empty($this->arr['page_keywords']))
+			{
+				$head->setKeywords($this->arr['page_keywords']);
+			}
+			
+		}	
+			
+			
 
 		function getnext(&$skip)
 			{
@@ -865,6 +896,8 @@ function readMore($topics, $article)
 				} else {
 					$this->imageurl = false;
 				}
+				
+				$this->setMeta();
 
 				$i++;
 				return true;

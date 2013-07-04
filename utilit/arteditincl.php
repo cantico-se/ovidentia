@@ -508,6 +508,23 @@ class bab_ArticleDraftEditor {
 		{
 			$lang->addOption($l,$l);
 		}
+		
+		
+		
+		$LeftFrame->addItem(
+				$update_meta = $W->Section(
+						bab_translate('HTML metadata'),
+						$W->Frame()
+							->addItem(bab_labelStr(bab_translate('Page title'), $W->LineEdit()->setSize(70)->setMaxSize(255)->disable()->setName('page_title')))
+							->addItem(bab_labelStr(bab_translate('Page description'), $W->TextEdit()->setColumns(80)->disable()->setName('page_description')))
+							->addItem(bab_labelStr(bab_translate('Page keywords'), $W->LineEdit()->setSize(70)->setMaxSize(255)->disable()->setName('page_keywords')))
+							->addItem(bab_labelStr(bab_translate('Rewrite name'), $W->LineEdit()->setSize(50)->setMaxSize(255)->disable()->setName('rewritename')))
+							
+				)->setFoldable(true, true)
+		);
+		
+		
+		
 
 
 		if($this->draft->id_article){
@@ -573,6 +590,10 @@ class bab_ArticleDraftEditor {
 			),
 			0
 		);
+		
+		
+		
+		
 
 		$LeftFrame->addItem(
 			$W->Frame()->addItem(

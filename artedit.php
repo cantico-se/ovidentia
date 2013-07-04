@@ -1241,6 +1241,12 @@ function bab_saveArticle(){
 		$draft->modification_comment = bab_pp('modification_comment', null);
 		$draft->update_datemodif = bab_pp('update_datemodif', 'Y');
 		
+		$draft->page_title = bab_pp('page_title');
+		$draft->page_description = bab_pp('page_description');
+		$draft->page_keywords = bab_pp('page_keywords');
+		$draft->rewritename = bab_pp('rewritename');
+		
+		
 		
 		if(bab_pp('submit', '') != ''){
 			$draft->save();

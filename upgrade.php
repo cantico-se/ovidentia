@@ -7012,6 +7012,31 @@ function ovidentia_upgrade($version_base,$version_ini) {
 		$babDB->db_query("ALTER TABLE `bab_sites` ADD `staticurl` varchar(255) NOT NULL default ''");
 	}
 	
+	
+	if (!bab_isTableField('bab_articles', 'page_title')) {
+		$babDB->db_query("ALTER TABLE `bab_articles` ADD `page_title` varchar(255) NOT NULL default ''");
+		$babDB->db_query("ALTER TABLE `bab_articles` ADD `page_keywords` varchar(255) NOT NULL default ''");
+		$babDB->db_query("ALTER TABLE `bab_articles` ADD `page_description` text NOT NULL");
+		
+		
+		$babDB->db_query("ALTER TABLE `bab_art_drafts` ADD `page_title` varchar(255) NOT NULL default ''");
+		$babDB->db_query("ALTER TABLE `bab_art_drafts` ADD `page_keywords` varchar(255) NOT NULL default ''");
+		$babDB->db_query("ALTER TABLE `bab_art_drafts` ADD `page_description` text NOT NULL");
+		
+		
+		$babDB->db_query("ALTER TABLE `bab_topics` ADD `allow_meta` text NOT NULL");
+	}
+	
+	if (!bab_isTableField('bab_articles', 'rewritename')) {
+		$babDB->db_query("ALTER TABLE `bab_articles` ADD `rewritename` varchar(255) NOT NULL default ''");
+		$babDB->db_query("ALTER TABLE `bab_art_drafts` ADD `rewritename` varchar(255) NOT NULL default ''");
+	}
+
+	
+	
+	
+	
+	
 	return true;
 
 }

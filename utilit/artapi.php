@@ -720,6 +720,7 @@ function bab_addTopic($name, $description, $idCategory, &$error, $topicArr = arr
 							'busetags'=>'N',
 							'allow_addImg'=>'N',
 							'allow_unsubscribe' => 0,
+							'allow_meta' => 0,
 							'uuid' => bab_uuid()
 							);
 	

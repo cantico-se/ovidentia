@@ -127,6 +127,7 @@ function addTopic($cat, $ncat, $category, $description, $saart, $sacom, $saupd, 
 			$this->yeswithapprobation	= bab_translate("Yes with approbation");
 			$this->yesnoapprobation 	= bab_translate("Yes without approbation");
 			$this->tagstxt				= bab_translate("Use tags");
+			$this->allow_meta			= bab_translate("Allow author to modify HTML metadata");
 			$this->yes					= bab_translate("Yes");
 			$this->no					= bab_translate("No");
 			$this->add					= bab_translate("Add");
@@ -753,7 +754,8 @@ function saveCategory($category, $cat, $sacom, $saart, $saupd, $bnotif, $lang, $
 						'auto_approbation'=>$bautoapp,
 						'busetags'=>$busetags,
 						'allow_addImg'=>$sAllowAddImg,
-						'allow_unsubscribe'=>bab_rp('allow_unsubscribe')
+						'allow_unsubscribe'=>bab_rp('allow_unsubscribe'),
+						'allow_meta'=>bab_rp('allow_meta')
 					);
 	
 	require_once dirname(__FILE__) . '/../utilit/editorincl.php';

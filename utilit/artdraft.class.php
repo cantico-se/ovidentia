@@ -133,6 +133,26 @@ class bab_ArtDraft
 	 * @var string
 	 */
 	public $modification_comment;
+	
+	/**
+	 * @var string
+	 */
+	public $page_title;
+	
+	/**
+	 * @var string
+	 */
+	public $page_description;
+	
+	/**
+	 * @var string
+	 */
+	public $page_keywords;
+	
+	/**
+	 * @var string
+	 */
+	public $rewritename;
 
 
 	/**

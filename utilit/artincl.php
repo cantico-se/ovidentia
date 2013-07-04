@@ -1544,6 +1544,7 @@ function acceptWaitingArticle($idart)
 			adt.*,
 			tt.category as topicname,
 			tt.allow_attachments,
+			tt.allow_meta,
 			tct.id_dgowner,
 			tt.allow_addImg,
 			tt.busetags,
@@ -1578,6 +1579,7 @@ function acceptWaitingArticle($idart)
 				$req .= ", date_modification=now()";
 				$req .= ", id_modifiedby='".$babDB->db_escape_string($arr['id_author'])."'";
 				}
+				
 			$req .= " where id='".$babDB->db_escape_string($articleid)."'";
 			$babDB->db_query($req);
 			bab_deleteArticleFiles($articleid);
@@ -1597,6 +1599,8 @@ function acceptWaitingArticle($idart)
 				{
 				$req .= ", '".$babDB->db_escape_string($arr['date_publication'])."'";
 				}
+			
+				
 			$req .= ", '".$babDB->db_escape_string($arr['date_archiving'])."', now(), '".$babDB->db_escape_string($arr['restriction'])."', '".$babDB->db_escape_string($arr['lang']). "', ".$babDB->quote(bab_uuid())." )";
 			$babDB->db_query($req);
 			$articleid = $babDB->db_insert_id();
@@ -1612,8 +1616,17 @@ function acceptWaitingArticle($idart)
 			head='".$babDB->db_escape_string($head)."',
 			body='".$babDB->db_escape_string($body)."',
 			title='".$babDB->db_escape_string($arr['title'])."'
+		";
+		
+		if( $arr['allow_meta'])
+		{
+			$req .= ", page_title=".$babDB->quote($arr['page_title']);
+			$req .= ", page_description=".$babDB->quote($arr['page_description']);
+			$req .= ", page_keywords=".$babDB->quote($arr['page_keywords']);
+			$req .= ", rewritename=".$babDB->quote($arr['rewritename']);
+		}
 
-		where id='".$babDB->db_escape_string($articleid)."'";
+		$req .= " where id='".$babDB->db_escape_string($articleid)."'";
 		$res = $babDB->db_query($req);
 
 
@@ -2214,7 +2227,11 @@ function bab_newArticleDraft($idtopic, $idarticle) {
 				date_publication	='".$babDB->db_escape_string($arr['date_publication'])."',
 				date_archiving		='".$babDB->db_escape_string($arr['date_archiving'])."',
 				lang				='".$babDB->db_escape_string($arr['lang'])."',
-				restriction			='".$babDB->db_escape_string($arr['restriction'])."'
+				restriction			='".$babDB->db_escape_string($arr['restriction'])."',
+				page_title			='".$babDB->db_escape_string($arr['page_title'])."',
+				page_description	='".$babDB->db_escape_string($arr['page_description'])."',
+				page_keywords		='".$babDB->db_escape_string($arr['page_keywords'])."',
+				rewritename			='".$babDB->db_escape_string($arr['rewritename'])."'
 
 			where id='".$babDB->db_escape_string($id)."'
 		");

@@ -13,6 +13,12 @@ function bab_setTopicSettings(editor_delay){
 	jQuery('[name="tags"]').attr('disabled','disabled');
 	jQuery('[name="tags"]').closest('.bab-labelStr').hide();
 	
+	jQuery('[name="page_title"]').attr('disabled','disabled');
+	jQuery('[name="page_description"]').attr('disabled','disabled');
+	jQuery('[name="page_keywords"]').attr('disabled','disabled');
+	jQuery('[name="rewritename"]').attr('disabled','disabled');
+	jQuery('[name="page_title"]').closest('.widget-section').hide();
+	
 	jQuery('#bab_article_attachments').hide();
 	jQuery('.bab-article-picture').hide();
 
@@ -92,6 +98,14 @@ function bab_setTopicSettings(editor_delay){
 			if(settings.busetags == 'Y'){
 				jQuery('[name="tags"]').removeAttr('disabled');
 				jQuery('[name="tags"]').closest('.bab-labelStr').show();
+			}
+			
+			if(settings.allow_meta == 1){
+				jQuery('[name="page_title"]').removeAttr('disabled');
+				jQuery('[name="page_description"]').removeAttr('disabled');
+				jQuery('[name="page_keywords"]').removeAttr('disabled');
+				jQuery('[name="rewritename"]').removeAttr('disabled');
+				jQuery('[name="page_title"]').closest('.widget-section').show();
 			}
 			
 			if(settings.idsaart != '0'){

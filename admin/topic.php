@@ -292,6 +292,7 @@ function modifyCategory($id, $cat, $category, $description, $saart, $sacom, $sau
 			$this->yesnoapprobation 	= bab_translate("Yes without approbation");
 			$this->autoapprobationtxt 	= bab_translate("Automatically approve author if he belongs to approbation schema");
 			$this->tagstxt 				= bab_translate("Use tags");
+			$this->allow_meta			= bab_translate("Allow author to modify HTML metadata");
 			$this->tgval 				= "topic";
 			$this->item 				= $id;
 			$this->langLabel 			= bab_translate("Language");
@@ -1183,6 +1184,7 @@ function updateCategory($id, $category, $cat, $saart, $sacom, $saupd, $bnotif, $
 		allow_article_rating='".$db->db_escape_string($allowarticlerating)."', 
 		allow_addImg='".$db->db_escape_string($sAllowAddImg)."', 
 		allow_unsubscribe=".$db->quote(bab_rp('allow_unsubscribe')).",
+		allow_meta=".$db->quote(bab_rp('allow_meta')).",
 		date_modification=NOW() 
 	WHERE 
 		id = '".$id."'";
@@ -1211,14 +1213,14 @@ function updateCategory($id, $category, $cat, $saart, $sacom, $saupd, $bnotif, $
 	$sTempName				= (string) bab_rp('sTempImgName', '');
 	$sImageName				= (string) bab_rp('sImgName', '');
 
-	//Si image charg�e par ajax
+	//Si image chargee par ajax
 	if('' !== $sTempName && '' !== $sImageName)
 	{
 		$bHaveAssociatedImage	= true;
 		$bFromTempPath			= true;
 	}
 	else
-	{//Si image charg�e par la voie normal
+	{//Si image chargee par la voie normal
 		if((array_key_exists($sKeyOfPhpFile, $_FILES) && '' != $_FILES[$sKeyOfPhpFile]['tmp_name']))
 		{
 			$bHaveAssociatedImage = true;
@@ -1231,8 +1233,8 @@ function updateCategory($id, $category, $cat, $saart, $sacom, $saupd, $bnotif, $
 
 	if(false === $bHaveAssociatedImage)
 	{
-		//Aucune image n'est associ�e alors on supprime celle qui �tait associ�e avant
-		//si on a cliqu� sur supprim�(ajax) ou coch� supprimer (javascript d�sactiv�)
+		//Aucune image n'est associee alors on supprime celle qui etait associee avant
+		//si on a clique sur supprime(ajax) ou coche supprimer (javascript desactive)
 		if(('' === $sTempName && '' === $sImageName) || bab_rp('deleteImageChk', 0) != 0)
 		{
 			if($oPubPathsEnv->setEnv($babBody->currentAdmGroup))
@@ -1246,7 +1248,7 @@ function updateCategory($id, $category, $cat, $saart, $sacom, $saupd, $bnotif, $
 	}
 
 
-	//Une image est associ�e alors on supprime l'ancienne
+	//Une image est associee alors on supprime l'ancienne
 	if($oPubPathsEnv->setEnv($babBody->currentAdmGroup))
 	{
 		require_once dirname(__FILE__) . '/../utilit/delincl.php';
