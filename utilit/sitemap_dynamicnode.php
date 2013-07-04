@@ -35,16 +35,32 @@ class Func_SitemapDynamicNode extends bab_functionality
 	
 	/**
 	 * Get a list of sitemap items from rewrite path
-	 * rewrite path is relative to the dynamic node, this method return one sitemap item forea each rewrite name in rewrite path, in the same order
+	 * rewrite path is relative to the dynamic node, this method return one sitemap item for each rewrite name in rewrite path, in the same order
 	 * 
 	 * @param	bab_Node	$node				The dynamic sitemap node
 	 * @param 	Array		$rewritePath		Relative rewrite path from node to required sitemap item
 	 * 
 	 * @return array
 	 */
-	public function getSitemapItemFromRewritePath(bab_Node $node, Array $rewritePath)
+	public function getSitemapItemsFromRewritePath(bab_Node $node, Array $rewritePath)
 	{
-		
+		throw new Exception('Not implemented');
+	}
+	
+	
+	/**
+	 * Get a list of sitemap items from node ID
+	 * this method return one sitemap item for each node beetween the dynamic node and the nodeId, sitemap item for nodeId included
+	 * 
+	 * @param bab_Node $node
+	 * @param string $nodeId
+	 * @throws Exception
+	 * 
+	 * @return array
+	 */
+	public function getSitemapItemsFromNodeId(bab_Node $node, $nodeId)
+	{
+		throw new Exception('Not implemented');
 	}
 }
 

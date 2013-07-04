@@ -33,6 +33,47 @@ class Func_SitemapDynamicNode_Topic extends Func_SitemapDynamicNode
 		return bab_translate('Load articles as topic subnodes');
 	}
 	
+	
+	/**
+	 * @return string
+	 */
+	private function getArticleUrl($id_topic, $id_article)
+	{
+		require_once dirname(__FILE__).'/urlincl.php';
+		
+		$url = new bab_url();
+		$url->tg = 'articles';
+		$url->idx = 'More';
+		$url->topics = $id_topic;
+		$url->article = $id_article;
+		
+		
+		return $url->toString();
+	}
+	
+	
+	
+	/**
+	 * 
+	 * @param int $id_topic
+	 * @param int $id_article
+	 * @param string $articleTitle
+	 * @param string $rewriteName
+	 * @return bab_siteMapItem
+	 */
+	private function getArticleSitemapItem($id_topic, $id_article, $articleTitle, $rewriteName)
+	{
+		$item = new bab_siteMapItem();
+		$item->id_function 		= 'babArticle_'.$id_article;
+		$item->name 			= $articleTitle;
+		$item->url 				= $this->getArticleUrl($id_topic, $id_article);
+		$item->folder 			= false;
+		$item->iconClassnames	= Func_Icons::OBJECTS_PUBLICATION_ARTICLE;
+		$item->rewriteName		= $rewriteName;
+		
+		return $item;
+	}
+	
 
 	
 	/**
@@ -44,9 +85,9 @@ class Func_SitemapDynamicNode_Topic extends Func_SitemapDynamicNode
 	 * 
 	 * @return array
 	 */
-	public function getSitemapItemFromRewritePath(bab_Node $node, Array $rewritePath)
+	public function getSitemapItemsFromRewritePath(bab_Node $node, Array $rewritePath)
 	{
-		require_once dirname(__FILE__).'/urlincl.php';
+		
 		bab_functionality::includeOriginal('Icons');
 		
 		$id_function = $node->getId();
@@ -61,27 +102,43 @@ class Func_SitemapDynamicNode_Topic extends Func_SitemapDynamicNode
 		
 		if (1 !== $babDB->db_num_rows($res))
 		{
-			bab_debug($rewritename);
 			return null;
 		}
 		
 		$article = $babDB->db_fetch_assoc($res);
+		return array($this->getArticleSitemapItem($id_topic, $article['id'], $article['title'], $rewritename));
+	}
+	
+	
+	
+	/**
+	 * Get a list of sitemap items from node ID
+	 * this method return one sitemap item for each node beetween the dynamic node and the nodeId, sitemap item for nodeId included
+	 *
+	 * @param bab_Node $node
+	 * @param string $nodeId
+	 * @throws Exception
+	 *
+	 * @return array
+	 */
+	public function getSitemapItemsFromNodeId(bab_Node $node, $nodeId)
+	{
+		bab_functionality::includeOriginal('Icons');
 		
-		$url = new bab_url();
-		$url->tg = 'articles';
-		$url->idx = 'More';
-		$url->topics = $id_topic;
-		$url->article = $article['id'];
+		$id_article = (int) mb_substr($nodeId, 11); // babArticle_
 		
-		$item = new bab_siteMapItem();
-		$item->id_function 		= 'babArticle'.$article['id'];
-		$item->name 			= $article['title'];
-		$item->url 				= $url->toString();
-		$item->folder 			= false;
-		$item->iconClassnames	= Func_Icons::OBJECTS_PUBLICATION_ARTICLE;
-		$item->rewriteName		= $rewritename;
+		global $babDB;
 		
 		
-		return array($item);
+		
+		$res = $babDB->db_query('SELECT id_topic, title, rewritename FROM bab_articles WHERE id='.$babDB->quote($id_article).'');
+		
+		if (1 !== $babDB->db_num_rows($res))
+		{
+			return null;
+		}
+		
+		$article = $babDB->db_fetch_assoc($res);
+		return array($this->getArticleSitemapItem($article['id_topic'], $id_article, $article['title'], $article['rewritename']));
 	}
 }

@@ -212,7 +212,7 @@ class bab_siteMapOrphanRootNode extends bab_OrphanRootNode {
 		
 		$parentNode = $this->getNodeById($id_parent);
 		
-		$itemList = $dynnode->getSitemapItemFromRewritePath($parentNode, $rewritepath);
+		$itemList = $dynnode->getSitemapItemsFromRewritePath($parentNode, $rewritepath);
 		
 		if (!isset($itemList))
 		{
@@ -223,25 +223,41 @@ class bab_siteMapOrphanRootNode extends bab_OrphanRootNode {
 		foreach($itemList as $sitemapItem)
 		{
 			$node = $this->createNode($sitemapItem, $sitemapItem->id_function);
-			
-			if ($sitemapItem->url)
-			{
-				// add url in index
-				$node->addIndex('url', $sitemapItem->url);
-			}
-			
-			
-			if ($sitemapItem->target)
-			{
-				// add target in index
-				$node->addIndex('target', $sitemapItem->target->id_function);
-			}
-			
+			$this->addNodeIndexes($node, $sitemapItem);
 			$this->appendChild($node, $id_parent);
+			
 			$id_parent = $sitemapItem->id_function;
 		}
 		
 		return $sitemapItem->id_function;
+	}
+	
+	
+	
+	/**
+	 * Add indexes to the nodes from informations in sitemap item
+	 * @param unknown_type $node
+	 * @param unknown_type $sitemapItem
+	 */
+	public function addNodeIndexes(bab_Node $node, bab_sitemapItem $sitemapItem)
+	{
+		if ($sitemapItem->url)
+		{
+			// add url in index
+			$node->addIndex('url', $sitemapItem->url);
+		}
+		
+		
+		if ($sitemapItem->target)
+		{
+			// add target in index
+			$node->addIndex('target', $sitemapItem->target->id_function);
+		}
+		
+		if ($sitemapItem->funcname)
+		{
+			$node->addIndex('funcname', $sitemapItem->funcname);
+		}
 	}
 	
 	
@@ -317,6 +333,30 @@ class bab_siteMapOrphanRootNode extends bab_OrphanRootNode {
 	
 	
 	/**
+	 * Returns the node whose id is given by $id
+	 *
+	 * Returns the node whose id is given by $id. If no such node exists, returns null.
+	 * if not found search in dynamic nodes
+	 * 
+	 * @param string $id
+	 * @return bab_Node | null
+	 */
+	public function getNodeById($id)
+	{
+		$node = parent::getNodeById($id);
+		
+		if (isset($node))
+		{
+			return $node;
+		}
+		
+		return $this->getDynamicNodeById($id);
+	}
+	
+	
+	
+	
+	/**
 	 * Get the first node found under $baseNodeId with a target to $targetId
 	 * @param	string	$baseNodeId
 	 * @param	string	$targetId
@@ -344,6 +384,61 @@ class bab_siteMapOrphanRootNode extends bab_OrphanRootNode {
 		}
 	
 		return null;
+	}
+	
+	
+	
+	/**
+	 * Search node in dynamif functionalities and add it in the sitemap
+	 * use only if not found in sitemap
+	 * return null if not found in not loaded dynamic nodes
+	 * 
+	 * @param	string	$nodeId
+	 * 
+	 * @return bab_Node | null
+	 */
+	protected function getDynamicNodeById($nodeId)
+	{
+		$funcname_list = $this->getIndexValues('funcname');
+		foreach($funcname_list as $funcname)
+		{
+			$dynnode = bab_functionality::get('SitemapDynamicNode/'.$funcname);
+			/*@var $dynnode Func_SitemapDynamicNode */
+			
+			if (false === $dynnode)
+			{
+				continue;
+			}
+			
+			
+			$dynnodes = $this->getNodesByIndex('funcname', $funcname);
+			$parent_node = reset($dynnodes);
+			
+			
+			$itemList = $dynnode->getSitemapItemsFromNodeId($parent_node, $nodeId);
+			
+			if (!isset($itemList))
+			{
+				// not found in this functionality
+				continue;
+			}
+			
+			$id_parent = $parent_node->getId();
+
+			foreach($itemList as $sitemapItem)
+			{
+				$node = $this->createNode($sitemapItem, $sitemapItem->id_function);
+				$this->addNodeIndexes($node, $sitemapItem);
+				$this->appendChild($node, $id_parent);
+			
+				$id_parent = $sitemapItem->id_function;
+			}
+			
+			return $node;
+		}
+		
+		return null;
+		
 	}
 }
 
@@ -985,20 +1080,7 @@ class bab_siteMap {
 			$id_parent = isset($node_list[$arr['id_parent']]) ? $node_list[$arr['id_parent']] : NULL;
 
 			$node = $rootNode->createNode($data, $node_list[$arr['id']]);
-			
-			if ($data->url)
-			{
-				// add url in index
-				$node->addIndex('url', $data->url);
-			}
-			
-			
-			if ($data->target)
-			{
-				// add target in index
-				$node->addIndex('target', $data->target->id_function);
-			}
-			
+			$rootNode->addNodeIndexes($node, $data);
 
 			if (null === $node) {
 				// bab_debug((string) $rootNode);

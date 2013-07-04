@@ -703,6 +703,8 @@ class bab_RootNode extends bab_Node
 	
 	/**
 	 * Returns the nodes where the name value pair exists in tree index
+	 * @param	string	$name
+	 * @param 	string 	$value
 	 * @return array
 	 */
 	public function getNodesByIndex($name, $value)
@@ -711,6 +713,19 @@ class bab_RootNode extends bab_Node
 			if (array_key_exists($value, $this->_index[$name])) {
 				return $this->_index[$name][$value];
 			}
+		}
+		return array();
+	}
+	
+	/**
+	 * Return all values in index $name
+	 * @param string $name
+	 * @return array
+	 */
+	public function getIndexValues($name)
+	{
+		if (array_key_exists($name, $this->_index)) {
+			return array_keys($this->_index[$name]);
 		}
 		return array();
 	}
