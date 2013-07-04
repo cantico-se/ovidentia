@@ -664,7 +664,7 @@ class Func_Ovml_Function_SitemapMenu extends Func_Ovml_Function {
 
 		$return .= '<li class="no-icon '.implode(' ', $classnames).'">'.$htmlData;
 
-		if ($node->hasChildNodes() && $depth < $this->maxDepth) {
+		if ($node->hasChildNodes() && $depth < $this->maxDepth && !$node->getData()->funcname) { // ignore dynamic nodes
 			$return .= "<ul>\n";
 
 			$node = $node->firstChild();

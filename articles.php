@@ -405,7 +405,8 @@ function listArticles($topics)
 				$this->bbody = $this->arr['blen'];
 				if( $this->bbody > 0 )
 					{
-					$this->moreurl = bab_toHtml($GLOBALS['babUrlScript']."?tg=articles&idx=More&topics=".$this->topics."&article=".$this->arr['id']);
+					$this->moreurl = bab_toHtml(bab_Sitemap::rewrittenUrl('babArticle_'.$this->arr['id']));
+					//$this->moreurl = bab_toHtml($GLOBALS['babUrlScript']."?tg=articles&idx=More&topics=".$this->topics."&article=".$this->arr['id']);
 					}
 				else
 					{
