@@ -39,6 +39,7 @@ class bab_siteMap_buildItem {
 	public  $onclick 			= '';
 	public  $position 			= array();
 	public  $lang;
+	public 	$funcname;
 	public  $parentNode;		// ref bab_siteMap_buildItem
 	public  $parentNode_str;
 	public 	$childNodes 		= array();
@@ -132,6 +133,12 @@ class bab_siteMap_buildItem {
 	public function setLanguage($lang) {
 		$this->lang = $lang;
 	}
+	
+	
+	public function setFunctionality($funcname) {
+		$this->funcname = $funcname;
+	}
+	
 
 	/**
 	 * @param	bab_siteMap_buildItem	$obj
@@ -175,6 +182,7 @@ class bab_siteMap_buildItem {
 		$clone->folder 					= $this->folder;
 		$clone->delegation 				= $this->delegation;
 		$clone->progress				= $this->progress;
+		$clone->funcname 				= $this->funcname;
 
 		return $clone;
 	}
@@ -638,9 +646,10 @@ class bab_siteMap_insertFunctionObj {
 
 				$onclick 	= isset($node->onclick)	? 	$node->onclick 	: '';
 				$href		= isset($node->href)	?	$node->href		: '';
+				$funcname 	= isset($node->funcname)?	$node->funcname	: '';
 
 				$folder = $node->folder ? '1' : '0';
-				$values[] = '('.$babDB->quote($node->uid).','.$babDB->quote($href).','.$babDB->quote($onclick).','.$babDB->quote($folder).','.$babDB->quote($node->getIcon()).')';
+				$values[] = '('.$babDB->quote($node->uid).','.$babDB->quote($href).','.$babDB->quote($onclick).','.$babDB->quote($folder).','.$babDB->quote($node->getIcon()).', '.$babDB->quote($funcname).')';
 			}
 
 			$babDB->db_query('
@@ -650,7 +659,8 @@ class bab_siteMap_insertFunctionObj {
 						url,
 						onclick,
 						folder,
-						icon
+						icon,
+						funcname 
 					)
 				VALUES
 					'.implode(",\n ",$values).'
@@ -1944,7 +1954,7 @@ function bab_sitemap_userSection($event) {
 }
 
 
-function bab_sitemap_articlesCategoryLevel($id_category, $position, $event, $id_delegation) {
+function bab_sitemap_articlesCategoryLevel($id_category, $position, bab_eventBeforeSiteMapCreated $event, $id_delegation) {
 
 	global $babDB;
 	$res = bab_getArticleCategoriesRes(array($id_category), $id_delegation);
@@ -1990,6 +2000,7 @@ function bab_sitemap_articlesCategoryLevel($id_category, $position, $event, $id_
 			$item->setDescription(strip_tags($arr['description']));
 			$item->setPosition($position);
 			$item->setLink($GLOBALS['babUrlScript']."?tg=articles&topics=".$arr['id']);
+			$item->setFunctionality('Topic');
 			$event->addFunction($item);
 		}
 	}
@@ -2000,7 +2011,7 @@ function bab_sitemap_articlesCategoryLevel($id_category, $position, $event, $id_
 /**
  * @param	bab_eventBeforeSiteMapCreated $event
  */
-function bab_sitemap_articles($event) {
+function bab_sitemap_articles(bab_eventBeforeSiteMapCreated $event) {
 	global $babDB;
 
 	include_once $GLOBALS['babInstallPath'].'utilit/artapi.php';

@@ -7033,8 +7033,12 @@ function ovidentia_upgrade($version_base,$version_ini) {
 	}
 
 	
+	if (!bab_isTableField('bab_sitemap_functions', 'funcname')) {
+		$babDB->db_query("ALTER TABLE `bab_sitemap_functions` ADD `funcname` varchar(255) NOT NULL default ''");
+	}
 	
-	
+	$functionalities->register('SitemapDynamicNode'					, $GLOBALS['babInstallPath'].'utilit/sitemap_dynamicnode.php');
+	$functionalities->register('SitemapDynamicNode/Topic'			, $GLOBALS['babInstallPath'].'utilit/sitemap_dyntopic.php');
 	
 	
 	return true;

@@ -4292,6 +4292,7 @@ CREATE TABLE bab_sitemap_functions (
    `folder` tinyint(1) unsigned NOT NULL default '0',
    `icon` varchar(255) NOT NULL default '',
    `rewrite` varchar(255) NOT NULL default '',
+   `funcname` varchar(255) NOT NULL default '',
    PRIMARY KEY (`id_function`)
 );
 

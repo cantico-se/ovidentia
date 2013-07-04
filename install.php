@@ -33,15 +33,17 @@ include_once "base.php";
 
 require_once $GLOBALS['babInstallPath'].'utilit/functionalityincl.php';
 $functionalities = new bab_functionalities();
-$functionalities->register('Icons'					, $GLOBALS['babInstallPath'].'utilit/icons.php');
-$functionalities->register('Icons/Default'			, $GLOBALS['babInstallPath'].'utilit/icons.php');
-$functionalities->register('Archive'				, $GLOBALS['babInstallPath'].'utilit/archiveincl.php');
-$functionalities->register('Archive/Zip'			, $GLOBALS['babInstallPath'].'utilit/archiveincl.php');
-$functionalities->register('Archive/Zip/Zlib'		, $GLOBALS['babInstallPath'].'utilit/archiveincl.php');
-$functionalities->register('Archive/Zip/ZipArchive'	, $GLOBALS['babInstallPath'].'utilit/archiveincl.php');
-$functionalities->register('CalendarBackend'		, $GLOBALS['babInstallPath'].'utilit/cal.backend.class.php');
-$functionalities->register('CalendarBackend/Ovi'	, $GLOBALS['babInstallPath'].'utilit/cal.backend.ovi.class.php');
-$functionalities->register('UserEditor'				, $GLOBALS['babInstallPath'].'utilit/usereditor.php');
+$functionalities->register('Icons'						, $GLOBALS['babInstallPath'].'utilit/icons.php');
+$functionalities->register('Icons/Default'				, $GLOBALS['babInstallPath'].'utilit/icons.php');
+$functionalities->register('Archive'					, $GLOBALS['babInstallPath'].'utilit/archiveincl.php');
+$functionalities->register('Archive/Zip'				, $GLOBALS['babInstallPath'].'utilit/archiveincl.php');
+$functionalities->register('Archive/Zip/Zlib'			, $GLOBALS['babInstallPath'].'utilit/archiveincl.php');
+$functionalities->register('Archive/Zip/ZipArchive'		, $GLOBALS['babInstallPath'].'utilit/archiveincl.php');
+$functionalities->register('CalendarBackend'			, $GLOBALS['babInstallPath'].'utilit/cal.backend.class.php');
+$functionalities->register('CalendarBackend/Ovi'		, $GLOBALS['babInstallPath'].'utilit/cal.backend.ovi.class.php');
+$functionalities->register('UserEditor'					, $GLOBALS['babInstallPath'].'utilit/usereditor.php');
+$functionalities->register('SitemapDynamicNode'			, $GLOBALS['babInstallPath'].'utilit/sitemap_dynamicnode.php');
+$functionalities->register('SitemapDynamicNode/Topic'	, $GLOBALS['babInstallPath'].'utilit/sitemap_dyntopic.php');
 
 
 $func_to_register = $functionalities->parseFile(dirname(__FILE__).'/utilit/omlincl.php');

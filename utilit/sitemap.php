@@ -33,8 +33,9 @@ class bab_siteMapOrphanRootNode extends bab_OrphanRootNode {
 
 	/**
 	 * for each id_function the id parent is stored with the rewrite name
-	 * key 0 = ID function
+	 * key 0 = ID function of parent
 	 * key 1 = rewritename
+	 * key 2 = functionality name inherited from Func_SitemapDynamicNode
 	 * 
 	 * @var array
 	 */
@@ -85,7 +86,7 @@ class bab_siteMapOrphanRootNode extends bab_OrphanRootNode {
 		}
 
 
-		$this->rewriteIndex_id[$newNode->getId()] = array($id, $rewriteName);
+		$this->rewriteIndex_id[$newNode->getId()] = array($id, $rewriteName, $sitemapItem->funcname);
 
 		if (isset($this->rewriteIndex_rn[$rewriteName])) {
 			if (isset($this->rewriteIndex_underRoot[$newNode->getId()]))
@@ -144,6 +145,8 @@ class bab_siteMapOrphanRootNode extends bab_OrphanRootNode {
 			return null;
 		}
 		
+		$dynamic_solutions = array();
+		
 		foreach($this->rewriteIndex_rn[$first] as $nodeId) {
 			if (isset($this->rewriteIndex_id[$nodeId])) {
 
@@ -152,16 +155,102 @@ class bab_siteMapOrphanRootNode extends bab_OrphanRootNode {
 					return $nodeId;
 				}
 
-				return $this->getNextRewriteNode($arr, $nodeId);
+				if ($found = $this->getNextRewriteNode($arr, $nodeId, $dynamic_solutions))
+				{
+					return $found;
+					
+				} elseif (!empty($dynamic_solutions)) {
+					
+					// try with dynamic nodes
+					foreach($dynamic_solutions as $dynsol)
+					{
+						if ($dynnodeid = $this->getNodeIdFromRewriteInFunctionality($dynsol['id_parent'], $dynsol['funcname'], $dynsol['path']))
+						{
+							return $dynnodeid;
+						}
+					}
+					
+					return null;
+					
+				} else {
+					
+					return null;
+				}
+				
+				
 			} else {
 				bab_debug("the node $nodeId is not in index");
 				return null;
 			}
 		}
+		
+		
+		
 
 		bab_debug("the rewrite name $first has no id_function in index");
 		return null;
 	}
+	
+	
+	
+	
+	/**
+	 * Get node ID from a dynamic node and a rewrite path
+	 * @param string	$funcname
+	 * @param array 	$rewritepath	Relative rewrite path
+	 */
+	private function getNodeIdFromRewriteInFunctionality($id_parent, $funcname, Array $rewritepath)
+	{
+		$dynnode = bab_functionality::get('SitemapDynamicNode/'.$funcname);
+		/*@var $dynnode Func_SitemapDynamicNode */
+		
+		if (false === $dynnode)
+		{
+			return null;
+		}
+		
+		
+		$parentNode = $this->getNodeById($id_parent);
+		
+		$sitemapItem = $dynnode->getSitemapItemFromRewritePath($parentNode, $rewritepath);
+		
+		if (!isset($sitemapItem))
+		{
+			return null;
+		}
+		
+		// TODO add in sitemap tree ?
+
+		$node = $this->createNode($sitemapItem, $sitemapItem->id_function);
+		
+		if ($sitemapItem->url)
+		{
+			// add url in index
+			$node->addIndex('url', $sitemapItem->url);
+		}
+		
+		
+		if ($sitemapItem->target)
+		{
+			// add target in index
+			$node->addIndex('target', $sitemapItem->target->id_function);
+		}
+		
+		
+		if (null === $node) {
+			// failed to add the node ?
+			return null;
+		}
+		
+		$this->appendChild($node, $id_parent);
+		
+		
+		return $sitemapItem->id_function;
+	}
+	
+	
+	
+	
 
 	/**
 	 *
@@ -169,13 +258,27 @@ class bab_siteMapOrphanRootNode extends bab_OrphanRootNode {
 	 * @param string $id_parent
 	 * @return string
 	 */
-	private function getNextRewriteNode(Array $path, $id_parent)
+	private function getNextRewriteNode(Array $path, $id_parent, Array & $dynamic_solutions)
 	{
+		$searched_path = $path;
 		$first = array_shift($path);
 
 		if (!isset($this->rewriteIndex_rn[$first]))
 		{
-			bab_debug("the rewrite name $first has no id_function in index");
+			$parent_funcname = $this->rewriteIndex_id[$id_parent][2];
+			
+			if (isset($parent_funcname))
+			{
+				$dynamic_solutions[] = array(
+					'id_parent'	=> $id_parent,
+					'path' 		=> $searched_path,
+					'funcname' 	=> $parent_funcname
+				);
+				
+				return null;
+			}
+			
+			bab_debug("the rewrite name $first has no id_function in index, id_parent=$id_parent, parent funcname=$parent_funcname");
 			return null;
 		}
 		
@@ -203,7 +306,7 @@ class bab_siteMapOrphanRootNode extends bab_OrphanRootNode {
 					return $nodeId;
 				}
 
-				if ($next = $this->getNextRewriteNode($path, $nodeId))
+				if ($next = $this->getNextRewriteNode($path, $nodeId, $dynamic_solutions))
 				{
 					return $next;
 				}
@@ -382,6 +485,13 @@ class bab_siteMapItem {
 	 * @var bab_Node
 	 */
 	public $node = null;
+	
+	
+	/**
+	 * 
+	 * @var string
+	 */
+	public $funcname = null;
 
 	/**
 	 * Compare sitemap items
@@ -868,7 +978,10 @@ class bab_siteMap {
 			$data->folder 			= 1 == $arr['folder'];
 			$data->iconClassnames	= $arr['icon'];
 			$data->rewriteName		= $arr['rewrite'];
-
+			if ('' !== $arr['funcname'])
+			{
+				$data->funcname	= $arr['funcname'];
+			}
 
 			$node_list[$arr['id']] = $arr['id_function'];
 
@@ -1030,6 +1143,7 @@ class bab_siteMap {
 				f.folder,
 				f.icon,
 				f.rewrite,
+				f.funcname, 
 				s.progress,
 				pv.id profile_version
 			FROM
