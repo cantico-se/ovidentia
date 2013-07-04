@@ -34,12 +34,13 @@ class Func_SitemapDynamicNode extends bab_functionality
 	
 	
 	/**
-	 * Get a sitemap item from rewrite path
+	 * Get a list of sitemap items from rewrite path
+	 * rewrite path is relative to the dynamic node, this method return one sitemap item forea each rewrite name in rewrite path, in the same order
 	 * 
 	 * @param	bab_Node	$node				The dynamic sitemap node
 	 * @param 	Array		$rewritePath		Relative rewrite path from node to required sitemap item
 	 * 
-	 * @return bab_siteMapItem
+	 * @return array
 	 */
 	public function getSitemapItemFromRewritePath(bab_Node $node, Array $rewritePath)
 	{

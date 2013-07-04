@@ -822,6 +822,10 @@ function readMore($topics, $article)
 				$head->setKeywords($this->arr['page_keywords']);
 			}
 			
+			if ($sitemapItem = bab_sitemap::getRealPosition())
+			{
+				$head->setCanonicalUrl($sitemapItem->getRwUrl());
+			}
 		}	
 			
 			
@@ -1443,7 +1447,7 @@ switch($idx)
 			$babBody->setTitle(bab_getCategoryTitle($topics));
 		}
 		$article = bab_gp('article');
-		bab_siteMap::setPosition('bab', 'ArticleTopic_'.$topics);
+		bab_siteMap::setPosition('bab', 'Article_'.$article);
 		readMore($topics, $article);
 		if ($arr['topic_menu'])
 		{

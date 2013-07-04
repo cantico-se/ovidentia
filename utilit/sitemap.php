@@ -212,38 +212,34 @@ class bab_siteMapOrphanRootNode extends bab_OrphanRootNode {
 		
 		$parentNode = $this->getNodeById($id_parent);
 		
-		$sitemapItem = $dynnode->getSitemapItemFromRewritePath($parentNode, $rewritepath);
+		$itemList = $dynnode->getSitemapItemFromRewritePath($parentNode, $rewritepath);
 		
-		if (!isset($sitemapItem))
+		if (!isset($itemList))
 		{
 			return null;
 		}
 		
-		// TODO add in sitemap tree ?
-
-		$node = $this->createNode($sitemapItem, $sitemapItem->id_function);
 		
-		if ($sitemapItem->url)
+		foreach($itemList as $sitemapItem)
 		{
-			// add url in index
-			$node->addIndex('url', $sitemapItem->url);
+			$node = $this->createNode($sitemapItem, $sitemapItem->id_function);
+			
+			if ($sitemapItem->url)
+			{
+				// add url in index
+				$node->addIndex('url', $sitemapItem->url);
+			}
+			
+			
+			if ($sitemapItem->target)
+			{
+				// add target in index
+				$node->addIndex('target', $sitemapItem->target->id_function);
+			}
+			
+			$this->appendChild($node, $id_parent);
+			$id_parent = $sitemapItem->id_function;
 		}
-		
-		
-		if ($sitemapItem->target)
-		{
-			// add target in index
-			$node->addIndex('target', $sitemapItem->target->id_function);
-		}
-		
-		
-		if (null === $node) {
-			// failed to add the node ?
-			return null;
-		}
-		
-		$this->appendChild($node, $id_parent);
-		
 		
 		return $sitemapItem->id_function;
 	}
