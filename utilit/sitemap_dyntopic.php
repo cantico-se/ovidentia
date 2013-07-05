@@ -87,18 +87,32 @@ class Func_SitemapDynamicNode_Topic extends Func_SitemapDynamicNode
 	 */
 	public function getSitemapItemsFromRewritePath(bab_Node $node, Array $rewritePath)
 	{
-		
 		bab_functionality::includeOriginal('Icons');
-		
-		$id_function = $node->getId();
-		$id_topic = (int) mb_substr($id_function, 16);
+		$sitemapItem = $node->getData();
+		$id_function = $sitemapItem->getTarget()->id_function;
+
+		$id_topic = (int) mb_substr($id_function, 16); // babArticleTopic_2305
 		$rewritename = reset($rewritePath);
+		$default_article_id = null;
+		
+		if (preg_match('/babArticle_(\d+)/', $rewritename, $m))
+		{
+			$default_article_id = (int) $m[1];
+		}
 		
 		global $babDB;
 		
+		$query = 'SELECT id, title FROM bab_articles WHERE id_topic='.$babDB->quote($id_topic).' 
+				AND (
+					rewritename='.$babDB->quote($rewritename);
+		if (isset($default_article_id))
+		{
+			$query .= ' OR (rewritename=\'\' AND id='.$babDB->quote($default_article_id).')';
+		}
 		
-		
-		$res = $babDB->db_query('SELECT id, title FROM bab_articles WHERE id_topic='.$babDB->quote($id_topic).' AND rewritename='.$babDB->quote($rewritename));
+		$query .= '		)';
+
+		$res = $babDB->db_query($query);
 		
 		if (1 !== $babDB->db_num_rows($res))
 		{
@@ -106,6 +120,9 @@ class Func_SitemapDynamicNode_Topic extends Func_SitemapDynamicNode
 		}
 		
 		$article = $babDB->db_fetch_assoc($res);
+		
+		
+		
 		return array($this->getArticleSitemapItem($id_topic, $article['id'], $article['title'], $rewritename));
 	}
 	

@@ -161,6 +161,8 @@ class bab_siteMapOrphanRootNode extends bab_OrphanRootNode {
 					
 				} elseif (!empty($dynamic_solutions)) {
 					
+					
+					
 					// try with dynamic nodes
 					foreach($dynamic_solutions as $dynsol)
 					{
@@ -210,6 +212,9 @@ class bab_siteMapOrphanRootNode extends bab_OrphanRootNode {
 		}
 		
 		
+		
+		
+		
 		$parentNode = $this->getNodeById($id_parent);
 		
 		$itemList = $dynnode->getSitemapItemsFromRewritePath($parentNode, $rewritepath);
@@ -223,6 +228,13 @@ class bab_siteMapOrphanRootNode extends bab_OrphanRootNode {
 		foreach($itemList as $sitemapItem)
 		{
 			$node = $this->createNode($sitemapItem, $sitemapItem->id_function);
+			
+			if (null === $node)
+			{
+				// node allready exists
+				continue;
+			}
+			
 			$this->addNodeIndexes($node, $sitemapItem);
 			$this->appendChild($node, $id_parent);
 			
@@ -325,7 +337,7 @@ class bab_siteMapOrphanRootNode extends bab_OrphanRootNode {
 			}
 		}
 
-		bab_debug("The rewrite name $first has no id_function in index, path : ".implode('/', $path)." , id_parent : $id_parent", DBG_WARNING);
+		bab_debug("The rewrite name $first has no id_function in index, path : ".implode('/', $path)." , id_parent : $id_parent, will try with dynamic nodes", DBG_WARNING);
 		
 		return null;
 	}
@@ -411,10 +423,9 @@ class bab_siteMapOrphanRootNode extends bab_OrphanRootNode {
 			}
 			
 			
+			
 			$dynnodes = $this->getNodesByIndex('funcname', $funcname);
 			$parent_node = reset($dynnodes);
-			
-			
 			$itemList = $dynnode->getSitemapItemsFromNodeId($parent_node, $nodeId);
 			
 			if (!isset($itemList))
@@ -424,10 +435,19 @@ class bab_siteMapOrphanRootNode extends bab_OrphanRootNode {
 			}
 			
 			$id_parent = $parent_node->getId();
+			
+			
 
 			foreach($itemList as $sitemapItem)
 			{
 				$node = $this->createNode($sitemapItem, $sitemapItem->id_function);
+				
+				if (null === $node)
+				{
+					// node ID allready exists
+					continue;
+				}
+				
 				$this->addNodeIndexes($node, $sitemapItem);
 				$this->appendChild($node, $id_parent);
 			
@@ -1753,6 +1773,7 @@ class bab_siteMap {
 
 		if (!$node)
 		{
+			bab_debug('Failed to get '.$id_function.' in sitemap');
 			return null;
 		}
 
