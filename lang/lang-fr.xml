@@ -3417,4 +3417,14 @@ L'administrateur</string>
 <string id="The security code is not correct">Le code de sécurité est incorrecte</string>
 <string id="Failed to delete the temporary package %s">Echec de la suppression de l'archive temporaire %s</string>
 <string id="This theme is not accessible or the prerequisites are not fulfilled">Ce thème n'est pas accessible ou les pré requis ne sont pas atteints</string>
+
+<string id="The security code is not correct">Le code de sécurité est incorrecte</string>
+
+<string id="Allow author to modify HTML metadata">Permettre à l'auteur de modifier les métadonnés HTML</string>
+<string id="HTML metadata">Métadonnés HTML</string>
+<string id="Page title">Titre de la page</string>
+<string id="Page description">Description de la page</string>
+<string id="Page keywords">Mots clés de la page</string>
+<string id="Rewrite name">Nom de réécriture</string>
+
 </fr>
