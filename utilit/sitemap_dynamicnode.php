@@ -48,17 +48,15 @@ class Func_SitemapDynamicNode extends bab_functionality
 	}
 	
 	
+
+	
+	
 	/**
-	 * Get a list of sitemap items from node ID
-	 * this method return one sitemap item for each node beetween the dynamic node and the nodeId, sitemap item for nodeId included
-	 * 
-	 * @param bab_Node $node
+	 * Get node with ancestors up to the dynamic node
 	 * @param string $nodeId
-	 * @throws Exception
-	 * 
-	 * @return array
+	 * @return bab_Node
 	 */
-	public function getSitemapItemsFromNodeId(bab_Node $node, $nodeId)
+	public function getNodeById($nodeId)
 	{
 		throw new Exception('Not implemented');
 	}

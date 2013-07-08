@@ -25,6 +25,8 @@ include_once "base.php";
 
 
 bab_functionality::includefile('SitemapDynamicNode');
+bab_functionality::includeOriginal('Icons');
+
 
 class Func_SitemapDynamicNode_Topic extends Func_SitemapDynamicNode
 {
@@ -51,6 +53,22 @@ class Func_SitemapDynamicNode_Topic extends Func_SitemapDynamicNode
 		return $url->toString();
 	}
 	
+	/**
+	 * 
+	 * @param int $id_topic
+	 * @return string
+	 */
+	private function getTopicUrl($id_topic)
+	{
+		require_once dirname(__FILE__).'/urlincl.php';
+		
+		$url = new bab_url();
+		$url->tg = 'articles';
+		$url->topics = $id_topic;
+
+		return $url->toString();
+	}
+	
 	
 	
 	/**
@@ -70,6 +88,20 @@ class Func_SitemapDynamicNode_Topic extends Func_SitemapDynamicNode
 		$item->folder 			= false;
 		$item->iconClassnames	= Func_Icons::OBJECTS_PUBLICATION_ARTICLE;
 		$item->rewriteName		= $rewriteName;
+		
+		return $item;
+	}
+	
+	
+	
+	private function getTopicSitemapItem($id_topic, $name)
+	{
+		$item = new bab_siteMapItem();
+		$item->id_function 		= 'babArticleTopic_'.$id_topic;
+		$item->name 			= $name;
+		$item->url 				= $this->getTopicUrl($id_topic);
+		$item->folder 			= false;
+		$item->iconClassnames	= Func_Icons::OBJECTS_PUBLICATION_TOPIC;
 		
 		return $item;
 	}
@@ -127,28 +159,34 @@ class Func_SitemapDynamicNode_Topic extends Func_SitemapDynamicNode
 	}
 	
 	
+
+	
+	
 	
 	/**
-	 * Get a list of sitemap items from node ID
-	 * this method return one sitemap item for each node beetween the dynamic node and the nodeId, sitemap item for nodeId included
-	 *
-	 * @param bab_Node $node
+	 * Get node with ancestors up to the dynamic node
 	 * @param string $nodeId
-	 * @throws Exception
-	 *
-	 * @return array
+	 * @return bab_Node
 	 */
-	public function getSitemapItemsFromNodeId(bab_Node $node, $nodeId)
+	public function getNodeById($nodeId)
 	{
-		bab_functionality::includeOriginal('Icons');
-		
 		$id_article = (int) mb_substr($nodeId, 11); // babArticle_
 		
 		global $babDB;
 		
-		
-		
-		$res = $babDB->db_query('SELECT id_topic, title, rewritename FROM bab_articles WHERE id='.$babDB->quote($id_article).'');
+		$res = $babDB->db_query('
+			SELECT 
+				a.id_topic, 
+				a.title, 
+				a.rewritename, 
+				t.category 
+			FROM 
+				bab_articles a,
+				bab_topics t
+			WHERE 
+				a.id='.$babDB->quote($id_article).'
+				AND t.id=a.id_topic 
+		');
 		
 		if (1 !== $babDB->db_num_rows($res))
 		{
@@ -156,6 +194,16 @@ class Func_SitemapDynamicNode_Topic extends Func_SitemapDynamicNode
 		}
 		
 		$article = $babDB->db_fetch_assoc($res);
-		return array($this->getArticleSitemapItem($article['id_topic'], $id_article, $article['title'], $article['rewritename']));
+		
+		$topicNodeId = 'babArticleTopic_'.$article['id_topic'];
+		$topicNode = new bab_Node(null, $topicNodeId);
+		$topicNode->setData($this->getTopicSitemapItem($article['id_topic'], $article['category']));
+
+		$articleNode = new bab_Node(null, $nodeId);
+		$articleNode->setData($this->getArticleSitemapItem($article['id_topic'], $id_article, $article['title'], $article['rewritename']));
+		
+		$topicNode->appendChild($articleNode);
+		
+		return $articleNode;
 	}
 }

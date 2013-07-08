@@ -401,7 +401,7 @@ class bab_siteMapOrphanRootNode extends bab_OrphanRootNode {
 	
 	
 	/**
-	 * Search node in dynamif functionalities and add it in the sitemap
+	 * Search node in dynamic functionalities and add it in the current site sitemap
 	 * use only if not found in sitemap
 	 * return null if not found in not loaded dynamic nodes
 	 * 
@@ -411,6 +411,8 @@ class bab_siteMapOrphanRootNode extends bab_OrphanRootNode {
 	 */
 	protected function getDynamicNodeById($nodeId)
 	{
+		
+		
 		$funcname_list = $this->getIndexValues('funcname');
 		foreach($funcname_list as $funcname)
 		{
@@ -424,37 +426,53 @@ class bab_siteMapOrphanRootNode extends bab_OrphanRootNode {
 			
 			
 			
-			$dynnodes = $this->getNodesByIndex('funcname', $funcname);
-			$parent_node = reset($dynnodes);
-			$itemList = $dynnode->getSitemapItemsFromNodeId($parent_node, $nodeId);
+			$newNode = $dynnode->getNodeById($nodeId);
 			
-			if (!isset($itemList))
+			if (!isset($newNode))
 			{
 				// not found in this functionality
 				continue;
 			}
 			
-			$id_parent = $parent_node->getId();
 			
 			
-
-			foreach($itemList as $sitemapItem)
+			$parentNode = $newNode->parentNode();
+			/*@var $parentNode bab_Node */
+			
+			if (!isset($parentNode))
 			{
-				$node = $this->createNode($sitemapItem, $sitemapItem->id_function);
-				
-				if (null === $node)
-				{
-					// node ID allready exists
-					continue;
-				}
-				
-				$this->addNodeIndexes($node, $sitemapItem);
-				$this->appendChild($node, $id_parent);
-			
-				$id_parent = $sitemapItem->id_function;
+				continue;
 			}
 			
-			return $node;
+			do 
+			{
+				// if parentNode exists in current sitemap, append subtree
+				// prefer the original instead of the target if available
+				
+				$baseItem = bab_sitemap::getVisibleRootNodeSitemapItem();
+				$sitemapParentNode = $this->getNodeByTargetId($baseItem->id_function, $parentNode->getId());
+				
+				if (null === $sitemapParentNode)
+				{
+					$sitemapParentNode = parent::getNodeById($parentNode->getId());
+				}
+				
+				if (isset($sitemapParentNode))
+				{
+					$cn = $parentNode->firstChild();
+					/*@var $cn bab_Node */
+					do {
+						$sitemapParentNode->appendChild($cn);
+					} while ($cn = $cn->nextSibling());
+					
+					break;
+				}
+				
+			} while($parentNode = $parentNode->parentNode());
+			
+
+			
+			return $newNode;
 		}
 		
 		return null;
@@ -1776,6 +1794,8 @@ class bab_siteMap {
 			bab_debug('Failed to get '.$id_function.' in sitemap');
 			return null;
 		}
+		
+
 
 		$arr = array();
 
