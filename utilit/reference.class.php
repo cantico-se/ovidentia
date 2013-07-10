@@ -802,7 +802,7 @@ class bab_ArticleReferenceDescription extends bab_ReferenceDescriptionImpl
 		}
 		
 		
-		return bab_sitemap::rewrittenUrl('babArticle_'.$arr['id']);
+		return bab_sitemap::url('babArticle_'.$arr['id']);
 	}
 
 

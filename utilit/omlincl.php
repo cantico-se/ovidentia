@@ -1498,7 +1498,7 @@ class Func_Ovml_Container_Articles extends Func_Ovml_Container
 			else
 				$this->ctx->curctx->push('ArticleReadMore', 1);
 			$this->ctx->curctx->push('ArticleId', $arr['id']);
-			$this->ctx->curctx->push('ArticleUrl', bab_sitemap::rewrittenUrl('babArticle_'.$arr['id']));
+			$this->ctx->curctx->push('ArticleUrl', bab_sitemap::url('babArticle_'.$arr['id']));
 			$this->ctx->curctx->push('ArticlePopupUrl', $GLOBALS['babUrlScript']."?tg=articles&idx=viewa&topics=".$arr['id_topic']."&article=".$arr['id']);
 			$this->ctx->curctx->push('ArticleAuthor', $arr['id_author']);
 			if ($arr['date'] == $arr['date_modification'])
@@ -1594,7 +1594,7 @@ class Func_Ovml_Container_Article extends Func_Ovml_Container
 			else
 				$this->ctx->curctx->push('ArticleReadMore', 1);
 			$this->ctx->curctx->push('ArticleId', $arr['id']);
-			$this->ctx->curctx->push('ArticleUrl', bab_sitemap::rewrittenUrl('babArticle_'.$arr['id']));
+			$this->ctx->curctx->push('ArticleUrl', bab_sitemap::url('babArticle_'.$arr['id']));
 			$this->ctx->curctx->push('ArticlePopupUrl', $GLOBALS['babUrlScript']."?tg=articles&idx=viewa&topics=".$arr['id_topic']."&article=".$arr['id']);
 			$this->ctx->curctx->push('ArticleAuthor', $arr['id_author']);
 			if ($arr['date'] == $arr['date_modification'])
@@ -3305,7 +3305,7 @@ class Func_Ovml_Container_RecentArticles extends Func_Ovml_Container
 			$this->ctx->curctx->push('ArticleDateModification', bab_mktime($arr['date_modification']));
 			$this->ctx->curctx->push('ArticleDatePublication', bab_mktime($arr['date_publication']));
 			$this->ctx->curctx->push('ArticleDateCreation', bab_mktime($arr['date']));
-			$this->ctx->curctx->push('ArticleUrl', bab_sitemap::rewrittenUrl('babArticle_'.$arr['id'])); // $GLOBALS['babUrlScript']."?tg=articles&idx=More&topics=".$arr['id_topic']."&article=".$arr['id']
+			$this->ctx->curctx->push('ArticleUrl', bab_sitemap::url('babArticle_'.$arr['id'])); // $GLOBALS['babUrlScript']."?tg=articles&idx=More&topics=".$arr['id_topic']."&article=".$arr['id']
 			$this->ctx->curctx->push('ArticlePopupUrl', $GLOBALS['babUrlScript']."?tg=articles&idx=viewa&topics=".$arr['id_topic']."&article=".$arr['id']);
 			$this->ctx->curctx->push('ArticleTopicId', $arr['id_topic']);
 			$this->ctx->curctx->push('ArticleLanguage', $arr['lang']);
@@ -8591,7 +8591,7 @@ class Func_Ovml_Function_ArticleTree extends Func_Ovml_Function {
 						}
 						$child[] = array(
 							'type' => 'article '.$classNew,
-							'url'=> bab_toHtml(bab_Sitemap::rewrittenUrl($arrArticles['id'])),
+							'url'=> bab_toHtml(bab_sitemap::url($arrArticles['id'])),
 							'name' => $arrArticles['title'],
 							'child' => '',
 							'date' => $date

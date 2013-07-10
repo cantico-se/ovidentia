@@ -53,6 +53,15 @@ class bab_siteMapOrphanRootNode extends bab_OrphanRootNode {
 	 * @var array
 	 */
 	private $rewriteIndex_underRoot = array();
+	
+	
+	/**
+	 * If the node urls should be rewritten urls or not
+	 *
+	 * @var bool
+	 */
+	public $enableRewriting = false;
+	
 
 	/**
 	 * Tries to append the node $newNode as child of the node having the id $id.
@@ -523,12 +532,7 @@ class bab_siteMapItem {
 	 */
 	public $rewriteName = null;
 
-	/**
-	 * If the node url should be a rewritten url or not
-	 * 
-	 * @var bool
-	 */
-	public $enableRewriting = false;
+
 	
 	
 	/**
@@ -836,6 +840,21 @@ class bab_siteMapItem {
 		return null;
 	}
 	
+	
+	/**
+	 * Test if babrw is used in url or if the url contain only the path 
+	 * @return bool
+	 */
+	public function rewritingEnabled()
+	{
+		if (!isset($this->node) || !isset($this->node->_tree))
+		{
+			return false;
+		}
+		
+		return $this->node->_tree->enableRewriting;
+	}
+	
 
 
 	/**
@@ -857,7 +876,7 @@ class bab_siteMapItem {
 		}
 		
 		
-		if ($this->enableRewriting) {
+		if ($this->rewritingEnabled()) {
 			$url = bab_Sitemap::rewrittenUrl($this->id_function);
 		} else {
 			$path = bab_Sitemap::rewrittenUrl($this->id_function);
@@ -1778,6 +1797,24 @@ class bab_siteMap {
 		parse_str($tmp[1], $arr);
 
 		return $arr;
+	}
+	
+	/**
+	 * Get the rewritten url of a sitemap node or an ur l with babrw= if the rewriting is disabled
+	 * @param string $id_function
+	 * @return string
+	 */
+	public static function url($id_function)
+	{
+		$node = self::get()->getNodeById($id_function);
+
+		if (!isset($node)) {
+			return null;
+		}
+
+		$sitemapItem = $node->getData();
+		
+		return $sitemapItem->getRwUrl();
 	}
 
 

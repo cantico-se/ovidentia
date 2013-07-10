@@ -405,7 +405,7 @@ function listArticles($topics)
 				$this->bbody = $this->arr['blen'];
 				if( $this->bbody > 0 )
 					{
-					$this->moreurl = bab_toHtml(bab_Sitemap::rewrittenUrl('babArticle_'.$this->arr['id']));
+					$this->moreurl = bab_toHtml(bab_sitemap::url('babArticle_'.$this->arr['id']));
 					//$this->moreurl = bab_toHtml($GLOBALS['babUrlScript']."?tg=articles&idx=More&topics=".$this->topics."&article=".$this->arr['id']);
 					}
 				else
@@ -623,7 +623,7 @@ function listArchiveArticles($topics, $pos)
 					}
 
 				// $this->moreurl = bab_toHtml($GLOBALS['babUrlScript']."?tg=articles&idx=More&topics=".$this->topics."&article=".$this->arr['id']);
-				$this->moreurl = bab_toHtml(bab_Sitemap::rewrittenUrl('babArticle_'.$this->arr['id']));
+				$this->moreurl = bab_toHtml(bab_sitemap::url('babArticle_'.$this->arr['id']));
 
 				$this->resf = $babDB->db_query("select * from ".BAB_ART_FILES_TBL." where id_article='".$babDB->db_escape_string($this->arr['id'])."' order by ordering asc");
 				$this->countf = $babDB->db_num_rows($this->resf);
@@ -929,7 +929,7 @@ function readMore($topics, $article)
 				$this->titlearticle = bab_toHtml($arr['title']);
 				$this->urlview = bab_toHtml($GLOBALS['babUrlScript']."?tg=articles&idx=viewa&topics=".$this->topics."&article=".$arr['id']);
 				// $this->urlreadmore = bab_toHtml($GLOBALS['babUrlScript']."?tg=articles&idx=More&topics=".$this->topics."&article=".$arr['id']);
-				$this->urlreadmore = bab_toHtml(bab_Sitemap::rewrittenUrl('babArticle_'.$arr['id']));
+				$this->urlreadmore = bab_toHtml(bab_sitemap::url('babArticle_'.$arr['id']));
 
 				$i++;
 				return true;
@@ -1455,7 +1455,7 @@ switch($idx)
 		if ($arr['topic_menu'])
 		{
 			$babBody->addItemMenu("Articles",bab_translate("Articles"),$GLOBALS['babUrlScript']."?tg=articles&idx=Articles&topics=".$topics);
-			$babBody->addItemMenu("More",bab_translate("Article"), bab_Sitemap::rewrittenUrl('babArticle_'.$article));
+			$babBody->addItemMenu("More",bab_translate("Article"), bab_sitemap::url('babArticle_'.$article));
 			if( $arr['nbarchive'] )
 				{
 				$babBody->addItemMenu("larch", bab_translate("Archives"), $GLOBALS['babUrlScript']."?tg=articles&idx=larch&topics=".$topics);
