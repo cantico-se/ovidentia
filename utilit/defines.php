@@ -328,11 +328,7 @@ define("BAB_USERS_GROUPS_TBL", "bab_users_groups");
 define("BAB_USERS_LOG_TBL", "bab_users_log");
 define("BAB_USERS_UNAVAILABILITY_TBL", "bab_users_unavailability");
 define("BAB_UPGRADE_MESSAGES_TBL", "bab_upgrade_messages");
-define("BAB_VACATIONS_TBL", "bab_vacations");
-define("BAB_VACATIONS_STATES_TBL", "bab_vacations_states");
-define("BAB_VACATIONS_TYPES_TBL", "bab_vacations_types");
-define("BAB_VACATIONSMAN_GROUPS_TBL", "bab_vacationsman_groups");
-define("BAB_VACATIONSVIEW_GROUPS_TBL", "bab_vacationsview_groups");
+
 define("BAB_VAC_MANAGERS_TBL", "bab_vac_managers");
 define("BAB_VAC_TYPES_TBL", "bab_vac_types");
 define("BAB_VAC_COLLECTIONS_TBL", "bab_vac_collections");
