@@ -342,6 +342,13 @@ class bab_siteMapOrphanRootNode extends bab_OrphanRootNode {
 		return null;
 	}
 	
+	/**
+	 * Get node By id without dynamic nodes
+	 */
+	public function getStaticNodeById($id)
+	{
+		return parent::getNodeById($id);
+	}
 	
 	
 	/**
