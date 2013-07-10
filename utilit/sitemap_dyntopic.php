@@ -91,6 +91,7 @@ class Func_SitemapDynamicNode_Topic extends Func_SitemapDynamicNode
 		$item->pageTitle		= $page_title;
 		$item->pageDescription	= $page_description;
 		$item->pageKeywords		= $page_keywords;
+		$item->menuIgnore		= true;
 		
 		return $item;
 	}
@@ -105,6 +106,7 @@ class Func_SitemapDynamicNode_Topic extends Func_SitemapDynamicNode
 		$item->url 				= $this->getTopicUrl($id_topic);
 		$item->folder 			= false;
 		$item->iconClassnames	= Func_Icons::OBJECTS_PUBLICATION_TOPIC;
+		$item->menuIgnore		= true;
 		
 		return $item;
 	}
