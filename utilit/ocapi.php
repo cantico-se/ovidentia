@@ -2718,3 +2718,36 @@ class bab_OrgChartUtil
 	}
 }
 
+
+
+
+function bab_IsUserUnderSuperior($id_user)
+{
+	if ($id_user == $GLOBALS['BAB_SESS_USERID'])
+		return true;
+
+	$user_entities = & bab_OCGetUserEntities($id_user);
+	$user_entities = array_merge($user_entities['superior'], $user_entities['temporary'], $user_entities['members']);
+	foreach($user_entities as $entity)
+	{
+		$user_entities_id[$entity['id']] = $entity['id'];
+	}
+
+	$arr = & bab_OCGetUserEntities($GLOBALS['BAB_SESS_USERID']);
+	bab_addCoManagerEntities($arr, $GLOBALS['BAB_SESS_USERID']);
+
+	$childs = array();
+	foreach ($arr['superior'] as $entity)
+	{
+		$childs[] = $entity;
+		$tmp = & bab_OCGetChildsEntities($entity['id']);
+		$childs = array_merge($childs, $tmp);
+	}
+
+	foreach($childs as $entity)
+	{
+		if (isset($user_entities_id[$entity['id']]))
+			return true;
+	}
+	return false;
+}
