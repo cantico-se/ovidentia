@@ -2710,12 +2710,13 @@ function bab_addHashEventsToCollection(bab_CalendarEventCollection $collection, 
 	}
 	
 	
-	if ('' === $calendarPeriod->getProperty('RRULE'))
+	if ('' === $calendarPeriod->getProperty('RRULE') && !$collection->hash)
 	{
 		// do not add a RECURRENCE-ID on non-recuring event
 		$method = BAB_CAL_EVT_ALL;
 	}
 
+	
 
 	switch($method)
 	{
