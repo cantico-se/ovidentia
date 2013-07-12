@@ -31,7 +31,7 @@ function bab_superAdminMenuItems()
 {
 	$list = array(
 		array('AdminDelegations', bab_translate("Delegation"), $GLOBALS['babUrlScript']."?tg=delegat", null, Func_Icons::APPS_DELEGATIONS),
-		array('AdminVacations', bab_translate("Vacations"), $GLOBALS['babUrlScript']."?tg=admvacs", null, Func_Icons::APPS_VACATIONS),
+	//	array('AdminVacations', bab_translate("Vacations"), $GLOBALS['babUrlScript']."?tg=admvacs", null, Func_Icons::APPS_VACATIONS),
 		array('AdminInstall', bab_translate("Add/remove programs"), $GLOBALS['babUrlScript']."?tg=addons", null, Func_Icons::ACTIONS_LIST_ADD),
 		array('AdminStats', bab_translate("Statistics"), $GLOBALS['babUrlScript']."?tg=admstats", null, Func_Icons::APPS_STATISTICS),
 		array('AdminThesaurus', bab_translate("Thesaurus"), $GLOBALS['babUrlScript']."?tg=admthesaurus", null, Func_Icons::APPS_THESAURUS),

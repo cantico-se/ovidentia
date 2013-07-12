@@ -7041,6 +7041,17 @@ function ovidentia_upgrade($version_base,$version_ini) {
 	$functionalities->register('SitemapDynamicNode/Topic'			, $GLOBALS['babInstallPath'].'utilit/sitemap_dyntopic.php');
 	
 	
+	
+	/**
+	 * Upgrade to 9.0.93
+	 * 
+	 * Vacations has been moved to the "absences" addon
+	 * file are not deleted in this version but the functionality is unplugged from calendar, sitemap, approbation list
+	 * a modification of bab_vacationsAccess() to disable the access
+	 */
+	bab_removeEventListener('bab_eventUserModified'	, 'bab_vac_onModifyPeriod', 'utilit/vacincl.php');
+	
+	
 	return true;
 
 }

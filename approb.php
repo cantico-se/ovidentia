@@ -1508,7 +1508,7 @@ switch($idx)
 			listWaitingComments();
 			listWaitingFiles();
 			listWaitingPosts();
-			listWaitingVacations();
+			// listWaitingVacations();
 			listWaitingEvents();
 			listWaitingAddons();
 		}

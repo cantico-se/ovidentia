@@ -4121,7 +4121,6 @@ CREATE TABLE `bab_event_listeners` (
 
 INSERT INTO `bab_event_listeners` (`id`, `event_class_name`, `function_name`, `require_file`, `addon_name`, `priority`) VALUES 
 (1, 'bab_eventBeforePeriodsCreated'				, 'bab_NWD_onCreatePeriods'					, 'utilit/nwdaysincl.php'			, 'core', 0),
-(2, 'bab_eventPeriodModified'					, 'bab_vac_onModifyPeriod'					, 'utilit/vacincl.php'				, 'core', 0),
 (3, 'bab_eventEditors'							, 'bab_onEventEditors'						, 'utilit/editorincl.php'			, 'core', 0),
 (4, 'bab_eventEditorFunctions'					, 'bab_onEditorFunctions'					, 'utilit/editorincl.php'			, 'core', 0),
 (5, 'bab_eventLogin'							, 'bab_onEventLogin'						, 'utilit/eventAuthentication.php'	, 'core', 0),

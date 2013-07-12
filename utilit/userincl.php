@@ -527,8 +527,16 @@ function bab_contactsAccess()
 	return false;
 	}
 
+	
+/**
+ * @deprecated moved to the absences addon
+ * @return multitype:boolean
+ */
 function bab_vacationsAccess()
 	{
+	return array();	
+	
+	/*
 	global $babBody, $babDB;
 
 	$array = array();
@@ -556,6 +564,7 @@ function bab_vacationsAccess()
 		}
 
 	return $array;
+	*/
 	}
 
 function bab_articleAccessByRestriction($restriction, $iduser ='')
