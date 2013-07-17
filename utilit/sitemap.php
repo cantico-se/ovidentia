@@ -1144,13 +1144,14 @@ class bab_siteMap {
 			$id_parent = isset($node_list[$arr['id_parent']]) ? $node_list[$arr['id_parent']] : NULL;
 
 			$node = $rootNode->createNode($data, $node_list[$arr['id']]);
-			$rootNode->addNodeIndexes($node, $data);
 
 			if (null === $node) {
 				// bab_debug((string) $rootNode);
 				return $rootNode;
 			}
 
+			$rootNode->addNodeIndexes($node, $data);
+				
 			$rootNode->appendChild($node, $id_parent);
 		}
 
