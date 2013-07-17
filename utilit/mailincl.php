@@ -386,6 +386,7 @@ class babMail
 
 		
 		$this->mail = new bab_PHPMailer();
+		$this->mail->Timeout = 60; // Timout modification for slower SMTP servers
 		$this->mail->CharSet = bab_charset::getIso();
 		$this->mail->PluginDir = $GLOBALS['babInstallPath'].'utilit/';
 		$this->mailFrom($GLOBALS['babAdminEmail'], $GLOBALS['babAdminName']);
