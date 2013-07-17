@@ -852,6 +852,13 @@ switch($cmd)
 			login_signon();
 		}
 		break;
+		
+	case "denied";
+		foreach(bab_rp('errors') as $error)
+		{
+			$babBody->addError($error);
+		}
+		break;
 
 	case "signon":
 	default:

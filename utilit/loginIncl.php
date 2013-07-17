@@ -852,6 +852,22 @@ function bab_doRequireCredential($sLoginMessage, $sAuthType)
 			loginRedirect($GLOBALS['babUrlScript'] . '?babHttpContext=restore');
 			exit;
 		}
+		
+		
+		if ($oAuthObject->errorMessages)
+		{
+			require_once dirname(__FILE__).'/urlincl.php';
+			
+			$url = new bab_url($GLOBALS['babUrlScript']);
+			$url->tg = 'login';
+			$url->cmd = 'denied';
+			$url->errors = $oAuthObject->errorMessages;
+			
+			loginRedirect($url->toString());
+			
+		}
+		
+		// failed authentication without error message
 		die(bab_translate("Failed authentication"));
 	}
 	return true;
