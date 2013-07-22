@@ -22,7 +22,7 @@
  */
 include_once 'base.php';
 include_once $GLOBALS['babInstallPath'].'admin/register.php';
-
+require_once dirname(__FILE__).'/userinfosincl.php';
 
 require_once $GLOBALS['babInstallPath'].'utilit/functionalityincl.php';
 
@@ -108,8 +108,10 @@ class Func_PortalAuthentication extends bab_functionality
 			$this->addError(bab_translate("Maximum number of connection attempts has been reached"));
 			return false;
 		}
+		
+		
 
-		$aUser = bab_getUserById($iIdUser);
+		$aUser = bab_userInfos::getRow($iIdUser);
 		if (!is_null($aUser)) {
 			$today = date('Y-m-d');
 			if (($aUser['disabled'] == '1') ||
@@ -933,26 +935,6 @@ function bab_getUserByLoginPassword($sLogin, $sPassword)
 }
 
 
-function bab_getUserById($iIdUser)
-{
-	global $babDB;
-
-	$sQuery = '
-		SELECT *
-		FROM ' . BAB_USERS_TBL . '
-		WHERE id = ' . $babDB->quote($iIdUser);
-
-	$oResult = $babDB->db_query($sQuery);
-	if(false !== $oResult)
-	{
-		$iRows = $babDB->db_num_rows($oResult);
-		if($iRows > 0 && false !== ($aDatas = $babDB->db_fetch_array($oResult)))
-		{
-			return $aDatas;
-		}
-	}
-	return null;
-}
 
 
 function bab_getUserByCookie($sCookie)
@@ -1597,7 +1579,8 @@ function bab_setUserSessionInfo($iIdUser)
 {
 	global $babBody;
 
-	$aUser = bab_getUserById($iIdUser);
+	$aUser = bab_userInfos::getRow($iIdUser);
+	
 	if(!is_null($aUser))
 	{
 		$_SESSION['BAB_SESS_NICKNAME']	= $aUser['nickname'];

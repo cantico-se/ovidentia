@@ -40,6 +40,7 @@ class bab_userInfos {
 		global $babDB;
 		$res = $babDB->db_query('
 			SELECT 
+				id,
 				nickname,
 				firstname, 
 				lastname,
@@ -48,7 +49,10 @@ class bab_userInfos {
 				password,
 				changepwd,
 				is_confirmed, 
-				date 
+				date,
+				validity_start,
+				validity_end,
+				confirm_hash   
 			FROM 
 				'.BAB_USERS_TBL.' 
 			WHERE id='.$babDB->quote($id_user)
