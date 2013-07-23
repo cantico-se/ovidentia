@@ -381,7 +381,13 @@ function listUsers($pos, $grp, $deleteAction)
 					{
 					$this->checked = "";
 					}
+					
+				$today = date('Y-m-d');
 
+				$this->disabled = ($this->arr['disabled'] || 
+						(($this->arr['validity_start'] != '0000-00-00' && $today < $this->arr['validity_start'])
+						||  ($this->arr['validity_end'] != '0000-00-00' && $today > $this->arr['validity_end']))
+				);
 				//$this->dirdetailurl = $GLOBALS['babUrlScript']."?tg=directory&idx=ddb&id=".$this->iddir."&idu=".$this->arr['idu']."&pos=&xf=";
 
 				$this->dirdetailurl = bab_toHtml($GLOBALS['babUrlScript']."?tg=users&idx=dirv&id_user=".urlencode($this->userid));

@@ -91,7 +91,7 @@ function bab_userListShowHideFilter()
 				
 				<!--#if arr[is_confirmed] "== 0" --><acronym title="{ t_unconfirmed }"><img src="{ babSkinPath }images/Puces/unconfirmed.gif" alt="{ t_unconfirmed }" style="valign:absmiddle;" /></acronym><!--#endif arr[is_confirmed] -->
 				
-				<!--#if arr[disabled] "== 1" --><acronym title="{ t_disabled }"><img src="{ babSkinPath }images/Puces/disabled.gif" alt="{ t_disabled }" style="valign:absmiddle;" /></acronym><!--#endif arr[disabled] -->&nbsp;
+				<!--#if disabled --><acronym title="{ t_disabled }"><img src="{ babSkinPath }images/Puces/disabled.gif" alt="{ t_disabled }" style="valign:absmiddle;" /></acronym><!--#endif disabled -->&nbsp;
 				
 				<!--#if set_directory -->
 				<a href="{ dirdetailurl }" onclick="Start(this.href, '', 'width=550,height=500,status=no,resizable=yes,top=50,left=200,scrollbars=yes');return false;"><img src="{ babSkinPath }images/Puces/contact.png" alt="{ t_dirdetail }" style="valign:absmiddle;" border="0" /></a>&nbsp;
