@@ -556,6 +556,7 @@ function getWaitingIdsFlowInstance($scinfo, $idschi, $notify=false)
 
 function getWaitingApproversFlowInstance($idschi, $notify=false)
 {
+	require_once dirname(__FILE__).'/userinfosincl.php';
 	global $babDB;
 	$res = $babDB->db_query("select * from ".BAB_FLOW_APPROVERS_TBL." join ".BAB_FA_INSTANCES_TBL." where ".BAB_FA_INSTANCES_TBL.".id='".$babDB->db_escape_string($idschi)."' and ".BAB_FA_INSTANCES_TBL.".idsch=".BAB_FLOW_APPROVERS_TBL.".id");
 	$result = array();
@@ -602,11 +603,11 @@ function getWaitingApproversFlowInstance($idschi, $notify=false)
 				case 2:
 					if( in_array(1, $result)) // registered users
 						{
-						$res2 = $babDB->db_query("select id from ".BAB_USERS_TBL." where is_confirmed='1' and disabled='0'");
+						$res2 = $babDB->db_query("select id from ".BAB_USERS_TBL." where ".bab_userInfos::queryAllowedUsers());
 						}
 					else
 						{
-						$res2 = $babDB->db_query("select distinct ut.id from ".BAB_USERS_TBL." ut left join ".BAB_USERS_GROUPS_TBL." ugt on ugt.id_object=ut.id where ut.is_confirmed='1' and ut.disabled='0' and ugt.id_group in (".$babDB->quote($result).")");
+						$res2 = $babDB->db_query("select distinct ut.id from ".BAB_USERS_TBL." ut left join ".BAB_USERS_GROUPS_TBL." ugt on ugt.id_object=ut.id where ".bab_userInfos::queryAllowedUsers('ut')." and ugt.id_group in (".$babDB->quote($result).")");
 						}
 
 					$ret = array();

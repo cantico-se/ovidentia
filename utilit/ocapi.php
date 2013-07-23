@@ -478,8 +478,8 @@ function bab_OCGetEntityTypes($entityId)
  * 		'id_dir_entry' => directory entry id (@see bab_getDirEntry)
  * 		'role_type' =>  1 = Superior, 2 = Temporary employee, 3 = Members, 0 = Other collaborators
  * 		'role_name' => The role title
- * 		'user_disabled' => 1 = disabled, 0 = not disabled
- * 		'user_confirmed' => 1 = confirmed, 0 = not confirmed
+ * 		'user_disabled' => 1 = disabled, 0 = not disabled		// deprecated : allways not disabled
+ * 		'user_confirmed' => 1 = confirmed, 0 = not confirmed	// deprecated : allways confirmed
  * 		'sn' =>	The member's surname (last name)
  * 		'givenname' => The member's given name (first name)
  * )
@@ -495,6 +495,7 @@ function bab_OCGetEntityTypes($entityId)
 function bab_OCSelectEntityCollaborators($entityId, $useNameOrder = true)
 {
 	global $babDB, $babBody;
+	require_once dirname(__FILE__).'/userinfosincl.php';
 
 	$sql = 'SELECT users.id_user AS id_dir_entry,';
 	$sql .= '      roles.type AS role_type,';
@@ -509,6 +510,7 @@ function bab_OCSelectEntityCollaborators($entityId, $useNameOrder = true)
 	$sql .= ' LEFT JOIN ' . BAB_DBDIR_ENTRIES_TBL . ' AS dir_entries ON users.id_user = dir_entries.id';
 	$sql .= ' LEFT JOIN ' . BAB_USERS_TBL . ' AS babusers ON dir_entries.id_user = babusers.id';
 	$sql .= ' WHERE roles.id_entity = ' . $babDB->quote($entityId);
+	$sql .= ' AND '.bab_userInfos::queryAllowedUsers('babusers');
 	$sql .= ' ORDER BY roles.ordering ASC, '; // We want role types to appear in the order 1,2,3,0
 	if ($useNameOrder) {
 		$sql .= ($babBody->nameorder[0] === 'F') ?

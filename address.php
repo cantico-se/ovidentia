@@ -138,7 +138,7 @@ function listAddress($pos)
 		 */
 		private function loadUsers()
 			{
-
+			require_once dirname(__FILE__).'/utilit/userinfosincl.php';
 			global $babDB;
 
 			$req = "
@@ -149,7 +149,7 @@ function listAddress($pos)
 				WHERE 
 					p3.id=p4.id_user 
 					AND ".$this->namesearch." like '".$babDB->db_escape_like($this->pos)."%' 
-					AND p3.disabled = '0' 
+					AND ".bab_userInfos::queryAllowedUsers('p3')." 
 
 				ORDER BY ".$this->namesearch.", ".$this->namesearch2." asc
 			";
@@ -167,6 +167,7 @@ function listAddress($pos)
 		private function loadGroupsMembers()
 			{
 			global $babDB;
+			require_once dirname(__FILE__).'/utilit/userinfosincl.php';
 			global $BAB_SESS_USERID;
 
 			$req = "
@@ -182,7 +183,7 @@ function listAddress($pos)
 					AND p1.id_group = p2.id_group 
 					AND p3.id=p2.id_object 
 					AND ".$this->namesearch." like '".$babDB->db_escape_like($this->pos)."%' 
-					AND p3.disabled = '0' 
+					AND ".bab_userInfos::queryAllowedUsers('p3')." 
 
 				ORDER BY ".$this->namesearch.", ".$this->namesearch2." asc
 			";

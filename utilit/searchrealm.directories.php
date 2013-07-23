@@ -421,7 +421,7 @@ class bab_SearchRealmDirectories extends bab_SearchRealm {
 	 */
 	public function search(bab_SearchCriteria $criteria) {
 
-
+		require_once dirname(__FILE__).'/userinfosincl.php';
 		$locations = $this->getSearchLocations();
 
 		if (!isset($locations['dbgroup']) && !isset($locations['dbdirectory'])) {
@@ -479,7 +479,7 @@ class bab_SearchRealmDirectories extends bab_SearchRealm {
 		";
 		if( $this->containAllRegisteredUsers())
 			{
-			$req .= " LEFT JOIN ".BAB_USERS_TBL." dis ON dis.id = e.id_user AND dis.disabled='0' 
+			$req .= " LEFT JOIN ".BAB_USERS_TBL." dis ON dis.id = e.id_user AND ".bab_userInfos::queryAllowedUsers('dis')." 
 						LEFT JOIN ".BAB_DB_DIRECTORIES_TBL." d ON d.id_group=".$babDB->quote(BAB_REGISTERED_GROUP)." 
 				";
 			}
@@ -487,7 +487,7 @@ class bab_SearchRealmDirectories extends bab_SearchRealm {
 			{
 			$req .= " LEFT JOIN ".BAB_USERS_GROUPS_TBL." u ON u.id_object = e.id_user 
 					AND u.id_group IN (".$babDB->quote($this->getSearchableGroups()).") 
-					LEFT JOIN ".BAB_USERS_TBL." dis ON dis.id = u.id_object AND dis.disabled='0' 
+					LEFT JOIN ".BAB_USERS_TBL." dis ON dis.id = u.id_object AND ".bab_userInfos::queryAllowedUsers('dis')."  
 					LEFT JOIN ".BAB_DB_DIRECTORIES_TBL." d ON d.id_group=u.id_group  
 				";
 			}

@@ -203,6 +203,7 @@ class bab_SearchRealmArticles_SearchTemplate extends bab_SearchTemplate {
 		global $babDB;
 	
 		include_once $GLOBALS['babInstallPath'].'utilit/topincl.php';
+		include_once $GLOBALS['babInstallPath'].'utilit/userinfosincl.php';
 
 		$babBody->addJavascriptFile($GLOBALS['babScriptPath'].'bab_dialog.js');
 		
@@ -241,7 +242,7 @@ class bab_SearchRealmArticles_SearchTemplate extends bab_SearchTemplate {
 				'.BAB_USERS_TBL.' u, 
 				'.BAB_ARTICLES_TBL.' a 
 			WHERE 
-				u.disabled=\'0\' 
+				'.bab_userInfos::queryAllowedUsers('u').' 
 				AND a.id_author=u.id 
 				AND a.id_topic IN('.$babDB->quote(bab_getUserIdObjects(BAB_TOPICSVIEW_GROUPS_TBL)).')
 

@@ -29,6 +29,7 @@ require_once dirname(__FILE__).'/utilit/registerglobals.php';
 include_once $babInstallPath.'utilit/dirincl.php';
 include_once $babInstallPath.'utilit/ldap.php';
 include_once $babInstallPath.'utilit/tempfile.php';
+include_once $babInstallPath.'utilit/userinfosincl.php';
 include_once $babInstallPath.'admin/register.php';
 
 function trimQuotes($str)
@@ -479,7 +480,7 @@ function browseDbDirectory($id, $pos, $xf, $badd, $disable_email='N')
 									".implode(' ',$leftjoin)." 
 									WHERE u.id_group='".$babDB->db_escape_string($this->idgroup)."' 
 									AND u2.id=e.id_user 
-									AND u2.disabled='0' 
+									AND ".bab_userInfos::queryAllowedUsers('u2')." 
 									AND u.id_object=e.id_user 
 									AND e.id_directory='0'";
 						}
@@ -489,7 +490,7 @@ function browseDbDirectory($id, $pos, $xf, $badd, $disable_email='N')
 						".implode(' ',$leftjoin)." 
 						WHERE 
 							u.id=e.id_user 
-							AND u.disabled='0' 
+							AND ".bab_userInfos::queryAllowedUsers('u')." 
 							AND e.id_directory='0'";
 						}
 					else
@@ -1765,11 +1766,11 @@ function assignList($id)
 					{
 					if( $arrgrpids === false )
 						{ 
-						$req = "select ut.id, ut.firstname, ut.lastname from ".BAB_USERS_TBL." ut where ut.disabled=0 AND lastname like '" . $babDB->db_escape_string($this->pos) . "%' order by lastname, firstname asc";
+						$req = "select ut.id, ut.firstname, ut.lastname from ".BAB_USERS_TBL." ut where ".bab_userInfos::queryAllowedUsers('ut')." AND lastname like '" . $babDB->db_escape_string($this->pos) . "%' order by lastname, firstname asc";
 						}
 					else
 						{
-						$req = "select distinct ut.id, ut.firstname, ut.lastname from ".BAB_USERS_TBL." ut left join ".BAB_USERS_GROUPS_TBL." ug on ut.id=ug.id_object where ut.disabled=0 and ug.id in (".$babDB->quote($arrgrpids).") AND lastname like '" . $babDB->db_escape_string($this->pos) . "%' order by lastname, firstname asc";
+						$req = "select distinct ut.id, ut.firstname, ut.lastname from ".BAB_USERS_TBL." ut left join ".BAB_USERS_GROUPS_TBL." ug on ut.id=ug.id_object where ".bab_userInfos::queryAllowedUsers('ut')." and ug.id in (".$babDB->quote($arrgrpids).") AND lastname like '" . $babDB->db_escape_string($this->pos) . "%' order by lastname, firstname asc";
 						}
 
 					$this->fullname = bab_translate("Lastname"). " " . bab_translate("Firstname");
@@ -1780,11 +1781,11 @@ function assignList($id)
 					{
 					if( $arrgrpids === false )
 						{
-						$req = "select ut.id, ut.firstname, ut.lastname from ".BAB_USERS_TBL." ut where ut.disabled=0 AND firstname like '" . $babDB->db_escape_string($this->pos) . "%' order by firstname, lastname asc";
+						$req = "select ut.id, ut.firstname, ut.lastname from ".BAB_USERS_TBL." ut where ".bab_userInfos::queryAllowedUsers('ut')." AND firstname like '" . $babDB->db_escape_string($this->pos) . "%' order by firstname, lastname asc";
 						}
 					else
 						{
-						$req = "select distinct ut.id, ut.firstname, ut.lastname from ".BAB_USERS_TBL." ut left join ".BAB_USERS_GROUPS_TBL." ug on ut.id=ug.id_object where ut.disabled=0 and ug.id in (".$babDB->quote($arrgrpids).") AND firstname like '" . $babDB->db_escape_string($this->pos) . "%' order by firstname, lastname asc";
+						$req = "select distinct ut.id, ut.firstname, ut.lastname from ".BAB_USERS_TBL." ut left join ".BAB_USERS_GROUPS_TBL." ug on ut.id=ug.id_object where ".bab_userInfos::queryAllowedUsers('ut')." and ug.id in (".$babDB->quote($arrgrpids).") AND firstname like '" . $babDB->db_escape_string($this->pos) . "%' order by firstname, lastname asc";
 						}
 
 					$this->fullname = bab_translate("Firstname"). " " . bab_translate("Lastname");
@@ -1872,22 +1873,22 @@ function assignList($id)
 					{
 					if( $this->arrgrpids === false )
 						{ 
-						$req = "select ut.id, ut.firstname, ut.lastname from ".BAB_USERS_TBL." ut where ut.disabled=0 AND lastname like '" . $babDB->db_escape_string($this->selectname) . "%' order by lastname, firstname asc";
+						$req = "select ut.id, ut.firstname, ut.lastname from ".BAB_USERS_TBL." ut where ".bab_userInfos::queryAllowedUsers('ut')." AND lastname like '" . $babDB->db_escape_string($this->selectname) . "%' order by lastname, firstname asc";
 						}
 					else
 						{
-						$req = "select distinct ut.id, ut.firstname, ut.lastname from ".BAB_USERS_TBL." ut left join ".BAB_USERS_GROUPS_TBL." ug on ut.id=ug.id_object where ut.disabled=0 and ug.id in (".$babDB->quote($this->arrgrpids).") AND lastname like '" . $babDB->db_escape_string($this->selectname) . "%' order by lastname, firstname asc";
+						$req = "select distinct ut.id, ut.firstname, ut.lastname from ".BAB_USERS_TBL." ut left join ".BAB_USERS_GROUPS_TBL." ug on ut.id=ug.id_object where ".bab_userInfos::queryAllowedUsers('ut')." and ug.id in (".$babDB->quote($this->arrgrpids).") AND lastname like '" . $babDB->db_escape_string($this->selectname) . "%' order by lastname, firstname asc";
 						}
 					}
 				else
 					{
 					if( $this->arrgrpids === false )
 						{
-						$req = "select ut.id, ut.firstname, ut.lastname from ".BAB_USERS_TBL." ut where ut.disabled=0 AND firstname like '" . $babDB->db_escape_string($this->selectname) . "%' order by firstname, lastname asc";
+						$req = "select ut.id, ut.firstname, ut.lastname from ".BAB_USERS_TBL." ut where ".bab_userInfos::queryAllowedUsers('ut')." AND firstname like '" . $babDB->db_escape_string($this->selectname) . "%' order by firstname, lastname asc";
 						}
 					else
 						{
-						$req = "select distinct ut.id, ut.firstname, ut.lastname from ".BAB_USERS_TBL." ut left join ".BAB_USERS_GROUPS_TBL." ug on ut.id=ug.id_object where ut.disabled=0 and ug.id in (".$babDB->quote($this->arrgrpids).") AND firstname like '" . $babDB->db_escape_string($this->selectname) . "%' order by firstname, lastname asc";
+						$req = "select distinct ut.id, ut.firstname, ut.lastname from ".BAB_USERS_TBL." ut left join ".BAB_USERS_GROUPS_TBL." ug on ut.id=ug.id_object where ".bab_userInfos::queryAllowedUsers('ut')." and ug.id in (".$babDB->quote($this->arrgrpids).") AND firstname like '" . $babDB->db_escape_string($this->selectname) . "%' order by firstname, lastname asc";
 						}
 					}
 				$res = $babDB->db_query($req);

@@ -379,6 +379,7 @@ class Func_CalendarBackend extends bab_functionality
 	public function getAccessiblePersonalCalendars($access_user = null, $calendartype = null)
 	{
 		global $babDB;
+		require_once dirname(__FILE__).'/userinfosincl.php';
 		
 		if (null == $access_user)
 		{
@@ -397,7 +398,7 @@ class Func_CalendarBackend extends bab_functionality
 				and u.id=ct.owner 
 				and cut.id_user='".$babDB->db_escape_string($access_user)."' 
 				and ct.actif='Y' 
-				and u.disabled='0'
+				and ".bab_userInfos::queryAllowedUsers('u')." 
 		";
 		
 		if (null !== $calendartype)

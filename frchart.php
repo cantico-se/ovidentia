@@ -580,6 +580,8 @@ function displayUsersList($ocid, $oeid, $update, $pos, $xf, $q, $entityId = null
 			global $babBody;
 
 			require_once $GLOBALS['babInstallPath'] . 'utilit/ocapi.php';
+			require_once $GLOBALS['babInstallPath'] . 'utilit/userinfosincl.php';
+			
 			$this->allname = bab_translate("All");
 			$this->search = bab_translate("Search");
 			$this->t_entity = bab_translate("Entity");
@@ -678,7 +680,7 @@ function displayUsersList($ocid, $oeid, $update, $pos, $xf, $q, $entityId = null
 								".implode(' ',$leftjoin)." 
 								WHERE u.id_group='".$this->idgroup."' 
 								AND u2.id=e.id_user 
-								AND u2.disabled='0' 
+								AND ".bab_userInfos::queryAllowedUsers('u2')."
 								AND u.id_object=e.id_user 
 								AND e.id_directory='0'";
 					}
@@ -688,7 +690,7 @@ function displayUsersList($ocid, $oeid, $update, $pos, $xf, $q, $entityId = null
 					".implode(' ',$leftjoin)." 
 					WHERE 
 						u.id=e.id_user 
-						AND u.disabled='0' 
+						AND ".bab_userInfos::queryAllowedUsers('u')." 
 						AND e.id_directory='0'";
 					}
 				else

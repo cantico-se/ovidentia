@@ -207,13 +207,13 @@ class bab_userInfos {
 		global $babDB;
 		
 		if ($disabled && $nonConfirmed) {
-			return '';
+			return 'TRUE';
 		}
 		
 		if (null === $users_tbl) {
 			$prefix = '';
 		} else {
-			$prefix = $users_tbl.'.';
+			$prefix = $babDB->backTick($users_tbl).'.';
 		}
 		
 		$criterions = array();

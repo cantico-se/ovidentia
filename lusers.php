@@ -26,6 +26,7 @@
 */
 include_once 'base.php';
 require_once dirname(__FILE__).'/utilit/registerglobals.php';
+require_once dirname(__FILE__).'/utilit/userinfosincl.php';
 
 function browseUsers($pos, $cb)
 	{
@@ -65,7 +66,7 @@ function browseUsers($pos, $cb)
 				$req = "select ".BAB_GROUPS_TBL.".id from ".BAB_GROUPS_TBL." join ".BAB_USERS_GROUPS_TBL." where id_object='".$babDB->db_escape_string($GLOBALS['BAB_SESS_USERID'])."' and ".BAB_GROUPS_TBL.".id=".BAB_USERS_GROUPS_TBL.".id_group";
 				$resgroups = $babDB->db_query($req);
 
-				$reqa = "select distinct ".BAB_USERS_TBL.".id, ".BAB_USERS_TBL.".firstname, ".BAB_USERS_TBL.".lastname, ".BAB_USERS_TBL.".nickname from ".BAB_USERS_TBL." join ".BAB_USERS_GROUPS_TBL." where is_confirmed ='1' and disabled='0'";
+				$reqa = "select distinct ".BAB_USERS_TBL.".id, ".BAB_USERS_TBL.".firstname, ".BAB_USERS_TBL.".lastname, ".BAB_USERS_TBL.".nickname from ".BAB_USERS_TBL." join ".BAB_USERS_GROUPS_TBL." where ".bab_userInfos::queryAllowedUsers();
 				if( $babDB->db_num_rows($resgroups) > 0 )
 					{
 					$arr = $babDB->db_fetch_array($resgroups);
@@ -78,7 +79,7 @@ function browseUsers($pos, $cb)
 					}
 				}
 			else
-				$reqa = "select * from ".BAB_USERS_TBL." where is_confirmed ='1' and disabled='0'";
+				$reqa = "select * from ".BAB_USERS_TBL." where ".bab_userInfos::queryAllowedUsers();
 
 			if( mb_strlen($pos) > 0 && $pos[0] == "-" )
 				{

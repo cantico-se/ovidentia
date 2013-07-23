@@ -24,6 +24,7 @@
 include_once 'base.php';
 include_once $GLOBALS['babInstallPath'].'utilit/dirincl.php';
 include_once $GLOBALS['babInstallPath'].'utilit/omlincl.php';
+include_once $GLOBALS['babInstallPath'].'utilit/userinfosincl.php';
 
 class Func_Ovml_Container_DbDirectories extends Func_Ovml_Container
 {
@@ -351,7 +352,7 @@ class Func_Ovml_Container_DbDirectoryMembers extends Func_Ovml_Container
 									".implode(' ',$leftjoin)." 
 									WHERE u.id_group='".$idgroup."' 
 									AND u2.id=e.id_user 
-									AND u2.disabled='0' 
+									AND ".bab_userInfos::queryAllowedUsers('u2')." 
 									AND u.id_object=e.id_user 
 									AND e.id_directory='0'";
 						}
@@ -361,7 +362,7 @@ class Func_Ovml_Container_DbDirectoryMembers extends Func_Ovml_Container
 						".implode(' ',$leftjoin)." 
 						WHERE 
 							u.id=e.id_user 
-							AND u.disabled='0' 
+							AND ".bab_userInfos::queryAllowedUsers('u')." 
 							AND e.id_directory='0'";
 						}
 					else

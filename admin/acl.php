@@ -492,25 +492,22 @@ function aclGetAccessUsers($table, $id_object, $activeOrderBy=NULL, $returnDisab
 	
 	$groups = aclGetAccessGroups($table, $id_object);
 	$query = '';
-	$where = bab_userInfos::queryAllowedUsers(null, $returnNonConfirmedUsers, $returnDisabledUsers);
+	
 	
 	if (isset($groups[BAB_REGISTERED_GROUP]) || isset($groups[BAB_ALLUSERS_GROUP])) {
+		
+		$where = bab_userInfos::queryAllowedUsers(null, $returnNonConfirmedUsers, $returnDisabledUsers);
+		
 		$query = 'SELECT `id`, `firstname`, `lastname`, `email` 
-					FROM '.BAB_USERS_TBL.' ';
-		
-		if ($where) {
-			$query .= ' WHERE '.$where;
-		}
-		
-		
+					FROM '.BAB_USERS_TBL.' WHERE '.$where;
+
 	} else {
+		
+		$where = bab_userInfos::queryAllowedUsers('u', $returnNonConfirmedUsers, $returnDisabledUsers);
+		
 		$query = 'SELECT `u`.id,`u`.`firstname`, `u`.`lastname`,`u`.`email` 
 					FROM '.BAB_USERS_TBL.' `u`, '.BAB_USERS_GROUPS_TBL.' `g`
-						WHERE `g`.`id_object`=`u`.`id` AND `g`.`id_group` IN('.$babDB->quote($groups).') ';
-		
-		if ($where) {
-			$query .= '	AND '.$where;
-		}
+						WHERE `g`.`id_object`=`u`.`id` AND `g`.`id_group` IN('.$babDB->quote($groups).') AND '.$where;
 	}
 	
 	if (isset($activeOrderBy)) {

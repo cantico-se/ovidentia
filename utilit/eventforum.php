@@ -252,6 +252,7 @@ class bab_eventForumPost extends bab_event implements bab_eventNotifyRecipients
 	protected function getFromUserOptions(Array $types)
 	{
 		global $babDB;
+		require_once dirname(__FILE__).'/userinfosincl.php';
 
 		$users = array();
 
@@ -266,7 +267,7 @@ class bab_eventForumPost extends bab_event implements bab_eventNotifyRecipients
 				'.BAB_USERS_TBL.' u
 			WHERE
 				u.id = n.id_user
-				AND u.disabled = 0
+				AND '.bab_userInfos::queryAllowedUsers('u').' 
 				AND n.id_forum='.$babDB->quote($this->forum_id).'
 				AND n.forum_notification IN('.$babDB->quote($types).')
 

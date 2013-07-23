@@ -206,6 +206,7 @@ class bab_selectUsersBase
 		$sExcludedUserIdWhereClause = $this->processEcludedUserId();
 
 		global $babDB;
+		require_once dirname(__FILE__).'/userinfosincl.php';
 		
 		$sQuery = 
 			'SELECT ' .
@@ -215,9 +216,7 @@ class bab_selectUsersBase
 			'FROM ' . 
 				BAB_USERS_TBL . ' usr ' . 
 			$sUsrGrpInnerJoin . ' ' .
-			'WHERE ' .
-				'disabled=\'0\' AND ' .
-				'is_confirmed=\'1\'';
+			'WHERE ' .bab_userInfos::queryAllowedUsers('usr');
 		
 		if('*' !== $sSearchText)
 		{

@@ -793,6 +793,7 @@ class bab_OviPersonalCalendar extends bab_OviEventCalendar implements bab_Person
 	public function initFromUser($id_user, $access_user = null)
 	{
 		global $babDB;
+		require_once dirname(__FILE__).'/userinfosincl.php';
 
 		if (null === $access_user)
 		{
@@ -833,7 +834,7 @@ class bab_OviPersonalCalendar extends bab_OviEventCalendar implements bab_Person
 					ct.id=cut.id_cal
 					and u.id=ct.owner
 					and ct.actif='Y'
-					and disabled='0' 
+					and ".bab_userInfos::queryAllowedUsers('u')." 
 					and cut.id_user=".$babDB->quote($access_user);
 			
 			$res = $babDB->db_query($query);

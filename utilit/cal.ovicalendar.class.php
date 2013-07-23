@@ -140,6 +140,8 @@ function bab_cal_getResourceCalendars($access_user, $calendars = null)
 function bab_cal_getPersonalCalendars($access_user, $calendars = null)
 {
 	require_once dirname(__FILE__).'/cal.eventcalendar.class.php';
+	require_once dirname(__FILE__).'/userinfosincl.php';
+	
 	global $babDB;	
 
 	$query = "
@@ -153,7 +155,7 @@ function bab_cal_getPersonalCalendars($access_user, $calendars = null)
 		where 
 			u.id=ct.owner 
 			and ct.actif='Y' 
-			and u.disabled='0' 
+			and ".bab_userInfos::queryAllowedUsers('u')."  
 			AND u.id=o.id_user 
 	";
 	$res = $babDB->db_query($query);

@@ -848,6 +848,7 @@ class bab_dirEntryPhoto {
 function getDirEntry($id, $type, $id_directory, $accessCtrl) 
 	{
 	global $babDB;
+	require_once dirname(__FILE__).'/userinfosincl.php';
 	require_once dirname(__FILE__).'/iterator/iterator.php';
 
 	if (BAB_DIR_ENTRY_ID_USER === $type && false === $id) {
@@ -1015,9 +1016,8 @@ function getDirEntry($id, $type, $id_directory, $accessCtrl)
 		$test_on_directory = '';
 		}
 		
-
-	$res = $babDB->db_query("
-	
+		
+	$_query = "
 				SELECT  
 					e.id,
 					e.cn,
@@ -1056,18 +1056,20 @@ function getDirEntry($id, $type, $id_directory, $accessCtrl)
 					".$str_leftjoin." 
 				WHERE 
 					".$colname." IN(".$babDB->quote($id).") ".$test_on_directory." 
+	";
+	
+	if ($accessCtrl)
+	{
+		$_query .= ' AND '.bab_userInfos::queryAllowedUsers('dis');
+	}
 
-	");
+	$res = $babDB->db_query($_query);
 
 
 	$return = array();
 
 
 	while( $arr = $babDB->db_fetch_assoc($res)) {
-	
-		if ($accessCtrl && 1 == $arr['disabled']) {
-			continue;
-		}
 		
 		$return[$arr['id_user']] = $entries;
 		$id_user = $arr['id_user'];

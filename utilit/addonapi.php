@@ -1306,11 +1306,14 @@ function bab_getPrimaryGroupId($userid)
 
 /**
  * Get groups members
- * @param	int|array	$ids	id_group or an array of id_group
+ * @param	int|array	$ids			id_group or an array of id_group
+ * @param	bool		$nonConfirmed	Get non confirmed users
+ * @param	bool		$disabled		Get disabled users
  * @return false|array
  */
-function bab_getGroupsMembers($ids)
+function bab_getGroupsMembers($ids, $nonConfirmed = false, $disabled = false)
 	{
+	require_once dirname(__FILE__).'/userinfosincl.php';
 	global $babDB;
 	if (!is_array($ids))
 		{
@@ -1321,7 +1324,7 @@ function bab_getGroupsMembers($ids)
 		{
 		if( in_array(BAB_REGISTERED_GROUP, $ids))
 			{
-			$req = "SELECT id, email, firstname, lastname FROM ".BAB_USERS_TBL." where disabled='0' and is_confirmed='1'";
+			$req = "SELECT id, email, firstname, lastname FROM ".BAB_USERS_TBL." where ".bab_userInfos::queryAllowedUsers(null, $nonConfirmed, $disabled);
 			}
 		else
 			{
@@ -1339,7 +1342,12 @@ function bab_getGroupsMembers($ids)
 					}
 				}
 
-			$req = "SELECT distinct u.id, u.email, u.firstname, u.lastname FROM ".BAB_USERS_GROUPS_TBL." g, ".BAB_USERS_TBL." u WHERE u.disabled='0' and u.is_confirmed='1' and g.id_group IN (".$babDB->quote($ids).") AND g.id_object=u.id";
+			$req = "SELECT distinct u.id, u.email, u.firstname, u.lastname FROM ".BAB_USERS_GROUPS_TBL." g, ".BAB_USERS_TBL." u 
+				WHERE 
+					".bab_userInfos::queryAllowedUsers('u', $nonConfirmed, $disabled)." 
+					and g.id_group IN (".$babDB->quote($ids).") 
+					AND g.id_object=u.id
+				";
 			}
 
 

@@ -141,7 +141,17 @@ function listUsers($pos, $grp, $deleteAction)
 						}
 					else
 						{
-						$req .= ", ".BAB_USERS_GROUPS_TBL." ug, ".BAB_GROUPS_TBL." g where u.disabled != '1' and ug.id_object=u.id and ug.id_group=g.id AND g.lf>='".$babDB->db_escape_string($babBody->currentDGGroup['lf'])."' AND g.lr<='".$babDB->db_escape_string($babBody->currentDGGroup['lr'])."' and u.".$babDB->db_escape_string($this->namesearch2)." like '".$babDB->db_escape_string($this->pos)."%' order by u.".$babDB->db_escape_string($this->namesearch2).", u.".$babDB->db_escape_string($this->namesearch)." asc";
+						$req .= ", ".BAB_USERS_GROUPS_TBL." ug, ".BAB_GROUPS_TBL." g 
+							where 
+								".bab_userInfos::queryAllowedUsers('u')." 
+								and ug.id_object=u.id 
+								and ug.id_group=g.id 
+								AND g.lf>='".$babDB->db_escape_string($babBody->currentDGGroup['lf'])."' 
+								AND g.lr<='".$babDB->db_escape_string($babBody->currentDGGroup['lr'])."' 
+								and u.".$babDB->db_escape_string($this->namesearch2)." like '".$babDB->db_escape_string($this->pos)."%' 
+							
+							order by u.".$babDB->db_escape_string($this->namesearch2).", u.".$babDB->db_escape_string($this->namesearch)." asc 
+						";
 						}
 	
 					//$this->fullname = bab_toHtml(bab_composeUserName(bab_translate("Lastname"),bab_translate("Firstname")));
@@ -153,8 +163,19 @@ function listUsers($pos, $grp, $deleteAction)
 					$this->ord = "";
 					if( $babBody->currentAdmGroup == 0 || ($this->bupdate && $babBody->currentDGGroup['battach'] == 'Y' && $this->grp == $babBody->currentDGGroup['id_group']))
 						$req .= " where ".$babDB->db_escape_string($this->namesearch)." like '".$babDB->db_escape_string($this->pos)."%' order by ".$babDB->db_escape_string($this->namesearch).", ".$babDB->db_escape_string($this->namesearch2)." asc";
-					else
-						$req .= ", ".BAB_USERS_GROUPS_TBL." ug, ".BAB_GROUPS_TBL." g where u.disabled != '1' and ug.id_object=u.id and ug.id_group=g.id AND g.lf>='".$babDB->db_escape_string($babBody->currentDGGroup['lf'])."' AND g.lr<='".$babDB->db_escape_string($babBody->currentDGGroup['lr'])."' and u.".$babDB->db_escape_string($this->namesearch)." like '".$babDB->db_escape_string($this->pos)."%' order by u.".$babDB->db_escape_string($this->namesearch).", u.".$babDB->db_escape_string($this->namesearch2)." asc";
+					else {
+						$req .= ", ".BAB_USERS_GROUPS_TBL." ug, ".BAB_GROUPS_TBL." g 
+							where 
+								".bab_userInfos::queryAllowedUsers('u')." 
+								and ug.id_object=u.id 
+								and ug.id_group=g.id 
+								AND g.lf>='".$babDB->db_escape_string($babBody->currentDGGroup['lf'])."' 
+								AND g.lr<='".$babDB->db_escape_string($babBody->currentDGGroup['lr'])."' 
+								and u.".$babDB->db_escape_string($this->namesearch)." like '".$babDB->db_escape_string($this->pos)."%' 
+								
+							order by u.".$babDB->db_escape_string($this->namesearch).", u.".$babDB->db_escape_string($this->namesearch2)." asc
+						";
+					}
 					//$this->fullname = bab_toHtml(bab_composeUserName(bab_translate("Firstname"),bab_translate("Lastname")));
 					
 					$this->fullnameurl = bab_toHtml($GLOBALS['babUrlScript']."?tg=users&idx=chg&pos=".urlencode($this->ord.$this->pos)."&grp=".urlencode($this->grp));
@@ -164,7 +185,7 @@ function listUsers($pos, $grp, $deleteAction)
 				else
 					$this->fullname = bab_toHtml(bab_translate("Firstname") . ' ' . bab_translate("Lastname"));
 				
-				//bab_debug($req);
+				// bab_debug($req);
 				$this->res = $babDB->db_query($req);
 			}
 			else
@@ -288,7 +309,7 @@ function listUsers($pos, $grp, $deleteAction)
 					', ' . BAB_USERS_GROUPS_TBL . ' ug' . 
 					', ' . BAB_GROUPS_TBL . ' g ';	
 
-				$aWhereClauseItem[] = 'u.disabled != \'1\'';
+				$aWhereClauseItem[] = bab_userInfos::queryAllowedUsers('u');
 				$aWhereClauseItem[] = 'ug.id_object = u.id';
 				$aWhereClauseItem[] = 'ug.id_group = g.id';
 				$aWhereClauseItem[] = 'g.lf >= ' . $babDB->db_escape_string($babBody->currentDGGroup['lf']);
