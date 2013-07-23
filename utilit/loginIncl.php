@@ -112,7 +112,7 @@ class Func_PortalAuthentication extends bab_functionality
 		
 
 		$aUser = bab_userInfos::getRow($iIdUser);
-		if (!is_null($aUser)) {
+		if ($aUser) {
 			$today = date('Y-m-d');
 			if (($aUser['disabled'] == '1') ||
 				(($aUser['validity_start'] != '0000-00-00' && $today < $aUser['validity_start'])
@@ -935,6 +935,22 @@ function bab_getUserByLoginPassword($sLogin, $sPassword)
 }
 
 
+/**
+ * @deprecated use bab_userInfos::getRow() instead
+ * @param int $iIdUser
+ * @return array
+ */
+function bab_getUserById($iIdUser)
+{
+	$row = bab_userInfos::getRow($iIdUser);
+	
+	if (false === $row)
+	{
+		return null;
+	}
+	
+	return $row;
+}
 
 
 function bab_getUserByCookie($sCookie)
@@ -1581,7 +1597,7 @@ function bab_setUserSessionInfo($iIdUser)
 
 	$aUser = bab_userInfos::getRow($iIdUser);
 	
-	if(!is_null($aUser))
+	if($aUser)
 	{
 		$_SESSION['BAB_SESS_NICKNAME']	= $aUser['nickname'];
 		$_SESSION['BAB_SESS_USER']		= bab_composeUserName($aUser['firstname'], $aUser['lastname']);

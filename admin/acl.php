@@ -24,7 +24,7 @@
 include_once "base.php";
 require_once $GLOBALS['babInstallPath']."utilit/grptreeincl.php";
 require_once $GLOBALS['babInstallPath']."utilit/session.class.php";
-	
+require_once $GLOBALS['babInstallPath']."utilit/userinfosincl.php";	
 	
 class macl
 {
@@ -492,53 +492,35 @@ function aclGetAccessUsers($table, $id_object, $activeOrderBy=NULL, $returnDisab
 	
 	$groups = aclGetAccessGroups($table, $id_object);
 	$query = '';
-	$today = date('Y-m-d');
+	$where = bab_userInfos::queryAllowedUsers(null, $returnNonConfirmedUsers, $returnDisabledUsers);
+	
 	if (isset($groups[BAB_REGISTERED_GROUP]) || isset($groups[BAB_ALLUSERS_GROUP])) {
 		$query = 'SELECT `id`, `firstname`, `lastname`, `email` 
 					FROM '.BAB_USERS_TBL.' ';
-		if ($returnDisabledUsers && $returnNonConfirmedUsers) {
-			//no condition
+		
+		if ($where) {
+			$query .= ' WHERE '.$where;
 		}
-		if ($returnDisabledUsers && !$returnNonConfirmedUsers) {
-			$query .= '		WHERE `is_confirmed` = \'1\'';
-		}
-		if (!$returnDisabledUsers && $returnNonConfirmedUsers) {
-			$query .= '		WHERE `disabled` = \'0\' AND (`validity_end` = \'0000-00-00\' OR `validity_end` >= \''.$today.'\')';
-		}
-		if (!$returnDisabledUsers && !$returnNonConfirmedUsers) {
-			$query .= '		WHERE `disabled` = \'0\' AND `is_confirmed` = \'1\' AND (`validity_end` = \'0000-00-00\' OR `validity_end` >= \''.$today.'\')';
-		}
-		if (isset($activeOrderBy)) {
-			if ($activeOrderBy == 'lastname') {
-				$query .= ' ORDER by `lastname`,`firstname`';
-			} else {
-				$query .= ' ORDER by `firstname`,`lastname`';
-			}
-		}
+		
+		
 	} else {
 		$query = 'SELECT `u`.id,`u`.`firstname`, `u`.`lastname`,`u`.`email` 
 					FROM '.BAB_USERS_TBL.' `u`, '.BAB_USERS_GROUPS_TBL.' `g`
 						WHERE `g`.`id_object`=`u`.`id` AND `g`.`id_group` IN('.$babDB->quote($groups).') ';
-		if ($returnDisabledUsers && $returnNonConfirmedUsers) {
-			//no condition
-		}
-		if ($returnDisabledUsers && !$returnNonConfirmedUsers) {
-			$query .= '		AND `u`.`is_confirmed` = \'1\'';
-		}
-		if (!$returnDisabledUsers && $returnNonConfirmedUsers) {
-			$query .= '		AND `u`.`disabled` = \'0\' AND (`u`.`validity_end` = \'0000-00-00\' OR `u`.`validity_end` >= \''.$today.'\')';
-		}
-		if (!$returnDisabledUsers && !$returnNonConfirmedUsers) {
-			$query .= '		AND `u`.`disabled` = \'0\' AND `u`.`is_confirmed` = \'1\' AND (`u`.`validity_end` = \'0000-00-00\' OR `u`.`validity_end` >= \''.$today.'\')';
-		}
-		if (isset($activeOrderBy)) {
-			if ($activeOrderBy == 'lastname') {
-				$query .= ' ORDER by `u`.`lastname`,`u`.`firstname`';
-			} else {
-				$query .= ' ORDER by `u`.`firstname`,`u`.`lastname`';
-			}
+		
+		if ($where) {
+			$query .= '	AND '.$where;
 		}
 	}
+	
+	if (isset($activeOrderBy)) {
+		if ($activeOrderBy == 'lastname') {
+			$query .= ' ORDER by `lastname`,`firstname`';
+		} else {
+			$query .= ' ORDER by `firstname`,`lastname`';
+		}
+	}
+	
 	
 	$user = array();
 	if( !empty($query))

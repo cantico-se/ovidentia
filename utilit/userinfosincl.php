@@ -190,6 +190,46 @@ class bab_userInfos {
 			bab_toHtml(self::composeName($id_user))
 		);
 	}
+	
+	
+	
+	/**
+	 * Get where clause for allowed users
+	 * 
+	 * @param	string	$users_tbl			users table name of alias 
+	 * @param	bool	$nonConfirmed		Return non confirmed users
+	 * @param	bool	$disabled			Return disabled users
+	 * 
+	 * @return string
+	 */
+	public static function queryAllowedUsers($users_tbl = null, $nonConfirmed = false, $disabled = false)
+	{
+		global $babDB;
+		
+		if ($disabled && $nonConfirmed) {
+			return '';
+		}
+		
+		if (null === $users_tbl) {
+			$prefix = '';
+		} else {
+			$prefix = $users_tbl.'.';
+		}
+		
+		$criterions = array();
+		
+		if (false === $nonConfirmed) {
+			$criterions[] = $prefix.'`is_confirmed` = \'1\'';
+		}
+		if (false === $disabled) {
+			$today = date('Y-m-d');
+			$criterions[] = $prefix.'`disabled` = \'0\'';
+			$criterions[] = '('.$prefix.'`validity_end` = \'0000-00-00\' OR '.$prefix.'`validity_end` >= \''.$today.'\')';
+			$criterions[] = '('.$prefix.'`validity_start` = \'0000-00-00\' OR '.$prefix.'`validity_start` <= \''.$today.'\')';
+		}
+		
+		return implode(' AND ', $criterions);
+	}
 }
 
 
