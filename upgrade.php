@@ -7052,6 +7052,13 @@ function ovidentia_upgrade($version_base,$version_ini) {
 	bab_removeEventListener('bab_eventUserModified'	, 'bab_vac_onModifyPeriod', 'utilit/vacincl.php');
 	
 	
+	/**
+	 * Upgrade to 9.0.94
+	 */
+	$functionalities->register('WorkingHours'					, $GLOBALS['babInstallPath'].'utilit/workinghoursincl.php');
+	$functionalities->register('WorkingHours/Ovidentia'			, $GLOBALS['babInstallPath'].'utilit/workinghoursincl.php');
+	
+	
 	return true;
 
 }

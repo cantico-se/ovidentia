@@ -1853,67 +1853,44 @@ class bab_cal_OviEventSelect
 
 		if ($users) {
 
-			// the +86400 is usefull for vacations where the $begin date start as 12H and the next date is the next day
-
-			while ($loop->getTimeStamp() < ($endts + 86400)) {
-
-				if ($working) {
-					foreach($users as $id_user) {
-
-						$arr = bab_getWHours($id_user, $loop->getDayOfWeek());
-
-						foreach($arr as $h) {
-							$startHour	= explode(':', $h['startHour']);
-							$endHour	= explode(':', $h['endHour']);
-
-							$beginDate = new BAB_DateTime(
-								$loop->getYear(),
-								$loop->getMonth(),
-								$loop->getDayOfMonth(),
-								$startHour[0],
-								$startHour[1],
-								$startHour[2]
-								);
-
-							$endDate = new BAB_DateTime(
-								$loop->getYear(),
-								$loop->getMonth(),
-								$loop->getDayOfMonth(),
-								$endHour[0],
-								$endHour[1],
-								$endHour[2]
-								);
-
-							if ($nworking && NULL == $previous_end) {
-								$previous_end = $begin; // reference
-							}
-
-							// add non-working period between 2 working period and at the begining
-							if ($nworking && $beginDate->getTimeStamp() > $previous_end->getTimeStamp()) {
-
-								$p = new bab_calendarPeriod;
-								$p->setDates($previous_end, $beginDate);
-								$p->setProperty('SUMMARY', bab_translate('Non-working period'));
-								$p->setData(array('id_user' => $id_user));
-
-								$nwp_collection->addPeriod($p);
-								$userperiods->addPeriod($p);
-							}
-
-							$p = new bab_calendarPeriod;
-							$p->setDates($beginDate, $endDate);
-							$p->setProperty('SUMMARY', bab_translate('Working period'));
-							$p->setData(array('id_user' => $id_user));
-							$p->available = true;
-
-							$wp_collection->addPeriod($p);
-							$userperiods->addPeriod($p);
-
-							$previous_end = $endDate; // the begin date of the non-working period will be a reference to the enddate of the working period
-						}
+			$workingHours = bab_functionality::get('WorkingHours');
+			/*@var $workingHours Func_WorkingHours */
+			foreach($users as $id_user)
+			{
+				$arr = $workingHours->selectPeriods($id_user, $begin, $end);
+				
+				foreach($arr as $wp) {
+					/*@var $wp bab_WorkingPeriod */
+					$beginDate 	= BAB_DateTime::fromIsoDateTime($wp->begin);
+					$endDate 	= BAB_DateTime::fromIsoDateTime($wp->end);
+					
+					if ($nworking && NULL == $previous_end) {
+						$previous_end = $begin; // reference
 					}
+					
+					// add non-working period between 2 working period and at the begining
+					if ($nworking && $beginDate->getTimeStamp() > $previous_end->getTimeStamp()) {
+					
+						$p = new bab_calendarPeriod;
+						$p->setDates($previous_end, $beginDate);
+						$p->setProperty('SUMMARY', bab_translate('Non-working period'));
+						$p->setData(array('id_user' => $id_user));
+					
+						$nwp_collection->addPeriod($p);
+						$userperiods->addPeriod($p);
+					}
+					
+					$p = new bab_calendarPeriod;
+					$p->setDates($beginDate, $endDate);
+					$p->setProperty('SUMMARY', bab_translate('Working period'));
+					$p->setData(array('id_user' => $id_user));
+					$p->available = true;
+					
+					$wp_collection->addPeriod($p);
+					$userperiods->addPeriod($p);
+					
+					$previous_end = $endDate; // the begin date of the non-working period will be a reference to the enddate of the working period
 				}
-				$loop->add(1, BAB_DATETIME_DAY);
 			}
 		}
 

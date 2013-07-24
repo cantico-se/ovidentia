@@ -44,6 +44,8 @@ $functionalities->register('CalendarBackend/Ovi'		, $GLOBALS['babInstallPath'].'
 $functionalities->register('UserEditor'					, $GLOBALS['babInstallPath'].'utilit/usereditor.php');
 $functionalities->register('SitemapDynamicNode'			, $GLOBALS['babInstallPath'].'utilit/sitemap_dynamicnode.php');
 $functionalities->register('SitemapDynamicNode/Topic'	, $GLOBALS['babInstallPath'].'utilit/sitemap_dyntopic.php');
+$functionalities->register('WorkingHours'				, $GLOBALS['babInstallPath'].'utilit/workinghoursincl.php');
+$functionalities->register('WorkingHours/Ovidentia'		, $GLOBALS['babInstallPath'].'utilit/workinghoursincl.php');
 
 
 $func_to_register = $functionalities->parseFile(dirname(__FILE__).'/utilit/omlincl.php');

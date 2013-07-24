@@ -78,6 +78,8 @@ function bab_createDefaultWorkingHours($iIdUser)
 /**
  * Get working hours parameters for user and weekday
  * 
+ * @see Func_WorkingHours	Use functionality to get working hours
+ * 
  * @param int $id_user
  * @param int $weekday
  */
@@ -133,4 +135,99 @@ function bab_getWHours($id_user, $weekday, $db_id_user = NULL) {
 }
 
 
+/**
+ * A working period
+ */
+class bab_WorkingPeriod {
+	/**
+	 * 
+	 * @var string
+	 */
+	public $begin;
+	
+	/**
+	 * @var string
+	 */
+	public $end;
+	
+	/**
+	 * 
+	 * @param string $begin		ISO datetime
+	 * @param string $end		ISO datetime
+	 */
+	public function __construct($begin, $end)
+	{
+		$this->begin = $begin;
+		$this->end = $end;
+	}
 
+}
+
+
+/**
+ * Interface to the working hours functionality
+ *
+ */
+class Func_WorkingHours extends bab_functionality
+{
+	public function getDescription()
+	{
+		return bab_translate('Get the working hours configuration');
+	}
+	
+		
+	/**
+	 * Get the working periods between two date
+	 * @param int			$id_user
+	 * @param BAB_DateTime 	$begin
+	 * @param BAB_DateTime 	$end
+	 * 
+	 * @return array <bab_WorkingPeriod>
+	 *
+	 */
+	public function selectPeriods($id_user, BAB_DateTime $begin, BAB_DateTime $end)
+	{
+		throw new Exception('Not implemented');
+	}
+}
+
+
+class Func_WorkingHours_Ovidentia extends Func_WorkingHours 
+{
+	public function getDescription()
+	{
+		return bab_translate('Get the working hours from users options or site configuration');
+	}
+	
+	
+	/**
+	 * Get the working periods between two date
+	 * @param BAB_DateTime $begin
+	 * @param BAB_DateTime $end
+	 *
+	 * @return array <bab_WorkingPeriod>
+	 *
+	 */
+	public function selectPeriods($id_user, BAB_DateTime $begin, BAB_DateTime $end)
+	{
+		$arr = array();
+		$loop = clone $begin;
+		/*@var $loop BAB_DateTime */
+		do {
+			$ts = $loop->getTimeStamp();
+			foreach(bab_getWHours($id_user, $loop->getDayOfWeek()) as $wh) {
+				$date = date('Y-m-d', $ts);
+				$arr[] = new bab_WorkingPeriod(
+					$date.' '.$wh['startHour'],
+					$date.' '.$wh['endHour']
+				);
+			}
+			
+			$loop->add(1, BAB_DATETIME_DAY);
+
+		} while ($loop->getTimeStamp() < $end->getTimeStamp());
+		
+		
+		return $arr;
+	}
+}
