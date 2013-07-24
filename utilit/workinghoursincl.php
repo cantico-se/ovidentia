@@ -134,12 +134,3 @@ function bab_getWHours($id_user, $weekday, $db_id_user = NULL) {
 
 
 
-
-
-/**
- * Manage working and non-working hours
- * browse periods with working hours and non-working days
- */
-class bab_userWorkingHours extends bab_UserPeriods {
-	
-}
