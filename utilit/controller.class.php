@@ -121,7 +121,7 @@ abstract class bab_Controller
 			$methods = $class->getMethods();
 
 			foreach ($methods as $method) {
-				if ($method->name === '__construct' || !$method->isPublic() || $method->isStatic() || $method->isFinal() || $method->name === 'setCrm' || $method->name === 'Crm') {
+				if ($method->name === '__construct' || !$method->isPublic() || $method->isStatic() || $method->isFinal()) {
 					continue;
 				}
 
@@ -161,7 +161,7 @@ abstract class bab_Controller
 	/**
 	 * Instanciates a controller class.
 	 *
-	 * @return crm_Controller
+	 * @return bab_Controller
 	 */
 	public static function ControllerProxy($className, $proxy = true)
 	{
@@ -254,6 +254,13 @@ abstract class bab_Controller
 	
 	
 	/**
+	 * Get tg value to use in URL
+	 * @return string
+	 */
+	abstract protected function getControllerTg();
+	
+	
+	/**
 	 * Get object name to use in URL from the controller classname
 	 * @param string $classname
 	 * @return string
@@ -297,7 +304,7 @@ abstract class bab_Controller
 
 		$action = new Widget_Action();
 
-		$action->setMethod($this->Crm()->controllerTg, $objectName . '.' . $methodName, $actionParams);
+		$action->setMethod($this->getControllerTg(), $objectName . '.' . $methodName, $actionParams);
 
 		$docComment = $method->getDocComment();
 		if (strpos($docComment, '@ajax') !== false) {
