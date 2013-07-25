@@ -168,7 +168,7 @@ return false;
 
 class bab_synchronizeSql
 {
-	var $fileContent = '';
+	public $fileContent = '';
 
 	/**
 	 * @var array( table => action )
@@ -221,6 +221,18 @@ class bab_synchronizeSql
 
 		$this->updateDatabase();
 	}
+	
+	/**
+	 * Add a set to filecontent
+	 * @param ORM_MySqlRecordSet $set
+	 */
+	public function addOrmSet(ORM_MySqlRecordSet $set)
+	{
+		$mysqlbackend = ORM_MySqlRecordSet::getBackend();
+		$this->fileContent .= $mysqlbackend->setToSql($set)."\n";
+	}
+	
+	
 	
 	/**
 	 * Disable or enable display of the message in install console

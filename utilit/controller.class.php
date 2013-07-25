@@ -157,6 +157,20 @@ abstract class bab_Controller
 	{
 		return self::getProxyInstance(get_class($this));
 	}
+	
+	/**
+	 * Instanciates a controller class.
+	 *
+	 * @return crm_Controller
+	 */
+	public static function ControllerProxy($className, $proxy = true)
+	{
+		if ($proxy) {
+			return bab_Controller::getProxyInstance($className);
+		}
+	
+		return new $className();
+	}
 
 
 	/**
@@ -302,7 +316,9 @@ abstract class bab_Controller
 	 */
 	public function execute(Widget_Action $action)
 	{
+		require_once dirname(__FILE__).'/urlincl.php';
 		require_once dirname(__FILE__).'/json.php';
+		
 		$method = $action->getMethod();
 
 		if (!isset($method) || '' === $method) {
