@@ -48,7 +48,6 @@ function bab_OCgetPrimaryOcId()
 			$ocinfo = $babDB->db_fetch_array($res);
 			$idprimaryoc = $ocinfo['id'];
 		}
-		return null;
 	}
 	return $idprimaryoc;
 }
