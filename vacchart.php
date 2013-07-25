@@ -128,7 +128,6 @@ global $babBody;
 							);
 			}
 
-		$entities = array_intersect($entities, $u_entities);
 		break;
 	default:
 		$entities = $u_entities['superior'];
