@@ -501,6 +501,14 @@ class babBody
 	 */
 	public $menu;
 	
+	
+	/**
+	 * Messages to display on page
+	 * @see babBody::addMessage();
+	 * @var unknown_type
+	 */
+	public $messages = array();
+	
 	/**
 	 * Error message as html
 	 * @access public
@@ -600,8 +608,25 @@ class babBody
 		$this->babaddons = array();
 	
 	
+		$session = bab_getInstance('bab_Session');
+		if (isset($session->bab_page_messages))
+		{
+			foreach($session->bab_page_messages as $message)
+			{
+				$this->addMessage($message);
+			}
+			unset($session->bab_page_messages);
+		}
 		
-	
+		
+		if (isset($session->bab_page_errors))
+		{
+			foreach($session->bab_page_errors as $error)
+			{
+				$this->addError($error);
+			}
+			unset($session->bab_page_errors);
+		}
 	}
 	
 	
@@ -627,6 +652,53 @@ class babBody
 		$this->title = bab_toHtml($title);
 	}
 	
+	
+	/**
+	 * Add text message to page
+	 * @param string $message
+	 */
+	public function addMessage($message)
+	{
+		$this->messages[] = $message;
+		return $this;
+	}
+	
+	/**
+	 * Add message to display in next page
+	 * @param unknown_type $message
+	 */
+	public function addNextPageMessage($message)
+	{
+		$session = bab_getInstance('bab_Session');
+		if (!isset($session->bab_page_messages))
+		{
+			$session->bab_page_messages = array();
+		}
+		$messages = $session->bab_page_messages;
+		$messages[] = $message;
+		$session->bab_page_messages = $messages;
+		
+		return $this;
+	}
+	
+	
+	/**
+	 * Add error to display in next page
+	 * @param unknown_type $message
+	 */
+	public function addNextPageError($message)
+	{
+		$session = bab_getInstance('bab_Session');
+		if (!isset($session->bab_page_errors))
+		{
+			$session->bab_page_errors = array();
+		}
+		$messages = $session->bab_page_errors;
+		$messages[] = $message;
+		$session->bab_page_errors = $messages;
+	
+		return $this;
+	}
 	
 	
 	/**

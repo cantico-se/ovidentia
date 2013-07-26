@@ -366,6 +366,23 @@ function printBody()
 			
 			
 		}
+		
+		
+		/**
+		 * Template method for messages
+		 */
+		public function getNextMessage()
+		{
+			global $babBody;
+			
+			if (list($key, $message) = each($babBody->messages))
+			{
+				$this->message = bab_toHtml($message);
+				return true;
+			}
+			
+			return false;
+		}
 
 
 		/**
@@ -382,11 +399,21 @@ function printBody()
 			switch ($propertyName) {
 
 				case 'content':
+					
+					$this->content = '';
+					
 					$debug = bab_getDebug();
-					if (false === $debug) {
-						$debug = '';
+					if (false !== $debug) {
+						$this->content  .= $debug;
 					}
-					$this->content = $debug . $babBody->printout();
+					
+					// if message not added to page by skin, add them to content
+					while($this->getNextMessage())
+					{
+						$this->content .= sprintf('<div class="bab-page-message">%s</div>', $this->message);
+					}
+					
+					$this->content .= $babBody->printout();
 					return $this->content;
 
 				// The values of nbsectleft and nbsectright are only valid after loadsections has been called.

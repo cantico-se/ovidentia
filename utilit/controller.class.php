@@ -46,7 +46,46 @@ class bab_MissingActionParameterException extends Exception
 }
 
 
+/**
+ * bab_AccessException are thrown when the user tries to
+ * perform an action or access a page that she is not
+ * allowed to.
+ * 
+ */
+class bab_AccessException extends Exception
+{
+	/**
+	 * Require credential if not logged in
+	 * @var unknown_type
+	 */
+	public $require_credential = true;
+}
 
+
+/**
+ * bab_SaveException are thrown in save methods of controller.
+ * this will go the failed action set on the submit button
+ * 
+ * display message in page
+ */
+class bab_SaveException extends Exception 
+{
+	/**
+	 * true : redirect to failed action
+	 * false : execute failed action directly without redirect
+	 * 		(can be used to redirect ot the same form and populate
+	 * 		 fields with posted data)
+	 *
+	 * @var bool
+	 */
+	public $redirect = true;
+}
+
+/**
+ * Dsiplay error in page instead of message
+ *
+ */
+class bab_SaveErrorException extends bab_SaveException {}
 
 
 
@@ -221,10 +260,9 @@ abstract class bab_Controller
 	 * Called by bab_Controller::execute()
 	 *
 	 * @param Widget_Action 	$action
-	 * @param string			$previous 		UID of previous page
 	 * @return mixed
 	 */
-	protected function execAction(Widget_Action $action, $previous = null)
+	protected function execAction(Widget_Action $action)
 	{
 		$methodStr = $action->getMethod();
 
@@ -341,14 +379,9 @@ abstract class bab_Controller
 			return false;
 		}
 
-		$previous 		= null;
+
 		$successAction 	= null;
 		$failedAction 	= null;
-
-		if (isset($_REQUEST['_ctrl_previous']))
-		{
-			$previous = $_REQUEST['_ctrl_previous'];
-		}
 
 		if (isset($_REQUEST['_ctrl_success'][$method]))
 		{
@@ -359,10 +392,48 @@ abstract class bab_Controller
 		{
 			$failedAction = Widget_Action::fromUrl($_REQUEST['_ctrl_failed'][$method]);
 		}
-
-
 		
-		$returnedValue = $objectController->execAction($action, $previous);
+		
+		$babBody = bab_getInstance('babBody');
+		/*@var $babBody babBody */
+
+		try {
+			$returnedValue = $objectController->execAction($action);
+		} catch(bab_AccessException $e) {
+			
+			if ($e->require_credential && !bab_isUserLogged())
+			{
+				bab_requireCredential($e->getMessage());
+			} else {
+				$babBody->addError($e->getMessage());
+				$returnedValue = bab_Widgets()->babPage();
+			}
+			
+		} catch(bab_SaveException $e) {
+			
+			if ($e->redirect)
+			{
+				if (!isset($failedAction))
+				{
+					throw new Exception(sprintf('Missing the failed action to redirect from %s', $method));
+				}
+				
+				$messageMethod = ($e instanceof bab_SaveErrorException) ? 'addNextPageError' : 'addNextPageMessage';
+				
+				$babBody->$messageMethod($e->getMessage());
+				$failedAction->location();
+			} else {
+				
+				$messageMethod = ($e instanceof bab_SaveErrorException) ? 'addError' : 'addMessage';
+				
+				$babBody->$messageMethod($e->getMessage());
+				if (0 == count($failedAction->getParameters()))
+				{
+					throw new Exception('Error, incorrect action');
+				}
+				$returnedValue = $objectController->execAction($failedAction);
+			}
+		}
 		
 		if ($returnedValue instanceof Widget_Displayable_Interface) {
 
@@ -412,8 +483,7 @@ abstract class bab_Controller
 				throw new Exception(sprintf('Missing the success action to redirect from %s', $method));
 			} 
 			
-			$url = new bab_url($successAction->url());
-			$url->location();
+			$successAction->location();
 		}
 
 		return $returnedValue;

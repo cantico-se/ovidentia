@@ -942,10 +942,24 @@ class BAB_DateTime
 		return 0;
 	}
 	
-	
+	/**
+	 * Get date in the Ovidentia short date format
+	 * @param bool $showHours
+	 * @return string
+	 */
 	public function shortFormat($showHours = true)
 	{
 		return bab_shortDate($this->getTimeStamp(), $showHours);
+	}
+	
+	/**
+	 * Get date in the Ovidentia long date format
+	 * @param bool $showHours
+	 * @return string
+	 */
+	public function longFormat($showHours = true)
+	{
+		return bab_longDate($this->getTimeStamp(), $showHours);
 	}
 }
 
