@@ -1693,7 +1693,7 @@ class bab_siteMap {
 		// test if current node is under baseNode
 		
 		
-		$testNode = $currentNode->parentNode();
+		$testNode = $currentNode;
 		do {
 		
 			if ($baseNodeId === $testNode->getId())
