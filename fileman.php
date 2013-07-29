@@ -3182,6 +3182,7 @@ function deleteOrphanFile()
 	$oFileManagerEnv =& getEnvObject();
 	$sUploadPath = $oFileManagerEnv->getRootFmPath();
 
+	
 	if(is_dir($sUploadPath))
 	{
 		$oFolderFileSet = new BAB_FolderFileSet();
@@ -3189,18 +3190,84 @@ function deleteOrphanFile()
 		$oId =& $oFolderFileSet->aField['iId'];
 
 		$oFolderFileSet->select($oGroup->in('Y'));
-
+		$id_to_delete = array();
+		
 		while(null !== ($oFolderFile = $oFolderFileSet->next()))
 		{
 			$sFullPathName = $sUploadPath . $oFolderFile->getPathName() . $oFolderFile->getName();
 			if(!is_file($sFullPathName))
 			{
-//				bab_debug($sFullPathName);
-				$oFolderFileSet->remove($oId->in($oFolderFile->getId()));
+				bab_debug($sFullPathName);
+				$id_to_delete[] = $oFolderFile->getId();
+			}
+		}
+		
+		$oFolderFileSet->remove($oId->in($id_to_delete));
+	}
+	
+}
+
+
+
+
+function deleteUnreferencedFiles()
+{
+	if(false === bab_isUserAdministrator())
+	{
+		return;
+	}
+	
+	$oFileManagerEnv =& getEnvObject();
+	$uploadPath = new bab_Path($oFileManagerEnv->getRootFmPath());
+	
+	bab_debug('Search in : '.$uploadPath->tostring());
+	
+	deleteUnreferencedFilesLevel($uploadPath);
+	
+	
+}
+
+function deleteUnreferencedFilesLevel(bab_Path $path)
+{
+	$oFileManagerEnv =& getEnvObject();
+	$prefix = $oFileManagerEnv->getRootFmPath();
+	
+	$oFolderFileSet = new BAB_FolderFileSet();
+	$oName = $oFolderFileSet->aField['sName'];
+	$oPath = $oFolderFileSet->aField['sPathName'];
+	$oGroup = $oFolderFileSet->aField['sGroup'];
+	
+	foreach($path as $file)
+	{
+		/*@var $file bab_path */
+		if ($file->isDir())
+		{
+			deleteUnreferencedFilesLevel($file);
+		} else {
+			
+			$basename = $file->getBasename();
+			$path = mb_substr($file->toString(), mb_strlen($prefix), -1 * mb_strlen($basename));
+			
+			$r = $oFolderFileSet->get(
+					$oName->in($basename)
+					->_and($oPath->in($path))
+			);
+			
+			if (null === $r)
+			{
+				// not found in database : delete
+				if (unlink($file->toString()))
+				{
+					bab_debug($file->toString());
+				}
 			}
 		}
 	}
-}
+} 
+
+
+
+
 function setRight()
 {
 	global $babBody;
@@ -4803,6 +4870,10 @@ switch($idx)
 
 	case 'deleteOrphanFile':
 		deleteOrphanFile();
+		break;
+		
+	case 'deleteUnreferencedFiles':
+		deleteUnreferencedFiles();
 		break;
 
 	default:
