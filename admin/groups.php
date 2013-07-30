@@ -152,7 +152,7 @@ function groupCreateMod()
 			}
 		}
 
-	if( $GLOBALS['babBody']->isSuperAdmin || $GLOBALS['babBody']->currentDGGroup['groups'] == 'Y')
+	if( bab_isUserAdministrator() || $GLOBALS['babBody']->currentDGGroup['groups'] == 'Y')
 		{
 		$temp = new CreateMod();
 		$babBody->babecho(	bab_printTemplate($temp,"groups.html", "groupscreate"));
@@ -315,7 +315,7 @@ function groupsOptions()
 			$this->uncheckall = bab_translate("Uncheck all");
 			$this->checkall = bab_translate("Check all");
 
-			if( $babBody->isSuperAdmin && $babBody->currentAdmGroup == 0 )
+			if( bab_isUserAdministrator() && $babBody->currentAdmGroup == 0 )
 				{
 				$this->bdgmail = true;
 				$this->bdgnotes = true;
@@ -530,7 +530,7 @@ function saveGroupsOptions($mailgrpids, $notgrpids, $congrpids, $pdsgrpids, $pca
 
 /* main */
 
-if (!$babBody->isSuperAdmin && $babBody->currentAdmGroup == 0 ) {
+if (!bab_isUserAdministrator() && $babBody->currentAdmGroup == 0 ) {
 	$babBody->addError('Access denied');
 	return;
 }
@@ -616,7 +616,7 @@ switch($idx)
 
 	// Attempts to repair the group tree in database.
 	case 'treecreate':
-		if ($babBody->isSuperAdmin)	{
+		if (bab_isUserAdministrator())	{
 			bab_grpTreeCreate(NULL, 1);
 		}
 		die();

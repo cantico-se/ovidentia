@@ -264,7 +264,7 @@ function topcatCreate($idp)
 			$res = $babDB->db_query("select * from ".BAB_TOPICS_CATEGORIES_TBL." where id_dgowner='".$babBody->currentAdmGroup."'");
 
 			$this->arrtopcats = array();
-			if($babBody->isSuperAdmin)
+			if(bab_isUserAdministrator())
 			{
 				$this->arrtopcats[] = array('id'=> 0, 'title' => $this->nonetxt);
 			}
@@ -554,7 +554,7 @@ function orderTopcat($idp)
 			$this->sortd = bab_translate("Sort descending");
 			$this->create = bab_translate("Modify");
 			$this->db = $GLOBALS['babDB'];
-			if( $idp == 0 && $babBody->isSuperAdmin )
+			if( $idp == 0 && bab_isUserAdministrator() )
 				$req = "select * from ".BAB_TOPCAT_ORDER_TBL." where id_parent='0' order by ordering asc";
 			else
 				$req = "select * from ".BAB_TOPCAT_ORDER_TBL." where id_parent='".$idp."' order by ordering asc";
@@ -927,7 +927,7 @@ function bab_pubOptions()
 
 bab_requireCredential();
 
-if( !$babBody->isSuperAdmin && $babBody->currentDGGroup['articles'] != 'Y')
+if( !bab_isUserAdministrator() && $babBody->currentDGGroup['articles'] != 'Y')
 {
 	$babBody->msgerror = bab_translate("Access denied");
 	return;

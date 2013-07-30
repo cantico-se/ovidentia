@@ -257,7 +257,7 @@ function delete_glist()
 
 // main
 
-if( !$babBody->isSuperAdmin && $babBody->currentDGGroup['groups'] != 'Y')
+if( !bab_isUserAdministrator() && $babBody->currentDGGroup['groups'] != 'Y')
 	{
 	$babBody->msgerror = bab_translate("Access denied");
 	return;

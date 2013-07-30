@@ -52,7 +52,7 @@ function changeAdmGroup()
 			$this->selected = "";
 			$this->delegat = array();
 
-			if( $babBody->isSuperAdmin )
+			if( bab_isUserAdministrator() )
 				{
 				$this->delegat[0] = bab_translate("All site");
 				}

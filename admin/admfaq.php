@@ -191,7 +191,7 @@ function confirmDeleteFaq($id)
 	}
 
 /* main */
-if( !$babBody->isSuperAdmin && $babBody->currentDGGroup['faqs'] != 'Y')
+if( !bab_isUserAdministrator() && $babBody->currentDGGroup['faqs'] != 'Y')
 {
 	$babBody->msgerror = bab_translate("Access denied");
 	return;

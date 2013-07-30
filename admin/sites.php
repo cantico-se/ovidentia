@@ -136,7 +136,7 @@ function database()
 
 
 /* main */
-if( !isset($BAB_SESS_LOGGED) || empty($BAB_SESS_LOGGED) ||  !$babBody->isSuperAdmin)
+if( !isset($BAB_SESS_LOGGED) || empty($BAB_SESS_LOGGED) ||  !bab_isUserAdministrator())
 {
 	$babBody->msgerror = bab_translate("Access denied");
 	return;

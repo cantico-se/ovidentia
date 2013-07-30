@@ -211,7 +211,7 @@ function sectionsOrder()
 				switch( $arr['type'] )
 					{
 					case "1":
-						if( $babBody->isSuperAdmin && $babBody->currentAdmGroup == 0 )
+						if( bab_isUserAdministrator() && $babBody->currentAdmGroup == 0 )
 							{
 							if( $arr['position'] == 0 )
 								$this->arrleft[] = $arr['id'];
@@ -221,7 +221,7 @@ function sectionsOrder()
 						break;
 					case "3":
 						$rr = $this->db->db_fetch_array($this->db->db_query("select id, id_dgowner from ".BAB_TOPICS_CATEGORIES_TBL." where id ='".$arr['id_section']."'"));
-						if( $babBody->currentAdmGroup == 0  && $babBody->isSuperAdmin)
+						if( $babBody->currentAdmGroup == 0  && bab_isUserAdministrator())
 						{
 							if( $rr['id_dgowner'] == 0 )
 							{
@@ -253,7 +253,7 @@ function sectionsOrder()
 						}
 						break;
 					case "4":
-						if( $babBody->isSuperAdmin && $babBody->currentAdmGroup == 0 )
+						if( bab_isUserAdministrator() && $babBody->currentAdmGroup == 0 )
 							{
 							if( $arr['position'] == 0 )
 								$this->arrleft[] = $arr['id'];
@@ -263,7 +263,7 @@ function sectionsOrder()
 						break;
 					default:
 						$rr = $this->db->db_fetch_array($this->db->db_query("select id, id_dgowner from ".BAB_SECTIONS_TBL." where id ='".$arr['id_section']."'"));
-						if( $babBody->currentAdmGroup == 0  && $babBody->isSuperAdmin)
+						if( $babBody->currentAdmGroup == 0  && bab_isUserAdministrator())
 						{
 							if( $rr['id_dgowner'] == 0 )
 							{
@@ -752,7 +752,7 @@ function disableSections($sections, $sectopt)
 	}
 
 /* main */
-if( !$babBody->isSuperAdmin && $babBody->currentDGGroup['sections'] != 'Y')
+if( !bab_isUserAdministrator() && $babBody->currentDGGroup['sections'] != 'Y')
 {
 	$babBody->msgerror = bab_translate("Access denied");
 	return;
@@ -791,7 +791,7 @@ switch($idx)
 		$babBody->title = bab_translate("Sections order");
 		sectionsOrder();
 		$babBody->addItemMenu("List", bab_translate("Sections"),$GLOBALS['babUrlScript']."?tg=sections&idx=List");
-		if( $babBody->isSuperAdmin && $babBody->currentAdmGroup == 0)
+		if( bab_isUserAdministrator() && $babBody->currentAdmGroup == 0)
 			$babBody->addItemMenu("Order", bab_translate("Order"),$GLOBALS['babUrlScript']."?tg=sections&idx=Order");
 
 		$babBody->addItemMenu("ch", bab_translate("Create")."(html)",$GLOBALS['babUrlScript']."?tg=sections&idx=ch");

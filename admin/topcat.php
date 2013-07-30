@@ -225,7 +225,7 @@ function topcatModify($id)
 			$res = $babDB->db_query("select * from ".BAB_TOPICS_CATEGORIES_TBL." where id_dgowner='".$babBody->currentAdmGroup."' and id NOT IN(".implode(',',$arr_exclude).") order by title asc");
 
 			$this->arrtopcats = array();
-			if($this->idp == 0 || ($this->idp != 0 && $babBody->isSuperAdmin))
+			if($this->idp == 0 || ($this->idp != 0 && bab_isUserAdministrator()))
 			{
 				$this->arrtopcats[] = array( 'id'=> 0, 'title' => $this->nonetxt);
 			}
@@ -796,7 +796,7 @@ function updateAclGroups()
 }
 
 /* main */
-if( !$babBody->isSuperAdmin && $babBody->currentDGGroup['articles'] != 'Y')
+if( !bab_isUserAdministrator() && $babBody->currentDGGroup['articles'] != 'Y')
 {
 	$babBody->msgerror = bab_translate("Access denied");
 	return;

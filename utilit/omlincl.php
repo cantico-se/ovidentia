@@ -3151,7 +3151,10 @@ class Func_Ovml_Container_RecentArticles extends Func_Ovml_Container
 
 			if( $this->nbdays !== false)
 				{
-				$req .= " AND at.date >= DATE_ADD(\"".$babDB->db_escape_string($babBody->lastlog)."\", INTERVAL -".$babDB->db_escape_string($this->nbdays)." DAY)";
+				require_once dirname(__FILE__).'/userinfosincl.php';
+				$usersettings = bab_userInfos::getUserSettings();
+
+				$req .= " AND at.date >= DATE_ADD(\"".$babDB->db_escape_string($usersettings['lastlog'])."\", INTERVAL -".$babDB->db_escape_string($this->nbdays)." DAY)";
 				}
 
 
@@ -3396,10 +3399,13 @@ class Func_Ovml_Container_RecentComments extends Func_Ovml_Container
 
 		if( $req != '' )
 			{
-			if( $this->nbdays !== false)
+			if( $this->nbdays !== false  && bab_isUserLogged())
 			{
+				require_once dirname(__FILE__).'/userinfosincl.php';
+				$usersettings = bab_userInfos::getUserSettings();
+				
 				$this->nbdays = (int) $this->nbdays;
-				$req .= " and date >= DATE_ADD(\"".$babDB->db_escape_string($babBody->lastlog)."\", INTERVAL -".$babDB->db_escape_string($this->nbdays)." DAY)";
+				$req .= " and date >= DATE_ADD(\"".$babDB->db_escape_string($usersettings['lastlog'])."\", INTERVAL -".$babDB->db_escape_string($this->nbdays)." DAY)";
 			}
 			$order = $ctx->get_value('order');
 			if( $order === false || $order === '' )
@@ -3511,9 +3517,12 @@ class Func_Ovml_Container_RecentPosts extends Func_Ovml_Container
 				$req .= " and p.id_thread = '".$this->threadid."'";
 			}
 
-			if( $this->nbdays !== false)
+			if( $this->nbdays !== false  && bab_isUserLogged())
 				{
-				$req .= " and p.date >= DATE_ADD(\"".$babDB->db_escape_string($babBody->lastlog)."\", INTERVAL -".$babDB->db_escape_string($this->nbdays)." DAY)";
+				require_once dirname(__FILE__).'/userinfosincl.php';
+				$usersettings = bab_userInfos::getUserSettings();
+				
+				$req .= " and p.date >= DATE_ADD(\"".$babDB->db_escape_string($usersettings['lastlog'])."\", INTERVAL -".$babDB->db_escape_string($this->nbdays)." DAY)";
 				}
 
 
@@ -3629,8 +3638,12 @@ class Func_Ovml_Container_RecentThreads extends Func_Ovml_Container
 			}
 
 
-		if( $this->nbdays !== false) {
-			$req .= " and p.date >= DATE_ADD(\"".$babDB->db_escape_string($babBody->lastlog)."\", INTERVAL -".$babDB->db_escape_string($this->nbdays)." DAY)";
+		if( $this->nbdays !== false  && bab_isUserLogged()) {
+			
+			require_once dirname(__FILE__).'/userinfosincl.php';
+			$usersettings = bab_userInfos::getUserSettings();
+			
+			$req .= " and p.date >= DATE_ADD(\"".$babDB->db_escape_string($usersettings['lastlog'])."\", INTERVAL -".$babDB->db_escape_string($this->nbdays)." DAY)";
 		}
 
 		$order = $ctx->get_value('order');
@@ -3803,9 +3816,12 @@ class Func_Ovml_Container_RecentFiles extends Func_Ovml_Container
 
 			$req .= " and f.id_owner IN (".$babDB->quote($arrid).")";
 
-			if( $this->nbdays !== false)
+			if( $this->nbdays !== false && bab_isUserLogged())
 			{
-				$req .= " and f.modified >= DATE_ADD(\"".$babDB->db_escape_string($babBody->lastlog)."\", INTERVAL -".$babDB->db_escape_string($this->nbdays)." DAY)";
+				require_once dirname(__FILE__).'/userinfosincl.php';
+				$usersettings = bab_userInfos::getUserSettings();
+				
+				$req .= " and f.modified >= DATE_ADD(\"".$babDB->db_escape_string($usersettings['lastlog'])."\", INTERVAL -".$babDB->db_escape_string($this->nbdays)." DAY)";
 			}
 
 			$order = $ctx->get_value('order');
@@ -4817,7 +4833,10 @@ class Func_Ovml_Container_RecentFaqQuestions extends Func_Ovml_Container
 
 		if( $this->nbdays !== false)
 			{
-			$where[] = "ft.date_modification >= DATE_ADD(\"".$babDB->db_escape_string($babBody->lastlog)."\", INTERVAL -".$babDB->db_escape_string($this->nbdays)." DAY)";
+			require_once dirname(__FILE__).'/userinfosincl.php';
+			$usersettings = bab_userInfos::getUserSettings();
+			
+			$where[] = "ft.date_modification >= DATE_ADD(\"".$babDB->db_escape_string($usersettings['lastlog'])."\", INTERVAL -".$babDB->db_escape_string($this->nbdays)." DAY)";
 			}
 
 		if( count($where))
@@ -8560,6 +8579,15 @@ class Func_Ovml_Function_ArticleTree extends Func_Ovml_Function {
 				ORDER BY bab_topcat_order.ordering ASC";
 		$req = "select * from ".BAB_TOPICS_TBL." where id_cat=".$babDB->quote($id) . $sTopic;
 		$res = $babDB->db_query($req);
+		
+		if (bab_isUserLogged())
+		{
+			require_once dirname(__FILE__).'/userinfosincl.php';
+			$usersettings = bab_userInfos::getUserSettings();
+			$lastlog = $usersettings['lastlog'];
+		} else {
+			$lastlog = '';
+		}
 
 		while( $arr = $babDB->db_fetch_assoc($res))
 		{
@@ -8577,7 +8605,7 @@ class Func_Ovml_Function_ArticleTree extends Func_Ovml_Function {
 					while( $arrArticles = $babDB->db_fetch_array($resArticles))
 					{
 						$classNew = '';
-						if( $arrArticles['date'] > $babBody->lastlog)
+						if( $arrArticles['date'] > $lastlog)
 						{
 							$classNew = 'new';
 						}

@@ -162,7 +162,7 @@ function saveOrgChart($name, $description, $dirid)
 	}
 
 /* main */
-if( !$babBody->isSuperAdmin && $babBody->currentDGGroup['orgchart'] != 'Y')
+if( !bab_isUserAdministrator() && $babBody->currentDGGroup['orgchart'] != 'Y')
 {
 	$babBody->msgerror = bab_translate("Access denied");
 	return;

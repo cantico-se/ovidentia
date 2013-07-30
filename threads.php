@@ -306,7 +306,10 @@ function listThreads($forum, $active, $pos)
 					$this->brecent = true;
 				else if($GLOBALS['BAB_SESS_LOGGED'])
 					{
-					if( $this->arrthread['lastpostdate'] >= $babBody->lastlog )
+					require_once dirname(__FILE__).'/utilit/userinfosincl.php';
+					$usersettings = bab_userInfos::getUserSettings();
+					
+					if( $this->arrthread['lastpostdate'] >= $usersettings['lastlog'] )
 						$this->brecent = true;
 					}
 					

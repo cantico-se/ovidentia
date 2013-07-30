@@ -207,7 +207,7 @@ function dirGroups() // liste des annuaires de groupes
 			$this->groups = $tree->getGroups(BAB_ALLUSERS_GROUP);
 			unset($this->groups[BAB_UNREGISTERED_GROUP]);
 			$this->altbg=false;
-			if( $babBody->isSuperAdmin && $babBody->currentAdmGroup == 0 )
+			if( bab_isUserAdministrator() && $babBody->currentAdmGroup == 0 )
 				{
 				$this->bdgdirectories = true;
 				}
@@ -1906,7 +1906,7 @@ function updateDirGroups($dirgrpids) // enregistrement des modifications aux ann
 
 
 /* main */
-if( !$babBody->isSuperAdmin && $babBody->currentDGGroup['directories'] != 'Y')
+if( !bab_isUserAdministrator() && $babBody->currentDGGroup['directories'] != 'Y')
 {
 	$babBody->msgerror = bab_translate("Access denied");
 	return;
@@ -2052,7 +2052,7 @@ if( isset($update) )
 		if(!dbUpdateListOrder($id, $listfields))
 			$idx = 'list';
 		}
-	elseif( 'search' == $_POST['update'] && $babBody->isSuperAdmin)
+	elseif( 'search' == $_POST['update'] && bab_isUserAdministrator())
 		{
 		if (!record_search_options())
 			{
@@ -2256,7 +2256,7 @@ switch($idx)
 		break;
 
 	case 'search':
-		if( $babBody->isSuperAdmin )
+		if( bab_isUserAdministrator() )
 		{
 		$babBody->title = bab_translate("Fields to display for a search in all directories");
 		search_options();
@@ -2274,7 +2274,7 @@ switch($idx)
 		dirGroups();
 		$babBody->addItemMenu("list", bab_translate("Directories"), $GLOBALS['babUrlScript']."?tg=admdir&idx=list");
 		$babBody->addItemMenu("ldg", bab_translate("Groups directories"), $GLOBALS['babUrlScript']."?tg=admdir&idx=ldg");
-		if( $babBody->isSuperAdmin )
+		if( bab_isUserAdministrator() )
 		{
 		$babBody->addItemMenu("search", bab_translate("Search options"), $GLOBALS['babUrlScript']."?tg=admdir&idx=search");
 		}
@@ -2286,7 +2286,7 @@ switch($idx)
 		listAds();
 		$babBody->addItemMenu('list', bab_translate("Directories"), $GLOBALS['babUrlScript'].'?tg=admdir&idx=list');
 		$babBody->addItemMenu("ldg", bab_translate("Groups directories"), $GLOBALS['babUrlScript']."?tg=admdir&idx=ldg");
-		if( $babBody->isSuperAdmin )
+		if( bab_isUserAdministrator() )
 		{
 		$babBody->addItemMenu('search', bab_translate("Search options"), $GLOBALS['babUrlScript'].'?tg=admdir&idx=search');
 		}

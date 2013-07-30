@@ -270,7 +270,7 @@ function updateForumFields($id, $listfd)
 	}	
 	
 /* main */
-if( !$babBody->isSuperAdmin && $babBody->currentDGGroup['forums'] != 'Y')
+if( !bab_isUserAdministrator() && $babBody->currentDGGroup['forums'] != 'Y')
 {
 	$babBody->msgerror = bab_translate("Access denied");
 	return;

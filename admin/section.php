@@ -294,7 +294,7 @@ function confirmDeleteSection($id)
 	}
 
 /* main */
-if( !$babBody->isSuperAdmin && $babBody->currentDGGroup['sections'] != 'Y')
+if( !bab_isUserAdministrator() && $babBody->currentDGGroup['sections'] != 'Y')
 {
 	$babBody->msgerror = bab_translate("Access denied");
 	return;

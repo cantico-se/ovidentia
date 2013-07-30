@@ -818,7 +818,7 @@ function updateOrderFiles($fid,$listfiles){
 }
 
 /* main */
-if( !$babBody->isSuperAdmin && $babBody->currentDGGroup['filemanager'] != 'Y')
+if( !bab_isUserAdministrator() && $babBody->currentDGGroup['filemanager'] != 'Y')
 {
 	$babBody->msgerror = bab_translate("Access denied");
 	return;

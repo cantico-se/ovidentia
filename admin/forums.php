@@ -158,7 +158,7 @@ function orderForum()
 			$this->res = $babDB->db_query($req);
 			while( $arr = $babDB->db_fetch_array($this->res) )
 				{
-					if( $babBody->isSuperAdmin && $babBody->currentAdmGroup == 0 && $arr['id_dgowner'] == 0)
+					if( bab_isUserAdministrator() && $babBody->currentAdmGroup == 0 && $arr['id_dgowner'] == 0)
 						{
 						$this->arrid[] = $arr['id'];
 						}
@@ -166,7 +166,7 @@ function orderForum()
 						{
 						$this->arrid[] = $arr['id'];
 						}
-					else if( $babBody->isSuperAdmin && ($babBody->currentAdmGroup != $arr['id_dgowner']) )
+					else if( bab_isUserAdministrator() && ($babBody->currentAdmGroup != $arr['id_dgowner']) )
 					{
 						if( count($this->arrid) == 0 || !in_array($arr['id_dgowner']."-0", $this->arrid))
 							{
@@ -412,7 +412,7 @@ function updateForumFields($listfd){
 }	
 	
 /* main */
-if( !$babBody->isSuperAdmin && $babBody->currentDGGroup['forums'] != 'Y')
+if( !bab_isUserAdministrator() && $babBody->currentDGGroup['forums'] != 'Y')
 {
 	$babBody->msgerror = bab_translate("Access denied");
 	return;

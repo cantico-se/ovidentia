@@ -858,7 +858,7 @@ function deleteCalendarCategory($idcat)
 }
 
 /* main */
-if( !$babBody->isSuperAdmin && $babBody->currentDGGroup['calendars'] != 'Y')
+if( !bab_isUserAdministrator() && $babBody->currentDGGroup['calendars'] != 'Y')
 {
 	$babBody->msgerror = bab_translate("Access denied");
 	return;
@@ -925,7 +925,7 @@ elseif("rmDomain" == bab_gp('action')){
 elseif("orderDomain" == bab_pp('action')){
 	bab_orderDomain();
 }
-elseif( "addcat" == bab_rp('add') && $babBody->isSuperAdmin)
+elseif( "addcat" == bab_rp('add') && bab_isUserAdministrator())
 {
 	if( !addCategoryCalendar(bab_rp('catname'), bab_rp('catdesc'), bab_rp('bgcolor')))
 	{
@@ -936,7 +936,7 @@ elseif( "addcat" == bab_rp('add') && $babBody->isSuperAdmin)
 switch($idx)
 	{
 	case "addc":
-		if( $babBody->isSuperAdmin )
+		if( bab_isUserAdministrator() )
 		{
 			calendarsAddCategory(bab_rp('catname'), bab_rp('catdesc'), bab_rp('bgcolor'));
 			$babBody->title = bab_translate("Add event category");
@@ -948,7 +948,7 @@ switch($idx)
 		}
 		break;
 	case "cats":
-		if( $babBody->isSuperAdmin )
+		if( bab_isUserAdministrator() )
 		{
 			calendarsCategories();
 			$babBody->title = bab_translate("Calendar categories list");
@@ -966,7 +966,7 @@ switch($idx)
 		$babBody->addItemMenu("pub", bab_translate("Public"), $GLOBALS['babUrlScript']."?tg=admcals&idx=pub");
 		$babBody->addItemMenu("res", bab_translate("Resources"), $GLOBALS['babUrlScript']."?tg=admcals&idx=res");
 		$babBody->addItemMenu("delr", bab_translate("Del"), $GLOBALS['babUrlScript']."?tg=admcals&idx=delp");
-		if( $babBody->isSuperAdmin )
+		if( bab_isUserAdministrator() )
 		{
 			$babBody->addItemMenu("cats", bab_translate("Categories"), $GLOBALS['babUrlScript']."?tg=admcals&idx=cats");
 			$babBody->addItemMenu("domain", bab_translate("Domains"), $GLOBALS['babUrlScript']."?tg=admcals&idx=domain");
@@ -979,7 +979,7 @@ switch($idx)
 		$babBody->addItemMenu("pub", bab_translate("Public"), $GLOBALS['babUrlScript']."?tg=admcals&idx=pub");
 		$babBody->addItemMenu("delp", bab_translate("Del"), $GLOBALS['babUrlScript']."?tg=admcals&idx=delr");
 		$babBody->addItemMenu("res", bab_translate("Resources"), $GLOBALS['babUrlScript']."?tg=admcals&idx=res");
-		if( $babBody->isSuperAdmin )
+		if( bab_isUserAdministrator() )
 		{
 			$babBody->addItemMenu("cats", bab_translate("Categories"), $GLOBALS['babUrlScript']."?tg=admcals&idx=cats");
 			$babBody->addItemMenu("domain", bab_translate("Domains"), $GLOBALS['babUrlScript']."?tg=admcals&idx=domain");
@@ -992,7 +992,7 @@ switch($idx)
 		$babBody->addItemMenu("pub", bab_translate("PublicCalendar"), $GLOBALS['babUrlScript']."?tg=admcals&idx=pub");
 		$babBody->addItemMenu("res", bab_translate("Resources"), $GLOBALS['babUrlScript']."?tg=admcals&idx=res");
 		$babBody->addItemMenu("addr", bab_translate("Add"), $GLOBALS['babUrlScript']."?tg=admcals&idx=addr");
-		if( $babBody->isSuperAdmin )
+		if( bab_isUserAdministrator() )
 		{
 			$babBody->addItemMenu("cats", bab_translate("Categories"), $GLOBALS['babUrlScript']."?tg=admcals&idx=cats");
 			$babBody->addItemMenu("domain", bab_translate("Domains"), $GLOBALS['babUrlScript']."?tg=admcals&idx=domain");
@@ -1004,7 +1004,7 @@ switch($idx)
 		$babBody->addItemMenu("pub", bab_translate("PublicCalendar"), $GLOBALS['babUrlScript']."?tg=admcals&idx=pub");
 		$babBody->addItemMenu("addp", bab_translate("Add"), $GLOBALS['babUrlScript']."?tg=admcals&idx=addp");
 		$babBody->addItemMenu("res", bab_translate("Resources"), $GLOBALS['babUrlScript']."?tg=admcals&idx=res");
-		if( $babBody->isSuperAdmin )
+		if( bab_isUserAdministrator() )
 		{
 			$babBody->addItemMenu("cats", bab_translate("Categories"), $GLOBALS['babUrlScript']."?tg=admcals&idx=cats");
 			$babBody->addItemMenu("domain", bab_translate("Domains"), $GLOBALS['babUrlScript']."?tg=admcals&idx=domain");
@@ -1016,14 +1016,14 @@ switch($idx)
 		$babBody->addItemMenu("pub", bab_translate("PublicCalendar"), $GLOBALS['babUrlScript']."?tg=admcals&idx=pub");
 		$babBody->addItemMenu("res", bab_translate("Resources"), $GLOBALS['babUrlScript']."?tg=admcals&idx=res");
 		/*$babBody->addItemMenu("addr", bab_translate("Add"), $GLOBALS['babUrlScript']."?tg=admcals&idx=addr");*/
-		if( $babBody->isSuperAdmin )
+		if( bab_isUserAdministrator() )
 		{
 			$babBody->addItemMenu("cats", bab_translate("Categories"), $GLOBALS['babUrlScript']."?tg=admcals&idx=cats");
 			$babBody->addItemMenu("domain", bab_translate("Domains"), $GLOBALS['babUrlScript']."?tg=admcals&idx=domain");
 		}
 		break;
 	case "domain":
-		if( $babBody->isSuperAdmin )
+		if( bab_isUserAdministrator() )
 		{
 			bab_calendarsDomain();
 			$babBody->title = bab_translate("Domains");
@@ -1037,7 +1037,7 @@ switch($idx)
 	case "addvalue":
 	case "editdomain":
 	case "editvalue":
-		if( $babBody->isSuperAdmin )
+		if( bab_isUserAdministrator() )
 		{
 			bab_calendarsEditDomain();
 			$babBody->addItemMenu("pub", bab_translate("PublicCalendar"), $GLOBALS['babUrlScript']."?tg=admcals&idx=pub");
@@ -1048,7 +1048,7 @@ switch($idx)
 		break;
 	case "ordervalue":
 	case "orderdomain":
-		if( $babBody->isSuperAdmin )
+		if( bab_isUserAdministrator() )
 		{
 			bab_calendarsOrderDomains();
 			$babBody->title = bab_translate("Domains");
@@ -1066,7 +1066,7 @@ switch($idx)
 		$babBody->addItemMenu("pub", bab_translate("PublicCalendar"), $GLOBALS['babUrlScript']."?tg=admcals&idx=pub");
 		/*$babBody->addItemMenu("addp", bab_translate("Add"), $GLOBALS['babUrlScript']."?tg=admcals&idx=addp");*/
 		$babBody->addItemMenu("res", bab_translate("Resources"), $GLOBALS['babUrlScript']."?tg=admcals&idx=res");
-		if( $babBody->isSuperAdmin )
+		if( bab_isUserAdministrator() )
 		{
 			$babBody->addItemMenu("cats", bab_translate("Categories"), $GLOBALS['babUrlScript']."?tg=admcals&idx=cats");
 			$babBody->addItemMenu("domain", bab_translate("Domains"), $GLOBALS['babUrlScript']."?tg=admcals&idx=domain");

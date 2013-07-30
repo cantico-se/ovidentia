@@ -113,7 +113,7 @@ function record_options() {
 
 
 /* main */
-if( !$babBody->isSuperAdmin )
+if( !bab_isUserAdministrator() )
 	{
 	$babBody->title = bab_translate("Access denied");
 	exit;

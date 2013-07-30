@@ -567,7 +567,7 @@ function confirmDeleteUser($userId)
 		return;
 	}
 
-	if ($babBody->isSuperAdmin && $babBody->currentAdmGroup == 0) {
+	if (bab_isUserAdministrator() && $babBody->currentAdmGroup == 0) {
 		include_once $GLOBALS['babInstallPath'] . 'utilit/delincl.php';
 		bab_deleteUser($userId);
 	}
@@ -625,7 +625,7 @@ function updatePassword($userId, $newpwd1, $newpwd2)
 
 /* main */
 
-if (!$babBody->isSuperAdmin && $babBody->currentDGGroup['users'] != 'Y' && $babBody->currentAdmGroup == 0)
+if (!bab_isUserAdministrator() && $babBody->currentDGGroup['users'] != 'Y' && $babBody->currentAdmGroup == 0)
 {
 	$babBody->msgerror = bab_translate("Access denied");
 	return;
@@ -640,7 +640,7 @@ $modify = bab_rp('modify', null);
 $bupdate = bab_rp('bupdate', null);
 $bdelete = bab_rp('bdelete', null);
 
-if ((!$babBody->isSuperAdmin && $babBody->currentDGGroup['users'] != 'Y') && $babBody->currentAdmGroup != 0)
+if ((!bab_isUserAdministrator() && $babBody->currentDGGroup['users'] != 'Y') && $babBody->currentAdmGroup != 0)
 {//deleged admin only have access to the group view.
 	$idx = bab_rp('idx','viewgroups');
 	$pos = bab_rp('pos');

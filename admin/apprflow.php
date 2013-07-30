@@ -741,7 +741,7 @@ function updateSchemaInstances($instances)
 
 
 /* main */
-if( !$babBody->isSuperAdmin && $babBody->currentDGGroup['approbations'] != 'Y')
+if( !bab_isUserAdministrator() && $babBody->currentDGGroup['approbations'] != 'Y')
 {
 	$babBody->msgerror = bab_translate("Access denied");
 	return;

@@ -29,7 +29,7 @@ include_once $babInstallPath."admin/acl.php";
 
 
 /* main */
-if( !$babBody->isSuperAdmin)
+if( !bab_isUserAdministrator())
 {
 	$babBody->msgerror = bab_translate("Access denied");
 	return;

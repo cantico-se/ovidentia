@@ -936,7 +936,7 @@ class bab_OrgChartUtil
 	public function haveAdminRight()
 	{
 		global $babBody;
-		return ($babBody->isSuperAdmin && 0 === (int) $babBody->currentAdmGroup) ||
+		return (bab_isUserAdministrator() && 0 === (int) $babBody->currentAdmGroup) ||
 			(isset($babBody->currentDGGroup['orgchart']) && 'Y' === (string) $babBody->currentDGGroup['orgchart']);
 	}
 

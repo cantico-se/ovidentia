@@ -202,7 +202,7 @@ function listUsers($pos, $grp, $deleteAction)
 			$this->allurl = bab_toHtml($GLOBALS['babUrlScript']."?tg=users&idx=List&pos=&grp=".$this->grp."&bupd=".$this->bupdate);
 			$this->groupurl = bab_toHtml($GLOBALS['babUrlScript']."?tg=group&idx=Members&item=".$this->grp);
 			
-			if( ($babBody->isSuperAdmin && $babBody->currentAdmGroup == 0))
+			if( (bab_isUserAdministrator() && $babBody->currentAdmGroup == 0))
 			{
 				list($iddir) = $babDB->db_fetch_row($babDB->db_query("select id from ".BAB_DB_DIRECTORIES_TBL." where id_group=".$babDB->quote(BAB_REGISTERED_GROUP)));
 			} else {
@@ -211,7 +211,7 @@ function listUsers($pos, $grp, $deleteAction)
 			
 			$this->set_directory = bab_isAccessValid(BAB_DBDIRVIEW_GROUPS_TBL,$iddir);
 			
-			if( ($babBody->isSuperAdmin && $babBody->currentAdmGroup == 0) || $babBody->currentDGGroup['users'] == 'Y' )
+			if( (bab_isUserAdministrator() && $babBody->currentAdmGroup == 0) || $babBody->currentDGGroup['users'] == 'Y' )
 			{
 				
 				$this->bmodname = true;
@@ -250,7 +250,7 @@ function listUsers($pos, $grp, $deleteAction)
 			
 			$oToolbar = new BAB_Toolbar();
 			
-			if( ($babBody->isSuperAdmin && $babBody->currentAdmGroup == 0) || $babBody->currentDGGroup['users'] == 'Y')
+			if( (bab_isUserAdministrator() && $babBody->currentAdmGroup == 0) || $babBody->currentDGGroup['users'] == 'Y')
 				{
 					$oToolbar->addToolbarItem(
 						new BAB_ToolbarItem(bab_translate("Create a user"), $sCreateUserUrl, 
@@ -569,7 +569,7 @@ function updateGroup( $grp, $users, $userst)
 		{
 		$id_parent = $babBody->currentDGGroup['id_group'];
 		}
-	elseif( $babBody->isSuperAdmin )
+	elseif( bab_isUserAdministrator() )
 		{
 		$id_parent = BAB_REGISTERED_GROUP;
 		}
@@ -618,7 +618,7 @@ function confirmDeleteUsers($names)
 {
 	global $babBody, $babDB;
 	
-	if( !empty($names) && $babBody->isSuperAdmin && $babBody->currentAdmGroup == 0)
+	if( !empty($names) && bab_isUserAdministrator() && $babBody->currentAdmGroup == 0)
 	{
 		include_once $GLOBALS['babInstallPath'] . 'utilit/delincl.php';
 		$arr = explode(",", $names);
@@ -640,7 +640,7 @@ $displayDeleteAction = false;
 if( !isset($grp) || empty($grp))
 {
 	$displayMembersItemMenu = false;
-	if( $babBody->isSuperAdmin && $babBody->currentAdmGroup == 0 )
+	if( bab_isUserAdministrator() && $babBody->currentAdmGroup == 0 )
 	{
 		$displayDeleteAction = true;
 		$grp = '';//BAB_ADMINISTRATOR_GROUP;
@@ -677,21 +677,21 @@ if( $idx == "chg")
 	$idx = "List";
 }
 
-if( isset($Updateg) && ($babBody->isSuperAdmin || $babBody->currentAdmGroup != 0 ))
+if( isset($Updateg) && (bab_isUserAdministrator() || $babBody->currentAdmGroup != 0 ))
 {
 	$users = isset($_POST['users']) ? $_POST['users'] : array();
 	updateGroup($_POST['grp'], $users, $_POST['userst']);
 	Header("Location: ". $GLOBALS['babUrlScript']."?tg=users&idx=List&pos=".$pos."&grp=".$grp."&bupd=".$_REQUEST['bupd']);
 	exit;
 }
-elseif(isset($Deleteg) && $babBody->isSuperAdmin)
+elseif(isset($Deleteg) && bab_isUserAdministrator())
 {
 	$idx = 'deletem';
 }
 
 if( isset($action) && $action == 'Yes')
 	{
-	if($idx == "Deleteu" && $babBody->isSuperAdmin && $babBody->currentAdmGroup == 0)
+	if($idx == "Deleteu" && bab_isUserAdministrator() && $babBody->currentAdmGroup == 0)
 		{
 		confirmDeleteUsers($names);
 		Header('Location: '. $GLOBALS['babUrlScript'].'?tg=users&idx=List&pos='.$pos.'&grp='.$grp);
@@ -699,7 +699,7 @@ if( isset($action) && $action == 'Yes')
 		}
 	}
 
-if( $idx == "Create" && !$babBody->isSuperAdmin && $babBody->currentDGGroup['users'] != 'Y')
+if( $idx == "Create" && !bab_isUserAdministrator() && $babBody->currentDGGroup['users'] != 'Y')
 {
 	$babBody->msgerror = bab_translate("Access denied");
 	return;
@@ -720,7 +720,7 @@ switch($idx)
 		break;
 
 	case "brow": // Used by add-ons but deprecated
-		if( $babBody->isSuperAdmin || $babBody->currentAdmGroup != 0 )
+		if( bab_isUserAdministrator() || $babBody->currentAdmGroup != 0 )
 			{
 			browseUsers($pos, $cb);
 			}
@@ -743,7 +743,7 @@ switch($idx)
 		break;
 		
 	case 'deletem':
-		if( $babBody->isSuperAdmin || $babBody->currentAdmGroup != 0 )
+		if( bab_isUserAdministrator() || $babBody->currentAdmGroup != 0 )
 			{
 			$babBody->setTitle(bab_translate("Delete users"));
 			
@@ -752,14 +752,14 @@ switch($idx)
 				$babBody->addItemMenu("Members", bab_translate("Members"),$GLOBALS['babUrlScript']."?tg=group&idx=Members&item=".bab_rp('grp'));
 				}
 			$babBody->addItemMenu("List", bab_translate("Users"),$GLOBALS['babUrlScript']."?tg=users&idx=List&pos=".$pos."&grp=".bab_rp('grp'));
-			if( $babBody->isSuperAdmin || $babBody->currentAdmGroup != 0 )
+			if( bab_isUserAdministrator() || $babBody->currentAdmGroup != 0 )
 				{
 					$users = isset($_POST['users']) ? $_POST['users'] : array();
 					deleteUsers($users);
 				}
 			
 
-			if( $babBody->isSuperAdmin && $babBody->currentAdmGroup == 0 )
+			if( bab_isUserAdministrator() && $babBody->currentAdmGroup == 0 )
 				{
 				$babBody->addItemMenu("utilit", bab_translate("Utilities"), $GLOBALS['babUrlScript']."?tg=users&idx=utilit&grp=".bab_rp('grp'));
 				}
@@ -771,7 +771,7 @@ switch($idx)
 		break;
 			
 	case "List":
-		if( $babBody->isSuperAdmin || $babBody->currentAdmGroup != 0 )
+		if( bab_isUserAdministrator() || $babBody->currentAdmGroup != 0 )
 			{
 			$babBody->setTitle(bab_translate("Users list"));
 			$cnt = listUsers($pos, $grp, $displayDeleteAction);
@@ -783,7 +783,7 @@ switch($idx)
 			$babBody->addItemMenu("List", bab_translate("Users"),$GLOBALS['babUrlScript']."?tg=users&idx=List&pos=".$pos."&grp=".bab_rp('grp'));
 			
 
-			if( $babBody->isSuperAdmin && $babBody->currentAdmGroup == 0 )
+			if( bab_isUserAdministrator() && $babBody->currentAdmGroup == 0 )
 				{
 				$babBody->addItemMenu("utilit", bab_translate("Utilities"), $GLOBALS['babUrlScript']."?tg=users&idx=utilit&grp=".bab_rp('grp'));
 				$babBody->addItemMenu("notif", bab_translate("Notices"),$GLOBALS['babUrlScript']."?tg=users&idx=notif");
@@ -796,7 +796,7 @@ switch($idx)
 		break;
 
 		case "notif":
-			if ($babBody->isSuperAdmin && $babBody->currentAdmGroup == 0)
+			if (bab_isUserAdministrator() && $babBody->currentAdmGroup == 0)
 			{
 				require_once $babInstallPath."admin/acl.php";
 				
@@ -812,7 +812,7 @@ switch($idx)
 			break;
 			
 	case "utilit":
-		if ($babBody->isSuperAdmin && $babBody->currentAdmGroup == 0)
+		if (bab_isUserAdministrator() && $babBody->currentAdmGroup == 0)
 			{
 			if (isset($_POST['action']) && $_POST['action'] == 'delete_unconfirmed')
 				{

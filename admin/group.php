@@ -308,7 +308,7 @@ function confirmDeleteGroup($id)
 
 
 /* main */
-if( !$babBody->isSuperAdmin && $babBody->currentAdmGroup == 0 )
+if( !bab_isUserAdministrator() && $babBody->currentAdmGroup == 0 )
 {
 	$babBody->msgerror = bab_translate("Access denied");
 	return;

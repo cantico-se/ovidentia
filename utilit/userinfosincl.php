@@ -52,7 +52,7 @@ class bab_userInfos {
 				date,
 				validity_start,
 				validity_end,
-				confirm_hash   
+				confirm_hash 
 			FROM 
 				'.BAB_USERS_TBL.' 
 			WHERE id='.$babDB->quote($id_user)
@@ -62,6 +62,51 @@ class bab_userInfos {
 
 		return $infos;
 	}
+	
+	
+	/**
+	 * Get user settings
+	 * @return array
+	 */
+	public static function getUserSettings()
+	{
+		static $settings = null;
+		
+		if (!bab_isUserLogged())
+		{
+			throw new Exception('User must be logged in');
+		}
+		
+		if (null === $settings)
+		{
+			global $babDB;
+			$res = $babDB->db_query('
+				SELECT 
+					lang, 
+					skin, 
+					style, 
+					lastlog, 
+					langfilter, 
+					date_shortformat, 
+					date_longformat, 
+					time_format  
+				FROM 
+					'.BAB_USERS_TBL.' 
+				WHERE id='.$babDB->quote(bab_getUserId())
+			);
+			
+			if (!$res || 0 === $babDB->db_num_rows($res))
+			{
+				$settings = false;
+			} else {
+				$settings = $babDB->db_fetch_assoc($res);
+			}
+		}
+		
+		return $settings;
+	}
+	
+	
 
 
 	/**

@@ -500,7 +500,7 @@ function confirmDeleteProfile($idprof)
 }
 
 /* main */
-if( !$babBody->isSuperAdmin /*&& $babBody->currentDGGroup['profiles'] != 'Y'*/)
+if( !bab_isUserAdministrator() /*&& $babBody->currentDGGroup['profiles'] != 'Y'*/)
 {
 	$babBody->msgerror = bab_translate("Access denied");
 	return;
@@ -562,7 +562,7 @@ switch($idx)
 	{
 	case "pacl":
 		include_once $babInstallPath."admin/acl.php";
-		if( $babBody->isSuperAdmin || $babBody->currentDGGroup['groups'] == 'Y')
+		if( bab_isUserAdministrator() || $babBody->currentDGGroup['groups'] == 'Y')
 		{
 			$macl = new macl("profiles", "plist", $idprof, "aclview");
 			$macl->addtable( BAB_PROFILES_GROUPS_TBL, bab_translate("Who can use this profile?"));
@@ -580,7 +580,7 @@ switch($idx)
 		}
 		break;
 	case "pdel":
-		if( $babBody->isSuperAdmin || $babBody->currentDGGroup['groups'] == 'Y')
+		if( bab_isUserAdministrator() || $babBody->currentDGGroup['groups'] == 'Y')
 		{
 			profileDelete($idprof);
 			$babBody->title = bab_translate("Delete profile");
@@ -596,7 +596,7 @@ switch($idx)
 		}
 		break;
 	case "pmod":
-		if( $babBody->isSuperAdmin || $babBody->currentDGGroup['groups'] == 'Y')
+		if( bab_isUserAdministrator() || $babBody->currentDGGroup['groups'] == 'Y')
 		{
 			if( !isset($pname)){$pname = "";}
 			if( !isset($pdesc)){$pdesc = "";}
@@ -617,7 +617,7 @@ switch($idx)
 		}
 		break;
 	case "padd":
-		if( $babBody->isSuperAdmin || $babBody->currentDGGroup['groups'] == 'Y')
+		if( bab_isUserAdministrator() || $babBody->currentDGGroup['groups'] == 'Y')
 		{
 			if( !isset($pname)){$pname = "";}
 			if( !isset($pdesc)){$pdesc = "";}
@@ -638,7 +638,7 @@ switch($idx)
 		break;
 	case "plist":
 	default:
-		if( $babBody->isSuperAdmin || $babBody->currentDGGroup['groups'] == 'Y')
+		if( bab_isUserAdministrator() || $babBody->currentDGGroup['groups'] == 'Y')
 		{
 			profilesList();
 			$babBody->title = bab_translate("Profiles list");

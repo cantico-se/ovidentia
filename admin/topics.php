@@ -948,7 +948,7 @@ function deleteTempImage()
 
 
 /* main */
-if(!$babBody->isSuperAdmin && $babBody->currentDGGroup['articles'] != 'Y')
+if(!bab_isUserAdministrator() && $babBody->currentDGGroup['articles'] != 'Y')
 {
 	$babBody->msgerror = bab_translate("Access denied");
 	return;

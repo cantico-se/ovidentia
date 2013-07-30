@@ -3985,7 +3985,7 @@ function bab_tskmgr_specificFieldDelatable($iIdProjectSpace, $iIdProject, $iIdUs
 {
 	global $babBody;
 	$sTg = bab_rp('tg', '');
-	if('admTskMgr' == $sTg && $babBody->isSuperAdmin)
+	if('admTskMgr' == $sTg && bab_isUserAdministrator())
 	{
 		return true;
 	}

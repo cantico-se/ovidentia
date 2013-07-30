@@ -363,7 +363,11 @@ function listPosts($forum, $thread, $post)
 					$this->brecent = true;
 				else if($GLOBALS['BAB_SESS_LOGGED'])
 					{
-					if( $arr['date'] >= $babBody->lastlog )
+						
+					require_once dirname(__FILE__).'/utilit/userinfosincl.php';
+					$usersettings = bab_userInfos::getUserSettings();
+						
+					if( $arr['date'] >= $usersettings['lastlog'])
 						$this->brecent = true;
 					}
 				
@@ -616,7 +620,10 @@ function listPostsFlat($forum, $thread, $open, $pos)
 					$this->brecent = true;
 				else if($GLOBALS['BAB_SESS_LOGGED'])
 					{
-					if( $arr['date'] >= $babBody->lastlog )
+					require_once dirname(__FILE__).'/utilit/userinfosincl.php';
+					$usersettings = bab_userInfos::getUserSettings();
+						
+					if( $arr['date'] >= $usersettings['lastlog'] )
 						$this->brecent = true;
 					}
 

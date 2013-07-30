@@ -368,7 +368,7 @@ function updateCalendarCategory($idcat, $catname, $catdesc, $bgcolor)
 }
 
 /* main */
-if( !$babBody->isSuperAdmin && $babBody->currentDGGroup['calendars'] != 'Y')
+if( !bab_isUserAdministrator() && $babBody->currentDGGroup['calendars'] != 'Y')
 {
 	$babBody->msgerror = bab_translate("Access denied");
 	return;
@@ -400,7 +400,7 @@ if( isset($addc))
 		}
 	}
 }
-elseif("updcat" == bab_rp('add')  && $babBody->isSuperAdmin)
+elseif("updcat" == bab_rp('add')  && bab_isUserAdministrator())
 {
 	updateCalendarCategory($idcat, $catname, $catdesc, $bgcolor);
 

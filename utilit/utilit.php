@@ -548,16 +548,12 @@ class babBody
 	 */
 	public $message;
 	
-	public $script;
-	public $lastlog; /* date of user last log */
-	
-	
-	
 	/**
-	 * @deprecated user bab_isUserAdministrator() instead
-	 * @var bool
+	 * 
+	 * @var string
 	 */
-	public $isSuperAdmin;
+	public $script;
+	
 	
 	/**
 	 * current group administrated by current user
@@ -600,8 +596,6 @@ class babBody
 		$this->title = '';
 		$this->msgerror = '';
 		$this->content = '';
-		$this->lastlog = '';
-		$this->isSuperAdmin = false;
 		$this->currentAdmGroup = 0;
 		$this->currentDGGroup = array('id' => 0);
 		$this->saarray = array();
@@ -626,6 +620,39 @@ class babBody
 				$this->addError($error);
 			}
 			unset($session->bab_page_errors);
+		}
+	}
+	
+	
+	/**
+	 * 
+	 */
+	public function __isset($propertyName) {
+		switch($propertyName) {
+			case 'isSuperAdmin':
+			case 'lastlog':
+				return true;
+				
+			default:
+				return false;
+		}
+	}
+	
+	public function __get($propertyName) {
+		switch($propertyName) {
+			case 'isSuperAdmin':
+				trigger_error('babBody->isSuperAdmin is deprecated, please use bab_isUserAdministrator() instead');
+				return bab_isUserAdministrator();
+				
+			case 'lastlog':
+				trigger_error('babBody->lastlog is deprecated, please use bab_userInfos::getUserSettings() instead');
+				if (bab_isUserLogged())
+				{
+					require_once dirname(__FILE__).'/userinfosincl.php';
+					$usersettings = bab_userInfos::getUserSettings();
+					return $usersettings['lastlog'];
+				}
+				return '';
 		}
 	}
 	
@@ -1174,23 +1201,33 @@ function bab_getICalendars($id_user = '') {
 
 
 
-
+/**
+ * Update users settings
+ */
 function bab_updateUserSettings()
 {
-	global $babDB, $babBody,$BAB_SESS_USERID;
+	global $babDB;
 	require_once dirname(__FILE__).'/delegincl.php';
+	
 
-	$babBody->isSuperAdmin = false;
-
-	if( !empty($BAB_SESS_USERID))
+	if(bab_isUserLogged())
 	{
-		$babDB->db_query("update ".BAB_USERS_LOG_TBL." set id_user='".$babDB->db_escape_string($BAB_SESS_USERID)."' where sessid='".$babDB->db_escape_string(session_id())."'");
-		$res=$babDB->db_query("select lang, skin, style, lastlog, langfilter, date_shortformat, date_longformat, time_format from ".BAB_USERS_TBL." where id='".$babDB->db_escape_string($BAB_SESS_USERID)."'");
-		if( $res && $babDB->db_num_rows($res) > 0 )
+		require_once dirname(__FILE__).'/settings.class.php';
+		require_once dirname(__FILE__).'/userinfosincl.php';
+		
+		$settings = bab_getInstance('bab_Settings');
+		/*@var $settings bab_Settings */
+		$site = $settings->getSiteSettings();
+		
+		
+		$id_user = bab_getUserId();
+		
+		$babDB->db_query("update ".BAB_USERS_LOG_TBL." set id_user='".$babDB->db_escape_string($id_user)."' where sessid='".$babDB->db_escape_string(session_id())."'");
+		
+		
+		if( $arr = bab_userInfos::getUserSettings() )
 			{
-			$arr = $babDB->db_fetch_array($res);
-
-			if('Y' === $babBody->babsite['change_lang']) {
+			if('Y' === $site['change_lang']) {
 
 				if( $arr['lang'] != '')
 					{
@@ -1205,7 +1242,7 @@ function bab_updateUserSettings()
 
 
 
-			if('Y' === $babBody->babsite['change_skin']) {
+			if('Y' === $site['change_skin']) {
 
 				if ($arr['skin'] !== $GLOBALS['babSkin'] && !empty($arr['skin']))
 					{
@@ -1219,7 +1256,7 @@ function bab_updateUserSettings()
 			}
 
 
-			if('Y' === $babBody->babsite['change_date']) {
+			if('Y' === $site['change_date']) {
 
 				if( $arr['date_shortformat'] != '') {
 					$GLOBALS['babShortDateFormat'] = bab_getDateFormat($arr['date_shortformat']) ;
@@ -1234,30 +1271,23 @@ function bab_updateUserSettings()
 					}
 			}
 
-
-			$babBody->lastlog = $arr['lastlog'];
-
-			$administrator = bab_Groups::get(BAB_ADMINISTRATOR_GROUP);
-			if( $administrator['member'] == 'Y') {
-				$babBody->isSuperAdmin = true;
-
-				if (isset($_GET['debug'])) {
-					if (0 == $_GET['debug']) {
-						setcookie('bab_debug', '', time() - 31536000); // remove
-					} else {
-						setcookie('bab_debug', $_GET['debug'], time() + 31536000); // 1 year
-					}
+			if (isset($_GET['debug'])) {
+				if (0 == $_GET['debug']) {
+					setcookie('bab_debug', '', time() - 31536000); // remove
+				} else {
+					setcookie('bab_debug', $_GET['debug'], time() + 31536000); // 1 year
 				}
 			}
+			
 
 		}
 
-		if('Y' === $babBody->babsite['change_unavailability'])
+		if('Y' === $site['change_unavailability'])
 		{
 			// les retirer le cache de l'approbation si les parametre d'indisponibilite sont actif
-			if (isset($_SESSION['bab_waitingApprobations'][$GLOBALS['BAB_SESS_USERID']]))
+			if (isset($_SESSION['bab_waitingApprobations'][$id_user]))
 			{
-				unset($_SESSION['bab_waitingApprobations'][$GLOBALS['BAB_SESS_USERID']]);
+				unset($_SESSION['bab_waitingApprobations'][$id_user]);
 			}
 		}
 	}
@@ -1275,7 +1305,7 @@ function bab_updateUserSettings()
 	}
 
 	
-	if ($GLOBALS['BAB_SESS_LOGGED'] || !defined('BAB_DISABLE_ANONYMOUS_LOG') || 0 == BAB_DISABLE_ANONYMOUS_LOG)
+	if (bab_isUserLogged() || !defined('BAB_DISABLE_ANONYMOUS_LOG') || 0 == BAB_DISABLE_ANONYMOUS_LOG)
 	{
 		bab_UsersLog::update();
 	}

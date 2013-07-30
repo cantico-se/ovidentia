@@ -122,7 +122,10 @@ function listForums()
 
 				if($GLOBALS['BAB_SESS_LOGGED'])
 					{
-					list($val['nbnewposts']) = $babDB->db_fetch_row($babDB->db_query("select count(p.id) from ".BAB_POSTS_TBL." p left join ".BAB_THREADS_TBL." t on p.id_thread = t.id where t.forum = '".$babDB->db_escape_string($key)."' and p.date_confirm >= '".$babDB->db_escape_string($babBody->lastlog)."' and p.confirmed='Y'"));
+					require_once dirname(__FILE__).'/utilit/userinfosincl.php';
+					$usersettings = bab_userInfos::getUserSettings();
+						
+					list($val['nbnewposts']) = $babDB->db_fetch_row($babDB->db_query("select count(p.id) from ".BAB_POSTS_TBL." p left join ".BAB_THREADS_TBL." t on p.id_thread = t.id where t.forum = '".$babDB->db_escape_string($key)."' and p.date_confirm >= '".$babDB->db_escape_string($usersettings['lastlog'])."' and p.confirmed='Y'"));
 					$this->nbtotalnewposts += $val['nbnewposts'];
 					}
 				else

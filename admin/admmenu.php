@@ -97,7 +97,7 @@ function bab_sitemap_adminSection(bab_eventBeforeSiteMapCreated $event) {
 
 	$addon_urls = array();
 	
-	if( $babBody->isSuperAdmin && $event->loadChildNodes(array('root', 'DGAll', 'babAdmin'))   )
+	if( bab_isUserAdministrator() && $event->loadChildNodes(array('root', 'DGAll', 'babAdmin'))   )
 	{
 		$addon_urls = bab_adminMenuAddons();
 	}
@@ -196,7 +196,7 @@ function bab_sitemap_adminSection(bab_eventBeforeSiteMapCreated $event) {
 
 	}
 
-	if( $babBody->isSuperAdmin )
+	if( bab_isUserAdministrator() )
 		{
 
 			// add nodes without control on delegations
