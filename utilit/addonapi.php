@@ -1746,6 +1746,7 @@ function bab_getAccessibleObjects($table, $userId)
  */
 function bab_getUserIdObjects($table)
 {
+	require_once dirname(__FILE__).'/defines.php';
 	require_once dirname(__FILE__).'/groupsincl.php';
 	require_once $GLOBALS['babInstallPath'].'utilit/session.class.php';
 	
