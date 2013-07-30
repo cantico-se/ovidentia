@@ -478,17 +478,14 @@ class bab_siteMapOrphanRootNode extends bab_OrphanRootNode {
 					$cn = $parentNode->firstChild();
 					/*@var $cn bab_Node */
 					do {
+						$cn->_tree = $this;
 						$sitemapParentNode->appendChild($cn);
 					} while ($cn = $cn->nextSibling());
 					
-					break;
+					return $newNode;
 				}
 				
 			} while($parentNode = $parentNode->parentNode());
-			
-
-			
-			return $newNode;
 		}
 		
 		return null;
@@ -851,7 +848,7 @@ class bab_siteMapItem {
 		{
 			return false;
 		}
-		
+
 		return $this->node->_tree->enableRewriting;
 	}
 	
@@ -878,12 +875,15 @@ class bab_siteMapItem {
 		
 		if ($this->rewritingEnabled()) {
 			$url = bab_Sitemap::rewrittenUrl($this->id_function);
+			
 		} else {
 			$path = bab_Sitemap::rewrittenUrl($this->id_function);
 			if ($path)
 			{
 				$url = '?babrw='.$path;
 			}
+			
+			
 		}
 
 		return $url;
@@ -1807,7 +1807,7 @@ class bab_siteMap {
 	 */
 	public static function url($id_function)
 	{
-		$node = self::get()->getNodeById($id_function);
+		$node = self::getFromSite()->getNodeById($id_function);
 
 		if (!isset($node)) {
 			return null;

@@ -79,7 +79,7 @@ class Func_SitemapDynamicNode_Topic extends Func_SitemapDynamicNode
 	 * @param string $rewriteName
 	 * @return bab_siteMapItem
 	 */
-	private function getArticleSitemapItem($id_topic, $id_article, $articleTitle, $rewriteName, $page_title, $page_description, $page_keywords)
+	private function getArticleSitemapItem($id_topic, $id_article, $articleTitle, $rewriteName, $page_title, $page_description, $page_keywords, bab_Node $articleNode = null)
 	{
 		$item = new bab_siteMapItem();
 		$item->id_function 		= 'babArticle_'.$id_article;
@@ -92,13 +92,14 @@ class Func_SitemapDynamicNode_Topic extends Func_SitemapDynamicNode
 		$item->pageDescription	= $page_description;
 		$item->pageKeywords		= $page_keywords;
 		$item->menuIgnore		= true;
+		$item->node 			= $articleNode;
 		
 		return $item;
 	}
 	
 	
 	
-	private function getTopicSitemapItem($id_topic, $name)
+	private function getTopicSitemapItem($id_topic, $name, bab_Node $topicNode = null)
 	{
 		$item = new bab_siteMapItem();
 		$item->id_function 		= 'babArticleTopic_'.$id_topic;
@@ -107,6 +108,7 @@ class Func_SitemapDynamicNode_Topic extends Func_SitemapDynamicNode
 		$item->folder 			= false;
 		$item->iconClassnames	= Func_Icons::OBJECTS_PUBLICATION_TOPIC;
 		$item->menuIgnore		= true;
+		$item->node				= $topicNode;
 		
 		return $item;
 	}
@@ -205,10 +207,10 @@ class Func_SitemapDynamicNode_Topic extends Func_SitemapDynamicNode
 		
 		$topicNodeId = 'babArticleTopic_'.$article['id_topic'];
 		$topicNode = new bab_Node(null, $topicNodeId);
-		$topicNode->setData($this->getTopicSitemapItem($article['id_topic'], $article['category']));
+		$topicNode->setData($this->getTopicSitemapItem($article['id_topic'], $article['category'], $topicNode));
 
 		$articleNode = new bab_Node(null, $nodeId);
-		$articleNode->setData($this->getArticleSitemapItem($article['id_topic'], $id_article, $article['title'], $article['rewritename'], $article['page_title'], $article['page_description'], $article['page_keywords']));
+		$articleNode->setData($this->getArticleSitemapItem($article['id_topic'], $id_article, $article['title'], $article['rewritename'], $article['page_title'], $article['page_description'], $article['page_keywords'], $articleNode));
 		
 		$topicNode->appendChild($articleNode);
 		
