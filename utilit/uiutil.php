@@ -51,67 +51,67 @@ function popupUnload($message, $redirecturl, $openerreload=false, $autoclose=tru
 
 class babBodyPopup
 {
-var $menu;
-var $msgerror;
-var $content;
-var $title;
-var $message;
-var $styleSheet = array();
-
-function babBodyPopup()
-{
-	global $babDB;
-	$this->menu = new babMenu();
-	$this->message = "";
-	$this->title = "";
-	$this->msgerror = "";
-	$this->content = "";
-}
-
-function resetContent()
-{
-	$this->content = "";
-}
-
-function babecho($txt)
-{
-	$this->content .= $txt;
-}
-
-function addItemMenu($title, $txt, $url, $enabled=true)
-{
-	$this->menu->addItem($title, $txt, $url, $enabled);
-}
-
-function addItemMenuAttributes($title, $attr)
-{
-	$this->menu->addItemAttributes($title, $attr);
-}
-
-function setCurrentItemMenu($title, $enabled=false)
-{
-	$this->menu->setCurrent($title, $enabled);
-}
-
-function addStyleSheet($file)
-{
-	$this->styleSheet[] = $file;
-}
-
-
-
-function printout()
-{
-    if(!empty($this->msgerror))
-		{
-		$this->message = $this->msgerror;
-		}
-	else if(!empty($this->title))
-		{
-		$this->message = $this->title;
-		}
-	return $this->content;
-}
+	var $menu;
+	var $msgerror;
+	var $content;
+	var $title;
+	var $message;
+	var $styleSheet = array();
+	
+	function babBodyPopup()
+	{
+		global $babDB;
+		$this->menu = new babMenu();
+		$this->message = "";
+		$this->title = "";
+		$this->msgerror = "";
+		$this->content = "";
+	}
+	
+	function resetContent()
+	{
+		$this->content = "";
+	}
+	
+	function babecho($txt)
+	{
+		$this->content .= $txt;
+	}
+	
+	function addItemMenu($title, $txt, $url, $enabled=true)
+	{
+		$this->menu->addItem($title, $txt, $url, $enabled);
+	}
+	
+	function addItemMenuAttributes($title, $attr)
+	{
+		$this->menu->addItemAttributes($title, $attr);
+	}
+	
+	function setCurrentItemMenu($title, $enabled=false)
+	{
+		$this->menu->setCurrent($title, $enabled);
+	}
+	
+	function addStyleSheet($file)
+	{
+		$this->styleSheet[] = $file;
+	}
+	
+	
+	
+	function printout()
+	{
+	    if(!empty($this->msgerror))
+			{
+			$this->message = $this->msgerror;
+			}
+		else if(!empty($this->title))
+			{
+			$this->message = $this->title;
+			}
+		return $this->content;
+	}
 } 
 
 

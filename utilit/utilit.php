@@ -601,7 +601,7 @@ class babBody
 		$this->saarray = array();
 		$this->babaddons = array();
 	
-	
+		require_once dirname(__FILE__).'/session.class.php';
 		$session = bab_getInstance('bab_Session');
 		if (isset($session->bab_page_messages))
 		{
