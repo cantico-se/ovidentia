@@ -172,23 +172,27 @@ class bab_eventArticle extends bab_event implements bab_eventNotifyRecipients
 
 		$users = aclGetAccessUsers(BAB_TOPICSVIEW_GROUPS_TBL, $this->topic_id);
 
-		// remove already notified users
-		if (0 < count($this->informed_recipients)) {
-			foreach($users as $id_user => $arr) {
 
-				if( null !== $this->restriction && !bab_articleAccessByRestriction($this->restriction, $id_user)){
-					unset($users[$id_user]);
-					continue;
-				}
-				
-				if( isset($this->unsubscribed_users[$id_user])){
-					unset($users[$id_user]);
-					continue;
-				}
-
-				if (isset($this->informed_recipients[$id_user])) {
-					unset($users[$id_user]);
-				}
+		foreach($users as $id_user => $arr) {
+		
+			if( null !== $this->restriction && !bab_articleAccessByRestriction($this->restriction, $id_user)){
+				unset($users[$id_user]);
+				continue;
+			}
+		
+			if( isset($this->unsubscribed_users[$id_user])){
+				unset($users[$id_user]);
+				continue;
+			}
+		
+			if (isset($this->informed_recipients[$id_user])) {
+				unset($users[$id_user]);
+				continue;
+			}
+			
+			if (empty($arr['email'])) {
+				unset($users[$id_user]);
+				continue;
 			}
 		}
 
