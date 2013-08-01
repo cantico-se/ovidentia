@@ -460,13 +460,15 @@ class bab_siteMapOrphanRootNode extends bab_OrphanRootNode {
 				continue;
 			}
 			
+			
+			$baseNodeId = bab_siteMap::getSitemapRootNode();
+			
 			do 
 			{
 				// if parentNode exists in current sitemap, append subtree
 				// prefer the original instead of the target if available
 				
-				$baseItem = bab_sitemap::getVisibleRootNodeSitemapItem();
-				$sitemapParentNode = $this->getNodeByTargetId($baseItem->id_function, $parentNode->getId());
+				$sitemapParentNode = $this->getNodeByTargetId($baseNodeId, $parentNode->getId());
 				
 				if (null === $sitemapParentNode)
 				{

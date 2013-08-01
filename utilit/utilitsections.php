@@ -400,10 +400,13 @@ function babUserSection($close) {
 		$this->babUserSectionAddons = $this->babUserSectionAddons->firstChild();
 	}
 	
-	require_once dirname(__FILE__).'/userinfosincl.php';
-	$usersettings = bab_userInfos::getUserSettings();
-
-	$this->lastlog = $usersettings['lastlog'];
+	if (bab_isUserLogged())
+	{
+		require_once dirname(__FILE__).'/userinfosincl.php';
+		$usersettings = bab_userInfos::getUserSettings();
+	
+		$this->lastlog = $usersettings['lastlog'];
+	}
 }
 
 
