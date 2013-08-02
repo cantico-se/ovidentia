@@ -386,7 +386,7 @@ function bab_OCGetUserEntities($iduser, $idoc = '')
 			ocrt.id AS role_id, 
 			ocrt.name AS role_name, 
 			ocet.description AS entity_description, 
-			ocrut.isprimary 
+			ocrut.isprimary, 
 			type
 		FROM '.BAB_OC_ROLES_TBL.' ocrt
 			LEFT JOIN '.BAB_OC_ROLES_USERS_TBL.' ocrut ON ocrt.id = ocrut.id_role
