@@ -73,16 +73,63 @@ function bab_WFGetWaitingInstances($iduser, $update=false)
 	return $result;
 }
 
+
+/**
+ * 
+ * @return array
+ */
 function bab_WFGetApprobationsList()
 {
 	global $babDB, $babBody;
 	$result = array();
 	$res = $babDB->db_query("select * from ".BAB_FLOW_APPROVERS_TBL." where id_dgowner='".$babDB->db_escape_string($babBody->currentAdmGroup)."' order by name asc");
-	while( $arr = $babDB->db_fetch_array($res))
+	while( $arr = $babDB->db_fetch_assoc($res))
 	{
 		$result[] = array('name' => $arr['name'], 'id' => $arr['id']);
 	}
 	return $result;
 }
 
-?>
+/**
+ * Get approbationscheme information
+ * @param int $idsch		approbation scheme
+ * @return array
+ */
+function bab_WFGetApprobationInfos($idsch)
+{
+	global $babDB;
+	$result = array();
+	$res = $babDB->db_query("select 
+		name, 
+		description, 
+		satype, 
+		id_oc,			# if linked to organizational chart
+		id_dgowner,		# delegation
+		refcount  		# usage count
+	from 
+		".BAB_FLOW_APPROVERS_TBL." 
+			
+	where 
+		id=".$babDB->quote($idsch)
+	);
+	
+	
+	while( $arr = $babDB->db_fetch_assoc($res))
+	{
+		switch($arr['satype'])
+		{
+			case 1:
+				$arr['type'] = bab_translate('Staff schema');
+				break;
+			case 2:
+				$arr['type'] = bab_translate('Group schema');
+				break;
+			default:
+				$arr['type'] = bab_translate('Nominative schema');
+		}
+		
+		return $arr;
+	}
+	
+	return null;
+}
