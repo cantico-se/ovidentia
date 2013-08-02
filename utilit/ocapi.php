@@ -438,6 +438,8 @@ function bab_OCGetUserEntities($iduser, $idoc = '')
 /**
  * Returns the primary role and entity the specified user is associated to in the specified organizational chart,
  * or in the main organizational chart if $idoc is not specificied.
+ * 
+ * @since 8.0.94
  *
  * @param int	$iduser
  * @param int	$idoc

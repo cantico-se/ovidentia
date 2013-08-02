@@ -92,6 +92,9 @@ function bab_WFGetApprobationsList()
 
 /**
  * Get approbationscheme information
+ * 
+ * @since 8.0.94
+ * 
  * @param int $idsch		approbation scheme
  * @return array
  */
