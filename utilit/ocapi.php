@@ -453,7 +453,7 @@ function bab_OCGetUserMainEntity($iduser, $idoc = '')
 
 		if( empty($idoc))
 		{
-			return $ret;
+			return null;
 		}
 	}
 
@@ -495,7 +495,7 @@ function bab_OCGetUserMainEntity($iduser, $idoc = '')
 		}
 	}
 
-	return $ret;
+	return null;
 }
 
 
