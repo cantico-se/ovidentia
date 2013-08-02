@@ -710,7 +710,7 @@ class bab_dirEntryPhoto {
 	 */
 	public function getUrl() {
 		
-		if ($T = @bab_functionality::get('Thumbnailer') && null !== $this->thumbWidth && null !== $this->thumbHeight)
+		if (($T = @bab_functionality::get('Thumbnailer')) && null !== $this->thumbWidth && null !== $this->thumbHeight)
 		{
 			/*@var $T Func_Thumbnailer */
 			
