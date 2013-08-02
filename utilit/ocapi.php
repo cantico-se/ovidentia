@@ -28,7 +28,6 @@ include_once $GLOBALS['babInstallPath'].'utilit/treeincl.php';
 /**
  * Returns the primary org chart id.
  *
- * @todo remove the idprimaryoc on babBody
  *
  * @return int	or null.
  */
@@ -359,7 +358,7 @@ function bab_OCGetUserOrgCharts($iduser)
  */
 function bab_OCGetUserEntities($iduser, $idoc = '')
 {
-	global $babBody, $babDB;
+	global $babDB;
 
 	$ret = array(
 		'superior' => array(),
@@ -381,12 +380,20 @@ function bab_OCGetUserEntities($iduser, $idoc = '')
 
 
 	$sql = '
-		SELECT ocrt.id_entity, ocet.name AS entity_name, ocrt.id AS role_id, ocrt.name AS role_name, ocet.description AS entity_description, type
+		SELECT 
+			ocrt.id_entity, 
+			ocet.name AS entity_name, 
+			ocrt.id AS role_id, 
+			ocrt.name AS role_name, 
+			ocet.description AS entity_description, 
+			ocrut.isprimary 
+			type
 		FROM '.BAB_OC_ROLES_TBL.' ocrt
-		LEFT JOIN '.BAB_OC_ROLES_USERS_TBL.' ocrut ON ocrt.id = ocrut.id_role
-		LEFT JOIN '.BAB_OC_ENTITIES_TBL.' ocet ON ocet.id = ocrt.id_entity
-		LEFT JOIN '.BAB_DBDIR_ENTRIES_TBL.' det ON det.id = ocrut.id_user
-		WHERE det.id_user = '.$babDB->quote($iduser).' AND ocrt.id_oc = '.$babDB->quote($idoc);
+			LEFT JOIN '.BAB_OC_ROLES_USERS_TBL.' ocrut ON ocrt.id = ocrut.id_role
+			LEFT JOIN '.BAB_OC_ENTITIES_TBL.' ocet ON ocet.id = ocrt.id_entity
+			LEFT JOIN '.BAB_DBDIR_ENTRIES_TBL.' det ON det.id = ocrut.id_user
+		WHERE 
+			det.id_user = '.$babDB->quote($iduser).' AND ocrt.id_oc = '.$babDB->quote($idoc);
 
 
 	$res = $babDB->db_query($sql);
@@ -396,11 +403,12 @@ function bab_OCGetUserEntities($iduser, $idoc = '')
 		while ($arr = $babDB->db_fetch_array($res))
 		{
 			$entities = array(
-				'id'=> $arr['id_entity'],
-				'name' => $arr['entity_name'],
-				'description' => $arr['entity_description'],
-				'role_id' => $arr['role_id'],
-				'role_name' => $arr['role_name'],
+				'id' 			=> $arr['id_entity'],
+				'name' 			=> $arr['entity_name'],
+				'description' 	=> $arr['entity_description'],
+				'role_id' 		=> $arr['role_id'],
+				'role_name' 	=> $arr['role_name'],
+				'isprimary'		=> $arr['isprimary']
 			);
 
 			switch ($arr['type'])
@@ -422,6 +430,76 @@ function bab_OCGetUserEntities($iduser, $idoc = '')
 
 	return $ret;
 }
+
+
+
+
+
+/**
+ * Returns the primary role and entity the specified user is associated to in the specified organizational chart,
+ * or in the main organizational chart if $idoc is not specificied.
+ *
+ * @param int	$iduser
+ * @param int	$idoc
+ * @return array
+ */
+function bab_OCGetUserMainEntity($iduser, $idoc = '')
+{
+	global $babDB;
+
+	if( empty($idoc))
+	{
+		$idoc = bab_OCgetPrimaryOcId();
+
+		if( empty($idoc))
+		{
+			return $ret;
+		}
+	}
+
+
+
+	$sql = '
+		SELECT
+			ocrt.id_entity,
+			ocet.name AS entity_name,
+			ocrt.id AS role_id,
+			ocrt.name AS role_name,
+			ocet.description AS entity_description,
+			type
+			
+		FROM '.BAB_OC_ROLES_TBL.' ocrt
+			LEFT JOIN '.BAB_OC_ROLES_USERS_TBL.' ocrut ON ocrt.id = ocrut.id_role
+			LEFT JOIN '.BAB_OC_ENTITIES_TBL.' ocet ON ocet.id = ocrt.id_entity
+			LEFT JOIN '.BAB_DBDIR_ENTRIES_TBL.' det ON det.id = ocrut.id_user
+		WHERE 
+			ocrut.isprimary=\'Y\' 
+			AND det.id_user = '.$babDB->quote($iduser).' 
+			AND ocrt.id_oc = '.$babDB->quote($idoc);
+
+
+	$res = $babDB->db_query($sql);
+
+	if ($res && $babDB->db_num_rows($res) > 0)
+	{
+		while ($arr = $babDB->db_fetch_array($res))
+		{
+			return array(
+					'id' 			=> $arr['id_entity'],
+					'name' 			=> $arr['entity_name'],
+					'description' 	=> $arr['entity_description'],
+					'role_id' 		=> $arr['role_id'],
+					'role_name' 	=> $arr['role_name'],
+					'type'			=> $arr['type']
+			);
+		}
+	}
+
+	return $ret;
+}
+
+
+
 
 
 
@@ -2722,33 +2800,3 @@ class bab_OrgChartUtil
 
 
 
-function bab_IsUserUnderSuperior($id_user)
-{
-	if ($id_user == $GLOBALS['BAB_SESS_USERID'])
-		return true;
-
-	$user_entities = & bab_OCGetUserEntities($id_user);
-	$user_entities = array_merge($user_entities['superior'], $user_entities['temporary'], $user_entities['members']);
-	foreach($user_entities as $entity)
-	{
-		$user_entities_id[$entity['id']] = $entity['id'];
-	}
-
-	$arr = & bab_OCGetUserEntities($GLOBALS['BAB_SESS_USERID']);
-	bab_addCoManagerEntities($arr, $GLOBALS['BAB_SESS_USERID']);
-
-	$childs = array();
-	foreach ($arr['superior'] as $entity)
-	{
-		$childs[] = $entity;
-		$tmp = & bab_OCGetChildsEntities($entity['id']);
-		$childs = array_merge($childs, $tmp);
-	}
-
-	foreach($childs as $entity)
-	{
-		if (isset($user_entities_id[$entity['id']]))
-			return true;
-	}
-	return false;
-}
