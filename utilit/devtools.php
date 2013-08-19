@@ -225,6 +225,7 @@ class bab_synchronizeSql
 	/**
 	 * Add a set to filecontent
 	 * @param ORM_MySqlRecordSet $set
+	 * @since 8.0.93
 	 */
 	public function addOrmSet(ORM_MySqlRecordSet $set)
 	{
