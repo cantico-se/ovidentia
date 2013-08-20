@@ -1111,6 +1111,7 @@ function viewVacationCalendar($users, $period = false )
 				else
 					{
 					$this->day_classname = 'noday';
+					$this->am_color = false;
 					$this->halfday = false;
 					$this->titledate = '';
 					}
