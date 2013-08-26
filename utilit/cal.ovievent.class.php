@@ -1851,7 +1851,7 @@ class bab_cal_OviEventSelect
 		$nworking = $userperiods->isPeriodCollection($nwp_collection);
 		$previous_end = NULL;
 
-		if ($users) {
+		if ($users && $working) {
 
 			$workingHours = bab_functionality::get('WorkingHours');
 			/*@var $workingHours Func_WorkingHours */

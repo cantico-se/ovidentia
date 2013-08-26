@@ -531,6 +531,12 @@ class bab_CalendarPeriod extends bab_ICalendarObject {
 	{
 		$collection = $this->getCollection();
 		$calendar = $collection->getCalendar();
+		
+		if (!isset($calendar))
+		{
+			throw new Exception('Missing calendar for event '.$this->getProperty('UID'));
+		}
+		
 		$backend = $calendar->getBackend();
 		return $backend->savePeriod($this);
 	}
