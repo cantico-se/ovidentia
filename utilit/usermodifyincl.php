@@ -390,24 +390,32 @@ class bab_userModify {
 	
 				if( isset($info['sn']) || isset($info['givenname']) || isset($info['mn']))
 				{
-					if( isset($info['sn']) && empty($info['sn']))
+					if( isset($info['sn']))
 					{
-						$error = bab_translate( "Lastname is required");
-						return false;
+						if ('' === $info['sn'])
+						{
+							$error = bab_translate( "Lastname is required");
+							return false;
+						} else {
+							$lastname = $info['sn'];
+						}
 					}
 					else
 					{
-						$lastname = $info['sn'];
+						$lastname = $arruinfo['lastname'];
 					}
 	
-					if( isset($info['givenname']) && empty($info['givenname']))
+					if( isset($info['givenname']))
 					{
-						$error = bab_translate( "Firstname is required");
-						return false;
-					}
-					else
-					{
-						$firstname = $info['givenname'];
+						if ('' === $info['givenname'])
+						{
+							$error = bab_translate( "Firstname is required");
+							return false;
+						} else {
+							$firstname = $info['givenname'];
+						}
+					} else {
+						$firstname = $arruinfo['firstname'];
 					}
 	
 					if( isset($info['mn']))
