@@ -857,7 +857,7 @@ class bab_siteMapItem {
 
 
 	/**
-	 * Get rewritten url is the rewriting is enabled or the regular url if there is no rewriting
+	 * Get rewritten url if the rewriting is enabled or the regular url if there is no rewriting
 	 * @return string
 	 */
 	public function getRwUrl()
