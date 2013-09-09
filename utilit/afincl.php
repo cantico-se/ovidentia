@@ -503,6 +503,17 @@ function isUserApproverFlow($idsa, $iduser, $update=false)
 	return false;
 }
 
+
+/**
+ * Get Waiting approval items
+ * if $notify set to true, the function return only the not notified approval items
+ * 
+ * @param array $scinfo		Approbation scheme informations
+ * @param int 	$idschi		Approbation Instance ID
+ * @param bool 	$notify		Mark the approval items as notified
+ * 
+ * @return array	List of approval items in the scheme (can be users, goups, entites)
+ */
 function getWaitingIdsFlowInstance($scinfo, $idschi, $notify=false)
 {
 	global $babDB;
@@ -554,6 +565,17 @@ function getWaitingIdsFlowInstance($scinfo, $idschi, $notify=false)
 	}
 }
 
+
+
+/**
+ * Return the list of approvers for an instance
+ * if $notify set to true, the function return only the not notified approvers
+ * 
+ * @param int $idschi		Workflow instance
+ * @param bool $notify		Mark the approvers as notified
+ * 
+ * @return array	A list of ID user
+ */
 function getWaitingApproversFlowInstance($idschi, $notify=false)
 {
 	require_once dirname(__FILE__).'/userinfosincl.php';
