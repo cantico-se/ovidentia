@@ -2099,7 +2099,16 @@ function displayDownloadHistory()
 
 	$template = new temp_displayDownloadHistory($file);
 	$babBody->setTitle(sprintf(bab_translate("Download history for %s"), $file->getName()));
-	$babBody->babpopup(bab_printTemplate($template, 'fileman.html', 'download_history'));
+	
+	$oFileManagerEnv =& getEnvObject();
+	$enable = ($oFileManagerEnv->oFmFolder->getDownloadHistory() == 'Y');
+	$sParentPath = $oFileManagerEnv->sRelativePath;
+	$right = haveRight($sParentPath, BAB_FMDOWNLOADHISTORY_GROUPS_TBL);
+	if($right && $enable){
+		$babBody->babpopup(bab_printTemplate($template, 'fileman.html', 'download_history'));
+	}else{
+		$babBody->babpopup(bab_translate('Access denied'));
+	}
 }
 
 
@@ -2746,7 +2755,7 @@ function viewFile()
 
 		var $bUseKeyword = false;
 
-		function temp_ViewFile($oFmFolder, $oFolderFile, $bmanager, $access, $bconfirm, $bupdate, $bdownload, $bversion)
+		function temp_ViewFile($oFmFolder, $oFolderFile, $bmanager, $bdownloadhistoryright, $access, $bconfirm, $bupdate, $bdownload, $bversion)
 		{
 			global $babBody, $babDB;
 
@@ -2759,6 +2768,7 @@ function viewFile()
 			$oFileManagerEnv =& getEnvObject();
 
 			$this->bmanager = $bmanager;
+			$this->bdownloadhistoryright = $bdownloadhistoryright;
 			$this->bconfirm = $bconfirm;
 			$this->bupdate = $bupdate;
 			$this->bdownload = $bdownload;
@@ -3009,6 +3019,7 @@ function viewFile()
 	$bconfirm = false;
 	$bupdate = false;
 	$bdownload = false;
+	$bdownloadhistoryright = false;
 	$arr = array();
 	$bversion = '';
 
@@ -3038,6 +3049,7 @@ function viewFile()
 				$bmanager = true;
 				$bupdate = true;
 				$bdownload = true;
+				$bdownloadhistoryright = true;
 			}
 		}
 		else if('Y' === $oFolderFile->getGroup())
@@ -3057,6 +3069,7 @@ function viewFile()
 			$bdownload = canDownload($sParentPath);
 			$bmanager = haveRight($sParentPath, BAB_FMMANAGERS_GROUPS_TBL);//canManage($sParentPath);
 			$bupdate = canUpdate($sParentPath);
+			$bdownloadhistoryright = haveRight($sParentPath, BAB_FMDOWNLOADHISTORY_GROUPS_TBL);
 
 			if ($bconfirm) {
 				$bupdate = false;
@@ -3071,9 +3084,9 @@ function viewFile()
 	}
 
 	if ($access) {
-		$temp = new temp_ViewFile($oFileManagerEnv->oFmFolder, $oFolderFile, $bmanager, $access, $bconfirm, $bupdate, $bdownload, $bversion);
+		$temp = new temp_ViewFile($oFileManagerEnv->oFmFolder, $oFolderFile, $bmanager, $bdownloadhistoryright, $access, $bconfirm, $bupdate, $bdownload, $bversion);
 	} else {
-		$temp = new temp_ViewFile(null, $oFolderFile, $bmanager, $access, $bconfirm, $bupdate, $bdownload, $bversion);
+		$temp = new temp_ViewFile(null, $oFolderFile, $bmanager, $bdownloadhistoryright, $access, $bconfirm, $bupdate, $bdownload, $bversion);
 	}
 	$babBody->babpopup(bab_printTemplate($temp, 'fileman.html', 'viewfile'));
 }
@@ -3128,7 +3141,9 @@ function displayRightForm()
 			$macl->filter(0,0,1,1,1);
 			$macl->addtable( BAB_FMNOTIFY_GROUPS_TBL,bab_translate("Who is notified when a new file is uploaded or updated?"));
 			$macl->filter(0,0,1,0,1);
-			$macl->addtable( 'bab_fmunzip_groups',bab_translate("Who can unzip archives?"));
+			$macl->addtable( BAB_FMUNZIP_GROUPS_TBL,bab_translate("Who can unzip archives?"));
+			$macl->filter(0,0,1,0,1);
+			$macl->addtable( BAB_FMDOWNLOADHISTORY_GROUPS_TBL,bab_translate("Who can view the download history?"));
 			$macl->filter(0,0,1,0,1);
 			$macl->babecho();
 		}

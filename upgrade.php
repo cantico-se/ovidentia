@@ -6564,9 +6564,9 @@ function ovidentia_upgrade($version_base,$version_ini) {
 	/**
 	 * Upgrade to 7.5.90
 	 */
-	if (!bab_isTable('bab_fmunzip_groups')) {
+	if (!bab_isTable(BAB_FMUNZIP_GROUPS_TBL)) {
 		$babDB->db_query("
-			CREATE TABLE bab_fmunzip_groups (
+			CREATE TABLE ".BAB_FMUNZIP_GROUPS_TBL." (
 			  id int(11) unsigned NOT NULL auto_increment,
 			  id_object int(11) unsigned NOT NULL default '0',
 			  id_group int(11) unsigned NOT NULL default '0',
@@ -7057,6 +7057,30 @@ function ovidentia_upgrade($version_base,$version_ini) {
 	 */
 	$functionalities->register('WorkingHours'					, $GLOBALS['babInstallPath'].'utilit/workinghoursincl.php');
 	$functionalities->register('WorkingHours/Ovidentia'			, $GLOBALS['babInstallPath'].'utilit/workinghoursincl.php');
+
+	if (!bab_isTable(BAB_FMDOWNLOADHISTORY_GROUPS_TBL)) {
+		$babDB->db_query("
+			CREATE TABLE ".BAB_FMDOWNLOADHISTORY_GROUPS_TBL." (
+			  id int(11) unsigned NOT NULL auto_increment,
+			  id_object int(11) unsigned NOT NULL default '0',
+			  id_group int(11) unsigned NOT NULL default '0',
+			  PRIMARY KEY  (id),
+			  KEY id_object (id_object),
+			  KEY id_group (id_group)
+			)
+		");
+		
+		$res = $babDB->db_query('SELECT * FROM ' . BAB_FMMANAGERS_GROUPS_TBL);
+		while($arr = $babDB->db_fetch_array($res)){
+			$sQuery =
+			"INSERT INTO " . BAB_FMDOWNLOADHISTORY_GROUPS_TBL . "
+				(id_object, id_group) 
+			VALUES
+				(" . $babDB->quote($arr['id_object']) . ", " . $babDB->quote($arr['id_group']) . ")";
+
+			$babDB->db_query($sQuery);
+		}
+	}
 	
 	
 	return true;
