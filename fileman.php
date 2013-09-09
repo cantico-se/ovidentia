@@ -3166,25 +3166,24 @@ function getOrphanFileList()
 	}
 
 	$oFileManagerEnv =& getEnvObject();
-	$sUploadPath = $oFileManagerEnv->getRootFmPath();
+	
+	$oFolderFileSet = new BAB_FolderFileSet();
+	$oGroup =& $oFolderFileSet->aField['sGroup'];
+	$oId =& $oFolderFileSet->aField['iId'];
 
-	if(is_dir($sUploadPath))
+	$oFolderFileSet->select($oGroup->in('Y'));
+
+	while(null !== ($oFolderFile = $oFolderFileSet->next()))
 	{
-		$oFolderFileSet = new BAB_FolderFileSet();
-		$oGroup =& $oFolderFileSet->aField['sGroup'];
-		$oId =& $oFolderFileSet->aField['iId'];
-
-		$oFolderFileSet->select($oGroup->in('Y'));
-
-		while(null !== ($oFolderFile = $oFolderFileSet->next()))
+		/*@var $oFolderFile bab_FolderFile */
+		$collectivePath = $oFileManagerEnv->getCollectivePath($oFolderFile->getDelegationOwnerId());
+		$sFullPathName = $collectivePath . $oFolderFile->getPathName() . $oFolderFile->getName();
+		if(!is_file($sFullPathName))
 		{
-			$sFullPathName = $sUploadPath . $oFolderFile->getPathName() . $oFolderFile->getName();
-			if(!is_file($sFullPathName))
-			{
-				bab_debug($sFullPathName);
-			}
+			bab_debug($sFullPathName);
 		}
 	}
+	
 }
 
 function deleteOrphanFile()
@@ -3195,28 +3194,30 @@ function deleteOrphanFile()
 	}
 
 	$oFileManagerEnv =& getEnvObject();
-	$sUploadPath = $oFileManagerEnv->getRootFmPath();
-
 	
-	if(is_dir($sUploadPath))
-	{
-		$oFolderFileSet = new BAB_FolderFileSet();
-		$oGroup =& $oFolderFileSet->aField['sGroup'];
-		$oId =& $oFolderFileSet->aField['iId'];
 
-		$oFolderFileSet->select($oGroup->in('Y'));
-		$id_to_delete = array();
+	$oFolderFileSet = new BAB_FolderFileSet();
+	$oGroup =& $oFolderFileSet->aField['sGroup'];
+	$oId =& $oFolderFileSet->aField['iId'];
+
+	$oFolderFileSet->select($oGroup->in('Y'));
+	$id_to_delete = array();
+	
+	while(null !== ($oFolderFile = $oFolderFileSet->next()))
+	{
+		/*@var $oFolderFile bab_FolderFile */
+		$collectivePath = $oFileManagerEnv->getCollectivePath($oFolderFile->getDelegationOwnerId());
 		
-		while(null !== ($oFolderFile = $oFolderFileSet->next()))
+		$sFullPathName = $collectivePath . $oFolderFile->getPathName() . $oFolderFile->getName();
+		if(!is_file($sFullPathName))
 		{
-			$sFullPathName = $sUploadPath . $oFolderFile->getPathName() . $oFolderFile->getName();
-			if(!is_file($sFullPathName))
-			{
-				bab_debug($sFullPathName);
-				$id_to_delete[] = $oFolderFile->getId();
-			}
+			bab_debug($sFullPathName);
+			$id_to_delete[] = $oFolderFile->getId();
 		}
-		
+	}
+	
+	if ($id_to_delete)
+	{
 		$oFolderFileSet->remove($oId->in($id_to_delete));
 	}
 	
@@ -3225,7 +3226,11 @@ function deleteOrphanFile()
 
 
 
-function deleteUnreferencedFiles()
+
+
+
+
+function deleteUnreferencedFiles($simulation = false)
 {
 	if(false === bab_isUserAdministrator())
 	{
@@ -3234,15 +3239,16 @@ function deleteUnreferencedFiles()
 	
 	$oFileManagerEnv =& getEnvObject();
 	$uploadPath = new bab_Path($oFileManagerEnv->getRootFmPath());
+	$uploadPath->pop();
 	
 	bab_debug('Search in : '.$uploadPath->tostring());
 	
-	deleteUnreferencedFilesLevel($uploadPath);
+	deleteUnreferencedFilesLevel($uploadPath , $simulation);
 	
 	
 }
 
-function deleteUnreferencedFilesLevel(bab_Path $path)
+function deleteUnreferencedFilesLevel(bab_Path $path, $simulation)
 {
 	$oFileManagerEnv =& getEnvObject();
 	$prefix = $oFileManagerEnv->getRootFmPath();
@@ -3257,7 +3263,7 @@ function deleteUnreferencedFilesLevel(bab_Path $path)
 		/*@var $file bab_path */
 		if ($file->isDir())
 		{
-			deleteUnreferencedFilesLevel($file);
+			deleteUnreferencedFilesLevel($file, $simulation);
 		} else {
 			
 			$basename = $file->getBasename();
@@ -3270,10 +3276,14 @@ function deleteUnreferencedFilesLevel(bab_Path $path)
 			
 			if (null === $r)
 			{
+				bab_debug($file->toString());
+				
 				// not found in database : delete
-				if (unlink($file->toString()))
+				if ($simulation)
 				{
-					bab_debug($file->toString());
+					continue;
+				} else {
+					unlink($file->toString());
 				}
 			}
 		}
@@ -4887,8 +4897,12 @@ switch($idx)
 		deleteOrphanFile();
 		break;
 		
+	case 'getUnreferencedFilesList':
+		deleteUnreferencedFiles(true); // simulation
+		break;
+		
 	case 'deleteUnreferencedFiles':
-		deleteUnreferencedFiles();
+		deleteUnreferencedFiles(false);
 		break;
 
 	default:
