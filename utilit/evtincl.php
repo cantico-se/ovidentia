@@ -446,7 +446,7 @@ function bab_createCalendarPeriod(Func_CalendarBackend $backend, $args, bab_Peri
 						{
 							include_once $GLOBALS['babInstallPath']."utilit/afincl.php";
 							$idfai = makeFlowInstance($idsa, $attendee->getUrlIdentifier().'-'.$period->getProperty('DTSTART').'-'.$period->getProperty('SUMMARY'));
-							getWaitingApproversFlowInstance($idfai, true);
+							// getWaitingApproversFlowInstance($idfai, true);
 						}
 						$status = 'NEEDS-ACTION';
 					}
@@ -2393,9 +2393,9 @@ class bab_event_posted {
 
 		foreach($newrelations as $urlidentifier => $relation)
 		{
-			if (isset($oldrelations[$urlidentifier]))
+			if (isset($oldrelations[$urlidentifier]) && $oldrelations[$urlidentifier]['X-CTO-WFINSTANCE'])
 			{
-				// already notified, ongoing instance
+				// if there was allready an instance, this relation is already notified
 				continue;
 			}
 
@@ -2405,7 +2405,7 @@ class bab_event_posted {
 			{
 				// approbation instance, notify approvers
 
-				$nfusers = getWaitingApproversFlowInstance($wfinstance, true);
+				$nfusers = getWaitingApproversFlowInstance($wfinstance);
 				notifyEventApprovers($calendarPeriod, $nfusers, $relation['calendar']);
 			}
 
