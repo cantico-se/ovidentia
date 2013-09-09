@@ -2188,6 +2188,9 @@ class bab_event_posted {
 
 
 	/**
+	 * Create calendar period
+	 * 
+	 * 
 	 * @throws ErrorException
 	 * 
 	 * 
@@ -2196,6 +2199,7 @@ class bab_event_posted {
 	 * 
 	 * @param	bool	$createinstance		Create approbation instance for the calendar period
 	 * 										do not create instance in availablity check
+	 * 										approvers are maked notified if instance is created
 	 * 
 	 * @return bab_CalendarPeriod
 	 */
@@ -2393,9 +2397,9 @@ class bab_event_posted {
 
 		foreach($newrelations as $urlidentifier => $relation)
 		{
-			if (isset($oldrelations[$urlidentifier]))
+			if (isset($oldrelations[$urlidentifier]) && $oldrelations[$urlidentifier]['X-CTO-WFINSTANCE'])
 			{
-				// already notified, ongoing instance
+				// if there was allready an instance, this relation is already notified
 				continue;
 			}
 
@@ -2403,9 +2407,9 @@ class bab_event_posted {
 
 			if( $wfinstance )
 			{
-				// approbation instance, notify approvers
+				// approbation instance, notify approvers, approvers are allready marked notified in the calendarPeriod creation
 
-				$nfusers = getWaitingApproversFlowInstance($wfinstance, true);
+				$nfusers = getWaitingApproversFlowInstance($wfinstance);
 				notifyEventApprovers($calendarPeriod, $nfusers, $relation['calendar']);
 			}
 
