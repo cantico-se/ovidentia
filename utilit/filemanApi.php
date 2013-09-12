@@ -99,9 +99,18 @@ class bab_FileInfo extends SplFileInfo
 	private function getFmFolder()
 	{
 		$fmPathname = $this->getFmPathname();
-		list($delegation) = explode('/', $fmPathname);
+		
+		$pathElements = explode('/', $fmPathname);
+		$delegation = array_shift($pathElements);
+		$filename = array_pop($pathElements);
+		$relativePath = implode('/', $pathElements);
+		if ($relativePath !== '') {
+			$relativePath .= '/';
+		}
+		
 		$iIdDelegation = (int)substr($delegation, strlen(BAB_FileManagerEnv::delegationPrefix));
 
+		/* @var $oFmFolderSet BAB_FmFolderSet */
 		$oFmFolderSet		= bab_getInstance('BAB_FmFolderSet');
 
 		$oNameField			= $oFmFolderSet->aField['sName'];
@@ -109,7 +118,7 @@ class bab_FileInfo extends SplFileInfo
 		$oIdDgOwnerField	= $oFmFolderSet->aField['iIdDgOwner'];
 
 		$oCriteria = $oNameField->in($this->getFilename());
-		$oCriteria = $oCriteria->_and($oRelativePathField->in(dirname($this->getFmPathname() . '/')));
+		$oCriteria = $oCriteria->_and($oRelativePathField->in($relativePath));
 		$oCriteria = $oCriteria->_and($oIdDgOwnerField->in($iIdDelegation));
 
 		return $oFmFolderSet->get($oCriteria);
@@ -148,6 +157,7 @@ class bab_FileInfo extends SplFileInfo
 		$oCriteria = $oCriteria->_and($oPathName->in(dirname($pathTmp).'/')); /* Criteria to the path of the file, example : Espace/Repertoire/ */
 		$oCriteria = $oCriteria->_and($oIdDgOwnerField->in($iIdDelegation)); /* Criteria to the delegation of the file */
 
+		
 		return $oFolderFileSet->get($oCriteria);
 	}
 
