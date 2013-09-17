@@ -742,7 +742,7 @@ class bab_CalendarPeriod extends bab_ICalendarObject {
 			
 			if (false === $backend->savePeriod($this, 'CANCEL'))
 			{
-				$failure[] = $calendar->getName();
+				// $failure[] = $calendar->getName();
 			}
 			
 		}
