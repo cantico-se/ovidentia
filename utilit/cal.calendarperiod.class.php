@@ -748,7 +748,11 @@ class bab_CalendarPeriod extends bab_ICalendarObject {
 			
 			if (false === $backend->savePeriod($this, 'CANCEL'))
 			{
-				$failure[] = $calendar->getName();
+				// attention, si un agenda viens d'etre ajoute sur l'evenement, on ne peut pas l'annuler car pas encore enregistre
+				// donc on ne tiens pas compte de ces agenda pour ne pas bloquer la creation de l'evenement sur le nouvel agenda 
+				// (exemple : l'agenda principal a ete remplace par un autre)
+				
+				// $failure[] = $calendar->getName();
 			}
 			
 		}
