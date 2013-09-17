@@ -173,7 +173,10 @@ class swishCls
 	}
 	pclose($handle);
 
-	$buffer = bab_getStringAccordingToDataBase($buffer, $this->system_charset);
+	// attention, si on considere que le retour de swishe est en "system_charset" les caracteres accentues serons perdus car les fichiers du gestionnaire de fichiers
+	// sont enregistres sur le disque du dur dans le charset d'ovidentia, il faut donc conserver le retour tel quel pour que ce soit lisible
+	
+	// $buffer = bab_getStringAccordingToDataBase($buffer, $this->system_charset);
 
 	$r->addDebug($buffer);
 

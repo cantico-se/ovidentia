@@ -92,7 +92,7 @@ function bab_indexJobs($idx, $object) {
 						}
 						
 						while ($msg = $r->getNextDebug()) {
-							$babBody->babEcho('<pre>'.bab_toHtml($msg).'</pre>');
+							$babBody->babEcho('<pre style="border-bottom:black 1px solid">'.bab_toHtml($msg).'</pre>');
 						}
 					}
 				}
@@ -112,7 +112,7 @@ function bab_indexJobs($idx, $object) {
 			}
 			
 			while ($msg = $r->getNextDebug()) {
-				$babBody->babEcho('<pre>'.bab_toHtml($msg).'</pre>');
+				$babBody->babEcho('<pre style="border-bottom:black 1px solid">'.bab_toHtml($msg).'</pre>');
 			}
 		}
 		
