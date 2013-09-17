@@ -173,7 +173,7 @@ class swishCls
 	}
 	pclose($handle);
 
-	$buffer = bab_getStringAccordingToDataBase($buffer, $this->system_charset);
+	// $buffer = bab_getStringAccordingToDataBase($buffer, $this->system_charset);
 
 	$r->addDebug($buffer);
 
