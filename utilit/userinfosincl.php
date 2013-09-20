@@ -275,6 +275,39 @@ class bab_userInfos {
 		
 		return implode(' AND ', $criterions);
 	}
+	
+	
+	/**
+	 * Test if a user is valid
+	 * @param int $id_user
+	 * @return boolean
+	 */
+	public static function isValid($id_user)
+	{
+		$row = self::getRow($id_user);
+
+		if (false === $row) {
+			return false;
+		}
+		
+		if ($row['disabled'] || !$row['is_confirmed']) {
+			return false;
+		}
+		
+		$today = date('Y-m-d');
+		
+		if ('0000-00-00' != $row['validity_end'] && $row['validity_end'] < $today)
+		{
+			return false;
+		}
+		
+		if ('0000-00-00' != $row['validity_start'] && $row['validity_start'] > $today)
+		{
+			return false;
+		}
+		
+		return true;
+	}
 }
 
 
