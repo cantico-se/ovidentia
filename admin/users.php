@@ -392,6 +392,12 @@ function listUsers($pos, $grp, $deleteAction)
 
 				$this->dirdetailurl = bab_toHtml($GLOBALS['babUrlScript']."?tg=users&idx=dirv&id_user=".urlencode($this->userid));
 				$this->groupsurl = bab_toHtml($GLOBALS['babUrlScript']."?tg=user&idx=viewgroups&id_user=".urlencode($this->userid).'&grp='.urlencode($this->grp).'&pos='.urlencode($this->ord.$this->pos));
+				
+				$this->usersInfo = array();
+				foreach($this->arr as $k => $v){
+					$this->usersInfo[$k] = bab_toHtml($v);
+				}
+				
 				$i++;
 				return true;
 				}

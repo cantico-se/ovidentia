@@ -106,8 +106,8 @@ function bab_userListShowHideFilter()
 				{ urlname }
 				<!--#endif bmodname -->
 			</td>
-			<td>{ arr[nickname] }</td>
-			<td><a class="BabNameEmailLink" href="mailto:{ arr[email] }">{ arr[email] }</a></td>
+			<td>{ usersInfo[nickname] }</td>
+			<td><a class="BabNameEmailLink" href="mailto:{ usersInfo[email] }">{ usersInfo[email] }</a></td>
 			<td align="center"><!--#if bshowform --><input type="checkbox" name="users[]" value="{ userid }" { checked } /><!--#endif bshowform --></td>
 		</tr>
 		<!--#endin getnext -->
