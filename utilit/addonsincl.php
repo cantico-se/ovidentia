@@ -411,7 +411,8 @@ class bab_addonInfos {
 	 * @return string
 	 */
 	public function getUrl() {
-		return $GLOBALS['babUrlScript'].'?tg=addon%2F'.$this->id_addon.'%2F';
+		global $babUrlScript;
+		return $babUrlScript.'?tg=addon%2F'.$this->id_addon.'%2F';
 	}
 
 	/**

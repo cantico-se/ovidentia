@@ -1955,7 +1955,7 @@ function bab_printTemplate(&$class, $file, $section = '')
 {
 	//bab_debug('Template file : '.$file.'<br />'.'Section in template file : '.$section);
 
-	global $babInstallPath, $babSkinPath;
+	global $babInstallPath, $babSkinPath, $babSkin;
 	$tplfound = false;
 
 	if( isset($GLOBALS['babUseNewTemplateParser']) && $GLOBALS['babUseNewTemplateParser'] === false)
@@ -1964,8 +1964,10 @@ function bab_printTemplate(&$class, $file, $section = '')
 	}
 	else
 	{
+		
+		
 		$tpl = new bab_Template();
-		if (bab_TemplateCache::get('skins/'.$GLOBALS['babSkin'].'/templates/'. $file, $section)) {
+		if (bab_TemplateCache::get('skins/'.$babSkin.'/templates/'. $file, $section)) {
 			return $tpl->printTemplate($class, 'skins/'.$GLOBALS['babSkin'].'/templates/'. $file, $section);
 		}
 		if (bab_TemplateCache::get($babSkinPath.'templates/'.$file, $section)) {
@@ -3760,4 +3762,13 @@ function bab_getLanguage()
 	}
 	
 	return $site['lang'];
+}
+
+/**
+ * @return babBody
+ */
+function bab_getBody()
+{
+	require_once dirname(__FILE__).'/utilit.php';
+	return bab_getInstance('babBody');
 }
