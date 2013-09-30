@@ -1173,6 +1173,19 @@ function functionalities() {
 				}
 
 			}
+			
+			
+			if ($failsafe && 0 < mb_substr_count($funcpath, '/')) {
+				
+				$url = bab_url::get_request('tg', 'idx', 'failsafe');
+				$url->uppath = $funcpath;
+				
+				$element->addAction('moveup',
+						bab_translate('Move Up'),
+						$GLOBALS['babSkinPath'] . 'images/Puces/go-up.png',
+						$url->toString(),
+						'');
+			}
 
 
 
