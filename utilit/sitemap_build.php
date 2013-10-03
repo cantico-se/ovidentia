@@ -2113,6 +2113,23 @@ function bab_onBeforeSiteMapCreated(bab_eventBeforeSiteMapCreated $event) {
 
 	// build user node
 	bab_sitemap_userSection($event);
+	
+	
+	// search link
+	
+	$delegations = bab_getUserSitemapDelegations();
+	foreach($delegations as $id_delegation => $deleg) {
+	
+		$dg_prefix = false === $deleg['id'] ? 'bab' : 'babDG'.$deleg['id'];
+		$item = $event->createItem($dg_prefix.'Search');
+		$item->setLabel(bab_translate("Search"));
+		$item->setLink($GLOBALS['babUrlScript'].'?tg=search');
+		$item->setPosition(array('root', $id_delegation, $dg_prefix.'User'));
+		$item->addIconClassname('actions-edit-find');
+		$event->addFunction($item);
+		
+	}
+	
 
 
 	// build admin node
