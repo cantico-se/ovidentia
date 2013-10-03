@@ -547,7 +547,7 @@ class Func_UserEditor extends bab_functionality {
 			return true;
 		}
 		
-		if ('Y' === $directory['user_update'] && $id_user === bab_getUserId())
+		if ('Y' === $directory['user_update'] && ((int) $id_user) === bab_getUserId())
 		{
 			return true;
 		}
