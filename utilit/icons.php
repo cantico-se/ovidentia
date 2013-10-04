@@ -245,6 +245,17 @@ class Func_Icons extends bab_Functionality
 	
 	const APPS_USERS							= 'apps-users';
 	const APPS_GROUPS							= 'apps-groups';
+	
+	const APPS_SITEMAP							= 'apps-sitemap';
+	const APPS_FORM								= 'apps-form';
+	const APPS_SHOP								= 'apps-shop';
+	const APPS_CATALOG							= 'apps-catalog';
+	const APPS_CRM								= 'apps-crm';
+	const APPS_MULTIMEDIA						= 'apps-multimedia';
+	const APPS_PORTLET							= 'apps-portlet';
+	
+	
+	
 
 	const APPS_PREFERENCES_SITE					= 'apps-preferences-site';
 	const APPS_PREFERENCES_USER					= 'apps-preferences-user';
@@ -297,6 +308,11 @@ class Func_Icons extends bab_Functionality
 	const OBJECTS_NOTE							= 'objects-note';
 	const OBJECTS_EMAIL							= 'objects-email';
 	const OBJECTS_SHOPPING_CART					= 'objects-shopping-cart';
+	const OBJECTS_PRODUCT						= 'objects-product'; // catalog or shop product
+	const OBJECTS_PRODUCT_CATEGORY				= 'objects-product-category';
+	const OBJECTS_RESOURCE						= 'objects-resource';
+	const OBJECTS_RESOURCE_CATEGORY				= 'objects-resource-category';
+	const OBJECTS_WAITING_ITEM					= 'objects-waiting-item'; // waiting for approval
 	
 	
 	//-----------------------------------------------------------------------
