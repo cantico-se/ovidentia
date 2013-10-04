@@ -214,6 +214,9 @@ class Func_Icons extends bab_Functionality
 	const ACTIONS_ARCHIVE_CREATE				= 'actions-archive-create';
 	const ACTIONS_ARCHIVE_EXTRACT				= 'actions-archive-extract';
 
+	const ACTIONS_AUTHENTICATE					= 'actions-authenticate';
+	const ACTIONS_LOGIN							= 'actions-login';
+	const ACTIONS_LOGOUT						= 'actions-logout';
 
 
 	//-----------------------------------------------------------------------
