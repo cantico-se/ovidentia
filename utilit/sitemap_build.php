@@ -76,7 +76,7 @@ class bab_siteMap_buildItem {
 	 */
 	public function __construct($uid) {
 		$this->uid = $uid;
-		$this->lang = $GLOBALS['babLanguage'];
+		$this->lang = bab_getLanguage();
 	}
 
 	/**
@@ -921,7 +921,7 @@ class bab_siteMap_insertTree
 				'.BAB_SITEMAP_FUNCTIONS_TBL.' f
 				LEFT JOIN '.BAB_SITEMAP_TBL.' s ON s.id_function = f.id_function
 				LEFT JOIN '.BAB_SITEMAP_FUNCTION_LABELS_TBL.' fl
-					ON f.id_function = fl.id_function AND fl.lang='.$babDB->quote($GLOBALS['babLanguage']).'
+					ON f.id_function = fl.id_function AND fl.lang='.$babDB->quote(bab_getLanguage()).'
 				LEFT JOIN '.BAB_SITEMAP_FUNCTION_PROFILE_TBL.' fp ON fp.id_function = f.id_function AND fp.id_profile='.$babDB->quote($id_profile).'
 		');
 		while ($arr = $babDB->db_fetch_assoc($res)) {
@@ -1396,7 +1396,7 @@ function bab_getMicrotime() {
  */
 function bab_siteMap_loadNodes($path, $levels) {
 
-	global $babBody, $babDB;
+	global $babDB;
 	include_once $GLOBALS['babInstallPath'].'utilit/addonsincl.php';
 	include_once $GLOBALS['babInstallPath'].'utilit/utilitsections.php';
 	include_once $GLOBALS['babInstallPath'].'utilit/delegincl.php';
@@ -1411,7 +1411,7 @@ function bab_siteMap_loadNodes($path, $levels) {
 
 	$rootNode = new bab_siteMap_buildItem('root');
 	$rootNode->setLabel($GLOBALS['babSiteName']);
-	$rootNode->setDescription($babBody->babsite['babslogan']);
+	$rootNode->setDescription('');
 	$rootNode->setLink('?');
 	$rootNode->id_dgowner = false;
 	$rootNode->folder = 1;
@@ -1579,6 +1579,7 @@ function bab_getUserAddonsUrls() {
 function bab_getUserDelegationUrls($id_delegation, $deleg, $dg_prefix) {
 
 	global $babDB, $babBody;
+	require_once dirname(__FILE__).'/utilit.php';
 
 	$array_urls = array();
 
@@ -1600,6 +1601,9 @@ function bab_getUserDelegationUrls($id_delegation, $deleg, $dg_prefix) {
 		if( $bemail == 1 || $bemail == 2)
 			$bemail = true;
 		}
+		
+		
+	$url = $GLOBALS['babUrl'].bab_getSelf();
 
 
 	if( !empty($GLOBALS['BAB_SESS_USER']))
@@ -1608,7 +1612,7 @@ function bab_getUserDelegationUrls($id_delegation, $deleg, $dg_prefix) {
 			{
 			$array_urls[] = array(
 				'label' => bab_translate("Publication"),
-				'url' => $GLOBALS['babUrlScript']."?tg=artedit",
+				'url' => $url."?tg=artedit",
 				'uid' => $dg_prefix.'UserPublication',
 				'icon'	=> 'apps-articles'
 				);
@@ -1617,7 +1621,7 @@ function bab_getUserDelegationUrls($id_delegation, $deleg, $dg_prefix) {
 		
 		$array_urls[] = array(
 			'label' => bab_translate("Approbations"),
-			'url' => $GLOBALS['babUrlScript']."?tg=approb",
+			'url' => $url."?tg=approb",
 			'uid' => $dg_prefix.'UserApprob',
 			'desc' => bab_translate("Validate waiting items"),
 			'icon' => 'apps-approbations'
@@ -1629,7 +1633,7 @@ function bab_getUserDelegationUrls($id_delegation, $deleg, $dg_prefix) {
 		{
 		$array_urls[] = array(
 				'label' => bab_translate("Articles management"),
-				'url' 	=> $GLOBALS['babUrlScript']."?tg=topman",
+				'url' 	=> $url."?tg=topman",
 				'uid' 	=> $dg_prefix.'UserArticlesMan',
 				'desc' 	=> bab_translate("List article topics where i am manager"),
 				'icon'	=> 'apps-articles'
@@ -1641,7 +1645,7 @@ function bab_getUserDelegationUrls($id_delegation, $deleg, $dg_prefix) {
 
 		$array_urls[] = array(
 			'label' => bab_translate("Options"),
-			'url' => $GLOBALS['babUrlScript']."?tg=options",
+			'url' => $url."?tg=options",
 			'uid' => $dg_prefix.'UserOptions',
 			'icon' => 'categories-preferences-desktop'
 		);
@@ -1649,7 +1653,7 @@ function bab_getUserDelegationUrls($id_delegation, $deleg, $dg_prefix) {
 		if( bab_notesAccess())
 			$array_urls[] = array(
 				'label' => bab_translate("Notes"),
-				'url' => $GLOBALS['babUrlScript']."?tg=notes",
+				'url' => $url."?tg=notes",
 				'uid' => $dg_prefix.'UserNotes',
 				'icon'	=> 'apps-notes'
 			);
@@ -1660,7 +1664,7 @@ function bab_getUserDelegationUrls($id_delegation, $deleg, $dg_prefix) {
 		{
 		$array_urls[] = array(
 			'label' => bab_translate("Faq"),
-			'url' => $GLOBALS['babUrlScript']."?tg=faq",
+			'url' => $url."?tg=faq",
 			'uid' => $dg_prefix.'UserFaq',
 			'desc' => bab_translate("Frequently Asked Questions"),
 			'icon' => 'apps-faqs'
@@ -1672,17 +1676,20 @@ function bab_getUserDelegationUrls($id_delegation, $deleg, $dg_prefix) {
 		{
 		$array_urls[] = array(
 			'label' => bab_translate("Vacation"),
-			'url' =>  $GLOBALS['babUrlScript']."?tg=vacuser",
+			'url' =>  $url."?tg=vacuser",
 			'uid' => $dg_prefix.'UserVac',
 			'icon' => 'apps-vacations'
 			);
 		}
+		
+		
+	
 
 	if( bab_getICalendars()->calendarAccess())
 		{
 		$array_urls[] = array(
 			'label' => bab_translate("Calendar"),
-			'url' =>  $GLOBALS['babUrlScript']."?tg=calendar",
+			'url' =>  $url."?tg=calendar",
 			'uid' => $dg_prefix.'UserCal',
 			'icon' => 'apps-calendar'
 			);
@@ -1692,7 +1699,7 @@ function bab_getUserDelegationUrls($id_delegation, $deleg, $dg_prefix) {
 		{
 		$array_urls[] = array(
 			'label' => bab_translate("Mail"),
-			'url' =>  $GLOBALS['babUrlScript']."?tg=inbox",
+			'url' =>  $url."?tg=inbox",
 			'uid' => $dg_prefix.'UserMail',
 			'icon'	=> 'apps-mail'
 			);
@@ -1701,7 +1708,7 @@ function bab_getUserDelegationUrls($id_delegation, $deleg, $dg_prefix) {
 		{
 		$array_urls[] = array(
 			'label' => bab_translate("Contacts"),
-			'url' =>  $GLOBALS['babUrlScript']."?tg=contacts",
+			'url' =>  $url."?tg=contacts",
 			'uid' => $dg_prefix.'UserContacts',
 			'icon'	=> 'apps-contacts'
 			);
@@ -1713,7 +1720,7 @@ function bab_getUserDelegationUrls($id_delegation, $deleg, $dg_prefix) {
 		{
 		$array_urls[] = array(
 			'label' 	=> bab_translate("File manager"),
-			'url' 		=>  $GLOBALS['babUrlScript']."?tg=fileman",
+			'url' 		=>  $url."?tg=fileman",
 			'uid' 		=> $dg_prefix.'UserFm',
 			'desc' 		=> bab_translate("Access to file manager"),
 			'icon'		=> 'apps-file-manager'
@@ -1728,7 +1735,7 @@ function bab_getUserDelegationUrls($id_delegation, $deleg, $dg_prefix) {
 
 		$array_urls[] = array(
 			'label' 	=> bab_translate("Directories"),
-			'url' 		=>  $GLOBALS['babUrlScript']."?tg=directory",
+			'url' 		=>  $url."?tg=directory",
 			'uid' 		=> $dg_prefix.'UserDir',
 			'folder' 	=> true,
 			'icon' 		=> 'apps-directories'
@@ -1751,7 +1758,7 @@ function bab_getUserDelegationUrls($id_delegation, $deleg, $dg_prefix) {
 		{
 		$array_urls[] = array(
 			'label' => bab_translate("Charts"),
-			'url' =>  $GLOBALS['babUrlScript']."?tg=charts",
+			'url' =>  $url."?tg=charts",
 			'uid' => $dg_prefix.'UserCharts',
 			'icon'	=> 'apps-orgcharts'
 			);
@@ -1761,7 +1768,7 @@ function bab_getUserDelegationUrls($id_delegation, $deleg, $dg_prefix) {
 		{
 		$array_urls[] = array(
 			'label' => bab_translate("Statistics"),
-			'url' =>  $GLOBALS['babUrlScript']."?tg=stat",
+			'url' =>  $url."?tg=stat",
 			'uid' => $dg_prefix.'UserStats',
 			'icon'	=> 'apps-statistics'
 			);
@@ -1780,7 +1787,7 @@ function bab_getUserDelegationUrls($id_delegation, $deleg, $dg_prefix) {
 		{
 			$array_urls[] = array(
 				'label' => bab_translate("Task Manager"),
-				'url' 	=> $GLOBALS['babUrlScript'].'?tg=usrTskMgr',
+				'url' 	=> $url.'?tg=usrTskMgr',
 				'uid' 	=> $dg_prefix.'UserTm',
 				'icon'	=> 'apps-task-manager',
 				'folder' => true
@@ -1809,7 +1816,7 @@ function bab_getUserDelegationUrls($id_delegation, $deleg, $dg_prefix) {
 			foreach($projects as $project) {
 				$array_urls[] = array(
 					'label' => $project['name'],
-					'url' =>  $GLOBALS['babUrlScript'].'?tg=usrTskMgr&idx=displayMyTaskList&iIdProjectSpace='.$project['idProjectSpace'].'&isProject=1&iIdProject='.$project['id'],
+					'url' =>  $url.'?tg=usrTskMgr&idx=displayMyTaskList&iIdProjectSpace='.$project['idProjectSpace'].'&isProject=1&iIdProject='.$project['id'],
 					'uid' => $dg_prefix.'UserTm'.$project['id'],
 					'desc' => $project['description'],
 					'position' => array('root', $id_delegation, $dg_prefix.'User',$dg_prefix.'UserSection', $dg_prefix.'UserTm')
@@ -1825,7 +1832,7 @@ function bab_getUserDelegationUrls($id_delegation, $deleg, $dg_prefix) {
 
 		$array_urls[] = array(
 			'label' => bab_translate("Forums"),
-			'url' 	=> $GLOBALS['babUrlScript'].'?tg=forumsuser',
+			'url' 	=> $url.'?tg=forumsuser',
 			'uid' 	=> $dg_prefix.'UserForums',
 			'desc' 	=> bab_translate('Discussion forums'),
 			'folder' => true,
@@ -1836,7 +1843,7 @@ function bab_getUserDelegationUrls($id_delegation, $deleg, $dg_prefix) {
 
 			$array_urls[] = array(
 				'label' 	=> $forum['name'],
-				'url' 		=> $GLOBALS['babUrlScript'].'?tg=threads&forum='.$forum['id'],
+				'url' 		=> $url.'?tg=threads&forum='.$forum['id'],
 				'uid' 		=> $dg_prefix.'UserForum'.$forum['id'],
 				'desc' 		=> $forum['description'],
 				'position'	=> array('root', $id_delegation, $dg_prefix.'User',$dg_prefix.'UserSection', $dg_prefix.'UserForums')
@@ -1849,7 +1856,7 @@ function bab_getUserDelegationUrls($id_delegation, $deleg, $dg_prefix) {
 		{
 		$array_urls[] = array(
 			'label' => bab_translate("Thesaurus"),
-			'url' 	=>  $GLOBALS['babUrlScript'].'?tg=thesaurus',
+			'url' 	=>  $url.'?tg=thesaurus',
 			'uid' 	=> $dg_prefix.'UserThesaurus',
 			'icon'	=> 'apps-thesaurus'
 			);

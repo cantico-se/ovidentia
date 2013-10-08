@@ -249,23 +249,28 @@ class bab_icalendars
 	 */
 	public function __construct($iduser = '')
 	{
-		global $babBody, $babDB;
+		global $babDB;
+		require_once dirname(__FILE__).'/settings.class.php';
+		
+		$settings = bab_getInstance('bab_Settings');
+		/*@var $settings bab_Settings */
+		$site = $settings->getSiteSettings();
 
-		$this->allday 			= $babBody->babsite['allday'];
-		$this->usebgcolor 		= $babBody->babsite['usebgcolor'];
-		$this->elapstime 		= $babBody->babsite['elapstime'];
-		$this->defaultview 		= $babBody->babsite['defaultview'];
-		$this->starttime 		= $babBody->babsite['start_time'];
-		$this->endtime 			= $babBody->babsite['end_time'];
-		$this->dispdays 		= $babBody->babsite['dispdays'];
-		$this->startday 		= $babBody->babsite['startday'];
-		$this->show_update_info = $babBody->babsite['show_update_info'];
+		$this->allday 			= $site['allday'];
+		$this->usebgcolor 		= $site['usebgcolor'];
+		$this->elapstime 		= $site['elapstime'];
+		$this->defaultview 		= $site['defaultview'];
+		$this->starttime 		= $site['start_time'];
+		$this->endtime 			= $site['end_time'];
+		$this->dispdays 		= $site['dispdays'];
+		$this->startday 		= $site['startday'];
+		$this->show_update_info = $site['show_update_info'];
 		$this->calendar_backend = 'Ovi';
-		$this->bshowonlydaysofmonth = $babBody->babsite['show_onlydays_of_month'];
+		$this->bshowonlydaysofmonth = $site['show_onlydays_of_month'];
 		$this->user_calendarids = '';
-		if( empty($iduser) && isset($GLOBALS['BAB_SESS_USERID']))
+		if( empty($iduser) && bab_getUserId())
 			{
-			$this->iduser = (int) $GLOBALS['BAB_SESS_USERID'];
+			$this->iduser = bab_getUserId();
 			}
 		else if ($iduser)
 			{

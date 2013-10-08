@@ -495,6 +495,9 @@ class bab_siteMapOrphanRootNode extends bab_OrphanRootNode {
 		return null;
 		
 	}
+	
+	
+	
 }
 
 /**
@@ -900,6 +903,80 @@ class bab_siteMapItem {
 		}
 
 		return $url;
+	}
+	
+	
+	
+	
+	
+	/**
+	 * Get LI html tag for the sitemap item
+	 * 
+	 * @param	string		$ul 						HTML for submenu UL tag
+	 * @param	array		$additional_classes			additional classes to set on LI
+	 * @return string
+	 */
+	public function getHtmlListItem($ul = null, $additional_classes = null)
+	{
+		$return = '';
+	
+		if (!empty($this->iconClassnames)) {
+			$icon = 'icon '.$this->iconClassnames;
+		} else {
+			$icon = 'icon';
+		}
+	
+		if (!empty($this->description)) {
+	
+			$description = ' title="'.bab_toHtml($this->description).'"';
+		} else {
+			$description = '';
+		}
+	
+		$url = $this->getRwUrl();
+	
+		if ($url) {
+	
+			if ($this->onclick) {
+				$onclick = ' onclick="'.bab_toHtml($this->onclick).'"';
+			} else {
+				$onclick = '';
+			}
+	
+			$htmlData = '<a class="'.bab_toHtml($icon).'" href="'.bab_toHtml($url).'" '.$onclick.' '.$description.'>'.bab_toHtml($this->name).'</a>';
+		} else {
+			$htmlData = '<span class="'.bab_toHtml($icon).'"'.$description.'>'.bab_toHtml($this->name).'</span>';
+		}
+	
+	
+	
+		$classnames[] = 'sitemap-'.$this->id_function;
+	
+		if (!empty($this->iconClassnames)) {
+			$classnames[] = $this->iconClassnames;
+		}
+	
+		if ($this->folder) {
+			$classnames[] = 'sitemap-folder';
+		}
+	
+		if (isset($additional_classes))
+		{
+			foreach($additional_classes as $class)
+			{
+				$classnames[] = $class;
+			}
+		}
+	
+		$return .= '<li class="no-icon '.implode(' ', $classnames).'">'.$htmlData;
+	
+		if (isset($ul)) {
+			$return .= $ul;
+		}
+	
+		$return .= "</li>\n";
+	
+		return $return;
 	}
 }
 
@@ -1522,7 +1599,7 @@ class bab_siteMap {
 		if (0 === $babDB->db_num_rows($res)) {
 			// no sitemap for user, build it
 	
-			self::build($path, $levels);
+			self::build(null, null);
 			$res = $babDB->db_query($query);
 		}
 	

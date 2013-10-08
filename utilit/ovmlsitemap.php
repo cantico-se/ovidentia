@@ -613,74 +613,35 @@ class Func_Ovml_Function_SitemapMenu extends Func_Ovml_Function {
 		}
 		
 
-		if (!empty($siteMapItem->iconClassnames)) {
-			$icon = 'icon '.$siteMapItem->iconClassnames;
-		} else {
-			$icon = 'icon';
-		}
-
-		if (!empty($siteMapItem->description)) {
-
-			$description = ' title="'.bab_toHtml($siteMapItem->description).'"';
-		} else {
-			$description = '';
-		}
-
-		$url = $siteMapItem->getRwUrl();
-
-		if ($url) {
-
-			if ($siteMapItem->onclick) {
-				$onclick = ' onclick="'.bab_toHtml($siteMapItem->onclick).'"';
-			} else {
-				$onclick = '';
-			}
-
-			$htmlData = '<a class="'.bab_toHtml($icon).'" href="'.bab_toHtml($url).'" '.$onclick.' '.$description.'>'.bab_toHtml($siteMapItem->name).'</a>';
-		} else {
-			$htmlData = '<span class="'.bab_toHtml($icon).'"'.$description.'>'.bab_toHtml($siteMapItem->name).'</span>';
-		}
-
-
-
-		$classnames[] = 'sitemap-'.$siteMapItem->id_function;
-
-		if (!empty($siteMapItem->iconClassnames)) {
-			$classnames[] = $siteMapItem->iconClassnames;
-		}
-
-		if ($siteMapItem->folder) {
-			$classnames[] = 'sitemap-folder';
-		}
-
+		$additional_classes = array();
 		if (isset($this->activeNodes[$siteMapItem->id_function])) {
 			// the nodes in the current path have the "active" class.
-			$classnames[] = $this->activeClass;
+			$additional_classes[] = $this->activeClass;
 		}
 		if ($this->selectedNodeId === $siteMapItem->id_function) {
 			// the current node has the "selected" class.
-			$classnames[] = $this->selectedClass;
+			$additional_classes[] = $this->selectedClass;
 		}
 
-		$return .= '<li class="no-icon '.implode(' ', $classnames).'">'.$htmlData;
+
+		$ul = null;
 
 		if ($node->hasChildNodes() && $depth < $this->maxDepth) { 
-			$return .= "<ul>\n";
+			$ul = "<ul>\n";
 
 			$node = $node->firstChild();
 			do {
 				if (!$node->getData()->menuIgnore)
 				{
-					$return .= $this->getHtml($node, null, $depth + 1);
+					$ul .= $this->getHtml($node, null, $depth + 1);
 				}
 			} while ($node = $node->nextSibling());
 
-			$return .= "</ul>\n";
+			$ul .= "</ul>\n";
 		}
 
-		$return .= "</li>\n";
 
-		return $return;
+		return $siteMapItem->getHtmlListItem($ul, $additional_classes);
 	}
 
 

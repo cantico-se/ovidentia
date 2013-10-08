@@ -57,7 +57,8 @@ function bab_adminMenuAddons()
 	{
 		if($row['access'])
 		{
-			$addonpath = $GLOBALS['babAddonsPath'].$row['title'];
+			
+			$addonpath = $GLOBALS['babInstallPath'].'addons/'.$row['title'];
 			if( is_dir($addonpath))
 			{
 				$arr = bab_getAddonsMenus($row, "getAdminSectionMenus");
