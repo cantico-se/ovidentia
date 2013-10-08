@@ -64,12 +64,12 @@ function bab_json_encode($a)
 	$result = array();
 	if ($isList) {
 		foreach ($a as $v) {
-			$result[] = crm_json_encode($v);
+			$result[] = bab_json_encode($v);
 		}
 		return '[' . join(',', $result) . ']';
 	} else {
 		foreach ($a as $k => $v) {
-			$result[] = crm_json_encode($k).':'.crm_json_encode($v);
+			$result[] = bab_json_encode($k).':'.bab_json_encode($v);
 		}
 		return '{' . join(',', $result) . '}';
 	}
