@@ -1274,7 +1274,7 @@ function bab_setAddonGlobals($id_addon) {
 	
 	$GLOBALS['babAddonFolder'] = $arr['title'];
 	$GLOBALS['babAddonTarget'] = 'addon/'.$id_addon;
-	$GLOBALS['babAddonUrl'] = $GLOBALS['babUrlScript'].'?tg=addon/'.$id_addon.'/';
+	$GLOBALS['babAddonUrl'] = $GLOBALS['babUrl'].bab_getSelf().'?tg=addon/'.$id_addon.'/';
 	$GLOBALS['babAddonPhpPath'] = $GLOBALS['babInstallPath'].'addons/'.$arr['title'].'/';
 	$GLOBALS['babAddonHtmlPath'] = 'addons/'.$arr['title'].'/';
 

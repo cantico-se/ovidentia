@@ -22,8 +22,10 @@
  * USA.																	*
 ************************************************************************/
 include_once "base.php";
+include_once $GLOBALS['babInstallPath'].'utilit/defines.php';
 include_once $GLOBALS['babInstallPath'].'utilit/treebase.php';
 include_once $GLOBALS['babInstallPath'].'utilit/eventincl.php';
+
 
 /**
  * Sitemap rootNode
@@ -631,6 +633,15 @@ class bab_siteMapItem {
 	 * @var string
 	 */
 	public $funcname = null;
+	
+	
+	/**
+	 * if item has childnodes or not
+	 * optionally defined, used for list of nodes 
+	 * @var bool
+	 */
+	public $haschildnodes = null;
+	
 
 	/**
 	 * Compare sitemap items
@@ -962,7 +973,7 @@ class bab_siteMap {
 	}
 
 	/**
-	 *
+	 * Get the full sitemap as a bab_Node tree
 	 * @param array $path
 	 * @param int $levels
 	 * @return bab_siteMapOrphanRootNode
@@ -970,6 +981,16 @@ class bab_siteMap {
 	public function getRootNode($path = null, $levels = null) {
 		return bab_siteMap::get($path, $levels);
 	}
+	
+	/**
+	 * Get one level in sitemap as a bab_Node list
+	 * @param	string	$nodeId
+	 * @return bab_siteMapOrphanRootNode
+	 */
+	public function getLevelRootNode($nodeId) {
+		return bab_siteMap::getLevel($nodeId);
+	}
+	
 
 	/**
 	 *
@@ -1123,7 +1144,7 @@ class bab_siteMap {
 
 			if ('?' === @mb_substr($arr['url'],0,1)) {
 				// sitemap store URL without the php filename
-				$arr['url'] = $GLOBALS['babPhpSelf'].$arr['url'];
+				$arr['url'] = bab_getSelf().$arr['url'];
 			}
 
 			$data = new bab_siteMapItem();
@@ -1135,10 +1156,12 @@ class bab_siteMap {
 			$data->folder 			= 1 == $arr['folder'];
 			$data->iconClassnames	= $arr['icon'];
 			$data->rewriteName		= $arr['rewrite'];
+			$data->haschildnodes	= ($arr['itemcount'] > 0);
 			if ('' !== $arr['funcname'])
 			{
 				$data->funcname	= $arr['funcname'];
 			}
+			
 
 			$node_list[$arr['id']] = $arr['id_function'];
 
@@ -1166,23 +1189,41 @@ class bab_siteMap {
 	}
 
 
+	
+	/**
+	 * Get site sitemap selected in site options
+	 * @return bab_siteMap
+	 */
+	public static function getSiteSitemap() {
+		
+		require_once $GLOBALS['babInstallPath'].'utilit/settings.class.php';
+		
+		$settings = bab_getInstance('bab_Settings');
+		/*@var $settings bab_Settings */
+		$site = $settings->getSiteSettings();
+		$uid = $site['sitemap'];
+		
+		$list = self::getList();
+
+		if (!isset($list[$uid])) {
+			return $list['core'];
+		}
+
+		return $list[$uid];
+	}
+	
+	
 
 	/**
-	 * Get sitemap selected in site options
+	 * Get sitemap rootnode selected in site options
 	 *
 	 * @return bab_siteMapOrphanRootNode
 	 */
 	public static function getFromSite()
 	{
-		global $babBody;
+		$sitemap = self::getSiteSitemap();
 
-		$sitemapId = $babBody->babsite['sitemap'];
-		$sitemap = self::getByUid($sitemapId);
-		if (!isset($sitemap)) {
-			$sitemap = self::getByUid('core');
-		}
-
-		return $sitemap;
+		return $sitemap->getRootNode();
 	}
 	
 	
@@ -1290,7 +1331,8 @@ class bab_siteMap {
 				f.rewrite,
 				f.funcname, 
 				s.progress,
-				pv.id profile_version
+				pv.id profile_version,
+				((s.lr-s.lf-1)DIV 2) itemcount  
 			FROM
 				'.BAB_SITEMAP_FUNCTIONS_TBL.' f,
 				'.BAB_SITEMAP_FUNCTION_LABELS_TBL.' fl,
@@ -1305,7 +1347,7 @@ class bab_siteMap {
 			';
 
 
-		if ($GLOBALS['BAB_SESS_USERID']) {
+		if (bab_getUserId()) {
 
 			$query .= ', '.BAB_USERS_TBL.' u
 
@@ -1314,7 +1356,7 @@ class bab_siteMap {
 				AND fp.id_function = f.id_function
 				AND fp.id_profile = p.id
 				AND p.id = u.id_sitemap_profile
-				AND u.id = '.$babDB->quote($GLOBALS['BAB_SESS_USERID']).'
+				AND u.id = '.$babDB->quote(bab_getUserId()).'
 				';
 
 		} else {
@@ -1329,7 +1371,7 @@ class bab_siteMap {
 
 		$query .= '
 			AND fl.id_function=f.id_function
-			AND fl.lang='.$babDB->quote($GLOBALS['babLanguage']).'
+			AND fl.lang='.$babDB->quote(bab_getLanguage()).'
 		';
 
 		
@@ -1380,6 +1422,143 @@ class bab_siteMap {
 
 		return $rootNode;
 	}
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	/**
+	 * Get sitemap default for current user
+	 *
+	 * @param	string	$nodeId
+	 *
+	 * @return bab_siteMapOrphanRootNode
+	 */
+	public static function getLevel($nodeId) {
+	
+
+		include_once $GLOBALS['babInstallPath'].'utilit/delegincl.php';
+	
+
+	
+		/** @var $babDB bab_Database */
+		global $babDB;
+	
+	
+		$query = 'SELECT
+			s.id,
+			s.id_parent,
+			sp.id_function parent_node,
+			f.id_function,
+			fl.name,
+			fl.description,
+			f.url,
+			f.onclick,
+			f.folder,
+			f.icon,
+			f.rewrite,
+			f.funcname,
+			s.progress,
+			pv.id profile_version,
+			((s.lr-s.lf-1)DIV 2) itemcount   
+		FROM
+		'.BAB_SITEMAP_FUNCTIONS_TBL.' f,
+		'.BAB_SITEMAP_FUNCTION_LABELS_TBL.' fl,
+		'.BAB_SITEMAP_FUNCTION_PROFILE_TBL.' fp,
+		'.BAB_SITEMAP_TBL.' s
+			LEFT JOIN '.BAB_SITEMAP_TBL.' sp ON sp.id = s.id_parent,
+		'.BAB_SITEMAP_PROFILES_TBL.' p
+			LEFT JOIN '.BAB_SITEMAP_PROFILE_VERSIONS_TBL.' pv
+				ON p.id = pv.id_profile
+					AND pv.root_function IS NULL 
+					AND pv.levels IS NULL
+		';
+	
+	
+		if (bab_getUserId()) {
+	
+			$query .= ', '.BAB_USERS_TBL.' u
+	
+			WHERE
+				s.id_function = f.id_function
+				AND fp.id_function = f.id_function
+				AND fp.id_profile = p.id
+				AND p.id = u.id_sitemap_profile
+				AND u.id = '.$babDB->quote(bab_getUserId()).'
+			';
+	
+		} else {
+			$query .= 'WHERE
+				s.id_function = f.id_function
+				AND fp.id_function = f.id_function
+				AND fp.id_profile = p.id
+				AND p.id = \''.BAB_UNREGISTERED_SITEMAP_PROFILE.'\'
+			';
+		}
+	
+	
+		$query .= '
+			AND fl.id_function=f.id_function
+			AND fl.lang='.$babDB->quote(bab_getLanguage()).' 
+			AND sp.id_function='.$babDB->quote($nodeId).'
+		';
+	
+	
+		$query .= 'ORDER BY s.lf';
+	
+		// bab_debug($query);
+	
+		$res = $babDB->db_query($query);
+	
+		if (0 === $babDB->db_num_rows($res)) {
+			// no sitemap for user, build it
+	
+			self::build($path, $levels);
+			$res = $babDB->db_query($query);
+		}
+	
+	
+		$firstnode = $babDB->db_fetch_assoc($res);
+	
+		if (null === $firstnode['profile_version']) {
+			// the profile version is missing, add version to profile
+			// the user have a correct profile and a correct sitemap but the sitemap is incomplete
+			// additional nodes need to be created in sitemap without deleting the profile
+			self::repair($path, $levels);
+			$res = $babDB->db_query($query);
+	
+		} else {
+	
+			$babDB->db_data_seek($res, 0);
+		}
+	
+	
+		$rootNode = self::buildFromResource($res);
+	
+		return $rootNode;
+	}
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
 
 	/**
 	 * Get the url of a sitemap node or null if the node does not exists or if there is no url
@@ -1526,6 +1705,10 @@ class bab_siteMap {
 
 		return $node->getData();
 	}
+	
+	
+	
+
 	
 
 
