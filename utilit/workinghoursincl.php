@@ -189,6 +189,30 @@ class Func_WorkingHours extends bab_functionality
 	{
 		throw new Exception('Not implemented');
 	}
+	
+	
+	/**
+	 * Test if the functionality has default settings (always return periods)
+	 * @throws Exception
+	 * 
+	 * @return bool
+	 */
+	public function hasDefaultSettings()
+	{
+		throw new Exception('Not implemented');
+	}
+	
+	/**
+	 * Test if the functionality has settings for the user
+	 * @param int $id_user
+	 * @throws Exception
+	 * 
+	 * @return bool
+	 */
+	public function hasUserSettings($id_user)
+	{
+		throw new Exception('Not implemented');
+	}
 }
 
 
@@ -229,5 +253,36 @@ class Func_WorkingHours_Ovidentia extends Func_WorkingHours
 		
 		
 		return $arr;
+	}
+	
+	
+	/**
+	 * Test if the functionality has default settings (always return periods)
+	 * 
+	 * @return bool
+	 */
+	public function hasDefaultSettings()
+	{
+		return true;
+	}
+	
+	/**
+	 * Test if the functionality has settings for the user
+	 * @param int $id_user
+	 * @throws Exception
+	 *
+	 * @return bool
+	 */
+	public function hasUserSettings($id_user)
+	{
+		global $babDB;
+		
+		$res = $babDB->db_query("
+				SELECT * 
+				FROM ".BAB_WORKING_HOURS_TBL." WHERE
+					idUser =".$babDB->quote($db_id_user)." "
+		);
+		
+		return ($babDB->db_num_rows($res) > 0);
 	}
 }
