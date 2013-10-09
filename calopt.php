@@ -168,7 +168,8 @@ function calendarOptions($urla)
 		function temp($urla)
 			{
 			include_once $GLOBALS['babInstallPath']."utilit/workinghoursincl.php";
-			global $babBody, $babDB, $BAB_SESS_USERID;
+			include_once $GLOBALS['babInstallPath']."utilit/settings.class.php";
+			global $babDB, $BAB_SESS_USERID;
 			
 			$this->urla = bab_toHtml($urla);
 			$this->calweekdisptxt = bab_translate("Days to display");
@@ -191,11 +192,24 @@ function calendarOptions($urla)
 			$this->minutes = bab_translate("Minutes");
 			$this->defaultview = bab_translate("Calendar default view");
 			$this->t_dispday = bab_translate("Display this day in the calendar");
-			$this->calweekwork = 'Y' == $GLOBALS['babBody']->babsite['user_workdays'];
 			$this->showupdateinfo = bab_translate("Show the date and the author of the updated event");
 			$this->showonlydaysmonthinfo = bab_translate("In month view, display only the days of current month");
 			$this->t_calendar_backend = bab_translate('Personal calendar type');
 			$this->t_options = bab_translate('Options');
+			
+			
+			$settings = bab_getInstance('bab_Settings');
+			/*@var $settings bab_Settings */
+			
+			$babsite = $settings->getSiteSettings();
+			
+			$f = bab_functionality::get('WorkingHours');
+			/*@var $f Func_WorkingHours */
+			
+			$this->calweekwork = ('Y' == $babsite['user_workdays'] && ($f instanceof Func_WorkingHours_Ovidentia || !$f->hasUserSettings(bab_getUserId())));
+			
+			
+			
 			$req = "select * from ".BAB_CAL_USER_OPTIONS_TBL." where id_user='".$babDB->db_escape_string($BAB_SESS_USERID)."'";
 			$res = $babDB->db_query($req);
 			$this->arr = $babDB->db_fetch_assoc($res);
@@ -223,38 +237,38 @@ function calendarOptions($urla)
 			$this->arrdvw = array(bab_translate("Columns"), bab_translate("Rows"));
 			if( empty($this->arr['start_time']))
 				{
-				$this->arr['start_time'] = $babBody->babsite['start_time'];
+				$this->arr['start_time'] = $babsite['start_time'];
 				}
 			if( empty($this->arr['end_time']))
 				{
-				$this->arr['end_time'] = $babBody->babsite['end_time'];
+				$this->arr['end_time'] = $babsite['end_time'];
 				}
 			if( !isset($this->arr['startday']))
 				{
-				$this->arr['startday'] = $babBody->babsite['startday'];
+				$this->arr['startday'] = $babsite['startday'];
 				}
 			if( empty($this->arr['defaultview']))
 				{
-				$this->arr['defaultview'] = $babBody->babsite['defaultview'];
+				$this->arr['defaultview'] = $babsite['defaultview'];
 				}
 			if( empty($this->arr['elapstime']))
 				{
-				$this->arr['elapstime'] = $babBody->babsite['elapstime'];
+				$this->arr['elapstime'] = $babsite['elapstime'];
 				}
 
 			if( empty($this->arr['dispdays']))
 				{
-				$this->arr['dispdays'] = $babBody->babsite['dispdays'];
+				$this->arr['dispdays'] = $babsite['dispdays'];
 				}
 				
 			if( !isset($this->arr['bgcolor']))
 				{
-				$this->arr['bgcolor'] = $babBody->babsite['usebgcolor'];
+				$this->arr['bgcolor'] = $babsite['usebgcolor'];
 				}
 				
 			if( !isset($this->arr['allday']))
 				{
-				$this->arr['allday'] = $babBody->babsite['allday'];
+				$this->arr['allday'] = $babsite['allday'];
 				}
 
 			$this->dispdays = explode(',', $this->arr['dispdays']);

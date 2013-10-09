@@ -213,6 +213,19 @@ class Func_WorkingHours extends bab_functionality
 	{
 		throw new Exception('Not implemented');
 	}
+	
+	
+	/**
+	 * Get url for user setting in a popup
+	 * return null if popup not available
+	 * 
+	 * @param int $id_user
+	 * @return string | null
+	 */
+	public function getUserSettingsPopupUrl($id_user)
+	{
+		return null;
+	}
 }
 
 
@@ -220,7 +233,7 @@ class Func_WorkingHours_Ovidentia extends Func_WorkingHours
 {
 	public function getDescription()
 	{
-		return bab_translate('Get the working hours from users options or site configuration');
+		return bab_translate('Users options or site configuration');
 	}
 	
 	

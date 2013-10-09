@@ -800,6 +800,7 @@ function site_menu13($id)
 			$this->t_starttimetxt = bab_translate("Start time");
 			$this->t_endtimetxt = bab_translate("End time");
 			$this->t_cal_category = bab_translate("Category to use in calendar for non working day");
+			$this->t_workinghours = bab_translate("Main source for working hours:");
 			
 			$this->id_cal_category = empty($GLOBALS['babBody']->babsite['id_calendar_cat'])? 0: $GLOBALS['babBody']->babsite['id_calendar_cat'];
 			include_once $GLOBALS['babInstallPath']."utilit/calapi.php";
@@ -817,7 +818,26 @@ function site_menu13($id)
 
 			$this->workdays = array_flip(explode(',',$sWorkingDays));
 			$this->resnw = $babDB->db_query("SELECT * FROM ".BAB_SITES_NONWORKING_CONFIG_TBL." WHERE id_site='".$babDB->db_escape_string($id)."'");
+		
+			$this->func = bab_functionality::getFunctionalities('WorkingHours');
+			$this->selectedfunc = bab_functionality::get('WorkingHours');
+			
+			$this->selectfunc = (count($this->func) > 1);
+		}
+		
+		public function getnextfunc()
+		{
+			if (list(, $f) = each($this->func))
+			{
+				$func = bab_functionality::get("WorkingHours/$f");
+				$this->name = bab_toHtml($f);
+				$this->description = bab_toHtml($func->getDescription());
+				$this->selected = ($this->selectedfunc instanceof $func);
+				return true;
 			}
+			
+			return false;
+		}
 
 		function getnextworkday()
 			{
@@ -2178,6 +2198,15 @@ function siteUpdate_menu6($item)
 function siteUpdate_menu13($item)
 	{
 	global $babDB;
+	
+	if (isset($_POST['funcname']))
+	{
+		require_once $GLOBALS['babInstallPath'] . 'utilit/functionalityincl.php';
+		$func = new bab_functionalities();
+		$func->copyToParent("WorkingHours/".bab_pp('funcname'));
+	}
+	
+	
 
 	include_once $GLOBALS['babInstallPath']."utilit/workinghoursincl.php";
 	bab_deleteAllWorkingHours(0);

@@ -1862,6 +1862,15 @@ document.getElementById('evtColor').style.backgroundColor = '#'+color;
 				<table  width="100%" border="0" cellspacing="0" cellpadding="5" class="BabLoginMenuBackground">
 					<tr>
 						<td valign="top">
+						<!--#if selectfunc -->
+							{ t_workinghours }<br />
+							<select name="funcname">
+								<!--#in getnextfunc -->
+								<option value="{ name }" <!--#if selected --> selected="selected"<!--#endif selected -->>{ description }</option>
+								<!--#endin getnextfunc -->
+							</select>
+						<!--#endif selectfunc -->
+						
 							<dl>
 								<dt><h5>{ t_workdays }</h5></dt>
 								<!--#in getnextworkday -->
