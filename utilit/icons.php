@@ -329,7 +329,11 @@ class Func_Icons extends bab_Functionality
 	const PLACES_FOLDER_BOOKMARKS				= 'places-folder-bookmarks';
 	const PLACES_USER_HOME						= 'places-user-home';
 	const PLACES_USER_TRASH						= 'places-user-trash';
+	const PLACES_USER_APPLICATIONS				= 'places-user-applications';
+	const PLACES_ADMINISTRATOR_HOME				= 'places-administrator-home';
+	const PLACES_ADMINISTRATOR_APPLICATIONS		= 'places-administrator-applications';
 	const PLACES_MAIL_FOLDER_INBOX				= 'places-mail-folder-inbox';
+	
 	
 	//-----------------------------------------------------------------------
 	// Categories

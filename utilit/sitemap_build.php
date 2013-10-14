@@ -1891,6 +1891,7 @@ function bab_sitemap_userSection($event) {
 			$item = $event->createItem($dg_prefix.'User');
 			$item->setLabel(bab_translate("User's section"));
 			$item->setPosition(array('root', $id_delegation));
+			$item->addIconClassname(Func_Icons::PLACES_USER_HOME);
 			$event->addFolder($item);
 
 			$position = array('root', $id_delegation, $dg_prefix.'User');
@@ -1900,6 +1901,7 @@ function bab_sitemap_userSection($event) {
 				$item = $event->createItem($dg_prefix.'UserSection');
 				$item->setLabel(bab_translate("Ovidentia functions"));
 				$item->setPosition($position);
+				$item->addIconClassname(FUnc_Icons::PLACES_USER_APPLICATIONS);
 				$event->addFolder($item);
 
 				if ($event->loadChildNodes(array('root', $id_delegation, $dg_prefix.'User', $dg_prefix.'UserSection'))) {
@@ -1938,6 +1940,7 @@ function bab_sitemap_userSection($event) {
 				$item = $event->createItem($dg_prefix.'UserSectionAddons');
 				$item->setLabel(bab_translate("Add-ons links"));
 				$item->setPosition($position);
+				$item->addIconClassname(FUnc_Icons::PLACES_USER_APPLICATIONS);
 				$event->addFolder($item);
 
 
@@ -1978,7 +1981,7 @@ function bab_sitemap_articlesCategoryLevel($id_category, $position, bab_eventBef
 			$item->setDescription(strip_tags($arr['description']));
 			$item->setPosition($position);
 			$item->setLink($GLOBALS['babUrlScript']."?tg=topusr&cat=".$arr['id']);
-			$item->addIconClassname('apps-articles');
+			$item->addIconClassname(Func_Icons::OBJECTS_PUBLICATION_CATEGORY); 
 			$item->progress = true;
 			$event->addFolder($item);
 
@@ -2008,6 +2011,7 @@ function bab_sitemap_articlesCategoryLevel($id_category, $position, bab_eventBef
 			$item->setPosition($position);
 			$item->setLink($GLOBALS['babUrlScript']."?tg=articles&topics=".$arr['id']);
 			$item->setFunctionality('Topic');
+			$item->addIconClassname(Func_Icons::OBJECTS_PUBLICATION_TOPIC);
 			$event->addFunction($item);
 		}
 	}
@@ -2039,6 +2043,7 @@ function bab_sitemap_articles(bab_eventBeforeSiteMapCreated $event) {
 			$item = $event->createItem('bab'.$dg.'Articles');
 			$item->setLabel(bab_translate("Articles"));
 			$item->setPosition($delegPosition);
+			$item->addIconClassname(Func_Icons::OBJECTS_PUBLICATION_CATEGORY);
 			$event->addFolder($item);
 
 			if ($event->loadChildNodes(array('root', $id_delegation, 'bab'.$dg.'Articles'))) {
@@ -2117,6 +2122,7 @@ function bab_sitemap_faq($event) {
 function bab_onBeforeSiteMapCreated(bab_eventBeforeSiteMapCreated $event) {
 
 	global $babBody, $BAB_SESS_LOGGED;
+	require_once dirname(__FILE__).'/icons.php';
 
 	// build user node
 	bab_sitemap_userSection($event);

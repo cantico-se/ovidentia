@@ -125,6 +125,7 @@ function bab_sitemap_adminSection(bab_eventBeforeSiteMapCreated $event) {
 		$item = $event->createItem($dg_prefix.'Admin');
 		$item->setLabel(bab_translate("Administration"));
 		$item->setPosition(array('root', $key));
+		$item->addIconClassname(Func_Icons::PLACES_ADMINISTRATOR_HOME);
 		$item->progress = true;
 		
 		$event->addFolder($item);
@@ -133,6 +134,7 @@ function bab_sitemap_adminSection(bab_eventBeforeSiteMapCreated $event) {
 		$item = $event->createItem($dg_prefix.'AdminSection');
 		$item->setLabel(bab_translate("Ovidentia functions"));
 		$item->setPosition(array('root', $key, $dg_prefix.'Admin'));
+		$item->addIconClassname(Func_Icons::PLACES_ADMINISTRATOR_APPLICATIONS);
 		$item->progress = true;
 		
 		$event->addFolder($item);
@@ -329,6 +331,7 @@ function bab_sitemap_adminSection(bab_eventBeforeSiteMapCreated $event) {
 					$item = $event->createItem($dg_prefix.'AdminSectionAddons');
 					$item->setLabel(bab_translate("Add-ons links"));
 					$item->setPosition(array('root',$key, $dg_prefix.'Admin'));
+					$item->addIconClassname(Func_Icons::PLACES_ADMINISTRATOR_APPLICATIONS);
 					$item->progress = true;
 					
 					$event->addFolder($item);
