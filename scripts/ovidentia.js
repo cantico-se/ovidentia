@@ -93,7 +93,7 @@ function bab_popup(url,divisor,menubar, toolbar, personalbar)
 		personalbar = 'yes';
 	}
 	
-	if (bab_popup_obj == null || bab_popup_obj.closed || bab_popup_obj == 0) {
+	if (bab_popup_obj == null || bab_popup_obj.closed || (typeof(bab_popup_obj) != 'object' && bab_popup_obj == 0)) {
 		if (typeof divisor == 'undefined') {
 				divisor = 3;
 		}
@@ -105,7 +105,7 @@ function bab_popup(url,divisor,menubar, toolbar, personalbar)
 		var t = Math.round(hd/2);
 		var name = 'bab_popup'+Math.floor(Math.random() * 99999999);
 		
-		if (bab_popup_obj == 0) {
+		if (typeof(bab_popup_obj) != 'object' && bab_popup_obj == 0) {
 			window.open(url,name,'status=yes,menubar='+menubar+',toolbar='+toolbar+',personalbar='+personalbar+',width='+w+',height='+h+',top='+t+',left='+l+',scrollbars=yes,resizable=yes');
 			bab_popup_obj = null;
 		} else {

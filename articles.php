@@ -813,7 +813,7 @@ function readMore($topics, $article)
 			
 			if (empty($this->arr['page_description']))
 			{
-				$head->setDescription(trim(bab_unhtmlentities(strip_tags($this->head))));
+				$head->setDescription(trim(bab_unhtmlentities(strip_tags($this->babtpl_head))));
 			} else {
 				$head->setDescription($this->arr['page_description']);
 			}
