@@ -52,9 +52,9 @@ function summaryForums($col, $order, $pos, $startday, $endday)
 			$this->threadstxt = bab_translate("Threads");
 			$this->poststxt = bab_translate("Posts");
 			$req = "SELECT  ft.id, ft.name, sum( sat.st_hits ) hits FROM  ".BAB_STATS_FORUMS_TBL." sat left join ".BAB_FORUMS_TBL." ft  on sat.st_forum_id=ft.id  where ft.name is not null";
-			if( $babBody->currentAdmGroup != 0 )
+			if( bab_getCurrentAdmGroup() != 0 )
 				{
-				$req .= " and ft.id_dgowner='".$babBody->currentAdmGroup."'";
+				$req .= " and ft.id_dgowner='".bab_getCurrentAdmGroup()."'";
 				}
 			if( !empty($startday) && !empty($endday))
 				{
@@ -267,9 +267,9 @@ function summaryThreads($col, $order, $pos, $startday, $endday)
 			$this->forumtxt = bab_translate("Forum");
 
 			$req = "SELECT ft.name, tt.id, pt.subject, sum( stt.st_hits ) hits FROM ".BAB_STATS_THREADS_TBL." stt left join ".BAB_THREADS_TBL." tt on tt.id=stt.st_thread_id left join ".BAB_POSTS_TBL." pt on pt.id=tt.post left join ".BAB_FORUMS_TBL." ft on ft.id=tt.forum where pt.subject is not null ";
-			if( $babBody->currentAdmGroup != 0 )
+			if( bab_getCurrentAdmGroup() != 0 )
 				{
-				$req .= " and ft.id_dgowner='".$babBody->currentAdmGroup."'";
+				$req .= " and ft.id_dgowner='".bab_getCurrentAdmGroup()."'";
 				}
 
 			if( !empty($startday) && !empty($endday))
@@ -446,15 +446,15 @@ function summaryPosts($col, $order, $pos, $startday, $endday)
 			$this->threadtxt = bab_translate("Thread");
 
 			$req = "SELECT pt.id_thread, pt.id, pt.subject, sum( stp.st_hits ) hits FROM ".BAB_STATS_POSTS_TBL." stp left join ".BAB_POSTS_TBL." pt on pt.id=stp.st_post_id";
-			if( $babBody->currentAdmGroup != 0 )
+			if( bab_getCurrentAdmGroup() != 0 )
 				{
 				$req .= " left join ".BAB_THREADS_TBL." tt on tt.id=pt.id_thread left join ".BAB_FORUMS_TBL." ft on ft.id=tt.forum";
 				}
 
 			$req .= " where pt.subject is not null";
-			if( $babBody->currentAdmGroup != 0 )
+			if( bab_getCurrentAdmGroup() != 0 )
 				{
-				$req .= " and ft.id_dgowner='".$babBody->currentAdmGroup."'";
+				$req .= " and ft.id_dgowner='".bab_getCurrentAdmGroup()."'";
 				}
 
 

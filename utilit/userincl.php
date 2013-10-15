@@ -634,23 +634,29 @@ function bab_calendarAccess()
 	return bab_getICalendars()->calendarAccess();
 	}
 
-
+	
+/**
+ * Get statistics access 
+ * @return int
+ */
 function bab_statisticsAccess()
 	{
-	global $babDB, $babBody, $BAB_SESS_USERID;
-	if( isset($babBody->stataccess))
+	global $babDB, $babBody;
+	static $stataccess = null;
+	
+	if( isset($stataccess))
 		{
-		return $babBody->stataccess;
+		return $stataccess;
 		}
 
-	$babBody->stataccess = -1;
+	$stataccess = -1;
 	if (bab_isAccessValid(BAB_STATSMAN_GROUPS_TBL, 1) )
 		{
-		$babBody->stataccess = BAB_STAT_ACCESS_MANAGER; // stat manager
+		$stataccess = BAB_STAT_ACCESS_MANAGER; // stat manager
 		}
-	elseif( $babBody->currentAdmGroup != 0 )
+	elseif( bab_getCurrentAdmGroup() != 0 )
 		{
-		$babBody->stataccess = BAB_STAT_ACCESS_DELEGATION; // stat delegation
+		$stataccess = BAB_STAT_ACCESS_DELEGATION; // stat delegation
 		}
 	else
 		{
@@ -667,10 +673,10 @@ function bab_statisticsAccess()
 			}
 		if( $bbasket )
 			{
-			$babBody->stataccess = BAB_STAT_ACCESS_USER; // stat user
+			$stataccess = BAB_STAT_ACCESS_USER; // stat user
 			}
 		}
-	return $babBody->stataccess;
+	return $stataccess;
 	}
 
 

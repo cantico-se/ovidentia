@@ -186,7 +186,7 @@ class Func_UserEditor extends bab_functionality {
 			return true;
 		}
 		
-		if (BAB_REGISTERED_GROUP === (int) $directory['id_group'] && (bab_isUserAdministrator() || 'Y' === $babBody->currentDGGroup['users']))
+		if (BAB_REGISTERED_GROUP === (int) $directory['id_group'] && (bab_isUserAdministrator() || bab_isDelegated('users')))
 		{
 			return true;
 		}
@@ -242,7 +242,7 @@ class Func_UserEditor extends bab_functionality {
 		}
 		
 		
-		if (BAB_REGISTERED_GROUP === (int) $directory['id_group'] && (bab_isUserAdministrator() || $babBody->currentAdmGroup != 0))
+		if (BAB_REGISTERED_GROUP === (int) $directory['id_group'] && (bab_isUserAdministrator() || bab_getCurrentAdmGroup() != 0))
 		{
 			return true;
 		}
@@ -556,7 +556,7 @@ class Func_UserEditor extends bab_functionality {
 			return true;
 		}
 		
-		if ('Y' === $babBody->currentDGGroup['users'])
+		if (bab_isDelegated('users'))
 		{
 			return true;
 		}
@@ -591,7 +591,7 @@ class Func_UserEditor extends bab_functionality {
 			return true;
 		}
 		
-		if ($babBody->currentAdmGroup != 0)
+		if (bab_getCurrentAdmGroup() != 0)
 		{
 			return true;
 		}
@@ -980,15 +980,16 @@ class Func_UserEditor extends bab_functionality {
 				bab_attachUserToGroup($id_user, $directory['id_group']);
 			}
 			
+			$currentDGGroup = bab_getCurrentDGGroup();
 			
 			// delegated administrator, add the created user in the main delegation group
-			if($babBody->currentAdmGroup != 0 &&
-					$babBody->currentDGGroup['id_group'] != BAB_ALLUSERS_GROUP &&
-					$babBody->currentDGGroup['id_group'] != BAB_REGISTERED_GROUP &&
-					$babBody->currentDGGroup['id_group'] != BAB_UNREGISTERED_GROUP &&
-					$babBody->currentDGGroup['users'] == 'Y')
+			if(bab_getCurrentAdmGroup() != 0 &&
+					$currentDGGroup['id_group'] != BAB_ALLUSERS_GROUP &&
+					$currentDGGroup['id_group'] != BAB_REGISTERED_GROUP &&
+					$currentDGGroup['id_group'] != BAB_UNREGISTERED_GROUP &&
+					bab_isDelegated('users'))
 			{
-				bab_attachUserToGroup($id_user, $babBody->currentDGGroup['id_group']);
+				bab_attachUserToGroup($id_user, $currentDGGroup['id_group']);
 			}
 		}
 		

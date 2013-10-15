@@ -48,9 +48,9 @@ function summaryFileManager($col, $order)
 			$this->versionstxt = bab_translate("Versions");
 			$this->kilooctet = " ".bab_translate("Kb");
 			$req = "select fft.*, dg.name as dgname, fft.id_dgowner as iIdDgOwner, count(ft.id) as files from ".BAB_FM_FOLDERS_TBL." fft left join ".BAB_DG_GROUPS_TBL." dg on fft.id_dgowner=dg.id left join ".BAB_FILES_TBL." ft on ft.id_owner=fft.id";		
-			if( $babBody->currentAdmGroup != 0 )
+			if( bab_getCurrentAdmGroup() != 0 )
 				{
-				$req .= " where fft.id_dgowner='".$babBody->currentAdmGroup."'";
+				$req .= " where fft.id_dgowner='".bab_getCurrentAdmGroup()."'";
 				}
 			$req .= " group by fft.id";
 
@@ -248,9 +248,10 @@ function showPersonalFoldersDetail()
 			
 
 			$this->users = false;
-			if( $babBody->currentAdmGroup != 0 && $babBody->currentDGGroup['id_group'] != 0 )
+			$currentDGGroup = bab_getCurrentDGGroup();
+			if( bab_getCurrentAdmGroup() != 0 && $currentDGGroup['id_group'] != 0 )
 				{
-				$u = bab_getGroupsMembers($babBody->currentDGGroup['id_group']);
+				$u = bab_getGroupsMembers($currentDGGroup['id_group']);
 				for( $k=0; $k < count($u); $k++ )
 					{
 					$this->users[$u[$k]['id']] = true;
@@ -311,9 +312,9 @@ function summaryFmDownloads($col, $order, $pos, $startday, $endday)
 
 			$req = "select ft.id, ft.name, fft.folder, ft.path, sum( sff.st_hits ) hits FROM ".BAB_STATS_FMFILES_TBL." sff left join ".BAB_FILES_TBL." ft on sff.st_fmfile_id=ft.id left join ".BAB_FM_FOLDERS_TBL." fft on fft.id=ft.id_owner where ft.bgroup='Y'";
 
-			if( $babBody->currentAdmGroup != 0 )
+			if( bab_getCurrentAdmGroup() != 0 )
 				{
-				$req .= " and fft.id_dgowner='".$babBody->currentAdmGroup."'";
+				$req .= " and fft.id_dgowner='".bab_getCurrentAdmGroup()."'";
 				}
 
 			if( !empty($startday) && !empty($endday))
@@ -494,9 +495,9 @@ function summaryFmFolders($col, $order, $pos, $startday, $endday)
 			$this->hitstxt = bab_translate("Hits");
 
 			$req = "SELECT  fft.id, fft.folder, sum( sft.st_hits ) hits FROM  ".BAB_STATS_FMFOLDERS_TBL." sft left join ".BAB_FM_FOLDERS_TBL." fft  on sft.st_folder_id=fft.id  where fft.folder is not null";
-			if( $babBody->currentAdmGroup != 0 )
+			if( bab_getCurrentAdmGroup() != 0 )
 				{
-				$req .= " and fft.id_dgowner='".$babBody->currentAdmGroup."'";
+				$req .= " and fft.id_dgowner='".bab_getCurrentAdmGroup()."'";
 				}
 			if( !empty($startday) && !empty($endday))
 				{

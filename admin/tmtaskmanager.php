@@ -104,7 +104,7 @@ function displayProjectsSpacesList()
 {
 	global $babBody;
 
-	if((bab_isUserAdministrator() && $babBody->currentAdmGroup == 0) || $babBody->currentDGGroup['taskmanager'] == 'Y')
+	if((bab_isUserAdministrator() && bab_getCurrentAdmGroup() == 0) || bab_isDelegated('taskmanager'))
 	{
 		
 		$itemMenu = array();
@@ -144,7 +144,7 @@ function displayProjectsSpacesForm()
 {
 	global $babBody;
 
-	if((bab_isUserAdministrator() && $babBody->currentAdmGroup == 0) || $babBody->currentDGGroup['taskmanager'] == 'Y')
+	if((bab_isUserAdministrator() && bab_getCurrentAdmGroup() == 0) || bab_isDelegated('taskmanager'))
 	{
 		$oTmCtx =& getTskMgrContext();
 		
@@ -226,7 +226,7 @@ function displayDeleteProjectsSpacesForm()
 {
 	global $babBody;
 
-	if((bab_isUserAdministrator() && $babBody->currentAdmGroup == 0) || $babBody->currentDGGroup['taskmanager'] == 'Y')
+	if((bab_isUserAdministrator() && bab_getCurrentAdmGroup() == 0) || bab_isDelegated('taskmanager'))
 	{
 		$oTmCtx =& getTskMgrContext();
 		
@@ -294,7 +294,7 @@ function displayProjectsSpacesRightsForm()
 {
 	global $babBody;
 
-	if((bab_isUserAdministrator() && $babBody->currentAdmGroup == 0) || $babBody->currentDGGroup['taskmanager'] == 'Y')
+	if((bab_isUserAdministrator() && bab_getCurrentAdmGroup() == 0) || bab_isDelegated('taskmanager'))
 	{
 		$oTmCtx =& getTskMgrContext();
 		
@@ -349,7 +349,7 @@ function displayProjectsConfigurationForm()
 {
 	global $babBody;
 
-	if((bab_isUserAdministrator() && $babBody->currentAdmGroup == 0) || $babBody->currentDGGroup['taskmanager'] == 'Y')
+	if((bab_isUserAdministrator() && bab_getCurrentAdmGroup() == 0) || bab_isDelegated('taskmanager'))
 	{
 		$oTmCtx =& getTskMgrContext();
 		
@@ -474,7 +474,7 @@ function displayPersonnalTaskRight()
 {
 	global $babBody;
 
-	if((bab_isUserAdministrator() && $babBody->currentAdmGroup == 0) || $babBody->currentDGGroup['taskmanager'] == 'Y')
+	if((bab_isUserAdministrator() && bab_getCurrentAdmGroup() == 0) || bab_isDelegated('taskmanager'))
 	{
 		$itemMenu = array();
 		add_item_menu($itemMenu);
@@ -505,7 +505,7 @@ function addModifyProjectSpace()
 {
 	global $babBody;
 
-	if((bab_isUserAdministrator() && $babBody->currentAdmGroup == 0) || $babBody->currentDGGroup['taskmanager'] == 'Y')
+	if((bab_isUserAdministrator() && bab_getCurrentAdmGroup() == 0) || bab_isDelegated('taskmanager'))
 	{
 		$oTmCtx =& getTskMgrContext();
 		$iIdProjectSpace = (int) $oTmCtx->getIdProjectSpace();
@@ -562,7 +562,7 @@ function deleteProjectSpace()
 {
 	global $babBody;
 
-	if((bab_isUserAdministrator() && $babBody->currentAdmGroup == 0) || $babBody->currentDGGroup['taskmanager'] == 'Y')
+	if((bab_isUserAdministrator() && bab_getCurrentAdmGroup() == 0) || bab_isDelegated('taskmanager'))
 	{
 		$oTmCtx =& getTskMgrContext();
 		
@@ -596,7 +596,7 @@ function saveProjectConfiguration()
 {
 	global $babBody;
 
-	if((bab_isUserAdministrator() && $babBody->currentAdmGroup == 0) || $babBody->currentDGGroup['taskmanager'] == 'Y')
+	if((bab_isUserAdministrator() && bab_getCurrentAdmGroup() == 0) || bab_isDelegated('taskmanager'))
 	{
 		$oTmCtx =& getTskMgrContext();
 		$iIdProjectSpace = $oTmCtx->getIdProjectSpace();

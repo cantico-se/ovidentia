@@ -1099,7 +1099,7 @@ class bab_ArticleTreeView extends bab_TreeView
 		$sql .= ' FROM ' . BAB_TOPICS_TBL . ' topics';
 		if ($this->hasAttributes(self::SHOW_ONLY_ADMINISTERED_DELEGATION)) {
 			$sql .= ' LEFT JOIN ' . BAB_TOPICS_CATEGORIES_TBL . ' AS categories ON topics.id_cat=categories.id';
-			$where[] = 'categories.id_dgowner=' . $babDB->quote($babBody->currentAdmGroup);
+			$where[] = 'categories.id_dgowner=' . $babDB->quote(bab_getCurrentAdmGroup());
 		}
 		$where[] = 'topics.id IN (' . $babDB->quote(array_keys(bab_getUserIdObjects($tablename))) . ')';
 		$sql .= ' WHERE ' . implode(' AND ', $where);
@@ -1170,7 +1170,7 @@ class bab_ArticleTreeView extends bab_TreeView
 				    . ' FROM ' . BAB_TOPICS_TBL . ' AS topics';
 				if ($this->hasAttributes(self::SHOW_ONLY_ADMINISTERED_DELEGATION)) {
 					$sql .= ' LEFT JOIN ' . BAB_TOPICS_CATEGORIES_TBL . ' AS categories ON topics.id_cat=categories.id';
-					$sql .= ' WHERE categories.id_dgowner=' . $babDB->quote($babBody->currentAdmGroup);
+					$sql .= ' WHERE categories.id_dgowner=' . $babDB->quote(bab_getCurrentAdmGroup());
 				}
 				break;
 		}
@@ -1253,7 +1253,7 @@ class bab_ArticleTreeView extends bab_TreeView
 		
 		$sql = 'SELECT id, title, description, id_parent, enabled FROM ' . BAB_TOPICS_CATEGORIES_TBL;
 		if ($this->hasAttributes(self::SHOW_ONLY_ADMINISTERED_DELEGATION)) {
-			$sql .= ' WHERE id_dgowner=' . $babDB->quote($babBody->currentAdmGroup);
+			$sql .= ' WHERE id_dgowner=' . $babDB->quote(bab_getCurrentAdmGroup());
 		}
 		$elementType = 'category';
 		if (!($this->hasAttributes(self::MULTISELECT))
@@ -1299,10 +1299,10 @@ class bab_ArticleTreeView extends bab_TreeView
 	{
 		global $babDB, $babBody;
 		$sql = 'SELECT articles.id, articles.title, articles.id_topic FROM ' . BAB_ARTICLES_TBL.' articles';
-		if ($babBody->currentAdmGroup != 0) {
+		if (bab_getCurrentAdmGroup() != 0) {
 			$sql .= ' LEFT JOIN '.BAB_TOPICS_TBL.' topics ON articles.id_topic=topics.id';
 			$sql .= ' LEFT JOIN '.BAB_TOPICS_CATEGORIES_TBL.' categories ON topics.id_cat=categories.id';
-			$sql .= ' WHERE id_dgowner=' . $babDB->quote($babBody->currentAdmGroup);
+			$sql .= ' WHERE id_dgowner=' . $babDB->quote(bab_getCurrentAdmGroup());
 		}
 		$elementType = 'article';
 		if (!($this->hasAttributes(self::MULTISELECT))
@@ -1637,7 +1637,7 @@ class bab_FileTreeView extends bab_TreeView
 		// display the currently administered delegation.
 		if ($this->hasAttributes(self::SHOW_ONLY_ADMINISTERED_DELEGATION))
 		{
-			$this->_visibleDelegations = array($babBody->currentAdmGroup => $this->_visibleDelegations[$babBody->currentAdmGroup]);
+			$this->_visibleDelegations = array(bab_getCurrentAdmGroup() => $this->_visibleDelegations[bab_getCurrentAdmGroup()]);
 		}
 
 		// We create a first-level node for each visible delegation.
@@ -1827,8 +1827,8 @@ class bab_FileTreeView extends bab_TreeView
                // $rootPath .= $oFolder->getName() . '/';
                 $idDgOwner = $oFolder->getDelegationOwnerId();
             }
-        } elseif ($babBody->currentAdmGroup != 0 && ($this->hasAttributes(self::SHOW_ONLY_ADMINISTERED_DELEGATION))) {
-        	$idDgOwner = $babBody->currentAdmGroup;
+        } elseif (bab_getCurrentAdmGroup() != 0 && ($this->hasAttributes(self::SHOW_ONLY_ADMINISTERED_DELEGATION))) {
+        	$idDgOwner = bab_getCurrentAdmGroup();
         } else {
         	$idDgOwner = null;
         }
@@ -2136,8 +2136,8 @@ class bab_ForumTreeView extends bab_TreeView
 		global $babDB, $babBody;
 
 		$sql = 'SELECT id, name FROM ' . BAB_FORUMS_TBL;
-		if ($babBody->currentAdmGroup != 0) {
-			$sql .= ' WHERE id_dgowner = ' . $babDB->quote($babBody->currentAdmGroup);
+		if (bab_getCurrentAdmGroup() != 0) {
+			$sql .= ' WHERE id_dgowner = ' . $babDB->quote(bab_getCurrentAdmGroup());
 		}
 		$sql .= ' ORDER BY ordering';
 		
@@ -2167,9 +2167,9 @@ class bab_ForumTreeView extends bab_TreeView
 		global $babDB, $babBody;
 
 		$sql = 'SELECT tt.id, tt.forum FROM ' . BAB_THREADS_TBL. ' tt';
-		if ($babBody->currentAdmGroup != 0) {
+		if (bab_getCurrentAdmGroup() != 0) {
 			$sql .= ' LEFT JOIN ' . BAB_FORUMS_TBL . ' ft ON tt.forum = ft.id ' .
-					' WHERE ft.id_dgowner = ' . $babDB->quote($babBody->currentAdmGroup);
+					' WHERE ft.id_dgowner = ' . $babDB->quote(bab_getCurrentAdmGroup());
 		}
 		$sql .= ' ORDER BY tt.date';
 		
@@ -2376,8 +2376,8 @@ class bab_FaqTreeView extends bab_TreeView
 		global $babDB, $babBody;
 
 		$sql = 'SELECT id, category FROM ' . BAB_FAQCAT_TBL;
-		if ($babBody->currentAdmGroup != 0) {
-			$sql .= ' WHERE id_dgowner = ' . $babDB->quote($babBody->currentAdmGroup);
+		if (bab_getCurrentAdmGroup() != 0) {
+			$sql .= ' WHERE id_dgowner = ' . $babDB->quote(bab_getCurrentAdmGroup());
 		}
 		$sql .= ' order by category asc';
 
@@ -2417,12 +2417,12 @@ class bab_FaqTreeView extends bab_TreeView
 
 		$sql = 'SELECT ftt.id_parent, fst.* FROM ' . BAB_FAQ_TREES_TBL . ' ftt ,' . BAB_FAQ_SUBCAT_TBL.' fst';
 
-		if ($babBody->currentAdmGroup != 0) {
+		if (bab_getCurrentAdmGroup() != 0) {
 			$sql .= ' LEFT JOIN '.BAB_FAQCAT_TBL.' ft ON ft.id=fst.id_cat';
 		}
 		$sql .= ' WHERE';
-		if ($babBody->currentAdmGroup != 0) {
-			$sql .= ' id_dgowner = '. $babDB->quote($babBody->currentAdmGroup) . ' AND';
+		if (bab_getCurrentAdmGroup() != 0) {
+			$sql .= ' id_dgowner = '. $babDB->quote(bab_getCurrentAdmGroup()) . ' AND';
 		}
 		$sql .= ' ftt.id = fst.id_node AND ftt.id_parent <> 0';
 		$sql .= ' ORDER BY ftt.id';
@@ -2455,8 +2455,8 @@ class bab_FaqTreeView extends bab_TreeView
 		global $babDB, $babBody;
 
 		$sql = 'SELECT fqt.id, fqt.question, fqt.id_subcat FROM ' . BAB_FAQQR_TBL.' fqt';
-		if ($babBody->currentAdmGroup != 0) {
-			$sql .= ' LEFT JOIN '.BAB_FAQCAT_TBL.' fct ON fqt.idcat=fct.id WHERE fct.id_dgowner=\''.$babBody->currentAdmGroup.'\'';
+		if (bab_getCurrentAdmGroup() != 0) {
+			$sql .= ' LEFT JOIN '.BAB_FAQCAT_TBL.' fct ON fqt.idcat=fct.id WHERE fct.id_dgowner=\''.bab_getCurrentAdmGroup().'\'';
 		}
 
 		$questionType = 'faqquestion';

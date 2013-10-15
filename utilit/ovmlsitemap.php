@@ -606,7 +606,7 @@ class Func_Ovml_Function_SitemapMenu extends Func_Ovml_Function {
 		$truncateId = explode('-', $id);
 		$truncateId = $truncateId[0];
 		if($this->admindelegation
-			&& !isset($this->delegAdmin[$babBody->currentAdmGroup][$truncateId])
+			&& !isset($this->delegAdmin[bab_getCurrentAdmGroup()][$truncateId])
 			&& (substr($truncateId, 0, 8) == 'babAdmin' || $truncateId == 'babSearchIndex') && $truncateId != 'babAdmin')
 		{
 			return $return;
@@ -674,10 +674,10 @@ class Func_Ovml_Function_SitemapMenu extends Func_Ovml_Function {
 			trigger_error(sprintf('incorrect attribute in %s#%s sitemap="%s"', (string) $this->template->debug_location, get_class($this), $args['sitemap']));
 			return '';
 		}
-		if( (isset($args['admindelegation']) && $args['admindelegation'] == '1' ) && $babBody->currentAdmGroup != 0 && !isset($this->delegAdmin[$babBody->currentAdmGroup]))
+		if( (isset($args['admindelegation']) && $args['admindelegation'] == '1' ) && bab_getCurrentAdmGroup() != 0 && !isset($this->delegAdmin[bab_getCurrentAdmGroup()]))
 		{
 			$this->admindelegation = $args['admindelegation'];
-			$delegation = bab_getDelegationById($babBody->currentAdmGroup);
+			$delegation = bab_getDelegationById(bab_getCurrentAdmGroup());
 			$delegation = $delegation[0];
 			foreach(bab_getDelegationsObjects() as $link)
 			{
@@ -688,16 +688,16 @@ class Func_Ovml_Function_SitemapMenu extends Func_Ovml_Function {
 			
 				if ($delegation[$link[0]] === 'Y')
 				{
-					$this->delegAdmin[$babBody->currentAdmGroup]['bab'.$link[2]] = true;
+					$this->delegAdmin[bab_getCurrentAdmGroup()]['bab'.$link[2]] = true;
 				}
 			}
 			$dgAdmGroups = bab_getDgAdmGroups();
 			if( count($dgAdmGroups) > 0) {
-				$this->delegAdmin[$babBody->currentAdmGroup]['babAdminDelegChange'] = true;
+				$this->delegAdmin[bab_getCurrentAdmGroup()]['babAdminDelegChange'] = true;
 			}
-			$this->delegAdmin[$babBody->currentAdmGroup]['babAdminGroups'] = true;
-			$this->delegAdmin[$babBody->currentAdmGroup]['babAdminUsers'] = true;
-			$this->delegAdmin[$babBody->currentAdmGroup]['babAdminSection'] = true;
+			$this->delegAdmin[bab_getCurrentAdmGroup()]['babAdminGroups'] = true;
+			$this->delegAdmin[bab_getCurrentAdmGroup()]['babAdminUsers'] = true;
+			$this->delegAdmin[bab_getCurrentAdmGroup()]['babAdminSection'] = true;
 		}
 
 		$this->sitemap = $sitemap;

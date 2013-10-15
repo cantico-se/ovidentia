@@ -106,7 +106,7 @@ function listOrgCharts()
 			$this->access = bab_translate("Access");
 			$this->grights = bab_translate("Rights");
 			$this->db = $GLOBALS['babDB'];
-			$req = "select oc.*, dd.name as dirname from ".BAB_ORG_CHARTS_TBL." oc left join ".BAB_DB_DIRECTORIES_TBL." dd on oc.id_directory=dd.id where oc.id_dgowner='".$babBody->currentAdmGroup."' order by name asc";
+			$req = "select oc.*, dd.name as dirname from ".BAB_ORG_CHARTS_TBL." oc left join ".BAB_DB_DIRECTORIES_TBL." dd on oc.id_directory=dd.id where oc.id_dgowner='".bab_getCurrentAdmGroup()."' order by name asc";
 			$this->res = $this->db->db_query($req);
 			$this->count = $this->db->db_num_rows($this->res);
 			}
@@ -147,14 +147,14 @@ function saveOrgChart($name, $description, $dirid)
 		}
 
 	$db = $GLOBALS['babDB'];
-	$res = $db->db_query("select id from ".BAB_ORG_CHARTS_TBL." where name='".$db->db_escape_string($name)."' and id_dgowner='".$db->db_escape_string($babBody->currentAdmGroup)."'");
+	$res = $db->db_query("select id from ".BAB_ORG_CHARTS_TBL." where name='".$db->db_escape_string($name)."' and id_dgowner='".$db->db_escape_string(bab_getCurrentAdmGroup())."'");
 	if( $db->db_num_rows($res) > 0)
 		{
 		$babBody->msgerror = bab_translate("ERROR: This organization chart already exists");
 		return false;
 		}
 
-	$query = "insert into ".BAB_ORG_CHARTS_TBL." (name, description, id_directory, id_dgowner) values ('" .$db->db_escape_string($name). "', '" . $db->db_escape_string($description). "', '" . $db->db_escape_string($dirid). "', '" . $db->db_escape_string($babBody->currentAdmGroup). "')";
+	$query = "insert into ".BAB_ORG_CHARTS_TBL." (name, description, id_directory, id_dgowner) values ('" .$db->db_escape_string($name). "', '" . $db->db_escape_string($description). "', '" . $db->db_escape_string($dirid). "', '" . $db->db_escape_string(bab_getCurrentAdmGroup()). "')";
 	$db->db_query($query);
 	$id = $db->db_insert_id();
 	Header("Location: ". $GLOBALS['babUrlScript']."?tg=admoc&idx=ocview&item=".$id);
@@ -162,7 +162,7 @@ function saveOrgChart($name, $description, $dirid)
 	}
 
 /* main */
-if( !bab_isUserAdministrator() && $babBody->currentDGGroup['orgchart'] != 'Y')
+if( !bab_isUserAdministrator() && !bab_isDelegated('orgchart'))
 {
 	$babBody->msgerror = bab_translate("Access denied");
 	return;

@@ -209,7 +209,7 @@ function &getArticleCategoriesDashboardRow($category, $start, $end, $sqlDateForm
 function createArticleCategoriesDashboard($start, $end)
 {
 	global $babBody, $babDB;
-	$admGroup = $babBody->currentAdmGroup;
+	$admGroup = bab_getCurrentAdmGroup();
 	$title = sprintf(bab_translate("Article Categories Top %d"), BAB_DASHBOARD_NB_ITEMS);
 	$dashboard = new bab_DashboardElement($title, 'categories');
 	$dashboard->setColumnHeaders(createHeaders($start, $end));
@@ -313,7 +313,7 @@ function &getArticleTopicsDashboardRow($topic, $start, $end, $sqlDateFormat)
 function createArticleTopicsDashboard($start, $end)
 {
 	global $babBody, $babDB;
-	$admGroup = $babBody->currentAdmGroup;
+	$admGroup = bab_getCurrentAdmGroup();
 	$title = sprintf(bab_translate("Article Topics Top %d"), BAB_DASHBOARD_NB_ITEMS);	
 	$dashboard = new bab_DashboardElement($title, 'topics');
 	$dashboard->setColumnHeaders(createHeaders($start, $end));
@@ -422,13 +422,13 @@ function createArticlesDashboard($start, $end)
 
 	$sql = 	'SELECT at.id AS id, SUM(sat.st_hits) AS hits ';
 	$sql .= ' FROM ' . BAB_STATS_ARTICLES_TBL . ' AS sat LEFT JOIN ' . BAB_ARTICLES_TBL . ' AS at ON at.id=sat.st_article_id';
-	if ($babBody->currentAdmGroup) {
+	if (bab_getCurrentAdmGroup()) {
 		$sql .= ' LEFT JOIN ' . BAB_TOPICS_TBL . ' AS tt ON tt.id=at.id_topic';
 		$sql .= ' LEFT JOIN ' . BAB_TOPICS_CATEGORIES_TBL . ' AS tct ON tct.id=tt.id_cat';
 	}
 	$where = array();
 	$where[] = 'at.title IS NOT NULL';
-	$babBody->currentAdmGroup && $where[] = 'tct.id_dgowner=\'' . $babBody->currentAdmGroup . '\'';
+	bab_getCurrentAdmGroup() && $where[] = 'tct.id_dgowner=\'' . bab_getCurrentAdmGroup() . '\'';
 	$start && $where[] = 'st_date >= \'' . date('Y-m-d', $start) . '\'';
 	$end && $where[] = 'st_date <= \'' . date('Y-m-d', $end) . ' 23:59:59\'';
 	if (!empty($where)) {
@@ -847,7 +847,7 @@ function &getFoldersDashboardRow($folder, $start, $end, $sqlDateFormat)
 function createFoldersDashboard($start, $end)
 {
 	global $babBody, $babDB;
-	$admGroup = $babBody->currentAdmGroup;
+	$admGroup = bab_getCurrentAdmGroup();
 	$title = sprintf(bab_translate("Collective Directories Top %d"), BAB_DASHBOARD_NB_ITEMS);
 	$dashboard = new bab_DashboardElement($title, 'folders');
 	$dashboard->setColumnHeaders(createHeaders($start, $end));
@@ -946,7 +946,7 @@ function &getFileDownloadsDashboardRow($file, $start, $end, $sqlDateFormat)
 function createFileDownloadsDashboard($start, $end)
 {
 	global $babBody, $babDB;
-	$admGroup = $babBody->currentAdmGroup;
+	$admGroup = bab_getCurrentAdmGroup();
 	$title = sprintf(bab_translate("File Downloads Top %d"), BAB_DASHBOARD_NB_ITEMS);
 	$dashboard = new bab_DashboardElement($title, 'files');
 	$dashboard->setColumnHeaders(createHeaders($start, $end));
@@ -1203,7 +1203,7 @@ define('BAB_STAT_BCT_QUESTION',		8);
 function createBasketDashboard($basketId, $start, $end)
 {
 	global $babDB, $babBody;
-	$admGroup = $babBody->currentAdmGroup;
+	$admGroup = bab_getCurrentAdmGroup();
 
 	$sql = 	'SELECT * FROM ' . BAB_STATS_BASKETS_TBL . ' WHERE id=' . $basketId;
 	$baskets = $babDB->db_query($sql);

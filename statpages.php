@@ -43,7 +43,7 @@ function summaryPages($col, $order, $startday, $endday)
 			$this->summaryBaseCls();
 			$this->fullname = bab_translate("Pages");
 			$this->hitstxt = bab_translate("Hits");
-			$req = "SELECT  stip.page_name, stip.page_url, sum( stp.st_hits ) hits FROM  ".BAB_STATS_PAGES_TBL." stp left join ".BAB_STATS_IPAGES_TBL." stip  on stp.st_page_id=stip.id where stip.id_dgowner='".$babBody->currentAdmGroup."'";
+			$req = "SELECT  stip.page_name, stip.page_url, sum( stp.st_hits ) hits FROM  ".BAB_STATS_PAGES_TBL." stp left join ".BAB_STATS_IPAGES_TBL." stip  on stp.st_page_id=stip.id where stip.id_dgowner='".bab_getCurrentAdmGroup()."'";
 			if( !empty($startday) && !empty($endday))
 				{
 				$req .= " and stp.st_date between '".$startday."' and '".$endday."'";

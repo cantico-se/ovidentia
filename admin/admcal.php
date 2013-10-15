@@ -148,7 +148,7 @@ function modifyCalendarResource($idcal, $name, $desc, $idsa)
 			$this->add = "modr";
 			$this->idcal = $arr['id'];
 			$this->tgval = 'admcal';
-			$this->sares = $babDB->db_query("select * from ".BAB_FLOW_APPROVERS_TBL." where id_dgowner=".$babDB->quote($babBody->currentAdmGroup)." order by name asc");
+			$this->sares = $babDB->db_query("select * from ".BAB_FLOW_APPROVERS_TBL." where id_dgowner=".$babDB->quote(bab_getCurrentAdmGroup())." order by name asc");
 			if( !$this->sares )
 				$this->sacount = 0;
 			else
@@ -229,7 +229,7 @@ function modifyCalendarPublic($idcal, $name, $desc, $idsa)
 			$this->add = "modp";
 			$this->idcal = $arr['id'];
 			$this->tgval = 'admcal';
-			$this->sares = $babDB->db_query("select * from ".BAB_FLOW_APPROVERS_TBL." where id_dgowner='".$babDB->db_escape_string($babBody->currentAdmGroup)."' order by name asc");
+			$this->sares = $babDB->db_query("select * from ".BAB_FLOW_APPROVERS_TBL." where id_dgowner='".$babDB->db_escape_string(bab_getCurrentAdmGroup())."' order by name asc");
 			if( !$this->sares )
 				$this->sacount = 0;
 			else
@@ -368,7 +368,7 @@ function updateCalendarCategory($idcat, $catname, $catdesc, $bgcolor)
 }
 
 /* main */
-if( !bab_isUserAdministrator() && $babBody->currentDGGroup['calendars'] != 'Y')
+if( !bab_isUserAdministrator() && !bab_isDelegated('calendars'))
 {
 	$babBody->msgerror = bab_translate("Access denied");
 	return;

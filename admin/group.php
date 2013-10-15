@@ -74,7 +74,7 @@ function groupMembers($id)
 			
 			$this->res = $this->db->db_query($req);
 			$this->count = $this->db->db_num_rows($this->res);
-			if( $babBody->currentAdmGroup == 0)
+			if( bab_getCurrentAdmGroup() == 0)
 				{
 				$this->bmodname = true;
 				}
@@ -86,10 +86,12 @@ function groupMembers($id)
 				
 			$this->bshowform = true;
 
-			if( $babBody->currentAdmGroup != 0)
+			if( bab_getCurrentAdmGroup() != 0)
 			{
-				$this->bshowform = ($babBody->currentDGGroup['battach'] == 'Y' 
-					&& ($id == $babBody->currentDGGroup['id_group'] || false !== bab_groupIsChildOf($babBody->currentDGGroup['id_group'], $id))
+				$currentDGGroup = bab_getCurrentDGGroup();
+				
+				$this->bshowform = (bab_isDelegated('battach') 
+					&& ($id == $currentDGGroup['id_group'] || false !== bab_groupIsChildOf($currentDGGroup['id_group'], $id))
 				);
 			}
 			
@@ -245,15 +247,17 @@ function confirmDeleteMembers($item, $names)
 {
 	global $babBody;
 	
-	if( $babBody->currentAdmGroup != 0)
+	if( bab_getCurrentAdmGroup() != 0)
 	{
-		if ($babBody->currentDGGroup['battach'] != 'Y')
+		if (!bab_isDelegated('battach'))
 		{
 			// si la delegation courrante n'a pas le droit d'attacher / detacher des users
 			throw new ErrorException('Members modification is not allowed on this delegation');
 		}
 		
-		if (!($item == $babBody->currentDGGroup['id_group'] || false !== bab_groupIsChildOf($babBody->currentDGGroup['id_group'], $item)))
+		$currentDGGroup = bab_getCurrentDGGroup();
+		
+		if (!($item == $currentDGGroup['id_group'] || false !== bab_groupIsChildOf($currentDGGroup['id_group'], $item)))
 		{
 			// si le groupe qu'on essai de modifier n'est pas dans la branche de delegation
 			throw new ErrorException('Members modification is not allowed on this group');
@@ -308,7 +312,7 @@ function confirmDeleteGroup($id)
 
 
 /* main */
-if( !bab_isUserAdministrator() && $babBody->currentAdmGroup == 0 )
+if( !bab_isUserAdministrator() && bab_getCurrentAdmGroup() == 0 )
 {
 	$babBody->msgerror = bab_translate("Access denied");
 	return;
@@ -381,7 +385,7 @@ switch($idx)
 		if( $item > 3 )
 			groupAdmDelete($item);
 		$babBody->title = bab_translate("Delete group");
-		if( $babBody->currentAdmGroup == 0 || $babBody->currentDGGroup['groups'] == 'Y' )
+		if( bab_getCurrentAdmGroup() == 0 || bab_isDelegated('groups') )
 			$babBody->addItemMenu("List", bab_translate("Groups"), $GLOBALS['babUrlScript']."?tg=groups&idx=List");
 		$babBody->addItemMenu("Members", bab_translate("Members"), $GLOBALS['babUrlScript']."?tg=group&idx=Members&item=".$item);
 		$babBody->addItemMenu("deldg", bab_translate("Delete"), $GLOBALS['babUrlScript']."?tg=group&idx=deldg&item=".$item);
@@ -401,10 +405,12 @@ switch($idx)
 	default:
 		groupMembers($item);
 		$babBody->title = bab_translate("Group's members").' : '.bab_getGroupName($item);
-		if( $babBody->currentAdmGroup == 0 || $babBody->currentDGGroup['groups'] == 'Y' )
+		if( bab_getCurrentAdmGroup() == 0 || bab_isDelegated('groups') )
 			$babBody->addItemMenu("List", bab_translate("Groups"), $GLOBALS['babUrlScript']."?tg=groups&idx=List");
 		$babBody->addItemMenu("Members", bab_translate("Members"), $GLOBALS['babUrlScript']."?tg=group&idx=Members&item=".$item);
-		if( $babBody->currentAdmGroup == 0 || $babBody->currentDGGroup['battach'] == 'Y' || $item != $babBody->currentDGGroup['id_group'] )
+		
+		$currentDGGroup = bab_getCurrentDGGroup();
+		if( bab_getCurrentAdmGroup() == 0 || bab_isDelegated('battach') || $item != $currentDGGroup['id_group'] )
 		{
 			$babBody->addItemMenu("Add", bab_translate("Attach"), $GLOBALS['babUrlScript']."?tg=users&idx=List&grp=".$item."&bupd=1");
 		}

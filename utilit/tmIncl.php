@@ -40,7 +40,7 @@ function bab_selectProjectSpaceList()
 		'FROM ' .
 			BAB_TSKMGR_PROJECTS_SPACES_TBL . ' ' .
 		'WHERE ' . 
-			'idDelegation =\'' . $babDB->db_escape_string($babBody->currentAdmGroup) . '\' ' .
+			'idDelegation =\'' . $babDB->db_escape_string(bab_getCurrentAdmGroup()) . '\' ' .
 		'ORDER BY name ASC' ;
 				
 	//bab_debug($query);

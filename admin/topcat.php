@@ -127,7 +127,7 @@ function topcatModify($id)
 					$fileExiste = false;
 					$oEnvObj = bab_getInstance('bab_PublicationPathsEnv');
 					
-					$oEnvObj->setEnv($babBody->currentAdmGroup);
+					$oEnvObj->setEnv(bab_getCurrentAdmGroup());
 					$sPath = $oEnvObj->getCategoryImgPath($id);
 					if(file_exists($sPath)){
 						$fileExiste = true;
@@ -161,7 +161,7 @@ function topcatModify($id)
 			}
 			
 			
-			if($this->idp == 0 && $babBody->currentAdmGroup)
+			if($this->idp == 0 && bab_getCurrentAdmGroup())
 			{
 				$this->bdelete = false;
 			}
@@ -222,7 +222,7 @@ function topcatModify($id)
 			/* Parent category */
 			$arr_exclude = $this->arr_child($id);
 
-			$res = $babDB->db_query("select * from ".BAB_TOPICS_CATEGORIES_TBL." where id_dgowner='".$babBody->currentAdmGroup."' and id NOT IN(".implode(',',$arr_exclude).") order by title asc");
+			$res = $babDB->db_query("select * from ".BAB_TOPICS_CATEGORIES_TBL." where id_dgowner='".bab_getCurrentAdmGroup()."' and id NOT IN(".implode(',',$arr_exclude).") order by title asc");
 
 			$this->arrtopcats = array();
 			if($this->idp == 0 || ($this->idp != 0 && bab_isUserAdministrator()))
@@ -398,7 +398,7 @@ function topcatDelete($id, $idp)
 			}
 		}
 
-	if( $idp == 0 && $babBody->currentAdmGroup)
+	if( $idp == 0 && bab_getCurrentAdmGroup())
 		{
 		$babBody->msgerror = bab_translate("This topic category can't be deleted");
 		return false;
@@ -437,7 +437,7 @@ function getImage()
 	$oEnvObj		= bab_getInstance('bab_PublicationPathsEnv');
 
 	global $babBody;
-	$oEnvObj->setEnv($babBody->currentAdmGroup);
+	$oEnvObj->setEnv(bab_getCurrentAdmGroup());
 	
 	$sPath = '';
 	if(0 !== $iIdCategory)
@@ -467,7 +467,7 @@ function uploadCategoryImg()
 	$sJSon			= '';
 	$sKeyOfPhpFile	= 'categoryPicture';
 	$oPubImpUpl		= new bab_PublicationImageUploader();
-	$aFileInfo		= $oPubImpUpl->uploadImageToTemp($babBody->currentAdmGroup, $sKeyOfPhpFile);
+	$aFileInfo		= $oPubImpUpl->uploadImageToTemp(bab_getCurrentAdmGroup(), $sKeyOfPhpFile);
 	
 	if(false === $aFileInfo)
 	{
@@ -513,7 +513,7 @@ function deleteTempImage()
 	$sImage		= bab_rp('sImage', '');
 	$oEnvObj	= bab_getInstance('bab_PublicationPathsEnv');
 	
-	$oEnvObj->setEnv($babBody->currentAdmGroup);
+	$oEnvObj->setEnv(bab_getCurrentAdmGroup());
 	$sPath = $oEnvObj->getTempPath();
 	
 	if(file_exists($sPath . $sImage))
@@ -563,7 +563,7 @@ function modifyTopcat($oldname, $name, $description, $benabled, $id, $template, 
 		title='".$db->db_escape_string($name)."' 
 		and id!='".$db->db_escape_string($id)."' 
 		and id_parent='".$db->db_escape_string($topcatid)."' 
-		and id_dgowner='".$db->db_escape_string($babBody->currentAdmGroup)."'";
+		and id_dgowner='".$db->db_escape_string(bab_getCurrentAdmGroup())."'";
 	$res = $db->db_query($query);
 	if($db->db_num_rows($res) > 0)
 	{
@@ -631,7 +631,7 @@ function modifyTopcat($oldname, $name, $description, $benabled, $id, $template, 
 		//si on a cliqu� sur supprim�(ajax) ou coch� supprimer (javascript d�sactiv�)
 		if(('' === $sTempName && '' === $sImageName) || bab_rp('deleteImageChk', 0) != 0)
 		{
-			if($oPubPathsEnv->setEnv($babBody->currentAdmGroup))
+			if($oPubPathsEnv->setEnv(bab_getCurrentAdmGroup()))
 			{
 				require_once dirname(__FILE__) . '/../utilit/delincl.php';
 				bab_deleteUploadDir($oPubPathsEnv->getCategoryImgPath($iIdCategory));
@@ -643,7 +643,7 @@ function modifyTopcat($oldname, $name, $description, $benabled, $id, $template, 
 	
 	
 	//Une image est associ�e alors on supprime l'ancienne
-	if($oPubPathsEnv->setEnv($babBody->currentAdmGroup))
+	if($oPubPathsEnv->setEnv(bab_getCurrentAdmGroup()))
 	{
 		require_once dirname(__FILE__) . '/../utilit/delincl.php';
 		bab_deleteUploadDir($oPubPathsEnv->getCategoryImgPath($iIdCategory));
@@ -653,11 +653,11 @@ function modifyTopcat($oldname, $name, $description, $benabled, $id, $template, 
 	$oPubImpUpl	= bab_getInstance('bab_PublicationImageUploader');
 	if(false === $bFromTempPath)
 	{
-		$sFullPathName = $oPubImpUpl->uploadCategoryImage($babBody->currentAdmGroup, $iIdCategory, $sKeyOfPhpFile);
+		$sFullPathName = $oPubImpUpl->uploadCategoryImage(bab_getCurrentAdmGroup(), $iIdCategory, $sKeyOfPhpFile);
 	}
 	else
 	{		
-		$sFullPathName = $oPubImpUpl->importCategoryImageFromTemp($babBody->currentAdmGroup, $iIdCategory, $sTempName, $sImageName);
+		$sFullPathName = $oPubImpUpl->importCategoryImageFromTemp(bab_getCurrentAdmGroup(), $iIdCategory, $sTempName, $sImageName);
 	}
 	
 	{
@@ -687,7 +687,7 @@ function confirmDeleteTopcat($id)
 	global $babBody, $babDB;
 
 	list($idparent) = $babDB->db_fetch_array($babDB->db_query("select id_parent from ".BAB_TOPICS_CATEGORIES_TBL." where id='".$babDB->db_escape_string($id)."'"));
-	if( !$idparent && $babBody->currentAdmGroup)
+	if( !$idparent && bab_getCurrentAdmGroup())
 		{
 		$babBody->msgerror = bab_translate("This topic category can't be deleted");
 		return false;
@@ -796,7 +796,7 @@ function updateAclGroups()
 }
 
 /* main */
-if( !bab_isUserAdministrator() && $babBody->currentDGGroup['articles'] != 'Y')
+if( !bab_isUserAdministrator() && !bab_isDelegated('articles'))
 {
 	$babBody->msgerror = bab_translate("Access denied");
 	return;

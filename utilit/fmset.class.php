@@ -695,7 +695,7 @@ class BAB_FmFolderSet extends BAB_BaseSet
 
 			//2 changer les sous repertoires
 			$oCriteria = $oRelativePath->like($babDB->db_escape_like($sOldRelativePath) . '%');
-			$oCriteria = $oCriteria->_and($oIdDgOwner->in($babBody->currentAdmGroup));
+			$oCriteria = $oCriteria->_and($oIdDgOwner->in(bab_getCurrentAdmGroup()));
 
 			$oFmFolderSet->select($oCriteria);
 			while(null !== ($oFmFolder = $oFmFolderSet->next()))

@@ -124,7 +124,7 @@ function bab_getResourceCalendars()
 	global $babBody, $babDB;
 	$rescals = array();
 
-	$res = $babDB->db_query("select cpt.*, ct.id as idcal from ".BAB_CAL_RESOURCES_TBL." cpt left join ".BAB_CALENDAR_TBL." ct on ct.owner=cpt.id where ct.actif='Y' and  ct.type='".BAB_CAL_RES_TYPE."' and id_dgowner='".$babDB->db_escape_string($babBody->currentAdmGroup)."' ORDER BY cpt.name");
+	$res = $babDB->db_query("select cpt.*, ct.id as idcal from ".BAB_CAL_RESOURCES_TBL." cpt left join ".BAB_CALENDAR_TBL." ct on ct.owner=cpt.id where ct.actif='Y' and  ct.type='".BAB_CAL_RES_TYPE."' and id_dgowner='".$babDB->db_escape_string(bab_getCurrentAdmGroup())."' ORDER BY cpt.name");
 	while( $arr = $babDB->db_fetch_array($res))
 		{
 		$tmp = array();
@@ -171,7 +171,7 @@ function bab_getPublicCalendars()
 	global $babBody, $babDB;
 	$rescals = array();
 
-	$res = $babDB->db_query("select cpt.*, ct.id as idcal from ".BAB_CAL_PUBLIC_TBL." cpt left join ".BAB_CALENDAR_TBL." ct on ct.owner=cpt.id where ct.actif='Y' and ct.type='".BAB_CAL_PUB_TYPE."' and id_dgowner='".$babDB->db_escape_string($babBody->currentAdmGroup)."' ORDER BY cpt.name");
+	$res = $babDB->db_query("select cpt.*, ct.id as idcal from ".BAB_CAL_PUBLIC_TBL." cpt left join ".BAB_CALENDAR_TBL." ct on ct.owner=cpt.id where ct.actif='Y' and ct.type='".BAB_CAL_PUB_TYPE."' and id_dgowner='".$babDB->db_escape_string(bab_getCurrentAdmGroup())."' ORDER BY cpt.name");
 	while( $arr = $babDB->db_fetch_array($res))
 		{
 		$tmp = array();

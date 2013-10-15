@@ -1578,8 +1578,13 @@ function bab_getUserAddonsUrls() {
  */
 function bab_getUserDelegationUrls($id_delegation, $deleg, $dg_prefix) {
 
-	global $babDB, $babBody;
+	global $babDB;
 	require_once dirname(__FILE__).'/utilit.php';
+	require_once dirname(__FILE__).'/settings.class.php';
+	
+	$settings = bab_getInstance('bab_Settings');
+	/*@var $settings bab_Settings */
+	$site = $settings->getSiteSettings();
 
 	$array_urls = array();
 
@@ -1629,7 +1634,7 @@ function bab_getUserDelegationUrls($id_delegation, $deleg, $dg_prefix) {
 		}
 		
 
-	if( count(bab_getUserIdObjects(BAB_TOPICSMAN_GROUPS_TBL)) > 0 || bab_isAccessValid(BAB_SITES_HPMAN_GROUPS_TBL, $babBody->babsite['id'])|| bab_isAccessValid(BAB_TAGSMAN_GROUPS_TBL, 1))
+	if( count(bab_getUserIdObjects(BAB_TOPICSMAN_GROUPS_TBL)) > 0 || bab_isAccessValid(BAB_SITES_HPMAN_GROUPS_TBL, $site['id'])|| bab_isAccessValid(BAB_TAGSMAN_GROUPS_TBL, 1))
 		{
 		$array_urls[] = array(
 				'label' => bab_translate("Articles management"),
@@ -2146,7 +2151,7 @@ function bab_onBeforeSiteMapCreated(bab_eventBeforeSiteMapCreated $event) {
 
 
 	// build admin node
-	if( isset($BAB_SESS_LOGGED) && $BAB_SESS_LOGGED && (bab_isUserAdministrator() || $babBody->currentAdmGroup != 0)) {
+	if( isset($BAB_SESS_LOGGED) && $BAB_SESS_LOGGED && (bab_isUserAdministrator() || bab_getCurrentAdmGroup() != 0)) {
 		include_once $GLOBALS['babInstallPath'].'admin/admmenu.php';
 		bab_sitemap_adminSection($event);
 	}

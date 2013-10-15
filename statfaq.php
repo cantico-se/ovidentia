@@ -43,9 +43,9 @@ function summaryFaqs($col, $order, $pos, $startday, $endday)
 			$this->fullname = bab_translate("Faqs");
 			$this->hitstxt = bab_translate("Hits");
 			$req = "SELECT  ft.id, ft.category, sum( sft.st_hits ) hits FROM  ".BAB_STATS_FAQS_TBL." sft left join ".BAB_FAQCAT_TBL." ft  on sft.st_faq_id=ft.id  where ft.category is not null";
-			if( $babBody->currentAdmGroup != 0 )
+			if( bab_getCurrentAdmGroup() != 0 )
 				{
-				$req .= " and ft.id_dgowner='".$babBody->currentAdmGroup."'";
+				$req .= " and ft.id_dgowner='".bab_getCurrentAdmGroup()."'";
 				}
 			if( !empty($startday) && !empty($endday))
 				{
@@ -218,9 +218,9 @@ function summaryQuestionsFaqs($col, $order, $pos, $startday, $endday)
 			$this->hitstxt = bab_translate("Hits");
 			$this->faqtxt = bab_translate("Faq");
 			$req = "SELECT fqrt.id, fqrt.question, ft.category, sum( sft.st_hits ) hits FROM ".BAB_STATS_FAQQRS_TBL." sft left join ".BAB_FAQQR_TBL." fqrt on sft.st_faqqr_id=fqrt.id left join ".BAB_FAQCAT_TBL." ft on ft.id=fqrt.idcat where fqrt.question is not null ";
-			if( $babBody->currentAdmGroup != 0 )
+			if( bab_getCurrentAdmGroup() != 0 )
 				{
-				$req .= " and ft.id_dgowner='".$babBody->currentAdmGroup."'";
+				$req .= " and ft.id_dgowner='".bab_getCurrentAdmGroup()."'";
 				}
 			if( !empty($startday) && !empty($endday))
 				{

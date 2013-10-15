@@ -540,7 +540,7 @@ function updateFolder($fid, $fname, $active, $said, $notification, $version, $bh
 	
 	$oCriteria = $oId->notIn($fid);
 	$oCriteria = $oCriteria->_and($oName->in($sName));
-	$oCriteria = $oCriteria->_and($oIdDgOwner->in($babBody->currentAdmGroup));
+	$oCriteria = $oCriteria->_and($oIdDgOwner->in(bab_getCurrentAdmGroup()));
 	$oFmFolder = $oFmFolderSet->get($oCriteria);
 	if(is_null($oFmFolder))
 	{
@@ -820,7 +820,7 @@ function updateOrderFiles($fid,$listfiles){
 }
 
 /* main */
-if( !bab_isUserAdministrator() && $babBody->currentDGGroup['filemanager'] != 'Y')
+if( !bab_isUserAdministrator() && !bab_isDelegated('filemanager'))
 {
 	$babBody->msgerror = bab_translate("Access denied");
 	return;

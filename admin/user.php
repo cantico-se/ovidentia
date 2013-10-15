@@ -130,7 +130,7 @@ function modifyUser($userId, $pos, $grp)
 			}
 	
 			/* If the current user is admin of a delegation, he can't delete the user */
-			if ($babBody->currentAdmGroup != 0) {
+			if (bab_getCurrentAdmGroup() != 0) {
 				$this->bdelete = false;
 			} else {
 				$this->bdelete = true;
@@ -567,7 +567,7 @@ function confirmDeleteUser($userId)
 		return;
 	}
 
-	if (bab_isUserAdministrator() && $babBody->currentAdmGroup == 0) {
+	if (bab_isUserAdministrator() && bab_getCurrentAdmGroup() == 0) {
 		include_once $GLOBALS['babInstallPath'] . 'utilit/delincl.php';
 		bab_deleteUser($userId);
 	}
@@ -625,7 +625,7 @@ function updatePassword($userId, $newpwd1, $newpwd2)
 
 /* main */
 
-if (!bab_isUserAdministrator() && $babBody->currentDGGroup['users'] != 'Y' && $babBody->currentAdmGroup == 0)
+if (!bab_isUserAdministrator() && !bab_isDelegated('users') && bab_getCurrentAdmGroup() == 0)
 {
 	$babBody->msgerror = bab_translate("Access denied");
 	return;
@@ -640,7 +640,7 @@ $modify = bab_rp('modify', null);
 $bupdate = bab_rp('bupdate', null);
 $bdelete = bab_rp('bdelete', null);
 
-if ((!bab_isUserAdministrator() && $babBody->currentDGGroup['users'] != 'Y') && $babBody->currentAdmGroup != 0)
+if ((!bab_isUserAdministrator() && !bab_isDelegated('users')) && bab_getCurrentAdmGroup() != 0)
 {//deleged admin only have access to the group view.
 	$idx = bab_rp('idx','viewgroups');
 	$pos = bab_rp('pos');
@@ -790,8 +790,9 @@ switch($idx) {
 		if (isset($arr['id'])) {
 			$mgroups->setGroupsOptions($arr['id'], 'checked', true);
 		}
-		if ($babBody->currentAdmGroup != 0) {
-			$mgroups->setGroupOption($babBody->currentDGGroup['id_group'], 'disabled', true);
+		if (bab_getCurrentAdmGroup() != 0) {
+			$currentDGGroup = bab_getCurrentDGGroup();
+			$mgroups->setGroupOption($currentDGGroup['id_group'], 'disabled', true);
 		}
 		$mgroups->babecho();
 

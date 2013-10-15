@@ -658,7 +658,7 @@ function bab_addUploadedFile(bab_fileHandler $fmFile, $count, $id, $gr, $sRelati
 	{
 		if($confirmed == "Y")
 		{
-			$GLOBALS['babWebStat']->addNewFile($babBody->currentAdmGroup);
+			$GLOBALS['babWebStat']->addNewFile(bab_getCurrentAdmGroup());
 		}
 
 		$res = $babDB->db_query("select id from ".BAB_FM_FIELDS_TBL." where id_folder='".$babDB->db_escape_string($id)."'");

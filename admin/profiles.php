@@ -272,7 +272,7 @@ function profilesList()
 			$this->rightstxt = bab_translate("Rights");
 			$this->yestxt = bab_translate("Yes");
 			$this->notxt = bab_translate("No");
-			$this->res = $babDB->db_query("select * from ".BAB_PROFILES_TBL." where id_dgowner='".$babDB->db_escape_string($babBody->currentAdmGroup)."' order by name asc");
+			$this->res = $babDB->db_query("select * from ".BAB_PROFILES_TBL." where id_dgowner='".$babDB->db_escape_string(bab_getCurrentAdmGroup())."' order by name asc");
 			$this->count = $babDB->db_num_rows($this->res);
 			}
 
@@ -398,7 +398,7 @@ function saveProfile($pname, $pdesc, $grpids, $cinscription, $cmultiple, $crequi
 			'" . $babDB->db_escape_string($multiplicity)."',
 			'" . $babDB->db_escape_string($inscription)."', 
 			'" . $babDB->db_escape_string($required). "',
-			'" . $babDB->db_escape_string($babBody->currentAdmGroup)."'
+			'" . $babDB->db_escape_string(bab_getCurrentAdmGroup())."'
 			)
 		");
 		$id = $babDB->db_insert_id();
@@ -470,7 +470,7 @@ function updateProfile($idprof, $pname, $pdesc, $grpids, $cinscription, $cmultip
 		multiplicity='".$babDB->db_escape_string($multiplicity)."', 
 		inscription='" . $babDB->db_escape_string($inscription)."', 
 		required='" . $babDB->db_escape_string($required). "', 
-		id_dgowner='".$babDB->db_escape_string($babBody->currentAdmGroup)."' 
+		id_dgowner='".$babDB->db_escape_string(bab_getCurrentAdmGroup())."' 
 		where id='".$babDB->db_escape_string($idprof)."'");
 
 		$babDB->db_query("delete from ".BAB_PROFILES_GROUPSSET_TBL." where id_object='".$babDB->db_escape_string($idprof)."'");
@@ -500,7 +500,7 @@ function confirmDeleteProfile($idprof)
 }
 
 /* main */
-if( !bab_isUserAdministrator() /*&& $babBody->currentDGGroup['profiles'] != 'Y'*/)
+if( !bab_isUserAdministrator() /*&& !bab_isDelegated('profiles')*/)
 {
 	$babBody->msgerror = bab_translate("Access denied");
 	return;
@@ -562,7 +562,7 @@ switch($idx)
 	{
 	case "pacl":
 		include_once $babInstallPath."admin/acl.php";
-		if( bab_isUserAdministrator() || $babBody->currentDGGroup['groups'] == 'Y')
+		if( bab_isUserAdministrator() || bab_isDelegated('groups'))
 		{
 			$macl = new macl("profiles", "plist", $idprof, "aclview");
 			$macl->addtable( BAB_PROFILES_GROUPS_TBL, bab_translate("Who can use this profile?"));
@@ -580,7 +580,7 @@ switch($idx)
 		}
 		break;
 	case "pdel":
-		if( bab_isUserAdministrator() || $babBody->currentDGGroup['groups'] == 'Y')
+		if( bab_isUserAdministrator() || bab_isDelegated('groups'))
 		{
 			profileDelete($idprof);
 			$babBody->title = bab_translate("Delete profile");
@@ -596,7 +596,7 @@ switch($idx)
 		}
 		break;
 	case "pmod":
-		if( bab_isUserAdministrator() || $babBody->currentDGGroup['groups'] == 'Y')
+		if( bab_isUserAdministrator() || bab_isDelegated('groups'))
 		{
 			if( !isset($pname)){$pname = "";}
 			if( !isset($pdesc)){$pdesc = "";}
@@ -617,7 +617,7 @@ switch($idx)
 		}
 		break;
 	case "padd":
-		if( bab_isUserAdministrator() || $babBody->currentDGGroup['groups'] == 'Y')
+		if( bab_isUserAdministrator() || bab_isDelegated('groups'))
 		{
 			if( !isset($pname)){$pname = "";}
 			if( !isset($pdesc)){$pdesc = "";}
@@ -638,7 +638,7 @@ switch($idx)
 		break;
 	case "plist":
 	default:
-		if( bab_isUserAdministrator() || $babBody->currentDGGroup['groups'] == 'Y')
+		if( bab_isUserAdministrator() || bab_isDelegated('groups'))
 		{
 			profilesList();
 			$babBody->title = bab_translate("Profiles list");

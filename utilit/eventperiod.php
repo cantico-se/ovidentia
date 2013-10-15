@@ -201,8 +201,13 @@ function bab_onBeforePeriodsCreated(bab_eventBeforePeriodsCreated $event)
 function bab_onCollectCalendarsBeforeDisplay(bab_eventCollectCalendarsBeforeDisplay $event)
 {
 
-	global $babDB, $babBody;
+	global $babDB;
 	require_once dirname(__FILE__).'/cal.ovicalendar.class.php';
+	require_once dirname(__FILE__).'/settings.class.php';
+	
+	$settings = bab_getInstance('bab_Settings');
+	/*@var $settings bab_Settings */
+	$site = $settings->getSiteSettings();
 
 
 	$arr = bab_cal_getPublicCalendars($event->getAccessUser());
@@ -240,7 +245,7 @@ function bab_onCollectCalendarsBeforeDisplay(bab_eventCollectCalendarsBeforeDisp
 	}
 
 
-	if('Ovi' !== $calendar_backend || $personal_calendar || $babBody->babsite['iPersonalCalendarAccess'] == 'Y')
+	if('Ovi' !== $calendar_backend || $personal_calendar || $site['iPersonalCalendarAccess'] == 'Y')
 	{
 		$arr = $backend->getAccessiblePersonalCalendars($access_user, 'personal');
 

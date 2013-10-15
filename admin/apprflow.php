@@ -56,12 +56,12 @@ function listSchemasInstances()
 			$this->none = bab_translate("None");
 			$this->instancetxt = bab_translate("Instance");
 			$this->updatetxt = bab_translate("Update");
-			$req = "select fai.id as instnbr, fai.iduser, fai.extra, fa.*, oc.name as orgname from ".BAB_FA_INSTANCES_TBL." fai left join  ".BAB_FLOW_APPROVERS_TBL." fa on fa.id=fai.idsch left join ".BAB_ORG_CHARTS_TBL." oc on oc.id=fa.id_oc where fa.id_dgowner='".$babDB->db_escape_string($babBody->currentAdmGroup)."' order by fa.name asc";
+			$req = "select fai.id as instnbr, fai.iduser, fai.extra, fa.*, oc.name as orgname from ".BAB_FA_INSTANCES_TBL." fai left join  ".BAB_FLOW_APPROVERS_TBL." fa on fa.id=fai.idsch left join ".BAB_ORG_CHARTS_TBL." oc on oc.id=fa.id_oc where fa.id_dgowner='".$babDB->db_escape_string(bab_getCurrentAdmGroup())."' order by fa.name asc";
 			$this->res = $babDB->db_query($req);
 
 			$this->count = $babDB->db_num_rows($this->res);
 
-			$req = "select * from ".BAB_FLOW_APPROVERS_TBL." where id_dgowner='".$babBody->currentAdmGroup."' order by name asc";
+			$req = "select * from ".BAB_FLOW_APPROVERS_TBL." where id_dgowner='".bab_getCurrentAdmGroup()."' order by name asc";
 			$this->sares = $babDB->db_query($req);
 			if( !$this->sares )
 				{
@@ -453,7 +453,7 @@ function listSchemas()
 			$this->nominative = bab_translate("Nominative");
 			$this->groups = bab_translate("Groups");
 			$this->orgnametxt = bab_translate("Charts");
-			$req = "select fa.*, oc.name as orgname from ".BAB_FLOW_APPROVERS_TBL." fa left join ".BAB_ORG_CHARTS_TBL." oc on oc.id=fa.id_oc where fa.id_dgowner='".$babDB->db_escape_string($babBody->currentAdmGroup)."' order by fa.name asc";
+			$req = "select fa.*, oc.name as orgname from ".BAB_FLOW_APPROVERS_TBL." fa left join ".BAB_ORG_CHARTS_TBL." oc on oc.id=fa.id_oc where fa.id_dgowner='".$babDB->db_escape_string(bab_getCurrentAdmGroup())."' order by fa.name asc";
 			$this->res = $babDB->db_query($req);
 
 			$this->count = $babDB->db_num_rows($this->res);
@@ -535,7 +535,7 @@ function listOrgCharts()
 			$this->satype = 1;
 			$this->messagetxt = bab_translate("Select the organizational chart on which the workflow will be based");
 			$this->donetxt = bab_translate("Next");
-			$this->res = $babDB->db_query("select b.id, b.name from ".BAB_ORG_CHARTS_TBL." b left join ".BAB_DB_DIRECTORIES_TBL." dd on b.id_directory=dd.id where dd.id_group!=0 and b.id_dgowner='".$babDB->db_escape_string($babBody->currentAdmGroup)."' order by b.name asc");
+			$this->res = $babDB->db_query("select b.id, b.name from ".BAB_ORG_CHARTS_TBL." b left join ".BAB_DB_DIRECTORIES_TBL." dd on b.id_directory=dd.id where dd.id_group!=0 and b.id_dgowner='".$babDB->db_escape_string(bab_getCurrentAdmGroup())."' order by b.name asc");
 			$this->count = $babDB->db_num_rows($this->res);
 			}
 
@@ -664,7 +664,7 @@ function saveSchema($rows, $cols, $order, $schname, $schdesc, $idsch, $ocid, $ty
 				'" . $babDB->db_escape_string($schdesc). "', 
 				'" . $babDB->db_escape_string($ret). "', 
 				'" . $babDB->db_escape_string($order). "', 
-				'" . $babDB->db_escape_string($babBody->currentAdmGroup). "', 
+				'" . $babDB->db_escape_string(bab_getCurrentAdmGroup()). "', 
 				'" . $babDB->db_escape_string($type). "', 
 				'" . $babDB->db_escape_string($ocid). "'
 			)";
@@ -741,7 +741,7 @@ function updateSchemaInstances($instances)
 
 
 /* main */
-if( !bab_isUserAdministrator() && $babBody->currentDGGroup['approbations'] != 'Y')
+if( !bab_isUserAdministrator() && !bab_isDelegated('approbations'))
 {
 	$babBody->msgerror = bab_translate("Access denied");
 	return;

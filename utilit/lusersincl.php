@@ -57,6 +57,8 @@ function browseUsers($pos, $cb)
 			$this->allname = bab_translate("All");
 			$this->nickname = bab_translate("Login ID");
 			$this->cb = $cb;
+			
+			$currentDGGroup = bab_getCurrentDGGroup();
 
 			switch ($babBody->nameorder[0]) {
 				case "L":
@@ -73,13 +75,13 @@ function browseUsers($pos, $cb)
 				{
 				$this->pos = mb_strlen($pos)>1? $pos[1]: '';
 				$this->ord = $pos[0];
-				if( $babBody->currentAdmGroup == 0)
+				if( bab_getCurrentAdmGroup() == 0)
 					{
 					$req = "select * from ".BAB_USERS_TBL." where ".bab_userInfos::queryAllowedUsers()." and ".$this->namesearch2." like '".$babDB->db_escape_like($this->pos)."%' order by ".$this->namesearch2.", ".$this->namesearch." asc";
 					}
 				else
 					{
-					$req .= "select distinct u.* from ".BAB_USERS_TBL." u, ".BAB_USERS_GROUPS_TBL." ug, ".BAB_GROUPS_TBL." g where ".bab_userInfos::queryAllowedUsers('u')." and ug.id_object=u.id and ug.id_group=g.id AND g.lf>='".$babDB->db_escape_string($babBody->currentDGGroup['lf'])."' AND g.lr<='".$babDB->db_escape_string($babBody->currentDGGroup['lr'])."' and u.".$this->namesearch2." like '".$babDB->db_escape_like($this->pos)."%' order by u.".$this->namesearch2.", u.".$this->namesearch." asc";
+					$req .= "select distinct u.* from ".BAB_USERS_TBL." u, ".BAB_USERS_GROUPS_TBL." ug, ".BAB_GROUPS_TBL." g where ".bab_userInfos::queryAllowedUsers('u')." and ug.id_object=u.id and ug.id_group=g.id AND g.lf>='".$babDB->db_escape_string($currentDGGroup['lf'])."' AND g.lr<='".$babDB->db_escape_string($currentDGGroup['lr'])."' and u.".$this->namesearch2." like '".$babDB->db_escape_like($this->pos)."%' order by u.".$this->namesearch2.", u.".$this->namesearch." asc";
 					}
 
 				$this->fullname = bab_composeUserName(bab_translate("Lastname"),bab_translate("Firstname"));
@@ -89,13 +91,13 @@ function browseUsers($pos, $cb)
 				{
 				$this->pos = $pos;
 				$this->ord = "";
-				if( $babBody->currentAdmGroup == 0)
+				if( bab_getCurrentAdmGroup() == 0)
 					{
 					$req = "select * from ".BAB_USERS_TBL." where ".bab_userInfos::queryAllowedUsers()." and ".$this->namesearch." like '".$babDB->db_escape_like($this->pos)."%' order by ".$this->namesearch.", ".$this->namesearch2." asc";
 					}
 				else
 					{
-					$req = "select distinct u.* from ".BAB_USERS_TBL." u, ".BAB_USERS_GROUPS_TBL." ug, ".BAB_GROUPS_TBL." g where ".bab_userInfos::queryAllowedUsers('u')." and ug.id_object=u.id and ug.id_group=g.id AND g.lf>='".$babDB->db_escape_string($babBody->currentDGGroup['lf'])."' AND g.lr<='".$babDB->db_escape_string($babBody->currentDGGroup['lr'])."' and u.".$this->namesearch." like '".$babDB->db_escape_like($this->pos)."%' order by u.".$this->namesearch.", u.".$this->namesearch2." asc";
+					$req = "select distinct u.* from ".BAB_USERS_TBL." u, ".BAB_USERS_GROUPS_TBL." ug, ".BAB_GROUPS_TBL." g where ".bab_userInfos::queryAllowedUsers('u')." and ug.id_object=u.id and ug.id_group=g.id AND g.lf>='".$babDB->db_escape_string($currentDGGroup['lf'])."' AND g.lr<='".$babDB->db_escape_string($currentDGGroup['lr'])."' and u.".$this->namesearch." like '".$babDB->db_escape_like($this->pos)."%' order by u.".$this->namesearch.", u.".$this->namesearch2." asc";
 					}
 
 				$this->fullname = bab_composeUserName(bab_translate("Firstname"),bab_translate("Lastname"));

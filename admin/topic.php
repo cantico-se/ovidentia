@@ -631,7 +631,7 @@ function modifyCategory($id, $cat, $category, $description, $saart, $sacom, $sau
 
 			/* Parent category */
 			global $babDB;
-			$req = "select * from ".BAB_TOPICS_CATEGORIES_TBL." where id_dgowner='".$babBody->currentAdmGroup."'";
+			$req = "select * from ".BAB_TOPICS_CATEGORIES_TBL." where id_dgowner='".bab_getCurrentAdmGroup()."'";
 			$this->res = $babDB->db_query($req);
 			$this->count = $babDB->db_num_rows($this->res);
 			$this->array_parent_categories = array();
@@ -650,7 +650,7 @@ function modifyCategory($id, $cat, $category, $description, $saart, $sacom, $sau
 				}
 			}
 
-			$req = "select * from ".BAB_FLOW_APPROVERS_TBL." where id_dgowner='".$babBody->currentAdmGroup."' order by name asc";
+			$req = "select * from ".BAB_FLOW_APPROVERS_TBL." where id_dgowner='".bab_getCurrentAdmGroup()."' order by name asc";
 			$this->sares = $this->db->db_query($req);
 			if( !$this->sares )
 				{
@@ -1237,7 +1237,7 @@ function updateCategory($id, $category, $cat, $saart, $sacom, $saupd, $bnotif, $
 		//si on a clique sur supprime(ajax) ou coche supprimer (javascript desactive)
 		if(('' === $sTempName && '' === $sImageName) || bab_rp('deleteImageChk', 0) != 0)
 		{
-			if($oPubPathsEnv->setEnv($babBody->currentAdmGroup))
+			if($oPubPathsEnv->setEnv(bab_getCurrentAdmGroup()))
 			{
 				require_once dirname(__FILE__) . '/../utilit/delincl.php';
 				bab_deleteUploadDir($oPubPathsEnv->getTopicImgPath($iIdTopic));
@@ -1249,7 +1249,7 @@ function updateCategory($id, $category, $cat, $saart, $sacom, $saupd, $bnotif, $
 
 
 	//Une image est associee alors on supprime l'ancienne
-	if($oPubPathsEnv->setEnv($babBody->currentAdmGroup))
+	if($oPubPathsEnv->setEnv(bab_getCurrentAdmGroup()))
 	{
 		require_once dirname(__FILE__) . '/../utilit/delincl.php';
 		bab_deleteUploadDir($oPubPathsEnv->getTopicImgPath($iIdTopic));
@@ -1259,11 +1259,11 @@ function updateCategory($id, $category, $cat, $saart, $sacom, $saupd, $bnotif, $
 	$oPubImpUpl	= bab_getInstance('bab_PublicationImageUploader');
 	if(false === $bFromTempPath)
 	{
-		$sFullPathName = $oPubImpUpl->uploadTopicImage($babBody->currentAdmGroup, $iIdTopic, $sKeyOfPhpFile);
+		$sFullPathName = $oPubImpUpl->uploadTopicImage(bab_getCurrentAdmGroup(), $iIdTopic, $sKeyOfPhpFile);
 	}
 	else
 	{
-		$sFullPathName = $oPubImpUpl->importTopicImageFromTemp($babBody->currentAdmGroup, $iIdTopic, $sTempName, $sImageName);
+		$sFullPathName = $oPubImpUpl->importTopicImageFromTemp(bab_getCurrentAdmGroup(), $iIdTopic, $sTempName, $sImageName);
 	}
 
 	{
@@ -1389,7 +1389,7 @@ function uploadTopicImg()
 	$sJSon			= '';
 	$sKeyOfPhpFile	= 'topicPicture';
 	$oPubImpUpl		= new bab_PublicationImageUploader();
-	$aFileInfo		= $oPubImpUpl->uploadImageToTemp($babBody->currentAdmGroup, $sKeyOfPhpFile);
+	$aFileInfo		= $oPubImpUpl->uploadImageToTemp(bab_getCurrentAdmGroup(), $sKeyOfPhpFile);
 
 
 	if(false === $aFileInfo)
@@ -1437,7 +1437,7 @@ function deleteTempImage()
 	$sImage		= bab_rp('sImage', '');
 	$oEnvObj	= bab_getInstance('bab_PublicationPathsEnv');
 
-	$oEnvObj->setEnv($babBody->currentAdmGroup);
+	$oEnvObj->setEnv(bab_getCurrentAdmGroup());
 	$sPath = $oEnvObj->getTempPath();
 
 	if(file_exists($sPath . $sImage))
@@ -1450,7 +1450,7 @@ function deleteTempImage()
 
 
 /* main */
-if( !bab_isUserAdministrator() && $babBody->currentDGGroup['articles'] != 'Y')
+if( !bab_isUserAdministrator() && !bab_isDelegated('articles'))
 {
 	$babBody->msgerror = bab_translate("Access denied");
 	return;

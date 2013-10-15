@@ -205,17 +205,18 @@ function babAdminSection($close)
 		$this->foot = '';
 		
 		$sDgName = '';
-		if( $babBody->currentAdmGroup == 0 ) {
+		if( bab_getCurrentAdmGroup() == 0 ) {
 			$sDgName = bab_translate("all site");
 		}
 		else {
-			$sDgName = $babBody->currentDGGroup['name'];
+			$currentDGGroup = bab_getCurrentDGGroup();
+			$sDgName = $currentDGGroup['name'];
 		}
 		
 		$this->head = bab_translate("Currently you administer ") . $sDgName;
 		
 		
-		if (0 == $babBody->currentAdmGroup)
+		if (0 == bab_getCurrentAdmGroup())
 		{
 			$rootNode = bab_siteMap::get(array('root', 'DGAll' , 'babAdmin'));
 			$babAdminSection = $rootNode->getNodeById('babAdminSection');
@@ -255,7 +256,7 @@ function babAdminSection($close)
 			
 			require_once dirname(__FILE__).'/delegincl.php';
 			
-			$delegation = bab_getDelegationById($babBody->currentAdmGroup);
+			$delegation = bab_getDelegationById(bab_getCurrentAdmGroup());
 			$delegation = $delegation[0];
 			
 			foreach(bab_getDelegationsObjects() as $link)

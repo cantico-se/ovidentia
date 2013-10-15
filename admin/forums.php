@@ -96,7 +96,7 @@ function listForums()
 			$this->description = bab_translate("Description");
 			$this->access = bab_translate("Access");
 			$this->rights = bab_translate("Rights");
-			$req = "select * from ".BAB_FORUMS_TBL." where id_dgowner='".$babDB->db_escape_string($babBody->currentAdmGroup)."' order by ordering asc";
+			$req = "select * from ".BAB_FORUMS_TBL." where id_dgowner='".$babDB->db_escape_string(bab_getCurrentAdmGroup())."' order by ordering asc";
 			$this->res = $babDB->db_query($req);
 			$this->count = $babDB->db_num_rows($this->res);
 			}
@@ -158,15 +158,15 @@ function orderForum()
 			$this->res = $babDB->db_query($req);
 			while( $arr = $babDB->db_fetch_array($this->res) )
 				{
-					if( bab_isUserAdministrator() && $babBody->currentAdmGroup == 0 && $arr['id_dgowner'] == 0)
+					if( bab_isUserAdministrator() && bab_getCurrentAdmGroup() == 0 && $arr['id_dgowner'] == 0)
 						{
 						$this->arrid[] = $arr['id'];
 						}
-					else if( $babBody->currentAdmGroup == $arr['id_dgowner'] )
+					else if( bab_getCurrentAdmGroup() == $arr['id_dgowner'] )
 						{
 						$this->arrid[] = $arr['id'];
 						}
-					else if( bab_isUserAdministrator() && ($babBody->currentAdmGroup != $arr['id_dgowner']) )
+					else if( bab_isUserAdministrator() && (bab_getCurrentAdmGroup() != $arr['id_dgowner']) )
 					{
 						if( count($this->arrid) == 0 || !in_array($arr['id_dgowner']."-0", $this->arrid))
 							{
@@ -338,7 +338,7 @@ function saveForum($name, $description, $moderation, $notification, $nbmsgdispla
 		'" . $babDB->db_escape_string($notification). "', 
 		'" . $babDB->db_escape_string($active). "', 
 		'" . $babDB->db_escape_string($max). "', 
-		'" . $babDB->db_escape_string($babBody->currentAdmGroup). "',
+		'" . $babDB->db_escape_string(bab_getCurrentAdmGroup()). "',
 		'" . $babDB->db_escape_string($bdisplayemailaddress). "',
 		'" . $babDB->db_escape_string($bdisplayauhtordetails). "',
 		'" . $babDB->db_escape_string($bflatview). "',
@@ -356,7 +356,7 @@ function saveOrderForums($listforums)
 	{
 	global $babBody, $babDB;
 	
-	if( $babBody->currentAdmGroup == 0 )
+	if( bab_getCurrentAdmGroup() == 0 )
 		{
 		$pos = 1;
 		for($i=0; $i < count($listforums); $i++)
@@ -380,7 +380,7 @@ function saveOrderForums($listforums)
 		}
 	else
 		{
-		$res = $babDB->db_query("select min(ordering) from ".BAB_FORUMS_TBL." where id_dgowner='".$babDB->db_escape_string($babBody->currentAdmGroup)."'");
+		$res = $babDB->db_query("select min(ordering) from ".BAB_FORUMS_TBL." where id_dgowner='".$babDB->db_escape_string(bab_getCurrentAdmGroup())."'");
 		$arr = $babDB->db_fetch_array($res);
 		if( isset($arr[0]))
 			$pos = $arr[0];
@@ -412,7 +412,7 @@ function updateForumFields($listfd){
 }	
 	
 /* main */
-if( !bab_isUserAdministrator() && $babBody->currentDGGroup['forums'] != 'Y')
+if( !bab_isUserAdministrator() && !bab_isDelegated('forums'))
 {
 	$babBody->msgerror = bab_translate("Access denied");
 	return;

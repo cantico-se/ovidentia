@@ -72,7 +72,7 @@ function groupCreateMod()
 			
 			$tree = new bab_grptree();
 
-			if ($babBody->currentAdmGroup > 0)
+			if (bab_getCurrentAdmGroup() > 0)
 				{
 				$id_parent = $tree->firstnode_info['id'];
 				if ($id_parent > BAB_ALLUSERS_GROUP)
@@ -91,7 +91,7 @@ function groupCreateMod()
 				unset($this->groups[BAB_UNREGISTERED_GROUP]);
 				}
 
-			if ($babBody->currentAdmGroup > 0)
+			if (bab_getCurrentAdmGroup() > 0)
 				{
 				unset($this->groups[$id_parent]);
 				}
@@ -152,7 +152,7 @@ function groupCreateMod()
 			}
 		}
 
-	if( bab_isUserAdministrator() || $GLOBALS['babBody']->currentDGGroup['groups'] == 'Y')
+	if( bab_isUserAdministrator() || bab_isDelegated('groups'))
 		{
 		$temp = new CreateMod();
 		$babBody->babecho(	bab_printTemplate($temp,"groups.html", "groupscreate"));
@@ -189,11 +189,11 @@ function groupList()
 			$this->arr = $tree->getNodeInfo($tree->firstnode);
 			$this->arr['name'] = bab_translate($this->arr['name']);
 			$this->arr['description'] = bab_toHtml(bab_translate($this->arr['description']));
-			$this->delegat = $GLOBALS['babBody']->currentAdmGroup == 0 && isset($tree->delegat[$this->arr['id']]);
+			$this->delegat = bab_getCurrentAdmGroup() == 0 && isset($tree->delegat[$this->arr['id']]);
 			$this->tpl_tree = bab_grp_node_html($tree, $tree->firstnode, 'groups.html', 'grp_childs');
 
-			$this->indelegat = $GLOBALS['babBody']->currentAdmGroup > 0;
-			$this->bupdate = $GLOBALS['babBody']->currentAdmGroup == 0 || $GLOBALS['babBody']->currentDGGroup['groups'] == 'Y';
+			$this->indelegat = bab_getCurrentAdmGroup() > 0;
+			$this->bupdate = (bab_getCurrentAdmGroup() == 0 || bab_isDelegated('groups'));
 
 			if (isset($_REQUEST['expand_to']))
 				{
@@ -201,7 +201,7 @@ function groupList()
 				}
 			else
 				{
-				if ($GLOBALS['babBody']->currentAdmGroup > 0)
+				if (bab_getCurrentAdmGroup() > 0)
 					{
 					$firstchild = $tree->getFirstChild($tree->firstnode);
 					if ($firstchild) {
@@ -315,7 +315,7 @@ function groupsOptions()
 			$this->uncheckall = bab_translate("Uncheck all");
 			$this->checkall = bab_translate("Check all");
 
-			if( bab_isUserAdministrator() && $babBody->currentAdmGroup == 0 )
+			if( bab_isUserAdministrator() && bab_getCurrentAdmGroup() == 0 )
 				{
 				$this->bdgmail = true;
 				$this->bdgnotes = true;
@@ -325,7 +325,7 @@ function groupsOptions()
 				}
 			else
 				{
-				if( $babBody->currentDGGroup['mails'] == 'Y' )
+				if( bab_isDelegated('mails') )
 					$this->bdgmail = true;
 				else
 					$this->bdgmail = false;
@@ -335,7 +335,7 @@ function groupsOptions()
 
 				$this->bpcalendar = false;
 
-				if( $babBody->currentDGGroup['filemanager'] == 'Y' )
+				if( bab_isDelegated('filemanager') )
 					$this->bdgpds = true;
 				else
 					$this->bdgpds = false;
@@ -398,7 +398,7 @@ function addModGroup()
 	global $babBody;
 	$db = &$GLOBALS['babDB'];
 	
-	if ($babBody->currentAdmGroup != 0 && $babBody->currentDGGroup['groups'] != 'Y')
+	if (bab_getCurrentAdmGroup() != 0 && !bab_isDelegated('groups'))
 	{
 		$babBody->msgerror = bab_translate("Access denied");
 		return 'Create';
@@ -478,10 +478,11 @@ function saveGroupsOptions($mailgrpids, $notgrpids, $congrpids, $pdsgrpids, $pca
 
 	$db->db_query("UPDATE ".BAB_USERS_LOG_TBL." SET grp_change='1'");
 
-	if ($babBody->currentAdmGroup > 0)
+	if (bab_getCurrentAdmGroup() > 0)
 		{
 		return false;
-		$db->db_query("update ".BAB_GROUPS_TBL." set mail='N', notes='N', contacts='N', ustorage='N', pcalendar='N' where  lf>'".$babBody->currentDGGroup['lf']."' AND lr<'".$babBody->currentDGGroup['lr']."'");
+		$dg = bab_getCurrentDGGroup();
+		$db->db_query("update ".BAB_GROUPS_TBL." set mail='N', notes='N', contacts='N', ustorage='N', pcalendar='N' where  lf>'".$dg['lf']."' AND lr<'".$dg['lr']."'");
 		}
 	else
 		{
@@ -530,7 +531,7 @@ function saveGroupsOptions($mailgrpids, $notgrpids, $congrpids, $pdsgrpids, $pca
 
 /* main */
 
-if (!bab_isUserAdministrator() && $babBody->currentAdmGroup == 0 ) {
+if (!bab_isUserAdministrator() && bab_getCurrentAdmGroup() == 0 ) {
 	$babBody->addError('Access denied');
 	return;
 }
@@ -566,7 +567,7 @@ if( isset($update) && $update == "options")
 if ($idx != "brow")
 	{
 	$babBody->addItemMenu("List", bab_translate("Groups"), $GLOBALS['babUrlScript']."?tg=groups&idx=List");
-	if (0 == $babBody->currentAdmGroup)
+	if (0 == bab_getCurrentAdmGroup())
 		{
 		$babBody->addItemMenu("sets", bab_translate("Sets of Group"), $GLOBALS['babUrlScript']."?tg=setsofgroups&idx=list");
 		$babBody->addItemMenu("options", bab_translate("Options"), $GLOBALS['babUrlScript']."?tg=groups&idx=options");
@@ -624,7 +625,7 @@ switch($idx)
 	case "List":
 	default:
 		groupList();
-		if ($babBody->currentAdmGroup == 0 || $babBody->currentDGGroup['groups'] == 'Y' ) {
+		if (bab_getCurrentAdmGroup() == 0 || bab_isDelegated('groups') ) {
 			groupCreateMod();
 		}
 		$babBody->title = bab_translate("Groups list");

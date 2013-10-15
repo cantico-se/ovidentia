@@ -167,7 +167,7 @@ function calendarsPublic()
 			$this->checkall = bab_translate("Check all");
 			$this->update = bab_translate("Update");
 
-			$this->res = $babDB->db_query("select cpt.*, ct.actif, ct.id as idcal from ".BAB_CAL_PUBLIC_TBL." cpt left join ".BAB_CALENDAR_TBL." ct on ct.owner=cpt.id where ct.type='".BAB_CAL_PUB_TYPE."' and id_dgowner='".$babDB->db_escape_string($babBody->currentAdmGroup)."' ORDER BY cpt.name");
+			$this->res = $babDB->db_query("select cpt.*, ct.actif, ct.id as idcal from ".BAB_CAL_PUBLIC_TBL." cpt left join ".BAB_CALENDAR_TBL." ct on ct.owner=cpt.id where ct.type='".BAB_CAL_PUB_TYPE."' and id_dgowner='".$babDB->db_escape_string(bab_getCurrentAdmGroup())."' ORDER BY cpt.name");
 			$this->count = $babDB->db_num_rows($this->res);
 			}
 
@@ -518,7 +518,7 @@ function calendarsResource()
 			$this->checkall = bab_translate("Check all");
 			$this->update = bab_translate("Update");
 
-			$this->res = $babDB->db_query("select cpt.*, ct.actif, ct.id as idcal from ".BAB_CAL_RESOURCES_TBL." cpt left join ".BAB_CALENDAR_TBL." ct on ct.owner=cpt.id where ct.type='".BAB_CAL_RES_TYPE."' and id_dgowner='".$babDB->db_escape_string($babBody->currentAdmGroup)."' ORDER BY cpt.name");
+			$this->res = $babDB->db_query("select cpt.*, ct.actif, ct.id as idcal from ".BAB_CAL_RESOURCES_TBL." cpt left join ".BAB_CALENDAR_TBL." ct on ct.owner=cpt.id where ct.type='".BAB_CAL_RES_TYPE."' and id_dgowner='".$babDB->db_escape_string(bab_getCurrentAdmGroup())."' ORDER BY cpt.name");
 			$this->count = $babDB->db_num_rows($this->res);
 			}
 
@@ -581,7 +581,7 @@ function calendarsAddPublic($name, $desc, $idsa)
 			$this->add = "addp";
 			$this->idcal = '';
 			$this->tgval = 'admcals';
-			$this->sares = $babDB->db_query("select * from ".BAB_FLOW_APPROVERS_TBL." where id_dgowner='".$babDB->db_escape_string($babBody->currentAdmGroup)."' order by name asc");
+			$this->sares = $babDB->db_query("select * from ".BAB_FLOW_APPROVERS_TBL." where id_dgowner='".$babDB->db_escape_string(bab_getCurrentAdmGroup())."' order by name asc");
 			if( !$this->sares )
 				$this->sacount = 0;
 			else
@@ -641,7 +641,7 @@ function calendarsAddResource($name, $desc, $idsa)
 			$this->add = "addr";
 			$this->idcal = '';
 			$this->tgval = 'admcals';
-			$this->sares = $babDB->db_query("select * from ".BAB_FLOW_APPROVERS_TBL." where id_dgowner='".$babDB->db_escape_string($babBody->currentAdmGroup)."' order by name asc");
+			$this->sares = $babDB->db_query("select * from ".BAB_FLOW_APPROVERS_TBL." where id_dgowner='".$babDB->db_escape_string(bab_getCurrentAdmGroup())."' order by name asc");
 			if( !$this->sares )
 				$this->sacount = 0;
 			else
@@ -754,7 +754,7 @@ function addPublicCalendar($calname, $caldesc, $calidsa)
 		}
 
 
-	$babDB->db_query("insert into ".BAB_CAL_PUBLIC_TBL." (name, description, id_dgowner, idsa) values ('" .$babDB->db_escape_string($calname). "', '".$babDB->db_escape_string($caldesc)."', '".$babDB->db_escape_string($babBody->currentAdmGroup)."', '".$babDB->db_escape_string($calidsa)."')");
+	$babDB->db_query("insert into ".BAB_CAL_PUBLIC_TBL." (name, description, id_dgowner, idsa) values ('" .$babDB->db_escape_string($calname). "', '".$babDB->db_escape_string($caldesc)."', '".$babDB->db_escape_string(bab_getCurrentAdmGroup())."', '".$babDB->db_escape_string($calidsa)."')");
 	$idowner = $babDB->db_insert_id();
 	$babDB->db_query("insert into ".BAB_CALENDAR_TBL." (owner, type) values ('" .$babDB->db_escape_string($idowner). "', '".BAB_CAL_PUB_TYPE."')");
 	Header("Location: ". $GLOBALS['babUrlScript']."?tg=admcals&idx=pub");
@@ -782,7 +782,7 @@ function addResourceCalendar($calname, $caldesc, $calidsa)
 			(
 				'" .$babDB->db_escape_string($calname). "', 
 				'".$babDB->db_escape_string($caldesc)."', 
-				'".$babDB->db_escape_string($babBody->currentAdmGroup)."', 
+				'".$babDB->db_escape_string(bab_getCurrentAdmGroup())."', 
 				'".$babDB->db_escape_string($calidsa)."',
 				".$babDB->quote($availability_lock)."
 			)
@@ -858,7 +858,7 @@ function deleteCalendarCategory($idcat)
 }
 
 /* main */
-if( !bab_isUserAdministrator() && $babBody->currentDGGroup['calendars'] != 'Y')
+if( !bab_isUserAdministrator() && !bab_isDelegated('calendars'))
 {
 	$babBody->msgerror = bab_translate("Access denied");
 	return;

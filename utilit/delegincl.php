@@ -932,3 +932,145 @@ function bab_getDgAdmGroups()
 }
 
 
+
+
+/**
+ * Delegation chosen by the delegated administrator
+ *
+ */
+class bab_currentDelegation
+{
+	/**
+	 * @var int
+	 */
+	private $id = null;
+	
+	/**
+	 * 
+	 * @var array
+	 */
+	private $row = null;
+
+	/**
+	 * Set necessary variable for delegations
+	 * @param int $id_dg		user current delegation
+	 * @return unknown_type
+	 */
+	function set($id_dg)
+	{
+		$this->id = $id_dg;
+		$this->row = null;
+	}
+
+	
+	
+	/**
+	 * Get current user delegation in bab_user_log
+	 * @return int
+	 */
+	private function getFromUserLog()
+	{
+
+		$log = bab_UsersLog::getCurrentRow();
+		if (false === $log)
+		{
+			return null;	
+		}
+		
+		$id_dg = (int) $log['id_dg'];
+	
+		if ($id_dg <= 0)
+		{
+			return null;
+		}
+		
+		return $id_dg;
+	}
+	
+	
+	/**
+	 * Get default delegation if the user is not super-administrator
+	 * @return int
+	 */
+	private function getDefaultDelegation()
+	{
+		
+		if(!bab_isUserAdministrator())
+		{
+			// not set by bab_users_log, use the first available delegation group
+			$dgAdmGroups = bab_getDgAdmGroups();
+		
+			if (count($dgAdmGroups) > 0)
+			{
+				return (int) $dgAdmGroups[0];
+			}
+		}
+		
+		return 0;
+	}
+
+	
+	/**
+	 * Get the ID of the current admin delegated group
+	 * @see bab_getCurrentAdmGroup()
+	 * @return int
+	 */
+	public function getCurrentAdmGroup()
+	{
+
+		if (null === $this->id)
+		{
+			$this->id = 0;
+			
+			// check first in bab_users_log
+			if ($id_dg = $this->getFromUserLog())
+			{
+				$this->id = $id_dg;
+				
+			} else if ($id_dg = $this->getDefaultDelegation()) {
+				
+				$this->id = $id_dg;
+				
+			}
+		}
+		
+		return $this->id;
+	}
+	
+	/**
+	 * 
+	 * @see bab_getCurrentDGGroup()
+	 * @return array
+	 */
+	public function getCurrentDGGroup()
+	{
+		if (!isset($this->row))
+		{
+			$this->row = array('id' => 0);
+			
+			if ($id = $this->getCurrentAdmGroup())
+			{
+				global $babDB;
+				
+				$this->row = $babDB->db_fetch_assoc(
+					$babDB->db_query("
+					SELECT 
+						dg.*, g.lf, g.lr 
+					FROM 
+						".BAB_DG_GROUPS_TBL." dg, 
+						".BAB_GROUPS_TBL." g 
+					WHERE 
+						g.id=dg.id_group AND dg.id='".$babDB->db_escape_string($id)."'")
+				);
+			}
+		}
+		
+		return $this->row;
+	}
+}
+
+
+
+
+
+

@@ -46,7 +46,7 @@ class bab_AdmArticleTreeView extends bab_ArticleTreeView
 
 		if('categoryroot' == $oElement->_type)
 		{
-			if( !$babBody->currentAdmGroup )
+			if( !bab_getCurrentAdmGroup() )
 			{
 			$sAddCategUrl = $GLOBALS['babUrlScript'] . '?tg=topcats&idx=Create&idp=0';
 			$oElement->addAction(
@@ -261,7 +261,7 @@ function topcatCreate($idp)
 			}
 			$this->countdisptmpl = count($this->arrdisptmpl);
 
-			$res = $babDB->db_query("select * from ".BAB_TOPICS_CATEGORIES_TBL." where id_dgowner='".$babBody->currentAdmGroup."'");
+			$res = $babDB->db_query("select * from ".BAB_TOPICS_CATEGORIES_TBL." where id_dgowner='".bab_getCurrentAdmGroup()."'");
 
 			$this->arrtopcats = array();
 			if(bab_isUserAdministrator())
@@ -447,7 +447,7 @@ function topcatsList($idp)
 					".BAB_TOPICS_CATEGORIES_TBL." c, 
 					".BAB_TOPCAT_ORDER_TBL." o 
 				WHERE 
-					id_dgowner=".$this->db->quote($babBody->currentAdmGroup)." 
+					id_dgowner=".$this->db->quote(bab_getCurrentAdmGroup())." 
 					AND c.id=o.id_topcat 
 					AND c.id_parent=".$this->db->quote($idp)." 
 					AND type='1' 
@@ -460,13 +460,13 @@ function topcatsList($idp)
 
 			if( $idp != 0)
 				{
-				$res = $this->db->db_query("select id_parent from ".BAB_TOPICS_CATEGORIES_TBL." where id_dgowner='".$babBody->currentAdmGroup."' and id='".$idp."'");
+				$res = $this->db->db_query("select id_parent from ".BAB_TOPICS_CATEGORIES_TBL." where id_dgowner='".bab_getCurrentAdmGroup()."' and id='".$idp."'");
 				while($arr = $this->db->db_fetch_array($res))
 					{
 					if( $arr['id_parent'] == 0 )
 						break;
 					$this->arrparents[] = $arr['id_parent'];
-					$res = $this->db->db_query("select id_parent from ".BAB_TOPICS_CATEGORIES_TBL." where id_dgowner='".$babBody->currentAdmGroup."' and id='".$arr['id_parent']."'");
+					$res = $this->db->db_query("select id_parent from ".BAB_TOPICS_CATEGORIES_TBL." where id_dgowner='".bab_getCurrentAdmGroup()."' and id='".$arr['id_parent']."'");
 					}
 				$this->arrparents[] = 0;
 				$this->arrparents = array_reverse($this->arrparents);	
@@ -614,13 +614,13 @@ function addTopCat($name, $description, $benabled, $template, $disptmpl, $topcat
 		return false;
 	}
 
-	if($babBody->currentAdmGroup && $topcatid == 0)
+	if(bab_getCurrentAdmGroup() && $topcatid == 0)
 	{
 		$babBody->addError(bab_translate("Access denied"));
 		return false;
 	}
 	
-	$iIdCategory = bab_addTopicsCategory($name, $description, $benabled, $template, $disptmpl, $topcatid, $babBody->currentAdmGroup);
+	$iIdCategory = bab_addTopicsCategory($name, $description, $benabled, $template, $disptmpl, $topcatid, bab_getCurrentAdmGroup());
 	if(false === $iIdCategory)
 	{
 		return false;
@@ -657,11 +657,11 @@ function addTopCat($name, $description, $benabled, $template, $disptmpl, $topcat
 	
 	if(false === $bFromTempPath)
 	{
-		$sFullPathName = $oPubImpUpl->uploadCategoryImage($babBody->currentAdmGroup, $iIdCategory, $sKeyOfPhpFile);
+		$sFullPathName = $oPubImpUpl->uploadCategoryImage(bab_getCurrentAdmGroup(), $iIdCategory, $sKeyOfPhpFile);
 	}
 	else
 	{		
-		$sFullPathName = $oPubImpUpl->importCategoryImageFromTemp($babBody->currentAdmGroup, $iIdCategory, $sTempName, $sImageName);
+		$sFullPathName = $oPubImpUpl->importCategoryImageFromTemp(bab_getCurrentAdmGroup(), $iIdCategory, $sTempName, $sImageName);
 	}
 
 	if(false === $sFullPathName)
@@ -669,7 +669,7 @@ function addTopCat($name, $description, $benabled, $template, $disptmpl, $topcat
 		global $babDB;
 		list($iIdParent) = $babDB->db_fetch_array($babDB->db_query("select id_parent from ".BAB_TOPICS_CATEGORIES_TBL." where id='".$babDB->db_escape_string($iIdCategory)."'"));
 		//Si la cat�gorie n'a pas �t� cr��e lors de la cr�ation d'une d�l�gation
-		if(!(!$iIdParent && $babBody->currentAdmGroup))
+		if(!(!$iIdParent && bab_getCurrentAdmGroup()))
 		{
 			require_once dirname(__FILE__) . '/../utilit/delincl.php';
 			bab_deleteTopicCategory($iIdCategory);
@@ -706,7 +706,7 @@ function addTopCat($name, $description, $benabled, $template, $disptmpl, $topcat
 function disableTopcats($topcats, $idp)
 	{
 	global $babBody, $babDB;
-	$req = "select id from ".BAB_TOPICS_CATEGORIES_TBL." where id_dgowner='".$babBody->currentAdmGroup."' and id_parent='".$idp."'";
+	$req = "select id from ".BAB_TOPICS_CATEGORIES_TBL." where id_dgowner='".bab_getCurrentAdmGroup()."' and id_parent='".$idp."'";
 	$res = $babDB->db_query($req);
 	while( $row = $babDB->db_fetch_array($res))
 		{
@@ -753,7 +753,7 @@ function getImage()
 	$oEnvObj	= bab_getInstance('bab_PublicationPathsEnv');
 
 	global $babBody;
-	$oEnvObj->setEnv($babBody->currentAdmGroup);
+	$oEnvObj->setEnv(bab_getCurrentAdmGroup());
 	$sPath = $oEnvObj->getTempPath();
 	
 	$oImageResize = new bab_ImageResize();
@@ -774,7 +774,7 @@ function uploadCategoryImg()
 	$sJSon			= '';
 	$sKeyOfPhpFile	= 'categoryPicture';
 	$oPubImpUpl		= new bab_PublicationImageUploader();
-	$aFileInfo		= $oPubImpUpl->uploadImageToTemp($babBody->currentAdmGroup, $sKeyOfPhpFile);
+	$aFileInfo		= $oPubImpUpl->uploadImageToTemp(bab_getCurrentAdmGroup(), $sKeyOfPhpFile);
 	
 	if(false === $aFileInfo)
 	{
@@ -819,7 +819,7 @@ function deleteTempImage()
 	$sImage		= bab_rp('sImage', '');
 	$oEnvObj	= bab_getInstance('bab_PublicationPathsEnv');
 	
-	$oEnvObj->setEnv($babBody->currentAdmGroup);
+	$oEnvObj->setEnv(bab_getCurrentAdmGroup());
 	$sPath = $oEnvObj->getTempPath();
 	
 	if(file_exists($sPath . $sImage))
@@ -927,7 +927,7 @@ function bab_pubOptions()
 
 bab_requireCredential();
 
-if( !bab_isUserAdministrator() && $babBody->currentDGGroup['articles'] != 'Y')
+if( !bab_isUserAdministrator() && !bab_isDelegated('articles'))
 {
 	$babBody->msgerror = bab_translate("Access denied");
 	return;

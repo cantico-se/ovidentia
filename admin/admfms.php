@@ -138,7 +138,7 @@ function addFolder()
 			$this->thelp7				= bab_translate("Allow to record which user has downloaded the files included in this folder. Downloads by anonymous users are counted as done by one single 'anonymous user'.");
 			$this->thelp8				= bab_translate("Allows the user granted with management rights on this folder to order manually the files. Subfolders are not affected by this option.");
 			
-			$this->sares = $babDB->db_query("select * from ".BAB_FLOW_APPROVERS_TBL." where id_dgowner='".$babBody->currentAdmGroup."' order by name asc");
+			$this->sares = $babDB->db_query("select * from ".BAB_FLOW_APPROVERS_TBL." where id_dgowner='".bab_getCurrentAdmGroup()."' order by name asc");
 			if(!$this->sares)
 			{
 				$this->sacount = 0;
@@ -227,7 +227,7 @@ function listFolders()
 			$oIdDgOwner			= $this->oFmFolderSet->aField['iIdDgOwner']; 
 			
 			$oCriteria	= $oRelativePath->in($babDB->db_escape_like(''));
-			$oCriteria	= $oCriteria->_and($oIdDgOwner->in($babBody->currentAdmGroup));
+			$oCriteria	= $oCriteria->_and($oIdDgOwner->in(bab_getCurrentAdmGroup()));
 			$aOrder		= array('sName' => 'ASC');
 			
 			$this->oFmFolderSet->select($oCriteria, $aOrder);
@@ -302,7 +302,7 @@ function saveFolder($fname, $active, $said, $notification, $version, $bhide, $ba
 	}
 	
 	include_once $GLOBALS['babInstallPath'] . 'utilit/delegincl.php';
-	bab_setCurrentUserDelegation($babBody->currentAdmGroup);
+	bab_setCurrentUserDelegation(bab_getCurrentAdmGroup());
 	$oFileManagerEnv = getEnvObject();
 	if(!$oFileManagerEnv->pathValid())
 	{
@@ -324,7 +324,7 @@ function saveFolder($fname, $active, $said, $notification, $version, $bhide, $ba
 	}
 			
 	$oCriteria = $oName->in($sName);
-	$oCriteria = $oCriteria->_and($oIdDgOwner->in($babBody->currentAdmGroup));
+	$oCriteria = $oCriteria->_and($oIdDgOwner->in(bab_getCurrentAdmGroup()));
 	$oFmFolder = $oFmFolderSet->get($oCriteria);
 	if(is_null($oFmFolder))
 	{
@@ -333,7 +333,7 @@ function saveFolder($fname, $active, $said, $notification, $version, $bhide, $ba
 			$said = 0;
 		}
 
-		$sFullPathName = BAB_FileManagerEnv::getCollectivePath($babBody->currentAdmGroup) . $sName;
+		$sFullPathName = BAB_FileManagerEnv::getCollectivePath(bab_getCurrentAdmGroup()) . $sName;
 
 		//bab_debug($sFullPathName);
 		
@@ -341,7 +341,7 @@ function saveFolder($fname, $active, $said, $notification, $version, $bhide, $ba
 		{
 			$oFmFolder = new BAB_FmFolder();
 			$oFmFolder->setApprobationSchemeId($said);
-			$oFmFolder->setDelegationOwnerId($babBody->currentAdmGroup);
+			$oFmFolder->setDelegationOwnerId(bab_getCurrentAdmGroup());
 			$oFmFolder->setName($sName);
 			$oFmFolder->setRelativePath('');
 			$oFmFolder->setFileNotify($notification);
@@ -375,7 +375,7 @@ function updateFolders($notifies, $actives, $versions, $bhides)
 	$oIdDgOwner		= $oFmFolderSet->aField['iIdDgOwner'];
 	$oRelativePath	= $oFmFolderSet->aField['sRelativePath'];
 
-	$oCriteria = $oIdDgOwner->in($babBody->currentAdmGroup);
+	$oCriteria = $oIdDgOwner->in(bab_getCurrentAdmGroup());
 	$oCriteria = $oCriteria->_and($oRelativePath->in(''));
 	$oFmFolderSet->select($oCriteria);
 	
@@ -769,7 +769,7 @@ function bab_purgeTrashs()
 
 
 /* main */
-if(!bab_isUserAdministrator() && $babBody->currentDGGroup['filemanager'] != 'Y')
+if(!bab_isUserAdministrator() && !bab_isDelegated('filemanager'))
 {
 	$babBody->msgerror = bab_translate("Access denied");
 	return;

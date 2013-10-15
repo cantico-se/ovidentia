@@ -130,8 +130,8 @@ function domainsList($userid, $grpid, $bgrp)
 			$this->countusr = 0;
 			if( $bgrp == "y" && $userid == 0)
 				{
-				if( $babBody->currentAdmGroup == 0 )
-					$req = "select * from ".BAB_MAIL_DOMAINS_TBL." where bgroup='Y' and owner='1' and id_dgowner='".$babDB->db_escape_string($babBody->currentAdmGroup)."'";
+				if( bab_getCurrentAdmGroup() == 0 )
+					$req = "select * from ".BAB_MAIL_DOMAINS_TBL." where bgroup='Y' and owner='1' and id_dgowner='".$babDB->db_escape_string(bab_getCurrentAdmGroup())."'";
 				else
 					$req = "select * from ".BAB_MAIL_DOMAINS_TBL." where bgroup='Y' and owner='1'";
 				$this->resadm = $babDB->db_query($req);
@@ -180,7 +180,7 @@ function domainsList($userid, $grpid, $bgrp)
 				$this->burl = 0;
 				for( $k = 0; $k < $this->count; $k++)
 					{
-					if( $this->idgrp[$k] == $this->arr['owner'] && $this->arr['id_dgowner'] == $babBody->currentAdmGroup)
+					if( $this->idgrp[$k] == $this->arr['owner'] && $this->arr['id_dgowner'] == bab_getCurrentAdmGroup())
 						{
 						$this->burl = 1;
 						$this->url = $GLOBALS['babUrlScript']."?tg=maildom&idx=modify&item=".$this->arr['id']."&userid=".$this->userid."&bgrp=y";
@@ -329,7 +329,7 @@ function addDomain($bgrp, $userid, $groups, $name, $description, $accessmethod, 
 			{
 			$iddgowner = 0;
 			if( $groups[$i] == 1 )
-				$iddgowner = $babBody->currentAdmGroup;
+				$iddgowner = bab_getCurrentAdmGroup();
 			$query = "INSERT into ".BAB_MAIL_DOMAINS_TBL." 
 			(name, description, access, inserver, inport, outserver, outport, bgroup, owner, id_dgowner) 
 				VALUES ";
@@ -365,7 +365,7 @@ if( $bgrp == "y")
 {
 	if( $userid == 0 )
 		{
-		if( !bab_isUserAdministrator() && $babBody->currentDGGroup['mails'] != 'Y' )
+		if( !bab_isUserAdministrator() && !bab_isDelegated('mails') )
 			{
 			$babBody->msgerror = bab_translate("Access denied");
 			return;

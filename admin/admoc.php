@@ -357,7 +357,7 @@ function duplicateOrgChart($id, $name, $description)
 		return;
 		}
 
-	$res = $babDB->db_query("select * from ".BAB_ORG_CHARTS_TBL." where id='".$babDB->db_escape_string($id)."' and id_dgowner='".$babDB->db_escape_string($babBody->currentAdmGroup)."'");
+	$res = $babDB->db_query("select * from ".BAB_ORG_CHARTS_TBL." where id='".$babDB->db_escape_string($id)."' and id_dgowner='".$babDB->db_escape_string(bab_getCurrentAdmGroup())."'");
 	if( !$res || $babDB->db_num_rows($res) == 0)
 		{
 		$babBody->msgerror = bab_translate("Unknown organization chart")." !!";
@@ -367,7 +367,7 @@ function duplicateOrgChart($id, $name, $description)
 	$arr = $babDB->db_fetch_array($res);
 	$idocsrc = $arr['id'];
 
-	$query = "insert into ".BAB_ORG_CHARTS_TBL." (name, description, id_directory, type, id_dgowner) values ('" .$babDB->db_escape_string($name). "', '" . $babDB->db_escape_string($description). "', '" . $babDB->db_escape_string($arr['id_directory']). "', '" . $babDB->db_escape_string($arr['type']). "', '" . $babDB->db_escape_string($babBody->currentAdmGroup). "')";
+	$query = "insert into ".BAB_ORG_CHARTS_TBL." (name, description, id_directory, type, id_dgowner) values ('" .$babDB->db_escape_string($name). "', '" . $babDB->db_escape_string($description). "', '" . $babDB->db_escape_string($arr['id_directory']). "', '" . $babDB->db_escape_string($arr['type']). "', '" . $babDB->db_escape_string(bab_getCurrentAdmGroup()). "')";
 	$babDB->db_query($query);
 	$idnewoc = $babDB->db_insert_id();
 
@@ -536,7 +536,7 @@ function updateOrgChartOvmlFile($ocid, $ovmldetail, $ovmlembedded)
 
 
 /* main */
-if( !bab_isUserAdministrator() && $babBody->currentDGGroup['orgchart'] != 'Y')
+if( !bab_isUserAdministrator() && !bab_isDelegated('orgchart'))
 {
 	$babBody->msgerror = bab_translate("Access denied");
 	return;

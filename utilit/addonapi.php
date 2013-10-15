@@ -2513,8 +2513,8 @@ function bab_canCurrentUserUpdateUser($userId) {
 	}
 
 	/* Verify the right admin */
-	if ($babBody->currentAdmGroup) {
-		$dg = $babBody->currentAdmGroup;
+	if (bab_getCurrentAdmGroup()) {
+		$dg = bab_getCurrentAdmGroup();
 	} elseif (bab_isUserAdministrator()) {
 		return true;
 	} else {

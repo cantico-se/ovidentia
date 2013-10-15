@@ -72,7 +72,7 @@ function changeAdmGroup()
 			global $babBody;	
 			if( list($this->grpdgid,$this->grpdgname ) = each($this->delegat))
 				{
-				if( $this->grpdgid == $babBody->currentDGGroup['id'] )
+				if( $this->grpdgid == bab_getCurrentAdmGroup() )
 					$this->selected = "selected";
 				else
 					$this->selected = "";
@@ -91,16 +91,21 @@ function changeAdmGroup()
 function updateAdmGroup($grpdg)
 {
 	global $babBody, $babDB;
-
-	$babBody->currentDGGroup = $babDB->db_fetch_array($babDB->db_query("select dg.*, g.lf, g.lr from ".BAB_DG_GROUPS_TBL." dg, ".BAB_GROUPS_TBL." g where g.id=dg.id_group and dg.id='".$babDB->db_escape_string($grpdg)."'"));
+	require_once dirname(__FILE__).'/utilit/delegincl.php';
 	
-	if ($grpdg > 0 && isset($babBody->currentDGGroup['id_group']))
+	$delegation = bab_getInstance('bab_currentDelegation');
+	/*@var $delegation bab_currentDelegation */
+
+	$row = $babDB->db_fetch_assoc($babDB->db_query("select dg.*, g.lf, g.lr from ".BAB_DG_GROUPS_TBL." dg, ".BAB_GROUPS_TBL." g 
+			where g.id=dg.id_group and dg.id='".$babDB->db_escape_string($grpdg)."'"));
+	
+	if ($grpdg > 0 && isset($row['id_group']) > 0)
 		{
-		$babBody->currentAdmGroup = &$babBody->currentDGGroup['id'];
+		$delegation->set($grpdg);
 		}
 	elseif ($grpdg == 0)
 		{
-		$babBody->currentAdmGroup = 0;
+		$delegation->set(0);
 		}
 	else
 		{

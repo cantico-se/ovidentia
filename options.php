@@ -1185,7 +1185,7 @@ function updateUnavailability($iduser, $fromdate, $todate, $id_substitute)
 	{
 	global $babBody, $babDB;
 
-	if( $iduser != $GLOBALS['BAB_SESS_USERID'] && !bab_isUserAdministrator() && $babBody->currentDGGroup['users'] != 'Y')
+	if( $iduser != $GLOBALS['BAB_SESS_USERID'] && !bab_isUserAdministrator() && !bab_isDelegated('users'))
 		{
 		return;
 		}
@@ -1431,7 +1431,7 @@ switch($idx)
 		$todate = bab_pp('todate');
 		$id_substitute = bab_pp('id_substitute');
 		$babBody->addItemMenu('global', bab_translate("Options"), $GLOBALS['babUrlScript'].'?tg=options&idx=global');
-		if( ('Y' == $babBody->babsite['change_unavailability'] && $iduser == $GLOBALS['BAB_SESS_USERID']) || bab_isUserAdministrator() || ($babBody->currentAdmGroup && $babBody->currentDGGroup['users'] == 'Y'))
+		if( ('Y' == $babBody->babsite['change_unavailability'] && $iduser == $GLOBALS['BAB_SESS_USERID']) || bab_isUserAdministrator() || (bab_getCurrentAdmGroup() && bab_isDelegated('users')))
 			{
 			showUnavailability($iduser, $fromdate, $todate, $id_substitute);
 			$babBody->addItemMenu('unav', bab_translate("Unavailability"), $GLOBALS['babUrlScript'].'?tg=options&idx=unav&iduser='.$iduser);
@@ -1491,7 +1491,7 @@ switch($idx)
 			}
 		
 		$iduser = isset($iduser)? $iduser: $BAB_SESS_USERID;
-		if( ('Y' == $babBody->babsite['change_unavailability'] && $iduser == $GLOBALS['BAB_SESS_USERID']) || bab_isUserAdministrator() || ($babBody->currentAdmGroup && $babBody->currentDGGroup['users'] == 'Y'))
+		if( ('Y' == $babBody->babsite['change_unavailability'] && $iduser == $GLOBALS['BAB_SESS_USERID']) || bab_isUserAdministrator() || (bab_getCurrentAdmGroup() && bab_isDelegated('users')))
 			{
 			$babBody->addItemMenu('unav', bab_translate("Unavailability"), $GLOBALS['babUrlScript'].'?tg=options&idx=unav&iduser='.$iduser);
 			}

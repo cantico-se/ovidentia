@@ -88,12 +88,12 @@ function sectionsList()
 			$this->db = &$GLOBALS['babDB'];
 			
 
-			$req = "select * from ".BAB_SECTIONS_TBL." where id_dgowner='".$babBody->currentAdmGroup."'";
+			$req = "select * from ".BAB_SECTIONS_TBL." where id_dgowner='".bab_getCurrentAdmGroup()."'";
 			$res = $this->db->db_query($req);
 			$this->processres($res, '-2');
 
 			/* don't get Administrator section */
-			if( $babBody->currentAdmGroup == 0 )
+			if( bab_getCurrentAdmGroup() == 0 )
 				{
 				$resa = $this->db->db_query("select * from ".BAB_PRIVATE_SECTIONS_TBL." where id > '1'");
 				$this->processres($resa, '-1');
@@ -101,7 +101,7 @@ function sectionsList()
 			else
 				$this->counta = 0;
 
-			$rescat = $this->db->db_query("select * from ".BAB_TOPICS_CATEGORIES_TBL." where id_dgowner='".$babBody->currentAdmGroup."'");
+			$rescat = $this->db->db_query("select * from ".BAB_TOPICS_CATEGORIES_TBL." where id_dgowner='".bab_getCurrentAdmGroup()."'");
 			$this->processres($rescat, '-3');
 			
 			bab_sort::ksort($this->sections, bab_sort::CASE_INSENSITIVE);
@@ -211,7 +211,7 @@ function sectionsOrder()
 				switch( $arr['type'] )
 					{
 					case "1":
-						if( bab_isUserAdministrator() && $babBody->currentAdmGroup == 0 )
+						if( bab_isUserAdministrator() && bab_getCurrentAdmGroup() == 0 )
 							{
 							if( $arr['position'] == 0 )
 								$this->arrleft[] = $arr['id'];
@@ -221,7 +221,7 @@ function sectionsOrder()
 						break;
 					case "3":
 						$rr = $this->db->db_fetch_array($this->db->db_query("select id, id_dgowner from ".BAB_TOPICS_CATEGORIES_TBL." where id ='".$arr['id_section']."'"));
-						if( $babBody->currentAdmGroup == 0  && bab_isUserAdministrator())
+						if( bab_getCurrentAdmGroup() == 0  && bab_isUserAdministrator())
 						{
 							if( $rr['id_dgowner'] == 0 )
 							{
@@ -243,7 +243,7 @@ function sectionsOrder()
 							}
 
 						}
-						else if( $babBody->currentAdmGroup == $rr['id_dgowner'] )
+						else if( bab_getCurrentAdmGroup() == $rr['id_dgowner'] )
 						{
 							if( $arr['position'] == 0 )
 								$this->arrleft[] = $arr['id'];
@@ -253,7 +253,7 @@ function sectionsOrder()
 						}
 						break;
 					case "4":
-						if( bab_isUserAdministrator() && $babBody->currentAdmGroup == 0 )
+						if( bab_isUserAdministrator() && bab_getCurrentAdmGroup() == 0 )
 							{
 							if( $arr['position'] == 0 )
 								$this->arrleft[] = $arr['id'];
@@ -263,7 +263,7 @@ function sectionsOrder()
 						break;
 					default:
 						$rr = $this->db->db_fetch_array($this->db->db_query("select id, id_dgowner from ".BAB_SECTIONS_TBL." where id ='".$arr['id_section']."'"));
-						if( $babBody->currentAdmGroup == 0  && bab_isUserAdministrator())
+						if( bab_getCurrentAdmGroup() == 0  && bab_isUserAdministrator())
 						{
 							if( $rr['id_dgowner'] == 0 )
 							{
@@ -285,7 +285,7 @@ function sectionsOrder()
 							}
 
 						}
-						else if( $babBody->currentAdmGroup == $rr['id_dgowner'] )
+						else if( bab_getCurrentAdmGroup() == $rr['id_dgowner'] )
 						{
 							if( $arr['position'] == 0 )
 								$this->arrleft[] = $arr['id'];
@@ -563,14 +563,14 @@ function sectionSave($title, $pos, $desc, $script, $js, $template, $lang, $opt)
 			$js = "Y";
 		else
 			$js = "N";
-		$query = "insert into ".BAB_SECTIONS_TBL." (title, position, description, content, content_format, script, jscript, template, lang, id_dgowner, optional) VALUES ('" .$title. "', '" . $pos. "', '" . $desc. "', '" . $content. "', '" . $contentFormat. "', '" . $php. "', '" . $js."', '". $template."', '" .$lang."', '" .$babBody->currentAdmGroup."', '" .$opt. "')";
+		$query = "insert into ".BAB_SECTIONS_TBL." (title, position, description, content, content_format, script, jscript, template, lang, id_dgowner, optional) VALUES ('" .$title. "', '" . $pos. "', '" . $desc. "', '" . $content. "', '" . $contentFormat. "', '" . $php. "', '" . $js."', '". $template."', '" .$lang."', '" .bab_getCurrentAdmGroup()."', '" .$opt. "')";
 		$db->db_query($query);
 		$id = $db->db_insert_id();
-		if( $babBody->currentAdmGroup == 0 )
+		if( bab_getCurrentAdmGroup() == 0 )
 			$db->db_query("insert into ".BAB_SECTIONS_GROUPS_TBL." (id_object, id_group) values ('". $id. "', '3')");
 		else
-			$db->db_query("insert into ".BAB_SECTIONS_GROUPS_TBL." (id_object, id_group) values ('". $id. "', '".$babBody->currentAdmGroup."')");
-		$res = $db->db_query("select max(so.ordering) from ".BAB_SECTIONS_ORDER_TBL." so, ".BAB_SECTIONS_TBL." s where so.position='".$pos."' and  so.type='2' and so.id_section=s.id and s.id_dgowner='".$babBody->currentAdmGroup."'");
+			$db->db_query("insert into ".BAB_SECTIONS_GROUPS_TBL." (id_object, id_group) values ('". $id. "', '".bab_getCurrentAdmGroup()."')");
+		$res = $db->db_query("select max(so.ordering) from ".BAB_SECTIONS_ORDER_TBL." so, ".BAB_SECTIONS_TBL." s where so.position='".$pos."' and  so.type='2' and so.id_section=s.id and s.id_dgowner='".bab_getCurrentAdmGroup()."'");
 		$arr = $db->db_fetch_array($res);
 		if( empty($arr[0]))
 			{
@@ -595,7 +595,7 @@ function saveSectionsOrder($listleft, $listright)
 
 		$db = $GLOBALS['babDB'];
 
-		if( $babBody->currentAdmGroup == 0 )
+		if( bab_getCurrentAdmGroup() == 0 )
 		{
 			for( $k = 0; $k < 2; $k++ )
 			{
@@ -694,7 +694,7 @@ function disableSections($sections, $sectopt)
 	global $babBody;
 
 	$db = $GLOBALS['babDB'];
-	$req = "select id from ".BAB_SECTIONS_TBL." where id_dgowner='".$babBody->currentAdmGroup."'";
+	$req = "select id from ".BAB_SECTIONS_TBL." where id_dgowner='".bab_getCurrentAdmGroup()."'";
 	$res = $db->db_query($req);
 	while( $row = $db->db_fetch_array($res))
 		{
@@ -712,7 +712,7 @@ function disableSections($sections, $sectopt)
 		$db->db_query($req);
 		}
 
-	if( $babBody->currentAdmGroup == 0 )
+	if( bab_getCurrentAdmGroup() == 0 )
 		{
 		$req = "select id from ".BAB_PRIVATE_SECTIONS_TBL."";
 		$res = $db->db_query($req);
@@ -733,7 +733,7 @@ function disableSections($sections, $sectopt)
 			}
 		}
 
-	$req = "select id from ".BAB_TOPICS_CATEGORIES_TBL." where id_dgowner='".$babBody->currentAdmGroup."'";
+	$req = "select id from ".BAB_TOPICS_CATEGORIES_TBL." where id_dgowner='".bab_getCurrentAdmGroup()."'";
 	$res = $db->db_query($req);
 	while( $row = $db->db_fetch_array($res))
 		{
@@ -752,7 +752,7 @@ function disableSections($sections, $sectopt)
 	}
 
 /* main */
-if( !bab_isUserAdministrator() && $babBody->currentDGGroup['sections'] != 'Y')
+if( !bab_isUserAdministrator() && !bab_isDelegated('sections'))
 {
 	$babBody->msgerror = bab_translate("Access denied");
 	return;
@@ -791,7 +791,7 @@ switch($idx)
 		$babBody->title = bab_translate("Sections order");
 		sectionsOrder();
 		$babBody->addItemMenu("List", bab_translate("Sections"),$GLOBALS['babUrlScript']."?tg=sections&idx=List");
-		if( bab_isUserAdministrator() && $babBody->currentAdmGroup == 0)
+		if( bab_isUserAdministrator() && bab_getCurrentAdmGroup() == 0)
 			$babBody->addItemMenu("Order", bab_translate("Order"),$GLOBALS['babUrlScript']."?tg=sections&idx=Order");
 
 		$babBody->addItemMenu("ch", bab_translate("Create")."(html)",$GLOBALS['babUrlScript']."?tg=sections&idx=ch");

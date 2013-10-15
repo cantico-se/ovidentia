@@ -556,24 +556,6 @@ class babBody
 	
 	
 	/**
-	 * current group administrated by current user
-	 * @var int
-	 */
-	public $currentAdmGroup;
-	
-	/**
-	 *  contains database row of current delegation groups 
-	 *  @var array
-	 */
-	public $currentDGGroup; 
-	
-	/**
-	 *  all groups administrated by current user 
-	 *  @var array
-	 */
-	public $dgAdmGroups; 
-	
-	/**
 	 * @deprecated use bab_Settings instead
 	 * @var array
 	 */
@@ -596,8 +578,6 @@ class babBody
 		$this->title = '';
 		$this->msgerror = '';
 		$this->content = '';
-		$this->currentAdmGroup = 0;
-		$this->currentDGGroup = array('id' => 0);
 		$this->saarray = array();
 		$this->babaddons = array();
 	
@@ -631,6 +611,8 @@ class babBody
 		switch($propertyName) {
 			case 'isSuperAdmin':
 			case 'lastlog':
+			case 'currentAdmGroup':
+			case 'currentDGGroup':
 				return true;
 				
 			default:
@@ -653,6 +635,14 @@ class babBody
 					return $usersettings['lastlog'];
 				}
 				return '';
+				
+			case 'currentAdmGroup':
+				trigger_error('babBody->currentAdmGroup is deprecated, please use bab_getCurrentAdmGroup() instead');
+				return bab_getCurrentAdmGroup();
+				
+			case 'currentDGGroup':
+				trigger_error('babBody->currentDGGroup is deprecated, please use bab_getCurrentDGGroup() instead');
+				return bab_getCurrentDGGroup();
 		}
 	}
 	
@@ -830,7 +820,7 @@ class babBody
 						switch($sectionid)
 							{
 								case 1: // admin
-									if( isset($BAB_SESS_LOGGED) && $BAB_SESS_LOGGED && (bab_isUserAdministrator() || $babBody->currentAdmGroup != 0))
+									if( isset($BAB_SESS_LOGGED) && $BAB_SESS_LOGGED && (bab_isUserAdministrator() || bab_getCurrentAdmGroup() != 0))
 										{
 											$sec = new babAdminSection($arrsectioninfo['close']);
 											$arrsections[$objectid] = $sec;
@@ -1413,13 +1403,16 @@ class bab_UsersLog
 			if ($arr['sessid'] == session_id())
 			{
 				bab_setUserPasswordVariable($arr['id'], $arr['cpw'], $arr['id_user']);
-				bab_setCurrentDelegation($arr['id_dg']);
+				
+				require_once dirname(__FILE__).'/delegincl.php';
+				$delegation = bab_getInstance('bab_currentDelegation');
+				$delegation->set($arr['id_dg']);
 		
 				$babDB->db_query("update ".BAB_USERS_LOG_TBL." set
 						dateact=now(),
 						remote_addr=".$babDB->quote($REMOTE_ADDR).",
 						forwarded_for=".$babDB->quote($HTTP_X_FORWARDED_FOR).",
-						id_dg='".$babDB->db_escape_string($babBody->currentDGGroup['id'])."',
+						id_dg='".$babDB->db_escape_string(bab_getCurrentAdmGroup())."',
 						grp_change=NULL,
 						schi_change=NULL,
 						tg='".$babDB->db_escape_string(bab_rp('tg'))."'
@@ -1441,20 +1434,14 @@ class bab_UsersLog
 			if( !empty($BAB_SESS_USERID))
 			{
 				$userid = $BAB_SESS_USERID;
-				$dgAdmGroups = bab_getDgAdmGroups();
-				
-				if( !bab_isUserAdministrator() && count($dgAdmGroups) > 0 )
-				{
-					$babBody->currentAdmGroup = $dgAdmGroups[0];
-					$babBody->currentDGGroup = $babDB->db_fetch_array($babDB->db_query("select dg.* from ".BAB_DG_GROUPS_TBL." dg where dg.id_group='".$babDB->db_escape_string($dgAdmGroups[0])."'"));
-				}
 			}
 			else
 			{
 				$userid = 0;
 			}
 		
-			$babDB->db_query("insert into ".BAB_USERS_LOG_TBL." (id_user, sessid, dateact, remote_addr, forwarded_for, id_dg, grp_change, schi_change, tg) values ('".$babDB->db_escape_string($userid)."', '".session_id()."', now(), '".$babDB->db_escape_string($REMOTE_ADDR)."', '".$babDB->db_escape_string($HTTP_X_FORWARDED_FOR)."', '".$babDB->db_escape_string((int) $babBody->currentDGGroup['id'])."', NULL, NULL, '".$babDB->db_escape_string(bab_rp('tg'))."')");
+			$babDB->db_query("insert into ".BAB_USERS_LOG_TBL." (id_user, sessid, dateact, remote_addr, forwarded_for, id_dg, grp_change, schi_change, tg) 
+				values ('".$babDB->db_escape_string($userid)."', '".session_id()."', now(), '".$babDB->db_escape_string($REMOTE_ADDR)."', '".$babDB->db_escape_string($HTTP_X_FORWARDED_FOR)."', '".$babDB->db_escape_string(bab_getCurrentAdmGroup())."', NULL, NULL, '".$babDB->db_escape_string(bab_rp('tg'))."')");
 		}
 		
 	}
@@ -1491,6 +1478,53 @@ class bab_UsersLog
 
 
 /**
+ * Get the ID of the current admin delegated group
+ * this function remplace the $babBody->currentAdmGroup variable
+ * @return int
+ */
+function bab_getCurrentAdmGroup()
+{
+	require_once dirname(__FILE__).'/delegincl.php';
+	$delegation = bab_getInstance('bab_currentDelegation');
+	/*@var $delegation bab_currentDelegation */
+	return $delegation->getCurrentAdmGroup();
+}
+
+
+/**
+ * This method replace the $babBody->currentDGGroup variable
+ * @return array
+ */
+function bab_getCurrentDGGroup()
+{
+	require_once dirname(__FILE__).'/delegincl.php';
+	$delegation = bab_getInstance('bab_currentDelegation');
+	/*@var $delegation bab_currentDelegation */
+	return $delegation->getCurrentDGGroup();
+}
+
+
+/**
+ * Test if the functionality is delegated in the current delegation
+ * @param string $functionname
+ * @return bool
+ */
+function bab_isDelegated($functionname)
+{
+	$arr = bab_getCurrentDGGroup();
+	
+	if (!isset($arr[$functionname]))
+	{
+		return false;
+	}
+	
+	return ('Y' === $arr[$functionname]);
+}
+
+
+
+
+/**
  * Set a global variable with user password if the mcrypt mode is activated
  * this work if $babEncryptionKey is set in config.php
  * @param	int		$id		bab_user_log ID
@@ -1508,30 +1542,7 @@ function bab_setUserPasswordVariable($id, $cpw, $id_user)
 }
 
 
-/**
- * Set necessary variable for delegations
- * @param int $id_dg		user current delegation
- * @return unknown_type
- */
-function bab_setCurrentDelegation($id_dg)
-{
-	global $babBody, $babDB;
-	require_once dirname(__FILE__).'/delegincl.php';
-	
-	$dgAdmGroups = bab_getDgAdmGroups();
 
-	if( 0 != $id_dg && count($dgAdmGroups) > 0 && in_array($id_dg, $dgAdmGroups ))
-	{
-		$babBody->currentDGGroup = $babDB->db_fetch_array($babDB->db_query("select dg.*, g.lf, g.lr from ".BAB_DG_GROUPS_TBL." dg, ".BAB_GROUPS_TBL." g where g.id=dg.id_group AND dg.id='".$babDB->db_escape_string($id_dg)."'"));
-		$babBody->currentAdmGroup = &$babBody->currentDGGroup['id'];
-
-	}
-	else if( !bab_isUserAdministrator() && count($dgAdmGroups) > 0 )
-	{
-		$babBody->currentDGGroup = $babDB->db_fetch_array($babDB->db_query("select dg.*, g.lf, g.lr from ".BAB_DG_GROUPS_TBL." dg, ".BAB_GROUPS_TBL." g where g.id=dg.id_group AND dg.id='".$babDB->db_escape_string($dgAdmGroups[0])."'"));
-		$babBody->currentAdmGroup = &$babBody->currentDGGroup['id'];
-	}
-}
 
 
 

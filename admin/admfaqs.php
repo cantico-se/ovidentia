@@ -137,20 +137,20 @@ function listCategories()
 			switch($langFilterValue)
 			{
 				case 2:
-					$req = "select * from ".BAB_FAQCAT_TBL." where id_dgowner='".$babBody->currentAdmGroup."' and (lang='".$GLOBALS['babLanguage']."' or lang='*' or lang = ''";
+					$req = "select * from ".BAB_FAQCAT_TBL." where id_dgowner='".bab_getCurrentAdmGroup()."' and (lang='".$GLOBALS['babLanguage']."' or lang='*' or lang = ''";
 					if ($GLOBALS['babApplyLanguageFilter'] == 'loose')
 						$req.= " or id_manager = '" .$GLOBALS['BAB_SESS_USERID']. "'";
 					$req .= ")";
 					break;
 				case 1:
-					$req = "select * from ".BAB_FAQCAT_TBL." where id_dgowner='".$babBody->currentAdmGroup."' and (lang like '". mb_substr($GLOBALS['babLanguage'], 0, 2) ."%' or lang='*' or lang = ''";
+					$req = "select * from ".BAB_FAQCAT_TBL." where id_dgowner='".bab_getCurrentAdmGroup()."' and (lang like '". mb_substr($GLOBALS['babLanguage'], 0, 2) ."%' or lang='*' or lang = ''";
 					if ($GLOBALS['babApplyLanguageFilter'] == 'loose')
 						$req.= " or id_manager = '" .$GLOBALS['BAB_SESS_USERID']. "'";
 					$req .= ")";
 					break;
 				case 0:
 				default:
-					$req = "select * from ".BAB_FAQCAT_TBL." where id_dgowner='".$babBody->currentAdmGroup."'";
+					$req = "select * from ".BAB_FAQCAT_TBL." where id_dgowner='".bab_getCurrentAdmGroup()."'";
 			}
 			$req .= ' order by category asc';
 
@@ -215,7 +215,7 @@ function saveCategory($category, $lang)
 		$babBody->msgerror = bab_translate("ERROR: This FAQ already exists");
 		return;
 		}
-	$query = "insert into ".BAB_FAQCAT_TBL." ( category, description, lang, id_dgowner) values ('" .$db->db_escape_string($category). "', '" . $db->db_escape_string($description). "', '" .$db->db_escape_string($lang). "', '" .$db->db_escape_string($babBody->currentAdmGroup). "')";
+	$query = "insert into ".BAB_FAQCAT_TBL." ( category, description, lang, id_dgowner) values ('" .$db->db_escape_string($category). "', '" . $db->db_escape_string($description). "', '" .$db->db_escape_string($lang). "', '" .$db->db_escape_string(bab_getCurrentAdmGroup()). "')";
 	$db->db_query($query);
 	$idcat = $db->db_insert_id();
 
@@ -229,7 +229,7 @@ function saveCategory($category, $lang)
 	}  // saveCategory
 
 /* main */
-if( !bab_isUserAdministrator() && $babBody->currentDGGroup['faqs'] != 'Y')
+if( !bab_isUserAdministrator() && !bab_isDelegated('faqs'))
 {
 	$babBody->msgerror = bab_translate("Access denied");
 	return;

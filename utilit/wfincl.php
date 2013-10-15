@@ -82,7 +82,7 @@ function bab_WFGetApprobationsList()
 {
 	global $babDB, $babBody;
 	$result = array();
-	$res = $babDB->db_query("select * from ".BAB_FLOW_APPROVERS_TBL." where id_dgowner='".$babDB->db_escape_string($babBody->currentAdmGroup)."' order by name asc");
+	$res = $babDB->db_query("select * from ".BAB_FLOW_APPROVERS_TBL." where id_dgowner='".$babDB->db_escape_string(bab_getCurrentAdmGroup())."' order by name asc");
 	while( $arr = $babDB->db_fetch_assoc($res))
 	{
 		$result[] = array('name' => $arr['name'], 'id' => $arr['id']);

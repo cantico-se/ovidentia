@@ -43,14 +43,14 @@ function summaryArticles($col, $order, $pos, $startday, $endday)
 			$this->fullname = bab_translate("Articles");
 			$this->hitstxt = bab_translate("Hits");
 			$req = "SELECT  at.id, at.id_topic, at.title, sum( sat.st_hits ) hits FROM  ".BAB_STATS_ARTICLES_TBL." sat left join ".BAB_ARTICLES_TBL." at  on sat.st_article_id=at.id";
-			if( $babBody->currentAdmGroup != 0 )
+			if( bab_getCurrentAdmGroup() != 0 )
 				{
 				$req .= " left join ".BAB_TOPICS_TBL." tt on tt.id=at.id_topic left join ".BAB_TOPICS_CATEGORIES_TBL." tct on tct.id=tt.id_cat";
 				}
 			$req.= " where at.title is not null";
-			if( $babBody->currentAdmGroup != 0 )
+			if( bab_getCurrentAdmGroup() != 0 )
 				{
-				$req .= " and tct.id_dgowner='".$babDB->db_escape_string($babBody->currentAdmGroup)."'";
+				$req .= " and tct.id_dgowner='".$babDB->db_escape_string(bab_getCurrentAdmGroup())."'";
 				}
 			if( !empty($startday) && !empty($endday))
 				{
@@ -349,14 +349,14 @@ function summaryTopicsArticles($col, $order, $pos, $startday, $endday)
 			$this->fullname = bab_translate("Topics");
 			$this->hitstxt = bab_translate("Hits");
 			$req = "SELECT tt.id, tt.category, sum( sat.st_hits ) hits FROM ".BAB_STATS_ARTICLES_TBL." sat left join ".BAB_ARTICLES_TBL." at on sat.st_article_id=at.id left join ".BAB_TOPICS_TBL." tt on tt.id=at.id_topic";
-			if( $babBody->currentAdmGroup != 0 )
+			if( bab_getCurrentAdmGroup() != 0 )
 				{
 				$req.= " left join ".BAB_TOPICS_CATEGORIES_TBL." tct on tct.id=tt.id_cat";
 				}
 			$req.= " where at.title is not null";
-			if( $babBody->currentAdmGroup != 0 )
+			if( bab_getCurrentAdmGroup() != 0 )
 				{
-				$req.= " and  tct.id_dgowner='".$babDB->db_escape_string($babBody->currentAdmGroup)."'";
+				$req.= " and  tct.id_dgowner='".$babDB->db_escape_string(bab_getCurrentAdmGroup())."'";
 				}
 			if( !empty($startday) && !empty($endday))
 				{
@@ -529,9 +529,9 @@ function summaryTopicCategoryArticles($col, $order, $pos, $startday, $endday)
 			$this->fullname = bab_translate("Topics categories");
 			$this->hitstxt = bab_translate("Hits");
 			$req = "SELECT tct.id, tct.title, sum( sat.st_hits ) hits FROM ".BAB_STATS_ARTICLES_TBL." sat left join ".BAB_ARTICLES_TBL." at on sat.st_article_id=at.id left join ".BAB_TOPICS_TBL." tt on tt.id=at.id_topic left join ".BAB_TOPICS_CATEGORIES_TBL." tct on tct.id=tt.id_cat where at.title is not null";
-			if( $babBody->currentAdmGroup != 0 )
+			if( bab_getCurrentAdmGroup() != 0 )
 				{
-				$req .= " and tct.id_dgowner='".$babDB->db_escape_string($babBody->currentAdmGroup)."'";
+				$req .= " and tct.id_dgowner='".$babDB->db_escape_string(bab_getCurrentAdmGroup())."'";
 				}
 			if( !empty($startday) && !empty($endday))
 				{

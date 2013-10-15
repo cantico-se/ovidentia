@@ -393,7 +393,7 @@ function addTopic($cat, $ncat, $category, $description, $saart, $sacom, $saupd, 
 			$this->idcat = $cat;
 			
 			/* Parent category */
-			$req = "select * from ".BAB_TOPICS_CATEGORIES_TBL." where id_dgowner='".$babBody->currentAdmGroup."'";
+			$req = "select * from ".BAB_TOPICS_CATEGORIES_TBL." where id_dgowner='".bab_getCurrentAdmGroup()."'";
 			$this->res = $babDB->db_query($req);
 			$this->count = $babDB->db_num_rows($this->res);
 			$this->array_parent_categories = array();
@@ -412,7 +412,7 @@ function addTopic($cat, $ncat, $category, $description, $saart, $sacom, $saupd, 
 				}
 			}
 			
-			$req = "select * from ".BAB_FLOW_APPROVERS_TBL." where id_dgowner='".$babBody->currentAdmGroup."' order by name asc";
+			$req = "select * from ".BAB_FLOW_APPROVERS_TBL." where id_dgowner='".bab_getCurrentAdmGroup()."' order by name asc";
 			$this->sares = $babDB->db_query($req);
 			if( !$this->sares )
 				{
@@ -802,11 +802,11 @@ function saveCategory($category, $cat, $sacom, $saart, $saupd, $bnotif, $lang, $
 	
 	if(false === $bFromTempPath)
 	{
-		$sFullPathName = $oPubImpUpl->uploadTopicImage($babBody->currentAdmGroup, $iIdTopic, $sKeyOfPhpFile);
+		$sFullPathName = $oPubImpUpl->uploadTopicImage(bab_getCurrentAdmGroup(), $iIdTopic, $sKeyOfPhpFile);
 	}
 	else
 	{		
-		$sFullPathName = $oPubImpUpl->importTopicImageFromTemp($babBody->currentAdmGroup, $iIdTopic, $sTempName, $sImageName);
+		$sFullPathName = $oPubImpUpl->importTopicImageFromTemp(bab_getCurrentAdmGroup(), $iIdTopic, $sTempName, $sImageName);
 	}
 
 	if(false === $sFullPathName)
@@ -867,7 +867,7 @@ function uploadTopicImg()
 	$sJSon			= '';
 	$sKeyOfPhpFile	= 'topicPicture';
 	$oPubImpUpl		= new bab_PublicationImageUploader();
-	$aFileInfo		= $oPubImpUpl->uploadImageToTemp($babBody->currentAdmGroup, $sKeyOfPhpFile);
+	$aFileInfo		= $oPubImpUpl->uploadImageToTemp(bab_getCurrentAdmGroup(), $sKeyOfPhpFile);
 	
 	
 	if(false === $aFileInfo)
@@ -917,7 +917,7 @@ function getImage()
 	$oEnvObj	= bab_getInstance('bab_PublicationPathsEnv');
 
 	global $babBody;
-	$oEnvObj->setEnv($babBody->currentAdmGroup);
+	$oEnvObj->setEnv(bab_getCurrentAdmGroup());
 	$sPath = $oEnvObj->getTempPath();
 	
 	$oImageResize = new bab_ImageResize();
@@ -936,7 +936,7 @@ function deleteTempImage()
 	$sImage		= bab_rp('sImage', '');
 	$oEnvObj	= bab_getInstance('bab_PublicationPathsEnv');
 	
-	$oEnvObj->setEnv($babBody->currentAdmGroup);
+	$oEnvObj->setEnv(bab_getCurrentAdmGroup());
 	$sPath = $oEnvObj->getTempPath();
 	
 	if(file_exists($sPath . $sImage))
@@ -948,7 +948,7 @@ function deleteTempImage()
 
 
 /* main */
-if(!bab_isUserAdministrator() && $babBody->currentDGGroup['articles'] != 'Y')
+if(!bab_isUserAdministrator() && !bab_isDelegated('articles'))
 {
 	$babBody->msgerror = bab_translate("Access denied");
 	return;

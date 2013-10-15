@@ -33,8 +33,6 @@ class bab_grptree extends bab_dbtree
 
 	function bab_grptree()
 	{
-	global $babBody;
-
 	$this->bab_dbtree(BAB_GROUPS_TBL, null);
 
 
@@ -42,12 +40,13 @@ class bab_grptree extends bab_dbtree
 	$this->firstnode_parent = NULL;
 	$this->where = 'nb_set >= \'0\'';
 
-	if ($babBody->currentAdmGroup > 0)
+	if (bab_getCurrentAdmGroup() > 0)
 		{
-		$this->firstnode_info = $this->getNodeInfo($babBody->currentDGGroup['id_group']);
+		$currentDGGroup = bab_getCurrentDGGroup();
+		$this->firstnode_info = $this->getNodeInfo($currentDGGroup['id_group']);
 
-		$this->setSubTree($babBody->currentDGGroup['lf'], $babBody->currentDGGroup['lr']);
-		$this->firstnode = $babBody->currentDGGroup['id_group'];
+		$this->setSubTree($currentDGGroup['lf'], $currentDGGroup['lr']);
+		$this->firstnode = $currentDGGroup['id_group'];
 
 		$this->firstnode_parent = $this->firstnode_info['id_parent'];
 		}
@@ -228,7 +227,7 @@ class bab_grp_node
 	$this->t_group_members = bab_translate("Group's members");
 	$this->t_members = bab_translate("Members");
 	$this->childs = $this->tree->getChilds($id_group);
-	$this->bupdate = $GLOBALS['babBody']->currentAdmGroup == 0 || $GLOBALS['babBody']->currentDGGroup['groups'] == 'Y';
+	$this->bupdate = bab_getCurrentAdmGroup() == 0 || bab_isDelegated('groups');
 	
 	/* Icons functionality */
 	$icons = @bab_functionality::get('Icons');
@@ -249,8 +248,8 @@ class bab_grp_node
 			}
 
 		$this->arr['description'] = bab_toHtml($this->arr['description']);
-		$this->delegat = $GLOBALS['babBody']->currentAdmGroup == 0 && isset($this->tree->delegat[$this->arr['id']]);
-		$this->set = $GLOBALS['babBody']->currentAdmGroup == 0 && $this->arr['nb_set'] > 0;
+		$this->delegat = bab_getCurrentAdmGroup() == 0 && isset($this->tree->delegat[$this->arr['id']]);
+		$this->set = bab_getCurrentAdmGroup() == 0 && $this->arr['nb_set'] > 0;
 		$this->option = isset($this->options[$this->arr['id']]) ? $this->options[$this->arr['id']] : false;
 		$this->subtree = bab_grp_node_html($this->tree, $this->arr['id'], $this->file, $this->template, $this->options);
 		return true;

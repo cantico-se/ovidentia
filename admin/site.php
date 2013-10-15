@@ -2063,7 +2063,7 @@ function siteUpdate_menuUpload()
 				$sFmUploadPath				= $sUploadPath . '/fileManager';
 				$sCollectiveUploadPath		= $sFmUploadPath . '/collectives';
 				$sUserUploadPath			= $sFmUploadPath . '/users';
-				$sCollectiveDgUploadPath	= $sCollectiveUploadPath . '/DG' . $babBody->currentAdmGroup;
+				$sCollectiveDgUploadPath	= $sCollectiveUploadPath . '/DG' . bab_getCurrentAdmGroup();
 
 				if(!is_writable($sUploadPath))
 				{

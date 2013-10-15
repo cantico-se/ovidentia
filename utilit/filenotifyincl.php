@@ -172,7 +172,7 @@ function notifyApprovers($id, $fid)
 	if( $arr['idsa'] ==  0 || $idfai === true)
 	{
 		$babDB->db_query("update ".BAB_FILES_TBL." set confirmed='Y' where id='".$babDB->db_escape_string($id)."'");
-		$GLOBALS['babWebStat']->addNewFile($babBody->currentAdmGroup);
+		$GLOBALS['babWebStat']->addNewFile(bab_getCurrentAdmGroup());
 		return true;
 	}
 	elseif(!empty($idfai))

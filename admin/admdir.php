@@ -101,10 +101,10 @@ function listAds()
 			$this->urladdldap		= bab_toHtml($GLOBALS['babUrlScript'].'?tg=admdir&idx=ldap');
 			$this->urladddb			= bab_toHtml($GLOBALS['babUrlScript'].'?tg=admdir&idx=db');
 			$this->db				= $GLOBALS['babDB'];
-			$this->resldap			= $this->db->db_query("select * from ".BAB_LDAP_DIRECTORIES_TBL." where id_dgowner='".$this->db->db_escape_string($babBody->currentAdmGroup)."' ORDER BY name");
+			$this->resldap			= $this->db->db_query("select * from ".BAB_LDAP_DIRECTORIES_TBL." where id_dgowner='".$this->db->db_escape_string(bab_getCurrentAdmGroup())."' ORDER BY name");
 			$this->countldap		= $this->db->db_num_rows($this->resldap);
 			$where = '';
-			if($babBody->currentAdmGroup){
+			if(bab_getCurrentAdmGroup()){
 				$groups = bab_getGroups();
 				$where = " WHERE id_group IN(".$this->db->quote($groups['id']).") ";
 			}
@@ -207,13 +207,13 @@ function dirGroups() // liste des annuaires de groupes
 			$this->groups = $tree->getGroups(BAB_ALLUSERS_GROUP);
 			unset($this->groups[BAB_UNREGISTERED_GROUP]);
 			$this->altbg=false;
-			if( bab_isUserAdministrator() && $babBody->currentAdmGroup == 0 )
+			if( bab_isUserAdministrator() && bab_getCurrentAdmGroup() == 0 )
 				{
 				$this->bdgdirectories = true;
 				}
 			else
 				{
-				if( $babBody->currentDGGroup['directories'] == 'Y' )
+				if( bab_isDelegated('directories') )
 					{
 					$this->bdgdirectories = true;
 					}
@@ -1389,7 +1389,7 @@ function addLdapDirectory($name, $description, $servertype, $decodetype, $host, 
 		}
 	else
 		{
-		$req = "insert into ".BAB_LDAP_DIRECTORIES_TBL." (name, description, server_type, decoding_type, host, basedn, userdn, password, id_dgowner) VALUES ('" .$db->db_escape_string($name). "', '" . $db->db_escape_string($description). "', '" . $db->db_escape_string($servertype). "', '" . $db->db_escape_string($decodetype). "', '" . $db->db_escape_string($host). "', '" . $db->db_escape_string($basedn). "', '" . $db->db_escape_string($userdn). "', ENCODE(\"".$password1."\",\"".$GLOBALS['BAB_HASH_VAR']."\"), '".$db->db_escape_string($babBody->currentAdmGroup)."')";
+		$req = "insert into ".BAB_LDAP_DIRECTORIES_TBL." (name, description, server_type, decoding_type, host, basedn, userdn, password, id_dgowner) VALUES ('" .$db->db_escape_string($name). "', '" . $db->db_escape_string($description). "', '" . $db->db_escape_string($servertype). "', '" . $db->db_escape_string($decodetype). "', '" . $db->db_escape_string($host). "', '" . $db->db_escape_string($basedn). "', '" . $db->db_escape_string($userdn). "', ENCODE(\"".$password1."\",\"".$GLOBALS['BAB_HASH_VAR']."\"), '".$db->db_escape_string(bab_getCurrentAdmGroup())."')";
 		$db->db_query($req);
 		}
 	return true;
@@ -1414,7 +1414,7 @@ function addDbDirectory($name, $description, $displayiu, $fields, $rw, $rq, $ml,
 		}
 	else
 		{
-		$req = "insert into ".BAB_DB_DIRECTORIES_TBL." (name, description, show_update_info, id_dgowner) VALUES ('" .$db->db_escape_string($name). "', '" . $db->db_escape_string($description). "', '" .$db->db_escape_string($displayiu). "', '" .$db->db_escape_string($babBody->currentAdmGroup). "')";
+		$req = "insert into ".BAB_DB_DIRECTORIES_TBL." (name, description, show_update_info, id_dgowner) VALUES ('" .$db->db_escape_string($name). "', '" . $db->db_escape_string($description). "', '" .$db->db_escape_string($displayiu). "', '" .$db->db_escape_string(bab_getCurrentAdmGroup()). "')";
 		$db->db_query($req);
 		$id = $db->db_insert_id();
 		$res = $db->db_query("select * from ".BAB_DBDIR_FIELDS_TBL);
@@ -1866,9 +1866,10 @@ function updateDirGroups($dirgrpids) // enregistrement des modifications aux ann
 
 	$babDB->db_query("UPDATE ".BAB_USERS_LOG_TBL." SET grp_change='1'");
 
-	if ($babBody->currentAdmGroup > 0)
+	if (bab_getCurrentAdmGroup() > 0)
 		{
-		$babDB->db_query("update ".BAB_GROUPS_TBL." set directory='N' where  lf>='".$babBody->currentDGGroup['lf']."' AND lr<='".$babBody->currentDGGroup['lr']."'");
+		$dg = bab_getCurrentDGGroup();
+		$babDB->db_query("update ".BAB_GROUPS_TBL." set directory='N' where  lf>='".$dg['lf']."' AND lr<='".$dg['lr']."'");
 		}
 	else
 		{
@@ -1878,11 +1879,11 @@ function updateDirGroups($dirgrpids) // enregistrement des modifications aux ann
 	$dirids = array();
 	for( $i=0; $i < count($dirgrpids); $i++)
 	{
-		$id = bab_setGroupDirectory($dirgrpids[$i], $babBody->currentAdmGroup);
+		$id = bab_setGroupDirectory($dirgrpids[$i], bab_getCurrentAdmGroup());
 		$dirids[$id] = $id;
 	}
 		
-	$res = $babDB->db_query("select id from ".BAB_DB_DIRECTORIES_TBL." where id_group not in ('0', '".BAB_REGISTERED_GROUP."') and id_dgowner=".$babDB->quote($babBody->currentAdmGroup));
+	$res = $babDB->db_query("select id from ".BAB_DB_DIRECTORIES_TBL." where id_group not in ('0', '".BAB_REGISTERED_GROUP."') and id_dgowner=".$babDB->quote(bab_getCurrentAdmGroup()));
 	while($arr = $babDB->db_fetch_array($res))
 	{
 		if(!isset($dirids[$arr['id']]))
@@ -1906,7 +1907,7 @@ function updateDirGroups($dirgrpids) // enregistrement des modifications aux ann
 
 
 /* main */
-if( !bab_isUserAdministrator() && $babBody->currentDGGroup['directories'] != 'Y')
+if( !bab_isUserAdministrator() && !bab_isDelegated('directories'))
 {
 	$babBody->msgerror = bab_translate("Access denied");
 	return;
@@ -2124,7 +2125,7 @@ switch($idx)
 		$babBody->title = getDirectoryName($id, BAB_DB_DIRECTORIES_TBL);
 		$idgroup =  isDirectoryGroup($id);
 		
-		if($idgroup && $babBody->currentAdmGroup == "0"){
+		if($idgroup && bab_getCurrentAdmGroup() == "0"){
 			$delegateGroups = bab_getDelegateGroupe(true);
 			if(isset($delegateGroups[$idgroup])){
 				$babBody->addError(bab_translate("The groupe of this directory have delegate administration. If you want to update rights on it you should probably contact the delegate administrator."));
