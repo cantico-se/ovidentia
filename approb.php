@@ -718,7 +718,7 @@ function listWaitingAddons()
 			include_once $GLOBALS['babInstallPath'].'utilit/addonsincl.php';
 			foreach(bab_addonsInfos::getRows() as $key => $row)
 				{
-				$addonpath = $GLOBALS['babAddonsPath'].$row['title'];
+				$addonpath = $GLOBALS['babInstallPath'].'addons/'.$row['title'];
 				if($row['access'] && is_file($addonpath."/init.php" ))
 					{
 					$this->_setGlobals($row['id'],$row['title']);

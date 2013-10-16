@@ -30,7 +30,7 @@ function bab_getAddonsMenus($row, $what)
 {
 	global $babDB;
 	$addon_urls = array();
-	$addonpath = $GLOBALS['babAddonsPath'].$row['title'];
+	$addonpath = $GLOBALS['babInstallPath'].'addons/'.$row['title'];
 	if( is_file($addonpath."/init.php" ))
 		{
 		bab_setAddonGlobals($row['id']);

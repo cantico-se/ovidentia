@@ -904,11 +904,11 @@ class babBody
 					$sectionid = $arr2['id'];
 					$objectid = $arrsectionsbytype[$type][$sectionid];
 	
-					if( $arr2['access'] && is_file($GLOBALS['babAddonsPath'].$arr2['title'].'/init.php'))
+					if( $arr2['access'] && is_file($GLOBALS['babInstallPath'].'addons/'.$arr2['title'].'/init.php'))
 						{
 						bab_setAddonGlobals($arr2['id']);
 	
-						require_once( $GLOBALS['babAddonsPath'].$arr2['title'].'/init.php' );
+						require_once( $GLOBALS['babInstallPath'].'addons/'.$arr2['title'].'/init.php' );
 						$func = $arr2['title'].'_onSectionCreate';
 						if(function_exists($func))
 							{

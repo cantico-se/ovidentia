@@ -1540,14 +1540,14 @@ function bab_getUserAddonsUrls() {
 	foreach( $addons as $row )
 		{
 		if($row['access']) {
-			$addonpath = $GLOBALS['babAddonsPath'].$row['title'];
+			$addonpath = $GLOBALS['babInstallPath'].'addons/'.$row['title'];
 			if( is_dir($addonpath)) {
 				$arr = bab_getAddonsMenus($row, 'getUserSectionMenus');
 				reset ($arr);
 				while (list ($txt, $url) = each($arr)) {
 
-					if (0 === mb_strpos($url, $GLOBALS['babUrl'].$GLOBALS['babPhpSelf'])) {
-						$url = mb_substr($url, mb_strlen($GLOBALS['babUrl'].$GLOBALS['babPhpSelf']));
+					if (0 === mb_strpos($url, $GLOBALS['babUrl'].bab_getSelf())) {
+						$url = mb_substr($url, mb_strlen($GLOBALS['babUrl'].bab_getSelf()));
 					}
 
 					$addon_urls[] = array(
@@ -2163,5 +2163,3 @@ function bab_onBeforeSiteMapCreated(bab_eventBeforeSiteMapCreated $event) {
 	bab_sitemap_faq($event);
 }
 
-
-?>

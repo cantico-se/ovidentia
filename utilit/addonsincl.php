@@ -294,12 +294,12 @@ class bab_addonsInfos {
 	
 		global $babDB;
 	
-		$h = opendir($GLOBALS['babAddonsPath']);
+		$h = opendir($GLOBALS['babInstallPath'].'addons/');
 		while (($f = readdir($h)) != false)
 			{
 			if ($f != "." and $f != "..") 
 				{
-				if (is_dir($GLOBALS['babAddonsPath'].$f) && is_file($GLOBALS['babAddonsPath'].$f."/init.php"))
+				if (is_dir($GLOBALS['babInstallPath'].'addons/'.$f) && is_file($GLOBALS['babInstallPath'].'addons/'.$f."/init.php"))
 					{
 					$res = $babDB->db_query("SELECT * FROM ".BAB_ADDONS_TBL." 
 					where title='".$babDB->db_escape_string($f)."' ORDER BY title ASC");
@@ -1329,7 +1329,7 @@ function bab_callAddonsFunction($func)
 		{ 
 		if($row['access'])
 			{
-			$addonpath = $GLOBALS['babAddonsPath'].$row['title'];
+			$addonpath = $GLOBALS['babInstallPath'].'addons/'.$row['title'];
 			if( is_file($addonpath.'/init.php' ))
 				{
 				bab_setAddonGlobals($row['id']);
@@ -1398,7 +1398,7 @@ function bab_callAddonsFunctionArray($func, $args)
 	
 	foreach($addons as $key => $row)
 		{ 
-		$addonpath = $GLOBALS['babAddonsPath'].$row['title'];
+		$addonpath = $GLOBALS['babInstallPath'].'addons/'.$row['title'];
 		if( is_file($addonpath.'/init.php' ))
 			{
 			bab_setAddonGlobals($row['id']);
