@@ -2063,16 +2063,22 @@ class bab_siteMap {
 	}
 	
 	/**
-	 * Get the rewritten url of a sitemap node or an ur l with babrw= if the rewriting is disabled
+	 * Get the rewritten url of a sitemap node or an url with babrw= if the rewriting is disabled
 	 * @param string $id_function
+	 * @param string $fallback_url		If node not found in site sitemap, return the fallback url if defined
 	 * @return string
 	 */
-	public static function url($id_function)
+	public static function url($id_function, $fallback_url = null)
 	{
 		$node = self::getFromSite()->getNodeById($id_function);
 
 		if (!isset($node)) {
-			return null;
+			if (isset($fallback_url))
+			{
+				bab_debug(sprintf('Node %s not found is site sitemap, return the fallback_url %s instead of rewritten url', $id_function, $fallback_url));
+			}
+			
+			return $fallback_url;
 		}
 
 		$sitemapItem = $node->getData();
@@ -2082,7 +2088,7 @@ class bab_siteMap {
 
 
 	/**
-	 * Get the rewritten url of a sitemap node
+	 * Get the rewritten url string of a sitemap node
 	 * @param string $id_function
 	 * @return string
 	 */
