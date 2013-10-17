@@ -630,20 +630,23 @@ function addDelegatGroup($name, $description, $color, $delegitems, $iIdCategory)
 		$babDB->db_query("insert into ".BAB_DG_GROUPS_TBL." ".$req1." VALUES ".$req2);
 		$id = $babDB->db_insert_id();
 
-		$tmp_file = $_FILES['delegPicture']['tmp_name'];
-		if( is_uploaded_file($tmp_file) ){
-			$type_file = $_FILES['delegPicture']['type'];
-
-			if( !strstr($type_file, 'jpg') && !strstr($type_file, 'jpeg') && !strstr($type_file, 'bmp') && !strstr($type_file, 'gif') && !strstr($type_file, 'png') )
-			{
-				$babBody->msgerror = bab_translate("Invalid image extension");
-			}else{
-				$uploadPath = new bab_Path($GLOBALS['babUploadPath'],'delegation','image','DG'.$id);
-				$uploadPath->createDir();
-				$uploadPath->push($_FILES['delegPicture']['name']);
-
-				if( !move_uploaded_file($tmp_file, $uploadPath->tostring()) ){
-					$babBody->msgerror = bab_translate("The file could not be uploaded");
+		if (isset($_FILES['delegPicture']))
+		{
+			$tmp_file = $_FILES['delegPicture']['tmp_name'];
+			if( is_uploaded_file($tmp_file) ){
+				$type_file = $_FILES['delegPicture']['type'];
+	
+				if( !strstr($type_file, 'jpg') && !strstr($type_file, 'jpeg') && !strstr($type_file, 'bmp') && !strstr($type_file, 'gif') && !strstr($type_file, 'png') )
+				{
+					$babBody->msgerror = bab_translate("Invalid image extension");
+				}else{
+					$uploadPath = new bab_Path($GLOBALS['babUploadPath'],'delegation','image','DG'.$id);
+					$uploadPath->createDir();
+					$uploadPath->push($_FILES['delegPicture']['name']);
+	
+					if( !move_uploaded_file($tmp_file, $uploadPath->tostring()) ){
+						$babBody->msgerror = bab_translate("The file could not be uploaded");
+					}
 				}
 			}
 		}
