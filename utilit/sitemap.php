@@ -1610,7 +1610,7 @@ class bab_siteMap {
 			// the profile version is missing, add version to profile
 			// the user have a correct profile and a correct sitemap but the sitemap is incomplete
 			// additional nodes need to be created in sitemap without deleting the profile
-			self::repair($path, $levels);
+			self::repair(null, null);
 			$res = $babDB->db_query($query);
 	
 		} else {

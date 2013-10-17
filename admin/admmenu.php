@@ -52,6 +52,8 @@ function bab_adminMenuAddons()
 	$addon_urls = array();
 	$addons = bab_addonsInfos::getRows();
 	
+	$babPhpSelf = bab_getSelf();
+	
 	foreach($addons as $row)
 	{
 		if($row['access'])
@@ -64,8 +66,8 @@ function bab_adminMenuAddons()
 				reset ($arr);
 				while (list ($txt, $url) = each($arr))
 				{
-					if (0 === mb_strpos($url, $GLOBALS['babUrl'].$GLOBALS['babPhpSelf'])) {
-						$url = mb_substr($url, mb_strlen($GLOBALS['babUrl'].$GLOBALS['babPhpSelf']));
+					if (0 === mb_strpos($url, $GLOBALS['babUrl'].$babPhpSelf)) {
+						$url = mb_substr($url, mb_strlen($GLOBALS['babUrl'].$babPhpSelf));
 					}
 	
 					$addon_urls[] = array(
