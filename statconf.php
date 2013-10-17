@@ -162,6 +162,7 @@ function statUpdateContentBasket()
 			$this->t_update_txt = bab_translate("Update");
 
 			$this->baskid = $_GET['baskid'];
+			$this->itemid = $_GET['itemid'];
 			$arr = $babDB->db_fetch_array($babDB->db_query("select bc_description, bc_type, bc_id from ".BAB_STATS_BASKET_CONTENT_TBL." where id='".$_GET['itemid']."'"));
 			$this->ibcdescriptionval = $arr['bc_description'];
 			switch($arr['bc_type'])

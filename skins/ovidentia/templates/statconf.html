@@ -125,7 +125,7 @@
 function page_next()
 	{
 	var f = document.forms.listform;
-	var tmp = f.pos.value + { rows_per_page };
+	var tmp = parseInt(f.pos.value) + { rows_per_page };
 	if (tmp < { max })
 		{
 		f.pos.value = tmp;
@@ -136,7 +136,7 @@ function page_next()
 function page_previous()
 	{
 	var f = document.forms.listform;
-	var tmp = f.pos.value - { rows_per_page };
+	var tmp = parseInt(f.pos.value) - { rows_per_page };
 	if (tmp >= 0)
 		{
 		f.pos.value = tmp;
