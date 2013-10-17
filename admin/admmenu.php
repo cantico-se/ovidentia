@@ -34,8 +34,7 @@ function bab_superAdminMenuItems()
 	//	array('AdminVacations', bab_translate("Vacations"), $GLOBALS['babUrlScript']."?tg=admvacs", null, Func_Icons::APPS_VACATIONS),
 		array('AdminInstall', bab_translate("Add/remove programs"), $GLOBALS['babUrlScript']."?tg=addons", null, Func_Icons::ACTIONS_LIST_ADD),
 		array('AdminStats', bab_translate("Statistics"), $GLOBALS['babUrlScript']."?tg=admstats", null, Func_Icons::APPS_STATISTICS),
-		array('AdminThesaurus', bab_translate("Thesaurus"), $GLOBALS['babUrlScript']."?tg=admthesaurus", null, Func_Icons::APPS_THESAURUS),
-		array('AdminSites', bab_translate("Sites"), $GLOBALS['babUrlScript']."?tg=sites", null, Func_Icons::APPS_PREFERENCES_SITE)
+		array('AdminThesaurus', bab_translate("Thesaurus"), $GLOBALS['babUrlScript']."?tg=admthesaurus", null, Func_Icons::APPS_THESAURUS)
 	);
 	
 	$engine = bab_searchEngineInfos();
@@ -239,7 +238,18 @@ function bab_sitemap_adminSection(bab_eventBeforeSiteMapCreated $event) {
 					
 					$event->addFunction($item);
 				}
+				
+				
+				
+				
 
+				$item = $event->createItem($dg_prefix.'AdminSites');
+				$item->setLabel(bab_translate("Sites"));
+				$item->setLink($GLOBALS['babUrlScript']."?tg=sites");
+				$item->setPosition($position);
+				$item->addIconClassname(Func_Icons::APPS_PREFERENCES_SITE);
+				$event->addFolder($item);
+				
 				
 				
 				// sub menu for "Sites"
