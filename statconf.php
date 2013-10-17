@@ -72,7 +72,12 @@ function statBaskets($baskname, $baskdesc)
 
 			if( $this->max > $this->rows_per_page )
 				{
-				$this->res = $babDB->db_query("SELECT t.* FROM ".BAB_STATS_BASKETS_TBL." t where t.id_dgowner='".bab_getCurrentAdmGroup()."' order by t.basket_name LIMIT ".$this->pos.",".$this->rows_per_page);
+				$this->res = $babDB->db_query("
+					SELECT t.*
+					FROM ".BAB_STATS_BASKETS_TBL." t
+					where t.id_dgowner='".bab_getCurrentAdmGroup()."'
+					order by t.basket_name
+					LIMIT ".$this->pos.",".$this->rows_per_page);
 				$this->bmpages =true;
 				}
 			else
@@ -162,6 +167,7 @@ function statUpdateContentBasket()
 			$this->t_update_txt = bab_translate("Update");
 
 			$this->baskid = $_GET['baskid'];
+			$this->itemid = $_GET['itemid'];
 			$arr = $babDB->db_fetch_array($babDB->db_query("select bc_description, bc_type, bc_id from ".BAB_STATS_BASKET_CONTENT_TBL." where id='".$_GET['itemid']."'"));
 			$this->ibcdescriptionval = $arr['bc_description'];
 			switch($arr['bc_type'])
