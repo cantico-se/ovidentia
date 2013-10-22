@@ -455,7 +455,7 @@ function bab_getArticleCategoriesRes($parentid, $delegationid = false, $rightacc
 
 	$sDelegation = ' ';
 	if(false !== $delegationid) {
-		$sDelegation = ' AND id_dgowner = \'' . $babDB->db_escape_string($delegationid) . '\' ';
+		$sDelegation = ' AND tc.id_dgowner = \'' . $babDB->db_escape_string($delegationid) . '\' ';
 	}
 	
 	// List of id categories 
@@ -532,7 +532,7 @@ function bab_getArticleCategoriesRes($parentid, $delegationid = false, $rightacc
 				
 			WHERE 
 				tc.id IN (".$babDB->quote($IdEntries).") 
-				and tot.type='1' " . $sDelegation .  " 
+				and (tot.id IS NULL OR tot.type='1') " . $sDelegation .  " 
 				
 			order by tot.ordering asc
 		";

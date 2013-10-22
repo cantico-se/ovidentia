@@ -39,7 +39,7 @@ CREATE TABLE bab_articles (
   KEY date_archiving (date_archiving),
   KEY index_status (index_status),
   KEY date (date),
-  KEY uuid (uuid) 
+  UNIQUE KEY uuid (uuid) 
 );
 
 
@@ -590,7 +590,7 @@ CREATE TABLE bab_topics (
   date_modification datetime NOT NULL default '0000-00-00 00:00:00',
   PRIMARY KEY  (id),
   KEY id_cat (id_cat),
-  KEY uuid (uuid)
+  UNIQUE KEY uuid (uuid)
 );
 
 INSERT INTO bab_topics (id, uuid, category, id_cat, lang) VALUES ('1', '9342cd5e-858b-4203-a240-ac2c35bf5c14', 'Ovidentia', 1, '*');
@@ -644,7 +644,7 @@ CREATE TABLE bab_topics_categories (
    PRIMARY KEY (id),
    KEY id_dgowner (id_dgowner),
    KEY id_parent (id_parent),
-   KEY uuid (uuid)
+   UNIQUE KEY uuid (uuid)
 );
 
 INSERT INTO bab_topics_categories (id, uuid, title, description, enabled) VALUES ('1', '973c971c-4c30-4c6f-ad95-378f96a6802c', 'Default category', 'Default category', 'Y');

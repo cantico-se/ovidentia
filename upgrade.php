@@ -6980,8 +6980,8 @@ function ovidentia_upgrade($version_base,$version_ini) {
 	 */
 	if (!bab_isTableField('bab_topics_categories', 'uuid')) {
 		$babDB->db_query("ALTER TABLE `bab_topics_categories` ADD `uuid` char(36) NOT NULL default ''");
-		$babDB->db_query("ALTER TABLE `bab_topics_categories` ADD INDEX ( `uuid` )");
 		upgradeAddMissingUuid('bab_topics_categories');
+		$babDB->db_query("ALTER TABLE `bab_topics_categories` ADD UNIQUE ( `uuid` )");
 	}
 	
 	
@@ -6991,14 +6991,15 @@ function ovidentia_upgrade($version_base,$version_ini) {
 	
 	if (!bab_isTableField('bab_topics', 'uuid')) {
 		$babDB->db_query("ALTER TABLE `bab_topics` ADD `uuid` char(36) NOT NULL default ''");
-		$babDB->db_query("ALTER TABLE `bab_topics` ADD INDEX ( `uuid` )");
 		upgradeAddMissingUuid('bab_topics');
+		$babDB->db_query("ALTER TABLE `bab_topics` ADD UNIQUE ( `uuid` )");
 	}
 	
 	if (!bab_isTableField('bab_articles', 'uuid')) {
 		$babDB->db_query("ALTER TABLE `bab_articles` ADD `uuid` char(36) NOT NULL default ''");
-		$babDB->db_query("ALTER TABLE `bab_articles` ADD INDEX ( `uuid` )");
 		upgradeAddMissingUuid('bab_articles');
+		$babDB->db_query("ALTER TABLE `bab_articles` ADD UNIQUE ( `uuid` )");
+		
 	}
 	
 	
