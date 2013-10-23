@@ -127,7 +127,7 @@ function listArticles($id)
 			$this->js_confirm_delete = str_replace("'","\'",$this->js_confirm_delete);
 			$this->badmin = bab_isUserAdministrator();
 			$this->removedrafttxt = bab_translate("Remove the draft");
-			$this->removedraftconfirm = mysql_real_escape_string(bab_translate("This will remove all modification on this article, continue?"));
+			$this->removedraftconfirm = bab_translate("This will remove all modification on this article, continue?");
 
 			if (bab_searchEngineInfos()) {
 				$this->index = true;

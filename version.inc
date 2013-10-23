@@ -39,7 +39,7 @@ php_version="5.1.0"
 
 ; available since 5.8.7
 
-mod_mysql="Available"
+mod_mysqli="Available"
 mysql_version="4.1.0"
 mod_zlib="Available"
 

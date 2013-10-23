@@ -570,6 +570,7 @@ function addModifySpecificFieldTextOrArea($iIdProjectSpace, $iIdProject, $iField
 
 function processSpecificFieldBaseClass($iIdProjectSpace, $iIdProject, $iFieldType)
 {
+	global $babDB;
 	$sFieldName = trim(bab_rp('sFieldName', ''));
 	
 	if(0 < mb_strlen($sFieldName))
@@ -578,7 +579,7 @@ function processSpecificFieldBaseClass($iIdProjectSpace, $iIdProject, $iFieldTyp
 		$iIdUser = (int) bab_rp('iIdUser', 0);
 		
 		$isValid = isNameUsedInProjectAndProjectSpace(BAB_TSKMGR_SPECIFIC_FIELDS_BASE_CLASS_TBL, $iIdProjectSpace, $iIdProject, $iIdField, $sFieldName);
-		$sFieldName = mysql_escape_string($sFieldName);
+		$sFieldName = $babDB->db_escape_string($sFieldName);
 		
 		if($isValid)
 		{

@@ -518,7 +518,7 @@ function addModifyProjectSpace()
 		{
 			$id = bab_isProjectSpaceExist($iIdDelegation, $sName);
 			
-			//Si le nom n'est pas utilisé
+			//Si le nom n'est pas utilisï¿½
 			if(false === $id)
 			{
 				if(0 === $iIdProjectSpace)
@@ -606,7 +606,7 @@ function saveProjectConfiguration()
 		$iEndTaskReminder = (int) bab_rp('iEndTaskReminder', 5);
 		$iTaskNumerotation = (int) bab_rp('iTaskNumerotation', BAB_TM_SEQUENTIAL);
 		$iEmailNotice = (int) bab_rp('iEmailNotice', BAB_TM_YES);
-		$sFaqUrl = mysql_escape_string(bab_rp('sFaqUrl', ''));
+		$sFaqUrl = bab_rp('sFaqUrl', '');
 	
 		if(0 < $iIdConfiguration && 0 < $iIdProjectSpace)
 		{

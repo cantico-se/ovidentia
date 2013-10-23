@@ -90,7 +90,7 @@ class bab_dumpToDb
 		{
 		global $install;
 			
-		$this->db = mysql_connect($install->babDBHost, $install->babDBLogin, $install->babDBPasswd);
+		$this->db = mysqli_connect($install->babDBHost, $install->babDBLogin, $install->babDBPasswd);
 		if( $this->db )
 			{
 			$this->succes->add($this->trans->str('Connexion test to mysql server successful'));
@@ -110,7 +110,7 @@ class bab_dumpToDb
 		
 		$sDBCharset = $install->babDBCharset;
 		
-		$oResult = mysql_select_db($install->babDBName, $this->db);
+		$oResult = mysqli_select_db($this->db, $install->babDBName);
 		if($oResult === true)
 		{
 			if(!empty($install->clearDb))
@@ -192,17 +192,17 @@ class bab_dumpToDb
 
 	function db_queryWem($query) 
 		{
-		return mysql_query($query, $this->db);
+		return mysqli_query($this->db, $query);
 		}
 		
 	function db_fetch_array($result)
     	{
-		return mysql_fetch_array($result);
+		return mysqli_fetch_array($result);
 		}
 		
 	function db_fetch_assoc($result)
     	{
-		return mysql_fetch_assoc($result);
+		return mysqli_fetch_assoc($result);
 		}
 		
 	function quote($param)
@@ -212,12 +212,12 @@ class bab_dumpToDb
 				$keys = array_keys($param); 
 			
 				foreach($keys as $key) {
-					$param[$key] = mysql_real_escape_string($param[$key]);
+					$param[$key] = mysqli_real_escape_string($this->db_connect(), $param[$key]);
 				}
 
 				return "'".implode("','",$param)."'";
 			} else {
-				return "'".mysql_real_escape_string($param)."'";
+				return "'".mysqli_real_escape_string($this->db_connect(), $param)."'";
 			}
 		}
 

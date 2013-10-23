@@ -50,10 +50,10 @@ class babDatabase
 	protected function connect($host, $login, $password, $dbname)
 		{
 
-		$dblink = mysql_connect($host, $login, $password);
+		$dblink = mysqli_connect($host, $login, $password);
 		if( $dblink )
 			{
-			$res = mysql_select_db($dbname, $dblink);
+			$res = mysqli_select_db($dblink, $dbname );
 			if( $res == false )
 				{
 				if (is_file('install.php')) {
@@ -116,7 +116,7 @@ class babDatabase
 
 	public function db_close()
 		{
-		return mysql_close($this->db_connect());
+		return mysqli_close($this->db_connect());
 		}
 
 	public function db_setCharset()
@@ -137,12 +137,12 @@ class babDatabase
 
 	public function db_create_db($dbname)
 		{
-		return mysql_create_db($dbname, $this->db_connect());
+		return $this->db_query('CREATE DATABASE '.$this->backTick($dbname));
 		}
 
 	public function db_drop_db($dbname)
 		{
-		return mysql_drop_db($dbname, $this->db_connect());
+		return $this->db_query('DROP DATABASE '.$this->backTick($dbname));
 		}
 
 	/**
@@ -154,7 +154,7 @@ class babDatabase
 		{
 			
 		$res = false;
-		$res = mysql_query($query, $this->db_connect());
+		$res = mysqli_query($this->db_connect(), $query );
 		if (!$res)
 			{
 			$this->db_print_error("Can't execute query : <br><pre>" . htmlspecialchars($query) . "</pre>");
@@ -169,47 +169,57 @@ class babDatabase
 		if (!$result) {
 			return 0;
 			}
-		return mysql_num_rows($result);
+		return mysqli_num_rows($result);
 		}
 
 	public function db_fetch_array($result)
 		{
-		return mysql_fetch_array($result);
+		$arr = mysqli_fetch_array($result);
+		if (null === $arr)
+		{
+			return false;
+		}
+		return $arr;
 		}
 
 	public function db_fetch_assoc($result)
 		{
-		return mysql_fetch_assoc($result);
+		$arr = mysqli_fetch_assoc($result);
+		if (null === $arr)
+		{
+			return false;
+		}
+		return $arr;
 		}
 
 	function db_fetch_row($result)
 		{
-		return mysql_fetch_row($result);
+		return mysqli_fetch_row($result);
 		}
 
 	public function db_result($result, $row, $field)
 		{
-		return mysql_result($result, $row, $field);
+		trigger_error('Deprecated '.__FUNCTION__);
 		}
 
 	public function db_affected_rows()
 		{
-		return mysql_affected_rows($this->db_connect());
+		return mysqli_affected_rows($this->db_connect());
 		}
 
 	public function db_insert_id()
 		{
-		return mysql_insert_id($this->db_connect());
+		return mysqli_insert_id($this->db_connect());
 		}
 
 	public function db_data_seek($res, $row)
 		{
-		return mysql_data_seek($res, $row);
+		return mysqli_data_seek($res, $row);
 		}
 
 	public function db_escape_string($str)
 		{
-		return mysql_real_escape_string($str);
+		return mysqli_real_escape_string($this->db_connect(), $str);
 		}
 
 	/**
@@ -280,7 +290,7 @@ class babDatabase
 
 	public function db_free_result($result)
 		{
-		return mysql_free_result($result);
+		return mysqli_free_result($result);
 		}
 		
 		
@@ -293,7 +303,7 @@ class babDatabase
 	 */
 	public function db_error()
 		{
-		$error = mysql_error();
+		$error = mysqli_error();
 		return empty($error) ? false : $error;
 		}
 		
@@ -319,7 +329,7 @@ class babDatabase
 	 * @return	resource|false
 	 */
 	public function db_queryWem($query) {
-		return mysql_query($query, $this->db_connect());
+		return mysqli_query($this->db_connect(), $query);
 	}
 }
 

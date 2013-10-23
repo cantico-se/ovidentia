@@ -655,6 +655,18 @@ class bab_inifile_requirements {
 			'result'		=> $status
 		);
 	}
+	
+	
+	
+	function require_mod_mysqli($value) {
+	
+		$status = extension_loaded('mysqli');
+		return array(
+				'description'	=> sprintf(bab_translate("%s php module"),'mysqli'),
+				'current'		=> $status ? bab_translate("Available") : bab_translate("Unavailable"),
+				'result'		=> $status
+		);
+	}
 
 
 	function require_mod_ftp($value) {
