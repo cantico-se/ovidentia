@@ -303,7 +303,7 @@ class babDatabase
 	 */
 	public function db_error()
 		{
-		$error = mysqli_error();
+		$error = mysqli_error($this->db_connect());
 		return empty($error) ? false : $error;
 		}
 		
