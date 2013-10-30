@@ -697,17 +697,7 @@ function bab_deleteUser($id)
 	$res = $babDB->db_query("delete from ".BAB_DBDIR_ENTRIES_TBL." where id='".$babDB->db_escape_string($iddu)."'");	
 	$babDB->db_query("delete from ".BAB_DBDIR_FIELDSEXPORT_TBL." where id_user='".$babDB->db_escape_string($id)."'");
 
-	// delete user from VACATION
-	$babDB->db_query("delete from ".BAB_VAC_MANAGERS_TBL." where id_user='".$babDB->db_escape_string($id)."'");
-	$babDB->db_query("delete from ".BAB_VAC_USERS_RIGHTS_TBL." where id_user='".$babDB->db_escape_string($id)."'");
-	$babDB->db_query("delete from ".BAB_VAC_PERSONNEL_TBL." where id_user='".$babDB->db_escape_string($id)."'");
-	$babDB->db_query("delete from ".BAB_VAC_PLANNING_TBL." where id_user='".$babDB->db_escape_string($id)."'");
-	$res = 	$babDB->db_query("select id from ".BAB_VAC_ENTRIES_TBL." where id_user='".$babDB->db_escape_string($id)."'");
-	while( $arr = $babDB->db_fetch_array($res))
-	{
-		$babDB->db_query("delete from ".BAB_VAC_ENTRIES_ELEM_TBL." where id_entry='".$babDB->db_escape_string($arr['id'])."'");
-		$babDB->db_query("delete from ".BAB_VAC_ENTRIES_TBL." where id='".$babDB->db_escape_string($arr['id'])."'");
-	}
+
 
 	$babDB->db_query("delete from ".BAB_USERS_UNAVAILABILITY_TBL." where id_user='".$babDB->db_escape_string($id)."' or id_substitute='".$babDB->db_escape_string($id)."'");
 	
@@ -731,6 +721,11 @@ function bab_deleteUser($id)
 	bab_callAddonsFunction('onUserDelete', $id);
 }
 
+
+/**
+ * Delete organizational chart
+ * @param int $id
+ */
 function bab_deleteOrgChart($id)
 {
 	global $babDB;
@@ -758,16 +753,10 @@ function bab_deleteOrgChart($id)
 	$res = 	$babDB->db_query("select id from ".BAB_OC_ENTITIES_TBL." where id_oc='".$babDB->db_escape_string($id)."'");
 	while( $arr = $babDB->db_fetch_array($res))
 	{
-		$entities[] = $arr['id'];
-	}
-
-	if( count($entities) > 0 )
-	{
-		$babDB->db_query("delete from ".BAB_VAC_PLANNING_TBL." where id_entity IN (".$babDB->quote($entities).")");
+		bab_deleteOrgChartEntity($arr['id']);
 	}
 
 	$babDB->db_query("delete from ".BAB_OC_ROLES_TBL." where id_oc='".$babDB->db_escape_string($id)."'");
-	$babDB->db_query("delete from ".BAB_OC_ENTITIES_TBL." where id_oc='".$babDB->db_escape_string($id)."'");
 	aclDelete(BAB_OCUPDATE_GROUPS_TBL, $id);
 	aclDelete(BAB_OCVIEW_GROUPS_TBL, $id);
 	$babDB->db_query("delete from ".BAB_ORG_CHARTS_TBL." where id='".$babDB->db_escape_string($id)."'");
@@ -780,6 +769,43 @@ function bab_deleteOrgChart($id)
 	}
 	$babTree->removeTree($rootinfo['id']);
 }
+
+
+
+function bab_deleteOrgChartEntity($id_entity)
+{
+	require_once dirname(__FILE__).'/eventchart.php';
+	global $babDB;
+	
+	$roles = array();
+	$res = $babDB->db_query("select id from ".BAB_OC_ROLES_TBL." where id_entity=".$babDB->quote($id_entity));
+	while( $arr = $babDB->db_fetch_assoc($res))
+	{
+		$roles[] = $arr['id'];
+	}
+	if( count($roles) > 0 )
+	{
+		$babDB->db_query("DELETE FROM ".BAB_OC_ROLES_USERS_TBL." where id_role IN (".$babDB->quote($roles).")");
+	}
+	$babDB->db_query("DELETE FROM ".BAB_OC_ROLES_TBL." where id_entity=".$babDB->quote($id_entity));
+	
+	$res = $babDB->db_query("select id_group from ".BAB_OC_ENTITIES_TBL." where id=".$babDB->quote($id_entity)." AND id_group>'0'");
+	while( $arr = $babDB->db_fetch_array($res))
+	{
+		$babDB->db_query("update ".BAB_GROUPS_TBL." set id_ocentity='0' where id='".$babDB->quote($arr['id_group']));
+	}
+	
+	$babDB->db_query('DELETE FROM '.BAB_OC_ENTITIES_TBL.' WHERE id='.$babDB->quote($id_entity));
+	
+	
+	
+	$event = new bab_eventOrgChartEntityAfterDeleted;
+	$event->id_entity = $id_entity;
+	bab_fireEvent($event);
+}
+
+
+
 
 
 function bab_tskmgr_deleteUserContext($iIdUser)

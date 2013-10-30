@@ -351,14 +351,12 @@ var $newtext;
 var $newurl;
 var $blogged;
 var $aidetxt;
-var $vacwaiting;
 
 function babUserSection($close) {
 
 	global $babDB, $babBody, $BAB_SESS_USERID;
 	$this->babSectionTemplate("usersection.html", "template");
 	$this->title = bab_translate("User's section");
-	$this->vacwaiting = false;
 
 	if( $close )
 		{

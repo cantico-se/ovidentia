@@ -2732,31 +2732,8 @@ class bab_OrgChartUtil
 
 	private function removeOrgChartEntity($iIdEntity, $iIdEntityGroup, $sIsOrgChartPrimary, $iIdOrgChartGroup)
 	{
-		$this->deleteRoleByEntityId($this->iIdSessUser, $iIdEntity);
-
-		if('Y' === (string) $sIsOrgChartPrimary && 1 === (int) $iIdOrgChartGroup)
-		{
-			global $babDB;
-
-			$sQuery =
-				'UPDATE ' .
-					BAB_GROUPS_TBL . ' ' .
-				'SET ' .
-					'id_ocentity = ' . $babDB->quote(0) . ' ' .
-				'WHERE ' .
-					'id = ' . $babDB->quote($iIdEntityGroup);
-
-			//bab_debug($sQuery);
-			$babDB->db_query($sQuery);
-		}
-
-		$sQuery = 'DELETE FROM ' . BAB_OC_ENTITIES_TBL . ' WHERE id = '	. $babDB->quote($iIdEntity);
-		//bab_debug($sQuery);
-		$babDB->db_query($sQuery);
-
-		$sQuery = 'DELETE FROM ' . BAB_VAC_PLANNING_TBL . ' WHERE id_entity = '	. $babDB->quote($iIdEntity);
-		//bab_debug($sQuery);
-		$babDB->db_query($sQuery);
+		require_once dirname(__FILE__).'/delincl.php';
+		bab_deleteOrgChartEntity($iIdEntity);
 	}
 
 

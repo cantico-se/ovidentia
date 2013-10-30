@@ -874,34 +874,16 @@ function updateOrgChartEntity($ocid, $name, $description, $oeid, $entityTypes = 
 	Header("Location: ". $GLOBALS['babUrlScript']."?tg=flbchart&rf=1&idx=mode&ocid=".$ocid."&oeid=".$oeid);
 	}
 
+	
+/**
+ * Delete entity
+ * @param unknown_type $ids
+ * @param unknown_type $all
+ */
 function removeOrgChartEntity($ids, $all)
 {
-	global $babDB, $ocinfo;
-
-	$oeids = is_array($ids)? implode(',', $ids) : $ids;
-	$res = $babDB->db_query("select id from ".BAB_OC_ROLES_TBL." where id_entity IN (".$oeids.")");
-	while( $arr = $babDB->db_fetch_array($res))
-	{
-		$row[] = $arr['id'];
-	}
-	if( count($row) > 0 )
-		{
-		$babDB->db_query("delete from ".BAB_OC_ROLES_USERS_TBL." where id_role IN (".implode(',', $row).")");
-		}
-	$babDB->db_query("delete from ".BAB_OC_ROLES_TBL." where id_entity IN (".$oeids.")");
-
-	if( !empty($all) && $ocinfo['isprimary'] == 'Y' && $ocinfo['id_group'] == 1)
-	{
-	include_once $GLOBALS['babInstallPath']."utilit/grpincl.php";
-	$res = $babDB->db_query("select id_group from ".BAB_OC_ENTITIES_TBL." where id IN (".$oeids.") AND id_group>'0'");
-	$all = 'N'; /* Forced to No for moment. DON'T CHANGE THIS LINE */
-	while( $arr = $babDB->db_fetch_array($res))
-		{
-		$babDB->db_query("update ".BAB_GROUPS_TBL." set id_ocentity='0' where id='".$arr['id_group']."'");
-		}
-	}
-	$babDB->db_query("delete from ".BAB_OC_ENTITIES_TBL." where id IN (".$oeids.")");
-	$babDB->db_query("delete from ".BAB_VAC_PLANNING_TBL." where id_entity IN (".$oeids.")");
+	require_once $GLOBALS['babInstallPath'].'utilit/delincl.php';
+	bab_deleteOrgChartEntity($ids);
 }
 
 function confirmDeleteOrgChartEntity($ocid, $oeid, $what)

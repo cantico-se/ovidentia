@@ -463,7 +463,7 @@ class bab_eventCalendarEvent extends bab_event implements bab_eventNotifyRecipie
  */
 class bab_eventAfterEventAdd extends bab_eventCalendarEvent
 {
-
+	
 }
 
 
@@ -521,8 +521,18 @@ class bab_eventAfterEventRelationDelete extends bab_eventCalendarEvent
 
 }
 
-
-
+/**
+ * Calendar event category deleted
+ * @package events
+ * @since 8.0.95
+ */
+class bab_eventAfterEventCategoryDeleted extends bab_event
+{
+	/**
+	 * @var int
+	 */
+	public $id_category;
+}
 
 
 /**

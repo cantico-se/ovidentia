@@ -311,9 +311,6 @@ function disableAddons($addons) {
 
 	global $babDB;
 
-
-	// if an addon has put some events in vacation cache
-	$babDB->db_query("TRUNCATE bab_vac_calendar");
 	bab_siteMap::clearAll();
 
 	Header("Location: ". $GLOBALS['babUrlScript']."?tg=addons&idx=list");
@@ -1490,7 +1487,6 @@ if( isset($update))
 if( isset($acladd))
 	{
 	maclGroups();
-	$babDB->db_query("TRUNCATE bab_vac_calendar");
 	}
 
 if (isset($_POST['action'])) {

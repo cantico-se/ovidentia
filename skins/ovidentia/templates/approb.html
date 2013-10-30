@@ -354,52 +354,6 @@ window.focus();
 <!--#end waitingposts --> 
 
 
-<!--#begin waitingvacations --> 
-<!--#if wvacationscount -->
-<br />
-<table border="0" width="95%" cellpadding="2" cellspacing="0" align="center">
-<tr> 
-<td class="BabLoginCadreBackground"> 
-	<table width="100%" border="0" cellspacing="0" cellpadding="2">
-	<tr> 
-		<td class="BabLoginMenuBackground" width="90%" valign="middle">{ waitingvacationstxt }</td>
-	</tr>
-	</table>
-</td>
-</tr>
-</table>
-<table border="0" width="95%" cellpadding="2" cellspacing="0" align="center">
-<tr>
-<td class="BabLoginCadreBackground"> 
-<table  border="0" width="100%" cellpadding="2" cellspacing="0">
-<tr class="BabSiteAdminTitleFontBackground">
-	<td>{ nametxt }&nbsp;</td>
-	<td>{ totaltxt }&nbsp;</td>
-	<td>{ datebtxt }&nbsp;</td>
-	<td>{ dateetxt }&nbsp;</td>
-	<td align="right">{ validationtxt }&nbsp;</td>
-</tr>
-<!--#in getnextvacation -->
-<!--#if altbg -->
-<tr class="BabSiteAdminFontBackground">
-<!--#else altbg -->
-<tr class="BabForumBackground1">
-<!--#endif altbg -->
-<td width="120">{ urlname }</td>
-<td align="left">{ total }</td>
-<td>{ dateb }</td>
-<td>{ datee }</td>
-<td align="right"><a href="{ url }" onclick="bab_popup(this.href);return false;"><img src="{ babSkinPath }images/Puces/confirm.gif" border="0" alt=""></a></td>
-</td>
-</tr>
-<!--#endin getnextvacation -->
-</table>
-</td>
-</tr>
-</table>
-<!--#endif wvacationscount -->
-<!--#end waitingvacations --> 
-
 <!--#begin waitingAddons --> 
 <!--#in getnextaddon -->
 <br />
@@ -432,75 +386,6 @@ window.focus();
 </table>
 <!--#endin getnextaddon -->
 <!--#end waitingAddons --> 
-
-<!--#begin confirmvacation -->
-
-<table width="95%" border="0" cellspacing="0" cellpadding="2" align="center">
-<tr>
-<td class="BabLoginCadreBackground"> 
-	<table class="BabSiteAdminFontBackground" width="100%" border="0" cellspacing="0" cellpadding="5" align="center">
-	<tr> 
-		<td colspan="2" align="center"><h4>{ fullname }</h4></td>
-	</tr>
-	<tr> 
-		<td align="right">{ datebegintxt }:</td>
-		<td>{ datebegin }</td>
-	</tr>
-	<tr> 
-		<td align="right">{ dateendtxt }:</td>
-		<td>{ dateend }</td>
-	</tr>
-	<tr> 
-		<td align="right" valign="top">{ nbdaystxt }:</td>
-		<td > 
-		<!--#in getnexttype -->
-		<p>{ nbdays }&nbsp;&nbsp;&nbsp;&nbsp;{ typename }&nbsp;&nbsp; <!--#if alert --> - <span class="BabErrorMessage">{ t_alert } ({ alert })</span><!--#endif alert --></p>
-		<!--#endin getnexttype -->
-		</td>
-	</tr>
-	<tr> 
-		<td align="right">{ totaltxt }:</td>
-		<td>{ availability }</td>
-	</tr>
-	<!--#in getmatch --><!--#endin getmatch -->
-	<!--#if nomatch -->
-	<tr> 
-		<td colspan="2" style="color:red">{ t_nomatch }</td>
-	</tr>
-	<!--#endif nomatch -->
-	<tr> 
-		<td align="right">{ remarktxt }:</td>
-		<td>{ remark }</td>
-	</tr>
-	</table>
-
-	<form method="post" action="{ babPhpSelf }">
-	<input type="hidden" name="tg" value="approb">
-	<input type="hidden" name="idx" value="unload">
-	<input type="hidden" name="conf" value="vac">
-	<input type="hidden" name="veid" value="{ veid }">
-	<table class="BabLoginMenuBackground" width="100%" border="0" cellspacing="0" cellpadding="2" align="center">
-		<tr> 
-			<td align="center">{ commenttxt }: </td>
-		</tr> 
-		<tr> 
-			<td align="center">
-			<textarea cols="40" rows="10" name="remarks"></textarea>
-			</td>
-		</tr>
-		<tr> 
-			<td align="center">
-				<input type="submit" name="confirm" value="{ confirm }" />&nbsp;&nbsp;
-				<input type="submit" name="refuse" value="{ refuse }" />
-			</td>
-		</tr>
-	</table>
-	</form>
-</td>
-</tr>
-</table>
-
-<!--#end confirmvacation -->
 
 <!--#begin confirmpost -->
 

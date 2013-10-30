@@ -445,12 +445,6 @@ switch(bab_rp('tg'))
 		if( isset($BAB_SESS_LOGGED) && $BAB_SESS_LOGGED && (bab_isUserAdministrator() || bab_getCurrentAdmGroup() != 0))
 			$incl = "admin/forum";
 		break;
-	case "admvacs":
-		$babLevelOne = bab_translate("Administration");
-		$babLevelTwo = bab_translate("Vacation");
-		if( isset($BAB_SESS_LOGGED) && $BAB_SESS_LOGGED && bab_isUserAdministrator() )
-			$incl = "admin/admvacs";
-		break;
 	case "admcals":
 		$babLevelOne = bab_translate("Administration");
 		$babLevelTwo = bab_translate("Calendar");
@@ -649,40 +643,10 @@ switch(bab_rp('tg'))
 		if( $BAB_SESS_LOGGED)
     		$incl = "sectopt";
 		break;
-	case "vacuser":
-		$babLevelOne = bab_translate("User's section");
-		$babLevelTwo = bab_translate("Vacation");
-		if( $BAB_SESS_LOGGED)
-    		$incl = "vacuser";
-		break;
-	case "vacchart":
-		$babLevelOne = bab_translate("User's section");
-		$babLevelTwo = bab_translate("Vacation");
-		if( $BAB_SESS_LOGGED)
-    		$incl = "vacchart";
-		break;
 	case "directory":
 		$babLevelOne = bab_translate("User's section");
 		$babLevelTwo = bab_translate("Directories");
    		$incl = "directory";
-		break;
-	case "vacadm":
-		$babLevelOne = bab_translate("User's section");
-		$babLevelTwo = bab_translate("Vacations");
-		if( $BAB_SESS_LOGGED)
-    		$incl = "vacadm";
-		break;
-	case "vacadma":
-		$babLevelOne = bab_translate("User's section");
-		$babLevelTwo = bab_translate("Vacations");
-		if( $BAB_SESS_LOGGED)
-    		$incl = "vacadma";
-		break;
-	case "vacadmb":
-		$babLevelOne = bab_translate("User's section");
-		$babLevelTwo = bab_translate("Vacations");
-		if( $BAB_SESS_LOGGED)
-    		$incl = "vacadmb";
 		break;
 	case "lusers":
 		$babLevelOne = "";

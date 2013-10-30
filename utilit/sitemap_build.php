@@ -1591,16 +1591,11 @@ function bab_getUserDelegationUrls($id_delegation, $deleg, $dg_prefix) {
 	// user links
 
 
-	$vac = false;
+	
 	$bemail = false;
 	$idcal = 0;
 	if( !empty($GLOBALS['BAB_SESS_USER']))
 		{
-		$vacacc = bab_vacationsAccess();
-		if( count($vacacc) > 0)
-			{
-			$vac = true;
-			}
 
 		$bemail = bab_mailAccessLevel();
 		if( $bemail == 1 || $bemail == 2)
@@ -1673,17 +1668,6 @@ function bab_getUserDelegationUrls($id_delegation, $deleg, $dg_prefix) {
 			'uid' => $dg_prefix.'UserFaq',
 			'desc' => bab_translate("Frequently Asked Questions"),
 			'icon' => 'apps-faqs'
-			);
-		}
-
-
-	if( $vac )
-		{
-		$array_urls[] = array(
-			'label' => bab_translate("Vacation"),
-			'url' =>  $url."?tg=vacuser",
-			'uid' => $dg_prefix.'UserVac',
-			'icon' => 'apps-vacations'
 			);
 		}
 		

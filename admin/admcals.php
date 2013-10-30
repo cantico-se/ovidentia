@@ -847,14 +847,22 @@ function updateResourceCalendars($calids)
 	exit;
 }
 
-
+/**
+ * Delete calendar event category
+ * @param int $idcat
+ */
 function deleteCalendarCategory($idcat)
 {
-	global $babDB, $babBody;
+	global $babDB;
+	require_once $GLOBALS['babInstallPath'].'utilit/eventperiod.php';
 	
 	$babDB->db_query("delete from ".BAB_CAL_CATEGORIES_TBL." WHERE id=".$babDB->quote($idcat));
 	$babDB->db_query("update ".BAB_CAL_EVENTS_TBL." set id_cat='0' WHERE id_cat=".$babDB->quote($idcat));
-	$babDB->db_query("update ".BAB_VAC_COLLECTIONS_TBL." set id_cat='0' WHERE id_cat=".$babDB->quote($idcat));
+
+	$event = new bab_eventAfterEventCategoryDeleted;
+	$event->id_category = $idcat;
+	
+	bab_fireEvent($event);
 }
 
 /* main */

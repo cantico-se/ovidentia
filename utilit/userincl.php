@@ -527,45 +527,6 @@ function bab_contactsAccess()
 	return false;
 	}
 
-	
-/**
- * @deprecated moved to the absences addon
- * @return multitype:boolean
- */
-function bab_vacationsAccess()
-	{
-	return array();	
-	
-	/*
-	global $babBody, $babDB;
-
-	$array = array();
-	$res = $babDB->db_query("select id from ".BAB_VAC_PERSONNEL_TBL." where id_user='".$babDB->db_escape_string($GLOBALS['BAB_SESS_USERID'])."'");
-	if( $res && $babDB->db_num_rows($res) > 0)
-		{
-		$array['user'] = true;
-		}
-
-	$res = $babDB->db_query("select id from ".BAB_VAC_MANAGERS_TBL." where id_user='".$babDB->db_escape_string($GLOBALS['BAB_SESS_USERID'])."'");
-	if( $res && $babDB->db_num_rows($res) > 0)
-		{
-		$array['manager'] = true;
-		}
-
-	$arrchi = bab_getWaitingIdSAInstance($GLOBALS['BAB_SESS_USERID']);
-	$res = $babDB->db_query("select idfai from ".BAB_VAC_ENTRIES_TBL."  where status=''");
-	while($arr =  $babDB->db_fetch_array($res) )
-		{
-		if( count($arrchi) > 0  && in_array($arr['idfai'], $arrchi))
-			{
-			$array['approver'] = true;
-			break;
-			}
-		}
-
-	return $array;
-	*/
-	}
 
 function bab_articleAccessByRestriction($restriction, $iduser ='')
 	{

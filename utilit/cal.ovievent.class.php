@@ -1385,7 +1385,7 @@ class bab_cal_OviEventSelect
 
 		if ('X-CTO-VACATION' === $property)
 		{
-			// return empty result if a vacatation is requested
+			// return empty result if a vacation is requested
 			// because vacation are not stored into calendar event collection within ovi backend
 			return '1=0';
 		}
@@ -1816,13 +1816,6 @@ class bab_cal_OviEventSelect
 		$wp_collection 	= $backend->WorkingPeriodCollection();
 		$nwp_collection = $backend->NonWorkingPeriodCollection();
 
-		/*
-		// moved to the absences addon
-		if ($userperiods->isPeriodCollection('bab_VacationPeriodCollection') && $users) {
-			include_once $GLOBALS['babInstallPath']."utilit/vacincl.php";
-			bab_vac_setVacationPeriods($userperiods, $users);
-		}
-		*/
 
 		if ($userperiods->isPeriodCollection('bab_CalendarEventCollection')) {
 			$this->setEventsPeriods($userperiods, $userperiods->calendars, $userperiods->icalProperties, $hash, $userperiods->uid_criteria);

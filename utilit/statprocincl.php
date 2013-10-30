@@ -238,8 +238,6 @@ class bab_stats_modules extends bab_stats_base
 			case "topic":
 			case "forums":
 			case "forum":
-			case "admvacs":
-			case "admvac":
 			case "admcals":
 			case "admcal":
 			case "admocs":
@@ -263,13 +261,6 @@ class bab_stats_modules extends bab_stats_base
 			case 'thesaurus':
 			case 'admthesaurus':
 				$id = 15; /* Administration */
-				break;
-			case "vacuser":
-			case "vacchart":
-			case "vacadm":
-			case "vacadma":
-			case "vacadmb":
-				$id = 16;  /* Vacation */
 				break;
 			case "mail":
 			case "mailopt":
