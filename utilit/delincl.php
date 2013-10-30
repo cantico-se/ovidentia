@@ -792,7 +792,7 @@ function bab_deleteOrgChartEntity($id_entity)
 	$res = $babDB->db_query("select id_group from ".BAB_OC_ENTITIES_TBL." where id=".$babDB->quote($id_entity)." AND id_group>'0'");
 	while( $arr = $babDB->db_fetch_array($res))
 	{
-		$babDB->db_query("update ".BAB_GROUPS_TBL." set id_ocentity='0' where id='".$babDB->quote($arr['id_group']));
+		$babDB->db_query("update ".BAB_GROUPS_TBL." set id_ocentity='0' where id=".$babDB->quote($arr['id_group']));
 	}
 	
 	$babDB->db_query('DELETE FROM '.BAB_OC_ENTITIES_TBL.' WHERE id='.$babDB->quote($id_entity));

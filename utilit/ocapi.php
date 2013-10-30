@@ -2623,13 +2623,7 @@ class bab_OrgChartUtil
 	{
 		global $babDB;
 
-		$sQuery =
-			'DELETE FROM ' .
-				BAB_VAC_PLANNING_TBL . ' ' .
-			'WHERE ' .
-				'id_user = '	. $babDB->quote($iIdUser);
-		//bab_debug($sQuery);
-		$babDB->db_query($sQuery);
+	
 
 		if('Y' === $sIsPrimary)
 		{

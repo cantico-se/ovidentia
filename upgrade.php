@@ -1628,27 +1628,7 @@ return $ret;
 
 function upgrade562to563()
 {
-$ret = "";
-$db = & $GLOBALS['babDB'];
 
-$arr = $db->db_fetch_array($db->db_query("SHOW TABLES LIKE '".BAB_VAC_PLANNING_TBL."'"));
-if ( $arr[0] != BAB_VAC_PLANNING_TBL )
-	{
-	$req = "CREATE TABLE `".BAB_VAC_PLANNING_TBL."` (
-		  `id_entity` int(10) unsigned NOT NULL default '0',
-		  `id_user` int(10) unsigned NOT NULL default '0',
-		  KEY `id_user` (`id_user`)
-		)";
-
-	$res = $db->db_query($req);
-	if( !$res)
-		{
-		$ret = "Creation of <b>".BAB_VAC_PLANNING_TBL."</b> table failed !<br>";
-		return $ret;
-		}
-	}
-
-return $ret;
 }
 
 

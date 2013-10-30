@@ -877,13 +877,16 @@ function updateOrgChartEntity($ocid, $name, $description, $oeid, $entityTypes = 
 	
 /**
  * Delete entity
- * @param unknown_type $ids
+ * @param array $ids
  * @param unknown_type $all
  */
 function removeOrgChartEntity($ids, $all)
 {
 	require_once $GLOBALS['babInstallPath'].'utilit/delincl.php';
-	bab_deleteOrgChartEntity($ids);
+	foreach($ids as $id)
+	{
+		bab_deleteOrgChartEntity($id);
+	}
 }
 
 function confirmDeleteOrgChartEntity($ocid, $oeid, $what)
@@ -1172,8 +1175,7 @@ function delUserOrgChartRole($ocid, $oeid, $ocfid)
 	{
 	list($idduser, $isprimary) = $babDB->db_fetch_row($babDB->db_query("select id_user, isprimary from ".BAB_OC_ROLES_USERS_TBL." where id='".$ocfid[$i]."'"));
 	$babDB->db_query("delete from ".BAB_OC_ROLES_USERS_TBL." where id='".$ocfid[$i]."'");
-	$babDB->db_query("delete from ".BAB_VAC_PLANNING_TBL." where id_user='".$idduser."'");
-
+	
 	if( $isprimary == 'Y' )
 		{
 		$res = $babDB->db_query("select ocrut.id from  ".BAB_OC_ROLES_USERS_TBL." ocrut left join ".BAB_OC_ROLES_TBL." ocrt on ocrut.id_role=ocrt.id where ocrt.id_oc='".$ocid."' and  ocrut.id_user='".$idduser."'");
