@@ -7023,7 +7023,7 @@ function ovidentia_upgrade($version_base,$version_ini) {
 	
 	
 	/**
-	 * Upgrade to 9.0.93
+	 * Upgrade to 8.0.93
 	 * 
 	 * Vacations has been moved to the "absences" addon
 	 * file are not deleted in this version but the functionality is unplugged from calendar, sitemap, approbation list
@@ -7033,7 +7033,7 @@ function ovidentia_upgrade($version_base,$version_ini) {
 	
 	
 	/**
-	 * Upgrade to 9.0.94
+	 * Upgrade to 8.0.94
 	 */
 	$functionalities->register('WorkingHours'					, $GLOBALS['babInstallPath'].'utilit/workinghoursincl.php');
 	$functionalities->register('WorkingHours/Ovidentia'			, $GLOBALS['babInstallPath'].'utilit/workinghoursincl.php');
