@@ -331,6 +331,24 @@ define("BAB_USERS_LOG_TBL", "bab_users_log");
 define("BAB_USERS_UNAVAILABILITY_TBL", "bab_users_unavailability");
 define("BAB_UPGRADE_MESSAGES_TBL", "bab_upgrade_messages");
 
+// BAB_VAC_xxx tables are no more used.
+define("BAB_VAC_MANAGERS_TBL", "bab_vac_managers");
+define("BAB_VAC_TYPES_TBL", "bab_vac_types");
+define("BAB_VAC_COLLECTIONS_TBL", "bab_vac_collections");
+define("BAB_VAC_COLL_TYPES_TBL", "bab_vac_coll_types");
+define("BAB_VAC_PERSONNEL_TBL", "bab_vac_personnel");
+define("BAB_VAC_RIGHTS_TBL", "bab_vac_rights");
+define("BAB_VAC_RIGHTS_RULES_TBL", "bab_vac_rights_rules");
+define("BAB_VAC_RIGHTS_INPERIOD_TBL", "bab_vac_rights_inperiod");
+define("BAB_VAC_USERS_RIGHTS_TBL", "bab_vac_users_rights");
+define("BAB_VAC_ENTRIES_TBL", "bab_vac_entries");
+define("BAB_VAC_ENTRIES_ELEM_TBL", "bab_vac_entries_elem");
+define("BAB_VAC_PLANNING_TBL", "bab_vac_planning");
+define("BAB_VAC_OPTIONS_TBL", "bab_vac_options");
+define("BAB_VAC_CALENDAR_TBL", "bab_vac_calendar");
+define("BAB_VAC_RGROUPS_TBL", "bab_vac_rgroup");
+define("BAB_VAC_COMANAGER_TBL", "bab_vac_comanager");
+
 define("BAB_REGISTRY_TBL", "bab_registry");
 define('BAB_WEEK_DAYS_TBL', 'bab_week_days');
 define('BAB_WORKING_HOURS_TBL', 'bab_working_hours');
