@@ -379,7 +379,11 @@ function schemaCreate($formula, $idsch, $schname, $schdesc, $order, $bdel, $ocid
 								}
 							break;
 						case 2:
-							$name = bab_getGroupName($this->arrf[$j]);
+							try {
+								$name = bab_getGroupName($this->arrf[$j]);
+							} catch (Excption $e) {
+								$name = null;
+							}
 							break;
 						default:
 							$name = bab_getUserName($this->arrf[$j]);
