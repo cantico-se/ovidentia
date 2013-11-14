@@ -234,7 +234,10 @@ class cal_monthCls extends cal_wmdbaseCls
 				if (isset($duplicates[$calperiod->getUiIdentifier()]))
 				{
 					// cet evenement existe deja, conserver le plus approprie
-					if ($calperiod->getCollection()->getCalendar()->getUrlIdentifier() === $calendarId)
+					
+					$collection = $calperiod->getCollection();
+					$collectionCalendar = $collection->getCalendar();
+					if ($collectionCalendar && $collectionCalendar->getUrlIdentifier() === $calendarId)
 					{
 						unset($this->evtarr[$duplicates[$calperiod->getUiIdentifier()]]);
 						
