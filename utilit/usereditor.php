@@ -692,12 +692,12 @@ class Func_UserEditor extends bab_functionality {
 	{
 		if (null === $id_user && !$this->canCreateUser())
 		{
-			throw new Exception('Access denied');
+			throw new Exception(bab_translate('Access denied'));
 		}
 		
 		if (null !== $id_user && !$this->canEditUser($id_user))
 		{
-			throw new Exception('Access denied');
+			throw new Exception(bab_translate('Access denied'));
 		}
 		
 		
@@ -1149,19 +1149,24 @@ class Func_UserEditor extends bab_functionality {
 				{
 					$backurl->location();
 				}
-			} catch(Exception $e)
-			{
+			} catch (Exception $e) {
 				$babPage->addError($e->getMessage());
 			}
 		}
-		$editor = $this->getForm($id_user);
-		$editor->setSelfPageHiddenFields();
-		$babPage->addItem($editor);
 		
-		if (isset($_POST['user']))
-		{
-			$editor->setValues(array('user' => bab_pp('user')));
+		try {
+			$editor = $this->getForm($id_user);
+			$editor->setSelfPageHiddenFields();
+			$babPage->addItem($editor);
+			
+			if (isset($_POST['user']))
+			{
+				$editor->setValues(array('user' => bab_pp('user')));
+			}
+		} catch (Exception $e) {
+			$babPage->addError($e->getMessage());
 		}
+				
 		
 		return $babPage;
 	}
