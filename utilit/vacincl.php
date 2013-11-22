@@ -401,10 +401,7 @@ function bab_getRightsOnPeriod($begin = false, $end = false, $id_user = false, $
 			{
 			$endp = 86400 + bab_mktime($arr['date_end_valid']);
 			}
-		else 
-			{
-			$endp += 86400;
-			}
+		
 		
 		$req = "select sum(el.quantity) total from ".BAB_VAC_ENTRIES_ELEM_TBL." el, ".BAB_VAC_ENTRIES_TBL." e where e.id_user=".$babDB->quote($id_user)." and e.status='Y' and el.id_right=".$babDB->quote($arr['id'])." and el.id_entry=e.id";
 		$row = $babDB->db_fetch_array($babDB->db_query($req));
@@ -431,7 +428,7 @@ function bab_getRightsOnPeriod($begin = false, $end = false, $id_user = false, $
 
 			
 
-			// acces sur la p�riode, en fonction de la periode de la demande
+			// acces sur la periode, en fonction de la periode de la demande
 			
 			
 			
@@ -2228,6 +2225,9 @@ function saveVacationPersonnel($userid,  $idcol, $idsa)
 
 	// update fixed vacation right
 	bab_vac_updateFixedRightsOnUser($userid);
+	
+	// update user menu
+	bab_sitemap::clear($userid);
 
 	
 	return true;
