@@ -960,6 +960,11 @@ function bab_ajaxTopicRow() {
 		}
 		
 		
+		$row['confirm_message'] = array(
+			'head' => bab_translate('This topic contain a template for the head section, do you wish to overwrite head with the template?'),
+			'body' => bab_translate('This topic contain a template for the body section, do you wish to overwrite body with the template?')		
+		);
+		
 		$rr = Widget_HtmlCanvas::json_encode($row);
 		echo $rr;
 	}else{
