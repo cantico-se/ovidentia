@@ -299,7 +299,7 @@ class bab_dbdata {
 	 * Count rows into table with same values as $this->row
 	 * if the filter parameter is used, only keys defined as key in the filter array will be used in were clause
 	 * @since 6.5.1
-	 * @param	array|false		[$filter]	the keys of the array are collumn names
+	 * @param	array|false		[$filter]	the keys of the array are column names
 	 * @return 	int
 	 */
 	function countDbRows($filter = false) {
@@ -331,10 +331,10 @@ class bab_dbdata {
 	
 	/**
 	 * Count rows into table with same values as $this->row
-	 * the autoincremented collumn value will be used to ignore le current row 
+	 * the autoincremented column value will be used to ignore le current row 
 	 * if the filter parameter is used, only keys defined as key in the filter array will be used in were clause
 	 * @since 6.6.94
-	 * @param	array|false		[$filter]	the keys of the array are collumn names
+	 * @param	array|false		[$filter]	the keys of the array are column names
 	 * @return 	int
 	 */
 	function countDuplicates($filter = false) {

@@ -132,11 +132,11 @@ class bab_sqlExport
 			$this->autoCommaStart();
 			}
 
-		$this->table_collumn = array();
+		$this->table_column = array();
 		$describe = $this->db->db_query("DESCRIBE ".$name);
-		while($collumn = $this->db->db_fetch_array($describe))
+		while($column = $this->db->db_fetch_array($describe))
 			{
-			$this->handleCollumn($collumn);
+			$this->handleColumn($column);
 			}
 
 		if ($this->opt_structure)
@@ -159,35 +159,40 @@ class bab_sqlExport
 			{
 			$this->commentPush(bab_translate('Dumping data for table')." `".$name."`");
 
+			$this->dumpPush('LOCK TABLES `'.$name.'` WRITE;');
+			$this->dumpPush('/*!40000 ALTER TABLE `'.$name.'` DISABLE KEYS */;');
 			$select = $this->db->db_query("SELECT * FROM ".$name);
 			while($line = $this->db->db_fetch_array($select))
 				{
 				$this->handleData($line,$name);
 				}
 			}
+			$this->dumpPush('/*!40000 ALTER TABLE `'.$name.'` ENABLE KEYS */;');
+			$this->dumpPush('UNLOCK TABLES;');
+				
 
 		$this->brPush();
 		}
 
-	function handleCollumn(&$collumn)
+	function handleColumn(&$column)
 		{
-		$this->table_collumn[] = $collumn['Field'];
-		$this->collumn_type[$collumn['Field']] = $collumn['Type'];
+		$this->table_column[] = $column['Field'];
+		$this->column_type[$column['Field']] = $column['Type'];
 		if ($this->opt_structure)
 			{
-			$str = '`'.$collumn['Field'].'` '.$collumn['Type'];
-			if (!empty($collumn['Default']) )
+			$str = '`'.$column['Field'].'` '.$column['Type'];
+			if (!empty($column['Default']) )
 				{
-				$collumn['Default'] = str_replace('\\','\\\\',$collumn['Default']);
-				$collumn['Default'] = str_replace("'","''",$collumn['Default']);
-					if ('CURRENT_TIMESTAMP' != $collumn['Default']) {
-					$str .= ' DEFAULT \''.$collumn['Default'].'\'';
+				$column['Default'] = str_replace('\\','\\\\',$column['Default']);
+				$column['Default'] = str_replace("'","''",$column['Default']);
+					if ('CURRENT_TIMESTAMP' != $column['Default']) {
+					$str .= ' DEFAULT \''.$column['Default'].'\'';
 					}
 				}
-			if ($collumn['Null'] != 'YES')
+			if ($column['Null'] != 'YES')
 				$str .= ' NOT NULL';
-			if (!empty($collumn['Extra']))
-				$str .= ' ' . $collumn['Extra'];
+			if (!empty($column['Extra']))
+				$str .= ' ' . $column['Extra'];
 
 			$this->dumpPush($str);
 			}
@@ -257,15 +262,15 @@ class bab_sqlExport
 	function handleData(&$line,&$table)
 		{
 		$value = array();
-		for ($i = 0 ; $i < count($this->table_collumn) ; $i++ )
+		for ($i = 0 ; $i < count($this->table_column) ; $i++ )
 			{
-			$col = $this->table_collumn[$i];
+			$col = $this->table_column[$i];
 
 			if (!isset($line[$col]))
 				$value[$i] = 'NULL';
 			elseif ($line[$col] == 0 || $line[$col] != '')
 				{
-				switch ($this->getType($this->collumn_type[$col]))
+				switch ($this->getType($this->column_type[$col]))
 					{
 					case 'tinyint':
 					case 'smallint':
@@ -295,7 +300,7 @@ class bab_sqlExport
 				}
 			}
 
-		$this->dumpPush( 'INSERT INTO `'.$table.'` (`'.implode('`,`',$this->table_collumn).'`) VALUES ('.implode(',',$value).');');
+		$this->dumpPush( 'INSERT INTO `'.$table.'` (`'.implode('`,`',$this->table_column).'`) VALUES ('.implode(',',$value).');');
 		}
 
 	function str_output($str)

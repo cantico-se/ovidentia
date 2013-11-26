@@ -1911,7 +1911,7 @@
 <string id="Select the organizational chart on which the workflow will be based">Sélectionnez l'organigramme sur lequel sera basé le schéma d'approbation</string>
 <string id="Fields to display for a search in all directories">Champs à afficher pour la recherche dans tous les annuaires</string>
 <string id="Search options">Options de la recherche</string>
-<string id="You must define one collumn at least">Vous devez définir une colonne au moins</string>
+<string id="You must define one column at least">Vous devez définir une colonne au moins</string>
 <string id="Create a set of groups">Créer un ensemble de groupes</string>
 <string id="Modify the set of groups">Modifier l\'ensemble de groupes</string>
 <string id="Do you really want to delete the set of groups ?">Voulez-vous vraiment supprimer l\'ensemble de groupes ?</string>

@@ -1841,7 +1841,7 @@ function record_search_options()
 
 	if (!isset($_POST['listfd']) || !isset($_POST['sortfd']) )
 	{
-		$babBody->msgerror = bab_translate("You must define one collumn at least");
+		$babBody->msgerror = bab_translate("You must define one column at least");
 		return false;
 	}
 

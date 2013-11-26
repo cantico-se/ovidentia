@@ -454,7 +454,7 @@ class bab_sitemap_tree extends bab_dbtree
 
 
 	/**
-	 * Get childnodes from this node with collumn to insert
+	 * Get childnodes from this node with column to insert
 	 *
 	 * @param	bab_siteMap_buildItem	$node
 	 * @param	int						&$id
@@ -1178,9 +1178,9 @@ class bab_siteMap_insertTree
 			} else {
 
 				// the uid_functions on profiles table is deprecated
-				// the collumn is not deleted for now (version 7.2.90)
+				// the column is not deleted for now (version 7.2.90)
 				// this way, the database stay compatible with older version of ovidentia (7.2.0 and PATCHS-7-2-0)
-				// this collumn may be deleted in the next main release
+				// this column may be deleted in the next main release
 
 				// create new profile
 				$res = $babDB->db_query('INSERT INTO '.BAB_SITEMAP_PROFILES_TBL.' (uid_functions) VALUES (\'0\')');
