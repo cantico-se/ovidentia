@@ -32,7 +32,7 @@ define("ORG_MAX_REQUESTS_LIST", 100);
 function bab_getOrgChartName($id)
 {
 	$db = $GLOBALS['babDB'];
-	$query = "select name from ".BAB_ORG_CHARTS_TBL." where id='".$id."'";
+	$query = "select name from ".BAB_ORG_CHARTS_TBL." where id=" . $db->quote($id);
 	$res = $db->db_query($query);
 	if( $res && $db->db_num_rows($res) > 0)
 		{
@@ -544,6 +544,7 @@ if( !bab_isUserAdministrator() && !bab_isDelegated('orgchart'))
 
 $idx = bab_rp('idx', 'modify');
 $item = bab_rp('item');
+$action = bab_rp('action', null);
 
 if( '' != ($update = bab_pp('update')))
 	{
