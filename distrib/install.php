@@ -184,7 +184,7 @@ class bab_dumpToDb
 			else
 			{
 				$this->succes->add($this->trans->str('Database created : ').$install->babDBName);
-				mysql_select_db($install->babDBName, $this->db);
+				mysqli_select_db($this->db, $install->babDBName);
 			}
 		}
 		return true;
@@ -249,7 +249,7 @@ class bab_dumpToDb
 				$query = $m[0][$k];
 				if (!$this->db_queryWem($query))
 					{
-					$this->error->add($this->trans->str('There is an error into sql dump file at query : ')."\n\n".$query."\n".mysql_error());
+					$this->error->add($this->trans->str('There is an error into sql dump file at query : ')."\n\n".$query."\n".mysqli_error());
 					return false;
 					}
 				
@@ -272,7 +272,7 @@ class bab_dumpToDb
 			
 		if (!empty($install->babUploadPath))
 			{
-			$this->db_queryWem("UPDATE bab_sites SET uploadpath='".mysql_real_escape_string($install->babUploadPath)."' WHERE id='1'");
+			$this->db_queryWem("UPDATE bab_sites SET uploadpath='".mysqli_real_escape_string($this->db_connect(), $install->babUploadPath)."' WHERE id='1'");
 			}
 		return true;
 		}
