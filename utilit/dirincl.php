@@ -1347,13 +1347,11 @@ function searchDirEntriesByField($id_directory, $likefields, $and = true) {
 	foreach($realm->search($criteria) as $record) {
 		$return[$record->id] = array();
 		foreach($realm->getFields() as $field) {
-			if ($field->searchable()) {
-				$fieldname = $field->getName();
-				$return[$record->id][$fieldname] = array(
-					'name' => $field->getDescription(),
-					'value' => $record->$fieldname
-				);
-			}
+			$fieldname = $field->getName();
+			$return[$record->id][$fieldname] = array(
+				'name' => $field->getDescription(),
+				'value' => $record->$fieldname
+			);
 		}
 	}
 
