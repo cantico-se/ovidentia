@@ -2454,7 +2454,9 @@ function bab_getVacationOption($field) {
 			$arr = $babDB->db_fetch_assoc($res);
 		} else {
 			$arr = array(
-				'chart_superiors_create_request' => 0	
+				'chart_superiors_create_request' => 0,
+				'allow_mismatch' => 1,
+				'email_manager_ondelete' => 1
 			);
 		}
 	}
@@ -3294,7 +3296,10 @@ function bab_vac_delete_request($id_request)
 {
 	
 	notifyOnRequestChange($id_request, true);
-	bab_vac_notifyManagers::send($id_request, true);
+	if (bab_getVacationOption('email_manager_ondelete'))
+	{
+		bab_vac_notifyManagers::send($id_request, true);
+	}
 
 	global $babDB;
 	

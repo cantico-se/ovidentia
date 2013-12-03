@@ -6944,8 +6944,14 @@ function ovidentia_upgrade($version_base,$version_ini) {
 		$babDB->db_query("ALTER TABLE `bab_sites` ADD `smtpsecurity` VARCHAR(10) NOT NULL default '' AFTER smtpport");
 	}
 	
-		
 	
+	/**
+	 * Upgrade to 7.9.11
+	 */
+	if (!bab_isTableField('bab_vac_options', 'email_manager_ondelete'))
+	{
+		$babDB->db_query("ALTER TABLE `bab_vac_options` ADD `email_manager_ondelete` TINYINT( 1 ) UNSIGNED NOT NULL default '1'");
+	}
 	
 	return true;
 

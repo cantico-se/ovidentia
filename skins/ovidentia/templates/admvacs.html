@@ -38,6 +38,20 @@
         </select>
     </td>
     </tr>
+    <tr>
+     <td align="right">Notifier les gestionnaire lors des suppressions</td>
+    <td> 
+        <select name="email_manager_ondelete">
+            <!--#if arr[email_manager_ondelete] -->
+            <option value="0">{ t_no }</option>
+            <option value="1" selected="selected">{ t_yes }</option>
+            <!--#else arr[email_manager_ondelete] -->
+            <option value="0" selected="selected">{ t_no }</option>
+            <option value="1">{ t_yes }</option>
+            <!--#endif arr[email_manager_ondelete] -->
+        </select>
+    </td>
+    </tr>
 	<tr> 
 	<td colspan="2" align="center"> 
 		<input type="submit" name="submit" value="{ t_record }" />

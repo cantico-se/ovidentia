@@ -101,12 +101,13 @@ function record_options() {
 		$babDB->db_query('
 			UPDATE ' . BAB_VAC_OPTIONS_TBL . '
 			SET chart_superiors_create_request = ' . $babDB->quote($_POST['chart_superiors_create_request']) . ',
-				allow_mismatch = ' . $babDB->quote($_POST['allow_mismatch'])
+				allow_mismatch = ' . $babDB->quote($_POST['allow_mismatch']).', 
+				email_manager_ondelete='.$babDB->quote($_POST['email_manager_ondelete'])
 		);
 	} else {
 		$babDB->db_query('
-			INSERT INTO ' . BAB_VAC_OPTIONS_TBL . '(chart_superiors_create_request, allow_mismatch)
-			VALUES (' . $babDB->quote($_POST['chart_superiors_create_request']) . ',' . $babDB->quote($_POST['allow_mismatch']) . ')'
+			INSERT INTO ' . BAB_VAC_OPTIONS_TBL . '(chart_superiors_create_request, allow_mismatch, email_manager_ondelete)
+			VALUES (' . $babDB->quote($_POST['chart_superiors_create_request']) . ',' . $babDB->quote($_POST['allow_mismatch']) .','. $babDB->quote($_POST['email_manager_ondelete']) . ')'
 		);
 	}
 }
