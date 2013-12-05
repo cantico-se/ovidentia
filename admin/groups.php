@@ -391,37 +391,60 @@ function groupsOptions()
 
 
 
+	
+/**
+ * 
+ * @return string       The next idx.
+ */
 function addModGroup()
-	{
+{
 	include_once $GLOBALS['babInstallPath']."utilit/grpincl.php";
 
 	global $babBody;
 	$db = &$GLOBALS['babDB'];
 	
-	if (bab_getCurrentAdmGroup() != 0 && !bab_isDelegated('groups'))
-	{
-		$babBody->msgerror = bab_translate("Access denied");
-		return 'Create';
-	}
+	$id_parent = bab_pp('parent', 0);
 	
+	$delegationId = bab_getCurrentAdmGroup();
+	
+	if ($delegationId != 0) {
+	    // The user is working on a delegation. We check that is allowed to work on the parent group. 
+	    if (!bab_isDelegated('groups')) {
+	        $babBody->msgerror = bab_translate("Access denied");
+	        return 'Create';
+	    }
 
-	$id_parent = &$_POST['parent'];
+	    $delegationInfo = bab_getCurrentDGGroup();
+
+	    if ($id_parent != $delegationInfo['id_group']) {
+	        // The parent group is not the administered group.
+	        $delegationSubGroups = bab_getGroups($delegationInfo['id_group']);
+	        
+	        if (!in_array($id_parent, $delegationSubGroups['id'])) {
+    	        // The parent group is also not one of the administered group's sub-groups.
+	            $babBody->msgerror = bab_translate("Access denied");
+	            return 'Create';
+	        }
+	    }
+	}
+
+
+    
 	$grpdg = isset($_POST['grpdg']) ? $_POST['grpdg'] : 0;
 
-	if ( !is_numeric($_POST['grpid']) )
-		{
+	if (!is_numeric($_POST['grpid'])) {
 		$ret = bab_addGroup($_POST['name'], $_POST['description'], 0, $grpdg, $id_parent);
-		if ($ret)
+		if ($ret) {
 			Header("Location: ". $GLOBALS['babUrlScript']."?tg=groups&idx=List&expand_to=".$ret);
-		else
+		} else {
 			return 'Create';
 		}
+	}
 
-	if( empty($_POST['name']))
-		{
+	if (empty($_POST['name'])) {
 		$babBody->msgerror = bab_translate("ERROR: You must provide a name !!");
 		return 'Create';
-		}
+	}
 
 
 	$description = $_POST['description'];
@@ -467,7 +490,9 @@ function addModGroup()
 
 	Header("Location: ". $GLOBALS['babUrlScript']."?tg=groups&idx=List&expand_to=".$idgrp);
 	return $_POST['idx'];
-	}
+}
+
+
 
 function saveGroupsOptions($mailgrpids, $notgrpids, $congrpids, $pdsgrpids, $pcalgrpids)
 {
