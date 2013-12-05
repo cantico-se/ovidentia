@@ -324,7 +324,7 @@ function bab_getStringAccordingToDataBase($input, $sStringIsoCharset)
 
 
 /**
- * Get a string according to the charset of the databese
+ * Convert a string in database charset
  *
  * @param string 	$input			String(s) to convert (in database charset)
  * @param string 	$sIsoCharset	Iso charset of the output string
