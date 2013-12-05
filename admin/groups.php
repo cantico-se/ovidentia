@@ -398,14 +398,31 @@ function addModGroup()
 	global $babBody;
 	$db = &$GLOBALS['babDB'];
 	
-	if ($babBody->currentAdmGroup != 0 && $babBody->currentDGGroup['groups'] != 'Y')
-	{
-		$babBody->msgerror = bab_translate("Access denied");
-		return 'Create';
-	}
+	$id_parent = bab_pp('parent', 0);
 	
+	$delegationId = $babBody->currentAdmGroup;
+	
+	if ($delegationId != 0) {
+	    
+	    $delegationInfo = $babBody->currentDGGroup;
+	    // The user is working on a delegation. We check that is allowed to work on the parent group.
+	    if ($delegationInfo['groups'] != 'Y') {
+	        $babBody->msgerror = bab_translate("Access denied");
+	        return 'Create';
+	    }
+	
+	    if ($id_parent != $delegationInfo['id_group']) {
+	        // The parent group is not the administered group.
+	        $delegationSubGroups = bab_getGroups($delegationInfo['id_group']);
+	         
+	        if (!in_array($id_parent, $delegationSubGroups['id'])) {
+	            // The parent group is also not one of the administered group's sub-groups.
+	            $babBody->msgerror = bab_translate("Access denied");
+	            return 'Create';
+	        }
+	    }
+	}
 
-	$id_parent = &$_POST['parent'];
 	$grpdg = isset($_POST['grpdg']) ? $_POST['grpdg'] : 0;
 
 	if ( !is_numeric($_POST['grpid']) )
