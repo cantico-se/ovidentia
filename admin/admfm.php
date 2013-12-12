@@ -92,7 +92,7 @@ function modifyFolder($fid)
 			$this->thelp6				= bab_translate("Sets the default value that appears in the upload form. The upolading user can change this value while filling the upload form.");
 			$this->thelp7				= bab_translate("Allow to record which user has downloaded the files included in this folder. Downloads by anonymous users are counted as done by one single 'anonymous user'.");
 			$this->thelp8				= bab_translate("Allows the user granted with management rights on this folder to order manually the files. Subfolders are not affected by this option.");
-			$this->fid					= $fid;
+			$this->fid					= bab_toHtml($fid);
 			
 			$sFolderName = '';
 			$oFmFolder = BAB_FmFolderHelper::getFmFolderById($this->fid);

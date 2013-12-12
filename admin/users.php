@@ -123,8 +123,8 @@ function listUsers($pos, $grp, $deleteAction)
 				$this->users_logged[$id_user] = $id_user;
 				}
 
-			$this->bupdate				= isset($_REQUEST['bupd']) ? $_REQUEST['bupd'] : 0;
-			$this->sSearchText			= bab_rp('sSearchText', '');
+			$this->bupdate				= bab_toHtml(bab_rp('bupd', 0));
+			$this->sSearchText			= bab_toHtml(bab_rp('sSearchText', ''));
 			$this->iUseSearchText		= (0 == mb_strlen(trim($this->sSearchText))) ? '0' : '1';
 			
 			$currentDGGroup = bab_getCurrentDGGroup();
@@ -135,8 +135,8 @@ function listUsers($pos, $grp, $deleteAction)
 	
 				if( isset($pos) &&  mb_strlen($pos) > 0 && $pos[0] == "-" )
 					{
-					$this->pos = mb_strlen($pos)>1? $pos[1]: '';
-					$this->ord = $pos[0];
+					$this->pos = mb_strlen($pos)>1? bab_toHtml($pos[1]): '';
+					$this->ord = bab_toHtml($pos[0]);
 					
 					
 					if( bab_getCurrentAdmGroup() == 0 || ($this->bupdate && bab_isDelegated('battach') && $this->grp == $currentDGGroup['id_group']))
@@ -163,7 +163,7 @@ function listUsers($pos, $grp, $deleteAction)
 					}
 				else
 					{
-					$this->pos = $pos;
+					$this->pos = bab_toHtml($pos);
 					$this->ord = "";
 					if( bab_getCurrentAdmGroup() == 0 || ($this->bupdate && bab_isDelegated('battach') && $this->grp == $currentDGGroup['id_group']))
 						$req .= " where ".$babDB->db_escape_string($this->namesearch)." like '".$babDB->db_escape_string($this->pos)."%' order by ".$babDB->db_escape_string($this->namesearch).", ".$babDB->db_escape_string($this->namesearch2)." asc";

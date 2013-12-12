@@ -1139,7 +1139,10 @@ function bab_updateCalOptions()
 $idx = bab_rp('idx', 'options');
 $urla = bab_rp('urla');
 
-
+if (preg_match('/javascript:/', $urla))
+{
+	$urla = '';
+}
 
 	
 if( isset($modify) && $modify == "options" && $BAB_SESS_USERID != '')
@@ -1203,7 +1206,7 @@ switch($idx)
 			
 			if( isset($urla) && !empty($urla) )
 				{
-				$babBody->addItemMenu("cal", bab_translate("Calendar"), urldecode($urla));
+				$babBody->addItemMenu("cal", bab_translate("Calendar"), $urla);
 				}
 		}
 		else
