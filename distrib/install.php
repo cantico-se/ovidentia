@@ -212,12 +212,12 @@ class bab_dumpToDb
 				$keys = array_keys($param); 
 			
 				foreach($keys as $key) {
-					$param[$key] = mysqli_real_escape_string($this->db_connect(), $param[$key]);
+					$param[$key] = mysqli_real_escape_string($this->db, $param[$key]);
 				}
 
 				return "'".implode("','",$param)."'";
 			} else {
-				return "'".mysqli_real_escape_string($this->db_connect(), $param)."'";
+				return "'".mysqli_real_escape_string($this->db, $param)."'";
 			}
 		}
 
@@ -272,7 +272,7 @@ class bab_dumpToDb
 			
 		if (!empty($install->babUploadPath))
 			{
-			$this->db_queryWem("UPDATE bab_sites SET uploadpath='".mysqli_real_escape_string($this->db_connect(), $install->babUploadPath)."' WHERE id='1'");
+			$this->db_queryWem("UPDATE bab_sites SET uploadpath='".mysqli_real_escape_string($this->db, $install->babUploadPath)."' WHERE id='1'");
 			}
 		return true;
 		}

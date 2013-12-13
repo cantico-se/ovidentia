@@ -37,6 +37,4 @@ $babFileNameTranslation = array('\\' => '_', '/' => '_', ':' => '_', '*' => '_',
  * It is advised not to show the errors in production.
  */
 ini_set('display_errors', 0);
-error_reporting(E_ALL ^ E_STRICT);
-
-?>
+error_reporting(E_ALL & ~E_STRICT);
