@@ -90,17 +90,17 @@ function modifyOrgChart($id)
 				{
 				$this->bdelete = true;
 				}
-			$this->nameval = $arr['name'];
-			$this->descval = $arr['description'];
+			$this->nameval = bab_toHtml($arr['name']);
+			$this->descval = bab_toHtml($arr['description']);
 			
 			$this->ovmldetailtxt = bab_translate("OVML file to be used for detail");
-			$this->ovmldetailval = $arr['ovml_detail'];
+			$this->ovmldetailval = bab_toHtml($arr['ovml_detail']);
 
 			$this->ovmlembeddedtxt = bab_translate("OVML file to be used for embedded view");
-			$this->ovmlembeddedval = $arr['ovml_embedded'];
+			$this->ovmlembeddedval = bab_toHtml($arr['ovml_embedded']);
 			
 			$this->browsetxt = bab_translate("Browse");
-			$this->browseurl = $GLOBALS['babUrlScript'].'?tg=editorovml';
+			$this->browseurl = bab_toHtml($GLOBALS['babUrlScript'].'?tg=editorovml');
 			}
 		}
 

@@ -1115,7 +1115,7 @@ function siteHomePage0($id)
 			$this->moveup = bab_translate("Move Up");
 			$this->movedown = bab_translate("Move Down");
 			$this->create = bab_translate("Modify");
-			$this->id = $id;
+			$this->id = (int) $id;
 
 			$req = "select at.title, ht.id_article from ".BAB_ARTICLES_TBL." at left join ".BAB_HOMEPAGES_TBL." ht on at.id=ht.id_article where ht.id_group='2' and ht.id_site='".$babDB->db_escape_string($id)."' and ht.ordering='0' order by ht.ordering asc";
 
@@ -1195,7 +1195,7 @@ function siteHomePage1($id)
 			$this->moveup = bab_translate("Move Up");
 			$this->movedown = bab_translate("Move Down");
 			$this->create = bab_translate("Modify");
-			$this->id = $id;
+			$this->id = (int) $id;
 			
 			$req = "select at.title, ht.id_article from ".BAB_ARTICLES_TBL." at left join ".BAB_HOMEPAGES_TBL." ht on at.id=ht.id_article where ht.id_group='1' and ht.id_site='".$babDB->db_escape_string($id)."' and ht.ordering='0' and (at.date_archiving = '0000-00-00 00:00' OR at.date_archiving >= now()) order by ht.ordering asc";
 

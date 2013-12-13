@@ -275,7 +275,7 @@ class BAB_TM_GanttBase
 			$this->m_GanttViewParamUrl .= '&isPersonnal=' . $aFilters['isPersonnal'];
 		}
 		
-		$iIdProject = bab_rp('iIdProject', -1);
+		$iIdProject = (int) bab_rp('iIdProject', -1);
 		if(-1 != $iIdProject)
 		{
 			$aProject = null;
@@ -288,7 +288,7 @@ class BAB_TM_GanttBase
 			$this->m_GanttViewParamUrl .= '&iIdProject=' . $aFilters['iIdProject'];
 		}
 		
-		$iIdOwner = bab_rp('iIdOwner', -1);
+		$iIdOwner = (int) bab_rp('iIdOwner', -1);
 		if(-1 != $iIdOwner)
 		{
 			$this->m_sMainTitle = bab_toHtml(bab_translate("My tasks"));
