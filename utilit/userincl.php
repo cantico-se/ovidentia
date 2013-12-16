@@ -196,6 +196,13 @@ function bab_isUserCommentApprover($topics)
 		}
 	}
 
+	
+/**
+ * Returns an array of all waiting instances for one user.
+ * @param int $iduser
+ * 
+ * @return array			An array of instances id.
+ */
 function bab_getWaitingIdSAInstance($iduser)
 	{
 	static $wIdSAInstance = array();

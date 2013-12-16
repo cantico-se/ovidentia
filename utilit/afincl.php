@@ -727,8 +727,8 @@ function getWaitingApprobations($iduser, $update=false)
 			AND frit.notified='Y'
 	");
 	
-	$result['idsch'] = array();
-	$result['idschi'] = array();
+	$result['idsch'] = array();  // id schema
+	$result['idschi'] = array(); // id instance
 	while( $row = $babDB->db_fetch_array($res))
 		{
 		

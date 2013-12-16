@@ -128,6 +128,8 @@ function bab_WFGetWaitingApproversInstance($idschi, $notify = false)
 /**
  * Returns an array of all waiting instances.
  * 
+ * @see bab_getWaitingIdSAInstance($iduser)
+ * 
  * @param int	$iduser
  * @param bool	$update		If true the session cache will not be used.
  * @return array			An array of instances id.
@@ -135,12 +137,7 @@ function bab_WFGetWaitingApproversInstance($idschi, $notify = false)
 function bab_WFGetWaitingInstances($iduser, $update = false)
 {
 	$arr = getWaitingApprobations($iduser, $update);
-	$result = array();
-	for( $i=0; $i < count($arr['idsch']); $i++)
-	{
-		$result[] = $arr['idschi'][$i];
-	}
-	return $result;
+	return $arr['idschi'];
 }
 
 
