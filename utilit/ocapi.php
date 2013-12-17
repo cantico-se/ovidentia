@@ -554,17 +554,20 @@ function bab_OCGetEntityTypes($entityId)
  *
  * Results fetched from the result set have the following structure:
  * array(
- * 		'id_dir_entry' => directory entry id (@see bab_getDirEntry)
- * 		'role_type' =>  1 = Superior, 2 = Temporary employee, 3 = Members, 0 = Other collaborators
- * 		'role_name' => The role title
- * 		'user_disabled' => 1 = disabled, 0 = not disabled		// deprecated : allways not disabled
- * 		'user_confirmed' => 1 = confirmed, 0 = not confirmed	// deprecated : allways confirmed
- * 		'sn' =>	The member's surname (last name)
- * 		'givenname' => The member's given name (first name)
+ * 		'id_dir_entry' 		=> directory entry id (@see bab_getDirEntry)
+ * 		'role_type' 		=>  1 = Superior, 2 = Temporary employee, 3 = Members, 0 = Other collaborators
+ * 		'role_name' 		=> The role title
+ * 		'user_disabled' 	=> 1 = disabled, 0 = not disabled		// deprecated : allways not disabled
+ * 		'user_confirmed' 	=> 1 = confirmed, 0 = not confirmed	// deprecated : allways confirmed
+ * 		'sn' 				=>	The member's surname (last name)
+ * 		'givenname' 		=> The member's given name (first name)
+ * 		'id_user' 			=> The member user ID (can be empty if the member is a directory entry without associated user) 
  * )
  * The result set is ordered by role ordering (which is by default type
  * in order 1,2,3,0 but can be manually reordered) and by user name
  * (according to ovidentia name ordering rules by default).
+ * 
+ * @since 8.0.97	The id_user key has been added in the 8.0.97 version
  *
  * @param int  $entityId			Id of orgchart entity.
  * @param bool $useNameOrder		If FALSE always order members by their lastname, if TRUE takes global name order into consideration. 
@@ -583,7 +586,8 @@ function bab_OCSelectEntityCollaborators($entityId, $useNameOrder = true)
 	$sql .= '      babusers.is_confirmed AS user_confirmed,';
 	$sql .= '      dir_entries.sn,';
 	$sql .= '      dir_entries.givenname,';
-	$sql .= '      dir_entries.id_directory';
+	$sql .= '      dir_entries.id_directory,';
+	$sql .= '      dir_entries.id_user';
 	$sql .= ' FROM ' . BAB_OC_ROLES_USERS_TBL . ' AS users';
 	$sql .= ' LEFT JOIN ' . BAB_OC_ROLES_TBL . ' AS roles ON users.id_role = roles.id';
 	$sql .= ' LEFT JOIN ' . BAB_DBDIR_ENTRIES_TBL . ' AS dir_entries ON users.id_user = dir_entries.id';
