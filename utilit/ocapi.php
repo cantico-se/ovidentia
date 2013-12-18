@@ -316,6 +316,32 @@ function bab_OCGetCollaborators($identity)
 }
 
 
+/**
+ * Returns the array of organizational charts associated to group directories
+ * 
+ * @since 8.0.98
+ * @return	multitype:string
+ */
+function bab_OCGetGroupDirOrgCharts()
+{
+	global $babDB;
+	
+	$orgChartRes = $babDB->db_query("
+		select b.id, b.name 
+			from ".BAB_ORG_CHARTS_TBL." b left join ".BAB_DB_DIRECTORIES_TBL." dd on b.id_directory=dd.id 
+		where 
+			dd.id_group!=0 and b.id_dgowner='".$babDB->db_escape_string(bab_getCurrentAdmGroup())."' order by b.name asc
+	");
+
+	$orgCharts = array();
+	while ($orgChart = $babDB->db_fetch_assoc($orgChartRes)) {
+		$orgCharts[$orgChart['id']] = $orgChart['name'];
+	}
+	
+	return $orgCharts;
+}
+
+
 
 /**
  * Returns the array of organizational charts where the specified user
