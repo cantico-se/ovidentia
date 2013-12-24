@@ -207,7 +207,7 @@
 		</td>
 	</tr>
 	
-	<tr> 
+	<tr id="event-title"> 
 		<td align="right" valign="middle">{ title }:</td>
 		<td> 
 		<input type="text" name="title" size="45" maxlength="100" value="{ arr[title] }">
@@ -221,10 +221,10 @@
 	</tr>
 	
 	<tr> 
-		<td align="right">{ category }:</td>
+		<td class="event-category-lbl" align="right">{ category }:</td>
 		<td> 
-			<select name="category" onchange="category_switch(this)">
-			<option value="" selected ></option>
+			<select class="event-category-select" name="category" onchange="category_switch(this)">
+				<option value="" selected ></option>
 				<!--#in getnextcat -->
 				<option value="{ cat[id] }" style="background:#{ cat[bgcolor] }" { selected }>{ cat[name] }</option>
 				<!--#endin getnextcat -->
@@ -271,54 +271,62 @@
 		<td colspan="2" align="center">
 		
 			<!--#if bprivate -->
-			&nbsp;&nbsp;{ t_bprivate }: 
-			<select name="bprivate">
-				<!--#if arr[bprivate] "== Y" -->
-				<option value="Y" selected>{ t_yes }</option>
-				<option value="N">{ t_no }</option>
-				<!--#else arr[bprivate] -->
-				<option value="Y">{ t_yes }</option>
-				<option value="N" selected>{ t_no }</option>
-				<!--#endif arr[bprivate] -->
-			</select>
+			<span class="event-bprivate">
+				&nbsp;&nbsp;{ t_bprivate }: 
+				<select name="bprivate">
+					<!--#if arr[bprivate] "== Y" -->
+					<option value="Y" selected>{ t_yes }</option>
+					<option value="N">{ t_no }</option>
+					<!--#else arr[bprivate] -->
+					<option value="Y">{ t_yes }</option>
+					<option value="N" selected>{ t_no }</option>
+					<!--#endif arr[bprivate] -->
+				</select>
+			</span>
 			<!--#endif bprivate -->
 
 			<!--#if block -->
-			&nbsp;&nbsp;{ t_block }:
-			<select name="block">
-				<!--#if arr[block] "== Y" -->
-				<option value="Y" selected>{ t_yes }</option>
-				<option value="N">{ t_no }</option>
-				<!--#else arr[block] -->
-				<option value="Y">{ t_yes }</option>
-				<option value="N" selected>{ t_no }</option>
-				<!--#endif arr[block] -->
-			</select>
+			<span class="event-block">
+				&nbsp;&nbsp;{ t_block }:
+				<select name="block">
+					<!--#if arr[block] "== Y" -->
+					<option value="Y" selected>{ t_yes }</option>
+					<option value="N">{ t_no }</option>
+					<!--#else arr[block] -->
+					<option value="Y">{ t_yes }</option>
+					<option value="N" selected>{ t_no }</option>
+					<!--#endif arr[block] -->
+				</select>
+			</span>
 			<!--#endif block -->
 
 			<!--#if bfree -->
-			&nbsp;&nbsp;{ t_bfree }:
-			<select name="bfree">
-				<!--#if arr[bfree] "== Y" -->
-				<option value="Y" selected>{ t_yes }</option>
-				<option value="N">{ t_no }</option>
-				<!--#else arr[bfree] -->
-				<option value="Y">{ t_yes }</option>
-				<option value="N" selected>{ t_no }</option>
-				<!--#endif arr[bfree] -->
-			</select>
+			<span class="event-bfree">
+				&nbsp;&nbsp;{ t_bfree }:
+				<select name="bfree">
+					<!--#if arr[bfree] "== Y" -->
+					<option value="Y" selected>{ t_yes }</option>
+					<option value="N">{ t_no }</option>
+					<!--#else arr[bfree] -->
+					<option value="Y">{ t_yes }</option>
+					<option value="N" selected>{ t_no }</option>
+					<!--#endif arr[bfree] -->
+				</select>
+			</span>
 			<!--#endif bfree -->
 
-			&nbsp;&nbsp;{ groupe_notiftxt }:
-			<select name="groupe-notif">
-				<!--#if notify -->
-				<option value="1" selected="selected">{ t_yes }</option>
-				<option value="0">{ t_no }</option>
-				<!--#else notify -->
-				<option value="1">{ t_yes }</option>
-				<option value="0" selected="selected">{ t_no }</option>
-				<!--#endif notify -->
-			</select>
+			<span class="event-groupe-notif">
+				&nbsp;&nbsp;{ groupe_notiftxt }:
+				<select name="groupe-notif">
+					<!--#if notify -->
+					<option value="1" selected="selected">{ t_yes }</option>
+					<option value="0">{ t_no }</option>
+					<!--#else notify -->
+					<option value="1">{ t_yes }</option>
+					<option value="0" selected="selected">{ t_no }</option>
+					<!--#endif notify -->
+				</select>
+			</span>
 			
 			&nbsp;&nbsp;&nbsp;
 			
@@ -357,7 +365,7 @@
 			
 			
 			
-			<label><input style="vertical-align:middle" type="checkbox" name="creminder" value="Y" { rcheckedval }  OnClick="bab_event_alert_ed()" />&nbsp;{ alerttxt }</label>
+			<label class="event-creminder"><input style="vertical-align:middle" type="checkbox" name="creminder" value="Y" { rcheckedval }  OnClick="bab_event_alert_ed()" />&nbsp;{ alerttxt }</label>
 		</td>
 	</tr>
 	<tr id="alert_tr"> 
@@ -593,7 +601,7 @@ bab_event_alert_ed();
 		</td>
 	</tr>
 	
-	<tr> 
+	<tr id="event-title"> 
 		<td align="right">{ title }:</td>
 		<td><input type="text" name="title" size="50" maxlength="255" value="{ evtarr[title] }" /></td>
 	</tr>
@@ -604,9 +612,9 @@ bab_event_alert_ed();
 	
 	
 	<tr> 
-		<td align="right">{ category }:</td>
+		<td class="event-category-lbl" align="right">{ category }:</td>
 		<td> 
-			<select name="category" onchange="category_switch(this)">
+			<select class="event-category-select" name="category" onchange="category_switch(this)">
 			<option value="" selected ></option>
 			<!--#in getnextcat -->
 			<option value="{ catid }" style="background:#{ bgcolor }" { selected }>{ catname }</option>
@@ -649,8 +657,8 @@ bab_event_alert_ed();
 
 	<tr> 
 		<td colspan="2" align="center">
-		
-		{ t_bprivate }:
+		<span class="event-bprivate">
+			{ t_bprivate }:
 			<select name="bprivate">
 				<!--#if evtarr[bprivate] "== Y" -->
 				<option value="Y" selected>{ t_yes }</option>
@@ -660,9 +668,10 @@ bab_event_alert_ed();
 				<option value="N" selected>{ t_no }</option>
 				<!--#endif evtarr[bprivate] -->
 			</select>
-
-		 &nbsp;&nbsp; { t_block }:
-		<select name="block">
+		</span>
+		<span class="event-block">
+			&nbsp;&nbsp; { t_block }:
+			<select name="block">
 				<!--#if evtarr[block] "== Y" -->
 				<option value="Y" selected>{ t_yes }</option>
 				<option value="N">{ t_no }</option>
@@ -671,9 +680,10 @@ bab_event_alert_ed();
 				<option value="N" selected>{ t_no }</option>
 				<!--#endif evtarr[block] -->
 			</select>
-
-		 &nbsp;&nbsp; { t_bfree }:
-		<select name="bfree">
+		</span>
+		<span class="event-bfree">
+			&nbsp;&nbsp; { t_bfree }:
+			<select name="bfree">
 				<!--#if evtarr[bfree] "== Y" -->
 				<option value="Y" selected>{ t_yes }</option>
 				<option value="N">{ t_no }</option>
@@ -682,9 +692,10 @@ bab_event_alert_ed();
 				<option value="N" selected>{ t_no }</option>
 				<!--#endif evtarr[bfree] -->
 			</select>
-			
-		&nbsp;&nbsp;{ groupe_notiftxt }:
-		<select name="groupe-notif">
+		</span>
+		<span class="event-groupe-notif">
+			&nbsp;&nbsp;{ groupe_notiftxt }:
+			<select name="groupe-notif">
 				<!--#if notify -->
 				<option value="1" selected="selected">{ t_yes }</option>
 				<option value="0">{ t_no }</option>
@@ -693,6 +704,7 @@ bab_event_alert_ed();
 				<option value="0" selected="selected">{ t_no }</option>
 				<!--#endif notify -->
 			</select>
+		</span>
 		</td>
 	</tr>
 	<tr> 

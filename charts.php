@@ -78,7 +78,11 @@ function listOrgCharts()
 				{
 				$arr = $babDB->db_fetch_array($this->res);
 				$this->ocid = $arr['id'];
-				$this->viewurl = $GLOBALS['babUrlScript']."?tg=chart&ocid=".$arr['id']."&disp=disp3";
+				$displayMode = 'disp3';
+				if($arr['display_mode']){
+					$displayMode = 'disp1';
+				}
+				$this->viewurl = $GLOBALS['babUrlScript']."?tg=chart&ocid=".$arr['id']."&disp=".$displayMode;
 				$this->urlname = $arr['name'];
 				$this->descval = $arr['description'];
 				$this->lock = $arr['edit'];

@@ -7062,6 +7062,12 @@ function ovidentia_upgrade($version_base,$version_ini) {
 		}
 	}
 	
+	/**
+	 * Upgrade to 8.0.97
+	 */
+	if (!bab_isTableField('bab_org_charts', 'display_mode')) {
+		$babDB->db_query("ALTER TABLE `bab_org_charts` ADD `display_mode` BOOLEAN NOT NULL");
+	}
 	
 	return true;
 

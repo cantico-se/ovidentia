@@ -26,8 +26,17 @@ valign="middle">{  name }:</td>
 <td class="BabLoginMenuBackground" valign="middle"> 
 <select name="dirid">
 <!--#in getnextdir -->
-<option value="{ dirid }">{ dirname }</option>
+<option value="{ dirid }"  <!--#if dirid "== diridval" -->selected="selected"<!--#endif dirid -->>{ dirname }</option>
 <!--#endin getnextdir -->
+</select>
+</td>
+</tr>
+<tr> 
+<td class="BabLoginMenuBackground" align="right" nowrap valign="middle">{ display_mode }:</td>
+<td class="BabLoginMenuBackground" valign="middle"> 
+<select name="display_mode">
+<option value="0" <!--#if displayval "== 0" -->selected="selected"<!--#endif displayval -->>{ display_horizontal }</option>
+<option value="1" <!--#if displayval "== 1" -->selected="selected"<!--#endif displayval -->>{ display_text }</option>
 </select>
 </td>
 </tr>
@@ -75,6 +84,15 @@ valign="middle">{  name }:</td>
 </td>
 </tr>
 <tr> 
+<td class="BabLoginMenuBackground" align="right" nowrap valign="middle">{ display_mode }:</td>
+<td class="BabLoginMenuBackground" valign="middle">
+<select name="display_mode">
+<option value="0" <!--#if displayval "== 0" -->selected="selected"<!--#endif displayval -->>{ display_horizontal }</option>
+<option value="1" <!--#if displayval "== 1" -->selected="selected"<!--#endif displayval -->>{ display_text }</option>
+</select> 
+</td>
+</tr>
+<tr> 
 <td class="BabLoginMenuBackground" nowrap>&nbsp;</td>
 <td class="BabLoginMenuBackground" valign="middle">
 <input type="submit" name="submit" value="{ update }">
@@ -117,6 +135,15 @@ valign="middle">{  name }:</td>
 <td class="BabLoginMenuBackground" align="right" nowrap valign="middle">{ description }:</td>
 <td class="BabLoginMenuBackground" valign="middle"> 
 <input type="text" name="ocndesc" size="30" maxlength="60" value="">
+</td>
+</tr>
+<tr> 
+<td class="BabLoginMenuBackground" align="right" nowrap valign="middle">{ display_mode }:</td>
+<td class="BabLoginMenuBackground" valign="middle">
+<select name="ocndisplay_mode">
+<option value="0">{ display_horizontal }</option>
+<option value="1">{ display_text }</option>
+</select> 
 </td>
 </tr>
 <tr> 
