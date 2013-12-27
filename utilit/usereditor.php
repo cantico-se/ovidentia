@@ -157,6 +157,50 @@ class Func_UserEditor extends bab_functionality {
 		
 		return $this->directory;
 	}
+	
+	
+	/**
+	 * Test if the users can modify their own directory entry
+	 * @return bool
+	 */
+	protected function canUserEditHisOwnEntry()
+	{
+		$directory = $this->getDirectory();
+
+		if ('Y' === $directory['user_update'])
+		{
+			return true;
+		}
+
+		if ($directory['id_group'] != BAB_REGISTERED_GROUP)
+		{
+			global $babDB;
+			
+			$res = $babDB->db_query("
+				SELECT user_update FROM  
+					
+					".BAB_DB_DIRECTORIES_TBL." d,
+					".BAB_GROUPS_TBL." g 
+					
+				WHERE
+					g.id>'0'
+					AND g.id=d.id_group
+					AND g.directory='Y'
+					AND g.id=".$babDB->quote(BAB_REGISTERED_GROUP)."
+			");
+			
+			$registered_users = $babDB->db_fetch_assoc($res);
+			
+			if (!empty($registered_users) && 'Y' === $registered_users['user_update'])
+			{
+				return true;
+			}
+		}
+		
+		return false;
+	}
+	
+	
 
 	
 	/**
@@ -236,7 +280,7 @@ class Func_UserEditor extends bab_functionality {
 			return false;
 		}
 		
-		if (((int) $id_user) === bab_getUserId() && 'Y' === $directory['user_update'])
+		if (((int) $id_user) === bab_getUserId() && $this->canUserEditHisOwnEntry())
 		{
 			return true;
 		}
@@ -603,7 +647,7 @@ class Func_UserEditor extends bab_functionality {
 			return true;
 		}
 		
-		if ('Y' === $directory['user_update'] && ((int) $id_user) === bab_getUserId())
+		if ($this->canUserEditHisOwnEntry() && ((int) $id_user) === bab_getUserId())
 		{
 			return true;
 		}
