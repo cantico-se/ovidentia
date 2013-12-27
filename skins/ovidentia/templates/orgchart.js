@@ -335,7 +335,7 @@ function bab_loadStateFromCookie()
 				this.setZoom(parseFloat(keyValue[1]));
 			}  else if (keyValue[0] == this.id + 'threshold') {
 				this.thresholdLevel = parseInt(keyValue[1]);
-			}  else if (keyValue[0] == this.id + 'relative') {
+			}  else if (keyValue[0] == this.id + 'relative' && typeof this.setRelative != 'undefined') {
 				this.setRelative(keyValue[1]);
 			}
 		}
@@ -497,8 +497,19 @@ function bab_resizeOrgChartContainer() {
 	var toolbar = $(orgChartContainer).select('.bab_treeToolbar')[0]; //bab_getElementsByClassName(orgChartContainer, 'bab_treeToolbar')[0];
 	var locationbar = $(orgChartContainer).select('.bab_treeLocationBar')[0]; //bab_getElementsByClassName(orgChartContainer, 'bab_treeLocationBar')[0];
 	
-	var toolbarDimensions = Element.getDimensions(toolbar);
-	var locationbarDimensions = Element.getDimensions(locationbar);
+	if (typeof toolbar != 'undefined')
+	{
+		var toolbarDimensions = Element.getDimensions(toolbar);
+	} else {
+		var toolbarDimensions = { 'height' : 50, 'width': 800 };
+	}
+	
+	if (typeof locationbar != 'undefined')
+	{
+		var locationbarDimensions = Element.getDimensions(locationbar);
+	} else {
+		var locationbarDimensions = { 'height' : 50, 'width': 800 };
+	}
 	
 	var ieBody = (document.documentElement ? document.documentElement : document.body)
 	
@@ -559,12 +570,7 @@ function bab_help()
 
 function bab_more()
 {
-	var orgChartDiv = this.getControlledElement();
-	var orgChartContainer = orgChartDiv.parentNode;
-
-	var configbar = $(orgChartContainer).select('.bab_treeToolbar')[1];
-	//configbar.style.display = 'none';
-	$(configbar).toggle();
+	$(window.bab_orgChart.configbar).toggle();
 }
 
 
@@ -689,6 +695,10 @@ function bab_createContextMenu(actionsDiv, entity)
 	});
 }
 
+
+
+
+
 function bab_initOrgChart(orgChartDiv)
 {
 	window.bab_orgChart = orgChartDiv;
@@ -702,8 +712,13 @@ function bab_initOrgChart(orgChartDiv)
 
 	// Toolbar creation.
 	var orgChartContainer = orgChartDiv.parentNode;
+	
+	var bars = $(orgChartContainer).select('.bab_treeToolbar');
+	var toolbar = bars[0];
+	var configbar = bars[1];
 
-	var toolbar = $(orgChartContainer).select('.bab_treeToolbar')[0]; //bab_getElementsByClassName(orgChartContainer, 'bab_treeToolbar')[0];
+	window.bab_orgChart.configbar = configbar;
+	
 	if (toolbar) {
 		toolbar.controlledElement = orgChartDiv;
 		toolbar.getControlledElement = getControlledElement;
@@ -783,7 +798,8 @@ function bab_initOrgChart(orgChartDiv)
 		window.bab_searchContext = new bab_SearchContext(orgChartDiv, search);
 */
 	}
-	var configbar = $(orgChartContainer).select('.bab_treeToolbar')[1]; //bab_getElementsByClassName(orgChartContainer, 'bab_treeToolbar')[0];
+
+	
 	if (configbar) {
 
 		configbar.style.display = 'none';
@@ -903,10 +919,15 @@ function bab_initOrgChart(orgChartDiv)
 	//console && console.timeEnd('entities');
 
 
+	if (typeof orgChartDiv.levelSelect != 'undefined')
+	{
+		orgChartDiv.levelSelect.value = '-';
+	}
 
-	orgChartDiv.levelSelect.value = '-';
-	
-	orgChartDiv.thresholdSelect.value = orgchart.thresholdLevel;
+	if (typeof orgChartDiv.thresholdSelect != 'undefined')
+	{
+		orgChartDiv.thresholdSelect.value = orgchart.thresholdLevel;
+	}
 
 	window.setTimeout('bab_setOpenNodes(window.bab_orgChart.bab_openNodes);'
 						+ 'bab_setOpenMembers(window.bab_orgChart.bab_openMembers);'
