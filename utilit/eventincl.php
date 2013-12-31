@@ -27,7 +27,12 @@ include_once 'base.php';
 
 class bab_event {
 
-
+	/**
+	 * Can be set in the callback function to stop the processing done by bab_fireEvent
+	 * @var bool
+	 */
+	public $stop_propagation = false;
+	
 }
 
 /**
@@ -286,6 +291,15 @@ function bab_fireEvent(&$event_obj) {
 
 				$object = eval($evalstr);
 				if (is_object($object)) {
+					
+					/*@var $event_obj bab_Event */
+					
+					if ($event_obj->stop_propagation)
+					{
+						$obj->restoreAddonCtx();
+						break;
+					}
+					
 					call_user_func_array(array($object, $method), array(&$event_obj));
 				} else {
 					bab_debug('
