@@ -7069,6 +7069,15 @@ function ovidentia_upgrade($version_base,$version_ini) {
 		$babDB->db_query("ALTER TABLE `bab_org_charts` ADD `display_mode` BOOLEAN NOT NULL");
 	}
 	
+	
+	
+	/**
+	 * Upgrade to 8.0.99
+	 */
+	
+	bab_addEventListener('bab_eventBeforeWaitingItemsDisplayed', 'bab_onBeforeWaitingItemsDisplayed', 'utilit/approbincl.php');
+	
+	
 	return true;
 
 }
