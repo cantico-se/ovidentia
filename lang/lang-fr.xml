@@ -3432,4 +3432,9 @@ L'administrateur</string>
 <string id="This topic contain a template for the head section, do you wish to overwrite head with the template?">Ce thème contient un modèle pour l'introduction de l'article, voulez-vous écraser l'introduction avec ce modèle?</string>
 <string id="This topic contain a template for the body section, do you wish to overwrite body with the template?">Ce thème contient un modèle pour le corps de l'article, voulez-vous écraser le corps avec ce modèle?</string>
 
+<string id="Node ID in the site sitemap (%s)">ID d'un noeud dans le plan du site sélectionné (%s)</string>
+<string id="The node exists">Le noeud existe</string>
+<string id="Node not found">Noeud introuvable</string>
+<string id="Node %s not found in site sitemap %s">Le noeud %s n'a pas été trouvé dans le plan du site sélectionné %s</string>
+
 </fr>

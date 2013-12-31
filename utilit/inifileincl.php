@@ -908,6 +908,49 @@ class bab_inifile_requirements {
 				'result'		=> $isWritable === true
 		);
 	}
+	
+	
+	
+	
+	function require_site_sitemap_node($value) {
+		
+		require_once $GLOBALS['babInstallPath'].'utilit/settings.class.php';
+		$error = null;
+		
+		$rootNode = bab_sitemap::getFromSite();
+		
+		
+		$settings = bab_getInstance('bab_Settings');
+		/*@var $settings bab_Settings */
+		
+		$site = $settings->getSiteSettings();
+		
+		
+		$found = array();
+		$required_id = preg_split('/\s*,\s*/', $value);
+		
+		foreach($required_id as $nodeId)
+		{
+			$node = $rootNode->getNodeById($nodeId);
+			if (null === $node)
+			{
+				$error = sprintf(bab_translate('Node %s not found in site sitemap %s'), $nodeId, $site['sitemap']);
+			} else {
+			
+				$found[] = $nodeId;
+			}
+		}
+		
+		return array(
+				'description'	=> sprintf(bab_translate("Node ID in the site sitemap (%s)"), $site['sitemap']),
+				'display_value' => $value,
+				'current'		=> count($found) > 0 ? (count($required_id) === 1 ? bab_translate('The node exists') : implode(', ', $found)) : bab_translate('Node not found'),
+				'result'		=> count($found) === count($required_id),
+				'error'			=> $error
+		);
+	}
+	
+	
 
 
 
