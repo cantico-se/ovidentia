@@ -184,9 +184,9 @@ class bab_fireEvent_Obj {
 /**
  * Fire all event registered as listeners
  * @see	bab_addEventListener
- * @param	object	$event_obj (inherited object of bab_event)
+ * @param	bab_Event	$event_obj
  */
-function bab_fireEvent(&$event_obj) {
+function bab_fireEvent(bab_Event $event_obj) {
 	//echo "<script type=\"text/javascript\">alert(\"" . get_class($event_obj) . "\")</script>";
 	//static $arrayEvent = array();
 	//$arrayEvent[] = get_class($event_obj);
@@ -268,16 +268,28 @@ function bab_fireEvent(&$event_obj) {
 				$unused[$class_name] = 1;
 			}
 		}
+		
+		
 	}
 
-
+	
+	
 
 	foreach($calls[$classkey] as $arr) {
+		
+		if ($event_obj->stop_propagation)
+		{
+			break;
+		}
+		
+		
 		$obj->setAddonCtx($arr['addon_id'], $arr['addon_name']);
 
 		if (!empty($arr['require_file'])) {
 			require_once $GLOBALS['babInstallPath'].$arr['require_file'];
 		}
+		
+		
 
 		if (function_exists($arr['function_name'])) {
 			call_user_func_array($arr['function_name'], array(&$event_obj));
@@ -291,15 +303,6 @@ function bab_fireEvent(&$event_obj) {
 
 				$object = eval($evalstr);
 				if (is_object($object)) {
-					
-					/*@var $event_obj bab_Event */
-					
-					if ($event_obj->stop_propagation)
-					{
-						$obj->restoreAddonCtx();
-						break;
-					}
-					
 					call_user_func_array(array($object, $method), array(&$event_obj));
 				} else {
 					bab_debug('

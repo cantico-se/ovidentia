@@ -66,11 +66,12 @@ class bab_eventBeforeWaitingItemsDisplayed extends bab_event
 	 * 
 	 * @param string 	$title		Title for the list of items
 	 * @param Array 	$arr		the list of items waiting for approval,
-	 * 								available format for each item :
+	 * 								Format for each item :
 	 * 									text 		: plain text on one line
 	 * 									description : HTML content
 	 * 									url			: url to the approval form
 	 * 									popup		: boolean (url opening method)
+	 * 									idschi		: int
 	 * 								
 	 */
 	public function addObject($title, Array $arr) {
@@ -1181,15 +1182,13 @@ switch($idx)
 
 		$babBody->title = bab_translate("Approbations");
 
-		$approbinit = bab_getWaitingIdSAInstance($GLOBALS['BAB_SESS_USERID']);
-		if (bab_isWaitingApprobations()  || count($approbinit) > 0) {
-			listWaitingArticles();
-			listWaitingComments();
-			listWaitingFiles();
-			listWaitingPosts();
-			listWaitingEvents();
-			listWaitingItems();
-		}
+		
+		listWaitingArticles();
+		listWaitingComments();
+		listWaitingFiles();
+		listWaitingPosts();
+		listWaitingEvents();
+		listWaitingItems();
 
 		$babBody->addItemMenu("all", bab_translate("Approbations"), $GLOBALS['babUrlScript']."?tg=approb&idx=all");
 		break;
