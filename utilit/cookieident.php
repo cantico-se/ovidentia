@@ -26,7 +26,7 @@ if (isset($_COOKIE['c_password']))
 {
 	$token = trim($_COOKIE['c_password']);
 	
-	if (!empty($token) && !$GLOBALS['BAB_SESS_USERID'])
+	if (!empty($token) && !isset($_SESSION['BAB_SESS_USERID']))
 	{
 		require_once $GLOBALS['babInstallPath'] . 'admin/register.php';
 		require_once $GLOBALS['babInstallPath'] . 'utilit/loginIncl.php';
