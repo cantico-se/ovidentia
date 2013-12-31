@@ -1187,7 +1187,7 @@ switch($idx)
 		listWaitingComments();
 		listWaitingFiles();
 		listWaitingPosts();
-		listWaitingEvents();
+		// listWaitingEvents();
 		listWaitingItems();
 
 		$babBody->addItemMenu("all", bab_translate("Approbations"), $GLOBALS['babUrlScript']."?tg=approb&idx=all");
