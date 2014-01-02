@@ -21,39 +21,47 @@
  * @copyright Copyright (c) 2008 by CANTICO ({@link http://www.cantico.fr})
  */
 include_once 'base.php';
-require_once dirname(__FILE__).'/userincl.php';
+
+
 
 if (isset($_COOKIE['c_password'])) 
 {
 	$token = trim($_COOKIE['c_password']);
 	
-	if (!empty($token) && !bab_isUserLogged())
+	if (!empty($token))
 	{
-		require_once $GLOBALS['babInstallPath'] . 'admin/register.php';
-		require_once $GLOBALS['babInstallPath'] . 'utilit/loginIncl.php';
+		require_once dirname(__FILE__).'/session.class.php';
+		$session = bab_getInstance('bab_Session');
 		
-		$oAuthObject = @bab_functionality::get('PortalAuthentication/AuthOvidentia');
-		if (false === $oAuthObject)
+		if (!isset($session->BAB_SESS_USERID))
 		{
-			// If the default authentication method 'AuthOvidentia' does not exist
-			// for example during first installation we (re)create it.
-			Func_PortalAuthentication_AuthOvidentia::registerAuthType();
-			$oAuthObject = @bab_functionality::get('PortalAuthentication/AuthOvidentia');
-		}
-		if (false === $oAuthObject)
-		{
-			destroyAuthCookie();
-		}
-		
-		$iIdUser = $oAuthObject->authenticateUserByCookie($token);
-		if ($oAuthObject->userCanLogin($iIdUser))
-		{
+			require_once $GLOBALS['babInstallPath'] . 'admin/register.php';
+			require_once $GLOBALS['babInstallPath'] . 'utilit/loginIncl.php';
 			
-			bab_setUserSessionInfo($iIdUser);
+			$oAuthObject = @bab_functionality::get('PortalAuthentication/AuthOvidentia');
+			if (false === $oAuthObject)
+			{
+				// If the default authentication method 'AuthOvidentia' does not exist
+				// for example during first installation we (re)create it.
+				Func_PortalAuthentication_AuthOvidentia::registerAuthType();
+				$oAuthObject = @bab_functionality::get('PortalAuthentication/AuthOvidentia');
+			}
+			if (false === $oAuthObject)
+			{
+				destroyAuthCookie();
+			}
+			
+			$iIdUser = $oAuthObject->authenticateUserByCookie($token);
+			if ($oAuthObject->userCanLogin($iIdUser))
+			{
+				
+				bab_setUserSessionInfo($iIdUser);
+			}
+			else 
+			{
+				destroyAuthCookie();
+			}
 		}
-		else 
-		{
-			destroyAuthCookie();
-		}
+	
 	}
 }

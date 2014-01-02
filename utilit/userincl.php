@@ -228,6 +228,12 @@ function bab_getWaitingIdSA($iduser)
 	}
 
 
+	
+/**
+ * Test if there are waiting items for core functionality only
+ * Use the bab_eventWaitingItemsStatus event to get approval status for all functionalities in the approbation list
+ * @return boolean
+ */
 function bab_isWaitingApprobations()
 	{
 		global $babDB;

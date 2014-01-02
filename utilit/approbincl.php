@@ -31,11 +31,11 @@ include_once dirname(__FILE__)."/editorincl.php";
  */
 function bab_onBeforeWaitingItemsDisplayed(bab_eventBeforeWaitingItemsDisplayed $event)
 {
-	if ($event->status_only)
+	if ($event instanceof bab_eventWaitingItemsStatus)
 	{
 		// test if there are waiting items in core
 		
-		$event->setStatus(bab_isWaitingApprobations());
+		$event->addStatus(bab_isWaitingApprobations());
 		return;
 	}
 	
@@ -79,11 +79,14 @@ function bab_listWaitingPosts(bab_eventBeforeWaitingItemsDisplayed $event)
 		}
 	}
 	
+	
 	if( count($arrf) == 0 )
 	{
 		return;
 	}
-
+	
+	
+	
 
 	$res = $babDB->db_query("select pt.*, pt2.subject as threadtitle, tt.id as threadid, tt.forum as forumid, ft.name as forumname 
 			from ".BAB_POSTS_TBL." pt 
@@ -93,6 +96,14 @@ function bab_listWaitingPosts(bab_eventBeforeWaitingItemsDisplayed $event)
 			
 			where pt.confirmed='N' and ft.id IN(".$babDB->quote($arrf).") order by date desc
 	");
+	
+	
+	if ($event instanceof bab_eventWaitingItemsCount)
+	{
+		$event->addItemCount(bab_translate("Waiting posts"), $babDB->db_num_rows($res));
+		return;
+	}
+	
 
 	if ($babDB->db_num_rows($res) <= 0)
 	{
@@ -163,8 +174,25 @@ function bab_listWaitingFiles(bab_eventBeforeWaitingItemsDisplayed $event)
 	
 	$items = array();
 	
-	$res = $babDB->db_query("select * from ".BAB_FILES_TBL." where bgroup='Y' and confirmed='N' and idfai IN(".$babDB->quote($arrschi).") order by created desc");
-	while( $arr = $babDB->db_fetch_assoc($res) )
+	$res1 = $babDB->db_query("select * from ".BAB_FILES_TBL." where bgroup='Y' and confirmed='N' and idfai IN(".$babDB->quote($arrschi).") order by created desc");
+	$res2 = $babDB->db_query("select fft.*, ft.path, ft.name, ft.description from ".BAB_FM_FILESVER_TBL." fft left join ".BAB_FILES_TBL." ft on ft.id=fft.id_file where fft.confirmed='N' and fft.idfai IN(".$babDB->quote($arrschi).") order by date desc");
+	
+	$count = $babDB->db_num_rows($res1) + $babDB->db_num_rows($res2);
+	
+	
+	if (0 === $count)
+	{
+		return;
+	}
+	
+	if ($event instanceof bab_eventWaitingItemsCount)
+	{
+		$event->addItemCount(bab_translate("Waiting files"), $count);
+		return;
+	}
+
+	
+	while( $arr = $babDB->db_fetch_assoc($res1) )
 	{
 	
 		$filedate = $arr['created'] == '0000-00-00 00:00:00'? '':$W->Label(bab_shortDate(bab_mktime($arr['created']), true));
@@ -197,8 +225,8 @@ function bab_listWaitingFiles(bab_eventBeforeWaitingItemsDisplayed $event)
 	}
 	
 	
-	$res = $babDB->db_query("select fft.*, ft.path, ft.name, ft.description from ".BAB_FM_FILESVER_TBL." fft left join ".BAB_FILES_TBL." ft on ft.id=fft.id_file where fft.confirmed='N' and fft.idfai IN(".$babDB->quote($arrschi).") order by date desc");
-	while( $arr = $babDB->db_fetch_assoc($res) )
+	
+	while( $arr = $babDB->db_fetch_assoc($res2) )
 	{
 		$fm_file = fm_getFileAccess($arr['id_file']);
 		$oFmFolder =& $fm_file['oFmFolder'];
@@ -286,6 +314,13 @@ function bab_listWaitingComments(bab_eventBeforeWaitingItemsDisplayed $event)
 	{
 		return;
 	}
+	
+	
+	if ($event instanceof bab_eventWaitingItemsCount)
+	{
+		$event->addItemCount(bab_translate("Waiting comments"), $babDB->db_num_rows($res));
+		return;
+	}
 
 	$items = array();
 
@@ -366,6 +401,13 @@ function bab_listWaitingArticles(bab_eventBeforeWaitingItemsDisplayed $event)
 		return;
 	}
 	
+	if ($event instanceof bab_eventWaitingItemsCount)
+	{
+		$event->addItemCount(bab_translate("Waiting articles"), $babDB->db_num_rows($res));
+		return;
+	}
+	
+	
 	$items = array();
 	
 	while( $arr = $babDB->db_fetch_assoc($res) )
@@ -429,6 +471,12 @@ function bab_listWaitingEvents(bab_eventBeforeWaitingItemsDisplayed $event)
 	
 	if ($babDB->db_num_rows($res) <= 0)
 	{
+		return;
+	}
+	
+	if ($event instanceof bab_eventWaitingItemsCount)
+	{
+		$event->addItemCount(bab_translate("Waiting appointments"), $babDB->db_num_rows($res));
 		return;
 	}
 	
