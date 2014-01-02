@@ -132,7 +132,8 @@ window.focus();
 	<table  border="0" width="100%" cellpadding="5" cellspacing="0">
 	<thead>
 	<tr class="BabSiteAdminTitleFontBackground"> 
-		<td colspan="3">{ addonTitle }</td>
+		<td>{ addonTitle }</td>
+		<td width="150"  align="center">{ t_accept_or_refuse }</td>
 	</tr>
 	</thead>
 	<!--#in getnextitem -->
@@ -141,9 +142,12 @@ window.focus();
 	<!--#else altbg -->
 	<tr class="BabForumBackground1">
 	<!--#endif altbg -->
-	<td>{ text }</td>
-	<td>{ description }</td>
-	<td width="2%" align="right">
+
+	<td>
+		<h4 class="bab-waiting-item-title">{ text }</h4>
+		<div class="bab-waiting-item-description">{ description }</div>
+	</td>
+	<td align="center">
 		<a href="<!--#if popup -->javascript:bab_popup('{ url }');<!--#else popup -->{ url }<!--#endif popup -->"><img src="{ babSkinPath }images/Puces/confirm.gif" border="0" alt=""></a>
 	</td>
 	</tr>

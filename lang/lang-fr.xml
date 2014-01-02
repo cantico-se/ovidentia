@@ -3436,5 +3436,6 @@ L'administrateur</string>
 <string id="The node exists">Le noeud existe</string>
 <string id="Node not found">Noeud introuvable</string>
 <string id="Node %s not found in site sitemap %s">Le noeud %s n'a pas été trouvé dans le plan du site sélectionné %s</string>
+<string id="Accept or reject">Accepter ou refuser</string>
 
 </fr>

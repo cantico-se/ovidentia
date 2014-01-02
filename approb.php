@@ -132,6 +132,9 @@ class listWaitingItemsCls
 
 	public function __construct()
 	{
+		
+		$this->t_accept_or_refuse = bab_translate('Accept or reject');
+		
 		$event = new bab_eventBeforeWaitingItemsDisplayed();
 		bab_fireEvent($event);
 		$this->arrObjects = $event->objects;
