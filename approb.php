@@ -109,486 +109,7 @@ class bab_eventBeforeWaitingItemsDisplayed extends bab_event
 
 
 
-function listWaitingArticles()
-{
-	global $babBody;
-	class listWaitingArticlesCls
-		{
-		var $waitingarticlestxt;
-		var $artdatetxt;
-		var $artnametxt;
-		var $authortxt;
-		var $validationtxt;
-		var $artdate;
-		var $wartres;
-		var $wartcount;
-		var $artpath;
-		var $arttitle;
-		var $author;
-		var $confirmurl;
-		var $artviewurl;
-		var $battachment;
 
-		function listWaitingArticlesCls()
-			{
-			global $babDB;
-			$this->validationtxt = bab_translate("Validation");
-			$arrschi = bab_getWaitingIdSAInstance($GLOBALS['BAB_SESS_USERID']);
-			if( count($arrschi) > 0 )
-				{
-				$req = "select adt.*, count(adft.id) as totalf, count(adnt.id) as totaln from ".BAB_ART_DRAFTS_TBL." adt left join ".BAB_ART_DRAFTS_FILES_TBL." adft on adft.id_draft=adt.id  left join ".BAB_ART_DRAFTS_NOTES_TBL." adnt on adnt.id_draft=adt.id where adt.trash !='Y' and adt.idfai IN(".$babDB->quote($arrschi).") GROUP BY adt.id order by date_submission desc";
-				$this->wartres = $babDB->db_query($req);
-				$this->wartcount = $babDB->db_num_rows($this->wartres);
-				if( $this->wartcount > 0 )
-					{
-					$this->waitingarticlestxt = bab_translate("Waiting articles");
-					$this->artdatetxt = bab_translate("Date");
-					$this->artnametxt = bab_translate("Article");
-					$this->authortxt = bab_translate("Author");
-					$this->attachmenttxt = bab_translate("Attachments");
-					$this->notestxt = bab_translate("Notes");
-					}
-				}
-			$this->altbg = true;
-			}
-
-		function getnextarticle()
-			{
-			global $babDB;
-			static $i = 0;
-			if( $i < $this->wartcount)
-				{
-				$arr = $babDB->db_fetch_array($this->wartres);
-				if( $arr['totalf'] >  0 )
-					{
-					$this->battachment = true;
-					}
-				else
-					{
-					$this->battachment = false;
-					}
-				if( $arr['totaln'] >  0 )
-					{
-					$this->bnotes = true;
-					}
-				else
-					{
-					$this->bnotes = false;
-					}
-				$this->artdate = $arr['date_submission'] == '0000-00-00 00:00:00'? '':bab_toHtml(bab_shortDate(bab_mktime($arr['date_submission']), true));
-				$this->artpath = viewCategoriesHierarchy_txt($arr['id_topic']);
-				$this->arttitle = bab_toHtml($arr['title']);
-				$this->author = bab_toHtml(bab_getUserName($arr['id_author']));
-				$this->confirmurl = bab_toHtml($GLOBALS['babUrlScript']."?tg=approb&idx=confart&idart=".$arr['id']);
-				$this->artviewurl = bab_toHtml($GLOBALS['babUrlScript']."?tg=approb&idx=viewart&idart=".$arr['id']);
-				$this->altbg = !$this->altbg;
-				$i++;
-				return true;
-				}
-			else
-				return false;
-
-			}
-		}
-
-	$temp = new listWaitingArticlesCls();
-	$babBody->babecho( bab_printTemplate($temp, "approb.html", "waitingarticles"));
-}
-
-function listWaitingComments()
-{
-	global $babBody;
-	class listWaitingCommentsCls
-		{
-		var $waitingcommentstxt;
-		var $comdatetxt;
-		var $comnametxt;
-		var $authortxt;
-		var $validationtxt;
-		var $comdate;
-		var $wcomres;
-		var $wcomcount;
-		var $artpath;
-		var $arttitle;
-		var $author;
-		var $confirmurl;
-		var $artviewurl;
-
-		function listWaitingCommentsCls()
-			{
-			global $babDB;
-			$this->validationtxt = bab_translate("Validation");
-			$arrschi = bab_getWaitingIdSAInstance($GLOBALS['BAB_SESS_USERID']);
-			if( count($arrschi) > 0 )
-				{
-				$req = "select ct.* from ".BAB_COMMENTS_TBL." ct where ct.idfai IN(".$babDB->quote($arrschi).") order by date desc";
-				$this->wcomres = $babDB->db_query($req);
-				$this->wcomcount = $babDB->db_num_rows($this->wcomres);
-				if( $this->wcomcount > 0 )
-					{
-					$this->waitingcommentstxt = bab_translate("Waiting comments");
-					$this->comdatetxt = bab_translate("Date");
-					$this->comnametxt = bab_translate("Comment");
-					$this->authortxt = bab_translate("Author");
-					}
-				}
-			$this->altbg = true;
-			}
-
-		function getnextcomment()
-			{
-			global $babDB;
-			static $i = 0;
-			if( $i < $this->wcomcount)
-				{
-				$arr = $babDB->db_fetch_array($this->wcomres);
-				$this->comdate = $arr['date'] == '0000-00-00 00:00:00'? '':bab_toHtml(bab_shortDate(bab_mktime($arr['date']), true));
-				$this->compath = viewCategoriesHierarchy_txt($arr['id_topic']);
-				$this->comtitle = bab_toHtml($arr['subject']);
-				if( $arr['id_author'] )
-					{
-					$this->author = bab_toHtml(bab_getUserName($arr['id_author']));
-					}
-				else
-					{
-					$this->author = bab_toHtml($arr['name']);
-					}
-				$this->confirmurl = bab_toHtml($GLOBALS['babUrlScript']."?tg=approb&idx=confcom&idcom=".$arr['id']);
-				$this->comviewurl = bab_toHtml($GLOBALS['babUrlScript']."?tg=approb&idx=viewcom&idcom=".$arr['id']);
-				$this->altbg = !$this->altbg;
-				$i++;
-				return true;
-				}
-			else
-				return false;
-
-			}
-		}
-
-	$temp = new listWaitingCommentsCls();
-	$babBody->babecho( bab_printTemplate($temp, "approb.html", "waitingcomments"));
-}
-
-
-function listWaitingFiles()
-{
-	global $babBody;
-
-	class listWaitingFilesCls
-		{
-		var $waitingfilestxt;
-		var $filedatetxt;
-		var $filenametxt;
-		var $authortxt;
-		var $validationtxt;
-		var $filedate;
-		var $wfilesres;
-		var $wfilescount;
-		var $filepath;
-		var $filetitle;
-		var $author;
-		var $confirmurl;
-		var $fileviewurl;
-
-		function listWaitingFilesCls()
-			{
-			global $babDB;
-			$this->validationtxt = bab_translate("Validation");
-			$arrschi = bab_getWaitingIdSAInstance($GLOBALS['BAB_SESS_USERID']);
-			$this->wfilescount = false;
-			if( count($arrschi) > 0 )
-				{
-				$req = "select * from ".BAB_FILES_TBL." where bgroup='Y' and confirmed='N' and idfai IN(".$babDB->quote($arrschi).") order by created desc";
-				$this->wfilesres = $babDB->db_query($req);
-				$this->wfilesnorcount = $babDB->db_num_rows($this->wfilesres);
-
-				$req = "select fft.*, ft.path, ft.name from ".BAB_FM_FILESVER_TBL." fft left join ".BAB_FILES_TBL." ft on ft.id=fft.id_file where fft.confirmed='N' and fft.idfai IN(".$babDB->quote($arrschi).") order by date desc";
-
-				$this->wfilesverres = $babDB->db_query($req);
-				$this->wfilesvercount = $babDB->db_num_rows($this->wfilesverres);
-				if( $this->wfilesvercount > 0 || $this->wfilesnorcount > 0 )
-					{
-					$this->wfilescount = true;
-					$this->waitingfilestxt = bab_translate("Waiting files");
-					$this->filedatetxt = bab_translate("Date");
-					$this->filenametxt = bab_translate("File");
-					$this->authortxt = bab_translate("Author");
-					}
-
-
-				}
-			$this->altbg = true;
-			}
-
-		function getnextfile()
-			{
-			global $babDB;
-			static $i = 0;
-			if( $i < $this->wfilesnorcount)
-				{
-				$arr = $babDB->db_fetch_array($this->wfilesres);
-
-				$this->filedate = $arr['created'] == '0000-00-00 00:00:00'? '':bab_toHtml(bab_shortDate(bab_mktime($arr['created']), true));
-				$this->filepath = bab_toHtml($arr['path']);
-				$this->filetitle = bab_toHtml($arr['name']);
-				$this->author = bab_toHtml(bab_getUserName($arr['author']));
-
-				$this->fileviewurl = bab_toHtml($GLOBALS['babUrlScript']."?tg=fileman&idx=viewFile&idf=".$arr['id']."&id=".$arr['id_owner']."&gr=".$arr['bgroup']."&path=".urlencode($this->cleanFmPath($arr['path']))."&file=".urlencode($arr['name']));
-				$this->altbg = !$this->altbg;
-				$i++;
-				return true;
-				}
-			else
-				{
-				return false;
-				}
-
-			}
-
-		function getnextfilever()
-			{
-			global $babDB;
-			static $i = 0;
-			if( $i < $this->wfilesvercount)
-				{
-				$arr = $babDB->db_fetch_array($this->wfilesverres);
-
-				$this->filedate = $arr['date'] == '0000-00-00 00:00:00'? '':bab_toHtml(bab_shortDate(bab_mktime($arr['date']), true));
-				$this->filepath = bab_toHtml($arr['path']);
-				$this->filetitle = bab_toHtml($arr['name']);
-				$this->fileversion = bab_toHtml($arr['ver_major'].".".$arr['ver_minor']);
-				$this->author = bab_toHtml(bab_getUserName($arr['author']));
-
-				include_once $GLOBALS['babInstallPath']."utilit/fileincl.php";
-				$fm_file = fm_getFileAccess($arr['id_file']);
-				$oFmFolder =& $fm_file['oFmFolder'];
-				$oFolderFile =& $fm_file['oFolderFile'];
-				$sPathName = getUrlPath($oFolderFile->getPathName());
-				$iIdUrl = $oFmFolder->getId();
-				if(mb_strlen($oFmFolder->getRelativePath()) > 0)
-				{
-					$oRootFmFolder = BAB_FmFolderSet::getFirstCollectiveParentFolder($oFmFolder->getRelativePath());
-					if(!is_null($oRootFmFolder))
-					{
-						$iIdUrl = $oRootFmFolder->getId();
-					}
-				}
-
-				$this->fileviewurl = bab_toHtml($GLOBALS['babUrlScript']."?tg=filever&idx=conf&id=".$iIdUrl."&gr=".$oFolderFile->getGroup()."&path=".urlencode($sPathName)."&idf=".$arr['id_file']);
-				$this->altbg = !$this->altbg;
-				$i++;
-				return true;
-				}
-			else
-				{
-				return false;
-				}
-
-			}
-		function cleanFmPath($sPath)
-			{
-			return mb_substr($sPath, 0, -1);
-			}
-		}
-
-	$temp = new listWaitingFilesCls();
-	$babBody->babecho( bab_printTemplate($temp, "approb.html", "waitingfiles"));
-}
-
-
-function listWaitingPosts()
-{
-	global $babBody;
-
-	class listWaitingPostsCls
-		{
-		var $waitingpoststxt;
-		var $postdatetxt;
-		var $postnametxt;
-		var $authortxt;
-		var $validationtxt;
-		var $postdate;
-		var $wpostsres;
-		var $wpostscount;
-		var $postpath;
-		var $poststitle;
-		var $author;
-		var $confirmurl;
-		var $postviewurl;
-
-		function listWaitingPostsCls()
-			{
-			global $babDB;
-			$this->validationtxt = bab_translate("Validation");
-			$this->wpostscount = 0;
-			$arrf = array();
-			$res = $babDB->db_query("select id from ".BAB_FORUMS_TBL." where active='Y'");
-			while( $arr = $babDB->db_fetch_array($res))
-				{
-				if( bab_isAccessValid(BAB_FORUMSMAN_GROUPS_TBL, $arr['id']) )
-					{
-					$arrf[] = $arr['id'];
-					}
-				}
-			if( count($arrf) > 0 )
-				{
-				$req = "select pt.*, pt2.subject as threadtitle, tt.id as threadid, tt.forum as forumid, ft.name as forumname from ".BAB_POSTS_TBL." pt left join ".BAB_THREADS_TBL." tt on pt.id_thread=tt.id left join ".BAB_POSTS_TBL." pt2 on tt.post=pt2.id left join ".BAB_FORUMS_TBL." ft on ft.id=tt.forum where pt.confirmed='N' and ft.id IN(".$babDB->quote($arrf).") order by date desc";
-				$this->wpostsres = $babDB->db_query($req);
-				$this->wpostscount = $babDB->db_num_rows($this->wpostsres);
-				if( $this->wpostscount > 0 )
-					{
-					$this->waitingpoststxt = bab_translate("Waiting posts");
-					$this->postdatetxt = bab_translate("Date");
-					$this->postnametxt = bab_translate("Post");
-					$this->authortxt = bab_translate("Author");
-					}
-				}
-			$this->altbg = true;
-			}
-
-		function getnextpost()
-			{
-			global $babDB;
-			static $i = 0;
-			if( $i < $this->wpostscount)
-				{
-				$arr = $babDB->db_fetch_array($this->wpostsres);
-				$this->postdate = $arr['date'] == '0000-00-00 00:00:00'? '':bab_toHtml(bab_shortDate(bab_mktime($arr['date']), true));
-				$this->postpath = bab_toHtml($arr['forumname'].' / '.$arr['threadtitle']);
-				$this->posttitle = bab_toHtml($arr['subject']);
-				$this->author = bab_getForumContributor($arr['forumid'], $arr['id_author'], $arr['author']);
-				$this->author = bab_toHtml($this->author);
-				$this->confirmurl = bab_toHtml($GLOBALS['babUrlScript']."?tg=approb&idx=confpost&idpost=".$arr['id']."&thread=".$arr['threadid']);
-				$this->postviewurl = bab_toHtml($GLOBALS['babUrlScript']."?tg=posts&idx=viewp&forum=".$arr['forumid']."&thread=".$arr['threadid']."&post=".$arr['id']);
-				$this->altbg = !$this->altbg;
-				$i++;
-				return true;
-				}
-			else
-				{
-				return false;
-				}
-
-			}
-		}
-
-	$temp = new listWaitingPostsCls();
-	$babBody->babecho( bab_printTemplate($temp, "approb.html", "waitingposts"));
-}
-
-
-function listWaitingEvents()
-{
-	global $babBody;
-
-	class listWaitingEventsCls
-		{
-		var $waitingpoststxt;
-		var $eventdatetxt;
-		var $eventtitletxt;
-		var $eventauthortxt;
-		var $validationtxt;
-		var $eventdate;
-		var $weventsres;
-		var $weventscount;
-		var $eventdescription;
-		var $eventauthor;
-		var $confirmurl;
-		var $eventviewurl;
-
-		function listWaitingEventsCls()
-			{
-			global $babDB;
-			require_once dirname(__FILE__).'/utilit/dateTime.php';
-			
-			$this->validationtxt = bab_translate("Validation");
-			$this->weventscount = 0;
-			$this->arrevts = array();
-			$arrschi = bab_getWaitingIdSAInstance($GLOBALS['BAB_SESS_USERID']);
-			if( count($arrschi) > 0 )
-			{
-				$res = $babDB->db_query("SELECT cet.*, ceot.caltype, ceot.id_cal
-					from
-						".BAB_CAL_EVENTS_TBL." cet ,
-					 	".BAB_CAL_EVENTS_OWNERS_TBL." ceot
-					 where
-					 	cet.id=ceot.id_event and ceot.idfai in (".$babDB->quote($arrschi).") order by cet.start_date asc
-				");
-
-				while( $arr = $babDB->db_fetch_array($res) )
-				{
-
-					$calendar = bab_getICalendars()->getEventCalendar($arr['caltype'].'/'.$arr['id_cal']);
-
-					if ($calendar)
-					{
-						$start = BAB_DateTime::fromIsoDateTime($arr['start_date']);
-						
-						$tmp = array();
-						$tmp['uuid'] = $arr['uuid'];
-						$tmp['title'] = $arr['title'];
-						$tmp['description'] = $arr['description'];
-						$tmp['description_format'] = $arr['description_format'];
-						$tmp['dtstart'] = $start->getICal();
-						$tmp['startdate'] = bab_shortDate(bab_mktime($arr['start_date']), true);
-						$tmp['enddate'] = bab_shortDate(bab_mktime($arr['end_date']), true);
-						$tmp['author'] = bab_getUserName($arr['id_creator']);
-						$tmp['idevent'] = $arr['id'];
-						$tmp['idcal'] = $arr['parent_calendar'];
-						$tmp['relation'] = $calendar->getUrlIdentifier();
-						$tmp['calendar'] = $calendar->getName();
-						$this->arrevts[] = $tmp;
-					}
-				}
-			}
-
-			$this->weventscount = count($this->arrevts);
-			if( $this->weventscount > 0 )
-				{
-				$this->waitingeventstxt = bab_translate("Waiting appointments");
-				$this->eventdatetxt = bab_translate("Date");
-				$this->eventtitletxt = bab_translate("Appointment");
-				$this->eventauthortxt = bab_translate("Author");
-				$this->eventcalendartxt = bab_translate("Calendar");
-				}
-			$this->altbg = true;
-
-			include_once $GLOBALS['babInstallPath']."utilit/editorincl.php";
-			}
-
-		function getnextevent()
-			{
-			global $babDB;
-			static $i = 0;
-			if( $i < $this->weventscount)
-				{
-				
-				$this->eventdate = bab_toHtml($this->arrevts[$i]['startdate']);
-
-				$editor = new bab_contentEditor('bab_calendar_event');
-				$editor->setContent($this->arrevts[$i]['description']);
-				$editor->setFormat($this->arrevts[$i]['description_format']);
-				$this->eventdescription = $editor->getHtml();
-
-				$this->eventtitle = bab_toHtml($this->arrevts[$i]['title']);
-				$this->eventauthor = bab_toHtml($this->arrevts[$i]['author']);
-				$this->eventcalendar = bab_toHtml($this->arrevts[$i]['calendar']);
-				$this->confirmurl = bab_toHtml($GLOBALS['babUrlScript']."?tg=calendar&idx=approb&evtid=".$this->arrevts[$i]['uuid']."&idcal=".$this->arrevts[$i]['idcal']."&relation=".$this->arrevts[$i]['relation']."&dtstart=".$this->arrevts[$i]['dtstart']);
-				$this->altbg = !$this->altbg;
-				$i++;
-				return true;
-				}
-			else
-				{
-				return false;
-				}
-
-			}
-		}
-
-	$temp = new listWaitingEventsCls();
-	$babBody->babecho( bab_printTemplate($temp, "approb.html", "waitingevents"));
-}
 
 
 
@@ -733,7 +254,10 @@ class bab_confirmWaiting
 
 
 
-
+/**
+ * 
+ * @param unknown_type $idart
+ */
 function confirmWaitingArticle($idart)
 {
 	global $babBody;
@@ -748,11 +272,14 @@ function confirmWaitingArticle($idart)
 
 			$this->accessDenied = false;
 
-			$res = $babDB->db_query("select id, title, idfai, id_topic, id_author from ".BAB_ART_DRAFTS_TBL." where id='".$babDB->db_escape_string($idart)."'");
+			$res = $babDB->db_query("select * from ".BAB_ART_DRAFTS_TBL." where id='".$babDB->db_escape_string($idart)."'");
 			if ($res && $babDB->db_num_rows($res) > 0) {
 				$arr = $babDB->db_fetch_array($res);
 				$arrschi = bab_getWaitingIdSAInstance($GLOBALS['BAB_SESS_USERID']);
 				if (count($arrschi) > 0  && in_array($arr['idfai'], $arrschi)) {
+					
+					$this->preview = bab_previewArticleDraft($idart);
+					
 					$this->idart = bab_toHtml($idart);
 					$this->arttxt = bab_translate("Article");
 					$this->pathtxt = bab_translate("Path");
@@ -875,6 +402,8 @@ function confirmWaitingComment($idcom)
 			global $babBody, $babDB;
 
 			$this->accessDenied = false;
+			
+			$this->preview = bab_previewComment($idcom);
 
 			$req = "select * from ".BAB_COMMENTS_TBL." where id='".$babDB->db_escape_string($idcom)."'";
 			$res = $babDB->db_query($req);
@@ -909,37 +438,6 @@ function confirmWaitingComment($idcom)
 
 
 
-
-
-function previewWaitingArticle($idart)
-{
-	global $babBody, $babDB, $BAB_SESS_USERID;
-	$res = $babDB->db_query("select * from ".BAB_ART_DRAFTS_TBL." where id='".$babDB->db_escape_string($idart)."'");
-	if ($res && $babDB->db_num_rows($res) > 0) {
-		$arr = $babDB->db_fetch_array($res);
-		$arrschi = bab_getWaitingIdSAInstance($GLOBALS['BAB_SESS_USERID']);
-		if (count($arrschi) > 0 && in_array($arr['idfai'],$arrschi)) {
-			$babBody->babPopup(bab_previewArticleDraft($idart));
-		}
-	} else {
-		echo bab_translate("Access denied");
-	}
-}
-
-function previewWaitingComment($idcom)
-{
-	global $babBody, $babDB, $BAB_SESS_USERID;
-	$res = $babDB->db_query("select idfai from ".BAB_COMMENTS_TBL." where id='".$babDB->db_escape_string($idcom)."'");
-	if ($res && $babDB->db_num_rows($res) > 0) {
-		$arr = $babDB->db_fetch_array($res);
-		$arrschi = bab_getWaitingIdSAInstance($GLOBALS['BAB_SESS_USERID']);
-		if (count($arrschi) > 0 && in_array($arr['idfai'],$arrschi)) {
-			$babBody->babecho(bab_previewComment($idcom));
-			return;
-		}
-	}
-	echo bab_translate("Access denied");
-}
 
 
 /**
@@ -1146,12 +644,14 @@ switch($idx)
 		include_once $babInstallPath."utilit/uiutil.php";
 		popupUnload(bab_translate("Update done"), $GLOBALS['babUrlScript']."?tg=approb&idx=all");
 		exit;
-
+		
+	case "viewart":
 	case "confart":
 		confirmWaitingArticle(bab_gp('idart'));
 		exit;
 		break;
 
+	case "viewcom":
 	case "confcom":
 		confirmWaitingComment(bab_gp('idcom'));
 		exit;
@@ -1161,16 +661,7 @@ switch($idx)
 		confirmWaitingPost(bab_gp('thread'), bab_gp('idpost'));
 		exit;
 		break;
-
-	case "viewart":
-		previewWaitingArticle(bab_gp('idart'));
-		exit;
-		break;
-
-	case "viewcom":
-		previewWaitingComment(bab_gp('idcom'));
-		exit;
-		break;
+	
 
 	case "all":
 	default:
@@ -1181,13 +672,6 @@ switch($idx)
 		}
 
 		$babBody->title = bab_translate("Approbations");
-
-		
-		listWaitingArticles();
-		listWaitingComments();
-		listWaitingFiles();
-		listWaitingPosts();
-		// listWaitingEvents();
 		listWaitingItems();
 
 		$babBody->addItemMenu("all", bab_translate("Approbations"), $GLOBALS['babUrlScript']."?tg=approb&idx=all");

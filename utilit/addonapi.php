@@ -1176,7 +1176,7 @@ function bab_translate($str, $folder = "", $lang="")
 	
 /**
  * Test if the user is member of administrators group
- * @return bool
+ * @return false | int
  */
 function bab_isUserAdministrator()
 {
@@ -1373,7 +1373,7 @@ function bab_getGroupsMembers($ids, $nonConfirmed = false, $disabled = false)
  */
 function bab_isMemberOfGroup($group, $userid="")
 {
-	global $BAB_SESS_USERID, $babDB;
+	global $babDB;
 	
 	if (is_numeric($group) && BAB_ALLUSERS_GROUP === (int) $group)
 	{
@@ -1385,7 +1385,9 @@ function bab_isMemberOfGroup($group, $userid="")
 	}
 
 	if( $userid == "")
-		$userid = $BAB_SESS_USERID;
+	{
+		$userid = bab_getUserId();
+	}
 
 	if (is_numeric($group)) {
 		$id_group = $group;
@@ -1401,7 +1403,7 @@ function bab_isMemberOfGroup($group, $userid="")
 		}
 	}
 	
-	if ($BAB_SESS_USERID == $userid)
+	if ($userid == bab_getUserId())
 	{
 		require_once dirname(__FILE__).'/groupsincl.php';
 		

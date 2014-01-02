@@ -1073,13 +1073,13 @@ function viewPost($thread, $post)
 			{
 			global $babDB;
 			$req = "select forum from ".BAB_THREADS_TBL." where id='".$babDB->db_escape_string($thread)."'";
-			$arr = $babDB->db_fetch_array($babDB->db_query($req));
-			$this->title = bab_toHtml(bab_getForumName($arr['forum']));
+			$thread = $babDB->db_fetch_array($babDB->db_query($req));
+			$this->title = bab_toHtml(bab_getForumName($thread['forum']));
 			$req = "select * from ".BAB_POSTS_TBL." where id='".$babDB->db_escape_string($post)."'";
 			$arr = $babDB->db_fetch_array($babDB->db_query($req));
 			$this->postdate = bab_toHtml(bab_strftime(bab_mktime($arr['date'])));
 			$this->postauthor = bab_toHtml($arr['author']);
-			$this->postauthor = bab_getForumContributor($arr['forum'], $arr['id_author'], $this->postauthor);
+			$this->postauthor = bab_getForumContributor($thread['forum'], $arr['id_author'], $this->postauthor);
 			$this->postsubject = bab_toHtml($arr['subject']);
 			
 			include_once $GLOBALS['babInstallPath']."utilit/editorincl.php";

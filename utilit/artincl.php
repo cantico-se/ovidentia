@@ -2078,7 +2078,7 @@ function bab_previewComment($com)
 		}
 
 	$temp = new bab_previewCommentCls($com);
-	echo bab_printTemplate($temp,"artincl.html", "previewcomment");
+	return bab_printTemplate($temp,"artincl.html", "previewcomment");
 	}
 
 function bab_getDocumentArticle( $idf )

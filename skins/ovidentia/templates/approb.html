@@ -1,116 +1,9 @@
-<!--#begin waitingarticles --> 
-<!--#if wartcount -->
-<br />
-<table border="0" width="95%" cellpadding="2" cellspacing="0" align="center">
-<tr> 
-<td class="BabLoginCadreBackground"> 
-	<table width="100%" border="0" cellspacing="0" cellpadding="2">
-	<tr> 
-		<td class="BabLoginMenuBackground" width="90%" valign="middle">{ waitingarticlestxt }</td>
-	</tr>
-	</table>
-</td>
-</tr>
-</table>
-<table border="0" width="95%" cellpadding="2" cellspacing="0" align="center">
-<tr>
-<td class="BabLoginCadreBackground"> 
-<table  border="0" width="100%" cellpadding="2" cellspacing="0">
-<tr class="BabSiteAdminTitleFontBackground">
-	<td>{ artdatetxt }&nbsp;</td>
-	<td>{ artnametxt }&nbsp;</td>
-	<td>{ authortxt }&nbsp;</td>
-	<td align="right">{ validationtxt }&nbsp;</td>
-</tr>
-<!--#in getnextarticle -->
-<!--#if altbg -->
-<tr class="BabSiteAdminFontBackground">
-<!--#else altbg -->
-<tr class="BabForumBackground1">
-<!--#endif altbg -->
-<td width="120">{ artdate }</td>
-<td align="left" colspan="3"><span style="font-Size:9">{ artpath }</span>
-</td>
-</tr>
-<!--#if altbg -->
-<tr class="BabSiteAdminFontBackground">
-<!--#else altbg -->
-<tr class="BabForumBackground1">
-<!--#endif altbg -->
-<td>&nbsp;</td>
-<td align="left"><a class="BabSummaryLinkColor" href="{ artviewurl }" onclick="bab_popup(this.href);return false;">{ arttitle }</a>
-&nbsp;<!--#if battachment -->
-<img valign="absmiddle" src="{ babSkinPath }images/Puces/PuceTrombonne.gif" alt="{ attachmenttxt }" border="0">
-<!--#endif battachment -->
-&nbsp;<!--#if bnotes -->
-<img valign="absmiddle" src="{ babSkinPath }images/Puces/text.gif" alt="{ notestxt }" border="0">
-<!--#endif bnotes -->
-</td>
-<td>{ author }</td>
-<td align="right"><a href="{ confirmurl }" onclick="bab_popup(this.href);return false;"><img src="{ babSkinPath }images/Puces/confirm.gif" border="0" alt=""></a></td>
-</tr>
-<!--#endin getnextarticle -->
-</table>
-</td>
-</tr>
-</table>
-<!--#endif wartcount -->
-<!--#end waitingarticles --> 
-
-<!--#begin waitingcomments --> 
-<!--#if wcomcount -->
-<br />
-<table border="0" width="95%" cellpadding="2" cellspacing="0" align="center">
-<tr> 
-<td class="BabLoginCadreBackground"> 
-	<table width="100%" border="0" cellspacing="0" cellpadding="2">
-	<tr> 
-		<td class="BabLoginMenuBackground" width="90%" valign="middle">{ waitingcommentstxt }</td>
-	</tr>
-	</table>
-</td>
-</tr>
-</table>
-<table border="0" width="95%" cellpadding="2" cellspacing="0" align="center">
-<tr>
-<td class="BabLoginCadreBackground"> 
-<table  border="0" width="100%" cellpadding="2" cellspacing="0">
-<tr class="BabSiteAdminTitleFontBackground">
-	<td>{ comdatetxt }&nbsp;</td>
-	<td>{ comnametxt }&nbsp;</td>
-	<td>{ authortxt }&nbsp;</td>
-	<td align="right">{ validationtxt }&nbsp;</td>
-</tr>
-<!--#in getnextcomment -->
-<!--#if altbg -->
-<tr class="BabSiteAdminFontBackground">
-<!--#else altbg -->
-<tr class="BabForumBackground1">
-<!--#endif altbg -->
-<td width="120">{ comdate }</td>
-<td align="left" colspan="3"><span style="font-Size:9">{ compath }</span>
-</td>
-</tr>
-<!--#if altbg -->
-<tr class="BabSiteAdminFontBackground">
-<!--#else altbg -->
-<tr class="BabForumBackground1">
-<!--#endif altbg -->
-<td>&nbsp;</td>
-<td align="left"><a class="BabSummaryLinkColor" href="{ comviewurl }" onclick="bab_popup(this.href);return false;">{ comtitle }</a>
-</td>
-<td>{ author }</td>
-<td align="right"><a href="{ confirmurl }" onclick="bab_popup(this.href);return false;"><img src="{ babSkinPath }images/Puces/confirm.gif" border="0" alt=""></a></td>
-</tr>
-<!--#endin getnextcomment -->
-</table>
-</td>
-</tr>
-</table>
-<!--#endif wcomcount -->
-<!--#end waitingcomments --> 
 
 <!--#begin confirmarticle -->
+
+
+{ preview }
+
 
 <br />
 <form method="post" action="{ babPhpSelf }">
@@ -156,6 +49,9 @@
 <!--#end confirmarticle -->
 
 <!--#begin confirmcomment -->
+
+{ preview }
+
 <form method="post" action="{ babPhpSelf }">
 <input type="hidden" name="tg" value="approb">
 <input type="hidden" name="idx" value="unload">
@@ -222,136 +118,8 @@ window.focus();
 </HTML>
 <!--#end previewarticle -->
 
-<!--#begin waitingfiles --> 
-<!--#if wfilescount -->
-<br />
-<table border="0" width="95%" cellpadding="2" cellspacing="0" align="center">
-<tr> 
-<td class="BabLoginCadreBackground"> 
-	<table width="100%" border="0" cellspacing="0" cellpadding="2">
-	<tr> 
-		<td class="BabLoginMenuBackground" width="90%" valign="middle">{ waitingfilestxt }</td>
-	</tr>
-	</table>
-</td>
-</tr>
-</table>
-<table border="0" width="95%" cellpadding="2" cellspacing="0" align="center">
-<tr>
-<td class="BabLoginCadreBackground"> 
-<table  border="0" width="100%" cellpadding="2" cellspacing="0">
-<tr class="BabSiteAdminTitleFontBackground">
-	<td>{ filedatetxt }&nbsp;</td>
-	<td>{ filenametxt }&nbsp;</td>
-	<td>{ authortxt }&nbsp;</td>
-	<td align="right">{ validationtxt }&nbsp;</td>
-</tr>
-<!--#in getnextfile -->
-<!--#if altbg -->
-<tr class="BabSiteAdminFontBackground">
-<!--#else altbg -->
-<tr class="BabForumBackground1">
-<!--#endif altbg -->
-<td width="120">{ filedate }</td>
-<td align="left" colspan="3"><span style="font-Size:9">{ filepath }</span>
-</td>
-</tr>
-<!--#if altbg -->
-<tr class="BabSiteAdminFontBackground">
-<!--#else altbg -->
-<tr class="BabForumBackground1">
-<!--#endif altbg -->
-<td>&nbsp;</td>
-<td align="left"><a class="BabSummaryLinkColor" href="{ fileviewurl }" onclick="bab_popup(this.href);return false;">{ filetitle }</a>
-&nbsp;
-</td>
-<td>{ author }</td>
-<td align="right"><a href="{ fileviewurl }" onclick="bab_popup(this.href);return false;"><img src="{ babSkinPath }images/Puces/confirm.gif" border="0" alt=""></a></td>
-</tr>
-<!--#endin getnextfile -->
-<!--#in getnextfilever -->
-<!--#if altbg -->
-<tr class="BabSiteAdminFontBackground">
-<!--#else altbg -->
-<tr class="BabForumBackground1">
-<!--#endif altbg -->
-<td width="120">{ filedate }</td>
-<td align="left" colspan="3"><span style="font-Size:9">{ filepath }</span>
-</td>
-</tr>
-<!--#if altbg -->
-<tr class="BabSiteAdminFontBackground">
-<!--#else altbg -->
-<tr class="BabForumBackground1">
-<!--#endif altbg -->
-<td>&nbsp;</td>
-<td align="left"><a class="BabSummaryLinkColor" href="{ fileviewurl }" onclick="bab_popup(this.href);return false;">{ filetitle }</a>
-&nbsp;&nbsp;{ fileversion }
-</td>
-<td>{ author }</td>
-<td align="right"><a href="{ fileviewurl }" onclick="bab_popup(this.href);return false;"><img src="{ babSkinPath }images/Puces/confirm.gif" border="0" alt=""></a></td>
-</tr>
-<!--#endin getnextfilever -->
-</table>
-</td>
-</tr>
-</table>
-<!--#endif wfilescount -->
-<!--#end waitingfiles --> 
 
-<!--#begin waitingposts --> 
-<!--#if wpostscount -->
-<br />
-<table border="0" width="95%" cellpadding="2" cellspacing="0" align="center">
-<tr> 
-<td class="BabLoginCadreBackground"> 
-	<table width="100%" border="0" cellspacing="0" cellpadding="2">
-	<tr> 
-		<td class="BabLoginMenuBackground" width="90%" valign="middle">{ waitingpoststxt }</td>
-	</tr>
-	</table>
-</td>
-</tr>
-</table>
-<table border="0" width="95%" cellpadding="2" cellspacing="0" align="center">
-<tr>
-<td class="BabLoginCadreBackground"> 
-<table  border="0" width="100%" cellpadding="2" cellspacing="0">
-<tr class="BabSiteAdminTitleFontBackground">
-	<td>{ postdatetxt }&nbsp;</td>
-	<td>{ postnametxt }&nbsp;</td>
-	<td>{ authortxt }&nbsp;</td>
-	<td align="right">{ validationtxt }&nbsp;</td>
-</tr>
-<!--#in getnextpost -->
-<!--#if altbg -->
-<tr class="BabSiteAdminFontBackground">
-<!--#else altbg -->
-<tr class="BabForumBackground1">
-<!--#endif altbg -->
-<td width="120">{ postdate }</td>
-<td align="left" colspan="3"><span style="font-Size:9">{ postpath }</span>
-</td>
-</tr>
-<!--#if altbg -->
-<tr class="BabSiteAdminFontBackground">
-<!--#else altbg -->
-<tr class="BabForumBackground1">
-<!--#endif altbg -->
-<td>&nbsp;</td>
-<td align="left"><a class="BabSummaryLinkColor" href="{ postviewurl }" onclick="bab_popup(this.href);return false;">{ posttitle }</a>
-&nbsp;
-</td>
-<td>{ author }</td>
-<td align="right"><a href="{ confirmurl }" onclick="bab_popup(this.href);return false;"><img src="{ babSkinPath }images/Puces/confirm.gif" border="0" alt=""></a></td>
-</tr>
-<!--#endin getnextpost -->
-</table>
-</td>
-</tr>
-</table>
-<!--#endif wpostscount -->
-<!--#end waitingposts --> 
+
 
 
 <!--#begin waitingItems --> 
@@ -446,61 +214,7 @@ window.focus();
 </form>
 <!--#end confirmpost -->
 
-<!--#begin waitingevents --> 
-<!--#if weventscount -->
-<br />
-<table border="0" width="95%" cellpadding="2" cellspacing="0" align="center">
-<tr> 
-<td class="BabLoginCadreBackground"> 
-	<table width="100%" border="0" cellspacing="0" cellpadding="2">
-	<tr> 
-		<td class="BabLoginMenuBackground" width="90%" valign="middle">{ waitingeventstxt }</td>
-	</tr>
-	</table>
-</td>
-</tr>
-</table>
-<table border="0" width="95%" cellpadding="2" cellspacing="0" align="center">
-<tr>
-<td class="BabLoginCadreBackground"> 
-<table  border="0" width="100%" cellpadding="2" cellspacing="0">
-<tr class="BabSiteAdminTitleFontBackground">
-	<td>{ eventdatetxt }&nbsp;</td>
-	<td>{ eventtitletxt }&nbsp;</td>
-	<td>{ eventauthortxt }&nbsp;</td>
-	<td>{ eventcalendartxt }&nbsp;</td>
-	<td align="right">{ validationtxt }&nbsp;</td>
-</tr>
-<!--#in getnextevent -->
-<!--#if altbg -->
-<tr class="BabSiteAdminFontBackground">
-<!--#else altbg -->
-<tr class="BabForumBackground1">
-<!--#endif altbg -->
-<td width="120">{ eventdate }</td>
-<td align="left"><span style="font-Size:9"><strong>{ eventtitle }</strong></span>
-<td align="left">{ eventauthor }</td>
-<td align="left" colspan="2">{ eventcalendar }</td>
-</td>
-</tr>
-<!--#if altbg -->
-<tr class="BabSiteAdminFontBackground">
-<!--#else altbg -->
-<tr class="BabForumBackground1">
-<!--#endif altbg -->
-<td>&nbsp;</td>
-<td align="left" colspan="3">{ eventdescription }
-&nbsp;
-</td>
-<td align="right"><a href="{ confirmurl }" onclick="bab_popup(this.href);return false;"><img src="{ babSkinPath }images/Puces/confirm.gif" border="0" alt=""></a></td>
-</tr>
-<!--#endin getnextevent -->
-</table>
-</td>
-</tr>
-</table>
-<!--#endif weventscount -->
-<!--#end waitingevents --> 
+
 
 <!--#begin confirmevent -->
 
