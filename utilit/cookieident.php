@@ -21,12 +21,13 @@
  * @copyright Copyright (c) 2008 by CANTICO ({@link http://www.cantico.fr})
  */
 include_once 'base.php';
+require_once dirname(__FILE__).'/userincl.php';
 
 if (isset($_COOKIE['c_password'])) 
 {
 	$token = trim($_COOKIE['c_password']);
 	
-	if (!empty($token) && !isset($_SESSION['BAB_SESS_USERID']))
+	if (!empty($token) && !bab_isUserLogged())
 	{
 		require_once $GLOBALS['babInstallPath'] . 'admin/register.php';
 		require_once $GLOBALS['babInstallPath'] . 'utilit/loginIncl.php';
@@ -47,6 +48,7 @@ if (isset($_COOKIE['c_password']))
 		$iIdUser = $oAuthObject->authenticateUserByCookie($token);
 		if ($oAuthObject->userCanLogin($iIdUser))
 		{
+			
 			bab_setUserSessionInfo($iIdUser);
 		}
 		else 

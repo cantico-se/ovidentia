@@ -1594,26 +1594,30 @@ function bab_addUserCookie($iIdUser, $sLogin, $iLifeTime)
 function bab_setUserSessionInfo($iIdUser)
 {
 	global $babBody;
+	require_once dirname(__FILE__).'/session.class.php';
 
 	$aUser = bab_userInfos::getRow($iIdUser);
+	$session = bab_getInstance('bab_Session');
+	/*@var $session bab_Session */
 	
 	if($aUser)
 	{
-		$_SESSION['BAB_SESS_NICKNAME']	= $aUser['nickname'];
-		$_SESSION['BAB_SESS_USER']		= bab_composeUserName($aUser['firstname'], $aUser['lastname']);
-		$_SESSION['BAB_SESS_FIRSTNAME'] = $aUser['firstname'];
-		$_SESSION['BAB_SESS_LASTNAME']	= $aUser['lastname'];
-		$_SESSION['BAB_SESS_EMAIL']		= $aUser['email'];
-		$_SESSION['BAB_SESS_USERID']	= $aUser['id'];
-		$_SESSION['BAB_SESS_HASHID']	= $aUser['confirm_hash'];
+		
+		$session->BAB_SESS_NICKNAME		= $aUser['nickname'];
+		$session->BAB_SESS_USER			= bab_composeUserName($aUser['firstname'], $aUser['lastname']);
+		$session->BAB_SESS_FIRSTNAME 	= $aUser['firstname'];
+		$session->BAB_SESS_LASTNAME		= $aUser['lastname'];
+		$session->BAB_SESS_EMAIL		= $aUser['email'];
+		$session->BAB_SESS_USERID		= $aUser['id'];
+		$session->BAB_SESS_HASHID		= $aUser['confirm_hash'];
 
-		$GLOBALS['BAB_SESS_NICKNAME'] 	= $_SESSION['BAB_SESS_NICKNAME'];
-		$GLOBALS['BAB_SESS_USER'] 		= $_SESSION['BAB_SESS_USER'];
-		$GLOBALS['BAB_SESS_FIRSTNAME'] 	= $_SESSION['BAB_SESS_FIRSTNAME'];
-		$GLOBALS['BAB_SESS_LASTNAME'] 	= $_SESSION['BAB_SESS_LASTNAME'];
-		$GLOBALS['BAB_SESS_EMAIL'] 		= $_SESSION['BAB_SESS_EMAIL'];
-		$GLOBALS['BAB_SESS_USERID'] 	= $_SESSION['BAB_SESS_USERID'];
-		$GLOBALS['BAB_SESS_HASHID'] 	= $_SESSION['BAB_SESS_HASHID'];
+		$GLOBALS['BAB_SESS_NICKNAME'] 	= $session->BAB_SESS_NICKNAME;
+		$GLOBALS['BAB_SESS_USER'] 		= $session->BAB_SESS_USER;
+		$GLOBALS['BAB_SESS_FIRSTNAME'] 	= $session->BAB_SESS_FIRSTNAME;
+		$GLOBALS['BAB_SESS_LASTNAME'] 	= $session->BAB_SESS_LASTNAME;
+		$GLOBALS['BAB_SESS_EMAIL'] 		= $session->BAB_SESS_EMAIL;
+		$GLOBALS['BAB_SESS_USERID'] 	= $session->BAB_SESS_USERID;
+		$GLOBALS['BAB_SESS_HASHID'] 	= $session->BAB_SESS_HASHID;
 		
 		if (session_id())
 		{
@@ -1622,21 +1626,26 @@ function bab_setUserSessionInfo($iIdUser)
 		}
 
 		// empty approbation cache
-		if (isset($_SESSION['bab_waitingApprobations'])) {
-			unset($_SESSION['bab_waitingApprobations']);
+		if (isset($session->bab_waitingApprobations)) {
+			unset($session->bab_waitingApprobations);
 		}
 	}
 }
 
 function bab_unsetUserSessionInfo()
 {
-	unset($_SESSION['BAB_SESS_NICKNAME']);
-	unset($_SESSION['BAB_SESS_USER']);
-	unset($_SESSION['BAB_SESS_FIRSTNAME']);
-	unset($_SESSION['BAB_SESS_LASTNAME']);
-	unset($_SESSION['BAB_SESS_EMAIL']);
-	unset($_SESSION['BAB_SESS_USERID']);
-	unset($_SESSION['BAB_SESS_HASHID']);
+	require_once dirname(__FILE__).'/session.class.php';
+	
+	$session = bab_getInstance('bab_Session');
+	/*@var $session bab_Session */
+	
+	unset($session->BAB_SESS_NICKNAME);
+	unset($session->BAB_SESS_USER);
+	unset($session->BAB_SESS_FIRSTNAME);
+	unset($session->BAB_SESS_LASTNAME);
+	unset($session->BAB_SESS_EMAIL);
+	unset($session->BAB_SESS_USERID);
+	unset($session->BAB_SESS_HASHID);
 
 
 	$GLOBALS['BAB_SESS_NICKNAME'] = '';
