@@ -56,6 +56,54 @@ function bab_onBeforeWaitingItemsDisplayed(bab_eventBeforeWaitingItemsDisplayed 
 
 
 
+/**
+ * Test if there are waiting items for core functionality only
+ * Use the bab_eventWaitingItemsStatus event to get approval status for all functionalities in the approbation list
+ * @return boolean
+ */
+function bab_isWaitingCoreItems()
+{
+	global $babDB;
+	static $iwa_called = false;
+	static $iwa_result = false;
+
+	if($iwa_called)
+	{
+		return $iwa_result;
+	}
+	$iwa_called = true;
+
+	$arr = bab_getWaitingIdSAInstance($GLOBALS['BAB_SESS_USERID']);
+	if( count($arr) > 0 )
+	{
+		$iwa_result = true;
+		return true;
+	}
+
+	$result = false;
+
+	$arrf = array();
+
+	$res = $babDB->db_query("select id from ".BAB_FORUMS_TBL." where active='Y'");
+	while( $arr = $babDB->db_fetch_array($res))
+	{
+		if( bab_isAccessValid(BAB_FORUMSMAN_GROUPS_TBL, $arr['id']) )
+		{
+			$arrf[] = $arr['id'];
+		}
+	}
+
+	if( count($arrf) > 0 )
+	{
+		list($posts) = $babDB->db_fetch_row($babDB->db_query("select count(pt.id) from ".BAB_POSTS_TBL." pt left join ".BAB_THREADS_TBL." tt on pt.id_thread=tt.id left join ".BAB_POSTS_TBL." pt2 on tt.post=pt2.id left join ".BAB_FORUMS_TBL." ft on ft.id=tt.forum where pt.confirmed='N' and ft.id IN(".$babDB->quote($arrf).")"));
+		if( $posts > 0 )
+		{
+			$result = true;
+		}
+	}
+	$iwa_result = $result;
+	return $result;
+}
 
 
 

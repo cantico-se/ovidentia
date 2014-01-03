@@ -160,8 +160,7 @@ class bab_eventWaitingItemsCount extends bab_eventBeforeWaitingItemsDisplayed
 		{
 			$total += $arr['count'];
 		}
-	
-		bab_debug($this->itemcount);
+
 		return $total;
 	}
 }
