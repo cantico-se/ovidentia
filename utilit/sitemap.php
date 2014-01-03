@@ -2070,7 +2070,14 @@ class bab_siteMap {
 	 */
 	public static function url($id_function, $fallback_url = null)
 	{
-		$node = self::getFromSite()->getNodeById($id_function);
+		$sitemap = self::getFromSite();
+		
+		if (!($sitemap instanceof bab_siteMapOrphanRootNode))
+		{
+			return $fallback_url;
+		}
+		
+		$node = $sitemap->getNodeById($id_function);
 
 		if (!isset($node)) {
 			if (isset($fallback_url))

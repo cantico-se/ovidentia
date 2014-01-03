@@ -39,7 +39,7 @@ abstract class Ovml_Container_Sitemap extends Func_Ovml_Container
 	public $data;
 
 	/**
-	 * @var bab_siteMap $sitemap	The sitemap the container is working on.
+	 * @var bab_siteMapOrphanRootNode $sitemap	The sitemap the container is working on.
 	 */
 	protected $sitemap;
 
@@ -78,6 +78,7 @@ abstract class Ovml_Container_Sitemap extends Func_Ovml_Container
 
 		if (false === $sitemap) {
 			global $babBody;
+			
 			$this->sitemap_name = $babBody->babsite['sitemap'];
 			$this->sitemap = bab_siteMap::getByUid($this->sitemap_name);
 			if (!isset($this->sitemap)) {
@@ -314,8 +315,7 @@ class Func_Ovml_Container_SitemapPath extends Ovml_Container_Sitemap
 
 					if (null === $baseNode)
 					{
-						trigger_error(sprintf('the basenode="%s" attribute has been specified in ovml file %s but the node has not been found in the sitemap',$baseNodeId, (string) $ctx->debug_location));
-						bab_debug((string) $this->sitemap);
+						trigger_error(sprintf('the basenode "%s" has not been found in the sitemap "%s", file %s',$baseNodeId, $this->sitemap_name, (string) $ctx->debug_location));
 					} else {
 
 						if ($customNode = $this->sitemap->getNodeByTargetId($baseNodeId, $nodeId))

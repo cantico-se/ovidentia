@@ -35,7 +35,7 @@ function bab_onBeforeWaitingItemsDisplayed(bab_eventBeforeWaitingItemsDisplayed 
 	{
 		// test if there are waiting items in core
 		
-		$event->addStatus(bab_isWaitingApprobations());
+		$event->addStatus(bab_isWaitingCoreItems());
 		return;
 	}
 	
