@@ -479,18 +479,34 @@ class bab_SearchRealmDirectories extends bab_SearchRealm {
 		";
 		if( $this->containAllRegisteredUsers())
 			{
+			$pop_query = 'SELECT u.id FROM bab_users u WHERE '.bab_userInfos::queryAllowedUsers('u');
+			$req .= " LEFT JOIN ".BAB_DB_DIRECTORIES_TBL." d ON d.id_group=".$babDB->quote(BAB_REGISTERED_GROUP)."";
+			
+			/*	
 			$req .= " LEFT JOIN ".BAB_USERS_TBL." dis ON dis.id = e.id_user AND ".bab_userInfos::queryAllowedUsers('dis')." 
 						LEFT JOIN ".BAB_DB_DIRECTORIES_TBL." d ON d.id_group=".$babDB->quote(BAB_REGISTERED_GROUP)." 
 				";
+			*/
 			}
 		else
 			{
+			$pop_query = 'SELECT u.id FROM bab_users u, bab_users_groups g 
+					WHERE g.id_object = u.id 
+						AND g.id_group IN ('.$babDB->quote($this->getSearchableGroups()).') 
+						AND '.bab_userInfos::queryAllowedUsers('u');
+			/*
 			$req .= " LEFT JOIN ".BAB_USERS_GROUPS_TBL." u ON u.id_object = e.id_user 
 					AND u.id_group IN (".$babDB->quote($this->getSearchableGroups()).") 
 					LEFT JOIN ".BAB_USERS_TBL." dis ON dis.id = u.id_object AND ".bab_userInfos::queryAllowedUsers('dis')."  
 					LEFT JOIN ".BAB_DB_DIRECTORIES_TBL." d ON d.id_group=u.id_group  
 				";
+			*/
+			
+			$req .= " LEFT JOIN ".BAB_DB_DIRECTORIES_TBL." d ON d.id_group IN(".$babDB->quote($this->getSearchableGroups()).")";
 			}
+			
+		
+			
 
 		// add additional left join if list of fields use custom fields
 		foreach($this->getAdditionalTables() as $leftjoin) {
@@ -498,9 +514,9 @@ class bab_SearchRealmDirectories extends bab_SearchRealm {
 		}
 		
 		$req .= $mysql->getWhereClause($criteria);
-		$req .= ' AND (e.id_user=\'0\' OR dis.id IS NOT NULL)';
+		//$req .= ' AND (e.id_user=\'0\' OR dis.id IS NOT NULL)';
+		$req .= ' AND (e.id_user=\'0\' OR e.id_user IN('.$pop_query.'))';
 		
-
 		
 		
 		
