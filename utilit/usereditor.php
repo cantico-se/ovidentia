@@ -78,6 +78,36 @@ class Func_UserEditor extends bab_functionality {
 	private $imagePicker = null;
 	
 	
+	/**
+	 * @var Widget_SuggestPlaceName
+	 */
+	private $hcity;
+	
+	/**
+	 * @var Widget_SuggestPostalCode
+	 */
+	private $hpostalcode;
+	
+	/**
+	 * @var Widget_SuggestCountry
+	 */
+	private $hcountry;
+	
+	/**
+	 * @var Widget_SuggestPlaceName
+	 */
+	private $bcity;
+	
+	/**
+	 * @var Widget_SuggestPostalCode
+	 */
+	private $bpostalcode;
+	
+	/**
+	 * @var Widget_SuggestCountry
+	 */
+	private $bcountry;
+	
 
 	public function getDescription() {
 		return bab_translate('Default create/modify form for the user account');
@@ -471,9 +501,57 @@ class Func_UserEditor extends bab_functionality {
 			{
 				$widget->setValue($values[$default]);
 			}
-		
+			
 		} else {
-			$widget = $W->LineEdit();
+			
+			switch($fieldname)
+			{
+				case 'btel':
+					$widget = $W->TelLineEdit()->setTelType(Widget_TelLineEdit::BUSINESS);
+					break;
+					
+				case 'htel':
+					$widget = $W->TelLineEdit()->setTelType(Widget_TelLineEdit::HOME);
+					break;
+					
+				case 'mobile':
+					$widget = $W->TelLineEdit()->setTelType(Widget_TelLineEdit::MOBILE);
+					break;
+					
+				case 'bfax':
+					$widget = $W->TelLineEdit()->setTelType(Widget_TelLineEdit::FAX);
+					break;
+					
+				case 'email':
+					$widget = $W->EmailLineEdit();
+					if (isset($this->imagePicker))
+					{
+						$this->imagePicker->setGravatarEmailField($widget);
+					}
+					break;
+					
+					
+				case 'bcity':
+				case 'hcity':
+					$this->$fieldname = $widget = $W->SuggestPlaceName();
+					break;
+
+				case 'bpostalcode':
+				case 'hpostalcode':
+					$this->$fieldname = $widget = $W->SuggestPostalCode();
+					break;
+					
+				case 'bcountry':
+				case 'hcountry':
+					$this->$fieldname = $widget = $W->SuggestCountry();
+					break;
+					
+				
+				default:
+					$widget = $W->LineEdit();
+			}
+			
+			
 		}
 			
 		if (isset($f['default_value_text']) && !isset($f['multi_values']))
@@ -543,6 +621,34 @@ class Func_UserEditor extends bab_functionality {
 				$frame->addItem($field);
 			}
 		}
+		
+		// create associations beetween fields if possible
+		
+		if (isset($this->bcity) && isset($this->bpostalcode))
+		{
+			$this->bcity->setRelatedPostalCode($this->bpostalcode);
+			$this->bpostalcode->setRelatedPlaceName($this->bcity);
+			
+			if (isset($this->bcountry))
+			{
+				$this->bcity->setRelatedCountry($this->bcountry);
+				$this->bpostalcode->setRelatedCountry($this->bcountry);
+			}
+		}
+		
+		if (isset($this->hcity) && isset($this->hpostalcode))
+		{
+			$this->hcity->setRelatedPostalCode($this->hpostalcode);
+			$this->hpostalcode->setRelatedPlaceName($this->hcity);
+		
+			if (isset($this->hcountry))
+			{
+				$this->hcity->setRelatedCountry($this->hcountry);
+				$this->hpostalcode->setRelatedCountry($this->hcountry);
+			}
+		}
+		
+		
 		
 		return $frame;
 	}
