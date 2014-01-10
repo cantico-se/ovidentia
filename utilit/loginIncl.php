@@ -1263,10 +1263,10 @@ function bab_ldapEntryToOvEntry($oLdap, $iIdUser, $sPassword, $aEntries, $aUpdat
 					if(mb_substr($val, 0, mb_strlen('babdirf')) == 'babdirf')
 					{
 						$tmp = mb_substr($val, mb_strlen('babdirf'));
-						$rs = $babDB->db_query('select id from ' . BAB_DBDIR_ENTRIES_EXTRA_TBL . ' where id_fieldx=\'' . $babDB->db_escape_string($arridfx[$tmp]) . '\' and  id_entry=\'' . $babDB->db_escape_string($idu) . '\'');
+						$rs = $babDB->db_query('select id from ' . BAB_DBDIR_ENTRIES_EXTRA_TBL . ' where id_fieldx=\'' . $babDB->db_escape_string($aExtraFieldId[$tmp]) . '\' and  id_entry=\'' . $babDB->db_escape_string($idu) . '\'');
 						if($rs && $babDB->db_num_rows($rs) > 0)
 						{
-							$babDB->db_query('update ' . BAB_DBDIR_ENTRIES_EXTRA_TBL . ' set field_value=\'' . $babDB->db_escape_string(bab_ldapDecode($aEntries[0][$key][0])) . '\' where id_fieldx=\'' . $babDB->db_escape_string($arridfx[$tmp]) . '\' and id_entry=\'' . $babDB->db_escape_string($idu) . '\'');
+							$babDB->db_query('update ' . BAB_DBDIR_ENTRIES_EXTRA_TBL . ' set field_value=\'' . $babDB->db_escape_string(bab_ldapDecode($aEntries[0][$key][0])) . '\' where id_fieldx=\'' . $babDB->db_escape_string($aExtraFieldId[$tmp]) . '\' and id_entry=\'' . $babDB->db_escape_string($idu) . '\'');
 						}
 						else
 						{
