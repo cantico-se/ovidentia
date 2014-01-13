@@ -23,6 +23,174 @@
 include_once 'base.php';
 
 
+class bab_InstallRepository {
+	
+	private $list_url;
+	
+	private $files = null;
+	
+	public function __construct()
+	{
+		$registry = bab_getRegistry();
+		$registry->changeDirectory('/bab/install_repository/');
+		$this->list_url = $registry->getValue('list_url');
+	}
+	
+	/**
+	 * Test if the repository exists
+	 * @return bool
+	 */
+	public function exists()
+	{
+		if (isset($this->list_url))
+		{
+			return true;
+		}
+		
+		return false;
+	}
+	
+	public function getFiles()
+	{
+		if (null === $this->files)
+		{
+			// load list
+			
+			$this->files = array();
+			
+			if (null !== $this->list_url)
+			{
+				$fp = fopen($this->list_url, 'r');
+				if (false === $fp)
+				{
+					throw new Exception(sprintf('Failed to download the configured url %s', $this->list_url));
+				}
+				
+				
+				while (($data = fgetcsv($fp, 0, "\t")) !== FALSE) {
+					
+					bab_debug($data);
+					
+					if (!isset($data[3]))
+					{
+						continue;
+					}
+					
+					$name 			= $data[0];
+					$filepath 		= $data[1]; // url relative to root_url in configuration
+					$version 		= $data[2];
+					$description 	= $data[3];
+					
+					
+					$this->files[$name][$version] = new bab_InstallRepositoryFile($name, $filepath, $version, $description);
+				}
+				
+				fclose($fp);
+			}
+		}
+		
+		return $this->files;
+	}
+	
+	
+	/**
+	 * Get a specific version
+	 * @param string $name	Name of addon (filename without version and extension)
+	 * @return bab_InstallRepositoryFile
+	 */
+	public function getFile($name, $version)
+	{
+		$arr = $this->getFiles();
+		
+		if (!isset($arr[$name][$version]))
+		{
+			return null;
+		}
+		
+		return $arr[$name][$version];
+	}
+	
+	
+	/**
+	 * 
+	 * @param string $name
+	 * @return NULL|multitype:string
+	 */
+	public function getAvailableVersions($name)
+	{
+		$arr = $this->getFiles();
+		
+		if (!isset($arr[$name]))
+		{
+			return null;
+		}
+
+		uksort($arr[$name] , 'version_compare');
+		
+		return array_keys($arr[$name]);
+	}
+	
+	
+	
+	/**
+	 * Get lastest file (higher version)
+	 * @param string $name
+	 * @return bab_InstallRepositoryFile
+	 */
+	public function getLastest($name)
+	{
+		$arr = $this->getFiles();
+		
+		if (!isset($arr[$name]))
+		{
+			return null;
+		}
+		
+		uksort($arr[$name] , 'version_compare');
+		
+		return end($arr[$name]);
+	}
+}
+
+
+
+class bab_InstallRepositoryFile
+{
+	public $name;
+	public $filepath;
+	public $version;
+	public $description;
+	
+	public function __construct($name, $filepath, $version, $description)
+	{
+		$this->name = $name;
+		$this->filepath = $filepath;
+		$this->version = $version;
+	}
+	
+	
+	/**
+	 * @return string
+	 */
+	public function getUrl()
+	{
+		$registry = bab_getRegistry();
+		$registry->changeDirectory('/bab/install_repository/');
+		$url = $registry->getValue('root_url');
+		
+		if (!isset($url))
+		{
+			throw new Exception('Missing configuration for root_url');
+		}
+		
+		
+		$url .= $this->filepath;
+		
+		
+		return $url;
+	}
+}
+
 
 
 
@@ -264,7 +432,7 @@ class bab_InstallSource {
 		
 		if (false === $target)
 		{
-			// il realpath failed, the file does not exist
+			// if realpath failed, the file does not exist
 			return false;
 		}
 		

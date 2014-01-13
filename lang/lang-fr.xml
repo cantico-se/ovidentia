@@ -3437,5 +3437,8 @@ L'administrateur</string>
 <string id="Node not found">Noeud introuvable</string>
 <string id="Node %s not found in site sitemap %s">Le noeud %s n'a pas été trouvé dans le plan du site sélectionné %s</string>
 <string id="Accept or reject">Accepter ou refuser</string>
-
+<string id="Search upgrades">Chercher des mises à jour</string>
+<string id="Available upgrade(s) for addon %s">Mise(s) à jour disponibe(s) du module %s</string>
+<string id="There are no upgrade available for the addon %s">Il n'y a pas de mise à jour disponible pour le module %s</string>
+<string id="Update to version">Installer la version</string>
 </fr>

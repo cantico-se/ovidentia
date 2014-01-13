@@ -725,6 +725,80 @@ function upload_tmpfile() {
 
 
 
+function bab_search_addon_upgrade()
+{
+	require_once $GLOBALS['babInstallPath'].'utilit/install.class.php';
+	
+	$W = bab_Widgets();
+	$page = $W->BabPage();
+	$form = $W->Form(null, $W->VBoxLayout()->setVerticalSpacing(1, 'em'));
+	
+	$form->setName('dlfile');
+	$form->setHiddenValue('tg', bab_rp('tg'));
+	$form->setHiddenValue('idx', 'import');
+	$form->addClass('widget-bordered');
+	$form->addClass('BabLoginMenuBackground');
+	$form->addClass('widget-centered');
+	$form->setCanvasOptions($form->Options()->width(50, 'em'));
+	
+	$form->addItem($W->Title(bab_translate('Update to version'))->colon());
+	
+	$repository = bab_getInstance('bab_InstallRepository');
+	/*@var $repository bab_InstallRepository */
+	
+	$id_addon = bab_rp('item');
+	$row = bab_addonsInfos::getDbRow($id_addon);
+	
+	$page->setTitle(sprintf(bab_translate('Available upgrade(s) for addon %s'), $row['title']));
+	$versions = $repository->getAvailableVersions($row['title']);
+	
+	
+	if (null === $versions)
+	{
+		$page->addError(sprintf(bab_translate('There are no upgrade available for the addon %s'), $row['title']));
+		$page->displayHtml();
+		return;
+	}
+	
+	$versions = array_reverse($versions);
+	
+	$form->setHiddenValue('dlfile[name]', $row['title']);
+	$addon = bab_getAddonInfosInstance($row['title']);
+	
+	$radioSet = $W->RadioSet()->setName('version');
+	$form->addItem($radioSet);
+	
+	$c = 0;
+	foreach($versions as $version)
+	{
+		if (version_compare($version, $addon->getDbVersion(), '>'))
+		{
+			$radioSet->addOption($version, sprintf(bab_translate('Version %s'), $version));
+			$c++;
+		}
+	}
+	
+	$radioSet->setValue($versions[0]);
+	
+	if ($c > 0)
+	{
+		$page->addItem($form);
+	} else {
+		$page->addError(sprintf(bab_translate('There are no upgrade available for the addon %s'), $row['title']));
+	}
+	
+	
+	$form->addItem($W->SubmitButton()->setLabel(bab_translate('Next')));
+	
+	
+	$page->displayHtml();
+}
+
+
+
+
+
+
 /**
  * Display requirement for an addon or for a new package to install
  */
@@ -828,7 +902,15 @@ function bab_display_addon_requirements()
 					{
 						$this->exportpkgurl = bab_toHtml($GLOBALS['babUrlScript']."?tg=addons&idx=exportall&item=".$addon->getId());
 					}
+					
+					$repository = bab_getInstance('bab_InstallRepository');
+					if ($repository->exists())
+					{
+						$this->searchupgradeurl = bab_toHtml($GLOBALS['babUrlScript']."?tg=addons&idx=searchupgrade&item=".$addon->getId());
+					}
 				}
+				
+				
 			}
 
 			$this->name = bab_toHtml($name);
@@ -852,6 +934,7 @@ function bab_display_addon_requirements()
 			$this->t_export = bab_translate("Download");
 			$this->t_exportpkg = bab_translate("Download with dependencies");
 			$this->confirmdelete = bab_toHtml(bab_translate("Are you sure you want to delete this add-on ?"));
+			$this->t_searchupgrade = bab_translate("Search upgrades");
 
 			$this->call_upgrade = true;
 			$this->t_call_upgrade = bab_translate("Launch addon installation program");
@@ -890,7 +973,12 @@ function bab_display_addon_requirements()
  * Install package of any type
  */
 class bab_import_package {
-
+	
+	/**
+	 * Get install source from temporay uploaded file or null if no uploaded file
+	 * 
+	 * @return bab_InstallSource
+	 */
 	private static function getInstallSource() {
 
 		include_once $GLOBALS['babInstallPath'].'utilit/install.class.php';
@@ -905,7 +993,7 @@ class bab_import_package {
 			}
 		}
 
-		throw new Exception(bab_translate('The file is missing'));
+		return null;
 	}
 
 
@@ -921,31 +1009,158 @@ class bab_import_package {
 
 
 	/**
+	 * Process iframe content on install
 	 * unzip and install package
+	 * 
+	 * @return bool
 	 */
 	public static function install() {
 
 		bab_setTimeLimit(1200);
-
-		try {
-			$install = self::getInstallSource();
-			$ini = self::getIni($install);
-
-		} catch(Exception $e) {
-			bab_installWindow::message($e->getMessage());
+		
+		// first, process downloads
+		
+		$dlfiles = self::installDlFiles();
+		
+		// second, install temporary uploaded files
+		
+		$tmpfile = self::installTmpFile();
+		
+		return $dlfiles && $tmpfile;
+	}
+	
+	
+	/**
+	 * Download and install a list of files
+	 * @return bool
+	 */
+	private static function installDlFiles()
+	{
+		$dlfile = bab_rp('dlfile', null);
+		
+		if (!isset($dlfile)||empty($dlfile))
+		{
 			return false;
 		}
-
-		if ($install->install($ini)) {
-			if (unlink($install->getArchive())) {
-				return true;
-			} else {
-				bab_installWindow::message(sprintf(bab_translate('Failed to delete the temporary package %s'), $install->getArchive()));
+		
+		$repository = bab_getInstance('bab_InstallRepository');
+		/*@var $repository bab_InstallRepository */
+		
+		foreach($dlfile as $filename)
+		{
+			$url = $repository->getLastest($filename)->getUrl();
+			if (!$rfp = fopen($url, 'r')) {
+				bab_installWindow::message(sprintf(bab_translate("Failed to open URL (%s)"), $url));
+				continue;
+			}
+			
+			$tmpfile = $GLOBALS['babUploadPath'].'/tmp/'.$filename;
+			if (!$wfp = fopen($tmpfile, 'w')) {
+				bab_installWindow::message(sprintf(bab_translate("Failed to write temporary file (%s)"), $tmpfile));
+				continue;
+			}
+			
+			self::downloadProgress($rfp, $wfp, $filename);
+			
+			$install = new bab_InstallSource;
+			$install->setArchive($tmpfile);
+			
+			try {
+				$ini = self::getIni($install);
+			} catch(Exception $e) {
+				bab_installWindow::message($e->getMessage());
+				return false;
+			}
+			
+			if ($install->install($ini)) {
+				if (!unlink($install->getArchive())) {
+					bab_installWindow::message(sprintf(bab_translate('Failed to delete the temporary package %s'), $install->getArchive()));
+				}
 			}
 		}
-
+		
+		return true;
+	}
+	
+	/**
+	 *
+	 */
+	private static function downloadProgress($rfp, $wfp, $filename)
+	{
+		$progress = new bab_installProgressBar;
+		$progress->setTitle(sprintf(bab_translate('Download %s'), $filename));
+		
+		
+		$packetsize = 2048;
+		$readlength = 0;
+		$totallength = self::getLength($rfp);
+		
+		while (!feof($rfp)) {
+			$data = fread($rfp, $packetsize);
+			fwrite($wfp, $data);
+			$readlength += strlen($data);
+			
+			$p = (($readlength * 100) / $totallength);
+			
+			$progress->setProgression($p);
+		}
+		
+		$progress->setProgression(100);
+	}
+	
+	
+	/**
+	 * Length of file from url
+	 * @param	ressource $fp
+	 * @return number
+	 */
+	private static function getLength($fp)
+	{
+		$length = 1;
+		$meta = stream_get_meta_data($fp);
+		foreach($meta['wrapper_data'] as $header)
+		{
+			$h = explode(':', $header);
+			if ($h[0] === 'Content-Length')
+			{
+				$length = (int) trim($h[1]);
+			}
+		}
+		
+		return $length;
+	}
+	
+	
+	
+	/**
+	 * Install tmp file if available
+	 * @return bool
+	 */
+	private static function installTmpFile()
+	{
+		$install = self::getInstallSource();
+		if (isset($install))
+		{
+			try {
+				$ini = self::getIni($install);
+			} catch(Exception $e) {
+				bab_installWindow::message($e->getMessage());
+				return false;
+			}
+		
+			if ($install->install($ini)) {
+				if (unlink($install->getArchive())) {
+					return true;
+				} else {
+					bab_installWindow::message(sprintf(bab_translate('Failed to delete the temporary package %s'), $install->getArchive()));
+				}
+			}
+		}
+		
 		return false;
 	}
+	
+	
 
 	/**
 	 * Display page for installation
@@ -955,7 +1170,10 @@ class bab_import_package {
 
 		try {
 			$install = self::getInstallSource();
-			$ini = self::getIni($install);
+			if (isset($install))
+			{
+				$ini = self::getIni($install);
+			}
 
 		} catch(Exception $e) {
 			global $babBody;
@@ -974,10 +1192,10 @@ class bab_import_package {
 		$frameurl = bab_url::mod($url, 'idx', 'import_frame');
 
 
-		$frameurl = bab_url::mod($frameurl, 'tmpfile', bab_rp('tmpfile'));
+		$frameurl = bab_url::mod($frameurl, 'tmpfile', bab_rp('tmpfile')); // temporary file name from upload
+		$frameurl = bab_url::mod($frameurl, 'dlfile', bab_rp('dlfile')); // file name to download, must be an array
 
-
-		if ($ini instanceOf bab_CoreIniFile) {
+		if (isset($ini) && ($ini instanceOf bab_CoreIniFile)) {
 			$t_continue = bab_translate('Home');
 			$continueurl = bab_url::request();
 		} else {
@@ -1541,6 +1759,12 @@ switch($idx)
 		display_addons_menu();
 		$babBody->addItemMenu("requirements", bab_translate("Requirements"), $GLOBALS['babUrlScript']."?tg=addons&idx=requirements");
 		bab_display_addon_requirements();
+		break;
+		
+	case 'searchupgrade':
+		display_addons_menu();
+		$babBody->addItemMenu("searchupgrade", bab_translate("Search upgrade"), $GLOBALS['babUrlScript']."?tg=addons&idx=searchupgrade");
+		bab_search_addon_upgrade();
 		break;
 
 	case 'import':
