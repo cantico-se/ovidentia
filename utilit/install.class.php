@@ -50,7 +50,7 @@ class bab_InstallRepository {
 		return false;
 	}
 	
-	public function getFiles()
+	private function getRows()
 	{
 		if (null === $this->files)
 		{
@@ -68,8 +68,6 @@ class bab_InstallRepository {
 				
 				
 				while (($data = fgetcsv($fp, 0, "\t")) !== FALSE) {
-					
-					bab_debug($data);
 					
 					if (!isset($data[3]))
 					{
@@ -92,6 +90,26 @@ class bab_InstallRepository {
 		return $this->files;
 	}
 	
+	/**
+	 * Get lastest version for each file
+	 * @return array
+	 */
+	public function getFiles()
+	{
+		$arr = $this->getRows();
+		$return = array();
+		
+		foreach($arr as $name => $d)
+		{
+			$return[] = $this->getLastest($name);
+		}
+		
+		bab_Sort::sortObjects($return);
+		
+		return $return;
+	}
+	
+	
 	
 	/**
 	 * Get a specific version
@@ -100,7 +118,7 @@ class bab_InstallRepository {
 	 */
 	public function getFile($name, $version)
 	{
-		$arr = $this->getFiles();
+		$arr = $this->getRows();
 		
 		if (!isset($arr[$name][$version]))
 		{
@@ -118,7 +136,7 @@ class bab_InstallRepository {
 	 */
 	public function getAvailableVersions($name)
 	{
-		$arr = $this->getFiles();
+		$arr = $this->getRows();
 		
 		if (!isset($arr[$name]))
 		{
@@ -139,7 +157,7 @@ class bab_InstallRepository {
 	 */
 	public function getLastest($name)
 	{
-		$arr = $this->getFiles();
+		$arr = $this->getRows();
 		
 		if (!isset($arr[$name]))
 		{
@@ -149,6 +167,17 @@ class bab_InstallRepository {
 		uksort($arr[$name] , 'version_compare');
 		
 		return end($arr[$name]);
+	}
+	
+	/**
+	 * 
+	 * @return strin
+	 */
+	public function getRootUrl()
+	{
+		$registry = bab_getRegistry();
+		$registry->changeDirectory('/bab/install_repository/');
+		return $registry->getValue('root_url');
 	}
 }
 
@@ -166,6 +195,7 @@ class bab_InstallRepositoryFile
 		$this->name = $name;
 		$this->filepath = $filepath;
 		$this->version = $version;
+		$this->description = $description;
 	}
 	
 	
@@ -188,6 +218,67 @@ class bab_InstallRepositoryFile
 		
 		
 		return $url;
+	}
+	
+	
+	/**
+	 * @return bool
+	 */
+	public function isInstalled()
+	{
+		if ('ovidentia' === $this->name)
+		{
+			return true;
+		}
+		
+		if (false === bab_getAddonInfosInstance($this->name))
+		{
+			return false;
+		}
+		
+		return true;
+	}
+	
+	
+	/**
+	 * 
+	 * @return bool
+	 */
+	public function isUpgradable()
+	{
+		$current_version = $this->getCurrentVersion();
+		if (!isset($current_version))
+		{
+			return false;
+		}
+		return version_compare($this->version, $current_version, '>');
+	}
+	
+	/**
+	 * 
+	 * @return string|null
+	 */
+	public function getCurrentVersion()
+	{
+		if ('ovidentia' === $this->name)
+		{
+			return bab_getDbVersion();
+		}
+		
+		$addon = bab_getAddonInfosInstance($this->name);
+		
+		if (false === $addon)
+		{
+			return null;
+		}
+		
+		return $addon->getDbVersion();
+	}
+	
+	
+	public function __toString()
+	{
+		return $this->name;
 	}
 }
 

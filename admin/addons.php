@@ -909,8 +909,6 @@ function bab_display_addon_requirements()
 						$this->searchupgradeurl = bab_toHtml($GLOBALS['babUrlScript']."?tg=addons&idx=searchupgrade&item=".$addon->getId());
 					}
 				}
-				
-				
 			}
 
 			$this->name = bab_toHtml($name);
