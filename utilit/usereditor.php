@@ -524,7 +524,7 @@ class Func_UserEditor extends bab_functionality {
 					
 				case 'email':
 					$widget = $W->EmailLineEdit();
-					if (isset($this->imagePicker))
+					if (isset($this->imagePicker) && method_exists($this->imagePicker, 'setGravatarEmailField'))
 					{
 						$this->imagePicker->setGravatarEmailField($widget);
 					}
