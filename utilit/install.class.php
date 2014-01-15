@@ -220,6 +220,114 @@ class bab_InstallRepositoryFile
 		return $url;
 	}
 	
+	/**
+	 * @return string
+	 */
+	public function getFileName()
+	{
+		return basename($this->filepath);
+	}
+	
+	
+	/**
+	 * Download the file and install package
+	 * 
+	 * @throws Exception
+	 * 
+	 * @return bool
+	 */
+	public function install($updateProgess = false)
+	{
+		
+		$tmpfile = $file->downloadTmpFile();
+
+		$install = new bab_InstallSource;
+		$install->setArchive($tmpfile);
+		
+		$ini = self::getIni($install);
+		
+		if ($install->install($ini)) {
+			if (!unlink($install->getArchive())) {
+				throw new Exception(sprintf(bab_translate('Failed to delete the temporary package %s'), $install->getArchive()));
+			}
+		}
+		
+		return true;
+	}
+	
+	
+	/**
+	 * Create a temporary local copy of the archive
+	 * 
+	 * @throws Exception
+	 * 
+	 * @param	bool	$updateProgess 	Set to TRUE to update the progress bar
+	 * @return string	Full path to downloaded temporary file
+	 */
+	public function downloadTmpFile($updateProgess = false)
+	{
+		
+		$url = $this->getUrl();
+		if (!$rfp = fopen($url, 'r')) {
+			throw new Exception(sprintf(bab_translate("Failed to open URL (%s)"), $url));
+		}
+		
+		$filename = $this->getFileName();
+		
+		$tmpfile = $GLOBALS['babUploadPath'].'/tmp/'.$filename;
+		if (!$wfp = fopen($tmpfile, 'w')) {
+			throw new Exception(sprintf(bab_translate("Failed to write temporary file (%s)"), $tmpfile));
+		}
+		
+		if ($updateProgess)
+		{
+			$progress = new bab_installProgressBar;
+			$progress->setTitle(sprintf(bab_translate('Download %s'), $filename));
+		} else {
+			$progress = null;
+		}
+		
+		$this->downloadProgress($rfp, $wfp, $progress);
+		
+	}
+	
+	
+	/**
+	 * Download the file
+	 * @param	ressource 				$rfp		file pointer resource, readable source file
+	 * @param	ressource 				$wfp 		file pointer resource, writable destination
+	 * @param	bab_installProgressBar	$progress	Optional progess bar
+	 * 
+	 */
+	private function downloadProgress($rfp, $wfp, bab_installProgressBar $progress = null)
+	{
+	
+		$packetsize = 2048;
+		
+		if (isset($progress))
+		{
+			$readlength = 0;
+			$totallength = self::getLength($rfp);
+		}
+	
+		while (!feof($rfp)) {
+			$data = fread($rfp, $packetsize);
+			fwrite($wfp, $data);
+			
+			if (isset($progress))
+			{
+				$readlength += strlen($data);
+				$p = (($readlength * 100) / $totallength);
+				$progress->setProgression($p);
+			}
+		}
+	
+		if (isset($progress))
+		{
+			$progress->setProgression(100);
+		}
+	}
+	
 	
 	/**
 	 * @return bool

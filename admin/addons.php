@@ -1036,75 +1036,36 @@ class bab_import_package {
 	{
 		$dlfile = bab_rp('dlfile', null);
 		
-		if (!isset($dlfile)||empty($dlfile))
+		if (!isset($dlfile['name']) || !isset($dlfile['version']))
 		{
 			return false;
 		}
 		
+		
 		$repository = bab_getInstance('bab_InstallRepository');
 		/*@var $repository bab_InstallRepository */
 		
-		foreach($dlfile as $filename)
+		$file = $repository->getFile($dlfile['name'], $dlfile['version']);
+		/*@var $file bab_InstallRepositoryFile */
+		
+		if (!($file instanceof bab_InstallRepositoryFile))
 		{
-			$url = $repository->getLastest($filename)->getUrl();
-			if (!$rfp = fopen($url, 'r')) {
-				bab_installWindow::message(sprintf(bab_translate("Failed to open URL (%s)"), $url));
-				continue;
-			}
-			
-			$tmpfile = $GLOBALS['babUploadPath'].'/tmp/'.$filename;
-			if (!$wfp = fopen($tmpfile, 'w')) {
-				bab_installWindow::message(sprintf(bab_translate("Failed to write temporary file (%s)"), $tmpfile));
-				continue;
-			}
-			
-			self::downloadProgress($rfp, $wfp, $filename);
-			
-			$install = new bab_InstallSource;
-			$install->setArchive($tmpfile);
-			
-			try {
-				$ini = self::getIni($install);
-			} catch(Exception $e) {
-				bab_installWindow::message($e->getMessage());
-				return false;
-			}
-			
-			if ($install->install($ini)) {
-				if (!unlink($install->getArchive())) {
-					bab_installWindow::message(sprintf(bab_translate('Failed to delete the temporary package %s'), $install->getArchive()));
-				}
-			}
+			return false;
 		}
+		
+		try {
+			$file->install(true/* update progress bar */);
+		} catch(Exception $e)
+		{
+			bab_installWindow::message($e->getMessage());
+			return false;
+		}
+		
 		
 		return true;
 	}
 	
-	/**
-	 *
-	 */
-	private static function downloadProgress($rfp, $wfp, $filename)
-	{
-		$progress = new bab_installProgressBar;
-		$progress->setTitle(sprintf(bab_translate('Download %s'), $filename));
-		
-		
-		$packetsize = 2048;
-		$readlength = 0;
-		$totallength = self::getLength($rfp);
-		
-		while (!feof($rfp)) {
-			$data = fread($rfp, $packetsize);
-			fwrite($wfp, $data);
-			$readlength += strlen($data);
-			
-			$p = (($readlength * 100) / $totallength);
-			
-			$progress->setProgression($p);
-		}
-		
-		$progress->setProgression(100);
-	}
+
 	
 	
 	/**
@@ -1191,7 +1152,7 @@ class bab_import_package {
 
 
 		$frameurl = bab_url::mod($frameurl, 'tmpfile', bab_rp('tmpfile')); // temporary file name from upload
-		$frameurl = bab_url::mod($frameurl, 'dlfile', bab_rp('dlfile')); // file name to download, must be an array
+		$frameurl = bab_url::mod($frameurl, 'dlfile', bab_rp('dlfile')); // file name to download, must be an array with [name], [version]
 
 		if (isset($ini) && ($ini instanceOf bab_CoreIniFile)) {
 			$t_continue = bab_translate('Home');
