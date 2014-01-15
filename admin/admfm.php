@@ -25,7 +25,7 @@ include_once 'base.php';
 require_once dirname(__FILE__).'/../utilit/registerglobals.php';
 include_once $GLOBALS['babInstallPath'] . 'admin/acl.php';
 include_once $GLOBALS['babInstallPath'] . 'utilit/fileincl.php';
-
+include_once $GLOBALS['babInstallPath'] . 'utilit/wfincl.php';
 
 function modifyFolder($fid)
 {
@@ -164,27 +164,17 @@ function modifyFolder($fid)
 					$this->js_appflowlock = str_replace("'", "\'", $this->js_appflowlock );
 					$this->js_appflowlock = str_replace('"', "'+String.fromCharCode(34)+'",$this->js_appflowlock );
 				}
-				$this->sares = $babDB->db_query("select * from ".BAB_FLOW_APPROVERS_TBL." order by name asc");
-				if(!$this->sares)
-				{
-					$this->sacount = 0;
-				}
-				else
-				{
-					$this->sacount = $babDB->db_num_rows($this->sares);
-				}
+				
+				$this->sares = bab_WFGetApprobationsList();
 			}
 			$babBody->title = $sFolderName . ": ".bab_translate("Modify folder");
 		}
 
 		function getnextschapp()
 		{
-			global $babDB;
-			static $i = 0;
-			if($i < $this->sacount)
+			if(list(,$arr) = each($this->sares))
 			{
-				$arr = $babDB->db_fetch_array($this->sares);
-				$this->saname = $arr['name'];
+				$this->saname = bab_toHtml($arr['name']);
 				$this->said = $arr['id'];
 				if($this->said == $this->safm)
 				{
@@ -194,13 +184,11 @@ function modifyFolder($fid)
 				{
 					$this->sasel = "";
 				}
-				$i++;
+				
 				return true;
 			}
-			else
-			{
-				return false;
-			}
+			
+			return false;
 		}
 	}
 	$temp = new temp($fid);
