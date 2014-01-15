@@ -137,7 +137,7 @@ class bab_InstallRepository {
 	public function getAvailableVersions($name)
 	{
 		$arr = $this->getRows();
-		
+
 		if (!isset($arr[$name]))
 		{
 			return null;
@@ -239,13 +239,12 @@ class bab_InstallRepositoryFile
 	public function install($updateProgess = false)
 	{
 		
-		$tmpfile = $file->downloadTmpFile();
+		$tmpfile = $this->downloadTmpFile($updateProgess);
 
 		$install = new bab_InstallSource;
 		$install->setArchive($tmpfile);
-		
-		$ini = self::getIni($install);
-		
+		$ini = $install->getIni();
+
 		if ($install->install($ini)) {
 			if (!unlink($install->getArchive())) {
 				throw new Exception(sprintf(bab_translate('Failed to delete the temporary package %s'), $install->getArchive()));
@@ -289,6 +288,7 @@ class bab_InstallRepositoryFile
 		
 		$this->downloadProgress($rfp, $wfp, $progress);
 		
+		return $tmpfile;
 	}
 	
 	
@@ -304,10 +304,11 @@ class bab_InstallRepositoryFile
 	
 		$packetsize = 2048;
 		
+		
 		if (isset($progress))
 		{
 			$readlength = 0;
-			$totallength = self::getLength($rfp);
+			$totallength = $this->getLength($rfp);
 		}
 	
 		while (!feof($rfp)) {
@@ -326,6 +327,29 @@ class bab_InstallRepositoryFile
 		{
 			$progress->setProgression(100);
 		}
+	}
+	
+	
+	
+	/**
+	 * Length of file from url
+	 * @param	ressource $fp
+	 * @return number
+	 */
+	private function getLength($fp)
+	{
+		$length = 1;
+		$meta = stream_get_meta_data($fp);
+		foreach($meta['wrapper_data'] as $header)
+		{
+			$h = explode(':', $header);
+			if ($h[0] === 'Content-Length')
+			{
+				$length = (int) trim($h[1]);
+			}
+		}
+	
+		return $length;
 	}
 	
 	
@@ -951,6 +975,8 @@ class bab_InstallSource {
 			return false;
 		}
 
+		
+		
 		// redirect to upgrade page
 
 		$upgrade_page = $GLOBALS['babUrlScript'].'?tg=version&idx=upgrade&iframe=1';
@@ -963,6 +989,24 @@ class bab_InstallSource {
 
 			<a href="%s">Install</a>
 		', $upgrade_page, bab_toHtml($upgrade_page)));
+		
+		
+		
+		
+		
+		
+		/*
+		// call upgrade code
+		// force new install path
+		$GLOBALS['babInstallPath'] = basename($destination).'/';
+		
+		$str = '';
+		bab_upgrade(basename($destination).'/', $str);
+		if (!empty($str))
+		{
+			bab_installWindow::message($str);
+		}
+		*/
 	}
 
 

@@ -914,7 +914,7 @@ class bab_inifile_requirements {
 	
 	function require_site_sitemap_node($value) {
 		
-		require_once $GLOBALS['babInstallPath'].'utilit/settings.class.php';
+		require_once dirname(__FILE__).'/settings.class.php';
 		$error = null;
 		
 		$rootNode = bab_sitemap::getFromSite();
@@ -1115,8 +1115,8 @@ class bab_inifile {
 		}
 
 
-		include_once $GLOBALS['babInstallPath']."utilit/zip.lib.php";
-		include_once $GLOBALS['babInstallPath']."utilit/addonsincl.php";
+		include_once dirname(__FILE__)."/zip.lib.php";
+		include_once dirname(__FILE__)."/addonsincl.php";
 
 		$addon_paths = bab_getAddonsFilePath();
 		$program_path = $addon_paths['loc_out'][0].'/';

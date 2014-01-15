@@ -1067,27 +1067,7 @@ class bab_import_package {
 	
 
 	
-	
-	/**
-	 * Length of file from url
-	 * @param	ressource $fp
-	 * @return number
-	 */
-	private static function getLength($fp)
-	{
-		$length = 1;
-		$meta = stream_get_meta_data($fp);
-		foreach($meta['wrapper_data'] as $header)
-		{
-			$h = explode(':', $header);
-			if ($h[0] === 'Content-Length')
-			{
-				$length = (int) trim($h[1]);
-			}
-		}
-		
-		return $length;
-	}
+
 	
 	
 	
