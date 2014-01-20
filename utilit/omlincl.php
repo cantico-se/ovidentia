@@ -7826,42 +7826,74 @@ class bab_rgp extends Func_Ovml_Function {
 
 	public function rgp($args, $method)
 	{
-	$name = '';
-	$default = '';
-	$saveas = false;
-	$saveasname = '';
-
-	if (count($args))
+		$name = '';
+		$default = '';
+		$saveas = false;
+		$saveasname = '';
+	
+		if (count($args))
 		{
-		foreach( $args as $p => $v)
+			foreach( $args as $p => $v)
 			{
-			switch(mb_strtolower(trim($p)))
+				switch(mb_strtolower(trim($p)))
 				{
-				case 'name':
-					$name = $v;
-					break;
-				case 'default':
-					$default = $v;
-					break;
-				case 'saveas':
-					if (!empty($v))
-						{
-						$saveas = true;
-						$saveasname = $v;
-						}
-					break;
+					case 'name':
+						$name = $v;
+						break;
+					case 'default':
+						$default = $v;
+						break;
+					case 'saveas':
+						if (!empty($v))
+							{
+							$saveas = true;
+							$saveasname = $v;
+							}
+						break;
 				}
 			}
 
-		if (!empty($name))
+			if (!empty($name))
 			{
-			if ($saveas)
+				if ($saveas)
 				{
-				$this->gctx->push($saveasname, $method($name, $default));
+					if(strpos($name,'[') !== false){
+						$name = str_replace(']', '', $name);
+						$name = explode('[', $name);
+						$value = $method($name[0], $default);
+						$i = 1;
+						while(is_array($value) && isset($name[$i]) && $name[$i]){
+							$value = $value[$name[$i]];
+							$i++;
+						}
+						if(is_array($value)){
+							$this->gctx->push($saveasname, $default);
+						}else{
+							$this->gctx->push($saveasname, $value);
+						}
+					}else{
+						$this->gctx->push($saveasname, $method($name, $default));
+					}
 				}
-			else
+				else
 				{
-				$this->gctx->push($name, $method($name, $default));
+					if(strpos($name,'[') !== false){
+						$name = str_replace(']', '', $name);
+						$name = explode('[', $name);
+						$value = $method($name[0], $default);
+						$i = 1;
+						while(is_array($value) && isset($name[$i]) && $name[$i]){
+							$value = $value[$name[$i]];
+							$i++;
+						}
+						if(is_array($value)){
+							$this->gctx->push($name[0], $default);
+						}else{
+							$this->gctx->push($name[0], $value);
+						}
+					}else{
+						$this->gctx->push($name, $method($name, $default));
+					}
 				}
 			}
 		}
@@ -7888,7 +7920,7 @@ class Func_Ovml_Function_Get extends bab_rgp {
 
 	public function toString()
 	{
-	$this->rgp($this->args, 'bab_gp');
+		$this->rgp($this->args, 'bab_gp');
 	}
 }
 
