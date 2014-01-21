@@ -869,6 +869,29 @@ class bab_siteMapItem {
 	}
 	
 
+	/**
+	 * Get rewritten path
+	 * @return string
+	 */
+	public function getRwPath()
+	{
+		$node = $this->node;
+	
+		$arr = array();
+	
+		do
+		{
+			$sitemapItem = $node->getData();
+			if (!$sitemapItem || $sitemapItem->getRewriteName() === bab_siteMap::REWRITING_ROOT_NODE) {
+				break;
+			}
+			array_unshift($arr, $sitemapItem->getRewriteName());
+		} while ($node = $node->parentNode());
+	
+		return implode('/', $arr);
+	}
+	
+	
 
 	/**
 	 * Get rewritten url if the rewriting is enabled or the regular url if there is no rewriting
@@ -890,10 +913,10 @@ class bab_siteMapItem {
 		
 		
 		if ($this->rewritingEnabled()) {
-			$url = bab_Sitemap::rewrittenUrl($this->id_function);
+			$url = $this->getRwPath();
 			
 		} else {
-			$path = bab_Sitemap::rewrittenUrl($this->id_function);
+			$path = $this->getRwPath();
 			if ($path)
 			{
 				$url = '?babrw='.$path;
@@ -2115,20 +2138,8 @@ class bab_siteMap {
 			return null;
 		}
 		
-
-
-		$arr = array();
-
-		do
-		{
-			$sitemapItem = $node->getData();
-			if (!$sitemapItem || $sitemapItem->getRewriteName() === self::REWRITING_ROOT_NODE) {
-				break;
-			}
-			array_unshift($arr, $sitemapItem->getRewriteName());
-		} while ($node = $node->parentNode());
-
-		return implode('/', $arr);
+		$sitemapItem = $node->getData();
+		return $sitemapItem->getRwPath();
 	}
 
 
