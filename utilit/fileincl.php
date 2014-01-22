@@ -426,7 +426,7 @@ function bab_addUploadedFile(bab_fileHandler $fmFile, $count, $id, $gr, $sRelati
 		$FMTotalSize+= $fmFile->size;
 	}
 
-	$totalsize = getDirSize($oFileManagerEnv->sFmRootPath);
+	$totalsize = getDirSize($oFileManagerEnv->getCurrentFmRootPath());
 	if($fmFile->size + $totalsize > ($gr == "Y"? $GLOBALS['babMaxGroupSize']: $GLOBALS['babMaxUserSize']))
 	{
 		$exception = new bab_FmFileErrorException(bab_translate("The file size exceed the limit configured for the current type of folder"));
@@ -2133,6 +2133,21 @@ class BAB_FileManagerEnv
 		else if('N' === $this->sGr)
 		{
 			return $this->getPersonnalFolderPath();
+		}
+		return '';
+	}
+	
+	
+	function getCurrentFmRootPath()
+	{
+		if('Y' === $this->sGr)
+		{
+			list($f) = explode('/', $this->sRelativePath);
+			return $this->sFmRootPath . $f.'/';
+		}
+		else if('N' === $this->sGr)
+		{
+			return $this->sFmRootPath . BAB_FileManagerEnv::userPrefix . bab_getUserId(). '/';
 		}
 		return '';
 	}
