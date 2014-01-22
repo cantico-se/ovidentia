@@ -138,6 +138,10 @@ class listFiles
 	var $sParent = '. .';
 	var $bVersion = false;
 
+	/**
+	 * 
+	 * @var BAB_FileManagerEnv
+	 */
 	var $oFileManagerEnv = null;
 
 	var $sRootFolderPath = '';
@@ -1191,7 +1195,13 @@ function showDiskSpace()
 		var $diskspacetxt;
 		var $allowedspacetxt;
 		var $remainingspacetxt;
+		
+		/**
+		 * 
+		 * @var BAB_FileManagerEnv
+		 */
 		var $oFileManagerEnv;
+		
 		var $sContent;
 
 		function temp()
@@ -1253,7 +1263,7 @@ function showDiskSpace()
 			static $i = 0;
 			if( $i < $this->diskp)
 				{
-				$pathx = $this->oFileManagerEnv->getPersonnalFolderPath();
+				$pathx = BAB_FileManagerEnv::getFmRealPersonalPath() . BAB_FileManagerEnv::userPrefix . bab_getUserId() . '/';
 				$size = getDirSize($pathx);
 				$this->diskspace = bab_toHtml(bab_formatSizeFile($size).$this->kilooctet);
 				$this->allowedspace =  bab_toHtml(bab_formatSizeFile($GLOBALS['babMaxUserSize']).$this->kilooctet);
