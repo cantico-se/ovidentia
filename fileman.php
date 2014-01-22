@@ -138,6 +138,10 @@ class listFiles
 	var $sParent = '. .';
 	var $bVersion = false;
 
+	/**
+	 * 
+	 * @var BAB_FileManagerEnv
+	 */
 	var $oFileManagerEnv = null;
 
 	var $sRootFolderPath = '';
@@ -660,6 +664,8 @@ class listFiles
 
 				if(0 === $this->oFolderFileSet->count())
 				{
+					$sFullPathName	= $this->oFileManagerEnv->sFmRootPath . $this->oFileManagerEnv->sRelativePath . $dir_file;
+					
 					$oFolderFile->setName($dir_file);
 					$oFolderFile->setPathName($this->oFileManagerEnv->sRelativePath);
 
@@ -683,6 +689,7 @@ class listFiles
 					$oFolderFile->setCommentVer('');
 					$oFolderFile->setStatusIndex(0);
 					$oFolderFile->setDelegationOwnerId(bab_getCurrentUserDelegation());
+					$oFolderFile->setSize(filesize($sFullPathName));
 
 					$oFolderFile->save();
 					$oFolderFile->setId(null);
@@ -1189,7 +1196,13 @@ function showDiskSpace()
 		var $diskspacetxt;
 		var $allowedspacetxt;
 		var $remainingspacetxt;
+		
+		/**
+		 * 
+		 * @var BAB_FileManagerEnv
+		 */
 		var $oFileManagerEnv;
+		
 		var $sContent;
 
 		function temp()
@@ -1251,7 +1264,7 @@ function showDiskSpace()
 			static $i = 0;
 			if( $i < $this->diskp)
 				{
-				$pathx = $this->oFileManagerEnv->getPersonnalFolderPath();
+				$pathx = BAB_FileManagerEnv::getFmRealPersonalPath() . BAB_FileManagerEnv::userPrefix . bab_getUserId() . '/';
 				$size = getDirSize($pathx);
 				$this->diskspace = bab_toHtml(bab_formatSizeFile($size).$this->kilooctet);
 				$this->allowedspace =  bab_toHtml(bab_formatSizeFile($GLOBALS['babMaxUserSize']).$this->kilooctet);

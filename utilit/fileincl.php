@@ -422,9 +422,11 @@ function bab_addUploadedFile(bab_fileHandler $fmFile, $count, $id, $gr, $sRelati
 		$exception->fmFileName = $fmFile->filename;
 		throw $exception;
 		return false;
+	}else{
+		$FMTotalSize+= $fmFile->size;
 	}
 
-	$totalsize = getDirSize($pathx);
+	$totalsize = getDirSize($oFileManagerEnv->getCurrentFmRootPath());
 	if($fmFile->size + $totalsize > ($gr == "Y"? $GLOBALS['babMaxGroupSize']: $GLOBALS['babMaxUserSize']))
 	{
 		$exception = new bab_FmFileErrorException(bab_translate("The file size exceed the limit configured for the current type of folder"));
@@ -695,8 +697,8 @@ function bab_addUploadedFile(bab_fileHandler $fmFile, $count, $id, $gr, $sRelati
 	}
 	
 	if($GLOBALS['babQuotaFM']
-			&& ($FMTotalSize <= $GLOBALS['babMaxTotalSize']*$GLOBALS['babQuotaFM']/100)
-			&& ($fmFile->size +  $FMTotalSize > $GLOBALS['babMaxTotalSize']*$GLOBALS['babQuotaFM']/100)){
+			&& ($FMTotalSize - $fmFile->size <= $GLOBALS['babMaxTotalSize']*$GLOBALS['babQuotaFM']/100)
+			&& ($FMTotalSize > $GLOBALS['babMaxTotalSize']*$GLOBALS['babQuotaFM']/100)){
 		bab_notifyAdminQuota(true);//notify when exceed the quota on FILE MANAGER
 	}
 	
@@ -2131,6 +2133,21 @@ class BAB_FileManagerEnv
 		else if('N' === $this->sGr)
 		{
 			return $this->getPersonnalFolderPath();
+		}
+		return '';
+	}
+	
+	
+	function getCurrentFmRootPath()
+	{
+		if('Y' === $this->sGr)
+		{
+			list($f) = explode('/', $this->sRelativePath);
+			return $this->sFmRootPath . $f.'/';
+		}
+		else if('N' === $this->sGr)
+		{
+			return $this->sFmRootPath . BAB_FileManagerEnv::userPrefix . bab_getUserId(). '/';
 		}
 		return '';
 	}
