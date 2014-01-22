@@ -184,7 +184,7 @@ class BAB_BaseSet extends BAB_MySqlResultIterator
 		{
 			global $babDB;
 			$sQuery = 'DELETE FROM ' . $this->sTableName . ' ' . $sWhereClause;
-//			bab_debug($sQuery);
+			bab_debug($sQuery);
 			return $babDB->db_query($sQuery);
 		}
 		return false;
@@ -825,6 +825,8 @@ class BAB_FmFolderCliboardSet extends BAB_BaseSet
 
 	function deleteFolder($sName, $sRelativePath, $sGroup)
 	{
+		global $BAB_SESS_USERID;
+		
 		$oIdDgOwner =& $this->aField['iIdDgOwner'];
 		$oIdOwner =& $this->aField['iIdOwner'];
 		$oName =& $this->aField['sName'];
@@ -836,13 +838,23 @@ class BAB_FmFolderCliboardSet extends BAB_BaseSet
 		global $babBody, $babDB;
 		$oCriteria = $oIdDgOwner->in($iDelegation);
 		$oCriteria = $oCriteria->_and($oRelativePath->like($babDB->db_escape_like($sRelativePath . $sName . '/') . '%'));
-		$oCriteria = $oCriteria->_and($oGroup->in('Y'));
+		if('Y' === $sGroup){
+			$oCriteria = $oCriteria->_and($oGroup->in('Y'));
+		}else{
+			$oCriteria = $oCriteria->_and($oGroup->in('N'));
+			$oCriteria = $oCriteria->_and($oIdOwner->in($BAB_SESS_USERID));
+		}
 		$this->remove($oCriteria);
 
 		$oCriteria = $oCriteria->_and($oName->in($sName));
 		$oCriteria = $oIdDgOwner->in($iDelegation);
 		$oCriteria = $oCriteria->_and($oRelativePath->like($babDB->db_escape_like($sRelativePath)));
-		$oCriteria = $oCriteria->_and($oGroup->in('Y'));
+		if('Y' === $sGroup){
+			$oCriteria = $oCriteria->_and($oGroup->in('Y'));
+		}else{
+			$oCriteria = $oCriteria->_and($oGroup->in('N'));
+			$oCriteria = $oCriteria->_and($oIdOwner->in($BAB_SESS_USERID));
+		}
 		$this->remove($oCriteria);
 	}
 
