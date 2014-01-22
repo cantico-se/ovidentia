@@ -426,7 +426,7 @@ function bab_addUploadedFile(bab_fileHandler $fmFile, $count, $id, $gr, $sRelati
 		$FMTotalSize+= $fmFile->size;
 	}
 
-	$totalsize = getDirSize($pathx);
+	$totalsize = getDirSize($oFileManagerEnv->sFmRootPath);
 	if($fmFile->size + $totalsize > ($gr == "Y"? $GLOBALS['babMaxGroupSize']: $GLOBALS['babMaxUserSize']))
 	{
 		$exception = new bab_FmFileErrorException(bab_translate("The file size exceed the limit configured for the current type of folder"));
