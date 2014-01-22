@@ -167,10 +167,7 @@ class listFiles
 
 		$this->prepare();
 
-		if('latin1' == bab_charset::getDatabase())
-		{
-			$this->autoadd_files();
-		}
+		$this->autoadd_files();
 
 		$this->fmfields = array();
 		$res = $babDB->db_query("select * from ".BAB_FM_HEADERS_TBL." where fmh_order != '0' order by fmh_order asc");
@@ -636,6 +633,8 @@ class listFiles
 		{
 			return;
 		}
+		
+		
 
 		if($this->count < count($this->files_from_dir))
 		{
@@ -660,6 +659,8 @@ class listFiles
 
 				if(0 === $this->oFolderFileSet->count())
 				{
+					$sFullPathName	= $this->oFileManagerEnv->sFmRootPath . $this->oFileManagerEnv->sRelativePath . $dir_file;
+					
 					$oFolderFile->setName($dir_file);
 					$oFolderFile->setPathName($this->oFileManagerEnv->sRelativePath);
 
@@ -683,6 +684,7 @@ class listFiles
 					$oFolderFile->setCommentVer('');
 					$oFolderFile->setStatusIndex(0);
 					$oFolderFile->setDelegationOwnerId(bab_getCurrentUserDelegation());
+					$oFolderFile->setSize(filesize($sFullPathName));
 
 					$oFolderFile->save();
 					$oFolderFile->setId(null);
