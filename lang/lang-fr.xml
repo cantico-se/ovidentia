@@ -157,6 +157,7 @@
 <string id="Cannot create temporary file">Impossible de créer un fichier temporaire</string>
 <string id="Cannot open file for writing">Vous n'avez pas un accès en écriture sur ce fichier</string>
 <string id="Cannot paste file">Impossible de copier le fichier</string>
+<string id="Cannot paste file: The target folder does not have enough space">Impossible de copier le fichier: Le fichier dépasse le quota du répertoire cible</string>
 <string id="Cannot remove directory">Impossible de supprimer le répertoire</string>
 <string id="Cannot rename directory">Impossible de renommer le répertoire</string>
 <string id="Cannot upload file">Le fichier ne peut être déposé</string>

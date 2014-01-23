@@ -2594,6 +2594,14 @@ function pasteFile()
 			}
 		}
 
+		$totalsize = getDirSize($oFileManagerEnv->getCurrentFmRootPath());
+		$filesize = filesize($sOldFullPathName);
+		if($filesize + $totalsize > ($oFileManagerEnv->sGr == "Y"? $GLOBALS['babMaxGroupSize']: $GLOBALS['babMaxUserSize']))
+		{
+			$babBody->msgerror = bab_translate("Cannot paste file: The target folder does not have enough space");
+			return false;
+		}
+		
 		if(rename($sOldFullPathName, $sNewFullPathName))
 		{
 			$oCriteria = $oIdOwner->in($iOldIdOwner);

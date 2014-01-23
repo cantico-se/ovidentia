@@ -184,7 +184,7 @@ class BAB_BaseSet extends BAB_MySqlResultIterator
 		{
 			global $babDB;
 			$sQuery = 'DELETE FROM ' . $this->sTableName . ' ' . $sWhereClause;
-			bab_debug($sQuery);
+			//bab_debug($sQuery);
 			return $babDB->db_query($sQuery);
 		}
 		return false;
