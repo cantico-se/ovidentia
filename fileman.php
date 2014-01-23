@@ -2585,6 +2585,15 @@ function pasteFile()
 				return true;
 			}
 		}
+		
+		$totalsize = getDirSize($oFileManagerEnv->getCurrentFmRootPath());
+		$filesize = filesize($sOldFullPathName);
+		if($filesize + $totalsize > ($oFileManagerEnv->sGr == "Y"? $GLOBALS['babMaxGroupSize']: $GLOBALS['babMaxUserSize']))
+		{
+			$babBody->msgerror = bab_translate("Cannot paste file: The target folder does not have enough space");
+			return false;
+		}
+		
 
 		if(rename($sOldFullPathName, $sNewFullPathName))
 		{
@@ -4551,7 +4560,7 @@ function deleteFolderForCollectiveDir()
 
 function deleteFolderForUserDir()
 {
-	global $babBody;
+	global $babBody, $BAB_SESS_USERID;
 
 	$oFileManagerEnv =& getEnvObject();
 
@@ -4568,10 +4577,21 @@ function deleteFolderForUserDir()
 
 				$sPathName = BAB_PathUtil::addEndSlash(BAB_PathUtil::sanitize($oFileManagerEnv->sRelativePath . '/' . $sDirName . '/'));
 				$sFullPathName = BAB_PathUtil::addEndSlash(BAB_PathUtil::sanitize($sUploadPath . $sPathName));
+				
+				$sPathNameDirFile = $sPathName;
+				if(substr($sPathName, 0, 1) == '/'){
+					$sPathNameDirFile = substr($sPathName, 1);
+				}
 
 				$oFolderFileSet = new BAB_FolderFileSet();
 				$oPathName =& $oFolderFileSet->aField['sPathName'];
-				$oFolderFileSet->remove($oPathName->like($babDB->db_escape_like($sPathName) . '%'));
+				$oIdOwner =& $oFolderFileSet->aField['iIdOwner'];
+				$oGroup =& $oFolderFileSet->aField['sGroup'];
+				$oFolderFileSet->remove(
+					$oPathName->like($babDB->db_escape_like($sPathNameDirFile) . '%')
+					->_and($oIdOwner->in($BAB_SESS_USERID))
+					->_and($oGroup->in('N'))
+				);
 
 				$oFmFolderSet = new BAB_FmFolderSet();
 				$oFmFolderSet->removeDir($sFullPathName);
