@@ -319,7 +319,7 @@ abstract class bab_Controller
 	{
 		$classname = substr(get_class($this), 0, -strlen(self::PROXY_CLASS_SUFFIX));
 		if (!method_exists($classname, $methodName)) {
-			throw new bab_InvalidActionException($classname . '::' . $action->getMethod());
+			throw new bab_InvalidActionException($classname . '::' . $methodName);
 		}
 		$method = new ReflectionMethod($classname, $methodName);
 		
