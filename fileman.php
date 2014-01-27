@@ -2478,7 +2478,11 @@ function unzipFile()
 					if($GLOBALS['babQuotaFM']!= 0 && ( ($unzipSize +  $oFileManagerEnv->getFMTotalSize()) > ($GLOBALS['babMaxTotalSize']*$GLOBALS['babQuotaFM']/100))){
 						bab_notifyAdminQuota(true);
 					}
-					bab_moveUnzipFolder($babPath, $oFolderFile->getPathName(), $oFileManagerEnv->getRootFmPath());
+					$return = bab_moveUnzipFolder($babPath, $oFolderFile->getPathName(), $oFileManagerEnv->getRootFmPath());
+					if(!$return){
+						$babBody->addError(bab_translate("Incomplete unzipping"));
+						return false;
+					}
 					header('location: '. $GLOBALS['babUrl'] . 'index.php?tg=fileman&idx=list&id=' . bab_rp('id') . '&gr=' . bab_rp('gr') . '&path=' . bab_rp('path'));
 				}
 
@@ -2492,13 +2496,17 @@ function unzipFile()
 }
 
 function bab_moveUnzipFolder(bab_Path $source, $destination, $absolutePath){
+	$return = true;
 	foreach($source as $babPath){
 		if($babPath->isDir()){
 			$currentBabPath = new bab_Path($absolutePath, $destination, $babPath->getBasename());
 			$currentBabPath->createDir();
 			$currentBabPath = new bab_Path($destination, $babPath->getBasename());
 
-			bab_moveUnzipFolder($babPath, $currentBabPath->tostring(), $absolutePath);
+			$returntmp = bab_moveUnzipFolder($babPath, $currentBabPath->tostring(), $absolutePath);
+			if($return){
+				$return = $returntmp;
+			}
 		}else{
 			$bgroup = false;
 			$id = $GLOBALS['BAB_SESS_USERID'];
@@ -2508,9 +2516,13 @@ function bab_moveUnzipFolder(bab_Path $source, $destination, $absolutePath){
 			}
 			$fmFile = bab_FmFile::move($babPath->tostring());
 			$currentBabPath = new bab_Path($destination,$babPath->getBasename());
-			bab_importFmFile($fmFile, $id, $destination, $bgroup, false);
+			$returntmp = bab_importFmFile($fmFile, $id, $destination, $bgroup, false);
+			if($return){
+				$return = $returntmp;
+			}
 		}
 	}
+	return $return;
 }
 
 
@@ -3903,6 +3915,15 @@ function pasteCollectiveDir()
 
 		$sFullSrcPath = realpath((string) $sUploadPath . $sSrcPath);
 		$sFullTrgPath = realpath((string) $sUploadPath . $sTrgPath);
+
+		$oFileManagerEnv =& getEnvObject();
+		$totalsize = getDirSize($oFileManagerEnv->getCurrentFmRootPath());
+		$filesize = getDirSize($sFullSrcPath);
+		if($filesize + $totalsize > ($oFileManagerEnv->sGr == "Y"? $GLOBALS['babMaxGroupSize']: $GLOBALS['babMaxUserSize']))
+		{
+			$babBody->msgerror = bab_translate("Cannot paste folder: The target folder does not have enough space");
+			return false;
+		}
 
 //		bab_debug('sFullSrcPath ==> ' . $sFullSrcPath . ' versioning ' . (($bSrcPathHaveVersioning) ? 'Yes' : 'No') . ' bSrcPathCollective ' . (($bSrcPathCollective) ? 'Yes' : 'No'));
 //		bab_debug('sFullTrgPath ==> ' . $sFullTrgPath . ' versioning ' . (($bTrgPathHaveVersioning) ? 'Yes' : 'No'));
