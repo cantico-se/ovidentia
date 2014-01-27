@@ -158,6 +158,7 @@
 <string id="Cannot open file for writing">Vous n'avez pas un accès en écriture sur ce fichier</string>
 <string id="Cannot paste file">Impossible de copier le fichier</string>
 <string id="Cannot paste file: The target folder does not have enough space">Impossible de copier le fichier: Le fichier dépasse le quota du répertoire cible</string>
+<string id="Cannot paste folder: The target folder does not have enough space">Impossible de copier le répertoire: Le fichier dépasse le quota du répertoire cible</string>
 <string id="Cannot remove directory">Impossible de supprimer le répertoire</string>
 <string id="Cannot rename directory">Impossible de renommer le répertoire</string>
 <string id="Cannot upload file">Le fichier ne peut être déposé</string>
@@ -3176,6 +3177,7 @@
 <string id="Send the notification">Envoyer la notification</string>
 <string id="Who is notified when a calendar event is created, modified, or deleted?">Qui est notifié lors de la création, de la modification ou de la suppression d'un événement?</string>
 <string id="Unzip here">Décompresser ici</string>
+<string id="Incomplete unzipping">Décompression incomplète</string>
 <string id="Download ZIP folder">Télécharger le dossier compressé</string>
 <string id="Remove the draft">Supprimer le brouillon</string>
 <string id="This will remove all modification on this article, continue?">Les corrections et modifications comprises dans le brouillon de cet article vont être conservées dans un brouillon à part. L'article d'origine pourra de nouveau être modifié. </string>
