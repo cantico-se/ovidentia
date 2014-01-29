@@ -23,6 +23,7 @@
 ************************************************************************/
 include_once 'base.php';
 require_once dirname(__FILE__).'/userinfosincl.php';
+require_once dirname(__FILE__).'/urlincl.php';
 
 function browseUsers($pos, $cb)
 	{
@@ -85,7 +86,9 @@ function browseUsers($pos, $cb)
 					}
 
 				$this->fullname = bab_composeUserName(bab_translate("Lastname"),bab_translate("Firstname"));
-				$this->fullnameurl = $GLOBALS['babUrlScript']."?tg=users&idx=brow&pos=".$this->pos."&cb=".$this->cb;
+				$url = bab_url::get_request_gp();
+				$url->pos = $this->pos;
+				$this->fullnameurl = bab_toHtml($url->toString());
 				}
 			else
 				{
@@ -101,7 +104,9 @@ function browseUsers($pos, $cb)
 					}
 
 				$this->fullname = bab_composeUserName(bab_translate("Firstname"),bab_translate("Lastname"));
-				$this->fullnameurl = $GLOBALS['babUrlScript']."?tg=users&idx=brow&pos=-".$this->pos."&cb=".$this->cb;
+				$url = bab_url::get_request_gp();
+				$url->pos = '-'.$this->pos;
+				$this->fullnameurl = bab_toHtml($url->toString());
 				}
 
 			$this->res = $babDB->db_query($req);
