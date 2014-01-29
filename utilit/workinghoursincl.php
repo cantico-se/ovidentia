@@ -249,21 +249,28 @@ class Func_WorkingHours_Ovidentia extends Func_WorkingHours
 	{
 		$arr = array();
 		$loop = clone $begin;
+		
+		$limit = clone $end;
+		$limit->add(1, BAB_DATETIME_DAY);
+		
 		/*@var $loop BAB_DateTime */
 		do {
 			$ts = $loop->getTimeStamp();
 			foreach(bab_getWHours($id_user, $loop->getDayOfWeek()) as $wh) {
 				$date = date('Y-m-d', $ts);
-				$arr[] = new bab_WorkingPeriod(
-					$date.' '.$wh['startHour'],
-					$date.' '.$wh['endHour']
-				);
+				
+				if ($date.' '.$wh['startHour'] < $end->getIsoDateTime())
+				{
+					$arr[] = new bab_WorkingPeriod(
+						$date.' '.$wh['startHour'],
+						$date.' '.$wh['endHour']
+					);
+				}
 			}
 			
 			$loop->add(1, BAB_DATETIME_DAY);
 
-		} while ($loop->getTimeStamp() < $end->getTimeStamp());
-		
+		} while ($loop->getTimeStamp() < $limit->getTimeStamp());
 		
 		return $arr;
 	}
