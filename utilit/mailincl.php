@@ -179,6 +179,14 @@ class bab_eventMail extends bab_event {
 	public $attachements = null;
 	
 	
+	
+	/**
+	 * List of mail image inline attachements
+	 * @var array
+	 */ 
+	public $imageattachements = null;
+	
+	
 	/**
 	 * @var string
 	 */ 
@@ -216,6 +224,7 @@ class bab_eventMail extends bab_event {
 		$this->cc 			= $babMail->mailCc;
 		$this->bcc 			= $babMail->mailBcc;
 		$this->attachements = $babMail->attachements;
+		$this->imageattachements = $babMail->imageattachements;
 		
 		$this->subject		= $babMail->mail->Subject;
 		$this->body			= $babMail->mail->Body;
@@ -559,6 +568,20 @@ class babMail
 	{
 		$result = $this->mail->AddStringAttachment($path, $realname, 'base64', $type);
 		$this->attachements[] = array('', $realname, $type);
+	}
+
+
+	/**
+	 *  Add an embedded attachment from a file.
+	 *
+	 * @param string	$content	The content to be attachmed.
+	 * @param string	$realname	The attachment name.
+	 * @param string	$type		File extension (MIME) type.
+	 */
+	public function mailEmbeddedImage($path, $cid, $name = '', $encoding = 'base64', $type = 'application/octet-stream')
+	{
+		$result = $this->mail->AddEmbeddedImage($path, $cid, $name, $encoding, $type);
+		$this->imageattachements[] = array($path, $cid, $name, $encoding, $type);
 	}
 
 
