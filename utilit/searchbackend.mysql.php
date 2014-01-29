@@ -89,7 +89,11 @@ class bab_SearchMySqlBackEnd extends bab_SearchBackEnd
 	
 	public function notCriteria(bab_SearchCriteria $oCriteria)
 	{
-		return 'NOT (' . $oCriteria->toString($this) . ')';
+		if (isset($this->realm)){
+			return $this->realm->realmIn().' NOT IN ( '.$this->realm->searchQuery($oCriteria, true) . ')';
+		}else{
+			return 'NOT (' . $oCriteria->toString($this) . ')';
+		}
 	}
 
 	

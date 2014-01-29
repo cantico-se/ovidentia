@@ -410,7 +410,7 @@ class bab_SearchRealmDirectories extends bab_SearchRealm {
 	}
 
 
-
+	
 
 
 	/**
@@ -419,7 +419,32 @@ class bab_SearchRealmDirectories extends bab_SearchRealm {
 	 *
 	 * @return 	bab_SearchResult
 	 */
-	public function search(bab_SearchCriteria $criteria) {
+	public function search(bab_SearchCriteria $criteria)
+	{
+		global $babDB;
+		
+		$req = $this->searchQuery($criteria);
+
+		$result = new bab_SearchDirectoriesResult;
+		$result->setRealm($this);
+		$result->setResource($babDB->db_query($req));
+		
+		return $result;
+	}
+
+	
+	public function realmIn()
+	{
+		return 'e.id';
+	}
+
+	/**
+	 * Search in directories from query
+	 * @param	bab_SearchCriteria	$criteria
+	 *
+	 * @return 	
+	 */
+	public function searchQuery(bab_SearchCriteria $criteria, $subselect = false) {
 
 
 		$locations = $this->getSearchLocations();
@@ -431,11 +456,7 @@ class bab_SearchRealmDirectories extends bab_SearchRealm {
 
 		global $babDB;
 		$mysql = $this->getBackend('mysql');
-
-		$result = new bab_SearchDirectoriesResult;
-		$result->setRealm($this);
-
-		
+		$mysql->realm = $this;
 
 		$req = "SELECT DISTINCT ";
 
@@ -454,23 +475,28 @@ class bab_SearchRealmDirectories extends bab_SearchRealm {
 			$fields[] = $fn;
 		}
 
-		$req .= implode(", \n", $fields);
-		
-		$defaultorder = $this->getDefaultOrder();
-		
 
-		if (null !== $this->primary_search) {
-			$first_orderfield = reset($defaultorder);
-			list($ordercol) = explode(' ', $first_orderfield);
+		if($subselect){
+			$req .=  ' ' . $this->realmIn() . ' ';
+		}else{
+			$req .= implode(", \n", $fields);
 			
-			if (0 === mb_strpos($ordercol, 'babdirf')) {
-				$ordercol = 'extra_'.$ordercol.'.field_value';
-			} else {
-				$ordercol = 'e.'.$ordercol;
+			$defaultorder = $this->getDefaultOrder();
+			
+	
+			if (null !== $this->primary_search) {
+				$first_orderfield = reset($defaultorder);
+				list($ordercol) = explode(' ', $first_orderfield);
+				
+				if (0 === mb_strpos($ordercol, 'babdirf')) {
+					$ordercol = 'extra_'.$ordercol.'.field_value';
+				} else {
+					$ordercol = 'e.'.$ordercol;
+				}
+				
+				
+				$req .= ", ABS(STRCMP(".$ordercol.",". $babDB->quote($this->primary_search) .")) AS relevance ";
 			}
-			
-			
-			$req .= ", ABS(STRCMP(".$ordercol.",". $babDB->quote($this->primary_search) .")) AS relevance ";
 		}
 		
 		$req .= "	 
@@ -505,36 +531,36 @@ class bab_SearchRealmDirectories extends bab_SearchRealm {
 		
 		
 
-		
-		if (null !== $this->sort_method) {
-
-			$sortcol = $this->sort_method;
-			$order_type = 'ASC';
-			if ('desc' === mb_substr($sortcol, -4)) {
-				$sortcol = mb_substr($sortcol, 0, -4);
-				$order_type = 'DESC';
+		if(!$subselect){
+			if (null !== $this->sort_method) {
+	
+				$sortcol = $this->sort_method;
+				$order_type = 'ASC';
+				if ('desc' === mb_substr($sortcol, -4)) {
+					$sortcol = mb_substr($sortcol, 0, -4);
+					$order_type = 'DESC';
+				}
+				
+				$sort = $babDB->backTick($sortcol).' '.$order_type;
+				
+			} else {
+				
+				// get back to default search
+				$sort = implode(', ', $defaultorder);
+				
+				if (null !== $this->primary_search) {
+					$sort = 'relevance ASC, '.$sort;
+				}
 			}
 			
-			$sort = $babDB->backTick($sortcol).' '.$order_type;
-			
-		} else {
-			
-			// get back to default search
-			$sort = implode(', ', $defaultorder);
-			
-			if (null !== $this->primary_search) {
-				$sort = 'relevance ASC, '.$sort;
-			}
-		}
 		
 	
-
-		$req .= ' ORDER BY '.$sort;
+			$req .= ' ORDER BY '.$sort;
+		}
 		
 		bab_debug($req, DBG_INFO, 'Search');
 
-		$result->setResource($babDB->db_query($req));
-		return $result;
+		return $req;
 	}
 	
 	
