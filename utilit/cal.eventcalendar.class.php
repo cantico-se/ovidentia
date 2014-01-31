@@ -797,7 +797,7 @@ class bab_OviPersonalCalendar extends bab_OviEventCalendar implements bab_Person
 
 		if (null === $access_user)
 		{
-			$access_user = $GLOBALS['BAB_SESS_USERID'];
+			$access_user = bab_getuserId();
 		}
 
 

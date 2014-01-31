@@ -1156,7 +1156,7 @@ class bab_siteMap_insertTree
 	{
 		global $babDB;
 
-		if ($GLOBALS['BAB_SESS_USERID']) {
+		if (bab_isUserLogged()) {
 			$res = $babDB->db_query('SELECT
 					p.id
 				FROM
@@ -1253,10 +1253,10 @@ class bab_siteMap_insertTree
 	{
 		global $babDB;
 
-		if ($GLOBALS['BAB_SESS_USERID']) {
+		if (bab_isUserLogged()) {
 			$res = $babDB->db_query('SELECT id_sitemap_profile
 				FROM '.BAB_USERS_TBL.'
-				WHERE id='.$babDB->quote($GLOBALS['BAB_SESS_USERID']));
+				WHERE id='.$babDB->quote(bab_getUserId()));
 
 			if ($arr = $babDB->db_fetch_assoc($res))
 			{
@@ -1287,7 +1287,7 @@ class bab_siteMap_insertTree
 
 		$babDB->db_query('UPDATE '.BAB_USERS_TBL.'
 				SET id_sitemap_profile='.$babDB->quote($id_profile).'
-				WHERE id='.$babDB->quote($GLOBALS['BAB_SESS_USERID']));
+				WHERE id='.$babDB->quote(bab_getUserId()));
 	}
 }
 

@@ -1330,7 +1330,7 @@ class bab_UsersLog
 			
 			if (bab_isUserLogged())
 			{
-				$query .= ' OR (id_user='.$babDB->quote($GLOBALS['BAB_SESS_USERID']).' AND sessid<>'.$babDB->quote(session_id()).') ORDER BY dateact DESC';
+				$query .= ' OR (id_user='.$babDB->quote(bab_getUserId()).' AND sessid<>'.$babDB->quote(session_id()).') ORDER BY dateact DESC';
 			}
 			
 			$res = $babDB->db_query($query);
