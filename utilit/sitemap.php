@@ -876,20 +876,25 @@ class bab_siteMapItem {
 	public function getRwPath()
 	{
 		$node = $this->node;
-	
 		$arr = array();
-	
+		
 		do
 		{
 			$sitemapItem = $node->getData();
 			if (!$sitemapItem || $sitemapItem->getRewriteName() === bab_siteMap::REWRITING_ROOT_NODE) {
+				
 				break;
 			}
 			array_unshift($arr, $sitemapItem->getRewriteName());
 		} while ($node = $node->parentNode());
 	
+		
+		
 		return implode('/', $arr);
 	}
+	
+	
+	
 	
 	
 
@@ -914,9 +919,11 @@ class bab_siteMapItem {
 		
 		if ($this->rewritingEnabled()) {
 			$url = $this->getRwPath();
+			// $url = bab_sitemap::rewrittenUrlOld($this->id_function);
 			
 		} else {
 			$path = $this->getRwPath();
+			// $path = bab_sitemap::rewrittenUrlOld($this->id_function);
 			if ($path)
 			{
 				$url = '?babrw='.$path;
@@ -1777,8 +1784,12 @@ class bab_siteMap {
 	 */
 	public static function getSitemapRootNode()
 	{
-		global $babBody;
-		return self::getVisibleRootNodeByUid($babBody->babsite['sitemap']);
+		require_once dirname(__FILE__).'/settings.class.php';
+		$settings = bab_getInstance('bab_Settings');
+		/*@var $settings bab_Settings */
+		$site = $settings->getSiteSettings();
+		
+		return self::getVisibleRootNodeByUid($site['sitemap']);
 	}
 	
 	
@@ -2141,6 +2152,49 @@ class bab_siteMap {
 		$sitemapItem = $node->getData();
 		return $sitemapItem->getRwPath();
 	}
+	
+	
+	
+	/**
+	 * Get the rewritten url string of a sitemap node
+	 * 
+	 * @deprecated
+	 * 
+	 * @param string $id_function
+	 * @return string
+	 */
+	public static function rewrittenUrlOld($id_function)
+	{
+		static $root = null;
+	
+		if (!isset($root)) {
+			$root = bab_siteMap::getFromSite();
+		}
+	
+		$node = $root->getNodeById($id_function);
+	
+		if (!$node)
+		{
+			bab_debug('Failed to get '.$id_function.' in sitemap');
+			return null;
+		}
+	
+	
+	
+		$arr = array();
+	
+		do
+		{
+			$sitemapItem = $node->getData();
+			if (!$sitemapItem || $sitemapItem->getRewriteName() === self::REWRITING_ROOT_NODE) {
+				break;
+			}
+			array_unshift($arr, $sitemapItem->getRewriteName());
+		} while ($node = $node->parentNode());
+	
+		return implode('/', $arr);
+	}
+	
 
 
 	/**
