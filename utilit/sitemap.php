@@ -1544,7 +1544,7 @@ class bab_siteMap {
 	
 	
 	/**
-	 * Get sitemap default for current user
+	 * Get sitemap level and ancestors
 	 *
 	 * @param	string	$nodeId
 	 *
@@ -1581,8 +1581,8 @@ class bab_siteMap {
 		'.BAB_SITEMAP_FUNCTIONS_TBL.' f,
 		'.BAB_SITEMAP_FUNCTION_LABELS_TBL.' fl,
 		'.BAB_SITEMAP_FUNCTION_PROFILE_TBL.' fp,
-		'.BAB_SITEMAP_TBL.' s
-			LEFT JOIN '.BAB_SITEMAP_TBL.' sp ON sp.id = s.id_parent,
+		'.BAB_SITEMAP_TBL.' s,
+		'.BAB_SITEMAP_TBL.' sp,
 		'.BAB_SITEMAP_PROFILES_TBL.' p
 			LEFT JOIN '.BAB_SITEMAP_PROFILE_VERSIONS_TBL.' pv
 				ON p.id = pv.id_profile
@@ -1613,16 +1613,17 @@ class bab_siteMap {
 		}
 	
 	
-		$query .= '
+		$query .= ' 
+			AND sp.id_function='.$babDB->quote($nodeId).' 
 			AND fl.id_function=f.id_function
 			AND fl.lang='.$babDB->quote(bab_getLanguage()).' 
-			AND sp.id_function='.$babDB->quote($nodeId).'
+			AND (sp.id = s.id_parent OR (s.lf<=sp.lf AND s.lr>=sp.lr))
 		';
 	
 	
 		$query .= 'ORDER BY s.lf';
 	
-		// bab_debug($query);
+		//bab_debug($query);
 	
 		$res = $babDB->db_query($query);
 	
@@ -1650,6 +1651,8 @@ class bab_siteMap {
 	
 	
 		$rootNode = self::buildFromResource($res);
+		
+		// bab_debug($rootNode->__toString());
 	
 		return $rootNode;
 	}
