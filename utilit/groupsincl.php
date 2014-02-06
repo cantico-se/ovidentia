@@ -310,7 +310,7 @@ class bab_Groups
 		$lf = $group['lf'];
 		$lr = $group['lr'];
 	
-		if ($GLOBALS['BAB_SESS_USERID'] != $id_user)
+		if (bab_getUserId() != $id_user)
 		{
 			if ($id_group == 0 || $id_group == 1)
 				return true;
