@@ -881,6 +881,7 @@ class bab_siteMapItem {
 		do
 		{
 			$sitemapItem = $node->getData();
+			/*@var $sitemapItem $sitemapItem */
 			if (!$sitemapItem || $sitemapItem->getRewriteName() === bab_siteMap::REWRITING_ROOT_NODE || $sitemapItem->id_function == 'DGAll') {
 				break;
 			}
