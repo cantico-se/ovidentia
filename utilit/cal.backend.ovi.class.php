@@ -96,25 +96,29 @@ class Func_CalendarBackend_Ovi extends Func_CalendarBackend
 		
 		if ($collection->hash)
 		{
+			$status = true;
 			foreach($collection as $period)
 			{
+				
 				// ovidentia backend does not support method CANCEL, so we delete if the event is canceled
 				if ('CANCEL' === $method)
 				{
 					if (!$this->deletePeriod($period))
 					{
-						return false;
+						$status = false;
+						continue;
 					}
 					
 				} else {
 				
 					if (!bab_cal_OviEventUpdate::save($period))
 					{
-						return false;	
+						$status = false;
+						continue;	
 					}
 				}
 			}
-			return true;
+			return $status;
 		
 		} else {
 			
