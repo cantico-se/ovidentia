@@ -754,6 +754,7 @@ class bab_UserPeriods implements Countable, seekableIterator {
 	{
 		reset($this->boundaries);
 		$r = array();
+		$duplicates_index = array();
 
 
 		foreach ($this->boundaries as $ts => $events) {
@@ -781,13 +782,30 @@ class bab_UserPeriods implements Countable, seekableIterator {
 				}
 
 				$uid = $event->getProperty('UID');
-				$u_key = $calendar_uid.'/'.$uid;
 
 				if ('' === $uid) {
 					// bab_debug('event ignored because the is no UID property ('.$event->getProperty('SUMMARY').')', DBG_ERROR, 'alert');
 					continue;
 				}
+				
+				
+				$u_key = $calendar_uid.'/'.$uid;
+				$d_key = md5($event->ts_begin . $event->ts_end. $event->getProperty('SUMMARY').$event->getProperty('LOCATION').$event->getProperty('CATEGORIES').$event->getProperty('DESCRIPTION'));
+				
+				
+				if (isset($duplicates_index[$d_key]))
+				{
+					// T7736 dedoublonner les evenements sur le meme agenda
+					if ($duplicates_index[$d_key] >= $event->getProperty('DTSTAMP'))
+					{
+						// a duplicate allready added
+						bab_debug('Ignore duplicate event '.$uid.' on calendar '.$calendar_uid);
+						continue;
+					}
+				}
 
+				
+				$duplicates_index[$d_key] = $event->getProperty('DTSTAMP');
 
 
 				if ($event->ts_end > $start && $event->ts_begin < $end) {
