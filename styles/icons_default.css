@@ -1,99 +1,5 @@
 
 
-/*** Icons ***/
-
-
-.icon {
-	background-repeat: no-repeat;
-	overflow: visible;
-	display: -moz-inline-stack;
-	display: inline-block;
-}
-
-.icon-label {
-	display: block;
-}
-
-.icon-left .icon-label {
-	vertical-align: middle;
-}
-
-.icon-left .icon {
-	text-align: left;
-	vertical-align: middle;
-	background-position: 4px center;
-}
-
-.icon-top .icon {
-	text-align: center;
-	vertical-align: top;
-	background-position: center 4px;
-}
-
-
-.icon-top-128 .icon {
-	min-width: 132px;
-	padding: 132px 4px 4px 4px;
-}
-
-.icon-left-128 .icon {
-	padding: 3em 4px 3em 138px;
-}
-
-.icon-top-64 .icon {
-	min-width: 68px;
-	padding: 68px 4px 4px 4px;
-}
-
-.icon-left-64 .icon {
-	padding: 32px 4px 32px 68px;
-}
-
-.icon-top-48 .icon {
-	min-width: 52px;
-	padding: 52px 4px 4px 4px;
-	background-position: center 21px;
-}
-
-.icon-left-48 .icon {
-	padding: 24px 4px 24px 58px;
-	background-position: 20px center;
-}
-
-.icon-top-32 .icon {
-	min-width: 36px;
-	padding: 36px 4px 4px 4px;
-	background-position: center 13px;
-}
-
-.icon-left-32 .icon {
-	padding: 1em 8px 1em 44px;
-	background-position: 12px center;
-}
-
-.icon-top-24 .icon {
-	min-width: 26px;
-	padding: 26px 4px 4px 4px;
-	background-position: center 8px;
-}
-
-.icon-left-24 .icon {
-	min-height: 1em;
-	padding: 4px 4px 4px 32px;
-	background-position: 8px center;
-}
-
-.icon-top-16 .icon {
-	min-width: 20px;
-	padding: 20px 4px 4px 4px;
-}
-
-.icon-left-16 .icon {
-	min-height: 1em;
-	padding: 0.25em 4px 0.25em 24px;
-	background-position: 1px center;
-}
-
 
 
 
@@ -636,3 +542,118 @@
 .icon-48x48 .status-dialog-warning { background-image: url('../skins/ovidentia/images/Puces/PuceFileWaitConfirm.gif'); }
 .icon-48x48 .status-content-loading { background-image: url('../skins/ovidentia/images/Puces/reload.png'); }
 
+
+
+
+
+/*** Avoid problems with Awesome Icons ***/
+
+[class^="icon-left-"], [class*=" icon-left-"],
+[class^="icon-top-"], [class*=" icon-top-"] {
+	font-family: inherit;
+}
+
+/*** Icons ***/
+
+.icon {
+	background-repeat: no-repeat;
+	overflow: visible;
+	display: inline-block;
+}
+
+.no-icon {
+	background-image: none !important;
+}
+
+
+.icon-label {
+	display: block;
+}
+
+.icon-left .icon-label {
+	vertical-align: middle;
+}
+
+.icon-left .icon {
+	text-align: left;
+	vertical-align: middle;
+	background-position: 4px center;
+}
+
+.icon-top .icon {
+	text-align: center;
+	vertical-align: top;
+	background-position: center 4px;
+}
+
+
+.icon-top-128 .icon {
+	min-width: 132px;
+	padding: 132px 4px 4px 4px;
+}
+
+.icon-left-128 .icon {
+	padding: 3em 4px 3em 138px;
+}
+
+.icon-top-64 .icon {
+	min-width: 68px;
+	padding: 68px 4px 4px 4px;
+}
+
+.icon-left-64 .icon {
+	padding: 32px 4px 32px 68px;
+}
+
+.icon-top-48 .icon {
+	min-width: 52px;
+	padding: 52px 4px 4px 4px;
+}
+
+.icon-left-48 .icon {
+	min-width: 0;
+	padding: 24px 4px 24px 58px;
+}
+
+.icon-top-32 .icon {
+	min-width: 36px;
+	padding: 36px 4px 4px 4px;
+}
+
+.icon-left-32 .icon {
+	min-width: 0;
+	padding: 1em 8px 1em 44px;
+}
+
+.icon-top-24 .icon {
+	min-width: 26px;
+	padding: 26px 4px 4px 4px;
+}
+
+.icon-left-24 .icon {
+	min-width: 0;
+	min-height: 1em;
+	padding: 4px 4px 4px 32px;
+}
+
+
+.icon-top-16 .icon,
+.icon-top-symbolic .icon {
+	min-width: 20px;
+	padding: 20px 4px 4px 4px;
+}
+
+.icon-left-16 .icon,
+.icon-left-symbolic .icon {
+    background-position: 3px center;
+    line-height: 1.5em;
+    min-height: 1.5em;
+    min-width: 0;
+    padding: 1px 4px 1px 24px;
+}
+
+.icon-left-16 .icon:empty,
+.icon-left-symbolic .icon:empty {
+    background-position: 3px center;
+    padding: 1px 2px 1px 20px;
+}
