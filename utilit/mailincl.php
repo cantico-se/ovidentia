@@ -381,6 +381,7 @@ class babMail
 	public $mailCc = array();
 	public $mailBcc = array();
 	public $attachements = array();
+	public $imageattachements = array();
 	public $format;
 	public $sent_status;
 
