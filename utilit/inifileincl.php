@@ -931,7 +931,12 @@ class bab_inifile_requirements {
 		
 		foreach($required_id as $nodeId)
 		{
-			$node = $rootNode->getNodeById($nodeId);
+			if(isset($rootNode)) {
+				$node = $rootNode->getNodeById($nodeId);
+			} else {
+				$node = null;
+			}
+			
 			if (null === $node)
 			{
 				$error = sprintf(bab_translate('Node %s not found in site sitemap %s'), $nodeId, $site['sitemap']);
