@@ -45,28 +45,74 @@ class bab_eventBeforeWaitingItemsDisplayed extends bab_event
 	/**
 	 * Add object to the waiting items page
 	 * 
-	 * @param string 	$title		Title for the list of items
-	 * @param Array 	$arr		the list of items waiting for approval,
-	 * 								Format for each item :
-	 * 									text 		: plain text on one line
-	 * 									description : HTML content
-	 * 									url			: url to the approval form
-	 * 									popup		: boolean (url opening method)
-	 * 									idschi		: int
-	 * 								
+	 * @param string 	$title			Title for the list of items
+	 * 
+	 * @param Array 	$arr			the list of items waiting for approval,
+	 *	 								Format for each item :
+	 *	  									text 		: plain text on one line
+	 *	 									description : HTML content
+	 *	 									url			: url to the approval form
+	 * 										popup		: boolean (url opening method)
+	 *	 									idschi		: int
+	 *										id			: int used by the bab_eventConfirmMultipleWaitingItems to report a massive confirmation by checkbox
+	 *													  possible id must be unique for each different value of the $confirm_from_list parameter
+	 *
+	 * @param string	$confirm_from_list	If set to TRUE, a checkbox will be visible on the list for all items for massive confirmation by checkbox
+	 * 										on confirmation the event bab_eventConfirmMultipleWaitingItems will be fired
+	 * 							
 	 */
-	public function addObject($title, Array $arr) {
+	public function addObject($title, Array $arr, $confirm_from_list = null) {
 		static $i = 0;
 		$key = mb_strtolower(mb_substr($title,0,3));
 		$this->objects[$key.$i] = array(
-			'title' => $title,
-			'arr'	=> $arr
+			'title' 			=> $title,
+			'arr'				=> $arr,
+			'confirm_from_list'	=> $confirm_from_list
 		);
 
 		$i++;
 	}
 
 }
+
+
+
+/**
+ * This event is fired when multiple waiting items are submited for confirmation for the waiting items list
+ * @since 8.0.99
+ *
+ */
+class bab_eventConfirmMultipleWaitingItems extends bab_event 
+{
+	/**
+	 * 
+	 * @var array
+	 */
+	private $items;
+	
+	
+	public function setItems($items)
+	{
+		$this->items = $items;
+	}
+	
+	
+	/**
+	 * Get a list of items to confirm
+	 * @param	string	$confirm_from_list			Same string given in bab_eventBeforeWaitingItemsDisplayed::addObject() third parameter
+	 * @return array
+	 */
+	public function getItems($confirm_from_list)
+	{
+		if (!isset($this->items[$confirm_from_list]))
+		{
+			return array();
+		}
+		
+		return $this->items[$confirm_from_list];
+	}
+}
+
 
 
 

@@ -3446,4 +3446,6 @@ L'administrateur</string>
 <string id="Update to version">Installer la version</string>
 
 <string id="Base url to use for static content (default is %s)">Url de base à utiliser pour les fichiers statiques (valeur par défaut : %s)</string>
+<string id="Accept checked items">Accepter les éléments cochés</string>
+<string id="Do you really want to accept the checked items?">Voulez-vous vraiment accepter les éléments cochés?</string>
 </fr>

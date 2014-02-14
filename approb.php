@@ -34,7 +34,7 @@ include_once $GLOBALS['babInstallPath'].'utilit/evtincl.php';
 include_once $GLOBALS['babInstallPath'].'utilit/calincl.php';
 include_once $GLOBALS['babInstallPath'].'utilit/forumincl.php';
 include_once $GLOBALS['babInstallPath'].'utilit/eventwaitingitems.php';
-
+include_once $GLOBALS['babInstallPath'].'utilit/urlincl.php';
 
 
 
@@ -55,11 +55,15 @@ class listWaitingItemsCls
 	var $url;
 	var $text;
 	var $description;
+	
+	public $display_submit_button = false;
 
 	public function __construct()
 	{
 		
 		$this->t_accept_or_refuse = bab_translate('Accept or reject');
+		$this->t_accept_checked = bab_translate('Accept checked items');
+		$this->t_confirm_checked = bab_translate('Do you really want to accept the checked items?');
 		
 		$event = new bab_eventBeforeWaitingItemsDisplayed();
 		bab_fireEvent($event);
@@ -91,8 +95,9 @@ class listWaitingItemsCls
 					if (count($arr) > 0) {
 						$key = mb_strtolower(mb_substr($title,0,3));
 						$this->arrObjects[$key.$row['id']] = array(
-								'title' => $title,
-								'arr'	=> $arr
+								'title' 			=> $title,
+								'arr'				=> $arr,
+								'confirm_from_list' => null
 						);
 					}
 				}
@@ -112,6 +117,7 @@ class listWaitingItemsCls
 		{
 			$this->addonTitle = bab_toHtml($arr['title']);
 			$this->arr = $arr['arr'];
+			$this->confirm_from_list = bab_toHtml((string) $arr['confirm_from_list']);
 			return true;
 		}
 		return false;
@@ -135,12 +141,19 @@ class listWaitingItemsCls
 			$this->url 				= bab_toHtml($arr['url']);
 			$this->popup 			= $arr['popup'];
 			$this->idschi 			= bab_toHtml($arr['idschi']);
-
+			if (isset($arr['id']))
+			{
+				$this->checkbox_value	= bab_toHtml($arr['id']);
+				$this->display_submit_button = true;
+			} else {
+				$this->checkbox_value	= false;
+			}
 			return true;
 		}
 		else
 			return false;
 	}
+	
 }
 
 
@@ -532,6 +545,21 @@ function updateConfirmationWaitingPost($thread, $post)
 
 
 
+function bab_confirmCheckedItems()
+{
+	$confirm_items = bab_pp('confirm_items');
+	
+	$event = new bab_eventConfirmMultipleWaitingItems;
+	$event->setItems($confirm_items);
+	
+	bab_fireEvent($event);
+	
+	$url = bab_url::get_request('tg');
+	$url->location();
+}
+
+
+
 
 /* main */
 
@@ -589,6 +617,10 @@ switch($idx)
 	case "confpost":
 		confirmWaitingPost(bab_gp('thread'), bab_gp('idpost'));
 		exit;
+		break;
+		
+	case 'confirm_checked':
+		bab_confirmCheckedItems();
 		break;
 	
 

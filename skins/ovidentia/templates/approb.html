@@ -123,6 +123,12 @@ window.focus();
 
 
 <!--#begin waitingItems --> 
+
+<form method="post" action="{ babPhpSelf }">
+<input type="hidden" name="tg" value="approb" />
+<input type="hidden" name="idx" value="confirm_checked" />
+
+
 <!--#in getnextaddon -->
 <br />
 
@@ -133,7 +139,7 @@ window.focus();
 	<thead>
 	<tr class="BabSiteAdminTitleFontBackground"> 
 		<td>{ addonTitle }</td>
-		<td width="150"  align="center">{ t_accept_or_refuse }</td>
+		<td width="150" align="center" colspan="2">{ t_accept_or_refuse }</td>
 	</tr>
 	</thead>
 	<!--#in getnextitem -->
@@ -147,16 +153,29 @@ window.focus();
 		<h4 class="bab-waiting-item-title">{ text }</h4>
 		<div class="bab-waiting-item-description">{ description }</div>
 	</td>
-	<td align="center">
+	<td align="center" width="100">
 		<a href="<!--#if popup -->javascript:bab_popup('{ url }');<!--#else popup -->{ url }<!--#endif popup -->"><img src="{ babSkinPath }images/Puces/confirm.gif" border="0" alt=""></a>
+	</td>
+	<td align="center" width="50">
+		<!--#if checkbox_value -->
+		<input type="checkbox" name="confirm_items[{ confirm_from_list }][]" value="{ checkbox_value }" />
+		<!--#endif checkbox_value -->
+		&nbsp;
 	</td>
 	</tr>
 	<!--#endin getnextitem -->
+	
+	
 	</table>
 </td>
 </tr>
 </table>
 <!--#endin getnextaddon -->
+<br />
+<!--#if display_submit_button -->
+<div style="width:95%;margin:0 auto;text-align:right;"><input type="submit" name="accept" value="{ t_accept_checked }" onclick="return confirm(this.title);" title="{ t_confirm_checked }" /></div>
+<!--#endif display_submit_button -->
+</form>
 <!--#end waitingItems --> 
 
 <!--#begin confirmpost -->
