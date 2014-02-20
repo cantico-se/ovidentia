@@ -1290,14 +1290,22 @@ function bab_ldapEntryToOvEntry($oLdap, $iIdUser, $sPassword, $aEntries, $aUpdat
 			 */
 			$key = mb_strtolower($key);
 			
+			if (isset($aEntries[0][$key][0]))
+			{
+				$ldapvalue = $aEntries[0][$key][0];
+			} else {
+				$ldapvalue = '';
+			}
+			
+			
 			switch($key)
 			{
 				case 'jpegphoto':
-					$sQuery .= ', photo_data=\'' . $babDB->db_escape_string($aEntries[0][$key][0]) . '\'';
+					$sQuery .= ', photo_data=\'' . $babDB->db_escape_string($ldapvalue) . '\'';
 					break;
 
 				case 'mail':
-					$sQuery .= ', email=\'' . $babDB->db_escape_string(bab_ldapDecode($aEntries[0][$key][0])) . '\'';
+					$sQuery .= ', email=\'' . $babDB->db_escape_string(bab_ldapDecode($ldapvalue)) . '\'';
 					break;
 
 				default:
@@ -1307,16 +1315,16 @@ function bab_ldapEntryToOvEntry($oLdap, $iIdUser, $sPassword, $aEntries, $aUpdat
 						$rs = $babDB->db_query('select id from ' . BAB_DBDIR_ENTRIES_EXTRA_TBL . ' where id_fieldx=\'' . $babDB->db_escape_string($aExtraFieldId[$tmp]) . '\' and  id_entry=\'' . $babDB->db_escape_string($idu) . '\'');
 						if($rs && $babDB->db_num_rows($rs) > 0)
 						{
-							$babDB->db_query('update ' . BAB_DBDIR_ENTRIES_EXTRA_TBL . ' set field_value=\'' . $babDB->db_escape_string(bab_ldapDecode($aEntries[0][$key][0])) . '\' where id_fieldx=\'' . $babDB->db_escape_string($aExtraFieldId[$tmp]) . '\' and id_entry=\'' . $babDB->db_escape_string($idu) . '\'');
+							$babDB->db_query('update ' . BAB_DBDIR_ENTRIES_EXTRA_TBL . ' set field_value=\'' . $babDB->db_escape_string(bab_ldapDecode($ldapvalue)) . '\' where id_fieldx=\'' . $babDB->db_escape_string($aExtraFieldId[$tmp]) . '\' and id_entry=\'' . $babDB->db_escape_string($idu) . '\'');
 						}
 						else
 						{
-							$babDB->db_query('insert into ' . BAB_DBDIR_ENTRIES_EXTRA_TBL . ' ( field_value, id_fieldx, id_entry) values (\'' . $babDB->db_escape_string(bab_ldapDecode($aEntries[0][$key][0])) . '\', \'' . $babDB->db_escape_string($aExtraFieldId[$tmp]) . '\', \'' . $babDB->db_escape_string($idu) . '\')');
+							$babDB->db_query('insert into ' . BAB_DBDIR_ENTRIES_EXTRA_TBL . ' ( field_value, id_fieldx, id_entry) values (\'' . $babDB->db_escape_string(bab_ldapDecode($ldapvalue)) . '\', \'' . $babDB->db_escape_string($aExtraFieldId[$tmp]) . '\', \'' . $babDB->db_escape_string($idu) . '\')');
 						}
 					}
 					else
 					{
-						$sQuery .= ', ' . $val . '=\'' . $babDB->db_escape_string(bab_ldapDecode($aEntries[0][$key][0])) . '\'';
+						$sQuery .= ', ' . $val . '=\'' . $babDB->db_escape_string(bab_ldapDecode($ldapvalue)) . '\'';
 					}
 					break;
 			}
@@ -1346,7 +1354,7 @@ function bab_ldapEntryGroups($id_user, $entry, $ldap_groups, $create)
 	require_once dirname(__FILE__).'/grpincl.php';
 	
 	
-	if (empty($ldap_groups))
+	if (empty($ldap_groups) || !isset($entry[$ldap_groups]))
 	{
 		return;
 	}
