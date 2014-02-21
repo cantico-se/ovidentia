@@ -167,9 +167,14 @@ class bab_ovml_cache
 			{
 				foreach($path as $cachefile)
 				{
-					if ((time()- filemtime($path->tostring())) > (10*24*3600))
+					if ((time()- @filemtime($path->tostring())) > (10*24*3600))
 					{
-						$path->delete();
+						try {
+							$path->delete();
+						} catch (Exception $e)
+						{
+							bab_debug($e->getMessage());
+						}
 					}
 				}
 			}
