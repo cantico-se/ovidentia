@@ -877,11 +877,12 @@ function updateOrgChartEntity($ocid, $name, $description, $oeid, $entityTypes = 
 	
 /**
  * Delete entity
- * @param array $ids
+ * @param array | string $ids
  * @param unknown_type $all
  */
 function removeOrgChartEntity($ids, $all)
 {
+	$ids = is_array($ids)? $ids : explode(',', $ids);
 	require_once $GLOBALS['babInstallPath'].'utilit/delincl.php';
 	foreach($ids as $id)
 	{
