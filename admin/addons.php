@@ -1024,7 +1024,7 @@ class bab_import_package {
 		
 		$tmpfile = self::installTmpFile();
 		
-		return $dlfiles && $tmpfile;
+		return $dlfiles || $tmpfile;
 	}
 	
 	
