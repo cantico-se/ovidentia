@@ -23,9 +23,18 @@
 ************************************************************************/
 include_once 'base.php';
 
-/**
-* @internal SEC1 PR 18/01/2007 FULL
-*/
+
+// for php < 5.4 (need allow_url_fopen)
+if (!function_exists('getimagesizefromstring')) {
+	function getimagesizefromstring($string_data)
+	{
+		$uri = 'data://application/octet-stream;base64,'  . base64_encode($string_data);
+		return getimagesize($uri);
+	}
+}
+
+
+
 
 /**
  * This file is included only if a user is added or modified
@@ -368,6 +377,9 @@ class bab_userModify {
 				if (isset($info['jpegphoto'])) {
 				
 					if ($info['jpegphoto'] instanceOf bab_fileHandler) {
+						
+						// process photo import by file upload or file copy
+						
 						if (false !== $tmppath = $info['jpegphoto']->importTemporary()) {
 							include_once dirname(__FILE__).'/dirincl.php';
 							$photo = new bab_dirEntryPhoto($arruinfo['id_entry']);
@@ -376,13 +388,23 @@ class bab_userModify {
 								return false;
 							}
 						}
-					}
-					
-					if ('' === $info['jpegphoto']) {
+					} else if ('' === $info['jpegphoto']) {
 						// empty string to remove photo from table
 						
 						$arrdq[] = "photo_data=''";
 						$arrdq[] = "photo_type=''";
+						
+					} else {
+						
+						// detect mime from given string
+						
+						$ims = getimagesizefromstring($info['jpegphoto']);
+						
+						if (isset($ims['mime']))
+						{
+							$arrdq[] = "photo_data=".$babDB->quote($info['jpegphoto']);
+							$arrdq[] = "photo_type=".$babDB->quote($ims['mime']);
+						}
 					}
 					
 					unset($info['jpegphoto']);
@@ -513,4 +535,3 @@ class bab_userModify {
 	}
 }
 
-?>
