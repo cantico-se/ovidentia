@@ -3448,4 +3448,10 @@ L'administrateur</string>
 <string id="Base url to use for static content (default is %s)">Url de base à utiliser pour les fichiers statiques (valeur par défaut : %s)</string>
 <string id="Accept checked items">Accepter les éléments cochés</string>
 <string id="Do you really want to accept the checked items?">Voulez-vous vraiment accepter les éléments cochés?</string>
+
+<string id="Password modification on active directory is not supported">La modification du mot de passe dans active directory n'est pas supportée</string>
+<string id="Failed to change password in LDAP">La modification du mot de passe dans LDAP a échouée</string>
+<string id="Failed to change password in LDAP because the admin DN or admin password are missing">La modification du mot de passe dans LDAP a échouée car le DN de l'administrateur ou le mot de passe de l'administrateur sont manquants</string>
+<string id="Failed to change password, LDAP bind failed">La modification du mot de passe a échouée, impossible de se connecter à l'annuaire LDAP</string>
+<string id="Failed to change password, LDAP search failed">La modification du mot de passe a échouée, la recherche dans l'annuaire LDAP n'a pas de résultats</string>
 </fr>

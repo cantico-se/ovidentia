@@ -88,7 +88,7 @@ function updateUserPasswordById($userId, $newPassword, $newPassword2, $ignoreAcc
 	switch ($authentification)
 	{
 		case BAB_AUTHENTIFICATION_AD: // Active Directory
-			$error = bab_translate("Nothing Changed !!");
+			$error = bab_translate("Password modification on active directory is not supported");
 			return false;
 			break;
 
@@ -101,11 +101,18 @@ function updateUserPasswordById($userId, $newPassword, $newPassword2, $ignoreAcc
 					$error = bab_translate("LDAP connection failed");
 					return false;
 				}
+				
+				if (empty($babBody->babsite['ldap_admindn']) || empty($babBody->babsite['ldap_adminpassword']))
+				{
+					$ldap->close();
+					$error = bab_translate("Failed to change password in LDAP because the admin DN or admin password are missing");
+					return  false;
+				}
 
 				$ret = $ldap->bind($babBody->babsite['ldap_admindn'], $babBody->babsite['ldap_adminpassword']);
 				if (!$ret) {
 					$ldap->close();
-					$error = bab_translate("LDAP bind failed");
+					$error = bab_translate("Failed to change password, LDAP bind failed");
 					return  false;
 				}
 
@@ -121,7 +128,7 @@ function updateUserPasswordById($userId, $newPassword, $newPassword2, $ignoreAcc
 
 				if ($entries === false) {
 					$ldap->close();
-					$error = bab_translate("LDAP search failed");
+					$error = bab_translate("Failed to change password, LDAP search failed");
 					return false;
 				}
 
@@ -129,7 +136,7 @@ function updateUserPasswordById($userId, $newPassword, $newPassword2, $ignoreAcc
 				$ret = $ldap->modify($entries[0]['dn'], array('userPassword'=>$ldappw));
 				$ldap->close();
 				if (!$ret) {
-					$error = bab_translate("Nothing Changed");
+					$error = bab_translate("Failed to change password in LDAP");
 					return false;
 				}
 			}
