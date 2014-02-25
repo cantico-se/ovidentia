@@ -1068,7 +1068,7 @@ function siteAuthentification($id)
 						$this->ldap_usercreate_test_checked = '';
 					}
 
-				$this->resf = $babDB->db_query("select * from ".BAB_LDAP_SITES_FIELDS_TBL." where id_site='".$babDB->db_escape_string($id)."'");
+				$this->resf = $babDB->db_query("select f.* from ".BAB_LDAP_SITES_FIELDS_TBL." f, ".BAB_DBDIR_FIELDSEXTRA_TBL." e where e.id_field=f.id_field AND e.id_directory='0' AND f.id_site='".$babDB->db_escape_string($id)."'");
 				if( $this->resf && $babDB->db_num_rows($this->resf) > 0)
 					{
 					$this->countf = $babDB->db_num_rows($this->resf);
