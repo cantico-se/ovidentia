@@ -379,6 +379,14 @@ function bab_upgrade($core_dir, &$ret, $forceUpgrade = false)
 
 		bab_siteMap::clearAll();
 
+		$delete_fail = '';
+		bab_deleteOldCore($ver_from, $delete_fail);
+		
+		if (!empty($delete_fail))
+		{
+			$ret .= $delete_fail."\n";
+		}
+
 		return true;
 	}
 
@@ -390,6 +398,44 @@ function bab_upgrade($core_dir, &$ret, $forceUpgrade = false)
 		$ret .= bab_translate('Error on upgrade');
 	}
 
+	return false;
+}
+
+
+
+
+/**
+ * Try to delete unused core folder
+ * ovidentia folder or ovidentia-x-x-x 
+ * version will be verified from the version.inc file
+ * 
+ * @param	string	$version	Version number to delete
+ * @param	string	&$msgerror	
+ * 
+ * @return bool
+ */
+function bab_deleteOldCore($version, &$msgerror)
+{
+	require_once dirname(__FILE__).'/delincl.php';
+	
+	$v = explode('.', $version);
+	$n = 'ovidentia-'.implode('-', $v);
+	
+	foreach(array('ovidentia', $n) as $folder)
+	{
+		$core_dir = realpath('.').'/'.$folder;
+		$ini_file = $core_dir.'/version.inc';
+		
+		if(is_dir($core_dir) && file_exists($ini_file))
+		{
+			$cfg = parse_ini_file($ini_file, true);
+			if (isset($cfg['general']['version']) && $cfg['general']['version'] === $version)
+			{
+				return bab_deldir($core_dir, $msgerror);
+			}
+		}
+	}
+	
 	return false;
 }
 
