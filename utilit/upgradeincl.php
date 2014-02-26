@@ -380,7 +380,10 @@ function bab_upgrade($core_dir, &$ret, $forceUpgrade = false)
 		bab_siteMap::clearAll();
 
 		$delete_fail = '';
-		bab_deleteOldCore($ver_from, $delete_fail);
+		if ($ver_from !== $ini->getVersion())
+		{
+			bab_deleteOldCore($ver_from, $delete_fail);
+		}
 		
 		if (!empty($delete_fail))
 		{
