@@ -62,11 +62,10 @@ mod_dom="Available"
 ; available since 7.4.0
 
 mysql_granted_privileges="SELECT, ALTER, CREATE, LOCK TABLES, CREATE TEMPORARY TABLES, DELETE, DROP, INDEX, INSERT, UPDATE"
-
+magic_quotes_gpc="Off"
 
 [recommendations]
 register_globals="Off"
-magic_quotes_gpc="Off"
 lang_directory="Available"
 upload_directory="Available"
 images_directory="Available"
