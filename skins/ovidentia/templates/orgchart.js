@@ -507,7 +507,7 @@ function bab_resizeOrgChartContainer() {
 	if (typeof locationbar != 'undefined')
 	{
 		var locationbarDimensions = Element.getDimensions(locationbar);
-	} else {
+	} else {
 		var locationbarDimensions = { 'height' : 50, 'width': 800 };
 	}
 	
