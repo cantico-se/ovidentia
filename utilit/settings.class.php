@@ -29,7 +29,7 @@ class bab_Settings
 	private $siteSettings = null;
 	
 	/**
-	 * Get site settings
+	 * Get get current site settings
 	 * @throws ErrorException
 	 * @return array
 	 */
@@ -54,5 +54,18 @@ class bab_Settings
 		}
 		
 		return $this->siteSettings;
+	}
+	
+	
+	public function setForCurrentSite($key, $value)
+	{
+		global $babDB;
+		$babDB->db_query('UPDATE bab_sites SET '.$babDB->backTick($key).'='.$babDB->quote($value).' WHERE name='.$babDB->quote($GLOBALS['babSiteName']));
+	}
+	
+	public function setForAllSites($key, $value)
+	{
+		global $babDB;
+		$babDB->db_query('UPDATE bab_sites SET '.$babDB->backTick($key).'='.$babDB->quote($value));
 	}
 }
