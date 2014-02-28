@@ -375,7 +375,7 @@ class bab_Node
 				$newNode->_nextSibling->_previousSibling = $newNode;
 			}
 		} else {
-			if ($node->isLastChild()) {
+			if ($oldNode->isLastChild()) {
 				$this->_lastChild = $newNode;
 				$oldNode->_previousSibling->_nextSibling = $newNode;
 				$newNode->_previousSibling = $oldNode->_previousSibling;
@@ -395,103 +395,6 @@ class bab_Node
 		return $oldNode;
 	}
 
-	/**
-	 * Swaps the node $firstNode and its next sibling.
-	 * @param bab_Node $firstNode
-	 * @access private
-	 */
-	private function _swapConsecutiveNodes(bab_Node $firstNode)
-	{
-		$secondNode = $firstNode->_nextSibling;
-		if ($firstNode->isFirstChild()) {
-			$firstNode->_parent->_firstChild = $secondNode;
-		} else {
-			$firstNode->_previousSibling->_nextSibling = $secondNode;
-		}
-		if ($secondNode->isLastChild()) {
-			$secondNode->_parent->_lastChild = $firstNode;
-		} else {
-			$secondNode->_nextSibling->_previousSibling = $firstNode;
-		}
-		$firstNode->_nextSibling = $secondNode->_nextSibling;
-		$secondNode->_nextSibling = $firstNode;
-		$secondNode->_previousSibling = $firstNode->_previousSibling;
-		$firstNode->_previousSibling = $secondNode;
-	}
-
-
-	/**
-	 * DO NOT USE ** BROKEN
-	 * 
-	 * This method has to be finished
-	 * 
-	 * Swaps the nodes $firstNode and $secondNode.
-	 * @param bab_Node $firstNode
-	 * @param bab_Node $secondNode
-	 */
-	private function _swapNodes(bab_Node $second, bab_Node $secondNode)
-	{
-		if ($firstNode->nextSibling() === $secondNode) {
-			$this->_swapConsecutiveNodes($firstNode);
-		} else if ($secondNode->nextSibling() === $firstNode) {
-			$this->_swapConsecutiveNodes($secondNode);
-		} else {
-			$firstNodeParent = $firstNode->_parent;
-			$firstNodePreviousSibling = $firstNode->_previousSibling;
-			$firstNodeNextSibling = $firstNode->_nextSibling;
-
-			$secondNodeParent = $firstNode->_parent;
-			$secondNodePreviousSibling = $secondNode->_previousSibling;
-			$secondNodeNextSibling = $secondNode->_nextSibling;
-			
-			$firstNode->_parent = $secondNodeParent;
-			$firstNode->_previousSibling = $secondNodeNextSibling;
-			$firstNode->_nextSibling = $secondNodeNextSibling;
-
-			$secondNode->_parent = $firstNodeParent;
-			$secondNode->_previousSibling = $firstNodePreviousSibling;
-			$secondNode->_nextSibling = $firstNodeNextSibling;
-		}
-	}
-
-	/**
-	 * Sorts the child nodes.
-	 * The data associated to the nodes must be an object implementing a 'compare'
-	 * method. This method must compare the object with a similar object passed in
-	 * parameter and return a scalar value.
-	 * The value returned by $a->compare($b) must be:
-	 * - 0 if "$a == $b"
-	 * - > 0 if "$a > $b"
-	 * - < 0 if "$a < $b"
-	 * 
-	 * @see bab_Node::sortSubTree()
-	 */
-	public function sortChildNodes_deprecated()
-	{
-		$nodes = array();
-		$node = $this->firstChild();
-		for ($i = 0; !is_null($node); $node = $node->nextSibling()) {
-			$nodes[$i++] = $node;
-		}
-		if ($i === 0)
-			return;
-//		$elementClass = get_class($nodes[0]);
-		$changed = true;
-		for ($end = count($nodes) - 1; $changed && $end > 0; $end--) {
-			$changed = false;
-			for ($current = 0; $current < $end; $current++) {
-				$currentElement = $nodes[$current]->getData();
-				$nextElement = $nodes[$current + 1]->getData();
-				if ($currentElement->compare($nextElement) > 0) {
-					$changed = true;
-					bab_Node::_swapConsecutiveNodes($nodes[$current]);
-					$temp = $nodes[$current];
-					$nodes[$current] = $nodes[$current + 1];
-					$nodes[$current + 1] = $temp;
-				}
-			}
-		}
-	}
 
 
 	/**
