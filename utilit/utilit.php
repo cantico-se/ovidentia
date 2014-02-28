@@ -1478,8 +1478,10 @@ class bab_UsersLog
 
 
 /**
- * Get the ID of the current admin delegated group
- * this function remplace the $babBody->currentAdmGroup variable
+ * Get the ID of the current admin delegation.
+ * 
+ * This function remplaces the $babBody->currentAdmGroup variable.
+ * 
  * @return int
  */
 function bab_getCurrentAdmGroup()
@@ -1492,6 +1494,8 @@ function bab_getCurrentAdmGroup()
 
 
 /**
+ * Returns an array with all information about the delegation.
+ * 
  * This method replace the $babBody->currentDGGroup variable
  * @return array
  */
