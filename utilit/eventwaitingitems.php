@@ -130,14 +130,14 @@ class bab_eventWaitingItemsStatus extends bab_eventBeforeWaitingItemsDisplayed
 	
 	
 	
-	public function addObject($title, Array $arr) {
+	public function addObject($title, Array $arr, $confirm_from_list = null) {
 	
 		if (count($arr) > 0)
 		{
 			$this->addStatus(true);
 		}
 		
-		return parent::addObject($title, $arr);
+		return parent::addObject($title, $arr, $confirm_from_list);
 	}
 	
 	
@@ -187,10 +187,10 @@ class bab_eventWaitingItemsCount extends bab_eventBeforeWaitingItemsDisplayed
 	}
 	
 	
-	public function addObject($title, Array $arr) {
+	public function addObject($title, Array $arr, $confirm_from_list = null) {
 		
 		$this->addItemCount($title, count($arr));
-		return parent::addObject($title, $arr);
+		return parent::addObject($title, $arr, $confirm_from_list);
 	}
 	
 	
