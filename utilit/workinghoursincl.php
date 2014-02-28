@@ -300,7 +300,7 @@ class Func_WorkingHours_Ovidentia extends Func_WorkingHours
 		$res = $babDB->db_query("
 				SELECT * 
 				FROM ".BAB_WORKING_HOURS_TBL." WHERE
-					idUser =".$babDB->quote($db_id_user)." "
+					idUser =".$babDB->quote($id_user)." "
 		);
 		
 		return ($babDB->db_num_rows($res) > 0);
