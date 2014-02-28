@@ -106,8 +106,8 @@ function checkFileManagerForError($sUploadPath, $sIsoFrom, $sIsoTo)
 		$aError = lookupCollectiveFolderInDatabaseForError($sFmCollectives, $sIsoFrom, $sIsoTo);
 		$aError = array_merge($aError, lookupCollectiveFileInDatabaseForError($sFmCollectives, $sIsoFrom, $sIsoTo));
 		$aError = array_merge($aError, lookupUserFileInDatabaseForError($sFmUsers, $sIsoFrom, $sIsoTo));
-		$aError = array_merge($aError, lookupForOrphanCollectiveFileInFileSystem($sFmCollectives, $sIsoFrom, $sIsoTo));
-		$aError = array_merge($aError, lookupForOrphanUserFileInFileSystem($sFmUsers, $sIsoFrom, $sIsoTo));
+		$aError = array_merge($aError, lookupForOrphanCollectiveFileInFileSystem($sFmCollectives));
+		$aError = array_merge($aError, lookupForOrphanUserFileInFileSystem($sFmUsers));
 	}
 	return $aError;
 }
