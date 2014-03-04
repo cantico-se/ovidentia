@@ -6746,18 +6746,22 @@ function ovidentia_upgrade($version_base,$version_ini) {
 		$babDB->db_query("ALTER TABLE `bab_vac_rights` DROP `day_end_fixed`");
 	}
 
-	$quantity_field = $babDB->db_fetch_assoc($babDB->db_query('describe `bab_vac_rights` `quantity`'));
-	if (false !== mb_strpos($quantity_field['Type'], 'decimal(3,1)'))
-	{
-		$babDB->db_query("ALTER TABLE `bab_vac_rights` CHANGE `quantity` `quantity` decimal(4,2) unsigned NOT NULL default '0.00'");
+	if (bab_isTable('bab_vac_rights')) {
+    	$quantity_field = $babDB->db_fetch_assoc($babDB->db_query('describe `bab_vac_rights` `quantity`'));
+    	if (false !== mb_strpos($quantity_field['Type'], 'decimal(3,1)'))
+    	{
+    		$babDB->db_query("ALTER TABLE `bab_vac_rights` CHANGE `quantity` `quantity` decimal(4,2) unsigned NOT NULL default '0.00'");
+    	}
 	}
 
-	$quantity_field = $babDB->db_fetch_assoc($babDB->db_query('describe `bab_vac_entries_elem` `quantity`'));
-	if (false !== mb_strpos($quantity_field['Type'], 'decimal(3,1)'))
-	{
-		$babDB->db_query("ALTER TABLE `bab_vac_entries_elem` CHANGE `quantity` `quantity` decimal(4,2) unsigned NOT NULL default '0.00'");
+	if (bab_isTable('bab_vac_entries_elem')) {
+    	$quantity_field = $babDB->db_fetch_assoc($babDB->db_query('describe `bab_vac_entries_elem` `quantity`'));
+    	if (false !== mb_strpos($quantity_field['Type'], 'decimal(3,1)'))
+    	{
+    		$babDB->db_query("ALTER TABLE `bab_vac_entries_elem` CHANGE `quantity` `quantity` decimal(4,2) unsigned NOT NULL default '0.00'");
+    	}
 	}
-
+    	
 
 	/**
 	 * Upgrade to 7.7.93
@@ -6802,8 +6806,9 @@ function ovidentia_upgrade($version_base,$version_ini) {
 
 	bab_addEventListener('LibTimer_eventHourly', 'bab_onHourly', 'utilit/timerincl.php');
 
-
-	if (!bab_isTableField('bab_vac_options', 'allow_mismatch'))
+	
+	
+	if (bab_isTable('bab_vac_options') && !bab_isTableField('bab_vac_options', 'allow_mismatch'))
 	{
 		$babDB->db_query("ALTER TABLE `bab_vac_options` ADD `allow_mismatch` TINYINT( 1 ) UNSIGNED NOT NULL default '1'");
 	}
