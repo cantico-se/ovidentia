@@ -6703,12 +6703,12 @@ function ovidentia_upgrade($version_base,$version_ini) {
 	 * Upgrade to 7.7.90
 	 * vacation hours
 	 */
-	if (!bab_isTableField('bab_vac_rights', 'quantity_unit'))
+	if (bab_isTable('bab_vac_rights') && !bab_isTableField('bab_vac_rights', 'quantity_unit'))
 	{
 		$babDB->db_query("ALTER TABLE `bab_vac_rights` ADD `quantity_unit` enum('H','D') NOT NULL default 'D'");
 	}
 
-	if (bab_isTableField('bab_vac_rights', 'day_begin_fixed'))
+	if (bab_isTable('bab_vac_rights') && bab_isTableField('bab_vac_rights', 'day_begin_fixed'))
 	{
 		$babDB->db_query("ALTER TABLE `bab_vac_rights` CHANGE `date_begin_fixed` `date_begin_fixed` datetime NOT NULL default '0000-00-00 00:00:00'");
 		$babDB->db_query("ALTER TABLE `bab_vac_rights` CHANGE `date_end_fixed` `date_end_fixed` datetime NOT NULL default '0000-00-00 00:00:00'");
