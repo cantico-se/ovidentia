@@ -4512,47 +4512,49 @@ function ovidentia_upgrade($version_base,$version_ini) {
 	 * from 5.5.3 to 6.2.0
 	 */
 
-	upgrade553to554();
-	upgrade554to555();
-	upgrade555to556();
-	upgrade558to559();
-	upgrade562to563();
-	upgrade563to564();
-	upgrade564to565();
-	upgrade565to566();
-	upgrade566to570();
-	upgrade570to571();
-	upgrade571to572();
-	upgrade572to573();
-	upgrade573to574();
-	upgrade574to575();
-	upgrade575to576();
-	upgrade577to578();
-	upgrade578to579();
-	upgrade580to581();
-	upgrade581to582();
-	upgrade582to583();
-	upgrade583to584();
-	upgrade584to585();
-	upgrade585to586();
-	upgrade586to587();
-	upgrade587to588();
-	upgrade588to589();
-	upgrade589to600();
-	upgrade600to601();
-	upgrade601to602();
-	upgrade602to603();
-	upgrade604to605();
-	upgrade605to606();
-	upgrade606to610();
-
-
-	if (!bab_isTableField(BAB_EVENT_LISTENERS_TBL, 'priority')) {
-		$babDB->db_query("ALTER TABLE ".BAB_EVENT_LISTENERS_TBL." ADD priority INT( 11 )  UNSIGNED DEFAULT '0' NOT NULL");
+	if (version_compare($version_base, '6.2.0', '<')) {
+    	upgrade553to554();
+    	upgrade554to555();
+    	upgrade555to556();
+    	upgrade558to559();
+    	upgrade562to563();
+    	upgrade563to564();
+    	upgrade564to565();
+    	upgrade565to566();
+    	upgrade566to570();
+    	upgrade570to571();
+    	upgrade571to572();
+    	upgrade572to573();
+    	upgrade573to574();
+    	upgrade574to575();
+    	upgrade575to576();
+    	upgrade577to578();
+    	upgrade578to579();
+    	upgrade580to581();
+    	upgrade581to582();
+    	upgrade582to583();
+    	upgrade583to584();
+    	upgrade584to585();
+    	upgrade585to586();
+    	upgrade586to587();
+    	upgrade587to588();
+    	upgrade588to589();
+    	upgrade589to600();
+    	upgrade600to601();
+    	upgrade601to602();
+    	upgrade602to603();
+    	upgrade604to605();
+    	upgrade605to606();
+    	upgrade606to610();
+    
+    
+    	if (!bab_isTableField(BAB_EVENT_LISTENERS_TBL, 'priority')) {
+    		$babDB->db_query("ALTER TABLE ".BAB_EVENT_LISTENERS_TBL." ADD priority INT( 11 )  UNSIGNED DEFAULT '0' NOT NULL");
+    	}
+    
+    	upgrade610to611();
+    	upgrade612to620();
 	}
-
-	upgrade610to611();
-	upgrade612to620();
 
 
 
