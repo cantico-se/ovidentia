@@ -4821,9 +4821,11 @@ function ovidentia_upgrade($version_base,$version_ini) {
 	$babDB->db_query("ALTER TABLE ".BAB_FILES_TBL." DROP keywords");
 	}
 
-	if(!bab_isTableField(BAB_TSKMGR_TASK_LIST_FILTER_TBL, 'iTaskCompletion'))
-	{
-		$babDB->db_query("ALTER TABLE ".BAB_TSKMGR_TASK_LIST_FILTER_TBL." ADD `iTaskCompletion` INT(11) NOT NULL default '-1'");
+	if(bab_isTable(BAB_TSKMGR_TASK_LIST_FILTER_TBL)) {
+    	if(!bab_isTableField(BAB_TSKMGR_TASK_LIST_FILTER_TBL, 'iTaskCompletion'))
+    	{
+    		$babDB->db_query("ALTER TABLE ".BAB_TSKMGR_TASK_LIST_FILTER_TBL." ADD `iTaskCompletion` INT(11) NOT NULL default '-1'");
+    	}
 	}
 
 	/**
@@ -5276,7 +5278,9 @@ function ovidentia_upgrade($version_base,$version_ini) {
 		}
 	}
 
-	$babDB->db_query('DROP TABLE `' . BAB_TSKMGR_TASK_LIST_FILTER_TBL . '`');
+	if(bab_isTable(BAB_TSKMGR_TASK_LIST_FILTER_TBL)) {
+	   $babDB->db_query('DROP TABLE `' . BAB_TSKMGR_TASK_LIST_FILTER_TBL . '`');
+    }
 
 	$oResult = $babDB->db_query('DESCRIBE `' . BAB_TSKMGR_TASKS_TBL . '` `iPriority`');
 	if(false !== $oResult)
@@ -5825,9 +5829,15 @@ function ovidentia_upgrade($version_base,$version_ini) {
 			}
 		}
 
-		$babDB->db_query('DROP TABLE `bab_files_tags`');
-		$babDB->db_query('DROP TABLE `bab_art_tags`');
-		$babDB->db_query('DROP TABLE `bab_art_drafts_tags`');
+    	if(bab_isTable('bab_files_tags')) {
+    		$babDB->db_query('DROP TABLE `bab_files_tags`');
+    	}
+    	if(bab_isTable('bab_art_tags')) {
+            $babDB->db_query('DROP TABLE `bab_art_tags`');
+    	}
+    	if(bab_isTable('bab_art_drafts_tags')) {
+    	    $babDB->db_query('DROP TABLE `bab_art_drafts_tags`');
+    	}
 	}
 
 	require_once $GLOBALS['babInstallPath'] . 'utilit/eventincl.php';
