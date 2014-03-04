@@ -105,6 +105,7 @@ function site_menu1()
 			$this->proposemassmailingtxt = bab_translate("Propose mass mailing in directory views?");
 			$this->staticurl_title = sprintf(bab_translate("Base url to use for static content (default is %s)"), $GLOBALS['babUrl']);
 			
+			$this->sSiteMapInfo = bab_translate("The chosen site map will be use to fill menus.");
 			
 			$this->skselectedindex = 0;
 			$this->stselectedindex = 0;

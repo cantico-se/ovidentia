@@ -3444,7 +3444,7 @@ L'administrateur</string>
 <string id="Available upgrade(s) for addon %s">Mise(s) à jour disponibe(s) du module %s</string>
 <string id="There are no upgrade available for the addon %s">Il n'y a pas de mise à jour disponible pour le module %s</string>
 <string id="Update to version">Installer la version</string>
-
+<string id="The chosen site map will be use to fill menus.">Le plan du site choisis sera utilisé pour afficher les menus.</string>
 <string id="Base url to use for static content (default is %s)">Url de base à utiliser pour les fichiers statiques (valeur par défaut : %s)</string>
 <string id="Accept checked items">Accepter les éléments cochés</string>
 <string id="Do you really want to accept the checked items?">Voulez-vous vraiment accepter les éléments cochés?</string>

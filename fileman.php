@@ -956,7 +956,6 @@ class DisplayCollectiveFolderForm extends DisplayFolderFormBase
 			$this->set_data('isAddTags', ('Y' === $sAddTags) ? true : false);
 			$this->set_data('isDownloadsCapping', ('Y' === $sDownloadsCapping) ? true : false);
 			$this->set_data('isDownloadHistory', ('Y' === $sDownloadHistory) ? true : false);
-			$this->set_data('isDownloadHistory', $bManualOrder);
 			$this->set_data('iMaxDownloads', $oFmFolder->getMaxDownloads());
 			$this->set_data('isManualOrder', $oFmFolder->getManualOrder());
 			$this->set_data('iIdFolder', $oFmFolder->getId());

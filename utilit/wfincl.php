@@ -34,7 +34,7 @@ include_once $GLOBALS['babInstallPath'].'utilit/afincl.php';
  * Creates an instance of approbation schema with id $idsch and return the id of the instance.
  * 
  * @param int		$idsch	Id of the approbation schema.
- * @param string	$extra	Instance identification string. This information id not used by Ovidentia, can be used debugging purpose.
+ * @param string	$extra	Instance identification string. This information is not used by Ovidentia, can be used debugging purpose.
  * @param int		$user	User id of owner for auto-approbation, 0 = no auto-approbation.
  * 
  * @return int		The id of the new instance.
@@ -70,8 +70,9 @@ function bab_WFDeleteInstance($idschi)
  * @param bool		$bool		True if the user accept the approbation and false if the user decline the approbation.
  * 
  * @return number	The new result of the schema approbation:
- *						- 0 if the approbation is declined and then the subject of the approbation must be revoked.
- * 						- 1 if the approbation is accepted and hence the subject of the approbation must be accepeted.
+ *						-  0 if the approbation is declined and then the subject of the approbation must be revoked.
+ * 						-  1 if the approbation is accepted and hence the subject of the approbation must be accepeted.
+ * 						- -1 if the approbation is still in wait status.
  */
 function bab_WFUpdateInstance($idschi, $iduser, $bool)
 {
