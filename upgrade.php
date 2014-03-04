@@ -5376,7 +5376,7 @@ function ovidentia_upgrade($version_base,$version_ini) {
 		");
 
 
-		if(bab_isTableField(BAB_VAC_RIGHTS_RULES_TBL, 'period_start'))
+		if(bab_isTable(BAB_VAC_RIGHTS_RULES_TBL) && bab_isTableField(BAB_VAC_RIGHTS_RULES_TBL, 'period_start'))
 		{
 			$res = $babDB->db_query('SELECT
 					id_right,
