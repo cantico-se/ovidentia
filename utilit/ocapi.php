@@ -981,6 +981,99 @@ function bab_OCGetPathToNodeQuery($iIdEntity, $bIncludeEntity = false, $sOrder =
 
 
 
+function bab_OCGetOrgChartByName($name , $delegationId = 0)
+{
+	global $babDB, $babBody;
+	
+	$name = trim($name);
+	if (0 === mb_strlen($name)) {
+		return null;
+	}
+
+	$sql = '
+		SELECT id
+		FROM ' . BAB_ORG_CHARTS_TBL . '
+		WHERE 
+			id_dgowner = ' . $babDB->quote($delegationId) . '
+		AND name LIKE ' . $babDB->quote($babDB->db_escape_like($name));
+	
+	//bab_debug($sQuery);
+	$orgCharts = $babDB->db_query($sql);
+	if (!$orgCharts) {
+		return null;
+	}
+	if (false !== ($orgChart = $babDB->db_fetch_assoc($orgCharts))) {
+		return $orgChart['id'];
+	}
+	return null;
+}
+
+
+
+
+/**
+ * Removes all entities in an organizational chart.
+ * 
+ * @param int $orgChartId		The organizational chart id.
+ */
+function bab_OCEmptyOrgChart($orgChartId)
+{
+	global $babDB;
+	
+	$sql = '
+		SELECT id
+		FROM ' . BAB_OC_ENTITIES_TBL . '
+		WHERE
+			id_oc = ' . $babDB->quote($orgChartId);
+	
+	$entities = $babDB->db_query($sql);
+	
+	$entityIds = array();
+	while ($entity = $babDB->db_fetch_assoc($entities))
+	{
+		$entityIds[$entity['id']] = $entity['id'];
+	}
+	
+	$sql = 'DELETE FROM ' . BAB_OC_ROLES_TBL . ' WHERE id_oc=' . $babDB->quote($orgChartId);
+	
+	$sql = '
+		SELECT id
+		FROM ' . BAB_OC_ROLES_TBL . '
+		WHERE
+			id_oc = ' . $babDB->quote($orgChartId);
+	
+	$roles = $babDB->db_query($sql);
+	
+	$roleIds = array();
+	while ($role = $babDB->db_fetch_assoc($roles))
+	{
+		$roleIds[$role['id']] = $role['id'];
+	}
+	
+	
+	if (count($roleIds) > 0) {
+		$sql = 'DELETE FROM ' . BAB_OC_ROLES_USERS_TBL . ' WHERE id_role IN(' . $babDB->quote($roleIds) .')';
+		$babDB->db_query($sql);
+	}
+	
+	$sql = 'DELETE FROM ' . BAB_OC_ROLES_TBL . ' WHERE id_oc=' . $babDB->quote($orgChartId);
+	$babDB->db_query($sql);
+
+	if (count($entityIds) > 0) {
+		$sql = 'DELETE FROM ' . BAB_OC_ENTITIES_ENTITY_TYPES_TBL . ' WHERE id_entity IN(' . $babDB->quote($entityIds) .')';
+		$babDB->db_query($sql);
+	}
+	
+	$sql = 'DELETE FROM ' . BAB_OC_ENTITIES_TBL . ' WHERE id_oc=' . $babDB->quote($orgChartId);
+	$babDB->db_query($sql);
+	$sql = 'DELETE FROM ' . BAB_OC_ENTITY_TYPES_TBL . ' WHERE id_oc=' . $babDB->quote($orgChartId);
+	$babDB->db_query($sql);
+	
+
+	$sql = 'DELETE FROM ' . BAB_OC_TREES_TBL . ' WHERE id_user=' . $babDB->quote($orgChartId);
+	$babDB->db_query($sql);
+}
+
 
 
 class bab_OrgChartUtil
@@ -992,6 +1085,8 @@ class bab_OrgChartUtil
 
 	private $aCachedOrgChart	= false;
 	private $aCachedEntity		= false;
+	
+	protected $isLockedBy = null;
 
 	function __construct($iIdOrgChart, $iIdSessUser = null)
 	{
@@ -1022,11 +1117,13 @@ class bab_OrgChartUtil
 	public function setOrgChartId($iIdOrgChart)
 	{
 		$this->iIdOrgChart = (int) $iIdOrgChart;
+		$this->initRight();
 	}
 
 	public function setSessUserId($iIdSessUser)
 	{
 		$this->iIdSessUser = (int) $iIdSessUser;
+		$this->initRight();
 	}
 
 	public function initRight()
@@ -1052,7 +1149,9 @@ class bab_OrgChartUtil
 
 	function isAccessValid()
 	{
-		return (false !== $this->bHaveUpdateRight || false !== $this->bHaveViewRight);
+		$this->bHaveUpdateRight	= bab_isAccessValid(BAB_OCUPDATE_GROUPS_TBL, $this->iIdOrgChart, $this->iIdSessUser);
+		$this->bHaveViewRight	= bab_isAccessValid(BAB_OCVIEW_GROUPS_TBL, $this->iIdOrgChart, $this->iIdSessUser);
+		return $this->bHaveUpdateRight || $this->bHaveViewRight;
 	}
 
 
@@ -1271,6 +1370,8 @@ class bab_OrgChartUtil
 			$babBody->addError(bab_translate("Access denied"));
 			return false;
 		}
+		
+		$this->isLockedBy = null;
 
 		if(true === $this->isLocked())
 		{
@@ -1321,6 +1422,8 @@ class bab_OrgChartUtil
 			return false;
 		}
 
+		$this->isLockedBy = null;
+		
 		if(false === $this->isLockedBy($this->iIdSessUser))
 		{
 			$babBody->addError(bab_translate("Access denied"));
@@ -1356,13 +1459,22 @@ class bab_OrgChartUtil
 	 */
 	function isLocked()
 	{
-		global $babBody;
-		if(false === $this->bHaveUpdateRight)
-		{
-			$babBody->addError(bab_translate("Access denied"));
-			return false;
+		global $babDB;
+		
+		if (!isset($this->isLockedBy)) {
+		
+			$sql = 'SELECT * FROM ' . BAB_ORG_CHARTS_TBL . ' WHERE id=' . $babDB->quote($this->iIdOrgChart);
+				
+			$orgCharts = $babDB->db_query($sql);
+				
+			while ($orgChart = $babDB->db_fetch_assoc($orgCharts)) {
+				if ($orgChart['edit'] === 'Y') {
+					$this->isLockedBy = $orgChart['edit_author'];
+				}
+			}
 		}
-		return (false !== $this->aCachedOrgChart && 'Y' === (string) $this->aCachedOrgChart['edit'] && 0 !== (int) $this->aCachedOrgChart['edit_author']);
+		
+		return (isset($this->isLockedBy));
 	}
 
 
@@ -1375,13 +1487,22 @@ class bab_OrgChartUtil
 	 */
 	function isLockedBy($iIdUser)
 	{
-		global $babBody;
-		if(false === $this->bHaveUpdateRight)
-		{
-			$babBody->addError(bab_translate("Access denied"));
-			return false;
+		global $babDB;
+		
+		if (!isset($this->isLockedBy)) {
+	
+			$sql = 'SELECT * FROM ' . BAB_ORG_CHARTS_TBL . ' WHERE id=' . $babDB->quote($this->iIdOrgChart);
+			
+			$orgCharts = $babDB->db_query($sql);
+			
+			while ($orgChart = $babDB->db_fetch_assoc($orgCharts)) {
+				if ($orgChart['edit'] === 'Y') {
+					$this->isLockedBy = $orgChart['edit_author'];
+				}
+			}
 		}
-		return (false !== $this->aCachedOrgChart && 'Y' === (string) $this->aCachedOrgChart['edit'] && (int) $iIdUser === (int) $this->aCachedOrgChart['edit_author']);
+
+		return (isset($this->isLockedBy) && $this->isLockedBy == $iIdUser);
 	}
 
 
@@ -1920,7 +2041,7 @@ class bab_OrgChartUtil
 	{
 		if(!$this->isLockedBy($this->iIdSessUser))
 		{
-			return false;
+ 			return false;
 		}
 
 		global $babBody;
