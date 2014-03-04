@@ -579,6 +579,8 @@ function getWaitingIdsFlowInstance($scinfo, $idschi, $notify=false)
 function getWaitingApproversFlowInstance($idschi, $notify=false)
 {
 	require_once dirname(__FILE__).'/userinfosincl.php';
+	require_once dirname(__FILE__).'/settings.class.php';
+	
 	global $babDB;
 	$res = $babDB->db_query("select * from ".BAB_FLOW_APPROVERS_TBL." join ".BAB_FA_INSTANCES_TBL." where ".BAB_FA_INSTANCES_TBL.".id='".$babDB->db_escape_string($idschi)."' and ".BAB_FA_INSTANCES_TBL.".idsch=".BAB_FLOW_APPROVERS_TBL.".id");
 	$result = array();
@@ -644,8 +646,17 @@ function getWaitingApproversFlowInstance($idschi, $notify=false)
 				}
 			}
 		}
+		
+		
+	$settings = bab_getInstance('bab_Settings');
+	/*@var $settings bab_Settings */
+	$site = $settings->getSiteSettings();
 
-	if( count($result) > 0 )
+		
+	// result contient la liste des approbateur suivants pour l'instance de l'organigramme 
+	// pour le moment sans tenir compte de l'indisponibilite, la suite du code sert a ajouter les remplacants si des personnes sont indisponibles
+		
+	if( count($result) > 0 && $site['change_unavailability'] == 'Y')
 	{
 	$res = $babDB->db_query("select id_user, id_substitute from ".BAB_USERS_UNAVAILABILITY_TBL." where curdate() between start_date and end_date and id_user in (".$babDB->quote($result).")");
 
@@ -662,6 +673,11 @@ function getWaitingApproversFlowInstance($idschi, $notify=false)
 					$substitutes[$arr['id_user']][] =  $arr['id_substitute'];
 					}
 				}
+				
+				
+			// $arr['id_user'] : approbateur suivant qui est abscent
+			// on cherche la liste des entites ou cet approbateur est supperieur
+			// on recupere l'interimaire de l'entite, on l'ajoute a la liste des remplacants
 
 			$entities = bab_OCGetUserEntities($arr['id_user']);
 			if( count($entities['superior']) > 0 )
