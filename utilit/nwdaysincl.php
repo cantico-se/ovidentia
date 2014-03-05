@@ -85,29 +85,29 @@ function bab_setNonWorkingDays($year)
 				if ($y == $year)
 					{
 					$r_date = sprintf("%04s-%02s-%02s", $y, $m, $d);
-					$nw_type = empty($text) ? 'Non-working day' : $text;
+					$nw_type = empty($text) ? bab_translate('Non-working day') : $text;
 					}
 				break;
 
 			case 102:
 				list($d,$m) = explode('-',$day);
 				$r_date = sprintf("%04s-%02s-%02s", $year, $m, $d);
-				$nw_type = empty($text) ? 'Non-working day' : $text;
+				$nw_type = empty($text) ? bab_translate('Non-working day') : $text;
 				break;
 
 			case 1:
 				$r_date = date("Y-m-d", easter_date($year) + $DAY*1);
-				$nw_type = 'Easter';
+				$nw_type = bab_translate('Easter');
 				break;
 
 			case 2:
 				$r_date = date("Y-m-d", easter_date($year) + $DAY*39);
-				$nw_type = 'Ascension';
+				$nw_type = bab_translate('Ascension');
 				break;
 
 			case 3:
 				$r_date = date("Y-m-d", easter_date($year) + $DAY*50);
-				$nw_type = 'Pentecost';
+				$nw_type = bab_translate('Pentecost');
 				break;
 			}
 
