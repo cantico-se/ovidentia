@@ -1869,10 +1869,18 @@ function bab_mkdir($path, $mode='')
 		{
 		$path = mb_substr($path, 0, -1);
 		}
-	$umask = umask($GLOBALS['babUmaskMode']);
+		
+	$umaskmode = isset($GLOBALS['babUmaskMode']) ? $GLOBALS['babUmaskMode'] : 0;
+		
+	$umask = umask($umaskmode);
 	if( $mode === '' )
 	{
-		$mode = $GLOBALS['babMkdirMode'];
+		if (isset($GLOBALS['babMkdirMode']))
+		{
+			$mode = $GLOBALS['babMkdirMode'];
+		} else{
+			$mode = '0770';
+		}
 	}
 	$res = mkdir($path, $mode);
 	if (!$res) {
