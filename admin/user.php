@@ -551,6 +551,12 @@ function updateUser($userId, $changepwd, $isConfirmed, $disabled, $validityStart
 		notifyUserconfirmation(bab_composeUserName($user['firstname'] , $user['lastname']), $user['email']);
 	}
 
+	require_once $GLOBALS['babInstallPath'] . 'utilit/eventdirectory.php';
+	require_once $GLOBALS['babInstallPath'] . 'utilit/addonsincl.php';
+	
+	$event = new bab_eventUserModified($userId);
+	bab_fireEvent($event);
+	
 	$pos = bab_rp('pos', 'A');
 	$grp = bab_rp('grp', '');
 	header('Location: ' . $GLOBALS['babUrlScript'] . '?tg=users&idx=List&pos=' . $pos . '&grp=' . $grp);
