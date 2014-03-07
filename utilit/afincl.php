@@ -76,11 +76,15 @@ function updateSchemaInstance($idschi)
 
 /**
  * Create workflow instance
- * @param	int		$idsch	approbation scheme
- * @param	string	$extra	instance identification string
- * @param	int		[$user]	Owner for the auto-approbation, 0 = no auto-approbation
+ * 
+ * @see bab_WFMakeInstance
+ * 
+ * @param	int		$idsch		approbation scheme
+ * @param	string	$extra		instance identification string
+ * @param	int		[$user]		Owner for the auto-approbation, 0 = no auto-approbation
+ * @param	int		[$owner]	Owner of instance, default is the current logged in user. This user will be used for the supperior function in organizational charts
  */
-function makeFlowInstance($idsch, $extra, $user = 0)
+function makeFlowInstance($idsch, $extra, $user = 0, $owner = null)
 {
 	global $babDB;
 	$res = $babDB->db_query("select * from ".BAB_FLOW_APPROVERS_TBL." where id='".$babDB->db_escape_string($idsch)."'");
@@ -89,15 +93,13 @@ function makeFlowInstance($idsch, $extra, $user = 0)
 	if( $res && $babDB->db_num_rows($res) > 0)
 		{
 		$arr = $babDB->db_fetch_array($res);
-		if( !empty($GLOBALS['BAB_SESS_USERID']))
+		
+		if (null === $owner)
 			{
-			$idcurrentuser = $GLOBALS['BAB_SESS_USERID'];
+			$owner = bab_getUserId();
 			}
-		else
-			{
-			$idcurrentuser = 0;
-			}
-		$babDB->db_query("insert into ".BAB_FA_INSTANCES_TBL." (idsch, extra, iduser) VALUES ('".$babDB->db_escape_string($idsch)."', '".$babDB->db_escape_string($extra)."', '".$babDB->db_escape_string($idcurrentuser)."')");
+
+		$babDB->db_query("insert into ".BAB_FA_INSTANCES_TBL." (idsch, extra, iduser) VALUES ('".$babDB->db_escape_string($idsch)."', '".$babDB->db_escape_string($extra)."', '".$babDB->db_escape_string($owner)."')");
 		$id = $babDB->db_insert_id();
 		$babDB->db_query("update ".BAB_FLOW_APPROVERS_TBL." set refcount='".$babDB->db_escape_string(($arr['refcount'] + 1))."' where id='".$babDB->db_escape_string($idsch)."'");
 		updateSchemaInstance($id);

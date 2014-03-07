@@ -33,15 +33,18 @@ include_once $GLOBALS['babInstallPath'].'utilit/afincl.php';
 /**
  * Creates an instance of approbation schema with id $idsch and return the id of the instance.
  * 
- * @param int		$idsch	Id of the approbation schema.
- * @param string	$extra	Instance identification string. This information is not used by Ovidentia, can be used debugging purpose.
- * @param int		$user	User id of owner for auto-approbation, 0 = no auto-approbation.
+ * @since 8.0.100	the $owner parameter has been added in 8.0.100
+ * 
+ * @param int		$idsch		Id of the approbation schema.
+ * @param string	$extra		Instance identification string. This information is not used by Ovidentia, can be used debugging purpose.
+ * @param int		[$user]		User id of owner for auto-approbation, 0 = no auto-approbation.
+ * @param int		[$owner]	Owner of instance, default is the current logged in user. This user will be used for the supperior function in organizational charts
  * 
  * @return int		The id of the new instance.
  */
-function bab_WFMakeInstance($idsch, $extra, $user = 0)
+function bab_WFMakeInstance($idsch, $extra, $user = 0, $owner = null)
 {
-	return makeFlowInstance($idsch, $extra, $user);
+	return makeFlowInstance($idsch, $extra, $user, $owner);
 }
 
 
