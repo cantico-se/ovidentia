@@ -69,7 +69,7 @@ function bab_json_encode($a)
 		return '[' . join(',', $result) . ']';
 	} else {
 		foreach ($a as $k => $v) {
-			$result[] = bab_json_encode($k).':'.bab_json_encode($v);
+			$result[] = bab_json_encode((string) $k).':'.bab_json_encode($v);
 		}
 		return '{' . join(',', $result) . '}';
 	}

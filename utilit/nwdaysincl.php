@@ -157,6 +157,7 @@ function bab_getNonWorkingDays($year)
  */
 function bab_getNonWorkingDaysBetween($from, $to)
 {
+	require_once dirname(__FILE__).'/settings.class.php';
 	include_once $GLOBALS['babInstallPath']."utilit/nwdaysincl.php";
 
 	if (is_int($from))
@@ -173,9 +174,15 @@ function bab_getNonWorkingDaysBetween($from, $to)
 		list($y_to)   = explode('-',$to);
 		$date_col     = 'nw_day';
 		}
+		
+		
+	$settings = bab_getInstance('bab_Settings');
+	/*@var $settings bab_Settings */
+	
+	$site = $settings->getSiteSettings();
 
 	$db = & $GLOBALS['babDB'];
-	$id_site = & $GLOBALS['babBody']->babsite['id'];
+	$id_site = $site['id'];
 	$result = array();
 
 	for($year = $y_from; $year<= $y_to; $year++)
@@ -199,10 +206,17 @@ function bab_getNonWorkingDaysBetween($from, $to)
 
 function bab_emptyNonWorkingDays($id_site = false)
 	{
-	if (!$id_site) $id_site = & $GLOBALS['babBody']->babsite['id'];
+	require_once dirname(__FILE__).'/settings.class.php';
+	
+	$settings = bab_getInstance('bab_Settings');
+	/*@var $settings bab_Settings */
+	
+	$site = $settings->getSiteSettings();
+
+	
 	$db = & $GLOBALS['babDB'];
 
-	$db->db_query("DELETE FROM ".BAB_SITES_NONWORKING_DAYS_TBL." WHERE id_site=".$db->quote($id_site)."");
+	$db->db_query("DELETE FROM ".BAB_SITES_NONWORKING_DAYS_TBL." WHERE id_site=".$db->quote($site['id'])."");
 	}
 
 
@@ -213,6 +227,9 @@ function bab_emptyNonWorkingDays($id_site = false)
  * @param	bab_eventBeforePeriodsCreated	$obj
  */
 function bab_NWD_onCreatePeriods(bab_eventBeforePeriodsCreated $obj) {
+	
+	require_once dirname(__FILE__).'/settings.class.php';
+	
 	
 	$backend = bab_functionality::get('CalendarBackend/Ovi');
 	/*@var $backend Func_CalendarBackend_Ovi */
@@ -241,10 +258,15 @@ function bab_NWD_onCreatePeriods(bab_eventBeforePeriodsCreated $obj) {
 	$nwd_color = 'FFFFFF';
 	$nwd_categories =  '';
 	
-	if( $GLOBALS['babBody']->babsite['id_calendar_cat'] != 0)
+	$settings = bab_getInstance('bab_Settings');
+	/*@var $settings bab_Settings */
+	
+	$site = $settings->getSiteSettings();
+	
+	if( $site['id_calendar_cat'] != 0)
 	{
 		include_once $GLOBALS['babInstallPath']."utilit/calapi.php";
-		$idcat = bab_calGetCategories($GLOBALS['babBody']->babsite['id_calendar_cat']);
+		$idcat = bab_calGetCategories($site['id_calendar_cat']);
 		if( isset($idcat[0]['color']))
 		{
 			$nwd_color = $idcat[0]['color'];
