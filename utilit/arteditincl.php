@@ -316,6 +316,7 @@ class bab_ArticleDraftEditor {
 		$headEditor = new bab_contentEditor('bab_article_head');
 		$headEditor->setRequestFieldName('head');
 		$headEditor->setContent($this->draft->head);
+		$headEditor->setFormat($this->draft->head_format);
 		if (isset($_POST['head']))
 		{
 			$headEditor->setContent($_POST['head']);
@@ -339,6 +340,7 @@ class bab_ArticleDraftEditor {
 		$bodyEditor = new bab_contentEditor('bab_article_body');
 		$bodyEditor->setRequestFieldName('body');
 		$bodyEditor->setContent($this->draft->body);
+		$bodyEditor->setFormat($this->draft->body_format);
 		if (isset($_POST['body']))
 		{
 			$bodyEditor->setContent($_POST['body']);
