@@ -339,7 +339,7 @@ function site_menu2($id)
 // 					$this->security__selected = 
 // 			}	
 		
-			if (!extension_loaded('opensssl')) {
+			if (!extension_loaded('openssl')) {
 			    $this->security .= ' (' . bab_translate("the php openssl extension is not loaded and is required to use SSL or TLS connections") . ')';
 			    $this->security_ssl .= ' (' . bab_translate("requires openssl php extension") . ')';
 			    $this->security_tls .= ' (' . bab_translate("requires openssl php extension") . ')';
