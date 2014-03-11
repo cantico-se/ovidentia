@@ -146,10 +146,6 @@ if (isset($_REQUEST['WSSESSIONID'])) {
 	}
 } elseif (!session_id()) {
 	session_name(sprintf("OV%u", crc32($babUrl)));
-	if (isset($_REQUEST[session_name()]))
-	{
-		session_id($_REQUEST[session_name()]);
-	}
 	session_start();
 }
 
