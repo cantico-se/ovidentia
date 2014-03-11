@@ -8898,8 +8898,7 @@ class Func_Ovml_Function_PreviousOrNextArticle extends Func_Ovml_Function {
 		}
 
 		if (isset($args['topicorder'])) {
-			$this->topicorder = $args['topicorder'];
-			$this->topicorder = (mb_strtoupper($forder) === 'YES');
+			$this->topicorder = (mb_strtoupper($args['topicorder']) === 'YES');
 		}
 
 		if (isset($args['archive'])) {
@@ -8921,7 +8920,7 @@ class Func_Ovml_Function_PreviousOrNextArticle extends Func_Ovml_Function {
 				'LEFT JOIN ' .
 					BAB_TOPICS_CATEGORIES_TBL . ' tpc ON tpc.id = t.id_cat ';
 
-			$sDelegation = ' AND tpc.id_dgowner = \'' . $babDB->db_escape_string($delegationid) . '\' ';
+			$sDelegation = ' AND tpc.id_dgowner = \'' . $babDB->db_escape_string($this->delegationid) . '\' ';
 		}
 
 		if ($this->topicid === null || $this->topicid === '' ) {
