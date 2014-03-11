@@ -3414,6 +3414,8 @@ L'administrateur</string>
 <string id="Test user field validity to login (lastname, firstname, email)">Tester la validité des champs de l'utilisateur lors de la connexion (nom, prénom, email)</string>
 <string id="In addition to the access rights, the users directory is accessible in creation / modification by administrators.">En plus des droits d'accès, l'annuaire des utilisateurs est accessible en création/modification par les administrateurs.</string>
 <string id="Connection security">Sécurité de la connexion</string>
+<string id="the php openssl extension is not loaded and is required to use SSL or TLS connections">l'extension openssl de php n'est pas chargée. Elle est requise pour l'utilisation de connexions SSL ou TLS</string>
+<string id="requires openssl php extension">Requiert l'extension openssl de php</string>
 <string id="No security">Aucune</string>
 <string id="This vacation request does not exists">Cette demande de congés n'existe pas</string>
 <string id="You must fill the security code">Vous devez remplir code de sécurité</string>

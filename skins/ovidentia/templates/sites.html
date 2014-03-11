@@ -350,9 +350,9 @@ mm(sksel);
 				            <td>{ security }</td>
 				            <td> 
 				              <select name="smtpsecurity">
-				              	 <option value="" <!--#if arr[smtpsecurity] "== " -->selected="selected"<!--#endif arr[smtpsecurity -->>{ security_none }</option>
-				              	 <option value="ssl" <!--#if arr[smtpsecurity] "== ssl" -->selected="selected"<!--#endif arr[smtpsecurity -->>{ security_ssl }</option>
-				              	 <option value="tls" <!--#if arr[smtpsecurity] "== tls" -->selected="selected"<!--#endif arr[smtpsecurity -->>{ security_tls }</option>
+				              	 <option value="" <!--#if arr[smtpsecurity] "== " -->selected="selected"<!--#endif arr[smtpsecurity] -->>{ security_none }</option>
+				              	 <option value="ssl" <!--#if arr[smtpsecurity] "== ssl" -->selected="selected"<!--#endif arr[smtpsecurity] --> <!--#if ssl_disabled -->disabled="disabled"<!--#endif ssl_disabled -->>{ security_ssl }</option>
+				              	 <option value="tls" <!--#if arr[smtpsecurity] "== tls" -->selected="selected"<!--#endif arr[smtpsecurity] --> <!--#if tls_disabled -->disabled="disabled"<!--#endif tls_disabled -->>{ security_tls }</option>
 				              </select>
 							</td>
 							</tr>

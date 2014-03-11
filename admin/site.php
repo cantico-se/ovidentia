@@ -339,6 +339,18 @@ function site_menu2($id)
 // 					$this->security__selected = 
 // 			}	
 		
+			if (!extension_loaded('opensssl')) {
+			    $this->security .= ' (' . bab_translate("the php openssl extension is not loaded and is required to use SSL or TLS connections") . ')';
+			    $this->security_ssl .= ' (' . bab_translate("requires openssl php extension") . ')';
+			    $this->security_tls .= ' (' . bab_translate("requires openssl php extension") . ')';
+			    $this->ssl_disabled = true;
+			    $this->tls_disabled = true;
+			} else {
+			    $this->ssl_disabled = false;
+			    $this->tls_disabled = false;
+			}
+			
+			
 			$addon = bab_getAddonInfosInstance('mailspooler');
 			if (false === $addon)
 			{
