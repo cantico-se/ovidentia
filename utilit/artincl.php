@@ -2222,7 +2222,9 @@ function bab_newArticleDraft($idtopic, $idarticle) {
 			UPDATE ".BAB_ART_DRAFTS_TBL." set
 				id_article			=".$babDB->quote($idarticle).",
 				head				='".$babDB->db_escape_string($arr['head'])."',
+				head_format			='".$babDB->db_escape_string($arr['head_format'])."',
 				body				='".$babDB->db_escape_string($arr['body'])."',
+		        body_format			='".$babDB->db_escape_string($arr['body_format'])."',
 				title				='".$babDB->db_escape_string($arr['title'])."',
 				date_publication	='".$babDB->db_escape_string($arr['date_publication'])."',
 				date_archiving		='".$babDB->db_escape_string($arr['date_archiving'])."',
