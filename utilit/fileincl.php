@@ -1251,7 +1251,7 @@ function fm_getFileAccess($idf)
 			}
 			else if('N' === $oFolderFile->getGroup())
 			{
-				if($GLOBALS['babBody']->ustorage && !empty($BAB_SESS_USERID) && $BAB_SESS_USERID == $oFmFolder->getId())
+				if($GLOBALS['babBody']->ustorage && bab_isUserLogged() && (bab_getUserId() == $oFmFolder->getId()))
 				{
 					$bupdate = true;
 					$bdownload = true;
