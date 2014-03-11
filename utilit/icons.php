@@ -397,6 +397,11 @@ class Func_Icons extends bab_Functionality
 	 * Icon above of the label, 64x64 pixels
 	 */
 	const ICON_TOP_64	= 'icon-top-64 icon-top icon-64x64';
+	
+	/**
+	 * Icon on left symbolic (black and white)
+	 */
+	const ICON_LEFT_SYMBOLIC =  'icon-left-symbolic icon-left icon-symbolic';
 }
 
 
