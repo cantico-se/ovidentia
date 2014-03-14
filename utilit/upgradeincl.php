@@ -618,6 +618,8 @@ function bab_newInstall() {
 				('ver_minor', ".$babDB->quote($arr[1])."),
 				('ver_build', ".$babDB->quote($arr[2]).")
 		");
+		
+		bab_sitemap::clearAll();
 
 		return true;
 
