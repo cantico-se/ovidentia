@@ -615,9 +615,12 @@ function getWaitingApproversFlowInstance($idschi, $notify=false)
 					if( count($arroles) > 0 )
 						{
 						$rr =  bab_getOrgChartRoleUsers($arroles);
-						foreach($rr['iduser'] as $role_id_user)
+						if (isset($rr['iduser']))
 							{
-							$ret[] = $role_id_user;
+							foreach($rr['iduser'] as $role_id_user)
+								{
+								$ret[] = $role_id_user;
+								}
 							}
 						}
 					if( isset($rr1['iduser']) && count($rr1['iduser']) > 0 )
