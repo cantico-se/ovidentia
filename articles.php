@@ -133,16 +133,28 @@ abstract class bab_listArticles extends categoriesHierarchy
 
 		$this->topicbuttons = false;
 
-		if( bab_isAccessValid(BAB_TOPICSSUB_GROUPS_TBL, $this->topics))
+		if( bab_isAccessValid(BAB_TOPICSMAN_GROUPS_TBL, $this->topics))
 			{
-			$this->submittxt = bab_translate("Submit");
-			$this->bsubmiturl = bab_toHtml($GLOBALS['babUrlScript']."?tg=articles&idx=Submit&topics=".$this->topics);
-			$this->bsubmit = true;
+			$this->managetxt = bab_translate("Articles management");
+			$this->bmanageurl = bab_toHtml($GLOBALS['babUrlScript']."?tg=topman&idx=Articles&item=".$this->topics);
+			$this->bmanage = true;
 			$this->topicbuttons = true;
 			}
 		else
 			{
-			$this->bsubmit = false;
+			$this->bmanage = false;
+			}
+			
+		if( bab_isAccessValid(BAB_TOPICSSUB_GROUPS_TBL, $this->topics))
+			{
+				$this->submittxt = bab_translate("Submit");
+				$this->bsubmiturl = bab_toHtml($GLOBALS['babUrlScript']."?tg=articles&idx=Submit&topics=".$this->topics);
+				$this->bsubmit = true;
+				$this->topicbuttons = true;
+			}
+			else
+			{
+				$this->bsubmit = false;
 			}
 
 		switch(bab_TopicNotificationSubscription($this->topics, $GLOBALS['BAB_SESS_USERID']))

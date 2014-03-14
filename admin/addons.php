@@ -1246,9 +1246,8 @@ function functionalities() {
 			$obj = false;
 			if (!$failsafe)
 			{
-				$obj = @bab_functionality::get($funcpath);
+				$obj = bab_functionality::get($funcpath);
 			}
-
 			if (false !== $obj) {
 				$original = $func->getOriginal($funcpath);
 

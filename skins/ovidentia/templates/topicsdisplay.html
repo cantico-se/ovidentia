@@ -38,12 +38,16 @@ Variables in "body_default" :
 	<td align="right">
 		<span class="bab_buttons">
 			<!--#if bsubscription -->
-			&nbsp; <a class="subscription" href="{ subscriptionurl }"><img src="{ babSkinPath }images/Puces/mail.png" align="absmiddle" border="0" /> { subscriptiontxt }</a>
+			&nbsp; <a class="subscription" href="{ subscriptionurl }"><img src="{ babSkinPath }images/16x16/mail.png" align="absmiddle" border="0" /> { subscriptiontxt }</a>
 			<!--#endif bsubscription -->
 		
 			<!--#if bsubmit -->
-			&nbsp; <a class="submit" href="{ bsubmiturl }"><img src="{ babSkinPath }images/Puces/edit_add.png" align="absmiddle" border="0" /> { submittxt }</a>
+			&nbsp; <a class="submit" href="{ bsubmiturl }"><img src="{ babSkinPath }images/16x16/article-new.png" align="absmiddle" border="0" /> { submittxt }</a>
 			<!--#endif bsubmit -->
+		
+			<!--#if bmanage -->
+			&nbsp; <a class="submit" href="{ bmanageurl }"><img src="{ babSkinPath }images/16x16/preferences-other.png" align="absmiddle" border="0" /> { managetxt }</a>
+			<!--#endif bmanage -->
 		</span>
 	</td>
 	<!--#endif topicbuttons -->
@@ -110,15 +114,15 @@ Variables in "body_default" :
       <td class="BabTopicsButtonBackground" align="right">
       <!--#if bmodify -->
 		  <!--#if bmodifyurl -->
-		  <a class="BabTopicsFooterLink" href="{ modifyurl }"><img src="{ babSkinPath }images/Puces/edit.gif"  border="0" alt="{ modifytxt }" align="absmiddle">&nbsp;{ modifytxt }</a>
+		  <a class="BabTopicsFooterLink" href="{ modifyurl }"><img src="{ babSkinPath }images/16x16/document-edit.png"  border="0" alt="{ modifytxt }" align="absmiddle">&nbsp;{ modifytxt }</a>
 		  <!--#else bmodifyurl -->
-		  <a class="BabTopicsFooterLink" href="{ modifyurl }"><img src="{ babSkinPath }images/Puces/edit_disabled.gif"  border="0" alt="{ modifytxt }" align="absmiddle">&nbsp;{ modifybytxt }:&nbsp;{ modifyauthor }</a>
+		  <a class="BabTopicsFooterLink" href="{ modifyurl }"><img src="{ babSkinPath }images/16x16/document-close.png"  border="0" alt="{ modifytxt }" align="absmiddle">&nbsp;{ modifybytxt }:&nbsp;{ modifyauthor }</a>
 		  <!--#endif bmodifyurl -->
       <!--#endif bmodify -->
 	  &nbsp;&nbsp;
-      <a class="BabTopicsFooterLink" href="{ printurl }" target="_blank" rel="nofollow"><img src="{ babSkinPath }images/Puces/Print.gif" border="0" alt="{ printtxt }" align="absmiddle">&nbsp;{ printtxt }</a>
+      <a class="BabTopicsFooterLink" href="{ printurl }" target="_blank" rel="nofollow"><img src="{ babSkinPath }images/16x16/printer.png" border="0" alt="{ printtxt }" align="absmiddle">&nbsp;{ printtxt }</a>
 	  <!--#if commentstxt -->
-	  &nbsp;&nbsp;<a class="BabTopicsFooterLink" href="{ commentsurl }" target="_blank" onclick="bab_popup('{ commentsurl }', 6);return false;"><img src="{ babSkinPath }images/Puces/addcomment.gif" border="0" alt="{ commentstxt }" align="absmiddle">&nbsp;{ commentstxt }</a>
+	  &nbsp;&nbsp;<a class="BabTopicsFooterLink" href="{ commentsurl }" target="_blank" onclick="bab_popup('{ commentsurl }', 6);return false;"><img src="{ babSkinPath }images/16x16/story-editor.png" border="0" alt="{ commentstxt }" align="absmiddle">&nbsp;{ commentstxt }</a>
 	  <!--#endif commentstxt -->
 	  &nbsp;&nbsp;
 		  <span class="bab-article-{ articleid }"></span>
@@ -169,12 +173,16 @@ Variables in "body_default" :
 	<td align="right">
 		<span class="bab_buttons">
 			<!--#if bsubscription -->
-			&nbsp; <a class="subscription" href="{ subscriptionurl }"><img src="{ babSkinPath }images/Puces/mail.png" align="absmiddle" border="0" /> { subscriptiontxt }</a>
+			&nbsp; <a class="subscription" href="{ subscriptionurl }"><img src="{ babSkinPath }images/16x16/mail.png" align="absmiddle" border="0" /> { subscriptiontxt }</a>
 			<!--#endif bsubscription -->
 		
 			<!--#if bsubmit -->
-			&nbsp; <a class="submit" href="{ bsubmiturl }"><img src="{ babSkinPath }images/Puces/edit_add.png" align="absmiddle" border="0" /> { submittxt }</a>
+			&nbsp; <a class="submit" href="{ bsubmiturl }"><img src="{ babSkinPath }images/16x16/article-new.png" align="absmiddle" border="0" /> { submittxt }</a>
 			<!--#endif bsubmit -->
+		
+			<!--#if bmanage -->
+			&nbsp; <a class="submit" href="{ bmanageurl }"><img src="{ babSkinPath }images/16x16/preferences-other.png" align="absmiddle" border="0" /> { managetxt }</a>
+			<!--#endif bmanage -->
 		</span>
 	</td>
 	<!--#endif topicbuttons -->
@@ -227,13 +235,13 @@ Variables in "body_default" :
 		<td class="BabTopicsButtonBackground" align="right" valign="middle">
 			<!--#if bmodify -->
 			<!--#if bmodifyurl -->
-			<a class="BabTopicsFooterLink" href="{ modifyurl }"><img src="{ babSkinPath }images/Puces/edit.gif"  border="0" alt="{ modifytxt }" align="absmiddle">&nbsp;{ modifytxt }</a>
+			<a class="BabTopicsFooterLink" href="{ modifyurl }"><img src="{ babSkinPath }images/16x16/document-edit.png"  border="0" alt="{ modifytxt }" align="absmiddle">&nbsp;{ modifytxt }</a>
 			<!--#else bmodifyurl -->
-			<a class="BabTopicsFooterLink" href="{ modifyurl }"><img src="{ babSkinPath }images/Puces/edit_disabled.gif"  border="0" alt="{ modifybytxt }" align="absmiddle">&nbsp;{ modifybytxt }:&nbsp;{ modifyauthor }</a>
+			<a class="BabTopicsFooterLink" href="{ modifyurl }"><img src="{ babSkinPath }images/16x16/document-close.png"  border="0" alt="{ modifybytxt }" align="absmiddle">&nbsp;{ modifybytxt }:&nbsp;{ modifyauthor }</a>
 			<!--#endif bmodifyurl -->
 			<!--#endif bmodify -->
 			&nbsp;&nbsp;
-			<a class="BabTopicsFooterLink" href="{ printurl }" target="_blank" rel="nofollow"><img src="{ babSkinPath }images/Puces/Print.gif" border="0" alt="{ printtxt }" align="absmiddle">&nbsp;{ printtxt }</a><!--#if commentstxt -->&nbsp;&nbsp;<a class="BabTopicsFooterLink" href="{ editcommentsurl }" target="_blank" onclick="bab_popup('{ editcommentsurl }', 6);return false;"><img src="{ babSkinPath }images/Puces/addcomment.gif" border="0" alt="{ commentstxt }" align="absmiddle">&nbsp;{ commentstxt }</a><!--#endif commentstxt -->
+			<a class="BabTopicsFooterLink" href="{ printurl }" target="_blank" rel="nofollow"><img src="{ babSkinPath }images/16x16/printer.png" border="0" alt="{ printtxt }" align="absmiddle">&nbsp;{ printtxt }</a><!--#if commentstxt -->&nbsp;&nbsp;<a class="BabTopicsFooterLink" href="{ editcommentsurl }" target="_blank" onclick="bab_popup('{ editcommentsurl }', 6);return false;"><img src="{ babSkinPath }images/16x16/story-editor.png" border="0" alt="{ commentstxt }" align="absmiddle">&nbsp;{ commentstxt }</a><!--#endif commentstxt -->
 			&nbsp;&nbsp;
 		    <span class="bab-article-{ babtpl_articleid }"></span>
 		</td>
