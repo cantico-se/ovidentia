@@ -8358,7 +8358,8 @@ class Func_Ovml_Function_FileTree extends Func_Ovml_Function {
 
 	protected	$maxDepth = 100;
 
-	private function getChildTree($relativePath = ''){
+	private function getChildTree($relativePath = '')
+	{
 		global $babDB;
 		$nextFolder = '';
 		$currentFolder = '';
@@ -8407,9 +8408,8 @@ class Func_Ovml_Function_FileTree extends Func_Ovml_Function {
 		return $return;
 	}
 
-	function generateUL($currentStage, $firstLevel = false){
-		$currentPath;
-
+	function generateUL($currentStage, $firstLevel = false)
+	{
 		$return = '';
 		foreach($currentStage as $nextStage){
 			if($firstLevel){
@@ -8574,7 +8574,8 @@ class Func_Ovml_Function_ArticleTree extends Func_Ovml_Function {
 	protected	$maxDepth = 100;
 
 
-	private function getChild($id, $depth = 1) {
+	private function getChild($id, $depth = 1)
+	{
 		global $babDB, $babBody;
 		$return = '';
 
@@ -8676,9 +8677,8 @@ class Func_Ovml_Function_ArticleTree extends Func_Ovml_Function {
 		return $return;
 	}
 
-	function generateUL($currentStage, $firstLevel = false){
-		$currentPath;
-
+	function generateUL($currentStage, $firstLevel = false)
+	{
 		$return = '';
 		foreach($currentStage as $nextStage){
 			if($firstLevel){
