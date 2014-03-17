@@ -286,11 +286,6 @@ function saveForum($name, $description, $moderation, $notification, $nbmsgdispla
 		}
 
 
-	if( empty($managerid))
-		{
-		$managerid = 0;
-		}
-
 	$query = "select * from ".BAB_FORUMS_TBL." where name='".$babDB->db_escape_string($name)."'";	
 	$res = $babDB->db_query($query);
 	if( $babDB->db_num_rows($res) > 0)
