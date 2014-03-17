@@ -220,7 +220,7 @@ function bab_writeConfig($replace)
 		$out = replace($txt, $key, $value);
 		if (!$out)
 			{
-			$babBody->msgerror = bab_translate('Config change failed on').' '.$var;
+			$babBody->msgerror = bab_translate('Config change failed on').' '.$key;
 			return false;
 			}
 		else
