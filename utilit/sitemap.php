@@ -2042,8 +2042,15 @@ class bab_siteMap {
 		}
 
 		$node = $matchingNodes[0];
+		
+		if (false === $node->getData()->breadCrumbIgnore)
+		{
+			$breadCrumbs = array($node);
+		} else {
+			$breadCrumbs = array();
+		}
 
-		$breadCrumbs = array($node);
+		
 		while (($node->getId() !== $baseNodeId) && ($node = $node->parentNode())) {
 			if (false === $node->getData()->breadCrumbIgnore)
 			{
