@@ -1227,33 +1227,6 @@ function openNode($ocid, $oeid)
 
 
 
-function summaryOcContactWithOvml($ocid, $directoryid, $userid)
-{
-	global $babDB;
-
-//	if (bab_isAccessValid(BAB_DBDIRVIEW_GROUPS_TBL, $args['directoryid'])) {
-
-		$sql = 'SELECT ovml_detail 
-				FROM ' . BAB_ORG_CHARTS_TBL . '
-				WHERE id = ' . $babDB->quote($ocid);
-
-		$arr = $babDB->db_fetch_array($babDB->db_query($sql));
-
-		if (isset($userid)) {
-			$sql = 'SELECT id 
-					FROM ' . BAB_DBDIR_ENTRIES_TBL . '
-					WHERE id_user = ' . $babDB->quote($userid);
-			list($userid) = $babDB->db_fetch_array($babDB->db_query($sql));
-		}
-
-		if (!empty($arr['ovml_detail'])) {
-			echo bab_printOvmlTemplate($arr['ovml_detail'], $args);
-		} else {
-			summaryDbContact($directoryid, $userid);
-		}
-//	}
-}
-
 
 /* main */
 $update = false;
