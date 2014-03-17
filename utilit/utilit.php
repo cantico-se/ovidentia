@@ -1689,7 +1689,7 @@ function bab_updateSiteSettings()
 		$GLOBALS['babLanguage'] = $arr['lang'];
 		}
 	else {
-		$GLOBALS['babLanguage'] = 'en'; }
+		$GLOBALS['babLanguage'] = 'fr'; }
 
 
 

@@ -253,7 +253,7 @@ if ('version' !== bab_rp('tg') || 'upgrade' !== bab_rp('idx')) {
 	}
 } else {
 	if (!isset($babLanguage)) {
-		$babLanguage = 'en';
+		$babLanguage = 'fr';
 	}
 	if (!isset($babStyle)) {
 		$babStyle = 'ovidentia.css';

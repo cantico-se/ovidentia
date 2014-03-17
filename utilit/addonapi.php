@@ -1140,7 +1140,7 @@ function bab_translate($str, $folder = "", $lang="")
 
 	if( empty($lang)) {
 		if (!isset($GLOBALS['babLanguage'])) {
-			$lang = 'en';
+			$lang = 'fr';
 		} else {
 			$lang = $GLOBALS['babLanguage'];
 		}

@@ -1953,25 +1953,75 @@ function bab_sitemap_userSection($event) {
 }
 
 
+/**
+ * Add topics and categories to sitemap
+ * if a topic exists with the same name of the category, the topic node will be used instead of the category node
+ * 
+ * @param int $id_category
+ * @param array $position
+ * @param bab_eventBeforeSiteMapCreated $event
+ * @param int $id_delegation
+ */
 function bab_sitemap_articlesCategoryLevel($id_category, $position, bab_eventBeforeSiteMapCreated $event, $id_delegation) {
 
 	global $babDB;
+	
+	$topicNames = array();
+	
+	// indexer les themes par nom
+	
+	$res = bab_getArticleTopicsRes(array($id_category), $id_delegation);
+	
+	if (false !== $res) {
+		while ($arr = $babDB->db_fetch_assoc($res)) {
+			
+			$dg = false === $id_delegation ? '' : 'DG'.$id_delegation;
+			
+			$uid = 'bab'.$dg.'ArticleTopic_'.$arr['id'];
+			
+			$item = $event->createItem($uid);
+			$item->setLabel($arr['category']);
+			$item->setDescription(strip_tags($arr['description']));
+			$item->setPosition($position);
+			$item->setLink($GLOBALS['babUrlScript']."?tg=articles&topics=".$arr['id']);
+			$item->setFunctionality('Topic');
+			$item->addIconClassname(Func_Icons::OBJECTS_PUBLICATION_TOPIC);
+			
+			$topicNames[$arr['category']] = $item;
+		}
+	}
+	
+	
+	
+	
+	
 	$res = bab_getArticleCategoriesRes(array($id_category), $id_delegation);
 
 	if (false !== $res) {
 		while ($arr = $babDB->db_fetch_assoc($res)) {
+			
+			if (isset($topicNames[$arr['title']]))
+			{
 
-			$dg = false === $id_delegation ? '' : 'DG'.$id_delegation;
-
-			$uid = 'bab'.$dg.'ArticleCategory_'.$arr['id'];
-
-			$item = $event->createItem($uid);
-			$item->setLabel($arr['title']);
-			$item->setDescription(strip_tags($arr['description']));
-			$item->setPosition($position);
-			$item->setLink($GLOBALS['babUrlScript']."?tg=topusr&cat=".$arr['id']);
-			$item->addIconClassname(Func_Icons::OBJECTS_PUBLICATION_CATEGORY); 
-			$item->progress = true;
+				$item = $topicNames[$arr['title']];
+				unset($topicNames[$arr['title']]);
+			
+			} else {
+				
+				$dg = false === $id_delegation ? '' : 'DG'.$id_delegation;
+				$uid = 'bab'.$dg.'ArticleCategory_'.$arr['id'];
+				
+				$item = $event->createItem($uid);
+				$item->setLabel($arr['title']);
+				$item->setDescription(strip_tags($arr['description']));
+				$item->setPosition($position);
+				$item->setLink($GLOBALS['babUrlScript']."?tg=topusr&cat=".$arr['id']);
+				$item->addIconClassname(Func_Icons::OBJECTS_PUBLICATION_CATEGORY);
+				$item->progress = true;
+				
+				
+			}
+			
 			$event->addFolder($item);
 
 			array_push($position, $uid);
@@ -1981,10 +2031,13 @@ function bab_sitemap_articlesCategoryLevel($id_category, $position, bab_eventBef
 	}
 
 
+	foreach($topicNames as $item)
+	{
+		$event->addFunction($item);
+	}
 
 
-
-
+	/*
 	$res = bab_getArticleTopicsRes(array($id_category), $id_delegation);
 
 	if (false !== $res) {
@@ -2004,6 +2057,7 @@ function bab_sitemap_articlesCategoryLevel($id_category, $position, bab_eventBef
 			$event->addFunction($item);
 		}
 	}
+	*/
 }
 
 

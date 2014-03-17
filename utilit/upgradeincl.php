@@ -583,7 +583,7 @@ function bab_newInstall() {
 	global $babBody, $babDB;
 	include_once $GLOBALS['babInstallPath'].'utilit/inifileincl.php';
 
-	$GLOBALS['babLanguage'] = 'en';
+	$GLOBALS['babLanguage'] = 'fr';
 	$GLOBALS['babStyle'] = 'ovidentia.css';
 	$GLOBALS['babSkin'] = 'ovidentia';
 
