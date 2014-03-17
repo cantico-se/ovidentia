@@ -471,6 +471,8 @@ class bab_addonPackage
 
 	public function __construct($multiple, bab_addonInfos $addon)
 	{
+	    global $babBody;
+
 		$this->multiple = $multiple;
 
 		if (!file_exists($GLOBALS['babUploadPath']))
