@@ -517,7 +517,13 @@ function notifyAdminUserRegistration($name, $email, $nickname, $pwd)
 	
 function destroyAuthCookie() {
 
-	if ( $GLOBALS['babCookieIdent'] != 'login' ) {
+	require_once $GLOBALS['babInstallPath'].'utilit/settings.class.php';
+	$settings = bab_getInstance('bab_Settings');
+	/*@var $settings bab_Settings */
+	$site = $settings->getSiteSettings();
+	
+	
+	if ($site['remember_login'] != 'L') {
 		setcookie('c_nickname','');
 	}
 	setcookie('c_password','');
