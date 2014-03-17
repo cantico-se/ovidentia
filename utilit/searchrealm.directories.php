@@ -38,7 +38,7 @@ include_once dirname(__FILE__).'/searchapi.php';
 class bab_SearchRealmDirectories extends bab_SearchRealm {
 
 	/**
-	 * search is access rights dependant or not
+	 * Defines if search is access rights dependant or not.
 	 * @see bab_SearchRealmDirectories::getDefaultCriteria()
 	 * @var bool
 	 */
@@ -57,7 +57,7 @@ class bab_SearchRealmDirectories extends bab_SearchRealm {
 
 
 	/**
-	 * Set directory to search
+	 * Sets directory to search.
 	 * @param	int	$id_directory		specify an id_directory to search
 	 * @return	bab_SearchRealmDirectories
 	 */
@@ -75,7 +75,7 @@ class bab_SearchRealmDirectories extends bab_SearchRealm {
 	}
 
 	/**
-	 * set if verification of access rights is activ
+	 * Sets if verification of access rights is active.
 	 * @return bab_SearchRealmDirectories
 	 */
 	public function setAccessRightsVerification($bool) {
@@ -112,7 +112,7 @@ class bab_SearchRealmDirectories extends bab_SearchRealm {
 	}
 
 	/**
-	 * Get Title of functionality throw sitemap API
+	 * Get Title of functionality through sitemap API
 	 * @return 	string
 	 */
 	public function getDescription() {
@@ -124,11 +124,11 @@ class bab_SearchRealmDirectories extends bab_SearchRealm {
 	}
 
 	/**
-	 * Get Url of functionality throw sitemap API
+	 * Get Url of functionality through sitemap API
 	 * @return 	string | null
 	 */
 	public function getLink() {
-		return $GLOBALS['babUrlScripts'].'?tg=directory';
+		return $GLOBALS['babUrlScript'].'?tg=directory';
 	}
 
 	/**
