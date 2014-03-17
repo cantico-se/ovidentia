@@ -68,14 +68,17 @@ function bab_WFDeleteInstance($idschi)
 /**
  * Updates an instance with user’s response.
  * 
+ * @see bab_WFGetWaitingApproversInstance
+ * 
  * @param int		$idschi		Id of the instance.
  * @param int		$iduser		User id.
  * @param bool		$bool		True if the user accept the approbation and false if the user decline the approbation.
  * 
  * @return number	The new result of the schema approbation:
- *						-  0 if the approbation is declined and then the subject of the approbation must be revoked.
- * 						-  1 if the approbation is accepted and hence the subject of the approbation must be accepeted.
- * 						- -1 if the approbation is still in wait status.
+ *		 0 	if the approbation is declined and then the subject of the approbation must be revoked.
+ * 		 1 	if the approbation is accepted and hence the subject of the approbation must be accepted.
+ * 		-1	if the approbation can't be evaluated at this moment and you must bab_WFGetWaitingApproversInstance()
+ * 			to see which users needs to approve the instance.
  */
 function bab_WFUpdateInstance($idschi, $iduser, $bool)
 {
