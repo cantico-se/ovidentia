@@ -1653,11 +1653,14 @@ class bab_inifile {
 	 * Tables in database related to the given ini file
 	 * @return array
 	 */
-	function getTables() {
+	function getTables()
+	{
+	    global $babDB;
+
 		$return = array();
 		if (!empty($this->inifile['db_prefix'])) {
-			$res = $db->db_query("SHOW TABLES LIKE '".$this->inifile['db_prefix']."%'");
-			while(list($tbl) = $db->db_fetch_array($res)) {
+			$res = $babDB->db_query("SHOW TABLES LIKE '" . $babDB->db_escape_like($this->inifile['db_prefix']) . "%'");
+			while(list($tbl) = $babDB->db_fetch_array($res)) {
 				$return[] = $tbl;
 			}
 		}
