@@ -520,10 +520,13 @@ class bab_OvidentiaOrgChart extends bab_OrgChart
 			$jpegphoto = null;
 			if ($arr['photo_data'] > 0) {
 				$photo = new bab_dirEntryPhoto($arr['id']);
-				//$jpegphoto['value'] = $photo->getUrl();
 				$jpegphoto['photo'] = $photo;
 			}
-			return array('givenname' => array('value' => $arr['givenname']), 'sn' => array('value' => $arr['sn']), 'jpegphoto' => $jpegphoto);
+			return array(
+				'givenname' => array('value' => $arr['givenname']),
+				'sn' => array('value' => $arr['sn']),
+				'jpegphoto' => $jpegphoto
+			);
 		}
 	}
 
