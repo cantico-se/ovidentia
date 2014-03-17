@@ -25,6 +25,9 @@ include_once 'base.php';
 include_once $GLOBALS['babInstallPath'].'utilit/treeincl.php';
 
 
+define('ORG_MAX_REQUESTS_LIST', 100);
+
+
 /**
  * Returns the primary org chart id.
  *

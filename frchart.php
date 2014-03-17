@@ -25,8 +25,8 @@ require_once dirname(__FILE__).'/utilit/registerglobals.php';
 include_once $babInstallPath.'utilit/orgincl.php';
 include_once $babInstallPath.'utilit/treeincl.php';
 include_once $babInstallPath.'utilit/orgchart.php';
+include_once $babInstallPath.'utilit/ocapi.php';
 
-define('ORG_MAX_REQUESTS_LIST', 100);
 
 
 function displayChart($ocid, $oeid, $update, $iduser, $disp='')
@@ -426,9 +426,8 @@ function displayChartTree($ocid, $oeid, $iduser, $adminMode)
 			$relativeThreshold = true;
 		}
 	}
-//	var_dump($relativeThreshold);echo "*";
+
 	$orgChart = new bab_OvidentiaOrgChart('orgChart_' . $ocid, $ocid, $oeid, $iduser, 0, $adminMode, $relativeThreshold);
-//	$orgChart->setRelativeThreshold($relativeThreshold);
 	
 	if (isset($_COOKIE['orgChart_' . $ocid . 'threshold'])) {
 		$verticalThreshold = $_COOKIE['orgChart_' . $ocid . 'threshold'];

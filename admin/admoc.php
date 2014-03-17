@@ -23,8 +23,8 @@
 ************************************************************************/
 include_once "base.php";
 include_once $babInstallPath."admin/acl.php";
+include_once $babInstallPath.'utilit/ocapi.php';
 
-define("ORG_MAX_REQUESTS_LIST", 100);
 
 
 function bab_getOrgChartName($id)
