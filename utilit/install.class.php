@@ -764,6 +764,8 @@ class bab_InstallSource {
 	 */
 	private function installAddonCollection(bab_AddonCollectionIniFile $ini) {
 
+	    global $babBody;
+	    
 		$collection = $ini->getPackageCollection();
 
 		if (null === $collection) {
