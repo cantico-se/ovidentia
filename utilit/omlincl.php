@@ -8211,7 +8211,7 @@ class Func_Ovml_Function_AddStyleSheet extends Func_Ovml_Function {
 			global $babBody;
 			$babBody->addStyleSheet($file);
 		} else {
-			trigger_error(sprintf('OFAddStyleSheet : the file attribute is mandatory in %s', (string) $ctx->debug_location));
+			trigger_error(sprintf('OFAddStyleSheet : the file attribute is mandatory in %s', (string) $this->gctx->debug_location));
 		}
 	}
 }
