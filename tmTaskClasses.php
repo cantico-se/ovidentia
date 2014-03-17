@@ -1072,7 +1072,7 @@
 					$oDate = BAB_DateTime::fromIsoDateTime($sDate);
 					if(null !== $oDate)
 					{
-						$sDate = bab_formatDate("%j-%n-%Y",$oDate->getTimeStamp(), false);
+						$sDate = bab_formatDate('%j-%n-%Y', $oDate->getTimeStamp());
 						$sDate = str_replace('/', '-', $sDate);
 					}
 					$iHour	= $aExplodedDate[2];	
@@ -1466,8 +1466,8 @@ bab_debug($sMsg);
 				}
 			}
 			
-			//Lors de la mise à jour d'une tâche cette variable n'est pas
-			//posté si on est pas gestionnaire
+			//Lors de la mise ï¿½ jour d'une tï¿½che cette variable n'est pas
+			//postï¿½ si on est pas gestionnaire
 			if(-1 == $this->m_iIdTaskResponsible && !array_key_exists('iIdTaskResponsible', $_POST))
 			{
 				$aResponsible = array();
@@ -1541,7 +1541,7 @@ bab_debug($sMsg);
 				{
 					if(BAB_TM_MANUAL == $this->m_aCfg['tasksNumerotation'])
 					{
-						return bab_isTaskNumberUsed($this->m_iIdProject, $this->m_iIdTask, $sName);
+						return bab_isTaskNumberUsed($this->m_iIdProject, $this->m_iIdTask, $this->m_sTaskNumber);
 					}
 					else
 					{
@@ -1714,7 +1714,7 @@ bab_debug($sMsg);
 			{
 				$success = true;
 
-				//Si la tache est liée
+				//Si la tache est liï¿½e
 				if(BAB_TM_YES == $this->m_iIsLinked)
 				{
 					//bab_debug('class: ' . __CLASS__ . ' fn: ' . __FUNCTION__ . ' the task is linked');
@@ -2174,10 +2174,10 @@ bab_debug($sMsg);
 			
 			$aTask =& $this->m_oTask->m_aTask;
 			
-			//Si on a changé de type
+			//Si on a changï¿½ de type
 			if($this->m_iClass != $aTask['iClass'])
 			{
-				//si c'était une tâche
+				//si c'ï¿½tait une tï¿½che
 				if(BAB_TM_TASK == $aTask['iClass']) 
 				{
 					if( BAB_TM_PERSONNAL_TASK_OWNER == $this->m_iUserProfil || 
