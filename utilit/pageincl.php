@@ -273,11 +273,11 @@ function printBody()
 					}
 
 					// use the sitemap root node page title
-					if ($root = bab_siteMap::getVisibleRootNodeSitemapItem()) {
-						return bab_toHtml($root->getPageTitle());
-					}
+// 					if ($root = bab_siteMap::getVisibleRootNodeSitemapItem()) {
+// 						return bab_toHtml($root->getPageTitle());
+// 					}
 
-					return '';
+					return $babBody->title;
 
 
 
