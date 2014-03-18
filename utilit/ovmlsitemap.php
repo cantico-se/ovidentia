@@ -477,7 +477,7 @@ class Func_Ovml_Function_SitemapPosition extends Func_Ovml_Function
 		foreach($breadcrumb as $node) {
 
 			if (!($node instanceOf bab_Node)) {
-				$html .= sprintf('<li>Broken sitemap node : %s</li>'."\n", (string) $node);
+				$html .= sprintf('<li>Broken sitemap node : %s</li>'."\n", bab_toHtml((string) $node));
 				continue;
 			}
 
@@ -485,7 +485,7 @@ class Func_Ovml_Function_SitemapPosition extends Func_Ovml_Function
 			$sitemapItem = $node->getData();
 
 			if (!$sitemapItem) {
-				$html .= sprintf('<li>Broken sitemap node : %s</li>'."\n", $node->getId());
+				$html .= sprintf('<li>Broken sitemap node : %s</li>'."\n", bab_toHtml($node->getId()));
 				continue;
 			}
 
@@ -499,16 +499,16 @@ class Func_Ovml_Function_SitemapPosition extends Func_Ovml_Function
 				} else {
 					$onclick = '';
 				}
- 				$html .= '<li class="sitemap-' . $node->getId() .'"><a href="' . $sitemapItem->getRwUrl() . '" ' . $onclick . '>'
- 					. $sitemapItem->name . '</a></li>'."\n";
+ 				$html .= '<li class="sitemap-' . bab_toHtml($node->getId()) .'"><a href="' . bab_toHtml($sitemapItem->getRwUrl()) . '" ' . $onclick . '>'
+ 					. bab_toHtml($sitemapItem->name) . '</a></li>'."\n";
 
 			} else {
 
 
 				$html .= sprintf('<li class="sitemap-%s"><span>%s</span></li>'."\n",
 
-					$node->getId(),
-					$sitemapItem->name
+					bab_toHtml($node->getId()),
+					bab_toHtml($sitemapItem->name)
 
 				);
 
