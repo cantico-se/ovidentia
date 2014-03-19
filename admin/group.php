@@ -365,7 +365,7 @@ elseif(isset($action) && $action=="DeleteG")
 	{
 		confirmDeleteGroup($idgroup);
 	}
-	if( isset($arrgrp) && count($arrgrp['id']))
+	if( isset($arrgrp['id']) && count($arrgrp['id']))
 	{
 		//print_r($arrgrp);
 		for($k=0; $k < count($arrgrp['id']); $k++)
