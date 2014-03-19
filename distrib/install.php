@@ -857,7 +857,7 @@ a:hover {
 			<li><?php echo $trans->str('Login ID') ?> : <strong>admin@admin.bab</strong></li>
 			<li><?php echo $trans->str('Password') ?> : <strong>012345678</strong></li>
 		</ul>
-		<p><a href="index.php?tg=login" onclick="window.open('http://www.ovidentia.org/premiers-pas', '', 'width=300,height=200');"><?php echo $trans->str('Go to login page') ?></a></p>
+		<p><a href="index.php?tg=login" onclick="window.open('http://www.ovidentia.org/premiers-pas', '', 'width=300,height=300,scrollbars=yes');"><?php echo $trans->str('Go to login page') ?></a></p>
 		<?php
 		}
 	else
