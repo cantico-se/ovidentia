@@ -2,7 +2,7 @@ var global_uid = null;
 var global_editor = null;
 
 
-function getSelection()
+function bab_getSelection()
 {
 if (global_editor != null)
 	{
@@ -116,7 +116,7 @@ function EditorOnCreateImage(param)
 function EditorOnInsertFiles(files)
 {
 	
-	var html = getSelection();
+	var html = bab_getSelection();
 	if (html != '') {
 		txt = html;
 	}
