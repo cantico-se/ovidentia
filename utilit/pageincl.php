@@ -494,7 +494,7 @@ function printBody()
 
 	// we make sure that the sitemap is created before final processing of the page
 	// because sitemap reconstruction errors are hidden if the reconstruction process is done in an eval
-	bab_sitemap::get();
+	bab_sitemap::getFromSite();
 
 	$temp = new tpl();
 	echo bab_printTemplate($temp, 'page.html', '');
