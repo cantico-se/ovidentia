@@ -46,49 +46,7 @@ CREATE TABLE bab_articles (
 INSERT INTO bab_articles 
 	(id, uuid, id_topic, id_author, date, date_publication, date_modification, title, head, head_format, body, body_format, lang) 
 	
-VALUES (1, '9a9bb81c-46ab-4065-af9a-30de36d7f14c', 1, 1, NOW(), NOW(), NOW(), 'Ovidentia',  '<p> <strong>OVIDENTIA</strong>
-	is a toolbox allowing to publish with extreme ease and very 
-	fast an intranet, extranet or internet portal. Starting with 
-	the classic functions of a Content Management System (CMS) 
-	such as: </p>
-  <ul>
-	<li>publishing of information (WYSIWYG editor, article tree, 
-	  categorization), </li>
-	<li>validation workflow (allowing to define approbation schemes, 
-	  from simple ones to the most complex), </li>
-	<li>a search engine,</li>
-	<li> ...</li>
-  </ul>
-  <p>
-	... <strong>OVIDENTIA</strong>
-	also has powerful collaborative functions</p>
-
-  <ul>
-	<li> Profile manager, shared agendas, mail interface, directories, 
-	</li>
-	<li>file manager (with version management)</li>
-	<li>Forums,</li>
-	<li>FAQ, </li>
-	<li>Management of vacation requests (with workflow)</li>
-	<li>Possibility to delegate administration functions (within 
-	  a given perimeter and for a defined set of functions)</li>
-	<li>... </li>
-  </ul>
-
-  <p>Its architecture, completely modular, allows to plug in additional 
-	extension modules developed by the <strong>OVIDENTIA</strong> 
-	community. </p>
-
-  <p>
-	For more information : <a href="http://www.ovidentia.org">http://www.ovidentia.org </a>
-  </p>', 'html', '', 'html', 'en');
-  
- 
- 
-INSERT INTO bab_articles 
-	(id, uuid, id_topic, id_author, date, date_publication, date_modification, title, head, head_format, body, body_format, lang) 
-	
-VALUES (2, '3c1ca350-9254-4e8c-b221-57535d2bd8e4', 1, 1, NOW(), NOW(), NOW(), 'Ovidentia',  '<p> <strong>OVIDENTIA</strong> est un outil permettant
+VALUES (1, '3c1ca350-9254-4e8c-b221-57535d2bd8e4', 1, 1, NOW(), NOW(), NOW(), 'Ovidentia',  '<p> <strong>OVIDENTIA</strong> est un outil permettant
   de publier avec une grande aisance et tr&egrave;s rapidement
   un portail intranet, extranet ou internet. En
   commencant par ses fonctions de syst&egrave;me de gestion de
@@ -647,7 +605,7 @@ CREATE TABLE bab_topics_categories (
    UNIQUE KEY uuid (uuid)
 );
 
-INSERT INTO bab_topics_categories (id, uuid, title, description, enabled) VALUES ('1', '973c971c-4c30-4c6f-ad95-378f96a6802c', 'Default category', 'Default category', 'Y');
+INSERT INTO bab_topics_categories (id, uuid, title, description, enabled) VALUES ('1', '973c971c-4c30-4c6f-ad95-378f96a6802c', 'Catégorie par défaut', '', 'Y');
 
 # --------------------------------------------------------
 #
