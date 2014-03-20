@@ -37,7 +37,7 @@ class bab_siteMapOrphanRootNode extends bab_OrphanRootNode {
 	 * for each id_function the id parent is stored with the rewrite name
 	 * key 0 = ID function of parent
 	 * key 1 = rewritename
-	 * key 2 = functionality name inherited from Func_SitemapDynamicNode
+	 * key 2 = functionality name inherited from Func_SitemapDynamicNode, can be null
 	 * 
 	 * @var array
 	 */
@@ -77,6 +77,7 @@ class bab_siteMapOrphanRootNode extends bab_OrphanRootNode {
 	 */
 	public function appendChild(bab_Node $newNode, $id = null) {
 		$sitemapItem = $newNode->getData();
+		/* @var $sitemapItem bab_sitemapItem */
 		$rewriteName = $sitemapItem->getRewriteName();
 
 		if (isset($this->rewriteIndex_underRoot[$id]) || $rewriteName === bab_siteMap::REWRITING_ROOT_NODE)
@@ -91,13 +92,26 @@ class bab_siteMapOrphanRootNode extends bab_OrphanRootNode {
 				$I = new bab_nodeIterator($newNode);
 				foreach($I as $childNode)
 				{
+					if (!($childNode instanceof bab_Node))
+					{
+						//TODO Ne devrais pas se produire!
+						//bab_debug($newNode->__toString());
+						continue;
+					}
 					$this->rewriteIndex_underRoot[$childNode->getId()] = '';
 				}
 			}
 		}
 
 
-		$this->rewriteIndex_id[$newNode->getId()] = array($id, $rewriteName, $sitemapItem->funcname);
+		if (!isset($this->rewriteIndex_id[$newNode->getId()]))
+		{
+			$this->rewriteIndex_id[$newNode->getId()] = array(
+				$id, 
+				$rewriteName, 
+				$sitemapItem->funcname
+			);
+		}
 
 		if (isset($this->rewriteIndex_rn[$rewriteName])) {
 			if (isset($this->rewriteIndex_underRoot[$newNode->getId()]))
@@ -313,7 +327,7 @@ class bab_siteMapOrphanRootNode extends bab_OrphanRootNode {
 				return null;
 			}
 			
-			bab_debug("the rewrite name $first has no id_function in index, id_parent=$id_parent, parent funcname=$parent_funcname");
+			bab_debug("the rewrite name $first has no id_function in index, id_parent=$id_parent, no dynamic solution found");
 			return null;
 		}
 		
@@ -632,7 +646,8 @@ class bab_siteMapItem {
 	
 	
 	/**
-	 * 
+	 * functionality name inherited from Func_SitemapDynamicNode, can be null
+	 * the functionality can be used to get dynamic childnodes
 	 * @var string
 	 */
 	public $funcname = null;
