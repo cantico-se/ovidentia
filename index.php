@@ -888,7 +888,7 @@ switch(bab_rp('tg'))
 				$addon_row = bab_addonsInfos::getDbRow($arr[1]);
 				$addon = bab_getAddonInfosInstance($addon_row['title']);
 				
-				if ($addon->hasAccessControl() && $addon->isInstalled() && !$addon->isDisabled())
+				if ($addon && $addon->hasAccessControl() && $addon->isInstalled() && !$addon->isDisabled())
 				{
 					bab_requireAccess('bab_addons_groups', $arr[1], bab_translate('You must be logged in to access this page.'));
 				}
