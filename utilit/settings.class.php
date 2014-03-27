@@ -23,7 +23,6 @@
 require_once 'base.php';
 
 
-
 class bab_Settings
 {
 	private $siteSettings = null;
@@ -46,7 +45,7 @@ class bab_Settings
 			$res=$babDB->db_query($req);
 			if ($babDB->db_num_rows($res) == 0)
 			{
-				throw new ErrorException(bab_translate("Configuration error : babSiteName in config.php not match site name in administration sites configuration"));
+				throw new ErrorException("Configuration error : babSiteName in config.php not match site name in administration sites configuration");
 			}
 			$arr = $babDB->db_fetch_assoc($res);
 			$this->siteSettings = $arr;
