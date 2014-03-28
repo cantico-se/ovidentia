@@ -84,17 +84,17 @@ function printBody()
 			$this->ttrademark = bab_translate('Ovidentia is a registered trademark by');
 			if (bab_isUserLogged()) {
 				$this->login = bab_translate("Logout");
-				$this->logurl = $GLOBALS['babUrlScript'].'?tg=login&amp;cmd=signoff';
+				$this->logurl = bab_toHtml($GLOBALS['babUrlScript'].'?tg=login&amp;cmd=signoff');
 			} else {
 				// Variables redeclarations for IIS (bug or default config)
 				if (!isset($GLOBALS['BAB_SESS_FIRSTNAME'])) $GLOBALS['BAB_SESS_FIRSTNAME'] = '';
 				if (!isset($GLOBALS['BAB_SESS_LASTNAME'])) $GLOBALS['BAB_SESS_LASTNAME'] = '';
 				$this->login = bab_translate("Login");
-				$this->logurl = $GLOBALS['babUrlScript'].'?tg=login&amp;cmd=signon';
+				$this->logurl = bab_toHtml($GLOBALS['babUrlScript'].'?tg=login&amp;cmd=signon');
 			}
 
 			$this->search = bab_translate("Search");
-			$this->searchurl = $GLOBALS['babUrlScript'].'?tg=search';
+			$this->searchurl = bab_toHtml($GLOBALS['babUrlScript'].'?tg=search');
 
 			if (!isset($GLOBALS['babMarquee']) || $GLOBALS['babMarquee'] == '') {
 				$this->babSlogan = $babSlogan;
