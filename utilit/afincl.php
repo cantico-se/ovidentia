@@ -332,6 +332,37 @@ class bab_UserUnavailability
 
 
 
+/**
+ * Find role for the supervisor
+ * 
+ * 
+ * @param	int		$id_user		
+ * @param	int		$id_chart		Organizational chart
+ * @param 	int 	$supervisor		zero or negative number
+ * 									0 : supperieur direct de niveau 1
+ *									-1 : supperieur de niveau 2
+ *									-2 : supperieur de niveau 3, etc...
+ * 									
+ * @return array	supervisor informations or empty array if no suppervisor at this level
+ * 					The array must be compatible with bab_getOrgChartRoleUsers and bab_getSuperior
+ */
+function bab_getSupervisor($id_user, $id_chart, $supervisor_pos)
+{
+	$iterations = 1 + abs($supervisor_pos);
+	
+	for($i =0; $i < $iterations; $i++)
+	{
+		$arr = bab_getSuperior($id_user, $id_chart);
+		if (count($arr['iduser']) > 0)
+		{
+			$id_user = $arr['iduser'][0]; // first user
+		} else {
+			return array();
+		}
+	}
+	
+	return $arr;
+}
 
 
 
@@ -362,21 +393,19 @@ function updateFlowInstance($idschi, $iduser, $bool)
 		$roles = getApproversFlow($scinfo['formula']);
 		if( count($roles) > 0 )
 		{
-
-			if( in_array(0, $roles ))
-			{
-				$rr = bab_getSuperior($scinfo['iduser'], $scinfo['id_oc']);
-				if( count($rr['iduser']) > 0  && in_array($rr['iduser'][0], $idusers) )
-					{
-					$idroles[] = 0;
-					}
-			}
 			$idnroles = array();
 			for( $i = 0; $i < count($roles); $i++ )
 			{
-				if( $roles[$i] != 0 )
+				if( $roles[$i] > 0 )
 				{
 					$idnroles[] = $roles[$i];
+				} else {
+					
+					$rr = bab_getSupervisor($id_user, $id_chart, $supervisor_pos);
+					if( count($rr['iduser']) > 0  && in_array($rr['iduser'][0], $idusers) )
+					{
+						$idroles[] = 0;
+					}
 				}
 			}
 
@@ -595,38 +624,37 @@ function getWaitingApproversFlowInstance($idschi, $notify=false)
 			switch($arr['satype'])
 				{
 				case 1:
-					$arroles = array();
-					if( in_array(0, $result))
-						{
-						for( $i = 0; $i < count($result); $i++ )
-							{
-							if( $result[$i] != 0 )
-								{
-								$arroles[] = $result[$i];
-								}
-							}
-						$rr1 = bab_getSuperior($arr['iduser'], $arr['id_oc']);
-						}
-					else
-						{
-						$arroles = $result;
-						}
 					$ret = array();
-					if( count($arroles) > 0 )
+					$arroles = array();
+					
+					for( $i = 0; $i < count($result); $i++ )
+					{
+						if( $result[$i] > 0 )
 						{
+							$arroles[] = $result[$i];
+						}
+						else 
+						{
+							$rr1 = bab_getSupervisor($arr['iduser'], $arr['id_oc'], $result[$i]);
+							if( isset($rr1['iduser']) && count($rr1['iduser']) > 0 )
+							{
+								$ret[] = $rr1['iduser'][0];
+							}
+						}
+					}
+					
+					if( count($arroles) > 0 )
+					{
 						$rr =  bab_getOrgChartRoleUsers($arroles);
 						if (isset($rr['iduser']))
-							{
+						{
 							foreach($rr['iduser'] as $role_id_user)
-								{
+							{
 								$ret[] = $role_id_user;
-								}
 							}
 						}
-					if( isset($rr1['iduser']) && count($rr1['iduser']) > 0 )
-						{
-						$ret[] = $rr1['iduser'][0];
-						}
+					}
+					
 					$result = $ret;
 					break;
 				case 2:
@@ -762,12 +790,12 @@ function getWaitingApprobations($iduser, $update=false)
 					$result['idschi'][] = $row['idschi'];
 					}
 				break;
-			case 1:
-				if( $row['iduser'] == 0 )
+			case 1: // fonctionel
+				if( $row['iduser'] <= 0 ) // supperieur hierarchique
 				{
 					if( $row['fit_iduser'] != 0 )
 						{
-						$rr = bab_getSuperior($row['fit_iduser'], $row['id_oc']);
+						$rr = bab_getSupervisor($row['fit_iduser'], $row['id_oc'], $row['iduser']);
 						if( isset($rr['iduser']) && count($rr['iduser']) > 0  && $rr['iduser'][0] == $iduser )
 							{
 							if( count($result['idschi']) == 0 || !in_array($row['idschi'], $result['idschi']))

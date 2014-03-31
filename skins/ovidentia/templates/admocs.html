@@ -311,21 +311,38 @@ function org_mm()
 <td class="BabSiteAdminSmall" valign="middle" nowrap ><b>{ entitytxt }</b><img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="1" height="1" border="0"></td>
 <td class="BabSiteAdminSmall" valign="middle" nowrap ><b>{ usernametxt }</b><img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="1" height="1" border="0"></td>
 </tr>
-<!--#if altbg -->
-<tr class="BabSiteAdminFontBackground">
-<!--#else altbg -->
+
 <tr class="BabForumBackground1">
-<!--#endif altbg --> 
 <td align="center" valign="middle" width="1%" >&nbsp;</td>
 <td align="center" valign="middle" width="1%" >
-<a class="BabNameEmailLink" href="#" onclick="self.opener.{ cb }(0, '{ lmrolename }')"><img src="{ babSkinPath }images/Puces/contact.png" border="0"></a>
+<a class="BabNameEmailLink" href="#" onclick="self.opener.{ cb }(0, '{ lmrolename1 }')"><img src="{ babSkinPath }images/Puces/contact.png" border="0"></a>
 </td>
 
-<td align="left" valign="middle">{ lmrolename }<img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="1" height="1" border="0"></td>
-<td align="left" valign="middle">&nbsp;<img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="1" height="1" border="0"></td>
-<td align="left" valign="middle">&nbsp;<img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="1" height="1" border="0"></td>
+<td align="left" valign="middle" colspan="3">{ lmrolename1 }</td>
 
 </tr>
+
+<tr class="BabSiteAdminFontBackground">
+<td align="center" valign="middle" width="1%" >&nbsp;</td>
+<td align="center" valign="middle" width="1%" >
+<a class="BabNameEmailLink" href="#" onclick="self.opener.{ cb }(-1, '{ lmrolename2 }')"><img src="{ babSkinPath }images/Puces/contact.png" border="0"></a>
+</td>
+
+<td align="left" valign="middle" colspan="3">{ lmrolename2 }</td>
+
+</tr>
+
+
+</tr>
+<tr class="BabForumBackground1">
+<td align="center" valign="middle" width="1%" >&nbsp;</td>
+<td align="center" valign="middle" width="1%" >
+<a class="BabNameEmailLink" href="#" onclick="self.opener.{ cb }(-2, '{ lmrolename3 }')"><img src="{ babSkinPath }images/Puces/contact.png" border="0"></a>
+</td>
+<td align="left" valign="middle" colspan="3">{ lmrolename3 }</td>
+
+</tr>
+
 
 <!--#in getnextrow -->
 <!--#if altbg -->

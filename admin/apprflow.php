@@ -172,6 +172,17 @@ function getApprovalSchemaName($id)
  */
 function getRoleName($id)
 {
+	if (0 == $id)
+	{
+		return bab_translate('Immediat superior');
+	}
+	else if ($id < 0)
+	{
+		$level = 1 + abs($id);
+		return sprintf(bab_translate('Level %d superior'), $level);
+	}
+	
+	
 	global $babDB;
 	$query = "select r.name role, e.name entity from ".BAB_OC_ROLES_TBL." r LEFT JOIN bab_oc_entities e ON e.id=r.id_entity WHERE r.id='".$babDB->db_escape_string($id)."'";
 	$res = $babDB->db_query($query);
@@ -353,15 +364,12 @@ function schemaCreate($formula, $idsch, $schname, $schdesc, $order, $bdel, $ocid
 					switch($this->type )
 						{
 						case 1:
-							if( $this->arrf[$j] == 0 )
+
+								
+							$name = getRoleName($this->arrf[$j]);
+							$rr = bab_getOrgChartRoleUsers($this->arrf[$j]);
+							if ($this->arrf[$j] > 0)
 								{
-								$name = bab_translate("Immediat superior");
-								}
-							else
-								{
-								$name = getRoleName($this->arrf[$j]);
-								$rr = bab_getOrgChartRoleUsers($this->arrf[$j]);
-								bab_debug($rr);
 								if( count($rr) == 0 )
 									{
 									$name .= " (?)";
@@ -374,9 +382,9 @@ function schemaCreate($formula, $idsch, $schname, $schdesc, $order, $bdel, $ocid
 										} else {
 											$name .= ' '. sprintf(bab_translate("(%d approbators)"), count($rr['name']));
 										}
-
+	
 									}
-								}
+								}	
 							break;
 						case 2:
 							try {

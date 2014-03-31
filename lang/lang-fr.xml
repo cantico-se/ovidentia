@@ -1268,6 +1268,7 @@
 <string id="Provided role">Fonction pourvue</string>
 <string id="Vacant role">Fonction vacante</string>
 <string id="Immediat superior">Supérieur hiérarchique</string>
+<string id="Level %d superior">Supérieur hiérarchique de niveau %d</string>
 <string id="Delete organization chart">Supprimer l'organigramme</string>
 <string id="Upgrade">Mettre à jour</string>
 <string id="Roles list">Liste des fonctions</string>
