@@ -188,20 +188,10 @@ if (!isset($GLOBALS['babUmaskMode'])) {
 	$GLOBALS['babUmaskMode'] = 0;
 }
 
-/*
- * Get the name of the PHP file of script curently executed (default : index.php)
- *
- * @return string
- */
-function bab_getSelf() {
-	$pos = mb_strrpos($_SERVER['PHP_SELF'], '/');
 
-	if (false === $pos) {
-		return $_SERVER['PHP_SELF'];
-	}
 
-	return mb_substr($_SERVER['PHP_SELF'], $pos +1);
-}
+include_once $babInstallPath.'utilit/addonapi.php';
+
 
 $babPhpSelf		= bab_getSelf();
 $babUrlScript	= $babUrl.$babPhpSelf;

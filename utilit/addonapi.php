@@ -3782,3 +3782,21 @@ function bab_getBody()
 	require_once dirname(__FILE__).'/utilit.php';
 	return bab_getInstance('babBody');
 }
+
+
+
+/*
+ * Get the name of the PHP file of script curently executed (default : index.php)
+*
+* @return string
+*/
+function bab_getSelf() {
+	$pos = mb_strrpos($_SERVER['PHP_SELF'], '/');
+
+	if (false === $pos) {
+		return $_SERVER['PHP_SELF'];
+	}
+
+	return mb_substr($_SERVER['PHP_SELF'], $pos +1);
+}
+
