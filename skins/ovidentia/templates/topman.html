@@ -602,48 +602,7 @@ function ovidentia_popuptreeviewselectparenttopic() {
 	</table>
 	<br />
 	
-	<!--#if restrictaccess -->
-	<table class="BabLoginCadreBackground" width="99%" border="0" cellspacing="0" cellpadding="2" align="center">
-	<tr> 
-	<td > 
-		<table class="BabLoginMenuBackground" width="100%" border="0" cellspacing="0" cellpadding="4" align="center">
-		<tr> 
-			<td align="left" valign="middle" colspan="2"><b>{ restrictiontitletxt }:</b></td>
-		</td>
-		</tr>
-		<tr> 
-			<td align="right" nowrap valign="middle">{ restrictiontxt }:</td>
-			<td valign="middle"> 
-			<select name="restriction">
-			<option value="" { norestrictsel }>{ norestricttxt }</option>
-			<option value="1" { yesrestrictsel }>{ yesrestricttxt }</option>
-			</select>
-			</td>
-		</tr>
-		<tr> 
-			<td align="right" nowrap valign="middle">{ operatortxt }:</td>
-			<td valign="middle"> 
-			<select name="operator">
-			<option value="," { operatororysel }>{ ortxt }</option>
-			<option value="&" { operatorornsel }>{ andtxt }</option>
-			</select>
-			</td>
-		</tr>
-		<tr> 
-			<td align="right" nowrap valign="middle">{ groupstxt }:</td>
-			<td valign="middle"> 
-			<!--#in getnextgroup -->
-			<br /><input type="checkbox" name="grpids[]" value="{ grpid }" { grpcheck } >&nbsp;{ grpname }
-			<!--#endin getnextgroup -->
-			</td>
-		</tr>
-		
-		</table>
-	</td>
-	</tr>
-	</table>
-	<br />
-	<!--#endif restrictaccess -->
+
 	<br />
 	<p align="center">
 		
