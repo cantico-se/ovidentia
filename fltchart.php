@@ -221,11 +221,11 @@ function listOrgChartRoles($ocid, $oeid, $iduser)
 			$this->altbg = false;
 			if( $babBody->nameorder[0] == 'F' )
 				{
-				$this->orderby = "order by det.givenname asc";
+				$this->orderby = "order by det.givenname asc, det.sn asc";
 				}
 			else
 				{
-				$this->orderby = "order by det.sn asc";
+				$this->orderby = "order by det.sn asc, det.givenname asc";
 				}
 			}
 
