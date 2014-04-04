@@ -3014,6 +3014,7 @@ CREATE TABLE bab_dbdir_configexport (
   id int(11) unsigned NOT NULL auto_increment,
   id_user int(11) unsigned NOT NULL default '0',
   id_directory int(11) unsigned NOT NULL default '0',
+  output_format varchar(255) NOT NULL default '',
   separatorchar tinyint(2) NOT NULL default '0',
   PRIMARY KEY  (id),
   KEY id_user (id_user),

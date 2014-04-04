@@ -455,6 +455,45 @@ function selectAll(list)
 	}
 }
 
+
+
+function bab_dbdir_output_format(select)
+{
+	var ov_options = document.getElementById('bab_dbdir_ovidentia_csv_options');
+	var output_format = select.options[select.selectedIndex].value;
+	
+	if (output_format == 'ovidentia_csv')
+	{
+		ov_options.style.display = '';
+	} else {
+		ov_options.style.display = 'none';
+	}
+}
+
+
+
+function bab_dbdir_wsepar(select)
+{
+	var separ = document.getElementById('bab_dbdir_separ');
+	var option = select.options[select.selectedIndex].value;
+	
+	if (option === '0')
+	{
+		separ.style.display = '';
+	} else {
+		separ.style.display = 'none';
+	}
+}
+
+
+
+
+bab_initFunctions.push(function() { 
+	bab_dbdir_output_format(document.getElementById('bab_dbdir_output_format_select'));
+	bab_dbdir_wsepar(document.getElementById('bab_dbdir_wsepar_select'));
+});
+
+
 //-->
 </script>
 <form name="dispdbf" method="post" action="{ babPhpSelf }">
@@ -465,19 +504,18 @@ function selectAll(list)
 <tr> 
 <td class="BabLoginCadreBackground" align="center" valign="middle"> 
 	<table class="BabLoginMenuBackground"  width="100%" border="0" cellspacing="0" cellpadding="5" align="center">
-
 	<tr> 
-	<td align="right">{ separator }</td>
-	<td  colspan="3"> 
-	<select name="wsepar">
-	<option value="0" { selected_0 }>{ other }</option>
-	<option value="1" { selected_1 }>{ comma }</option>
-	<option value="2" { selected_2 }>{ tab }</option>
-	</select>&nbsp;&nbsp;
-	<input type="text" name="separ" size="1" maxlength="1" value="{ separvalue }">
-	</td>
+		<td align="right" width="40%">{ t_output }</td>
+		<td  colspan="3"> 
+		<select id="bab_dbdir_output_format_select" name="output_format" onchange="bab_dbdir_output_format(this);">
+			<option value="ovidentia_csv" { selected_ovidentia_csv }>{ t_ovidentia_csv }</option>
+			<option value="google_csv" { selected_google_csv }>{ t_google_csv }</option>
+			<option value="outlook_csv" { selected_outlook_csv }>{ t_outlook_csv }</option>
+			<option value="vcard" { selected_vcard }>{ t_vcard }</option>
+		</select>
+		</td>
 	</tr>
-<!--#if bgroup -->
+	<!--#if bgroup -->
 	<tr> 
 	<td align="right">{ t_export_disbaled_users }</td>
 	<td  colspan="3">
@@ -487,52 +525,65 @@ function selectAll(list)
 	</select>
 	</td>
 	</tr>
-<!--#endif bgroup -->	
-
-<tr> 
-<td class="BabLoginMenuBackground" align="center" nowrap valign="middle" colspan="4">{ infotxt }:</td>
-</tr>
-
-<tr> 
-<td align="center" nowrap valign="middle"> 
-<select id="directory_list_available_fields" name="listfields1" size="12" multiple="multiple">
-  <option value="0">{ listftxt }</option>
-  <!--#in getnextf --> 
-  <option value="{ fid }">{ fieldval }</option>
-  <!--#endin getnextf --> 
-</select>
-</td>
-
-<td align="center">
-<a href="javascript:moveOptions(document.getElementById('directory_list_available_fields'),document.getElementById('directory_list_selected_fields'))"><img src="{ babSkinPath }images/Puces/PuceGoRight.gif" width="20" height="24" border=0 alt="Down"></a>
-<br /><br />
-<a href="javascript:moveOptions(document.getElementById('directory_list_selected_fields'),document.getElementById('directory_list_available_fields'))" ><img src="{ babSkinPath }images/Puces/PuceGoLeft.gif" width="20" height="24" border=0 alt="Up"></a>
-</td>
-
-<td align="center"> 
-<select  id="directory_list_selected_fields" name="listfd[]"  size="12" multiple="multiple">
-  <option value="0">{ listdftxt }</option>
-  <!--#in getnextdf --> 
-  <option value="{ fid }">{ fieldval }</option>
-  <!--#endin getnextdf --> 
-</select>
-</td>
-
-<td align="center" ><a href="javascript:move(true, document.getElementById('directory_list_selected_fields'))"><img src="{ babSkinPath }images/Puces/PuceGoTop.gif" width="22" height="18" border=0 alt="{ moveup }"></a> 
-<br>
-<br>
-<a href="javascript:move(false, document.getElementById('directory_list_selected_fields'))"> 
-<img src="{ babSkinPath }images/Puces/PuceGoDown.gif" width="22" height="18" border=0 alt="{ movedown }"></a> 
-</td>
-</tr>
-
-
+	<!--#endif bgroup -->	
+	<tbody id="bab_dbdir_ovidentia_csv_options">
+		<tr> 
+			<td align="right">{ separator }</td>
+			<td  colspan="3"> 
+			<select id="bab_dbdir_wsepar_select" name="wsepar" onchange="bab_dbdir_wsepar(this);">
+				<option value="0" { selected_0 }>{ other }</option>
+				<option value="1" { selected_1 }>{ comma }</option>
+				<option value="2" { selected_2 }>{ tab }</option>
+			</select>&nbsp;&nbsp;
+			<input id="bab_dbdir_separ" type="text" name="separ" size="1" maxlength="1" value="{ separvalue }">
+			</td>
+		</tr>
+	
+		
+		<tr> 
+			<td class="BabLoginMenuBackground" align="center" nowrap valign="middle" colspan="4">{ infotxt }:</td>
+		</tr>
+		
+		<tr> 
+			<td align="center" nowrap valign="middle"> 
+			<select id="directory_list_available_fields" name="listfields1" size="12" multiple="multiple">
+			  <option value="0">{ listftxt }</option>
+			  <!--#in getnextf --> 
+			  <option value="{ fid }">{ fieldval }</option>
+			  <!--#endin getnextf --> 
+			</select>
+			</td>
+		
+			<td align="center">
+			<a href="javascript:moveOptions(document.getElementById('directory_list_available_fields'),document.getElementById('directory_list_selected_fields'))"><img src="{ babSkinPath }images/Puces/PuceGoRight.gif" width="20" height="24" border=0 alt="Down"></a>
+			<br /><br />
+			<a href="javascript:moveOptions(document.getElementById('directory_list_selected_fields'),document.getElementById('directory_list_available_fields'))" ><img src="{ babSkinPath }images/Puces/PuceGoLeft.gif" width="20" height="24" border=0 alt="Up"></a>
+			</td>
+			
+			<td align="center"> 
+			<select  id="directory_list_selected_fields" name="listfd[]"  size="12" multiple="multiple">
+			  <option value="0">{ listdftxt }</option>
+			  <!--#in getnextdf --> 
+			  <option value="{ fid }">{ fieldval }</option>
+			  <!--#endin getnextdf --> 
+			</select>
+			</td>
+			
+			<td align="center" ><a href="javascript:move(true, document.getElementById('directory_list_selected_fields'))"><img src="{ babSkinPath }images/Puces/PuceGoTop.gif" width="22" height="18" border=0 alt="{ moveup }"></a> 
+			<br>
+			<br>
+			<a href="javascript:move(false, document.getElementById('directory_list_selected_fields'))"> 
+			<img src="{ babSkinPath }images/Puces/PuceGoDown.gif" width="22" height="18" border=0 alt="{ movedown }"></a> 
+			</td>
+		</tr>
+	</tbody>
+	
 	<tr>
-	<td valign="middle" align="center" colspan="4"> 
-	<input type="hidden" name="expfile" value="{ export }">
-	<input type="submit" name="expfile-submit" value="{ export }" onClick="selectAll(document.getElementById('directory_list_selected_fields')); document.dispdbf.submit()/*this.click()*//* jQuery(this).click();*/">
-	<br>
-	</td>
+		<td valign="middle" align="center" colspan="4"> 
+		<input type="hidden" name="expfile" value="{ export }">
+		<input type="submit" name="expfile-submit" value="{ export }" onClick="selectAll(document.getElementById('directory_list_selected_fields')); document.dispdbf.submit()/*this.click()*//* jQuery(this).click();*/">
+		<br>
+		</td>
 	</tr>
 	
 	</table>

@@ -1287,6 +1287,11 @@ function exportDbFile($id)
 			$this->t_yes = bab_translate("Yes");
 			$this->t_no = bab_translate("No");
 			$this->t_export_disbaled_users = bab_translate("Include disabled users");
+			$this->t_output = bab_translate("Output format");
+			$this->t_ovidentia_csv = bab_translate("Ovidentia CSV");
+			$this->t_google_csv = bab_translate("Google CSV");
+			$this->t_outlook_csv = bab_translate("Outlook CSV");
+			$this->t_vcard = bab_translate("VCard");
 
 			$this->infotxt = bab_translate("Specify which fields will be exported");
 			$this->listftxt = "---- ".bab_translate("Fields")." ----";
@@ -1306,21 +1311,53 @@ function exportDbFile($id)
 				}
 
 			$this->bgroup = $arr['id_group'] > 0;
+			
+			$this->selected_ovidentia_csv = '';
+			$this->selected_google_csv = '';
+			$this->selected_outlook_csv = '';
+			$this->selected_vcard = '';
 
 			$this->selected_1 = '';
 			$this->selected_2 = '';
 			$this->selected_0 = '';
 			$this->separvalue = '';
 			
-			$res = $babDB->db_query("select separatorchar from ".BAB_DBDIR_CONFIGEXPORT_TBL." where id_directory='".$babDB->db_escape_string($id)."' and id_user='".$babDB->db_escape_string($GLOBALS['BAB_SESS_USERID'])."'");
+			$res = $babDB->db_query("select output_format, separatorchar 
+					from ".BAB_DBDIR_CONFIGEXPORT_TBL." 
+					where 
+						id_directory='".$babDB->db_escape_string($id)."' 
+						and id_user='".$babDB->db_escape_string(bab_getUserId())."'");
+			
 			if( $res && $babDB->db_num_rows($res) > 0 )
 				{
-				$arr = $babDB->db_fetch_array($res);
+				$arr = $babDB->db_fetch_assoc($res);
 				}
 			else
 				{
-				$arr['separatorchar'] = 44;
+					$arr = array(
+						'output_format' => 'ovidentia_csv',
+						'separatorchar' => 44
+					);
 				}
+				
+				
+			switch($arr['output_format'] )
+			{
+				default:
+				case 'ovidentia_csv':
+					$this->selected_ovidentia_csv = 'selected';
+					break;
+				case 'google_csv':
+					$this->selected_google_csv = 'selected';
+					break;
+				case 'outlook_csv':
+					$this->selected_outlook_csv = 'selected';
+					break;
+				case 'vcard':
+					$this->selected_vcard = 'selected';
+					break;
+			}
+				
 
 			switch($arr['separatorchar'] )
 				{
@@ -3130,138 +3167,33 @@ function unassignDbContact($id, $idu)
 		}
 	}
 
-function exportDbDirectory($id, $wsepar, $separ, $listfd)
+function exportDbDirectory($id, $output_format, $wsepar, $separ, $listfd)
 {
-
-	global $babDB;
-	switch($wsepar)
-		{
-		case "1":
-			$separ = ",";
-			break;
-		case "2":
-			$separ = "\t";
-			break;
-		default:
-			if( empty($separ))
-				$separ = ",";
-			break;
-		}
+	require_once dirname(__FILE__).'/utilit/direxport.class.php';
+	$bdisabled = ('Y' === bab_pp('bdisabled', 'Y'));
+	$separ = bab_getPostedSeparator($wsepar, $separ);
 	
-	$bdisabled = bab_pp('bdisabled', 'Y');
-
-	list($idgroup, $idname) = $babDB->db_fetch_array($babDB->db_query("select id_group, name from ".BAB_DB_DIRECTORIES_TBL." where id='".$babDB->db_escape_string($id)."'"));
-
-
-	if( $GLOBALS['BAB_SESS_USERID'])
-		{
-		$babDB->db_query("delete from ".BAB_DBDIR_FIELDSEXPORT_TBL." where id_directory='".$babDB->db_escape_string($id)."' and id_user='".$babDB->db_escape_string($GLOBALS['BAB_SESS_USERID'])."'");
-
-		for($i=0; $i < count($listfd); $i++)
-			{
-			$babDB->db_query("insert into ".BAB_DBDIR_FIELDSEXPORT_TBL." (id_user, id_directory, id_field, ordering) values ('".$babDB->db_escape_string($GLOBALS['BAB_SESS_USERID'])."','".$babDB->db_escape_string($id)."','".$babDB->db_escape_string($listfd[$i])."','".($i + 1)."')");
-			}
-
-		$babDB->db_query("delete from ".BAB_DBDIR_CONFIGEXPORT_TBL." where id_directory='".$babDB->db_escape_string($id)."' and id_user='".$babDB->db_escape_string($GLOBALS['BAB_SESS_USERID'])."'");
-		$babDB->db_query("insert into ".BAB_DBDIR_CONFIGEXPORT_TBL." (id_user, id_directory, separatorchar) values ('".$babDB->db_escape_string($GLOBALS['BAB_SESS_USERID'])."','".$babDB->db_escape_string($id)."','".$babDB->db_escape_string(Ord($separ))."')");	
-		}
-
-
-	$output = "";
-	if( $idgroup > 0 )
-		{
-		$output .= '"'.str_replace('"','""',bab_translate("Login ID")).'"'.$separ;
-		}
-
-	$arrnamef = array();
-	$leftjoin = array();
-	$select = array();
-
-	if( $GLOBALS['BAB_SESS_USERID'])
-		{
-		$res = $babDB->db_query("select dbf.* from ".BAB_DBDIR_FIELDSEXPORT_TBL." dbfex left join ".BAB_DBDIR_FIELDSEXTRA_TBL." dbf on dbf.id_field=dbfex.id_field where dbf.id_directory='".($idgroup != 0? 0: $babDB->db_escape_string($id))."' and dbfex.id_user='".$babDB->db_escape_string($GLOBALS['BAB_SESS_USERID'])."' and dbfex.id_directory='".$babDB->db_escape_string($id)."' order by dbfex.ordering asc");
-		}
-	else
-		{
-		$res = $babDB->db_query("select * from ".BAB_DBDIR_FIELDSEXTRA_TBL." where id_directory='".($idgroup != 0? 0: $babDB->db_escape_string($id))."' order by list_ordering asc");
-		}
-
-	while( $arr = $babDB->db_fetch_array($res))
-		{
-		if( $arr['id_field'] < BAB_DBDIR_MAX_COMMON_FIELDS )
-			{
-			$rr = $babDB->db_fetch_array($babDB->db_query("select description, name from ".BAB_DBDIR_FIELDS_TBL." where id='".$babDB->db_escape_string($arr['id_field'])."'"));
-			$fieldn = translateDirectoryField($rr['description']);
-			$arrnamef[] = $rr['name'];
-			$select[] = 'e.'.$rr['name'];
-			}
-		else
-			{
-			$rr = $babDB->db_fetch_array($babDB->db_query("select * from ".BAB_DBDIR_FIELDS_DIRECTORY_TBL." where id='".$babDB->db_escape_string(($arr['id_field'] - BAB_DBDIR_MAX_COMMON_FIELDS))."'"));
-			$fieldn = translateDirectoryField($rr['name']);
-			$arrnamef[] = "babdirf".$arr['id'];
-
-			$leftjoin[] = 'LEFT JOIN '.BAB_DBDIR_ENTRIES_EXTRA_TBL.' lj'.$arr['id']." ON lj".$arr['id'].".id_fieldx='".$babDB->db_escape_string($arr['id'])."' AND e.id=lj".$babDB->db_escape_string($arr['id']).".id_entry";
-			$select[] = "lj".$arr['id'].'.field_value '."babdirf".$babDB->db_escape_string($arr['id'])."";
-			}
-		$output .= '"'.str_replace('"','""',translateDirectoryField($fieldn)).'"'.$separ;
-		}
-
-	$output = mb_substr($output, 0, -1);
-	$output .= "\n";
-
-	if( $idgroup > 1 )
-		{
-		$req = " ".BAB_USERS_GROUPS_TBL." u,
-				".BAB_DBDIR_ENTRIES_TBL." e ".implode(' ',$leftjoin)." 
-					WHERE u.id_group='".$idgroup."' 
-					AND u.id_object=e.id_user 
-					AND e.id_directory='0'";
-		}
-	else
-		{
-		$req = " ".BAB_DBDIR_ENTRIES_TBL." e ".implode(' ',$leftjoin)." WHERE e.id_directory='".(1 == $idgroup ? 0 : $babDB->db_escape_string($id) )."'";
-		}
-
-	$select[] = 'e.id_user';
-
-	$req = "select ".implode(',', $select)." from ".$req;
-	$res2 = $babDB->db_query($req);
-
-	while( $row = $babDB->db_fetch_array($res2))
-		{
-		$badd = true;
-		if( $idgroup > 0 )
-			{
-			$uarr = $babDB->db_fetch_array($babDB->db_query("select nickname, disabled from ".BAB_USERS_TBL." where id='".$babDB->db_escape_string($row['id_user'])."'"));
-			if( $bdisabled === 'N' && $uarr['disabled'] != 0 )
-				{
-				$badd = false;
-				}
-			else
-				{
-				$output .= '"'.str_replace('"','""',$uarr['nickname']).'"'.$separ;
-				}
-			}
-
-		if( $badd )
-			{
-			for( $k=0; $k < count($arrnamef); $k++ )
-				{
-				$output .= '"'.str_replace(array("\r","\n",'"'),array('',' ','""'),stripslashes($row[$arrnamef[$k]])).'"'.$separ;
-				}
-
-			$output = mb_substr($output, 0, -1);
-			$output .= "\n";
-			}
-		}
-
-	header("Content-Disposition: attachment; filename=\"".$idname.".csv\""."\n");
-	header("Content-Type: text/plain"."\n");
-	header("Content-Length: ". mb_strlen($output)."\n");
-	header("Content-transfert-encoding: binary"."\n");
-	print $output;
-	exit;
+	bab_saveExportFormStatus($id, $output_format, $listfd, $separ);
+	
+	switch($output_format)
+	{
+		case 'ovidentia_csv':
+			$export = new bab_dbdir_export_ovidentia_csv($id, $bdisabled, $separ, $listfd);
+			break;
+			
+		case 'google_csv':
+			break;
+			
+		case 'outlook_csv':
+			break;
+			
+		case 'vcard':
+			break;
+	}
+	
+	$export->output();
+	
+	
 }
 
 
@@ -3367,7 +3299,7 @@ if( '' != ($modify = bab_pp('modify')))
 }
 else if (  ('' !=  bab_pp('expfile'))  && bab_isAccessValid(BAB_DBDIREXPORT_GROUPS_TBL, $id))
 {
-	exportDbDirectory($id, bab_pp('wsepar'), bab_pp('separ'), bab_pp('listfd', array()));
+	exportDbDirectory($id, bab_pp('output_format'), bab_pp('wsepar'), bab_pp('separ'), bab_pp('listfd', array()));
 	$idx = 'sdb';
 }
 

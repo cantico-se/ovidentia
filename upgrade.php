@@ -7095,6 +7095,14 @@ function ovidentia_upgrade($version_base,$version_ini) {
 	bab_addEventListener('bab_eventBeforeWaitingItemsDisplayed', 'bab_onBeforeWaitingItemsDisplayed', 'utilit/approbincl.php');
 	
 	
+	/**
+	 * Upgrade to 8.1.90
+	 */
+	if (!bab_isTableField('bab_dbdir_configexport', 'output_format')) {
+		$babDB->db_query("ALTER TABLE `bab_dbdir_configexport` ADD `output_format` varchar(255) NOT NULL default ''");
+	}
+	
+	
 	return true;
 
 }
