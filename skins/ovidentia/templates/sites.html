@@ -1058,15 +1058,15 @@ function selectAll(list)
 }
 function sortAA(a, b)
 {
-	if (a < b) return -1;
-	if (a > b) return 1;
+	if (a.toLowerCase() < b.toLowerCase()) return -1;
+	if (a.toLowerCase() > b.toLowerCase()) return 1;
 	return 0;
 }
 
 function sortAD(a, b)
 {
-	if (a < b) return 1;
-	if (a > b) return -1;
+	if (a.toLowerCase() < b.toLowerCase()) return 1;
+	if (a.toLowerCase() > b.toLowerCase()) return -1;
 	return 0;
 }
 
