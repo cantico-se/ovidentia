@@ -346,6 +346,12 @@ class bab_addonInfos {
 	 * @access private
 	 */
 	var $ini = null;
+	
+	/**
+	 * 
+	 * @var array
+	 */
+	private $tags;
 
 
 	/**
@@ -1212,6 +1218,63 @@ class bab_addonInfos {
 		}
 
 		return false; 
+	}
+	
+	
+	/**
+	 * Get tags list associated to addons
+	 * @return array
+	 */
+	public function getTags()
+	{
+		
+		if (!isset($this->tags))
+		{
+			$this->tags = array();
+			
+			$ini = $this->getIni();
+			if (isset($ini->inifile['tags'])) {
+				
+				return array();
+			}
+			
+			$tags = preg_split('/\s*,\s*/', $ini->inifile['tags']);
+			
+			foreach($tags as $name)
+			{
+				$name = mb_strtolower($name);
+				$this->tags[$name] = $name;
+			}
+		}
+		
+		return $this->tags;
+	}
+	
+	/**
+	 * Test if a tag exists in addon
+	 * if $tag is an array, return true if all tags are found in the addon
+	 * 
+	 * @param string | array $tag
+	 * @return bool
+	 */
+	public function hasTag($tag)
+	{
+		if (!is_array($tag))
+		{
+			$tag = array($tag);
+		}
+		
+		foreach($tag as $name)
+		{
+			$name = mb_strtolower($name);
+			$arr = $this->getTags();
+			if (!isset($arr[$tag]))
+			{
+				return false;
+			}
+		}
+		
+		return true;
 	}
 }
 

@@ -68,14 +68,23 @@ class bab_skin {
 	
 	/**
 	 * Get the list of available skins with or without access rights verification
-	 * @param	boolean	$access_verification
+	 * @param	boolean				$access_verification
+	 * @param   array | string		$tags					Get only the skins containing all tags in this parameter
 	 * @return array
 	 */
-	public static function getList($access_verification = true) {
+	public static function getList($access_verification = true, $tags = null) {
 		$return = array();
 		foreach(self::getAllSkins() as $skin) {
 			
+			/*@var $skin bab_Skin */
+			
 			if (false === $access_verification || $skin->isAccessValid()) {
+				
+				if (isset($tags) && !$skin->hasTag($tags))
+				{
+					continue;
+				}
+				
 				$return[] = $skin;
 			}
 		}
@@ -288,6 +297,20 @@ class bab_skin {
 
 		return $arrstyles;
 	}
+	
+	
+	
+	/**
+	 * Test if a tag exists in addon
+	 * @param string | array $tag
+	 * @return bool
+	 */
+	public function hasTag($tag)
+	{
+		$addon = bab_getAddonInfosInstance($this->skinname);
+		return $addon->hasTag($tag);
+	}
+	
 
 
 	public function __tostring() {
