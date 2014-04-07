@@ -3182,9 +3182,11 @@ function exportDbDirectory($id, $output_format, $wsepar, $separ, $listfd)
 			break;
 			
 		case 'google_csv':
+			$export = new bab_dbdir_export_google_csv($id, $bdisabled);
 			break;
 			
 		case 'outlook_csv':
+			$export = new bab_dbdir_export_outlook_csv($id, $bdisabled);
 			break;
 			
 		case 'vcard':

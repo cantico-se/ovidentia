@@ -56,6 +56,19 @@ abstract class bab_dbdir_export
 	protected $contenttype;
 	
 	/**
+	 * Columns in query result
+	 * @var array
+	 */
+	protected $cols = array();
+	
+	
+	/**
+	 * List of custom fields
+	 * @var array
+	 */
+	protected $custom = array();
+	
+	/**
 	 *
 	 * @param	int		$id_directory				Directory to export
 	 * @param	bool	$includedisabled			Include disabled users in export
@@ -97,6 +110,153 @@ abstract class bab_dbdir_export
 	 * echo text to export
 	 */
 	abstract protected function outputText();
+	
+	
+	
+	
+	
+	
+	/**
+	 * create ressource and columns
+	 * @param	array	$listfd		optional column filter
+	 */
+	protected function init($listfd = null)
+	{
+		global $babDB;
+	
+		$arrnamef = array();
+		$leftjoin = array();
+		$select = array();
+		
+		$query = "select * from ".BAB_DBDIR_FIELDSEXTRA_TBL." where
+				id_directory='".($this->directory['id_group'] != 0? 0: $babDB->db_escape_string($id))."' 
+				";
+		
+		if (isset($listfd))
+		{
+			$query .= "AND id_field IN(".$babDB->quote($listfd).")";
+		}
+		
+		$query .= " order by list_ordering asc";
+	
+		$res = $babDB->db_query($query);
+	
+	
+		if( $this->directory['id_group'] > 0 )
+		{
+			$this->cols[] = bab_translate("Login ID");
+			$select[] = 'ua.nickname';
+		}
+	
+		while($arr = $babDB->db_fetch_array($res))
+		{
+			if( $arr['id_field'] < BAB_DBDIR_MAX_COMMON_FIELDS )
+			{
+				$rr = $babDB->db_fetch_array($babDB->db_query("select description, name from ".BAB_DBDIR_FIELDS_TBL." where id='".$babDB->db_escape_string($arr['id_field'])."'"));
+				$fieldn = translateDirectoryField($rr['description']);
+				$arrnamef[] = $rr['name'];
+				$select[] = 'e.'.$rr['name'];
+			}
+			else
+			{
+				$rr = $babDB->db_fetch_array($babDB->db_query("select * from ".BAB_DBDIR_FIELDS_DIRECTORY_TBL." where id='".$babDB->db_escape_string(($arr['id_field'] - BAB_DBDIR_MAX_COMMON_FIELDS))."'"));
+				$fieldn = translateDirectoryField($rr['name']);
+				$arrnamef[] = "babdirf".$arr['id'];
+	
+				$leftjoin[] = 'LEFT JOIN '.BAB_DBDIR_ENTRIES_EXTRA_TBL.' lj'.$arr['id']." ON lj".$arr['id'].".id_fieldx='".$babDB->db_escape_string($arr['id'])."' AND e.id=lj".$babDB->db_escape_string($arr['id']).".id_entry";
+				$select[] = "lj".$arr['id'].'.field_value '."babdirf".$babDB->db_escape_string($arr['id'])."";
+				
+				$this->custom["babdirf".$arr['id']] = $fieldn;
+			}
+	
+			$this->cols[] = $fieldn;
+		}
+	
+	
+		if( $this->directory['id_group'] > 1 )
+		{
+			// un groupe
+	
+			$req = " ".BAB_USERS_GROUPS_TBL." u,
+			".BAB_DBDIR_ENTRIES_TBL." e
+			LEFT JOIN bab_users ua ON ua.id=e.id_user
+			".implode(' ',$leftjoin)."
+			WHERE u.id_group='".$idgroup."'
+			AND u.id_object=e.id_user
+			AND e.id_directory='0'";
+		}
+		else if ($this->directory['id_group'] == 1 )
+		{
+			// tous les utilisateurs enregistres
+	
+			$req = " ".BAB_DBDIR_ENTRIES_TBL." e
+			LEFT JOIN bab_users ua ON ua.id=e.id_user
+			".implode(' ',$leftjoin)."
+			WHERE e.id_directory='0'";
+		}
+		else
+		{
+			// annuaire de base de donnes
+	
+			$req = " ".BAB_DBDIR_ENTRIES_TBL." e ".implode(' ',$leftjoin)." WHERE e.id_directory='".$babDB->db_escape_string($id)."'";
+		}
+	
+	
+		if( $this->directory['id_group'] > 0 )
+		{
+			require_once dirname(__FILE__).'/userinfosincl.php';
+			$req .= ' AND '.bab_userInfos::queryAllowedUsers('ua', false, $this->includedisabled);
+		}
+	
+	
+		$req = "select ".implode(',', $select)." from ".$req;
+		$this->res = $babDB->db_query($req);
+	}
+	
+	
+	
+	/**
+	 * 
+	 * @param string $prefix
+	 * @param array $row
+	 * @return string
+	 */
+	protected function getAddress($prefix, Array $row)
+	{
+		$street = $row[$prefix.'streetaddress'];
+		$postalcode = $row[$prefix.'postalcode'];
+		$city = $row[$prefix.'city'];
+		$state = $row[$prefix.'state'];
+		$country = $row[$prefix.'country'];
+	
+		$address = '';
+		if (!empty($street))
+		{
+			$address .= $street."\n";
+		}
+	
+		if (!empty($postalcode))
+		{
+			$address .= $postalcode." ";
+		}
+	
+		if (!empty($city))
+		{
+			$address .= $city."\n";
+		}
+	
+		if (!empty($state))
+		{
+			$address .= $state."\n";
+		}
+	
+		if (!empty($country))
+		{
+			$address .= $country."\n";
+		}
+	
+		return trim($address);
+	}
 }
 
 
@@ -136,6 +296,7 @@ abstract class bab_dbdir_export_csv extends bab_dbdir_export
 	
 	/**
 	 * Get the columns to export
+	 * key is position, value is column label (first CSV row)
 	 * @return Array
 	 */
 	abstract protected function getColumns();
@@ -169,13 +330,14 @@ abstract class bab_dbdir_export_csv extends bab_dbdir_export
 		
 		while ($row = $babDB->db_fetch_assoc($this->res))
 		{
-			foreach($row as $name => $value)
-			{
-				$row[$name] = $this->csvencode($value);
-			}
-			echo implode($this->separator, $row)."\n";
+			
+			$this->outputRow($row);
 		}
 	}
+	
+	
+	abstract protected function outputRow(Array $row);
+	
 }
 
 
@@ -187,11 +349,7 @@ abstract class bab_dbdir_export_csv extends bab_dbdir_export
  */
 class bab_dbdir_export_ovidentia_csv extends bab_dbdir_export_csv 
 {
-	/**
-	 * 
-	 * @var array
-	 */
-	protected $cols = array();
+
 	
 	/**
 	 * 
@@ -209,98 +367,312 @@ class bab_dbdir_export_ovidentia_csv extends bab_dbdir_export_csv
 		$this->init($listfd);
 	}
 	
-	/**
-	 * create ressource and columns
-	 */
-	private function init($listfd)
-	{
-		global $babDB;
-		
-		$arrnamef = array();
-		$leftjoin = array();
-		$select = array();
-		
-		$res = $babDB->db_query("select * from ".BAB_DBDIR_FIELDSEXTRA_TBL." where 
-				id_directory='".($this->directory['id_group'] != 0? 0: $babDB->db_escape_string($id))."' 
-				AND id_field IN(".$babDB->quote($listfd).") 
-				order by list_ordering asc");
-		
-		
-		if( $this->directory['id_group'] > 0 )
-		{
-			$this->cols[] = bab_translate("Login ID");
-			$select[] = 'ua.nickname';
-		}
-		
-		while($arr = $babDB->db_fetch_array($res))
-		{
-			if( $arr['id_field'] < BAB_DBDIR_MAX_COMMON_FIELDS )
-			{
-				$rr = $babDB->db_fetch_array($babDB->db_query("select description, name from ".BAB_DBDIR_FIELDS_TBL." where id='".$babDB->db_escape_string($arr['id_field'])."'"));
-				$fieldn = translateDirectoryField($rr['description']);
-				$arrnamef[] = $rr['name'];
-				$select[] = 'e.'.$rr['name'];
-			}
-			else
-			{
-				$rr = $babDB->db_fetch_array($babDB->db_query("select * from ".BAB_DBDIR_FIELDS_DIRECTORY_TBL." where id='".$babDB->db_escape_string(($arr['id_field'] - BAB_DBDIR_MAX_COMMON_FIELDS))."'"));
-				$fieldn = translateDirectoryField($rr['name']);
-				$arrnamef[] = "babdirf".$arr['id'];
-			
-				$leftjoin[] = 'LEFT JOIN '.BAB_DBDIR_ENTRIES_EXTRA_TBL.' lj'.$arr['id']." ON lj".$arr['id'].".id_fieldx='".$babDB->db_escape_string($arr['id'])."' AND e.id=lj".$babDB->db_escape_string($arr['id']).".id_entry";
-				$select[] = "lj".$arr['id'].'.field_value '."babdirf".$babDB->db_escape_string($arr['id'])."";
-			}
-			
-			$this->cols[] = $fieldn;
-		}
-		
-		
-		if( $this->directory['id_group'] > 1 )
-		{
-			// un groupe
-			
-			$req = " ".BAB_USERS_GROUPS_TBL." u,
-			".BAB_DBDIR_ENTRIES_TBL." e 
-				LEFT JOIN bab_users ua ON ua.id=e.id_user 
-				".implode(' ',$leftjoin)."
-			WHERE u.id_group='".$idgroup."'
-			AND u.id_object=e.id_user
-			AND e.id_directory='0'";
-		} 
-		else if ($this->directory['id_group'] == 1 )
-		{
-			// tous les utilisateurs enregistres
-			
-			$req = " ".BAB_DBDIR_ENTRIES_TBL." e 
-				LEFT JOIN bab_users ua ON ua.id=e.id_user 
-				".implode(' ',$leftjoin)." 
-			WHERE e.id_directory='0'";
-		}
-		else
-		{
-			// annuaire de base de donnes
-			
-			$req = " ".BAB_DBDIR_ENTRIES_TBL." e ".implode(' ',$leftjoin)." WHERE e.id_directory='".$babDB->db_escape_string($id)."'";
-		}
-		
-		
-		if( $this->directory['id_group'] > 0 )
-		{
-			require_once dirname(__FILE__).'/userinfosincl.php';
-			$req .= ' AND '.bab_userInfos::queryAllowedUsers('ua', false, $this->includedisabled);
-		}
-		
-		
-		$req = "select ".implode(',', $select)." from ".$req;
-		$this->res = $babDB->db_query($req);
-	}
+	
 	
 	
 	protected function getColumns()
 	{
 		return $this->cols;
 	}
+	
+	/**
+	 * Output row 
+	 */
+	protected function outputRow(Array $row)
+	{
+		foreach($row as $name => $value)
+		{
+			$row[$name] = $this->csvencode($value);
+		}
+		echo implode($this->separator, $row)."\n";
+	}
 }
+
+
+
+
+
+
+
+
+/**
+ * Export CSV file, google format
+ *
+ */
+class bab_dbdir_export_google_csv extends bab_dbdir_export_csv
+{
+	public function __construct($id_directory, $includedisabled)
+	{
+		parent::__construct($id_directory, $includedisabled);
+	
+		$this->init();
+	}
+	
+	
+	/**
+	 * Output row
+	 */
+	protected function outputRow(Array $row)
+	{
+		$output = array_fill(0, 38, '""');
+		
+		$output[0] = $this->csvencode($row['givenname'].' '.$row['sn']);
+		$output[1] = $this->csvencode($row['givenname']);
+		$output[2] = $this->csvencode($row['sn']);
+		
+		$output[3] = $this->csvencode('*');
+		$output[4] = $this->csvencode($row['email']);
+		
+		$output[5] = $this->csvencode('Home');
+		$output[6] = $this->csvencode($row['htel']);
+		
+		$output[7] = $this->csvencode('Mobile');
+		$output[8] = $this->csvencode($row['mobile']);
+		
+		$output[9] = $this->csvencode('Work');
+		$output[10] = $this->csvencode($row['btel']);
+		
+		$output[11] = $this->csvencode('Work Fax');
+		$output[12] = $this->csvencode($row['bfax']);
+		
+		$output[13] =  $this->csvencode('Home');
+		$output[14] = $this->csvencode($this->getAddress('h', $row));
+		$output[15] =  $this->csvencode($row['hstreetaddress']);
+		$output[16] =  $this->csvencode($row['hcity']);
+		$output[17] =  $this->csvencode($row['hstate']);
+		$output[18] =  $this->csvencode($row['hpostalcode']);
+		$output[19] =  $this->csvencode($row['hcountry']);
+		
+		$output[20] =  $this->csvencode('Work');
+		$output[21] =  $this->csvencode($this->getAddress('b', $row));
+		$output[22] =  $this->csvencode($row['bstreetaddress']);
+		$output[23] =  $this->csvencode($row['bcity']);
+		$output[24] =  $this->csvencode($row['bstate']);
+		$output[25] =  $this->csvencode($row['bpostalcode']);
+		$output[26] =  $this->csvencode($row['bcountry']);
+		
+		$output[28] =  $this->csvencode($row['organisationname']);
+		$output[29] =  $this->csvencode($row['title']);
+		$output[30] =  $this->csvencode($row['departmentnumber']);
+		
+		$i = 31;
+		
+		foreach($this->custom as $name => $label)
+		{
+			$output[$i++] =  $this->csvencode($label);
+			$output[$i++] =  $this->csvencode($row[$name]);
+		}
+
+		echo implode($this->separator, $output)."\n";
+	}
+	
+	
+	protected function getColumns()
+	{
+		return array(
+				
+			0 => 'Name', 						// full name
+			1 => 'Given Name',
+			2 => 'Family Name',
+			3 => 'E-mail 1 - Type', 			// Ce champ aura toujours la valeur *
+			4 => 'E-mail 1 - Value', 
+			5 => 'Phone 1 - Type', 				// Ce champ aura toujours la valeur « Home »
+			6 => 'Phone 1 - Value', 			// Téléphone (domicile)
+			7 => 'Phone 2 - Type', 				// Ce champ aura toujours la valeur « Mobile »
+			8 => 'Phone 2 - Value', 			// Tél. mobile
+			9 => 'Phone 3 - Type', 				// Ce champ aura toujours la valeur « Work »
+			10 => 'Phone 3 - Value', 			// Téléphone (bureau)
+			11 => 'Phone 4 - Type', 				// Ce champ aura toujours la valeur « Work Fax »
+			12 => 'Phone 4 - Value', 			// Télécopie (bureau)
+			13 => 'Address 1 - Type', 			// Ce champ aura toujours la valeur « Home »
+			14 => 'Address 1 - Formatted', 		// composée à partir de plusieurs champ de l'annuaire
+			15 => 'Address 1 - Street', 			// Rue (domicile)
+			16 => 'Address 1 - City', 			// Ville (domicile)
+			17 => 'Address 1 - Region', 			// Dép/Région (domicile)
+			18 => 'Address 1 - Postal Code', 	// Code postal (domicile)
+			19 => 'Address 1 - Country', 		// Pays (domicile)
+			20 => 'Address 2 - Type', 			// Ce champ aura toujours la valeur « Work »
+			21 => 'Address 2 - Formatted', 		// Adresse (bureau), composée à partir de plusieurs champ de l'annuaire
+			22 => 'Address 2 - Street', 			// Rue (bureau)
+			23 => 'Address 2 - City', 			// Ville (bureau)
+			24 => 'Address 2 - Region', 			// Dép/Région (bureau)
+			25 => 'Address 2 - Postal Code',	 	// Code postal (bureau)
+			26 => 'Address 2 - Country', 		// Pays (bureau)
+			27 => 'Organization 1 - Type', 		// Toujours vide
+			28 => 'Organization 1 - Name', 		// Société
+			29 => 'Organization 1 - Title', 		// Titre
+			30 => 'Organization 1 - Department', // Service
+			31 => 'Custom Field 1 - Type', 		// Ce champ aura toujours la valeur « Resume »
+			32 => 'Custom Field 1 - Value', 		// Resume (champ supplémentaire configuré dans l'annuaire)
+			33 => 'Custom Field 2 - Type', 		// Ce champ aura toujours la valeur « Spoken languages »
+			34 => 'Custom Field 2 - Value', 		// Spoken languages (champ supplémentaire configuré dans l'annuaire)
+			35 => 'Custom Field 3 - Type', 		// Ce champ aura toujours la valeur « UIC identifier »
+			36 => 'Custom Field 3 - Value' 		// UIC identifier (champ supplémentaire configuré dans l'annuaire)
+				
+				
+		);
+	}
+}
+
+
+
+/**
+ * Export CSV file, outlook format
+ *
+ */
+class bab_dbdir_export_outlook_csv extends bab_dbdir_export_csv
+{
+	public function __construct($id_directory, $includedisabled)
+	{
+		parent::__construct($id_directory, $includedisabled);
+	
+		$this->init();
+	}
+	
+	
+	
+	
+	/**
+	 * Output row
+	 */
+	protected function outputRow(Array $row)
+	{
+		
+		$output = array_fill(0, 87, '""');
+		
+		
+		
+		$output[0] = $this->csvencode($row['givenname']);
+		$output[1] = $this->csvencode($row['mn']);
+		$output[2] = $this->csvencode($row['sn']);
+		$output[3] = $this->csvencode($row['title']);
+		$output[14] = $this->csvencode($row['email']);
+		$output[17] = $this->csvencode($row['btel']);
+		$output[18] = $this->csvencode($row['htel']);
+		$output[20] = $this->csvencode($row['mobile']);
+		$output[23] = $this->csvencode($this->getAddress('h', $row));
+		$output[24] =  $this->csvencode($row['hstreetaddress']);
+		$output[28] =  $this->csvencode($row['hcity']);
+		$output[29] =  $this->csvencode($row['hstate']);
+		$output[30] =  $this->csvencode($row['hpostalcode']);
+		$output[31] =  $this->csvencode($row['hcountry']);
+		$output[38] =  $this->csvencode($row['htel']);
+		$output[42] =  $this->csvencode($row['organisationname']);
+		$output[43] =  $this->csvencode($row['title']);
+		$output[44] =  $this->csvencode($row['departmentnumber']);
+		$output[49] =  $this->csvencode($this->getAddress('b', $row));
+		$output[50] =  $this->csvencode($row['bstreetaddress']);
+		$output[54] =  $this->csvencode($row['bcity']);
+		$output[55] =  $this->csvencode($row['bstate']);
+		$output[56] =  $this->csvencode($row['bpostalcode']);
+		$output[57] =  $this->csvencode($row['bcountry']);
+		$output[75] =  $this->csvencode($row['user1']);
+		$output[76] =  $this->csvencode($row['user2']);
+		$output[77] =  $this->csvencode($row['user3']);
+		$output[85] =  $this->csvencode('Normal');
+		$output[87] =  $this->directory['name'];
+		
+		
+		echo implode($this->separator, $output)."\n";
+	}
+	
+	
+	protected function getColumns()
+	{
+		return array(
+				
+				0  => 'First Name',
+				1  => 'Middle Name',
+				2  => 'Last Name',
+				3  => 'Title',
+				4  => 'Suffix', 				// Vide
+				5  => 'Initials', 				// Vide
+				6  => 'Web Page', 				// Vide
+				7  => 'Gender', 				// Vide
+				8  => 'Birthday',				// Vide
+				9  => 'Anniversary',			// Vide
+				10  => 'Location',				// Vide
+				11  => 'Language',				// Vide
+				12  => 'Internet Free Busy',	// Vide
+				13  => 'Notes',					// Vide
+				14  => 'E-mail Address', 
+				15  => 'E-mail 2 Address', 		// Vide
+				16  => 'E-mail 3 Address', 		// Vide
+				17  => 'Primary Phone',
+				18  => 'Home Phone',
+				19  => 'Home Phone 2',			// Vide
+				20  => 'Mobile Phone',
+				21  => 'Pager',					// Vide
+				22  => 'Home Fax',				// Vide
+				23  => 'Home Address',
+				24  => 'Home Street',
+				25  => 'Home Street 2',			// Vide
+				26  => 'Home Street 3',			// Vide
+				27  => 'Home Address PO Box',	// Vide
+				28  => 'Home City',			
+				29  => 'Home State',
+				30  => 'Home Postal Code',	
+				31  => 'Home Country',
+				32  => 'Spouse',				// Vide
+				33  => 'Children',				// Vide
+				34  => 'Manager\'s Name', 		// Vide
+				35  => 'Assistant\'s Name',		// Vide
+				36  => 'Referred By',			// Vide
+				37  => 'Company Main Phone',	// Vide
+				38  => 'Business Phone',	
+				39  => 'Business Phone 2',		// Vide
+				40  => 'Business Fax',		
+				41  => 'Assistant\'s Phone',	// Vide
+				42  => 'Company',
+				43  => 'Job Title',
+				44  => 'Department',
+				45  => 'Office Location',		// Vide
+				46  => 'Organizational ID Number', // Vide
+				47  => 'Profession',			// Vide
+				48  => 'Account',				// Vide
+				49  => 'Business Address',		
+				50  => 'Business Street',
+				51  => 'Business Street 2', 	// Vide
+				52  => 'Business Street 3',		// Vide
+				53  => 'Business Address PO Box',	// Vide
+				54  => 'Business City',
+				55  => 'Business State',
+				56  => 'Business Postal Code',
+				57  => 'Business Country',
+				58  => 'Other Phone',			// Vide
+				59  => 'Other Fax',				// Vide
+				60  => 'Other Address',			// Vide
+				61  => 'Other Street',			// Vide
+				62  => 'Other Street 2',	 	// Vide
+				63  => 'Other Street 3',		// Vide
+				64  => 'Other Address PO Box',	// Vide
+				65  => 'Other City',			// Vide
+				66  => 'Other State',			// Vide
+				67  => 'Other Postal Code',		// Vide
+				68  => 'Other Country',			// Vide
+				69  => 'Callback',				// Vide
+				70  => 'Car Phone',				// Vide
+				71  => 'ISDN',					// Vide
+				72  => 'Radio Phone',			// Vide
+				73  => 'TTY/TDD Phone',			// Vide
+				74  => 'Telex',					// Vide
+				75  => 'User 1',
+				76  => 'User 2', 
+				77  => 'User 3',
+				78  => 'User 4',				// Vide
+				79  => 'Keywords',				// Vide
+				80  => 'Mileage',				// Vide
+				81  => 'Hobby',					// Vide
+				82  => 'Billing Information',	// Vide
+				83  => 'Directory Server',		// Vide
+				84  => 'Sensitivity',			// Vide
+				85  => 'Priority',				// Ce champ aura toujours la valeur "Normal"
+				86  => 'Private', 				// Vide
+				87  => 'Categories'				
+		);
+	}
+}
+
 
 
 
