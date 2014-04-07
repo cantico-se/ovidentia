@@ -23,6 +23,7 @@
 ************************************************************************/
 require_once 'base.php';
 require_once dirname(__FILE__).'/dirincl.php';
+require_once dirname(__FILE__).'/dateTime.php';
 
 /**
  * Export directory as text (csv, vcard)
@@ -67,6 +68,15 @@ abstract class bab_dbdir_export
 	 * @var array
 	 */
 	protected $custom = array();
+	
+	
+	/**
+	 * Ressource used to fetch all row to export
+	 * @var ressource
+	 */
+	protected $res;
+	
+	
 	
 	/**
 	 *
@@ -120,7 +130,7 @@ abstract class bab_dbdir_export
 	 * create ressource and columns
 	 * @param	array	$listfd		optional column filter
 	 */
-	protected function init($listfd = null)
+	protected function init($listfd = null, $photo = false, $revision = false)
 	{
 		global $babDB;
 	
@@ -207,6 +217,19 @@ abstract class bab_dbdir_export
 			require_once dirname(__FILE__).'/userinfosincl.php';
 			$req .= ' AND '.bab_userInfos::queryAllowedUsers('ua', false, $this->includedisabled);
 		}
+		
+		
+		if ($photo)
+		{
+			$select[] = 'photo_data';
+			$select[] = 'photo_type';
+		}
+		
+		if ($revision)
+		{
+			$select[] = 'date_modification';
+			$select[] = 'id_modifiedby';
+		}
 	
 	
 		$req = "select ".implode(',', $select)." from ".$req;
@@ -274,11 +297,7 @@ abstract class bab_dbdir_export_csv extends bab_dbdir_export
 	 */
 	protected $separator = ',';
 	
-	/**
-	 * Ressource used to fetch all row to export
-	 * @var ressource
-	 */
-	protected $res;
+
 	
 	public function __construct($id_directory, $includedisabled)
 	{
@@ -672,6 +691,154 @@ class bab_dbdir_export_outlook_csv extends bab_dbdir_export_csv
 		);
 	}
 }
+
+
+
+
+
+
+
+class bab_dbdir_export_vcard extends bab_dbdir_export
+{
+	
+	public function __construct($id_directory, $includedisabled)
+	{
+		parent::__construct($id_directory, $includedisabled);
+	
+		$this->contenttype = 'text/vcard';
+		$this->filename = bab_removeDiacritics($this->directory['name']).'.vcf';
+		
+		$this->init(null, true, true);
+	}
+	
+	
+	/**
+	 * echo text to export
+	 */
+	protected function outputText()
+	{
+		global $babDB;
+		
+		while ($row = $babDB->db_fetch_assoc($this->res))
+		{
+			$this->outputRow($row);
+		}
+	}
+	
+	
+	private function getPhotoType($mimetype)
+	{
+		switch($mimetype)
+		{
+			case 'image/png': return 'PNG';
+			case 'image/jpeg': return 'JPG';
+			case 'image/gif': return 'GIF';
+		}
+		
+		return false;
+	}
+
+	
+	/**
+	 * Output row
+	 */
+	protected function outputRow(Array $row)
+	{
+		
+		extract($row);
+		
+		if (!$sn)
+		{
+			return;
+		}
+		
+		
+		$T = @bab_functionality::get('Thumbnailer');
+		$vcard_image_type = $this->getPhotoType($photo_type);
+		$b64 = '';
+		
+		if ($T && $photo_data && $vcard_image_type)
+		{
+			/*@var $T Func_Thumbnailer */
+			$T->setSourceBinary($photo_data, $date_modification);
+			$imagePath = $T->getThumbnailPath(48, 48);
+			$b64 = base64_encode(file_get_contents($imagePath->tostring()));
+		}
+		
+		$rev = BAB_DateTime::fromIsoDateTime($date_modification);
+		$date_modification = $rev->getICal(true);
+		
+		$vcard = "BEGIN:VCARD
+VERSION:2.1
+N:$sn;$givenname
+FN:$givenname $sn
+KIND:Individual
+";
+		
+		if ($organisationname)
+		{
+			$vcard .= "ORG:$organisationname\n";
+		}
+		
+		if ($title)
+		{
+			$vcard .= "TITLE:$title\n";
+		}
+
+		if ($b64 && $vcard_image_type)
+		{
+			$vcard .= "PHOTO;$vcard_image_type;ENCODING=BASE64:$b64\n";
+		}
+		
+		if ($email)
+		{
+			$vcard .= "EMAIL:$email\n";
+		}
+
+		if ($mobile)
+		{
+			$vcard .= "TEL;CELL:$mobile\n";
+		}
+
+		if ($btel)
+		{
+			$vcard .= "TEL;WORK;VOICE:$btel\n";
+		}
+		
+		if ($bfax)
+		{
+			$vcard .= "TEL;WORK;FAX:$bfax\n";
+		}
+		
+		if ($bstreetaddress || $bcity)
+		{
+			$vcard .= "ADR;WORK:;;$bstreetaddress;$bcity;$bstate;$bpostalcode;$bcountry\n";
+		}
+
+		if ($htel)
+		{
+			$vcard .= "TEL;HOME;VOICE:$htel\n";
+		}
+
+
+		if ($hstreetaddress || $hcity)
+		{
+			$vcard .= "ADR;HOME:;;$hstreetaddress;$hcity;$hstate;$hpostalcode;$hcountry\n";
+		}
+
+		if ($date_modification)
+		{
+			$vcard .= "REV:$date_modification\n";
+		}
+		$vcard .= "END:VCARD\n";
+
+		echo bab_convertStringFromDatabase($vcard, 'UTF-8');
+	}
+}
+
+
+
+
 
 
 

@@ -3190,6 +3190,7 @@ function exportDbDirectory($id, $output_format, $wsepar, $separ, $listfd)
 			break;
 			
 		case 'vcard':
+			$export = new bab_dbdir_export_vcard($id, $bdisabled);
 			break;
 	}
 	
