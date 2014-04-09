@@ -774,6 +774,7 @@ class bab_AclGroups
 function bab_deleteDelegation($id_delegation, $deleteObjects)
 {
 	global $babDB;
+	require_once dirname(__FILE__).'/eventdelegation.php';
 	
 	if (empty($id_delegation))
 	{
@@ -903,7 +904,11 @@ function bab_deleteDelegation($id_delegation, $deleteObjects)
 	$babDB->db_query("delete from ".BAB_DG_ACL_GROUPS_TBL." where id_object='".$idsafe."'");
 	
 	
-	return true;
+	$event = new bab_eventDelegationDeleted();
+	$event->id_delegation = $id_delegation;
+	bab_fireEvent($event);
+	
+	return $event->returnStatus;
 }
 
 
