@@ -338,7 +338,36 @@ function bab_isUserOutOfDelegation($id_delegation, $id_user = null)
 
 
 
+/**
+ * Get all delegations
+ * 
+ * @param bool $dgall
+ * @param bool $dg0
+ *
+ * @since	8.1.90
+ *
+ * @return 	array
+ */
+function bab_getDelegations($dgall = false, $dg0 = false) {
 
+	global $babDB;
+
+	if (NULL === $id_user) {
+		$id_user = $GLOBALS['BAB_SESS_USERID'];
+	}
+
+
+	$res = $babDB->db_query('
+			SELECT
+			d.*
+
+			FROM
+			'.BAB_DG_GROUPS_TBL.' d
+				ORDER BY d.name
+			');
+
+	return bab_getDelegationsFromResource($res, $dgall, $dg0);
+}
 
 
 /**
