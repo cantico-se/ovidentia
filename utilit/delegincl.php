@@ -352,11 +352,6 @@ function bab_getDelegations($dgall = false, $dg0 = false) {
 
 	global $babDB;
 
-	if (NULL === $id_user) {
-		$id_user = $GLOBALS['BAB_SESS_USERID'];
-	}
-
-
 	$res = $babDB->db_query('
 			SELECT
 			d.*
