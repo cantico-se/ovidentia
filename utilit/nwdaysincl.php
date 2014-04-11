@@ -63,11 +63,19 @@ function bab_getNonWorkingDayTypes($with_date = false)
  */
 function bab_setNonWorkingDays($year)
 {
+	require_once dirname(__FILE__).'/settings.class.php';
+	
 	$return = array();
 	$db = & $GLOBALS['babDB'];
 	$t_type = bab_getNonWorkingDayTypes();
 	$DAY = 86400;
-	$id_site = & $GLOBALS['babBody']->babsite['id'];
+	
+	$settings = bab_getInstance('bab_Settings');
+	/*@var $settings bab_Settings */
+	
+	$site = $settings->getSiteSettings();
+	
+	$id_site = $site['id'];
 
 	$res = $db->db_query("SELECT nw_day,nw_type,nw_text FROM ".BAB_SITES_NONWORKING_CONFIG_TBL." WHERE id_site='".$id_site."'");
 
@@ -184,6 +192,9 @@ function bab_getNonWorkingDaysBetween($from, $to)
 	$db = & $GLOBALS['babDB'];
 	$id_site = $site['id'];
 	$result = array();
+	
+	
+	
 
 	for($year = $y_from; $year<= $y_to; $year++)
 		{
@@ -273,6 +284,7 @@ function bab_NWD_onCreatePeriods(bab_eventBeforePeriodsCreated $obj) {
 			$nwd_categories = $idcat[0]['name'];
 		}
 	}
+
 	
 	foreach($arr as $nw_day => $nw_type) {
 		$beginDate	= BAB_DateTime::fromIsoDateTime($nw_day.' 00:00:00');
