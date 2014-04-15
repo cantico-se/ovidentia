@@ -413,8 +413,8 @@ function bab_getUserAdministratorDelegations($id_user = NULL) {
 /**
  * Get administrators of a specified delegation
  * 
- * @param	int	$id_user
- * @since	7.8.93
+ * @param	int	$deleg_id
+ * @since	7.8.93		Fixed only in 8.1.90
  *
  * @return 	array
  */
@@ -435,11 +435,14 @@ function bab_getAdministratorsDelegation($deleg_id) {
 	
 	$users = array();
 	while ($arr = $babDB->db_fetch_assoc($res)) {
+		$id_user = (int) $arr['id_user'];
 		$user = bab_getUserInfos($arr['id_user']);
-		if($user && isset($user['id'])){
-			$users[]['id'] = $user['id'];
-			$users[]['name'] = bab_composeUserName($user['firstname'],$user['lastname']);
-			$users[]['email'] = $user['email'];
+		if($user){
+			$users[] = array(
+				'id' => $id_user,
+				'name' => bab_composeUserName($user['givenname'],$user['sn']),
+				'email' => $user['email']
+			);
 		}
 	}
 	
