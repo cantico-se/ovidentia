@@ -654,6 +654,27 @@ abstract class bab_ICalendarObject
 		return $return;
 	}
 	
+	/**
+	 * Get the list of associated calendars on one backend
+	 * @param Func_CalendarBackend $backend
+	 * @return array[bab_EventCalendar]
+	 */
+	public function getbackendCalendars(Func_CalendarBackend $backend)
+	{
+		$r = array();
+		foreach($this->getCalendars() as $calendar)
+		{
+			/*@var $calendar bab_EventCalendar */
+			$b = $calendar->getBackend();
+			
+			if ($b instanceof $backend)
+			{
+				$r[] = $calendar;
+			}
+		}
+		
+		return $r;
+	}
 	
 	
 	/**
@@ -704,6 +725,64 @@ abstract class bab_ICalendarObject
 		}
 		
 		return null;
+	}
+	
+	
+	/**
+	 * Parse iCalendar property
+	 * @param string $property
+	 * @return array
+	 */
+	public function parseProperty($property)
+	{
+		
+		$o = new bab_ICalendarProperty;
+	
+	
+		if (preg_match('/^([^:^;]+)/', $property, $m))
+		{
+			$o->name = $m[1];
+		}
+		
+		
+		$property = substr($property, strlen($o->name));
+		
+	
+		if (preg_match('/^;(.+)$/', $property, $m))
+		{
+			
+			$o->parameters = preg_split('/\s*;\s*/', $m[1]);
+			$str = '';
+	
+			foreach($o->parameters as $key => $p)
+			{
+				if (preg_match('/^([^=]+)=(?:([^"][^:]+)|(?:"([^"]+)"))/', $p, $m))
+				{
+					$pname = $m[1];
+					if (isset($m[3]))
+					{
+						$pvalue = $m[3];
+					} else {
+						$pvalue = $m[2];
+					}
+	
+					
+					$str .= substr($p, 0,  strlen($m[0])).';';
+					$o->value = substr($p, (1 + strlen($m[0])));
+					
+	
+					$o->parameters[$key] = array('name' => $pname, 'value' => $pvalue);
+				}
+			}
+			
+			$o->parameters_str = substr($str,0, -1);
+	
+		} else {
+	
+			$o->value = substr($property, 1);
+		}
+	
+		return $o;
 	}
 }
 
@@ -837,5 +916,53 @@ class bab_CalAttendeeBackend
 		}
 	
 		return true;
+	}
+}
+
+
+
+
+
+class bab_ICalendarProperty 
+{
+	/**
+	 * 
+	 * @var string
+	 */
+	public $name;
+	
+	/**
+	 * 
+	 * @var string
+	 */
+	public $value;
+	
+	
+	/**
+	 * 
+	 * @var string
+	 */
+	public $parameters_str;
+	
+	/**
+	 * 
+	 * @var array
+	 */
+	public $parameters = array();	
+	
+	
+	/**
+	 * Get first parameter of the setProperty method : name + parameters
+	 * @return string
+	 */
+	public function getPropertyId()
+	{
+		if (empty($this->parameters_str))
+		{
+			return $this->name;
+		}
+		
+		
+		return $this->name.';'.$this->parameters_str;
 	}
 }

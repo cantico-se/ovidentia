@@ -752,6 +752,140 @@ class bab_CalendarPeriod extends bab_ICalendarObject {
 
 		return $backend->savePeriod($this, 'CANCEL');
 	}
+	
+	
+	
+	
+	
+	
+	/**
+	 * If there are copies of the same event in differents backend, update the copies according to the parent calendar event
+	 * T7904
+	 *
+	 *
+	 */
+	public function updateCopies()
+	{
+		$collection = $this->getCollection();
+		if (!isset($collection))
+		{
+			return;
+		}
+	
+		$mainCalendar = $collection->getCalendar();
+		if (!isset($mainCalendar))
+		{
+			return;
+		}
+	
+	
+		$id_user = $mainCalendar->getIdUser();
+		if (!isset($id_user))
+		{
+			// work only on personal calendar
+			return;
+		}
+	
+	
+		$mainBackend = $mainCalendar->getBackend();
+	
+		require_once dirname(__FILE__).'/functionalityincl.php';
+	
+		$f = new bab_functionalities();
+		$arr = $f->getChildren('CalendarBackend');
+	
+		foreach($arr as $backendname)
+		{
+			$path = 'CalendarBackend/'.$backendname;
+	
+			if ($mainBackend->getPath() === $path)
+			{
+				// never modify the main backend
+				continue;
+			}
+	
+			$backend = bab_functionality::get($path);
+	
+			if (!$backend->StorageBackend())
+			{
+				continue;
+			}
+	
+			$copy = $backend->getPeriod($collection, $this->getProperty('UID'));
+	
+			if (!isset($copy))
+			{
+				continue;
+			}
+	
+			if ($this->isEqualTo($copy))
+			{
+				continue;
+			}
+	
+			$newPeriod = $backend->CalendarPeriod($this->ts_begin, $this->ts_end);
+			$newPeriod->setCollection($collection);
+	
+	
+			foreach($this->getProperties() as $p)
+			{
+				$property = $this->parseProperty($p);
+				$newPeriod->setProperty($property->getPropertyId(), $property->value);
+			}
+	
+			bab_debug(sprintf('A copy of event %s has been updated in backend %s', $this->getProperty('UID'), $backend->getPath()));
+			$backend->savePeriod($newPeriod);
+		}
+	}
+	
+	
+	/**
+	 * Get properties without empty value
+	 * and without LAST-MODIFIED and SEQUENCE
+	 */
+	private function getTrimedProperties()
+	{
+		$r = array();
+		foreach($this->getProperties() as $ps)
+		{
+			$property = $this->parseProperty($ps);
+			if ('' === trim($property->value) || $property->name === 'SEQUENCE' || $property->name === 'LAST-MODIFIED')
+			{
+				continue;
+			}
+	
+			if ($property->name === 'X-CTO-ORGANIZER-PARTSTAT')
+			{
+				continue;
+			}
+	
+			$r[] = $ps;
+		}
+	
+		return $r;
+	}
+	
+	
+	/**
+	 * Test if two periods have the sames properties, empty properties ignored
+	 * @param bab_CalendarPeriod $period
+	 *
+	 * @return bool
+	 */
+	public function isEqualTo(bab_CalendarPeriod $period)
+	{
+		$a1 = $this->getTrimedProperties();
+		$a2 = $period->getTrimedProperties();
+	
+	
+		sort($a1);
+		sort($a2);
+	
+		//bab_debug($a1);
+		//bab_debug($a2);
+	
+		return ($a1 == $a2);
+	}
 }
 
 
