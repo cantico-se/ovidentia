@@ -672,6 +672,28 @@ abstract class bab_ICalendarObject
 		return $return;
 	}
 	
+	/**
+	 * Get the list of associated calendars on one backend
+	 * @param Func_CalendarBackend $backend
+	 * @return array[bab_EventCalendar]
+	 */
+	public function getbackendCalendars(Func_CalendarBackend $backend)
+	{
+		$r = array();
+		foreach($this->getCalendars() as $calendar)
+		{
+			/*@var $calendar bab_EventCalendar */
+			$b = $calendar->getBackend();
+			
+			if ($b instanceof $backend)
+			{
+				$r[] = $calendar;
+			}
+		}
+		
+		return $r;
+	}
+	
 	
 	
 	/**
@@ -747,7 +769,9 @@ abstract class bab_ICalendarObject
 	
 		if (preg_match('/^;(.+)$/', $property, $m))
 		{
+			
 			$o->parameters = preg_split('/\s*;\s*/', $m[1]);
+			$str = '';
 	
 			foreach($o->parameters as $key => $p)
 			{
@@ -761,11 +785,16 @@ abstract class bab_ICalendarObject
 						$pvalue = $m[2];
 					}
 	
+					
+					$str .= substr($p, 0,  strlen($m[0])).';';
 					$o->value = substr($p, (1 + strlen($m[0])));
+					
 	
 					$o->parameters[$key] = array('name' => $pname, 'value' => $pvalue);
 				}
 			}
+			
+			$o->parameters_str = substr($str,0, -1);
 	
 		} else {
 	
@@ -935,9 +964,32 @@ class bab_ICalendarProperty
 	 */
 	public $value;
 	
+	
+	/**
+	 * 
+	 * @var string
+	 */
+	public $parameters_str;
+	
 	/**
 	 * 
 	 * @var array
 	 */
 	public $parameters = array();	
+	
+	
+	/**
+	 * Get first parameter of the setProperty method : name + parameters
+	 * @return string
+	 */
+	public function getPropertyId()
+	{
+		if (empty($this->parameters_str))
+		{
+			return $this->name;
+		}
+		
+		
+		return $this->name.';'.$this->parameters_str;
+	}
 }
