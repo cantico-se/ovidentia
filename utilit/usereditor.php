@@ -470,14 +470,22 @@ class Func_UserEditor extends bab_functionality {
 	
 	
 	
-	protected function getPhotoFrame()
+	protected function getFormDirectoryFields()
 	{
 		if ($this->register)
 		{
-			$fields = $this->getRegistrationFields();
+			return $this->getRegistrationFields();
 		} else {
-			$fields = $this->getDirectoryFields();
+			return $this->getDirectoryFields();
 		}
+	}
+	
+	
+	
+	
+	protected function getPhotoFrame()
+	{
+		$fields = $this->getFormDirectoryFields();
 	
 		if (!isset($fields['jpegphoto']) || !isset($fields['jpegphoto']['modifiable']) || false === $fields['jpegphoto']['modifiable'])
 		{
@@ -693,11 +701,7 @@ class Func_UserEditor extends bab_functionality {
 		
 		if (null === $fields)
 		{
-			if($this->register){
-				$fields = $this->getRegistrationFields();
-			} else {
-				$fields = $this->getDirectoryFields();
-			}
+			$fields = $this->getFormDirectoryFields();
 		}
 
 		
@@ -996,6 +1000,60 @@ class Func_UserEditor extends bab_functionality {
 	}
 	
 	
+	/**
+	 * 
+	 * @param array $profile
+	 * @return Widget_Displayable_Interface
+	 */
+	protected function getProfileWidget(Array $profile)
+	{
+		global $babDB;
+		$W = bab_Widgets();
+		
+		$res = $babDB->db_query("
+			SELECT
+				gt.id,
+				gt.name 
+			FROM
+				".BAB_PROFILES_GROUPSSET_TBL." pgt
+				LEFT JOIN ".BAB_GROUPS_TBL." gt on pgt.id_group=gt.id
+			WHERE
+				pgt.id_object =".$babDB->quote($profile['id'])
+		);
+		
+		
+		if ($profile['multiplicity'] == 'Y')
+		{
+			$container = $W->Frame();
+			$output = $W->Frame(null, $W->VBoxLayout())->addItem($W->Label($profile['name'])->colon())->addItem($container);
+		} else {
+			$container = $W->Select();
+			$output = $this->labeledField($container, $profile['name']);
+			
+			if ($profile['required'] == 'Y')
+			{
+				$container->setMandatory();
+			} else {
+				$container->addOption('', '');
+			}
+		}
+		
+		$container->setName(array('profile', $profile['id']));
+		
+		while($arr = $babDB->db_fetch_assoc($res))
+		{
+			if ($profile['multiplicity'] == 'Y')
+			{
+				$container->addItem($this->labeledField($W->CheckBox()->setName($arr['id']), $arr['name']));
+			} else {
+				$container->addOption($arr['id'], $arr['name']);
+			}
+		}
+		
+		return $output;
+	}
+	
+	
 	
 	/**
 	 * A frame with optional field displayed only on registration form
@@ -1003,8 +1061,16 @@ class Func_UserEditor extends bab_functionality {
 	 */
 	protected function getRegistrationFrame()
 	{
+		global $babDB;
 		$W = bab_Widgets();
-		$frame = $W->Frame();
+		$frame = $W->Frame(null, $W->VBoxLayout()->setVerticalSpacing(1,'em'));
+		
+		// profils
+		$respf = $babDB->db_query("select * from ".BAB_PROFILES_TBL." where inscription='Y'");
+		while ($pf = $babDB->db_fetch_assoc($respf))
+		{
+			$frame->addItem($this->getProfileWidget($pf));
+		}
 		
 		
 		if($this->condition){
@@ -1162,9 +1228,9 @@ class Func_UserEditor extends bab_functionality {
 		
 		// verify directory mandatory fields
 		
-		if ((null === $id_user && ($this->canAddDirectoryEntry() || $this->register)) || $this->canEditDirectoryEntry($id_user))
+		if ((null === $id_user && $this->canAddDirectoryEntry()) || $this->canEditDirectoryEntry($id_user))
 		{
-			$fields = $this->getDirectoryFields();
+			$fields = $this->getFormDirectoryFields();
 			foreach($fields as $fieldname => $f) {
 				if (!$this->register && (isset($f['modifiable']) && isset($f['required']) && true === $f['modifiable'] && true === $f['required']))
 				{
@@ -1327,7 +1393,10 @@ class Func_UserEditor extends bab_functionality {
 		}
 		
 		
-		
+		if (isset($user['profile']) && count($user['profile']) > 0)
+		{
+			$this->saveProfiles($id_user, $user['profile']);
+		}
 		
 		
 		if(!$this->register){
@@ -1346,7 +1415,7 @@ class Func_UserEditor extends bab_functionality {
 				notifyUserPassword($user['password'], bab_getUserEmail($id_user), bab_getUserNickname($id_user));
 			}
 			
-		}else{
+		} else {
 			
 			$registration_exception = null;
 			$site = $this->getSiteSettings();
@@ -1403,6 +1472,70 @@ class Func_UserEditor extends bab_functionality {
 	}
 	
 	
+	
+	
+	/**
+	 * Save the user profiles
+	 * @param int $id_user
+	 * @param array $profiles		posted array
+	 */
+	protected function saveProfiles($id_user, $profiles)
+	{
+		global $babDB;
+		
+		$query = 'SELECT * from bab_profiles WHERE id IN('.$babDB->quote(array_keys($profiles)).')';
+		
+		if ($this->register)
+		{
+			$query .= " AND inscription='Y'";
+		}
+		
+		$res = $babDB->db_query($query);
+		while($profile = $babDB->db_fetch_assoc($res))
+		{
+			$values = $profiles[$profile['id']];
+			
+			$this->saveProfile($id_user, $profile, $values);
+		}
+	}
+	
+	
+	/**
+	 * Save a profile values for one user
+	 * 
+	 * @throws Exception
+	 * 
+	 * @param	int		$id_user
+	 * @param	array	$profile
+	 * @param	mixed	$values			one group id for a select or multiple group id in checkbox values
+	 */
+	protected function saveProfile($id_user, Array $profile, $values)
+	{
+		$id_groups = array();
+		if ('Y' == $profile['multiplicity'])
+		{
+			foreach($values as $idg => $checked)
+			{
+				if ($checked && $idg)
+				{
+					$id_groups[] = $idg;
+				}
+			}	
+		} elseif ($values) {
+			$id_groups[] = $values;
+		}
+		
+		
+		if ('Y' == $profile['required'] && empty($id_groups))
+		{
+			throw new Exception(sprintf(bab_translate('At least one option must be selected on profile %s'), $profile['name']));
+		}
+		
+		foreach($id_groups as $id_group)
+		{
+			bab_addUserToGroup($id_user, $id_group);
+		}
+	}
 	
 	
 	

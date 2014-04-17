@@ -3459,4 +3459,5 @@ L'administrateur</string>
 <string id="Failed to change password, LDAP search failed">La modification du mot de passe a échouée, la recherche dans l'annuaire LDAP n'a pas de résultats</string>
 
 <string id="Registration is complete">Inscription terminée</string>
+<string id="At least one option must be selected on profile %s">Au moins une option doit être sélectionnée sur le profile %s</string>
 </fr>
