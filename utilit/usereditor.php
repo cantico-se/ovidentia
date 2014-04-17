@@ -45,7 +45,7 @@ class Func_UserEditor extends bab_functionality {
 
 
 	/**
-	 * If the form is used in register mod
+	 * If the form is used for public user registration
 	 * @var bool
 	 */
 	protected $register = false;
@@ -69,6 +69,12 @@ class Func_UserEditor extends bab_functionality {
 	 * @var array
 	 */
 	private $fields = null;
+	
+	/**
+	 * @see Func_UserEditor::getRegistrationFields()
+	 * @var array
+	 */
+	private $registration_fields = null;
 	
 	
 	/**
@@ -241,7 +247,6 @@ class Func_UserEditor extends bab_functionality {
 	 */
 	protected function canAddDirectoryEntry()
 	{
-		global $babBody;
 		
 		if (!$this->access_control && !isset($this->id_directory))
 		{
@@ -280,8 +285,6 @@ class Func_UserEditor extends bab_functionality {
 	 */
 	protected function canEditDirectoryEntry($id_user)
 	{
-		global $babBody;
-		
 		if (null === $id_user)
 		{
 			return false;
@@ -369,7 +372,51 @@ class Func_UserEditor extends bab_functionality {
 	}
 	
 	
+	/**
+	 * @return Widget_Displayable_Interface
+	 */
+	protected function getNicknameWidget($id_user)
+	{
+		$W = bab_Widgets();
+		return $this->labeledField($W->LineEdit()->setMaxSize(255)->setMandatory()->setName('nickname'), bab_translate('Login ID'));
+	}
 	
+	/**
+	 * @return Widget_Displayable_Interface
+	 */
+	protected function getPasswordWidget($id_user)
+	{
+		$W = bab_Widgets();
+		$frame = $W->Frame(null, $W->VBoxLayout());
+		
+		$password1 = $this->labeledField($W->LineEdit()->obfuscate()->setMandatory()->setName('password1')->setAutoComplete(false), bab_translate('Password'));
+		$password2 = $this->labeledField($W->LineEdit()->obfuscate()->setMandatory()->setName('password2')->setAutoComplete(false), bab_translate('Retype Password'));
+		$sendpwd = $this->boolField($W->CheckBox()->setName('sendpwd'), bab_translate('Send an e-mail to the user with its new password'));
+		
+		if (null !== $id_user)
+		{
+			$frame->addItem($this->boolField($W->CheckBox()
+					->setAssociatedDisplayable($password1, array(1))
+					->setAssociatedDisplayable($password2, array(1))
+					->setAssociatedDisplayable($sendpwd, array(1))
+					->setName('setpwd'), bab_translate('Change password')));
+		}
+		
+		$frame->addItem($password1);
+		$frame->addItem($password2);
+		
+		if(!$this->register){
+			if (null === $id_user)
+			{
+				$frame->addItem($this->boolField($W->CheckBox()->setName('notifyuser'), bab_translate('Notify user')));
+				$frame->addItem($this->boolField($W->CheckBox()->setName('sendpwd'), bab_translate('Send password with email')));
+			} else {
+				$frame->addItem($sendpwd);
+			}
+		}
+		
+		return $frame;
+	}
 	
 	
 	
@@ -387,38 +434,18 @@ class Func_UserEditor extends bab_functionality {
 		
 		if (null === $id_user || $this->canEditNickname($id_user))
 		{
-			$frame->addItem($this->labeledField($W->LineEdit()->setMaxSize(255)->setMandatory()->setName('nickname'), bab_translate('Login ID')));
+			if ($nickname = $this->getNicknameWidget($id_user))
+			{
+				$frame->addItem($nickname);
+			}
 		}
 		
 		if (null === $id_user || $this->canEditPassword($id_user))
 		{
-		
-			$password1 = $this->labeledField($W->LineEdit()->obfuscate()->setMandatory()->setName('password1')->setAutoComplete(false), bab_translate('Password'));
-			$password2 = $this->labeledField($W->LineEdit()->obfuscate()->setMandatory()->setName('password2')->setAutoComplete(false), bab_translate('Retype Password'));
-			$sendpwd = $this->boolField($W->CheckBox()->setName('sendpwd'), bab_translate('Send an e-mail to the user with its new password'));
-			
-			if (null !== $id_user)
+			if ($password = $this->getPasswordWidget($id_user))
 			{
-				$frame->addItem($this->boolField($W->CheckBox()
-						->setAssociatedDisplayable($password1, array(1))
-						->setAssociatedDisplayable($password2, array(1))
-						->setAssociatedDisplayable($sendpwd, array(1))
-						->setName('setpwd'), bab_translate('Change password')));
+				$frame->addItem($password);
 			}
-			
-			$frame->addItem($password1);
-			$frame->addItem($password2);
-			
-			if(!$this->register){
-				if (null === $id_user)
-				{
-					$frame->addItem($this->boolField($W->CheckBox()->setName('notifyuser'), bab_translate('Notify user')));
-					$frame->addItem($this->boolField($W->CheckBox()->setName('sendpwd'), bab_translate('Send password with email')));
-				} else {
-					$frame->addItem($sendpwd);
-				}
-			}
-			
 		}
 		
 		return $frame;
@@ -426,8 +453,9 @@ class Func_UserEditor extends bab_functionality {
 	
 	
 	/**
-	 * 
-	 * @return Ambigous <multitype:, boolean, multitype:multitype:number bab_QueryIterator  , bab_dirEntryPhoto, unknown, multitype:number bab_QueryIterator >
+	 * Get directory fields
+	 * output must be in the same format as getDirEntry function
+	 * @return Array
 	 */
 	protected function getDirectoryFields()
 	{
@@ -444,7 +472,12 @@ class Func_UserEditor extends bab_functionality {
 	
 	protected function getPhotoFrame()
 	{
-		$fields = $this->getDirectoryFields();
+		if ($this->register)
+		{
+			$fields = $this->getRegistrationFields();
+		} else {
+			$fields = $this->getDirectoryFields();
+		}
 	
 		if (!isset($fields['jpegphoto']) || !isset($fields['jpegphoto']['modifiable']) || false === $fields['jpegphoto']['modifiable'])
 		{
@@ -467,8 +500,12 @@ class Func_UserEditor extends bab_functionality {
 		return $this->imagePicker;
 	}
 	
-	
-	protected function getDirectoryFieldFrame($fieldname, $f, $overideMandatory = null)
+	/**
+	 * 
+	 * @param string	 	$fieldname
+	 * @param array 		$f	
+	 */
+	protected function getDirectoryFieldFrame($fieldname, $f)
 	{
 		$W = bab_Widgets();
 		if (!$this->register && (!isset($f['modifiable']) || true !== $f['modifiable']))
@@ -559,13 +596,89 @@ class Func_UserEditor extends bab_functionality {
 			$widget->setValue($f['default_value_text']);
 		}
 		
-		if ( ($overideMandatory === null && isset($f['required']) && $f['required']) || ($overideMandatory === true))
+		if ( isset($f['required']) && $f['required'])
 		{
 			$widget->setMandatory();
 		}
 		
 		return $this->labeledField($widget->setName($fieldname), $f['name']);
 	}
+	
+	
+	/**
+	 * Get fields for registration
+	 * output must be in the same format as getDirEntry function
+	 * @return array
+	 */
+	private function getRegistrationFields()
+	{
+		if (!isset($this->registration_fields))
+		{
+		
+			global $babDB;
+			$site = $this->getSiteSettings();
+			$this->registration_fields = array();
+			
+			$res = $babDB->db_query("
+				SELECT  
+					sfrt.*, 
+					sfxt.id as idfx, 
+					sfxt.default_value as default_value, 
+					sfxt.multilignes, 	# Y or N
+					sfxt.multi_values 	# Y or N
+					
+				FROM 
+					".BAB_SITES_FIELDS_REGISTRATION_TBL." sfrt 
+						left join ".BAB_DBDIR_FIELDSEXTRA_TBL." sfxt on sfxt.id_field=sfrt.id_field 
+					
+				WHERE sfrt.id_site='".$babDB->db_escape_string($site['id'])."' and sfrt.registration='Y' and sfxt.id_directory='0'
+			");
+			
+			
+			while($arr = $babDB->db_fetch_array($res)){
+				if( $arr['id_field'] < BAB_DBDIR_MAX_COMMON_FIELDS )
+				{
+					$rr = $babDB->db_fetch_array($babDB->db_query("select description, name from ".BAB_DBDIR_FIELDS_TBL." where id='".$babDB->db_escape_string($arr['id_field'])."'"));
+					$fieldName = $rr['name'];
+					$fieldLabel = translateDirectoryField($rr['description']);
+				}
+				else
+				{
+					$rr = $babDB->db_fetch_array($babDB->db_query("select name from ".BAB_DBDIR_FIELDS_DIRECTORY_TBL." where id='".$babDB->db_escape_string(($arr['id_field'] - BAB_DBDIR_MAX_COMMON_FIELDS))."'"));
+					$fieldName = "babdirf".$arr['idfx'];
+					$fieldLabel = translateDirectoryField($rr['name']);
+				}
+				
+				
+				$f = array(
+						
+					'name' => $fieldLabel,
+					'value' => '',
+					'modifiable' => true,
+					'required' => ($arr['required'] == 'Y'),
+					'multilignes' => ($arr['multilignes'] == 'Y')
+				);
+				
+				
+				if ('Y' === $arr['multi_values'])
+				{
+					$options = new bab_QueryIterator;
+					$options->setQuery('SELECT * FROM bab_dbdir_fieldsvalues WHERE id_fieldextra='.$babDB->quote($arr['idfx']).' ORDER BY field_value ASC');
+				
+					$f['multi_values'] = array(
+							'default_value' => (int) $arr['default_value'],
+							'options' => $options
+					);
+				}
+				
+				
+				$this->registration_fields[$fieldName] = $f;
+			}
+		}
+		
+		return $this->registration_fields;
+	}
+	
 
 	
 	/**
@@ -580,46 +693,23 @@ class Func_UserEditor extends bab_functionality {
 		
 		if (null === $fields)
 		{
-			$fields = $this->getDirectoryFields();
-		}
-
-		$arrFieldToDisplay = array();
-		if($this->register){//REGISTER
-			global $babDB, $babBody;
-			$res = $babDB->db_query("select sfrt.*, sfxt.id as idfx, sfxt.default_value as default_value from ".BAB_SITES_FIELDS_REGISTRATION_TBL." sfrt left join ".BAB_DBDIR_FIELDSEXTRA_TBL." sfxt on sfxt.id_field=sfrt.id_field WHERE sfrt.id_site='".$babDB->db_escape_string($babBody->babsite['id'])."' and sfrt.registration='Y' and sfxt.id_directory='0'");
-			while($arr = $babDB->db_fetch_array($res)){
-				if( $arr['id_field'] < BAB_DBDIR_MAX_COMMON_FIELDS )
-				{
-					$rr = $babDB->db_fetch_array($babDB->db_query("select description, name from ".BAB_DBDIR_FIELDS_TBL." where id='".$babDB->db_escape_string($arr['id_field'])."'"));
-					$fieldName = $rr['name'];
-				}
-				else
-				{
-					$fieldName = "babdirf".$arr['idfx'];
-				}
-			
-				if($arr['required'] == 'Y'){
-					$arrFieldToDisplay[$fieldName] = true;
-				}else{
-					$arrFieldToDisplay[$fieldName] = false;
-				}
+			if($this->register){
+				$fields = $this->getRegistrationFields();
+			} else {
+				$fields = $this->getDirectoryFields();
 			}
 		}
+
 		
 		foreach($fields as $fieldname => $f)
 		{
+			$field = $this->getDirectoryFieldFrame($fieldname, $f);
 			
-			if(!$this->register || isset($arrFieldToDisplay[$fieldname])){
-				if(isset($arrFieldToDisplay[$fieldname])){//REGISTER
-					$field = $this->getDirectoryFieldFrame($fieldname, $f, $arrFieldToDisplay[$fieldname]);
-				}else{
-					$field = $this->getDirectoryFieldFrame($fieldname, $f);
-				}
-				if(!$field){
-					continue;
-				}
-				$frame->addItem($field);
+			if(!$field){
+				continue;
 			}
+			
+			$frame->addItem($field);
 		}
 		
 		// create associations beetween fields if possible
@@ -694,7 +784,6 @@ class Func_UserEditor extends bab_functionality {
 	 */
 	protected function canCreateUser()
 	{
-		global $babBody;
 		
 		if (!$this->access_control)
 		{
@@ -729,7 +818,6 @@ class Func_UserEditor extends bab_functionality {
 	 */
 	protected function canEditUser($id_user)
 	{
-		global $babBody;
 		
 		if (!$this->access_control)
 		{
@@ -761,6 +849,17 @@ class Func_UserEditor extends bab_functionality {
 		return false;
 	}
 	
+	/**
+	 * @return array
+	 */
+	private function getSiteSettings()
+	{
+		require_once dirname(__FILE__).'/settings.class.php';
+		$settings = bab_getInstance('bab_Settings');
+		/*@var $settings bab_Settings */
+		return $settings->getSiteSettings();
+	}
+	
 	
 	/**
 	 * Test if the password of user can be modified
@@ -778,10 +877,9 @@ class Func_UserEditor extends bab_functionality {
 			return true;
 		}
 		
-		global $babBody;
-		/*@var $babBody babBody */
+		$site = $this->getSiteSettings();
 
-		if ('Y' === $babBody->babsite['change_password'] && $id_user === bab_getUserId())
+		if ('Y' === $site['change_password'] && $id_user === bab_getUserId())
 		{
 			return true;
 		}
@@ -807,10 +905,9 @@ class Func_UserEditor extends bab_functionality {
 			return true;
 		}
 	
-		global $babBody;
-		/*@var $babBody babBody */
+		$site = $this->getSiteSettings();
 	
-		if ('Y' === $babBody->babsite['change_nickname'] && $id_user === bab_getUserId())
+		if ('Y' === $site['change_nickname'] && $id_user === bab_getUserId())
 		{
 			return true;
 		}
@@ -819,16 +916,17 @@ class Func_UserEditor extends bab_functionality {
 	}
 	
 	/**
-	 * can not unregister
+	 * Activate registration options on user form
+	 * 
 	 */
-	public function setRegister($condition = false)
+	public function setRegister()
 	{
-		global $babBody;
-		if($babBody->babsite['registration'] == 'Y'){
+		$site = $this->getSiteSettings();
+		if($site['registration'] == 'Y'){
 			$this->setDirectory(1);
 			$this->register = true;
 			$this->access_control = false;
-			$this->condition = $condition;
+			$this->condition = ($site['display_disclaimer']=='Y');
 		}
 		return $this;
 	}
@@ -857,7 +955,7 @@ class Func_UserEditor extends bab_functionality {
 		/*@var $Icons Func_Icons */
 		$Icons->includeCss();
 		
-		$form = $W->Form();
+		$form = $W->Form(null, $W->VBoxLayout()->setVerticalSpacing(1,'em'));
 		$form->colon();
 		$form->setName('user');
 		$form->addClass('bab-user-editor');
@@ -881,55 +979,7 @@ class Func_UserEditor extends bab_functionality {
 		}
 		
 		if($this->register){
-
-			if($this->condition){
-				$form->addItem(
-					$W->VBoxItems(
-						$W->HBoxItems(
-							$tmp = $W->CheckBox()->setMandatory(true, bab_translate('You have to accept the agreement'))->setCheckedValue('1')->setName('checkCondition'),
-							$W->Label(bab_translate("I have read and accept the agreement").' ('),
-							$W->Link(bab_translate("Read"), "javascript: Start('?tg=login&cmd=showdp', 'OviRegisterDP', 'width=600,height=1000,status=no,resizable=yes,top=10,left=200,scrollbars=yes');"),
-							$W->Label(')')->setAssociatedWidget($tmp)
-						)->setHorizontalSpacing(5),
-						$W->Label('')
-					)->setVerticalSpacing(10,'px')
-				);
-			}
-			
-			
-			global $babDB, $babBody;
-			list($email_confirm) = $babDB->db_fetch_array($babDB->db_query("select email_confirm FROM ".BAB_SITES_TBL." where id='".$babDB->db_escape_string($babBody->babsite['id'])."'"));
-			
-			if ($email_confirm == 'Y')
-			{
-				$form->addItem($W->label(bab_translate("Please provide a valid email.")));
-				$form->addItem($W->label(bab_translate("We will send you an email for confirmation before you can use our services")));
-			}
-			else
-			{
-				if($babBody->babsite['email_confirm'] == 2)
-				{
-				}
-				else
-				{
-					$form->addItem($W->VBoxItems($W->label(bab_translate("Your account will be activated only after validation")), $W->label(''))->addClass('bab-user-editor-center')->setVerticalSpacing(25,'px'),0);
-				}
-			}
-			
-				$captcha = bab_functionality::get('Captcha');
-				if($captcha){
-					$captchaLayout = $W->HBoxItems(
-						$W->Html($captcha->getGetSecurityHtmlData()),
-						$W->HBoxItems(
-							$tmp = $W->Label(bab_translate('Enter the letters in the image above')),
-							$W->LineEdit()->setAssociatedLabel($tmp)
-								->setSize(15)
-								->setMandatory(true, bab_translate('You must fill the security code'))
-								->setName('captcha')
-						)
-					)->setHorizontalSpacing(1,'em');
-					$form->addItem($captchaLayout);
-				}
+			$form->addItem($this->getRegistrationFrame());
 		}
 		
 
@@ -943,6 +993,65 @@ class Func_UserEditor extends bab_functionality {
 		
 		
 		return $form;
+	}
+	
+	
+	
+	/**
+	 * A frame with optional field displayed only on registration form
+	 * @return Widget_Frame
+	 */
+	protected function getRegistrationFrame()
+	{
+		$W = bab_Widgets();
+		$frame = $W->Frame();
+		
+		
+		if($this->condition){
+			$frame->addItem(
+				$W->VBoxItems(
+					$W->HBoxItems(
+						$tmp = $W->CheckBox()->setMandatory(true, bab_translate('You have to accept the agreement'))->setCheckedValue('1')->setName('checkCondition'),
+						$W->Label(bab_translate("I have read and accept the agreement").' ('),
+						$W->Link(bab_translate("Read"), "javascript: Start('?tg=login&cmd=showdp', 'OviRegisterDP', 'width=600,height=1000,status=no,resizable=yes,top=10,left=200,scrollbars=yes');"),
+						$W->Label(')')->setAssociatedWidget($tmp)
+					)->setHorizontalSpacing(5),
+					$W->Label('')
+				)->setVerticalSpacing(10,'px')
+			);
+		}
+		
+		$site = $this->getSiteSettings();
+		
+		if ($site['email_confirm'] == 'Y')
+		{
+			$frame->addItem($W->label(bab_translate("Please provide a valid email.")));
+			$frame->addItem($W->label(bab_translate("We will send you an email for confirmation before you can use our services")));
+		}
+		else
+		{
+			if($site['email_confirm'] != 2)
+			{
+				$frame->addItem($W->VBoxItems($W->label(bab_translate("Your account will be activated only after validation")), $W->label(''))->addClass('bab-user-editor-center')->setVerticalSpacing(25,'px'),0);
+			}
+		}
+		
+		$captcha = bab_functionality::get('Captcha');
+		if($captcha){
+			$captchaLayout = $W->HBoxItems(
+					$W->Html($captcha->getGetSecurityHtmlData()),
+					$W->HBoxItems(
+							$tmp = $W->Label(bab_translate('Enter the letters in the image above')),
+							$W->LineEdit()->setAssociatedLabel($tmp)
+							->setSize(15)
+							->setMandatory(true, bab_translate('You must fill the security code'))
+							->setName('captcha')
+					)
+			)->setHorizontalSpacing(1,'em');
+			$frame->addItem($captchaLayout);
+		}
+		
+		return $frame;
 	}
 	
 	
@@ -1018,7 +1127,10 @@ class Func_UserEditor extends bab_functionality {
 	public function save(Array $user)
 	{
 		global $babBody;
-		if(!$GLOBALS['BAB_SESS_LOGGED'] && $babBody->babsite['registration'] == 'Y'){
+		
+		$site = $this->getSiteSettings();
+		
+		if(!$GLOBALS['BAB_SESS_LOGGED'] && $site['registration'] == 'Y'){
 			$this->register = true;
 		}
 		
@@ -1033,7 +1145,6 @@ class Func_UserEditor extends bab_functionality {
 			}
 		}
 		
-		global $babBody;
 		$id_user = isset($user['id']) ? ((int) $user['id']) : null;
 		$id_user_original = $id_user;
 		$send_pwd = isset($user['sendpwd']) ? $user['sendpwd'] : null;
@@ -1069,16 +1180,21 @@ class Func_UserEditor extends bab_functionality {
 		
 		if (!isset($id_user))
 		{
+			// User creation
+			
 			if (mb_strlen($user['password1']) < 6)
 			{
 				throw new Exception(bab_translate('Password must have at least 6 characters'));
 			}
 			
-			if($this->register){
-				global $babBody;
+			
+			$isconfirmed = 0;
+			
+			if($this->register)
+			{
 				
-				require_once $GLOBALS['babInstallPath'].'admin/register.php';
-				switch( $babBody->babsite['email_confirm'] )
+				$site = $this->getSiteSettings();
+				switch( $site['email_confirm'] )
 				{
 					case 1: // Don't validate adresse email
 						$isconfirmed = 0;
@@ -1088,39 +1204,21 @@ class Func_UserEditor extends bab_functionality {
 						break;
 					default: //Confirm account by validationg address email
 						$isconfirmed = 0;
-						break;
+					break;
 				}
-				$id_user = bab_registerUser($user['sn'], $user['givenname'], '', $user['email'], $user['nickname'], $user['password1'], $user['password2'], $isconfirmed, $error);
+			}	
 			
-				if( $id_user === false )
-				{
-					throw new Exception($error);
-				}
+
+			require_once $GLOBALS['babInstallPath'].'admin/register.php';
 			
-				$babBody->msgerror = bab_translate("Thank You For Registering at our site") ."<br />";
-				$fullname = bab_composeUserName($user['sn'] , $user['givenname']);
-				if( $babBody->babsite['email_confirm'] == 2){
-					$warning = "( ". bab_translate("Account user is already confirmed")." )";
-				}elseif( $babBody->babsite['email_confirm'] == 1 ){
-					$warning = "( ". bab_translate("To let user log on your site, you must confirm his registration")." )";
-				}else{
-					$hash=md5($user['nickname'].bab_getHashVar());
-					$babBody->msgerror .= bab_translate("You will receive an email which let you confirm your registration.");
-					$link = $GLOBALS['babUrlScript']."?tg=login&cmd=confirm&hash=$hash&name=". urlencode($user['nickname']);
-					$warning = "";
-					if (!notifyUserRegistration($link, $fullname, $user['email']))
-					{
-						$babBody->msgerror = bab_translate("ERROR: Email message can't be sent !!");
-						$warning = "( ". bab_translate("The user has not received his confirmation email")." )";
-					}
-				}
-				notifyAdminRegistration($fullname, $user['email'], $warning);
-			}else{
-				if (false === $id_user = bab_registerUser($user['sn'], $user['givenname'], '', $user['email'], $user['nickname'], $user['password1'], $user['password2'], 1, $error))
-				{
-					throw new Exception($error);
-				}
+			
+			if (false === $id_user = bab_registerUser($user['sn'], $user['givenname'], '', $user['email'], $user['nickname'], $user['password1'], $user['password2'], $isconfirmed, $error))
+			{
+				throw new Exception($error);
 			}
+				
+
+			
 			
 			// if in group directory, attach user to group
 			
@@ -1141,11 +1239,14 @@ class Func_UserEditor extends bab_functionality {
 			{
 				bab_attachUserToGroup($id_user, $currentDGGroup['id_group']);
 			}
+			
 		}
 		
 		
 		if (isset($user['setpwd']) && $user['setpwd'])
 		{
+			// password modification
+			
 			if (mb_strlen($user['password1']) < 6)
 			{
 				throw new Exception(bab_translate('Password must have at least 6 characters'));
@@ -1168,7 +1269,7 @@ class Func_UserEditor extends bab_functionality {
 		}
 		
 		
-		if ((!isset($user['id']) && ($this->canAddDirectoryEntry() || $this->register)) || $this->canEditDirectoryEntry($id_user))
+		if ((!isset($user['id']) && $this->canAddDirectoryEntry()) || $this->canEditDirectoryEntry($id_user))
 		{
 			
 			if (isset($fields['jpegphoto']['modifiable']) && true === $fields['jpegphoto']['modifiable'])
@@ -1244,33 +1345,58 @@ class Func_UserEditor extends bab_functionality {
 				require_once $GLOBALS['babInstallPath'].'admin/register.php';	
 				notifyUserPassword($user['password'], bab_getUserEmail($id_user), bab_getUserNickname($id_user));
 			}
+			
 		}else{
-			if(2 == $babBody->babsite['email_confirm'])
-			{
+			
+			$registration_exception = null;
+			$site = $this->getSiteSettings();
+			
+			$message = bab_translate("Thank You For Registering at our site");
+			$fullname = bab_composeUserName($user['sn'] , $user['givenname']);
+			
+			if( $site['email_confirm'] == 2){
+				
 				// Confirm account without address email validation
-				$iLifeTime	= 0;
-			
 				$AuthOvidentia = bab_functionality::get('PortalAuthentication/AuthOvidentia');
-			
+				/*@var $AuthOvidentia Func_PortalAuthentication_AuthOvidentia */
 				$iIdUser = $AuthOvidentia->authenticateUserByLoginPassword($user['nickname'], $user['password1']);
 				if(!is_null($iIdUser) && $AuthOvidentia->userCanLogin($iIdUser))
 				{
-					bab_setUserSessionInfo($iIdUser);
-					bab_logUserConnectionToStat($iIdUser);
-					bab_updateUserConnectionDate($iIdUser);
-					bab_createReversableUserPassword($iIdUser, $user['password1']);
-					bab_addUserCookie($iIdUser, $user['nickname'], 0);
-					header("Location: ?tg=login&cmd=signon&");
-					die;
+					$AuthOvidentia->setUserSession($iIdUser, 0);
 				}
-				else
+				
+				$warning = "( ". bab_translate("Account user is already confirmed")." )";
+				
+				
+			}elseif( $site['email_confirm'] == 1 ){
+				
+				
+				$warning = "( ". bab_translate("To let user log on your site, you must confirm his registration")." )";
+				
+				
+			}else{
+				
+				$hash=md5($user['nickname'].bab_getHashVar());
+				$message .= ', '.bab_translate("You will receive an email which let you confirm your registration.");
+				$link = $GLOBALS['babUrlScript']."?tg=login&cmd=confirm&hash=$hash&name=". urlencode($user['nickname']);
+				$warning = "";
+				if (!notifyUserRegistration($link, $fullname, $user['email']))
 				{
-					Header("Location: ". $GLOBALS['babUrlScript']);
-					die;
+					$warning = "( ". bab_translate("The user has not received his confirmation email")." )";
+					$registration_exception = new Exception(bab_translate("ERROR: Email message can't be sent !!"));
 				}
 			}
-			header("Location: ?tg=login&cmd=displayMessage");
-			die;
+			
+			
+			notifyAdminRegistration($fullname, $user['email'], $warning);
+			
+			if (isset($registration_exception))
+			{
+				throw $registration_exception;
+			}
+			
+			/*@var $babBody babBody */
+			$babBody->addNextPageMessage($message);
 		}
 		
 		return $id_user;
@@ -1278,11 +1404,12 @@ class Func_UserEditor extends bab_functionality {
 	
 	
 	
+	
+	
 	/**
 	 * Get editor as a babPage widget
 	 * @param 	int			$id_user
 	 * @param	bab_url		$backurl
-	 * @param	bool		$register
 	 * 
 	 * @return Widget_BabPage
 	 */

@@ -3457,4 +3457,6 @@ L'administrateur</string>
 <string id="Failed to change password in LDAP because the admin DN or admin password are missing">La modification du mot de passe dans LDAP a échouée car le DN de l'administrateur ou le mot de passe de l'administrateur sont manquants</string>
 <string id="Failed to change password, LDAP bind failed">La modification du mot de passe a échouée, impossible de se connecter à l'annuaire LDAP</string>
 <string id="Failed to change password, LDAP search failed">La modification du mot de passe a échouée, la recherche dans l'annuaire LDAP n'a pas de résultats</string>
+
+<string id="Registration is complete">Inscription terminée</string>
 </fr>
