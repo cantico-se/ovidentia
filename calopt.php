@@ -851,11 +851,20 @@ function bab_changeCalendarBackendConfirm($calendar_backend, $copy_source, $dele
  * @param	string			$start_copy_from
  * @return unknown_type
  */
-function bab_changeCalendarBackendFrame($calendar_backend, $copy_source, $delete_destination, $start_copy_from)
+function bab_changeCalendarBackendFrame($calendar_backend, $copy_source, $delete_destination, $start_copy_from, $old_calendar = null)
 {
 	require_once dirname(__FILE__).'/utilit/install.class.php';
+	require_once dirname(__FILE__).'/utilit/dateTime.php';
 	
-	$changeCalendar = new bab_changeCalendarBackend($calendar_backend, $copy_source, $delete_destination, $start_copy_from);
+	if ('' !== $start_copy_from)
+	{
+		$start_copy_from = BAB_DateTime::fromIsoDateTime($this->start_copy_from.' 00:00:00');
+	} else {
+		$start_copy_from = null;
+	}
+
+	
+	$changeCalendar = new bab_changeCalendarBackend($calendar_backend, $copy_source, $delete_destination, $start_copy_from, $old_calendar);
 	
 	$old_backend = bab_functionality::get('CalendarBackend/'.bab_getICalendars()->calendar_backend);
 	$new_backend = bab_functionality::get('CalendarBackend/'.$calendar_backend);
@@ -878,14 +887,32 @@ class bab_changeCalendarBackend
 	private $calendar_backend;
 	private $copy_source;
 	private $delete_destination;
+	
+	/**
+	 * 
+	 * @var BAB_DateTime
+	 */
 	private $start_copy_from;
 	
-	public function __construct($calendar_backend, $copy_source, $delete_destination, $start_copy_from)
+	
+	private $old_calendar;
+	
+	
+	/**
+	 * @param	string 			$calendar_backend		New calendar backend name
+	 * @param	int				$$copy_source			Checkbox
+	 * @param	int				$delete_destination		Checkbox
+	 * @param	BAB_DateTime	$start_copy_from
+	 * @param	string			$old_calendar			Old calendar url identifier
+	 */
+	public function __construct($calendar_backend, $copy_source, $delete_destination, BAB_DateTime $start_copy_from = null, $old_calendar = null)
 	{
 		$this->calendar_backend = $calendar_backend;
 		$this->copy_source = $copy_source;
 		$this->delete_destination = $delete_destination;
 		$this->start_copy_from = $start_copy_from;
+		
+		$this->old_calendar = $old_calendar;
 	}
 	
 	/**
@@ -901,15 +928,27 @@ class bab_changeCalendarBackend
 		$copy_source 		= $this->copy_source;
 		$delete_destination = $this->delete_destination;
 		
-		
-		// my personal calendar on old backend
-		
-		$old_calendar = bab_getICalendars()->getPersonalCalendar();
-		
-		if (!($old_calendar instanceof bab_PersonalCalendar))
+		if (isset($this->old_calendar))
 		{
-			bab_installWindow::message(bab_translate('Personal calendar not available on old backend'));
-			return false;
+			
+			// import any other accessible calendar into a personal calendar
+			// old_calendar should be on the same backend as the current personnal calendar
+			
+			$old_calendar = bab_getICalendars()->getEventCalendar($this->old_calendar);
+			
+		} else {
+		
+		
+			// my personal calendar on old backend
+			
+			$old_calendar = bab_getICalendars()->getPersonalCalendar();
+			
+			if (!($old_calendar instanceof bab_PersonalCalendar))
+			{
+				bab_installWindow::message(bab_translate('Personal calendar not available on old backend'));
+				return false;
+			}
+			
 		}
 		
 		if (bab_getICalendars()->calendar_backend === $calendar_backend)
@@ -1019,11 +1058,9 @@ class bab_changeCalendarBackend
 			$criteria = $factory->Calendar($old_calendar);
 			$criteria = $criteria->_AND_($factory->Collection(array('bab_CalendarEventCollection', 'bab_VacationPeriodCollection', 'bab_InboxEventCollection'))); 
 			
-			if ('' !== $this->start_copy_from)
+			if (isset($this->start_copy_from))
 			{
-				require_once dirname(__FILE__).'/utilit/dateTime.php';
-				$begin = BAB_DateTime::fromIsoDateTime($this->start_copy_from.' 00:00:00');
-				$criteria = $criteria->_AND_($factory->Begin($begin));
+				$criteria = $criteria->_AND_($factory->Begin($this->start_copy_from));
 			}
 			
 			$events = $old_backend->selectPeriods($criteria);
@@ -1166,7 +1203,7 @@ $personalCalendar = bab_getICalendars()->getPersonalCalendar();
 switch($idx)
 	{
 	case 'changeCalendarBackendFrame':
-		bab_changeCalendarBackendFrame(bab_rp('calendar_backend'), (int) bab_rp('copy_source'), (int) bab_rp('delete_destination'), bab_rp('start_copy_from'));
+		bab_changeCalendarBackendFrame(bab_rp('calendar_backend'), (int) bab_rp('copy_source'), (int) bab_rp('delete_destination'), bab_rp('start_copy_from'), bab_rp('old_calendar'));
 		break;
 
 	case "pop_calendarchoice":
