@@ -1114,8 +1114,6 @@ class bab_OviPersonalCalendar extends bab_OviEventCalendar implements bab_Person
 	 */
 	public function onAddAttendee(bab_CalendarPeriod $event)
 	{
-		bab_debug($this->getName().' '.__FUNCTION__);
-
 		$collection = $event->getCollection();
 		$calendar = $collection->getCalendar();
 

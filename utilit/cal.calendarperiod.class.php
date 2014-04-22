@@ -266,10 +266,15 @@ class bab_CalendarPeriod extends bab_ICalendarObject {
 
 		foreach($this->attendeesEvents as $urlidentifier => $method)
 		{
-			if (isset($calendar) && $urlidentifier === $calendar->getUrlIdentifier())
-			{
-				continue;
-			}
+			
+			// T7915, $calendar n'est pas l'agenda principal
+			// dans le cas ou l'evenement est cree par un caldav sur un non caldav et si l'agenda non caldav n'est pas "affiche"
+			// 
+			// if (isset($calendar) && $urlidentifier === $calendar->getUrlIdentifier())
+			// {
+			// 		bab_debug('continue; main calendar '.$urlidentifier);
+			//		continue;
+			// }
 
 			if (isset($this->attendees[$urlidentifier]))
 			{
