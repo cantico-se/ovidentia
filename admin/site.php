@@ -1009,6 +1009,7 @@ function siteAuthentification($id)
 				$this->auth_multi_session = $arr['auth_multi_session'];
 				$this->remember_login = $arr['remember_login'];
 				$this->email_password = $arr['email_password']; 
+				$this->ask_nickname = $arr['ask_nickname'];
 				
 				$this->decodetypetxt = bab_translate("Server charset");
 
@@ -1032,6 +1033,7 @@ function siteAuthentification($id)
 				$this->remember_login_title = bab_translate("Automatic connection");
 				$this->login_only = bab_translate("Login ID only");
 				$this->email_password_title = bab_translate("Display option 'Lost Password'");
+				$this->ask_nickname_title = bab_translate("Ask for the nickname to send a new password by email");
 				$this->yes = bab_translate('Yes');
 				$this->no = bab_translate('No');
 				$this->groups = bab_translate('User groups');

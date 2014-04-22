@@ -3460,4 +3460,5 @@ L'administrateur</string>
 
 <string id="Registration is complete">Inscription terminée</string>
 <string id="At least one option must be selected on profile %s">Au moins une option doit être sélectionnée sur le profile %s</string>
+<string id="Ask for the nickname to send a new password by email">Demander l'identifiant pour envoyer un nouveau mot de passe par email</string>
 </fr>

@@ -38,13 +38,23 @@ function emailPassword()
 		{
 		var $nickname;
 		var $send;
+		
+		public $ask_nickname;
 
 		function temp()
 			{
+				
+			include_once dirname(__FILE__).'/utilit/settings.class.php';
+				
 			$this->intro = bab_translate("Before we can reset your password, you need to enter the information below to help identify your account:");
 			$this->nickname = bab_translate("Your login ID");
 			$this->email = bab_translate("Your email");
 			$this->send = bab_translate("Send");
+			
+			$settings = bab_getInstance('bab_Settings');
+			/*@var $settings bab_Settings */
+			$site = $settings->getSiteSettings();
+			$this->ask_nickname = (bool) $site['ask_nickname'];
 			}
 		}
 

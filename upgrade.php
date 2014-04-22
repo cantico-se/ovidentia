@@ -7102,6 +7102,10 @@ function ovidentia_upgrade($version_base,$version_ini) {
 		$babDB->db_query("ALTER TABLE `bab_dbdir_configexport` ADD `output_format` varchar(255) NOT NULL default ''");
 	}
 	
+	if (!bab_isTableField('bab_sites', 'ask_nickname')) {
+		$babDB->db_query("ALTER TABLE `bab_sites` ADD `ask_nickname` tinyint(1) unsigned NOT NULL default '1' COMMENT 'ask for nickname is the email password functionality'");
+	}
+	
 	
 	return true;
 

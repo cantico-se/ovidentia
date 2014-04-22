@@ -1207,6 +1207,22 @@ function hideShowCnx()
 			</select>
 		</td>
 	</tr>
+	
+	<tr>
+		<td align="right">{ ask_nickname_title }</td>
+           <td> 
+			<select name="ask_nickname">
+			<!--#if ask_nickname -->
+			<option value="1" selected="selected">{ yes }</option>
+			<option value="0">{ no }</option>
+			<!--#else ask_nickname -->
+			<option value="1">{ yes }</option>
+			<option value="0" selected="selected">{ no }</option>
+			<!--#endif ask_nickname -->
+			</select>
+		</td>
+	</tr>
+	
 	<tr> 
 		<td align="right">{ authentificationtxt }</td>
 		<td>

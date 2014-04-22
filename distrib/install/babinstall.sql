@@ -1085,6 +1085,7 @@ CREATE TABLE `bab_sites` (
   `quota_total` int(11) unsigned NOT NULL default '0',
   `quota_folder` int(11) unsigned NOT NULL default '0',
   `staticurl` varchar(255) NOT NULL default '',
+  `ask_nickname` tinyint(1) unsigned NOT NULL default '1' COMMENT 'ask for nickname is the email password functionality',
   PRIMARY KEY  (`id`),
   KEY `name` (`name`)
 );
