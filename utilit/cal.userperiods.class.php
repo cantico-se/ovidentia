@@ -799,7 +799,7 @@ class bab_UserPeriods implements Countable, seekableIterator {
 					if ($duplicates_index[$d_key] >= $event->getProperty('DTSTAMP'))
 					{
 						// a duplicate allready added
-						bab_debug('Ignore duplicate event '.$uid.' on calendar '.$calendar_uid);
+						// bab_debug('Ignore duplicate event '.$uid.' on calendar '.$calendar_uid);
 						continue;
 					}
 				}
