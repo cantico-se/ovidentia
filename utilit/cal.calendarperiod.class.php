@@ -830,6 +830,15 @@ class bab_CalendarPeriod extends bab_ICalendarObject {
 			{
 				continue;
 			}
+			try {
+				if (!$backend->checkCalendar($id_user))
+				{
+					continue;
+				}
+			} catch (Exception $e)
+			{
+				continue;
+			}
 			
 			$copy = $backend->getPeriod($collection, $this->getProperty('UID'));
 			
