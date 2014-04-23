@@ -2299,6 +2299,8 @@ function siteUpdate_authentification($id, $authtype, $host, $hostname, $ldpapchk
 	$auth_multi_session = (int) bab_pp('auth_multi_session', 0);
 	$remember_login = bab_pp('remember_login', 'N');
 	$email_password = bab_pp('email_password', 'N');
+	$ask_nickname = (int) bab_pp('ask_nickname', 0);
+	
 	$ldap_groups = bab_pp('ldap_groups');
 	$ldap_groups_create = bab_pp('ldap_groups_create', '0');
 	$ldap_groups_remove = bab_pp('ldap_groups_remove', '0');
@@ -2369,6 +2371,7 @@ function siteUpdate_authentification($id, $authtype, $host, $hostname, $ldpapchk
 
 		$req = "update ".BAB_SITES_TBL." set 
 			email_password=".$babDB->quote($email_password).", 
+			ask_nickname=".$babDB->quote($email_password).", 
 			remember_login=".$babDB->quote($remember_login).", 
 			auth_multi_session=".$babDB->quote($auth_multi_session).", 
 			authentification='".$babDB->db_escape_string($authtype)."', 
@@ -2427,6 +2430,7 @@ function siteUpdate_authentification($id, $authtype, $host, $hostname, $ldpapchk
 		{
 		$babDB->db_query("update ".BAB_SITES_TBL." set 
 			email_password=".$babDB->quote($email_password).", 
+			ask_nickname=".$babDB->quote($ask_nickname).", 
 			remember_login=".$babDB->quote($remember_login).", 
 			authentification='".$babDB->db_escape_string($authtype)."', 
 			auth_multi_session=".$babDB->quote($auth_multi_session)." 
