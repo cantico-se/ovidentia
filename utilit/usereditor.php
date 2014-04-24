@@ -670,6 +670,7 @@ class Func_UserEditor extends bab_functionality {
 				
 				if ('Y' === $arr['multi_values'])
 				{
+					require_once dirname(__FILE__).'/iterator/iterator.php';
 					$options = new bab_QueryIterator;
 					$options->setQuery('SELECT * FROM bab_dbdir_fieldsvalues WHERE id_fieldextra='.$babDB->quote($arr['idfx']).' ORDER BY field_value ASC');
 				
