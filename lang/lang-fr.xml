@@ -282,7 +282,7 @@
 <string id="Nb downloads">Nombre de téléchargements</string>
 <string id="Current downloads: %s">Nombre de téléchargements actuels : %s</string>
 <string id="ERROR - Login ID is required">ERREUR : l'identifiant est nécessaire</string>
-<string id="ERROR - Login ID and email are required">ERREUR : l'identifiant et l'email sont nécessaires</string>
+<string id="ERROR - email is required">ERREUR : l'email est nécessaire</string>
 <string id="ERROR">ERREUR</string>
 <string id="ERROR: End date must be older">ERREUR : la date de fin doit être postérieure</string>
 <string id="ERROR: Old password incorrect !!">ERREUR : ancien mot de passe incorrect !</string>
@@ -421,6 +421,7 @@
 <string id="Incoming mail server">Serveur de messagerie 'entrant' (Pop/Imap)</string>
 <string id="Incorrect login ID">Identifiant incorrect</string>
 <string id="Incorrect login ID or email">Identifiant ou email incorrect</string>
+<string id="Incorrect email">Email incorrect</string>
 <string id="Incorrect total number of days">Nombre de jours total incorrect</string>
 <string id="Index of questions">Index des questions</string>
 <string id="Information">Information</string>
@@ -3461,4 +3462,5 @@ L'administrateur</string>
 <string id="Registration is complete">Inscription terminée</string>
 <string id="At least one option must be selected on profile %s">Au moins une option doit être sélectionnée sur le profile %s</string>
 <string id="Ask for the nickname to send a new password by email">Demander l'identifiant pour envoyer un nouveau mot de passe par email</string>
+<string id="ERROR - the email password functionality is disabled">Erreur, la fonctionnalité d'envoi du mot de passe par email est désactivée</string>
 </fr>

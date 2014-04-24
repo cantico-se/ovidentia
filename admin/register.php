@@ -39,129 +39,8 @@ include_once $GLOBALS['babInstallPath'].'utilit/mailincl.php';
  */
 function updateUserPasswordById($userId, $newPassword, $newPassword2, $ignoreAccessRights=false, $ignoreSixCharactersMinimum=false, &$error)
 {
-	global $babBody, $babDB, $BAB_HASH_VAR;
-	
-	/* Test rights */
-	if (!$ignoreAccessRights) {
-		$res = bab_canCurrentUserUpdateUser($userId);
-		if (!$res) {
-			$error = bab_translate("You don't have access to update the user");
-			return false;
-		}
-	}
-	
-	/* Delete spaces in passwords */
-	$newPassword = trim($newPassword);
-	$newPassword2 = trim($newPassword2);
-	
-	/* Test if passwords are same */
-	if ($newPassword != $newPassword2) {
-		$error = bab_translate("Passwords not match !!");
-		return false;
-	}
-	
-	$minPasswordLengh = 6;
-	if(ISSET($GLOBALS['babMinPasswordLength']) && is_numeric($GLOBALS['babMinPasswordLength'])){
-		$minPasswordLengh = $GLOBALS['babMinPasswordLength'];
-		if($minPasswordLengh < 1){
-			$minPasswordLengh = 1;
-		}
-	}
-	
-	/* Test if the password have at least $GLOBALS['babMinPasswordLength'] or 6 characters */
-	if (!$ignoreSixCharactersMinimum) {
-		if (mb_strlen($newPassword) < $minPasswordLengh) {
-			$error = sprintf(bab_translate("Password must be at least %s characters !!"),$minPasswordLengh);
-			return false;
-		}
-	}
-
-	/* Verify the authentification mode of the user */
-	$sql = 'SELECT nickname, db_authentification FROM ' . BAB_USERS_TBL . ' WHERE id=' . $babDB->quote($userId);
-	list($nickname, $dbauth) = $babDB->db_fetch_row($babDB->db_query($sql));
-
-	$authentification = $babBody->babsite['authentification'];
-	if ($dbauth == 'Y') {
-		$authentification = ''; // force to default
-	}
-
-	switch ($authentification)
-	{
-		case BAB_AUTHENTIFICATION_AD: // Active Directory
-			$error = bab_translate("Password modification on active directory is not supported");
-			return false;
-			break;
-
-		case BAB_AUTHENTIFICATION_LDAP: // Active Directory
-			if (!empty($babBody->babsite['ldap_encryptiontype'])) {
-				include_once $GLOBALS['babInstallPath']."utilit/ldap.php";
-				$ldap = new babLDAP($babBody->babsite['ldap_host'], "", false);
-				$ret = $ldap->connect();
-				if ($ret === false) {
-					$error = bab_translate("LDAP connection failed");
-					return false;
-				}
-				
-				if (empty($babBody->babsite['ldap_admindn']) || empty($babBody->babsite['ldap_adminpassword']))
-				{
-					$ldap->close();
-					$error = bab_translate("Failed to change password in LDAP because the admin DN or admin password are missing");
-					return  false;
-				}
-
-				$ret = $ldap->bind($babBody->babsite['ldap_admindn'], $babBody->babsite['ldap_adminpassword']);
-				if (!$ret) {
-					$ldap->close();
-					$error = bab_translate("Failed to change password, LDAP bind failed");
-					return  false;
-				}
-
-				if (isset($babBody->babsite['ldap_filter']) && !empty($babBody->babsite['ldap_filter'])) {
-					$filter = str_replace('%UID', ldap_escapefilter($babBody->babsite['ldap_attribute']), $babBody->babsite['ldap_filter']);
-					$filter = str_replace('%NICKNAME', ldap_escapefilter($nickname), $filter);
-				} else {
-					$filter = "(|(".ldap_escapefilter($babBody->babsite['ldap_attribute'])."=".ldap_escapefilter($nickname)."))";
-				}
-
-				$attributes = array("dn", $babBody->babsite['ldap_attribute'], "cn");
-				$entries = $ldap->search($babBody->babsite['ldap_searchdn'], $filter, $attributes);
-
-				if ($entries === false) {
-					$ldap->close();
-					$error = bab_translate("Failed to change password, LDAP search failed");
-					return false;
-				}
-
-				$ldappw = ldap_encrypt($newPassword, $babBody->babsite['ldap_encryptiontype']);
-				$ret = $ldap->modify($entries[0]['dn'], array('userPassword'=>$ldappw));
-				$ldap->close();
-				if (!$ret) {
-					$error = bab_translate("Failed to change password in LDAP");
-					return false;
-				}
-			}
-			break;
-
-		default:
-			break;
-	}
-
-	/* Update the user's password */
-	$sql = 'UPDATE ' . BAB_USERS_TBL . ' SET password=' . $babDB->quote(md5(mb_strtolower($newPassword))) . ' WHERE id=' . $babDB->quote($userId);
-	$babDB->db_query($sql);
-
-	/* Call the functionnality event onUserChangePassword */
-	include_once $GLOBALS['babInstallPath'].'utilit/addonsincl.php';
-	bab_callAddonsFunctionArray('onUserChangePassword',
-		array(
-			'id' => $userId, 
-			'nickname' => $nickname, 
-			'password' => $newPassword, 
-			'error' => &$error
-		)
-	);
-
-	return true;
+	// in addon api
+	return bab_updateUserPasswordById($userId, $newPassword, $newPassword2, $ignoreAccessRights, $ignoreSixCharactersMinimum, $error);
 }
 
 
@@ -529,123 +408,83 @@ function destroyAuthCookie() {
 	setcookie('c_password','');
 }
 
-
+/**
+ * Send an email with a new password
+ * 
+ * @param string $nickname		Can be empty if site option disable nickname
+ * @param string $email
+ */
 function sendPassword($nickname, $email)
 	{
 	global $babBody, $babDB, $BAB_HASH_VAR, $babAdminEmail;
+	require_once $GLOBALS['babInstallPath'].'utilit/settings.class.php';
+	
+	
+	$settings = bab_getInstance('bab_Settings');
+	/*@var $settings bab_Settings */
+	$site = $settings->getSiteSettings();
+	
+	if ($site['email_password'] !== 'Y')
+	{
+		$babBody->msgerror = bab_translate("ERROR - the email password functionality is disabled");
+		return false;
+	}
+	
 
-	if (!empty($nickname))
+	if (empty($nickname) && $site['ask_nickname'])
 		{
-		$req="select id, nickname, email, changepwd from ".BAB_USERS_TBL." where nickname='".$babDB->db_escape_string($nickname)."' AND email=".$babDB->quote($email);
-		$res = $babDB->db_query($req);
-		if (!$res || $babDB->db_num_rows($res) < 1)
-			{
-			$babBody->msgerror = bab_translate("Incorrect login ID or email");
-			return false;
-			}
-		else
-			{
-			$arr = $babDB->db_fetch_array($res);
-			
-			if( $arr['changepwd'] != 1)
-			{
-				$babBody->msgerror = bab_translate("Sorry, You cannot change your password. Please contact administrator");
-				return false;
-			}
-			$new_pass=mb_strtolower(random_password(8));
-
-			switch($babBody->babsite['authentification'])
-				{
-				case BAB_AUTHENTIFICATION_AD: // Active Directory
-					$babBody->msgerror = bab_translate("Cannot reset password !!");
-					return false;
-					break;
-				case BAB_AUTHENTIFICATION_LDAP: // Active Directory
-					if( !empty($babBody->babsite['ldap_encryptiontype']))
-						{
-						include_once $GLOBALS['babInstallPath']."utilit/ldap.php";
-						$ldap = new babLDAP($babBody->babsite['ldap_host'], "", false);
-						$ret = $ldap->connect();
-						if( $ret === false )
-							{
-							$babBody->msgerror = bab_translate("LDAP connection failed");
-							return false;
-							}
-
-						$ret = $ldap->bind($babBody->babsite['ldap_admindn'], $babBody->babsite['ldap_adminpassword']);
-						if( !$ret )
-							{
-							$ldap->close();
-							$babBody->msgerror = bab_translate("LDAP bind failed");
-							return  false;
-							}
-				
-						if( isset($babBody->babsite['ldap_filter']) && !empty($babBody->babsite['ldap_filter']))
-							{
-							$filter = str_replace('%UID', ldap_escapefilter($babBody->babsite['ldap_attribute']), $babBody->babsite['ldap_filter']);
-							$filter = str_replace('%NICKNAME', $nickname, $filter);
-							}
-						else
-							{
-							$filter = "(|(".ldap_escapefilter($babBody->babsite['ldap_attribute'])."=".ldap_escapefilter($nickname)."))";
-							}
-
-						$attributes = array("dn", $babBody->babsite['ldap_attribute'], "cn");
-						$entries = $ldap->search($babBody->babsite['ldap_searchdn'], $filter, $attributes);
-
-						if( $entries === false )
-							{
-							$ldap->close();
-							$babBody->msgerror = bab_translate("LDAP search failed");
-							return false;
-							}
-
-						$ldappw = ldap_encrypt($new_pass, $babBody->babsite['ldap_encryptiontype']);
-						$ret = $ldap->modify($entries[0]['dn'], array('userPassword'=>$ldappw));
-						$ldap->close();
-						if( !$ret)
-							{
-							$babBody->msgerror = bab_translate("Nothing Changed");
-							return false;
-							}
-						}
-					break;
-				default:
-					break;
-				}
-
-
-			//update the database to include the new password
-			$req="update ".BAB_USERS_TBL." set password='". $babDB->db_escape_string(md5($new_pass)) ."' where nickname='".$babDB->db_escape_string($nickname)."'";
-			$res=$babDB->db_query($req);
-
-			//send a simple email with the new password
-			notifyUserPassword($new_pass, $arr['email'], $arr['nickname']);
-			$babBody->addError(bab_translate("Your new password has been emailed to you.") ." <".$arr['email'].">");
-			$error = '';
-			
-			include_once $GLOBALS['babInstallPath'].'utilit/addonsincl.php';
-			bab_callAddonsFunctionArray('onUserChangePassword', 
-				array(
-					'id'		=> $arr['id'], 
-					'nickname'	=> $arr['nickname'], 
-					'password'	=> $new_pass, 
-					'error'		=> &$error
-				)
-			);
-			
-			if( !empty($error))
-				{
-				$babBody->addError($error);
-				return false;
-				}
-			return true;
-			}
-		}
-	else
-		{
-		$babBody->msgerror = bab_translate("ERROR - Login ID and email are required");
+		$babBody->msgerror = bab_translate("ERROR - Login ID is required");
 		return false;
 		}
+		
+	if (empty($email))
+		{
+			$babBody->msgerror = bab_translate("ERROR - email is required");
+			return false;
+		}
+		
+		
+	$req="select id, nickname, email, changepwd from ".BAB_USERS_TBL." where  email=".$babDB->quote($email);
+	
+	if ($site['ask_nickname'])
+	{
+		$req.= ' AND nickname='.$babDB->quote($nickname);
+	}
+	
+	$res = $babDB->db_query($req);
+	if (!$res || $babDB->db_num_rows($res) < 1)
+		{
+			
+			if ($site['ask_nickname'])
+			{
+				$babBody->msgerror = bab_translate("Incorrect login ID or email");
+			} else {
+				$babBody->msgerror = bab_translate("Incorrect email");
+			}
+			
+		
+		return false;
+		}
+	
+	$arr = $babDB->db_fetch_array($res);
+	
+	if( $arr['changepwd'] != 1)
+	{
+		$babBody->msgerror = bab_translate("Sorry, You cannot change your password. Please contact administrator");
+		return false;
+	}
+	$new_pass=mb_strtolower(random_password(8));
+
+	$error = '';
+	if (!bab_updateUserPasswordById($arr['id'], $new_pass, $new_pass, true, true, $error))
+	{
+		$babBody->msgerror = $error;
+		return false;
+	}
+		
+	notifyUserPassword($new_pass, $arr['email'], $arr['nickname']);
+	$babBody->addError(bab_translate("Your new password has been emailed to you.") ." <".$arr['email'].">");
+	return true;
+
 }
 

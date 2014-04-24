@@ -335,8 +335,7 @@ class bab_userModify {
 	
 				if( isset($info['password']) )
 				{
-					include_once $GLOBALS['babInstallPath'].'admin/register.php';
-					if(!updateUserPasswordById($arruinfo['id'], $info['password'], $info['password'], true, true, $error))
+					if(!bab_updateUserPasswordById($arruinfo['id'], $info['password'], $info['password'], true, true, $error))
 					{
 						return false;
 					}

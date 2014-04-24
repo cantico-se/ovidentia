@@ -609,6 +609,8 @@ function updateNickname($userId, $newNickname)
 /**
  * Updates the specified user's password.
  * 
+ * @deprecated use bab_updateUserPasswordById instead
+ * 
  * @param int		$userId		The user id		
  * @param string	$newpwd1	The new password
  * @param string	$newpwd2	The new password (again)
@@ -618,7 +620,7 @@ function updateNickname($userId, $newNickname)
 function updatePassword($userId, $newpwd1, $newpwd2)
 {
 	$error = '';
-	$res = updateUserPasswordById($userId, $newpwd1, $newpwd2, false, false, $error);
+	$res = bab_updateUserPasswordById($userId, $newpwd1, $newpwd2, false, false, $error);
 	
 	if (!$res) {
 		global $babBody;
