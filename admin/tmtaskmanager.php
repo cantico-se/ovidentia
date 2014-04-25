@@ -328,8 +328,8 @@ function displayProjectsSpacesRightsForm()
 			$macl->filter($enableGroup, $enableGroup, $disableGroup, $enableGroup, $disableGroup);
 			$macl->addtable(BAB_TSKMGR_DEFAULT_PROJECTS_VISUALIZERS_GROUPS_TBL, bab_translate("Default project visualizers"));
 			$macl->filter($enableGroup, $enableGroup, $disableGroup, $enableGroup, $disableGroup);
-			$macl->addtable(BAB_TSKMGR_DEFAULT_TASK_RESPONSIBLE_GROUPS_TBL, bab_translate("Default task responsibles"));
-			$macl->filter($enableGroup, $enableGroup, $disableGroup, $enableGroup, $disableGroup);
+			//$macl->addtable(BAB_TSKMGR_DEFAULT_TASK_RESPONSIBLE_GROUPS_TBL, bab_translate("Default task responsibles"));
+			//$macl->filter($enableGroup, $enableGroup, $disableGroup, $enableGroup, $disableGroup);
 		
 			$macl->babecho();
 		}
@@ -487,7 +487,7 @@ function displayPersonnalTaskRight()
 		$oTmCtx =& getTskMgrContext();
 		$iIdProjectSpace = $oTmCtx->getIdProjectSpace();
 		$iIdDelegation = $oTmCtx->getIdDelegation();
-		$macl = new macl('admTskMgr', BAB_TM_IDX_DISPLAY_PROJECTS_SPACES_LIST, $iIdDelegation, BAB_TM_ACTION_SET_RIGHT);
+		$macl = new macl('admTskMgr', BAB_TM_IDX_DISPLAY_PROJECTS_SPACES_LIST, 1, BAB_TM_ACTION_SET_RIGHT);
 	
 		$macl->addtable(BAB_TSKMGR_PERSONNAL_TASK_CREATOR_GROUPS_TBL, bab_translate("Who can create personnals tasks"));
 		$macl->filter($enableGroup, $enableGroup, $disableGroup, $enableGroup, $disableGroup);

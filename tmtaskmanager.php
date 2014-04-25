@@ -419,7 +419,7 @@ function displayProjectsSpacesList()
 			$oTmCtx =& getTskMgrContext();
 			$iIdDelegation = (int) $oTmCtx->getIdDelegation();
 			
-			if(bab_isAccessValid(BAB_TSKMGR_PERSONNAL_TASK_CREATOR_GROUPS_TBL, $iIdDelegation))
+			if(bab_isAccessValid(BAB_TSKMGR_PERSONNAL_TASK_CREATOR_GROUPS_TBL, 1))
 			{
 				$iTaskCount = bab_getTaskCount(0, $GLOBALS['BAB_SESS_USERID']);
 				
@@ -640,8 +640,8 @@ function displayProjectRightsForm()
 			$macl->filter($enableGroup, $enableGroup, $disableGroup, $enableGroup, $disableGroup);
 			$macl->addtable(BAB_TSKMGR_PROJECTS_VISUALIZERS_GROUPS_TBL, bab_translate("Project visualizer"));
 			$macl->filter($enableGroup, $enableGroup, $disableGroup, $enableGroup, $disableGroup);
-			$macl->addtable(BAB_TSKMGR_TASK_RESPONSIBLE_GROUPS_TBL, bab_translate("Task responsible"));
-			$macl->filter($enableGroup, $enableGroup, $disableGroup, $enableGroup, $disableGroup);
+		//	$macl->addtable(BAB_TSKMGR_TASK_RESPONSIBLE_GROUPS_TBL, bab_translate("Task responsible"));
+		//	$macl->filter($enableGroup, $enableGroup, $disableGroup, $enableGroup, $disableGroup);
 		}
 	
 		$macl->babecho();

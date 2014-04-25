@@ -477,11 +477,7 @@
 		{
 			return false;
 		}
-		
-		function getNextTaskResponsible()
-		{
-			return false;
-		}
+
 		
 		function getNextSpecificField()
 		{
@@ -616,6 +612,12 @@
 		var $m_sEditTaskDescriptionUrl = '#';
 		var $m_iUseEditor = 0;
 		
+		/**
+		 * 
+		 * @var array
+		 */
+		private $projects = array();
+		
 		function BAB_TaskForm()
 		{
 			parent::BAB_TaskFormBase();
@@ -678,7 +680,7 @@
 				$this->m_aCfg =& $oTmCtx->getConfiguration();
 			}
 			
-			bab_getTaskResponsibles($this->m_iIdTask, $this->m_aTaskResponsibles);
+			
 
 			bab_getLinkedTasks($this->m_iIdTask, $this->m_aLinkedTasks);
 			$this->m_iLinkedTaskCount = count($this->m_aLinkedTasks);
@@ -707,6 +709,35 @@
 			$this->set_caption('sProjectSpace', bab_translate("Project space"));
 			$this->set_caption('sProject', bab_translate("Project"));
 
+		}
+		
+		/**
+		 * Initialize projects where the task can be saved
+		 * @param int $id_project	current project
+		 */
+		public function initProjects($id_project)
+		{
+			$this->projects = array();
+			
+			if (bab_isAccessValid(BAB_TSKMGR_PERSONNAL_TASK_CREATOR_GROUPS_TBL, 1))
+			{
+				$this->projects[0] = bab_translate('Personnal tasks'); // si l'on peut creer des taches perso
+			}
+			
+			global $babDB;
+			
+			$spaces = bab_selectProjectSpaceList();
+			while($s = $babDB->db_fetch_assoc($spaces))
+			{
+				$projects = bab_selectProjectList($s['id']);
+				while($p = $babDB->db_fetch_assoc($projects))
+				{
+					if (bab_isAccessValid(BAB_TSKMGR_PROJECTS_MANAGERS_GROUPS_TBL, $p['id']))
+					{
+						$this->projects[$p['id']] = $s['name'].' > '.$p['name'];
+					}
+				}
+			}
 		}
 
 		
@@ -815,6 +846,15 @@
 
 		function initResponsible($iIdResponsible)
 		{
+			if (-1 == $iIdResponsible || empty($iIdResponsible))
+			{
+				$iIdResponsible = bab_getUserId();
+			}
+			
+			$W = bab_Widgets();
+			$userPicker = $W->UserPicker('iIdTaskResponsible')->setName('iIdTaskResponsible')->setValue($iIdResponsible);
+			$this->userPicker = $userPicker->display($W->HtmlCanvas());
+			
 			$this->set_data('iIdSlectedTaskResponsible', $iIdResponsible);
 			$this->set_data('sReadOnlyTaskResponsible', 
 				(BAB_TM_PROJECT_MANAGER == $this->m_iUserProfil) ? '' : 'disabled="disabled"');
@@ -1018,6 +1058,7 @@
 				
 			}
 
+			$this->initProjects($this->m_iIdProject);
 			$this->initTaskNumber($sTaskNumber);
 			$this->initTaskClass($iClassType);
 			$this->initCategory($iIdCategory);
@@ -1103,6 +1144,21 @@
 			$oList->set_data('url', $url . '&iIdCommentary=');
 			$this->set_data('sTaskCommentaries', bab_printTemplate($oList, 'tmUser.html', 'taskCommentariesList'));
 		}
+		
+		
+		public function getnextproject()
+		{
+			if (list($id_project, $name) = each($this->projects))
+			{
+				$this->id_project = (int) $id_project;
+				$this->name = bab_toHtml($name);
+				$this->selected = ($this->m_iIdProject == $id_project) ? 'selected="selected"' : '';
+				return true;
+			}
+			
+			return false;
+		}
+		
 
 		//getNext function
 		function getNextCategory()
@@ -1125,21 +1181,6 @@
 			return false;
 		}
 		
-		function getNextTaskResponsible()
-		{
-			$aResponsible = each($this->m_aAvailableTaskResponsible);
-			if(false != $aResponsible)
-			{
-				$this->get_data('iIdSlectedTaskResponsible', $iIdTaskResponsible);
-				$this->set_data('sSlectedTaskResponsible', ($aResponsible['value']['id'] == $iIdTaskResponsible) ? 
-					'selected="selected"' : '');
-				
-				$this->set_data('iIdTaskResponsible', $aResponsible['value']['id']);
-				$this->set_data('sTaskResponsibleName', $aResponsible['value']['name']);
-				return true;
-			}
-			return false;
-		}
 		
 /*
 		function getNextSpecificField()

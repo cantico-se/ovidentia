@@ -745,13 +745,26 @@ document.onmousemove = bab_tooltipPosition;
 	<input type="hidden" name="iUseEditor" value="{ m_iUseEditor }" />
 	<input type="hidden" name="iIdSessUser" value="{ m_iIdSessUser }" />
 	
+	<!--#if m_datas[bIsProjectSpace] -->
 	<div class="BabSiteAdminTitleFontBackground" align="center">
-		<!--#if m_datas[bIsProjectSpace] --><h4>{ m_captions[sProjectSpace] }:&nbsp;{ m_datas[sProjectSpace] }&nbsp;&nbsp;</h4><!--#endif m_datas[bIsProjectSpace] --><h5>{ m_captions[sProject] }:&nbsp;{ m_datas[sProject] }</h5>
+		<h4>{ m_captions[sProjectSpace] }:&nbsp;{ m_datas[sProjectSpace] }&nbsp;&nbsp;</h4>
 	</div>
-	<br />
+	<!--#endif m_datas[bIsProjectSpace] -->
+
 	<div id="oDateFormat">{ m_captions[sDateFormat] }</div>
 	<div class="BabLoginMenuBackground">
-		<table width="95%" border="0" cellspacing="0" cellpadding="2" align="center">
+		<table width="95%" border="0" cellspacing="0" cellpadding="5" align="center">
+			<tr>
+				<td><label for="iIdProject">{ m_captions[sProject] } </label></td>
+				<td>
+				
+					<select name="iIdProject" id="iIdProject">
+						<!--#in getnextproject -->
+						<option value="{ id_project }" { selected }>{ name }</option>
+						<!--#endin getnextproject -->
+					</select>
+				</td>
+			</tr>
 			<tr> 
 				<td>
 					<label for="sTaskNumber">{ m_captions[sTaskNumber] }</label>
@@ -863,12 +876,7 @@ document.onmousemove = bab_tooltipPosition;
 						<label for="iIdTaskResponsible">{ m_captions[sTaskResponsible] }</label>
 					</td>
 					<td>
-						<select id="iIdTaskResponsible" { m_datas[sReadOnlyTaskResponsible] } name="iIdTaskResponsible" onchange="onTaskResponsibleChanged()">
-							<option value="{ m_datas[iNone] }">{ m_captions[sNone] }</option>
-							<!--#in getNextTaskResponsible -->
-							<option { m_datas[sSlectedTaskResponsible] } value="{ m_datas[iIdTaskResponsible] }">{ m_datas[sTaskResponsibleName] }</option>
-							<!--#endin getNextTaskResponsible -->
-						</select>
+						{ userPicker }
 					</td>
 				</tr>
 			<!--#endif m_datas[isResourceAvailable] -->
