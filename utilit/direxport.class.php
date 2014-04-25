@@ -191,7 +191,7 @@ abstract class bab_dbdir_export
 			".BAB_DBDIR_ENTRIES_TBL." e
 			LEFT JOIN bab_users ua ON ua.id=e.id_user
 			".implode(' ',$leftjoin)."
-			WHERE u.id_group='".$idgroup."'
+			WHERE u.id_group=".$babDB->quote($this->directory['id_group'])." 
 			AND u.id_object=e.id_user
 			AND e.id_directory='0'";
 		}
