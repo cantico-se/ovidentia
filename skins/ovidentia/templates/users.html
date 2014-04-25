@@ -37,13 +37,21 @@ function bab_userListShowHideFilter()
 <table border="0" width="95%" cellspacing="0" cellpadding="1" align="center" id="babUserListFilter">
 	<tr> 
 		<td class="BabLoginCadreBackground">
-			<table width="100%" border="0" cellspacing="0" cellpadding="2" class="BabLoginMenuBackground">
+			<table width="100%" border="0" cellspacing="0" cellpadding="4" class="BabLoginMenuBackground">
 				<tr> 
-					<td align="center">
-						<label for="BAB_sSearchField">{ sSearchCaption }&nbsp;</label>
-						<input type="text" class="bab_search" id="BAB_sSearchField" name="sSearchText" size="30" maxlength="255" value="{ sSearchText }" />
-						<input type="submit" class="bab_searchSubmit" name="sSearchButton" value="{ sSearchButtonCaption }"/>
+					<td align="right"><label for="BAB_sSearchField">{ sSearchCaption }&nbsp;</label></td>
+					<td align="left">
+						<input type="text" class="bab_search" id="BAB_sSearchField" name="sSearchText" size="40" maxlength="255" value="{ sSearchText }" />
 					</td>
+				</tr>
+				
+				<tr> 
+					<td align="right"><label>{ t_last_login }</label></td>
+					<td align="left">{ selectoption }{ datewidget }</td>
+				</tr>
+				
+				<tr>
+					<td colspan="2" align="right"><input type="submit" class="bab_searchSubmit" name="sSearchButton" value="{ sSearchButtonCaption }"/></td>
 				</tr>
 			</table>
 		</td>
@@ -78,7 +86,7 @@ function bab_userListShowHideFilter()
 			<td>{ email }</td>
 			<td align="center"><!--#if bshowform -->
 			<!--#if deleteAction  -->
-			{ t_delete }
+			{ t_deletedisable }
 			<!--#else deleteAction  -->
 			<a class="BabSiteAdminListLink" href="{ groupurl }">{ group }</a>
 			<!--#endif deleteAction  -->
@@ -118,7 +126,10 @@ function bab_userListShowHideFilter()
 <!--#if bshowform --><input type="hidden" name="userst" value="{ userst }" />
 <div align="center"><br />
 <!--#if deleteAction  -->
-<input type="submit" name="Deleteg" value="{ t_delete }" />
+<select name="deleteaction">
+	<option value="disable">{ t_disable }</option>
+	<option value="delete">{ t_delete }</option>
+</select> { t_selected_users } <input type="submit" name="Deleteg" value="{ t_ok }" />
 <!--#else deleteAction  -->
 <input type="submit" name="Updateg" value="{ updategroup }" />
 <!--#endif deleteAction  -->

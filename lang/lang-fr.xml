@@ -3463,4 +3463,10 @@ L'administrateur</string>
 <string id="At least one option must be selected on profile %s">Au moins une option doit être sélectionnée sur le profile %s</string>
 <string id="Ask for the nickname to send a new password by email">Demander l'identifiant pour envoyer un nouveau mot de passe par email</string>
 <string id="ERROR - the email password functionality is disabled">Erreur, la fonctionnalité d'envoi du mot de passe par email est désactivée</string>
+
+<string id="the selected users">les utilisateurs sélectionnés</string>
+<string id="Delete/disable">Supprimer/désactiver</string>
+<string id="By last login date">Par date de dernière connexion</string>
+<string id="Before the">Avant le</string>
+<string id="After the">Après le</string>
 </fr>

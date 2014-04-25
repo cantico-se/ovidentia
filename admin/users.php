@@ -93,8 +93,39 @@ function listUsers($pos, $grp, $deleteAction)
 			$this->uncheckall		= bab_translate("Uncheck all");
 			$this->sContent			= 'text/html; charset=' . bab_charset::getIso();
 			$this->t_or				= bab_translate("Or");
+			$this->t_deletedisable	= bab_translate("Delete/disable");
 			$this->t_delete			= bab_translate("Delete");
+			$this->t_disable		= bab_translate("Disable");
 			$this->withselected 	= bab_translate("With selected");
+			$this->t_last_login		= bab_translate("By last login date");
+			$this->t_selected_users = bab_translate("the selected users");
+			$this->t_ok				= bab_translate('Ok');
+			
+			$W = bab_Widgets();
+			$canvas = $W->HtmlCanvas();
+			
+			$datePicker = $W->DatePicker();
+			$datePicker->setName('last_login')->setValue(bab_pp('last_login'));
+			$this->datewidget = $datePicker->display($canvas);
+			
+			$last_login = $datePicker->getISODate(bab_pp('last_login'));
+			
+			$select = $W->Select();
+			$select->addOption('before', bab_translate('Before the'));
+			$select->addOption('after', bab_translate('After the'));
+			$select->setName('last_login_option')->setValue(bab_pp('last_login_option'));
+			$this->selectoption = $select->display($canvas);
+			
+			switch(bab_pp('last_login_option'))
+			{
+				case 'before':
+					$sign = '<=';
+					break;
+				case 'after':
+				default:
+					$sign = '>=';
+					break;
+			}
 			
 			$this->group	= bab_toHtml(bab_getGroupName($grp));
 			$this->deleteAction = $deleteAction;	
@@ -141,7 +172,13 @@ function listUsers($pos, $grp, $deleteAction)
 					
 					if( bab_getCurrentAdmGroup() == 0 || ($this->bupdate && bab_isDelegated('battach') && $this->grp == $currentDGGroup['id_group']))
 						{
-						$req .= " where ".$this->namesearch2." like '".$babDB->db_escape_string($this->pos)."%' order by ".$babDB->db_escape_string($this->namesearch2).", ".$babDB->db_escape_string($this->namesearch)." asc";
+						$req .= " where ".$this->namesearch2." like '".$babDB->db_escape_string($this->pos)."%' ";
+						if ($last_login != '0000-00-00')
+						{
+							$req .= ' AND datelog'.$sign.$babDB->quote($last_login);
+						}
+						
+						$req .= " order by ".$babDB->db_escape_string($this->namesearch2).", ".$babDB->db_escape_string($this->namesearch)." asc";
 						}
 					else
 						{
@@ -153,9 +190,14 @@ function listUsers($pos, $grp, $deleteAction)
 								AND g.lf>='".$babDB->db_escape_string($currentDGGroup['lf'])."' 
 								AND g.lr<='".$babDB->db_escape_string($currentDGGroup['lr'])."' 
 								and u.".$babDB->db_escape_string($this->namesearch2)." like '".$babDB->db_escape_string($this->pos)."%' 
-							
-							order by u.".$babDB->db_escape_string($this->namesearch2).", u.".$babDB->db_escape_string($this->namesearch)." asc 
 						";
+						
+						if ($last_login != '0000-00-00')
+						{
+							$req .= ' AND u.datelog'.$sign.$babDB->quote($last_login);
+						}
+						
+						$req .= " order by u.".$babDB->db_escape_string($this->namesearch2).", u.".$babDB->db_escape_string($this->namesearch)." asc ";
 						}
 	
 					//$this->fullname = bab_toHtml(bab_composeUserName(bab_translate("Lastname"),bab_translate("Firstname")));
@@ -166,7 +208,16 @@ function listUsers($pos, $grp, $deleteAction)
 					$this->pos = bab_toHtml($pos);
 					$this->ord = "";
 					if( bab_getCurrentAdmGroup() == 0 || ($this->bupdate && bab_isDelegated('battach') && $this->grp == $currentDGGroup['id_group']))
-						$req .= " where ".$babDB->db_escape_string($this->namesearch)." like '".$babDB->db_escape_string($this->pos)."%' order by ".$babDB->db_escape_string($this->namesearch).", ".$babDB->db_escape_string($this->namesearch2)." asc";
+					{
+						$req .= " where ".$babDB->db_escape_string($this->namesearch)." like '".$babDB->db_escape_string($this->pos)."%'";
+					
+						if ($last_login != '0000-00-00')
+						{
+							$req .= ' AND datelog'.$sign.$babDB->quote($last_login);
+						}
+						
+						$req .= " order by ".$babDB->db_escape_string($this->namesearch).", ".$babDB->db_escape_string($this->namesearch2)." asc";
+					}
 					else {
 						$req .= ", ".BAB_USERS_GROUPS_TBL." ug, ".BAB_GROUPS_TBL." g 
 							where 
@@ -176,25 +227,33 @@ function listUsers($pos, $grp, $deleteAction)
 								AND g.lf>='".$babDB->db_escape_string($currentDGGroup['lf'])."' 
 								AND g.lr<='".$babDB->db_escape_string($currentDGGroup['lr'])."' 
 								and u.".$babDB->db_escape_string($this->namesearch)." like '".$babDB->db_escape_string($this->pos)."%' 
-								
-							order by u.".$babDB->db_escape_string($this->namesearch).", u.".$babDB->db_escape_string($this->namesearch2)." asc
 						";
+						
+						if ($last_login != '0000-00-00')
+						{
+							$req .= ' AND u.datelog'.$sign.$babDB->quote($last_login);
+						}
+						
+						
+						$req .= " order by u.".$babDB->db_escape_string($this->namesearch).", u.".$babDB->db_escape_string($this->namesearch2)." asc";
 					}
 					//$this->fullname = bab_toHtml(bab_composeUserName(bab_translate("Firstname"),bab_translate("Lastname")));
 					
 					$this->fullnameurl = bab_toHtml($GLOBALS['babUrlScript']."?tg=users&idx=chg&pos=".urlencode($this->ord.$this->pos)."&grp=".urlencode($this->grp));
 					}
-				if( !$this->ord == "-" )
+				if( !$this->ord == "-" ) {
 					$this->fullname = bab_toHtml(bab_translate("Lastname") . ' ' . bab_translate("Firstname"));
-				else
+				}
+				else {
 					$this->fullname = bab_toHtml(bab_translate("Firstname") . ' ' . bab_translate("Lastname"));
+				}
 				
-				// bab_debug($req);
+				//bab_debug($req);
 				$this->res = $babDB->db_query($req);
 			}
 			else
 			{
-				$this->selectFilteredUsers($pos, $grp);
+				$this->selectFilteredUsers($pos, $grp, $last_login, $sign);
 			}
 				
 			$this->count = $babDB->db_num_rows($this->res);
@@ -282,7 +341,7 @@ function listUsers($pos, $grp, $deleteAction)
 			}
 			
 			
-		function selectFilteredUsers($pos, $grp)
+		function selectFilteredUsers($pos, $grp, $last_login, $sign)
 		{
 			global $babDB, $babBody;
 
@@ -338,8 +397,14 @@ function listUsers($pos, $grp, $deleteAction)
 						'u.nickname	 LIKE \'%' . $babDB->db_escape_like($this->sSearchText) . '%\' OR '  .
 						'u.firstname LIKE \'%' . $babDB->db_escape_like($this->sSearchText) . '%\' OR '  .
 						'u.lastname	 LIKE \'%' . $babDB->db_escape_like($this->sSearchText) . '%\' ' . 
-					') ' .
-				$sOrderBy;
+					') ';
+			
+			if ($last_login != '0000-00-00')
+			{
+				$sQuery .= ' AND u.datelog'.$sign.$babDB->quote($last_login);
+			}
+			
+			$sQuery .= $sOrderBy;
 			
 			//bab_debug($sQuery);
 			$this->res = $babDB->db_query($sQuery);
@@ -441,7 +506,7 @@ function listUsers($pos, $grp, $deleteAction)
 	}
 
 	
-function deleteUsers($users)
+function deleteUsers($users, $deleteaction)
 	{
 	global $babBody, $idx;
 
@@ -455,13 +520,23 @@ function deleteUsers($users)
 		var $yes;
 		var $no;
 
-		function tempa($users)
+		function tempa($users, $deleteaction)
 			{
 			global $BAB_SESS_USERID;
 			$pos = bab_rp('pos', '');
 			$grp = bab_rp('grp', '');
 			
-			$this->warning = bab_translate("WARNING: This operation will remove users and their references"). '!';
+			switch($deleteaction){
+				case 'delete':
+					$this->warning = bab_translate("WARNING: This operation will remove users and their references"). '!';
+					$idx = 'Deleteu';
+					break;
+				case 'disable':
+					$this->warning = bab_translate("WARNING: This operation will disable the users");
+					$idx = 'Disableu';
+					break;
+			}
+			
 			$this->title = "";
 			$names = "";
 			$db = $GLOBALS['babDB'];
@@ -479,7 +554,7 @@ function deleteUsers($users)
 					$names .= ",";
 				}
 			$this->message = bab_translate("Are you sure you want to continue");
-			$this->urlyes = $GLOBALS['babUrlScript'].'?tg=users&idx=Deleteu&pos='.$pos.'&action=Yes&grp='.$grp.'&names='.$names;
+			$this->urlyes = $GLOBALS['babUrlScript'].'?tg=users&idx='.$idx.'&pos='.$pos.'&action=Yes&grp='.$grp.'&names='.$names;
 			$this->yes = bab_translate("Yes");
 			$this->urlno = $GLOBALS['babUrlScript'].'?tg=users&idx=List&pos='.$pos.'&action=Yes&grp='.$grp;
 			$this->no = bab_translate("No");
@@ -491,7 +566,7 @@ function deleteUsers($users)
 		return false;
 		}
 	
-	$tempa = new tempa($users);
+	$tempa = new tempa($users, $deleteaction);
 	$babBody->babecho(	bab_printTemplate($tempa,"warning.html", "warningyesno"));
 	return true;
 	}
@@ -644,6 +719,22 @@ function confirmDeleteUsers($names)
 	}
 }
 
+function confirmDisableUsers($names)
+{
+	global $babBody, $babDB;
+
+	if( !empty($names) && bab_isUserAdministrator() && bab_getCurrentAdmGroup() == 0)
+	{
+		include_once $GLOBALS['babInstallPath'] . 'utilit/delincl.php';
+		$arr = explode(",", $names);
+		$cnt = count($arr);
+		for($i = 0; $i < $cnt; $i++)
+		{
+			bab_updateUserById($arr[$i], array('disabled' => 1), $error);
+		}
+	}
+}
+
 /* main */
 
 $pos = bab_rp('pos','A');
@@ -706,9 +797,15 @@ elseif(isset($Deleteg) && bab_isUserAdministrator())
 
 if( isset($action) && $action == 'Yes')
 	{
-	if($idx == "Deleteu" && bab_isUserAdministrator() && bab_getCurrentAdmGroup() == 0)
+	if(bab_isUserAdministrator() && bab_getCurrentAdmGroup() == 0)
 		{
-		confirmDeleteUsers($names);
+		if ($idx == "Deleteu")
+		{
+			confirmDeleteUsers($names);
+		} else if ($idx == 'Disableu')
+		{
+			confirmDisableUsers($names);
+		}
 		Header('Location: '. $GLOBALS['babUrlScript'].'?tg=users&idx=List&pos='.$pos.'&grp='.$grp);
 		exit;
 		}
@@ -760,7 +857,13 @@ switch($idx)
 	case 'deletem':
 		if( bab_isUserAdministrator() || bab_getCurrentAdmGroup() != 0 )
 			{
-			$babBody->setTitle(bab_translate("Delete users"));
+			$deleteaction = bab_pp('deleteaction');
+			switch ($deleteaction)
+			{
+				case 'delete':		$babBody->setTitle(bab_translate("Delete users"));	break;
+				case 'disable': 	$babBody->setTitle(bab_translate("Disable users"));	break;
+			}
+			
 			
 			if ($displayMembersItemMenu)
 				{
@@ -770,7 +873,7 @@ switch($idx)
 			if( bab_isUserAdministrator() || bab_getCurrentAdmGroup() != 0 )
 				{
 					$users = isset($_POST['users']) ? $_POST['users'] : array();
-					deleteUsers($users);
+					deleteUsers($users, $deleteaction);
 				}
 			
 
