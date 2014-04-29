@@ -204,3 +204,16 @@ td.tskmgr_warningTitle {
 .tskmgr_dialogBackground {
 	background-color:#F3F3F3;
 }
+
+
+
+.task-comment {
+	background-color:#F3F3F3;
+	border:#ccc 1px solid;
+	padding:.5em;
+}
+
+.task-comment .comment-content {
+	padding:.3em;
+	background:#fff;
+}

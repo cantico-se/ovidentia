@@ -2032,10 +2032,9 @@ reset($this->aCurrentColumnHeader['value']['aDataSourceFieldName']);
 //*/
 
 	$sTg = bab_rp('tg', 'admTskMgr');
-	$sLink = $GLOBALS['babUrlScript'] . '?tg=' . urlencode($sTg) . '&idx=' . urlencode(BAB_TM_IDX_DISPLAY_TASK_FORM) .
-		'&sFromIdx=' . urlencode($sIdx) . '&isProject=' . urlencode($isProject);
+	
 
-	//Pour les ic�nes
+	//Pour les icones
 	{		
 		$aDataSourceFields = array(
 			array('sDataSourceFieldName' => 'iIdProjectSpace', 'sUrlParamName' => 'iIdProjectSpace'),	
@@ -2043,9 +2042,20 @@ reset($this->aCurrentColumnHeader['value']['aDataSourceFieldName']);
 			array('sDataSourceFieldName' => 'iIdTask', 'sUrlParamName' => 'iIdTask')
 		);
 		
+		/*
+		 
+		$sLink = $GLOBALS['babUrlScript'] . '?tg=' . urlencode($sTg) . '&idx=' . urlencode(BAB_TM_IDX_DISPLAY_TASK_FORM) .
+		'&sFromIdx=' . urlencode($sIdx) . '&isProject=' . urlencode($isProject); 
+		
 		$oMultiPage->addAction(0, bab_translate("Edit"), 
 			$GLOBALS['babSkinPath'] . 'images/Puces/edit.png', 
 			$sLink, $aDataSourceFields);
+		*/
+		$viewLink = $GLOBALS['babUrlScript'] . '?tg=' . urlencode($sTg) . '&idx=displayTask&sFromIdx=' . urlencode($sIdx) . '&isProject=' . urlencode($isProject);
+		
+		$oMultiPage->addAction(0, bab_translate("View"),
+			$GLOBALS['babSkinPath'] . 'images/Puces/edit.png',
+			$viewLink, $aDataSourceFields);
 	}
 
 	$GLOBALS['babBody']->addStyleSheet('taskManager.css');
@@ -2082,7 +2092,45 @@ reset($this->aCurrentColumnHeader['value']['aDataSourceFieldName']);
 }
 
 
-
+function displayTask()
+{
+	require_once dirname(__FILE__).'/utilit/tmtask.ui.php';
+	require_once dirname(__FILE__).'/tmTaskClasses.php';
+	
+	$W = bab_Widgets();
+	$page = $W->BabPage();
+	$page->addStyleSheet('taskManager.css');
+	
+	$oTmCtx =& getTskMgrContext();
+	$iIdProjectSpace = (int) $oTmCtx->getIdProjectSpace();
+	$iIdProject = (int) $oTmCtx->getIdProject();
+	$iIdTask = (int) $oTmCtx->getIdTask();
+	
+	$page->setTitle(bab_translate('View task'));
+	
+	$isProject = (int) bab_rp('isProject', 0);
+	
+	$page->addItemMenu(
+		BAB_TM_IDX_DISPLAY_PROJECT_TASK_LIST, 
+		bab_translate("Tasks of the project"), 
+		$GLOBALS['babUrlScript'] . '?tg=' . urlencode('usrTskMgr') . '&idx=' . urlencode(BAB_TM_IDX_DISPLAY_PROJECT_TASK_LIST) . 
+				'&isProject=' . urlencode($isProject) . '&iIdProjectSpace=' . urlencode($iIdProjectSpace) .
+				'&iIdProject=' . urlencode($iIdProject));
+	
+	$page->addItemMenu(
+			'displayTask',
+			bab_translate("View task"),
+			$GLOBALS['babUrlScript'] . '?tg=' . urlencode('usrTskMgr') . '&idx=displayTask&isProject=' . urlencode($isProject) . '&iIdProjectSpace=' . urlencode($iIdProjectSpace) .
+			'&iIdProject=' . urlencode($iIdProject).'&iIdTask='.urlencode($iIdTask));
+	
+	
+	$oTask = new BAB_TM_Task();
+	$frame = new bab_TaskFullFrame($oTask);
+	
+	$page->addItem($frame);
+	
+	$page->displayHtml();
+}
 
 
 function displayTaskForm()
@@ -3657,6 +3705,10 @@ switch($idx)
 	case BAB_TM_IDX_DISPLAY_PROJECT_TASK_LIST:
 	case BAB_TM_IDX_DISPLAY_MY_TASK_LIST:
 		displayTaskList($idx);
+		break;
+		
+	case 'displayTask':
+		displayTask();
 		break;
 		
 	case BAB_TM_IDX_DISPLAY_TASK_FORM:

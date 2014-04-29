@@ -446,6 +446,9 @@ class BAB_TM_Context
 	}
 }
 
+/**
+ * @return BAB_TM_Context
+ */
 function& getTskMgrContext()
 {
 	if(!isset($GLOBALS['BAB_TM_Context']))

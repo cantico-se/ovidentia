@@ -22,9 +22,49 @@
  * USA.																	*
 ************************************************************************/
 	include "base.php";
-	require_once($babInstallPath . 'utilit/baseFormProcessingClass.php');
-	require_once $babInstallPath . 'utilit/dateTime.php';
+	require_once($GLOBALS['babInstallPath'] . 'utilit/baseFormProcessingClass.php');
+	require_once $GLOBALS['babInstallPath'] . 'utilit/dateTime.php';
 
+	
+	/**
+	 * 
+	 * @property int 		$id
+	 * @property int 		$iIdProject 
+	 * @property string 	$sTaskNumber		varchar 9
+	 * @property string 	$sDescription
+	 * @property string 	$sShortDescription
+	 * @property int 		$idCategory
+	 * @property string 	$sCreated			Datetime
+	 * @property string 	$sModified			Datetime
+	 * @property int	 	$iIdUserCreated
+	 * @property int	 	$iIdUserModified
+	 * @property int		$iClass
+	 * @property int	 	$iParticipationStatus
+	 * @property int	 	$isLinked
+	 * @property int 		$iIdCalEvent			
+	 * @property string 	$hashCalEvent		varchar 34
+	 * @property float	 	$iDuration
+	 * @property int	 	$iDurationUnit
+	 * @property int	 	$iMajorVersion
+	 * @property int	 	$iMinorVersion
+	 * @property string 	$sColor
+	 * @property int	 	$iPosition
+	 * @property int	 	$iCompletion
+	 * @property string 	$sPlannedStartDate	Datetime
+	 * @property string 	$sPlannedEndDate	Datetime
+	 * @property string 	$sStartDate			Datetime
+	 * @property string 	$sEndDate			Datetime
+	 * @property int	 	$iIsNotified
+	 * @property float	 	$iPlannedTime			  
+	 * @property int	 	$iPlannedTimeDurationUnit			  
+	 * @property float	 	$iTime			  
+	 * @property int	 	$iTimeDurationUnit			  
+	 * @property float	 	$iPlannedCost			  
+	 * @property float	 	$iCost			  
+	 * @property int	 	$iPriority 
+	 * @property int 		$idOwner			in BAB_TSKMGR_TASKS_INFO_TBL
+	 *
+	 */
 	class BAB_TM_Task
 	{
 		var $m_bIsStarted		= false;
@@ -89,6 +129,36 @@
 		{
 			return $this->m_aCfg;
 		}
+		
+		
+		
+		public function __isset($p)
+		{
+			return isset($this->m_aTask[$p]);
+		}
+		
+		public function __get($p)
+		{
+			if (!isset($this->m_aTask[$p]))
+			{
+				return null;
+			}
+			
+			return $this->m_aTask[$p];
+		}
+		
+		
+		
+		public function selectCommentaries()
+		{
+			global $babDB;
+			require_once dirname(__FILE__).'/utilit/iterator/iterator.php';
+			$I = new bab_QueryIterator;
+			$I->setQuery('SELECT * FROM bab_tskmgr_tasks_comments WHERE idTask='.$babDB->quote($this->m_iIdTask).' ORDER BY created DESC');
+			
+			return $I;
+		}
+		
 	}
 
 	
@@ -696,8 +766,7 @@
 				$this->set_data('isLinkable', true);
 			}
 
-			bab_getAvailableTaskResponsibles($this->m_iIdProject, $this->m_aAvailableTaskResponsible);
-
+			
 			$iIdUser = (0 === $this->m_iIdProjectSpace && 0 === $this->m_iIdProject) ? $GLOBALS['BAB_SESS_USERID'] : 0;
 			
 			$this->m_catResult = bab_selectAvailableCategories($this->m_iIdProjectSpace, $this->m_iIdProject, $iIdUser);
@@ -1475,7 +1544,6 @@ $this->set_data('iSpFldInstanceId', $aItem['value']['iIdFieldClass']);
 			$this->processPostedDate('Start');
 			$this->processPostedDate('End');
 
-			bab_getAvailableTaskResponsibles($this->m_iIdProject, $this->m_aAvailableResponsibles);
 			bab_getTaskResponsibles($this->m_iIdTask, $this->m_aTaskResponsibles);
 			bab_getDependingTasks($this->m_iIdTask, $this->m_aDependingTasks);
 			
@@ -1610,10 +1678,6 @@ bab_debug($sMsg);
 			return false;
 		}
 		
-		function isResponsibleValid()
-		{
-			return(isset($this->m_aAvailableResponsibles[$this->m_iIdTaskResponsible]));
-		}
 		
 		function isDateValid($sDate)
 		{
@@ -1855,15 +1919,7 @@ bab_debug($sMsg);
 				
 				if($iIsBefore == BAB_DateTime::compare($oStart, $oEnd))
 				{
-					if($this->m_iUserProfil == BAB_TM_PROJECT_MANAGER && !$this->isResponsibleValid())
-					{
-						bab_debug(__FUNCTION__ . ': Invalid iIdTaskResponsible');
-						$babBody->addError(bab_translate("The choosen task responsible is invalid"));
-					}
-					else 
-					{
-						return true;
-					}
+					return true;
 				}
 				else 
 				{
