@@ -2042,7 +2042,7 @@ reset($this->aCurrentColumnHeader['value']['aDataSourceFieldName']);
 			array('sDataSourceFieldName' => 'iIdTask', 'sUrlParamName' => 'iIdTask')
 		);
 		
-		/*
+		
 		 
 		$sLink = $GLOBALS['babUrlScript'] . '?tg=' . urlencode($sTg) . '&idx=' . urlencode(BAB_TM_IDX_DISPLAY_TASK_FORM) .
 		'&sFromIdx=' . urlencode($sIdx) . '&isProject=' . urlencode($isProject); 
@@ -2050,12 +2050,13 @@ reset($this->aCurrentColumnHeader['value']['aDataSourceFieldName']);
 		$oMultiPage->addAction(0, bab_translate("Edit"), 
 			$GLOBALS['babSkinPath'] . 'images/Puces/edit.png', 
 			$sLink, $aDataSourceFields);
-		*/
-		$viewLink = $GLOBALS['babUrlScript'] . '?tg=' . urlencode($sTg) . '&idx=displayTask&sFromIdx=' . urlencode($sIdx) . '&isProject=' . urlencode($isProject);
+		
+		/* $viewLink = $GLOBALS['babUrlScript'] . '?tg=' . urlencode($sTg) . '&idx=displayTask&sFromIdx=' . urlencode($sIdx) . '&isProject=' . urlencode($isProject);
 		
 		$oMultiPage->addAction(0, bab_translate("View"),
 			$GLOBALS['babSkinPath'] . 'images/Puces/edit.png',
 			$viewLink, $aDataSourceFields);
+			*/
 	}
 
 	$GLOBALS['babBody']->addStyleSheet('taskManager.css');
