@@ -187,7 +187,8 @@ class Func_Ovml_Container_SitemapEntries extends Ovml_Container_Sitemap
 					$tmp['description'] = $item->description;
 					$tmp['id'] = $item->id_function;
 					$tmp['onclick'] = $item->onclick;
-					$tmp['folder'] = $item->folder;
+					$tmp['folder'] = $item->folder; 					// set as folder by developper
+					$tmp['hasChildNodes'] = $node->hasChildNodes(); 	// has childnodes in sitemap
 					$tmp['pageTitle'] = $item->getPageTitle();
 					$tmp['pageDescription'] = $item->getPageDescription();
 					$tmp['pageKeywords'] = $item->getPageKeywords();
