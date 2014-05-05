@@ -131,7 +131,7 @@ abstract class bab_ICalendarObject
 	 * get a property with a icalendar property name
 	 *
 	 * @param	string	$icalProperty
-	 * @return	mixed
+	 * @return	string
 	 */
 	public function getProperty($icalProperty) {
 		if (isset($this->properties[$icalProperty])) {
@@ -139,7 +139,7 @@ abstract class bab_ICalendarObject
 			if (1 === count($this->properties[$icalProperty]) && isset($this->properties[$icalProperty][''])) {
 				return $this->properties[$icalProperty][''];
 			} else {
-				return $this->properties[$icalProperty];
+				return reset($this->properties[$icalProperty]);
 			}
 			
 			
