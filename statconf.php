@@ -60,10 +60,10 @@ function statBaskets($baskname, $baskdesc)
 
 			$this->addbaskurl = $GLOBALS['babUrlScript']."?tg=statconf&idx=basknew";
 
-			$this->rows_per_page = isset($_POST['rows_per_page']) ? $_POST['rows_per_page'] : 10;
-			$this->pos = isset($_POST['pos']) ? $_POST['pos'] : 0;
+			$this->rows_per_page = isset($_POST['rows_per_page']) ? (int)($_POST['rows_per_page']) : 10;
+			$this->pos = isset($_POST['pos']) ? (int)($_POST['pos']) : 0;
 
-			list($this->max) = $babDB->db_fetch_array($babDB->db_query("SELECT COUNT(*) FROM ".BAB_STATS_BASKETS_TBL." where id_dgowner='".bab_getCurrentAdmGroup()."'"));
+			list($this->max) = $babDB->db_fetch_array($babDB->db_query("SELECT COUNT(*) FROM ".BAB_STATS_BASKETS_TBL." where id_dgowner=" . $babDB->quote(bab_getCurrentAdmGroup())));
 
 			
 			$this->baskdescval = $baskdesc;
@@ -75,14 +75,14 @@ function statBaskets($baskname, $baskdesc)
 				$this->res = $babDB->db_query("
 					SELECT t.*
 					FROM ".BAB_STATS_BASKETS_TBL." t
-					where t.id_dgowner='".bab_getCurrentAdmGroup()."'
+					where t.id_dgowner=" . $babDB->quote(bab_getCurrentAdmGroup()) . "
 					order by t.basket_name
 					LIMIT ".$this->pos.",".$this->rows_per_page);
 				$this->bmpages =true;
 				}
 			else
 				{
-				$this->res = $babDB->db_query("SELECT t.* FROM ".BAB_STATS_BASKETS_TBL." t where t.id_dgowner='".bab_getCurrentAdmGroup()."' order by basket_name");
+				$this->res = $babDB->db_query("SELECT t.* FROM ".BAB_STATS_BASKETS_TBL." t where t.id_dgowner=" . $babDB->quote(bab_getCurrentAdmGroup()) . " order by basket_name");
 				$this->bmpages =false;
 				}
 			$this->count = $babDB->db_num_rows($this->res);
@@ -135,7 +135,7 @@ function statModifyBasket()
 			$this->updatetxt = bab_translate("Update");
 
 			$this->baskid = $_GET['baskid'];
-			$arr = $babDB->db_fetch_array($babDB->db_query("select basket_name, basket_desc from ".BAB_STATS_BASKETS_TBL." where id='".$this->baskid."'"));
+			$arr = $babDB->db_fetch_array($babDB->db_query("select basket_name, basket_desc from ".BAB_STATS_BASKETS_TBL." where id=" . $babDB->quote($this->baskid)));
 
 			$this->basknameval = $arr['basket_name'];
 			$this->baskdescval = $arr['basket_desc'];
@@ -168,33 +168,36 @@ function statUpdateContentBasket()
 
 			$this->baskid = $_GET['baskid'];
 			$this->itemid = $_GET['itemid'];
-			$arr = $babDB->db_fetch_array($babDB->db_query("select bc_description, bc_type, bc_id from ".BAB_STATS_BASKET_CONTENT_TBL." where id='".$_GET['itemid']."'"));
+			
+			$req = 'select bc_description, bc_type, bc_id from '.BAB_STATS_BASKET_CONTENT_TBL.' where id=' . $babDB->quote($_GET['itemid']);
+			
+			$arr = $babDB->db_fetch_array($babDB->db_query($req));
 			$this->ibcdescriptionval = $arr['bc_description'];
 			switch($arr['bc_type'])
 				{
 				case BAB_STAT_BCT_TOPIC:
-					$req = "select tt.category as bc_item_name from ".BAB_TOPICS_TBL." tt where tt.id='".$arr['bc_id']."'";
+					$req = "select tt.category as bc_item_name from ".BAB_TOPICS_TBL." tt where tt.id=" . $babDB->quote($arr['bc_id']);
 					break;
 				case BAB_STAT_BCT_ARTICLE:
-					$req = "select at.title as bc_item_name from ".BAB_ARTICLES_TBL." at where at.id='".$arr['bc_id']."'";
+					$req = "select at.title as bc_item_name from ".BAB_ARTICLES_TBL." at where at.id=" . $babDB->quote($arr['bc_id']);
 					break;
 				case BAB_STAT_BCT_FOLDER:
-					$req = "select fft.folder as bc_item_name from ".BAB_FM_FOLDERS_TBL." fft where fft.id='".$arr['bc_id']."'";
+					$req = "select fft.folder as bc_item_name from ".BAB_FM_FOLDERS_TBL." fft where fft.id=" . $babDB->quote($arr['bc_id']);
 					break;
 				case BAB_STAT_BCT_FILE:
-					$req = "select ft.name as bc_item_name from ".BAB_FILES_TBL." ft where ft.id='".$arr['bc_id']."'";
+					$req = "select ft.name as bc_item_name from ".BAB_FILES_TBL." ft where ft.id=" . $babDB->quote($arr['bc_id']);
 					break;
 				case BAB_STAT_BCT_FORUM:
-					$req = "select ft.name as bc_item_name from ".BAB_FORUMS_TBL." ft where ft.id='".$arr['bc_id']."'";
+					$req = "select ft.name as bc_item_name from ".BAB_FORUMS_TBL." ft where ft.id=" . $babDB->quote($arr['bc_id']);
 					break;
 				case BAB_STAT_BCT_POST:
-					$req = "select pt.subject as bc_item_name from ".BAB_POSTS_TBL." pt where pt.id='".$arr['bc_id']."'";
+					$req = "select pt.subject as bc_item_name from ".BAB_POSTS_TBL." pt where pt.id=" . $babDB->quote($arr['bc_id']);
 					break;
 				case BAB_STAT_BCT_FAQ:
-					$req = "select ft.category as bc_item_name from ".BAB_FAQCAT_TBL." ft where ft.id='".$arr['bc_id']."'";
+					$req = "select ft.category as bc_item_name from ".BAB_FAQCAT_TBL." ft where ft.id=" . $babDB->quote($arr['bc_id']);
 					break;
 				case BAB_STAT_BCT_QUESTION:
-					$req = "select ft.question as bc_item_name from ".BAB_FAQQR_TBL." ft where ft.id='".$arr['bc_id']."'";
+					$req = "select ft.question as bc_item_name from ".BAB_FAQQR_TBL." ft where ft.id=" . $babDB->quote($arr['bc_id']);
 					break;
 				default:
 					$req = '';
@@ -408,28 +411,28 @@ function statContentBasket($baskid)
 				switch($k)
 					{
 					case BAB_STAT_BCT_TOPIC:
-						$req = "select sbct.*, tt.category as bc_item_name from ".BAB_STATS_BASKET_CONTENT_TBL." sbct left join ".BAB_TOPICS_TBL." tt on tt.id=sbct.bc_id where sbct.bc_type='".$k."'";
+						$req = "select sbct.*, tt.category as bc_item_name from ".BAB_STATS_BASKET_CONTENT_TBL." sbct left join ".BAB_TOPICS_TBL." tt on tt.id=sbct.bc_id where sbct.bc_type=" . $babDB->quote($k);
 						break;
 					case BAB_STAT_BCT_ARTICLE:
-						$req = "select sbct.*, at.title as bc_item_name from ".BAB_STATS_BASKET_CONTENT_TBL." sbct left join ".BAB_ARTICLES_TBL." at on at.id=sbct.bc_id where sbct.bc_type='".$k."'";
+						$req = "select sbct.*, at.title as bc_item_name from ".BAB_STATS_BASKET_CONTENT_TBL." sbct left join ".BAB_ARTICLES_TBL." at on at.id=sbct.bc_id where sbct.bc_type=" . $babDB->quote($k);
 						break;
 					case BAB_STAT_BCT_FOLDER:
-						$req = "select sbct.*, fft.folder as bc_item_name from ".BAB_STATS_BASKET_CONTENT_TBL." sbct left join ".BAB_FM_FOLDERS_TBL." fft on fft.id=sbct.bc_id where sbct.bc_type='".$k."'";
+						$req = "select sbct.*, fft.folder as bc_item_name from ".BAB_STATS_BASKET_CONTENT_TBL." sbct left join ".BAB_FM_FOLDERS_TBL." fft on fft.id=sbct.bc_id where sbct.bc_type=" . $babDB->quote($k);
 						break;
 					case BAB_STAT_BCT_FILE:
-						$req = "select sbct.*, ft.name as bc_item_name from ".BAB_STATS_BASKET_CONTENT_TBL." sbct left join ".BAB_FILES_TBL." ft on ft.id=sbct.bc_id where sbct.bc_type='".$k."'";
+						$req = "select sbct.*, ft.name as bc_item_name from ".BAB_STATS_BASKET_CONTENT_TBL." sbct left join ".BAB_FILES_TBL." ft on ft.id=sbct.bc_id where sbct.bc_type=" . $babDB->quote($k);
 						break;
 					case BAB_STAT_BCT_FORUM:
-						$req = "select sbct.*, ft.name as bc_item_name from ".BAB_STATS_BASKET_CONTENT_TBL." sbct left join ".BAB_FORUMS_TBL." ft on ft.id=sbct.bc_id where sbct.bc_type='".$k."'";
+						$req = "select sbct.*, ft.name as bc_item_name from ".BAB_STATS_BASKET_CONTENT_TBL." sbct left join ".BAB_FORUMS_TBL." ft on ft.id=sbct.bc_id where sbct.bc_type=" . $babDB->quote($k);
 						break;
 					case BAB_STAT_BCT_POST:
-						$req = "select sbct.*, pt.subject as bc_item_name from ".BAB_STATS_BASKET_CONTENT_TBL." sbct left join ".BAB_POSTS_TBL." pt on pt.id=sbct.bc_id where sbct.bc_type='".$k."'";
+						$req = "select sbct.*, pt.subject as bc_item_name from ".BAB_STATS_BASKET_CONTENT_TBL." sbct left join ".BAB_POSTS_TBL." pt on pt.id=sbct.bc_id where sbct.bc_type=" . $babDB->quote($k);
 						break;
 					case BAB_STAT_BCT_FAQ:
-						$req = "select sbct.*, ft.category as bc_item_name from ".BAB_STATS_BASKET_CONTENT_TBL." sbct left join ".BAB_FAQCAT_TBL." ft on ft.id=sbct.bc_id where sbct.bc_type='".$k."'";
+						$req = "select sbct.*, ft.category as bc_item_name from ".BAB_STATS_BASKET_CONTENT_TBL." sbct left join ".BAB_FAQCAT_TBL." ft on ft.id=sbct.bc_id where sbct.bc_type=" . $babDB->quote($k);
 						break;
 					case BAB_STAT_BCT_QUESTION:
-						$req = "select sbct.*, ft.question as bc_item_name from ".BAB_STATS_BASKET_CONTENT_TBL." sbct left join ".BAB_FAQQR_TBL." ft on ft.id=sbct.bc_id where sbct.bc_type='".$k."'";
+						$req = "select sbct.*, ft.question as bc_item_name from ".BAB_STATS_BASKET_CONTENT_TBL." sbct left join ".BAB_FAQQR_TBL." ft on ft.id=sbct.bc_id where sbct.bc_type=" . $babDB->quote($k);
 						break;
 					default:
 						$req = '';
@@ -439,7 +442,7 @@ function statContentBasket($baskid)
 
 				if( !empty($req))
 					{
-					$req .= " and sbct.basket_id = '".$this->baskid."'";
+					$req .= " and sbct.basket_id = " . $babDB->quote($this->baskid);
 					$this->res = $babDB->db_query($req);
 					$this->counti = $babDB->db_num_rows($this->res);
 					}
@@ -502,7 +505,7 @@ function statDeleteBasket($id)
 			{
 			global $babDB;
 			$this->message = bab_translate("Are you sure you want to delete this basket");
-			list($this->title) = $babDB->db_fetch_row($babDB->db_query("select basket_name from ".BAB_STATS_BASKETS_TBL." where id='".$id."'"));
+			list($this->title) = $babDB->db_fetch_row($babDB->db_query("select basket_name from ".BAB_STATS_BASKETS_TBL." where id=" . $babDB->quote($id)));
 			$this->warning = bab_translate("WARNING: This operation will delete the basket and all associated datas"). "!";
 			$this->urlyes = $GLOBALS['babUrlScript']."?tg=statconf&idx=bask&baskid=".$id."&action=dbask";
 			$this->yes = bab_translate("Yes");
@@ -534,7 +537,7 @@ function statPages($url, $page)
 			$this->deletetxt = bab_translate("Delete");
 			$this->desctxt = bab_translate("Name");
 			$this->addtxt = bab_translate("Add");
-			$this->res = $babDB->db_query("select * from ".BAB_STATS_IPAGES_TBL." where id_dgowner='".bab_getCurrentAdmGroup()."' order by page_name asc");
+			$this->res = $babDB->db_query("select * from ".BAB_STATS_IPAGES_TBL." where id_dgowner=" . $babDB->quote(bab_getCurrentAdmGroup()) . " order by page_name asc");
 			$this->count = $babDB->db_num_rows($this->res);
 			$this->urlval = $url;
 			$this->descval = $page;
@@ -582,7 +585,7 @@ function statPreferences()
 		function statPreferencesCls()
 			{
 			global $babDB;
-			$res = $babDB->db_query("select separatorchar from ".BAB_STATS_PREFERENCES_TBL." where id_user='".$GLOBALS['BAB_SESS_USERID']."'");
+			$res = $babDB->db_query("select separatorchar from ".BAB_STATS_PREFERENCES_TBL." where id_user=" . $babDB->quote($GLOBALS['BAB_SESS_USERID']));
 			if( $res && $babDB->db_num_rows($res) > 0 )
 				{
 				$arr = $babDB->db_fetch_array($res);
@@ -590,7 +593,7 @@ function statPreferences()
 				}
 			else
 				{
-				$babDB->db_query("insert into ".BAB_STATS_PREFERENCES_TBL." (id_user, time_interval, begin_date, end_date, separatorchar) values ('".$GLOBALS['BAB_SESS_USERID']."', '0', '', '', '".ord(",")."')");
+				$babDB->db_query("insert into ".BAB_STATS_PREFERENCES_TBL." (id_user, time_interval, begin_date, end_date, separatorchar) values (" . $babDB->quote($GLOBALS['BAB_SESS_USERID']) . ", '0', '', '', '".ord(",")."')");
 				$arr['separator'] = ",";
 				}
 
@@ -645,7 +648,7 @@ function addPage($url, $page )
 	{
 		$url = mb_substr($url, mb_strlen($GLOBALS['babUrl']));
 	}
-	$babDB->db_query("insert into ".BAB_STATS_IPAGES_TBL." (page_name, page_url, id_dgowner) values ('".addslashes($page)."','".addslashes($url)."','".bab_getCurrentAdmGroup()."')");
+	$babDB->db_query("insert into ".BAB_STATS_IPAGES_TBL." (page_name, page_url, id_dgowner) values (".$babDB->quote($page).",".$babDB->quote($url)."," . $babDB->quote(bab_getCurrentAdmGroup()) . ")");
 }
 
 function deletePages($pages )
@@ -654,8 +657,8 @@ function deletePages($pages )
 
 	for( $i = 0; $i < count($pages); $i++ )
 		{
-		$babDB->db_query("delete from ".BAB_STATS_IPAGES_TBL." where id='".$pages[$i]."'");
-		$babDB->db_query("delete from ".BAB_STATS_PAGES_TBL." where st_page_id='".$pages[$i]."'");
+		$babDB->db_query("delete from ".BAB_STATS_IPAGES_TBL." where id=" . $babDB->quote($pages[$i]));
+		$babDB->db_query("delete from ".BAB_STATS_PAGES_TBL." where st_page_id=" . $babDB->quote($pages[$i]));
 		}
 }
 
@@ -679,7 +682,7 @@ function updateStatPreferences($wsepar, $separ)
 			break;
 		}
 
-	$babDB->db_query("update ".BAB_STATS_PREFERENCES_TBL." set separatorchar='".$separ."' where id_user='".$GLOBALS['BAB_SESS_USERID']."'");
+	$babDB->db_query("update ".BAB_STATS_PREFERENCES_TBL." set separatorchar=" . $babDB->quote($separ) . " where id_user=" . $babDB->quote($GLOBALS['BAB_SESS_USERID']));
 
 }
 
@@ -780,7 +783,7 @@ function addStatBasketContentItem()
 
 		if( $bctype )
 		{
-			$res = $babDB->db_query("select * from ".BAB_STATS_BASKET_CONTENT_TBL." where bc_id='".$_POST['ibcid']."' and basket_id='".$_POST['baskid']."' and bc_type='".$bctype."'");
+			$res = $babDB->db_query("select * from ".BAB_STATS_BASKET_CONTENT_TBL." where bc_id=" . $babDB->quote($_POST['ibcid']) . " and basket_id=" . $babDB->quote($_POST['baskid']) . " and bc_type=" . $babDB->quote($bctype));
 			if( $res && $babDB->db_num_rows($res))
 			{
 				$babBody->msgerror = bab_translate("This item is already used");
@@ -825,7 +828,12 @@ if ( bab_statisticsAccess() == -1 )
 	return;
 }
 
-if( !isset($idx)) { $idx = "conf"; }
+$idx = bab_rp('idx', 'conf');
+
+$action = bab_rp('action', null);
+
+$aclview = bab_rp('aclview', null);
+
 
 if( isset($action))
 {
@@ -1061,4 +1069,3 @@ switch($idx)
 	}
 
 $babBody->setCurrentItemMenu($idx);
-?>
