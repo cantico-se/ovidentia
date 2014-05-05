@@ -858,7 +858,7 @@ function bab_changeCalendarBackendFrame($calendar_backend, $copy_source, $delete
 	
 	if ('' !== $start_copy_from)
 	{
-		$start_copy_from = BAB_DateTime::fromIsoDateTime($this->start_copy_from.' 00:00:00');
+		$start_copy_from = BAB_DateTime::fromIsoDateTime($start_copy_from.' 00:00:00');
 	} else {
 		$start_copy_from = null;
 	}
@@ -928,13 +928,19 @@ class bab_changeCalendarBackend
 		$copy_source 		= $this->copy_source;
 		$delete_destination = $this->delete_destination;
 		
-		if (isset($this->old_calendar))
+		if (isset($this->old_calendar) && !empty($this->old_calendar))
 		{
 			
 			// import any other accessible calendar into a personal calendar
 			// old_calendar should be on the same backend as the current personnal calendar
 			
 			$old_calendar = bab_getICalendars()->getEventCalendar($this->old_calendar);
+			
+			if (!($old_calendar instanceof bab_EventCalendar))
+			{
+				bab_installWindow::message(bab_translate('Calendar not found : '.$this->old_calendar));
+				return false;
+			}
 			
 		} else {
 		
@@ -1126,6 +1132,8 @@ class bab_changeCalendarBackend
 				AND id_cal=".$babDB->quote($old_calendar->getUid())." 
 				
 		");
+		
+		
 		
 		
 		bab_installWindow::message(bab_translate('Update my calendar sharing access'));
