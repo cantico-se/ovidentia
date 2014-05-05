@@ -572,7 +572,7 @@ function deleteDelegatGroup($id)
 			{
 			global $babDB;
 			$this->message = bab_translate("Are you sure you want to delete this delegation group");
-			list($this->title) = $babDB->db_fetch_row($babDB->db_query("select name from ".BAB_DG_GROUPS_TBL." where id='".$id."'"));
+			list($this->title) = $babDB->db_fetch_row($babDB->db_query("select name from ".BAB_DG_GROUPS_TBL." where id=" . $babDB->quote($id)));
 
 			$this->t_delete_all = bab_translate("Delete all objects created in the delegation");
 			$this->t_set_to_admin = bab_translate("Attach objects to all site");
@@ -751,7 +751,7 @@ function updateDelegatMembers()
 
 	if (!empty($_POST['nuserid']) && !empty($_POST['id']))
 	{
-	$res = $db->db_query("SELECT COUNT(*) FROM ".BAB_DG_ADMIN_TBL." WHERE id_dg='".$_POST['id']."' AND id_user='".$_POST['nuserid']."'");
+	$res = $db->db_query("SELECT COUNT(*) FROM ".BAB_DG_ADMIN_TBL." WHERE id_dg=" . $babDB->quote($_POST['id']) . " AND id_user=" . $babDB->quote($_POST['nuserid']));
 	list($n) = $db->db_fetch_array($res);
 	if ($n > 0)
 		{
@@ -759,7 +759,7 @@ function updateDelegatMembers()
 		return false;
 		}
 
-	$db->db_query("INSERT INTO ".BAB_DG_ADMIN_TBL." (id_dg,id_user) VALUES ('".$_POST['id']."','".$_POST['nuserid']."')");
+	$db->db_query("INSERT INTO ".BAB_DG_ADMIN_TBL." (id_dg,id_user) VALUES (" . $babDB->quote($_POST['id']) . "," . $babDB->quote($_POST['nuserid']) . ")");
 
 	bab_siteMap::clearAll();
 
@@ -778,7 +778,7 @@ function deleteDelegatMembers()
 
 	if (isset($_POST['users']) && count($_POST['users']) > 0 && !empty($_POST['id']))
 	{
-	$db->db_query("DELETE FROM ".BAB_DG_ADMIN_TBL." WHERE id_dg='".$_POST['id']."' AND id_user IN('".implode("','",$_POST['users'])."')");
+	$db->db_query("DELETE FROM ".BAB_DG_ADMIN_TBL." WHERE id_dg=" . $babDB->quote($_POST['id']) . " AND id_user IN(" . $babDB->quote($_POST['users']) . ")");
 	}
 
 
@@ -827,7 +827,7 @@ function updateCategory($idcat, $catname, $catdesc, $bgcolor)
 	}
 
 	$oResult = $babDB->db_query("select * from " . BAB_DG_CATEGORIES_TBL . " WHERE name LIKE '" .
-		$babDB->db_escape_like($catname) . "' AND id NOT IN('" . $idcat . "')");
+		$babDB->db_escape_like($catname) . "' AND id NOT IN(" . $babDB->quote($idcat) . ")");
 
 	if(false !== $oResult && 0 < $babDB->db_num_rows($oResult))
 	{
