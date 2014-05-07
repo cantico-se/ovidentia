@@ -195,7 +195,7 @@ function evalFlowInstance($idschi)
 						return -1;
 						}
 					break;
-				case "|": // All is not set on row
+				case "|": // All is not set on row, if one user has confirmed "x" is set in the others cells
 					$res = $babDB->db_query("select id from ".BAB_FAR_INSTANCES_TBL." where idschi='".$babDB->db_escape_string($idschi)."' and iduser IN (".$babDB->quote($rr).") and far_order='".$i."' and result=''");
 					if( $res && $babDB->db_num_rows($res) > 0)
 						{
