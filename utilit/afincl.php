@@ -143,6 +143,17 @@ function setFlowInstanceOwner($idschi, $id_user) {
 
 
 
+/**
+ * Get the workflow instance status
+ * 
+ * @param int $idschi
+ * 
+ * @return number	The new result of the schema approbation:
+ *		 0 	then the subject of the approbation must be revoked.
+ * 		 1 	the subject of the approbation must be accepted.
+ * 		-1	if the approbation can't be evaluated at this moment and you must bab_WFGetWaitingApproversInstance()
+ * 			to see which users needs to approve the instance.
+ */
 function evalFlowInstance($idschi)
 {
 	global $babDB;
@@ -150,7 +161,13 @@ function evalFlowInstance($idschi)
 	if( $res && $babDB->db_num_rows($res) > 0 )
 		return 0;
 
-	$res = $babDB->db_query("select * from ".BAB_FLOW_APPROVERS_TBL." join ".BAB_FA_INSTANCES_TBL." where ".BAB_FA_INSTANCES_TBL.".id='".$babDB->db_escape_string($idschi)."' and ".BAB_FA_INSTANCES_TBL.".idsch=".BAB_FLOW_APPROVERS_TBL.".id");
+	$res = $babDB->db_query("select formula FROM 
+			".BAB_FLOW_APPROVERS_TBL." join ".BAB_FA_INSTANCES_TBL." 
+			where 
+				".BAB_FA_INSTANCES_TBL.".id='".$babDB->db_escape_string($idschi)."' 
+				and ".BAB_FA_INSTANCES_TBL.".idsch=".BAB_FLOW_APPROVERS_TBL.".id
+	");
+	
 	$result = array();
 	if( $res && $babDB->db_num_rows($res) > 0)
 		{
@@ -158,36 +175,32 @@ function evalFlowInstance($idschi)
 		$arr = explode(",", $arr['formula']);
 		for( $i= 0; $i < count($arr); $i++)
 			{
-			if( strchr($arr[$i], "&"))
+			if(false !== strpos($arr[$i], "&"))
+			{
 				$op = "&";
-			else
+			}
+			else {
 				$op = "|";
+			}
+				
 
 			$rr = explode($op, $arr[$i]);
 
 			switch($op)
 				{
-				case "&":
+				case "&": // All is set on row and there is more than one cell set
 					$res = $babDB->db_query("select id from ".BAB_FAR_INSTANCES_TBL." where idschi='".$babDB->db_escape_string($idschi)."' and iduser IN (".$babDB->quote($rr).") and far_order='".$i."' and result=''");
 					if( $res && $babDB->db_num_rows($res) > 0)
 						{
 						return -1;
 						}
 					break;
-				case "|":
+				case "|": // All is not set on row
 					$res = $babDB->db_query("select id from ".BAB_FAR_INSTANCES_TBL." where idschi='".$babDB->db_escape_string($idschi)."' and iduser IN (".$babDB->quote($rr).") and far_order='".$i."' and result=''");
 					if( $res && $babDB->db_num_rows($res) > 0)
 						{
 						return -1;
 						}
-					break;
-				default:
-					$res = $babDB->db_query("select id from ".BAB_FAR_INSTANCES_TBL." where idschi='".$babDB->db_escape_string($idschi)."' and iduser='".$babDB->db_escape_string($arr[$i])."' and far_order='".$i."'");
-					$tab = $babDB->db_fetch_array($res);
-					if( $tab['result'] == '')
-					{
-						return -1;
-					}
 					break;
 				}
 			}
@@ -366,7 +379,21 @@ function bab_getSupervisor($id_user, $id_chart, $supervisor_pos)
 
 
 
-
+/**
+ * Updates an instance with user’s response.
+ *
+ * @see bab_WFGetWaitingApproversInstance
+ *
+ * @param int		$idschi		Id of the instance.
+ * @param int		$iduser		User id.
+ * @param bool		$bool		True if the user accept the approbation and false if the user decline the approbation.
+ *
+ * @return number	The new result of the schema approbation:
+ *		 0 	if the approbation is declined and then the subject of the approbation must be revoked.
+ * 		 1 	if the approbation is accepted and hence the subject of the approbation must be accepted.
+ * 		-1	if the approbation can't be evaluated at this moment and you must bab_WFGetWaitingApproversInstance()
+ * 			to see which users needs to approve the instance.
+ */
 function updateFlowInstance($idschi, $iduser, $bool)
 {
 	global $babDB;
