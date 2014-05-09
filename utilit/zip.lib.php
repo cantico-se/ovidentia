@@ -5,6 +5,23 @@
 
 // Need help ? http://forum.maxg.info
 
+
+
+if (!function_exists('gzopen') && function_exists('gzopen64'))
+{
+	/**
+	 * To fix a strange bug in ubuntu package, zlib is compiled with php but the gzopen function has the wrong name
+	 * found in ubuntu 11.04
+	 * 
+	 * @link https://bugs.launchpad.net/ubuntu/+source/php5/+bug/451405
+	 */
+	function gzopen($filename , $mode ,$use_include_path = 0)
+	{
+		return gzopen64($filename , $mode ,$use_include_path);
+	}
+}
+
+
 class zip
 {
 	var $datasec, $ctrl_dir = array();
