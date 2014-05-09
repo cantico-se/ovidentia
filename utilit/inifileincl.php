@@ -378,12 +378,20 @@ class bab_inifile_requirements {
 	 */
 	function require_addons_directory($value) {
 
-		include_once dirname(__FILE__).'/addonsincl.php';
-		$folders = bab_getAddonsFilePath();
+		$loc_in = array(
+			$GLOBALS['babInstallPath'].'addons',
+			$GLOBALS['babInstallPath'].'lang/addons',
+			$GLOBALS['babInstallPath'].'styles/addons',
+			$GLOBALS['babInstallPath'].'skins/ovidentia/templates/addons',
+			$GLOBALS['babInstallPath'].'skins/ovidentia/ovml/addons',
+			$GLOBALS['babInstallPath'].'skins/ovidentia/images/addons',
+			'skins'
+		);
+		
 
 		$error = null;
 		$status = true;
-		foreach($folders['loc_in'] as $folder) {
+		foreach($loc_in as $folder) {
 
 			$folder = new bab_Path(realpath('.'), $folder);
 
@@ -407,7 +415,7 @@ class bab_inifile_requirements {
 		}
 
 		return array(
-			'description'	=> sprintf(bab_translate("Writable addons subfolders (%s)"), implode(', ',$folders['loc_in'])),
+			'description'	=> sprintf(bab_translate("Writable addons subfolders (%s)"), implode(', ',$loc_in)),
 			'current'		=> $status ? bab_translate("Available") : bab_translate("Unavailable"),
 			'result'		=> $status,
 			'error'			=> $error
