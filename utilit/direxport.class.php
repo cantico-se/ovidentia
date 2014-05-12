@@ -455,7 +455,7 @@ class bab_dbdir_export_google_csv extends bab_dbdir_export_csv
 		$output[12] = $this->csvencode($row['bfax']);
 		
 		$output[13] =  $this->csvencode('Home');
-		$output[14] = $this->csvencode($this->getAddress('h', $row));
+		$output[14] =  $this->csvencode($this->getAddress('h', $row));
 		$output[15] =  $this->csvencode($row['hstreetaddress']);
 		$output[16] =  $this->csvencode($row['hcity']);
 		$output[17] =  $this->csvencode($row['hstate']);
@@ -495,38 +495,38 @@ class bab_dbdir_export_google_csv extends bab_dbdir_export_csv
 			2 => 'Family Name',
 			3 => 'E-mail 1 - Type', 			// Ce champ aura toujours la valeur *
 			4 => 'E-mail 1 - Value', 
-			5 => 'Phone 1 - Type', 				// Ce champ aura toujours la valeur « Home »
-			6 => 'Phone 1 - Value', 			// Téléphone (domicile)
-			7 => 'Phone 2 - Type', 				// Ce champ aura toujours la valeur « Mobile »
-			8 => 'Phone 2 - Value', 			// Tél. mobile
-			9 => 'Phone 3 - Type', 				// Ce champ aura toujours la valeur « Work »
-			10 => 'Phone 3 - Value', 			// Téléphone (bureau)
-			11 => 'Phone 4 - Type', 				// Ce champ aura toujours la valeur « Work Fax »
-			12 => 'Phone 4 - Value', 			// Télécopie (bureau)
-			13 => 'Address 1 - Type', 			// Ce champ aura toujours la valeur « Home »
-			14 => 'Address 1 - Formatted', 		// composée à partir de plusieurs champ de l'annuaire
+			5 => 'Phone 1 - Type', 				// Ce champ aura toujours la valeur ï¿½ Home ï¿½
+			6 => 'Phone 1 - Value', 			// Tï¿½lï¿½phone (domicile)
+			7 => 'Phone 2 - Type', 				// Ce champ aura toujours la valeur ï¿½ Mobile ï¿½
+			8 => 'Phone 2 - Value', 			// Tï¿½l. mobile
+			9 => 'Phone 3 - Type', 				// Ce champ aura toujours la valeur ï¿½ Work ï¿½
+			10 => 'Phone 3 - Value', 			// Tï¿½lï¿½phone (bureau)
+			11 => 'Phone 4 - Type', 				// Ce champ aura toujours la valeur ï¿½ Work Fax ï¿½
+			12 => 'Phone 4 - Value', 			// Tï¿½lï¿½copie (bureau)
+			13 => 'Address 1 - Type', 			// Ce champ aura toujours la valeur ï¿½ Home ï¿½
+			14 => 'Address 1 - Formatted', 		// composï¿½e ï¿½ partir de plusieurs champ de l'annuaire
 			15 => 'Address 1 - Street', 			// Rue (domicile)
 			16 => 'Address 1 - City', 			// Ville (domicile)
-			17 => 'Address 1 - Region', 			// Dép/Région (domicile)
+			17 => 'Address 1 - Region', 			// Dï¿½p/Rï¿½gion (domicile)
 			18 => 'Address 1 - Postal Code', 	// Code postal (domicile)
 			19 => 'Address 1 - Country', 		// Pays (domicile)
-			20 => 'Address 2 - Type', 			// Ce champ aura toujours la valeur « Work »
-			21 => 'Address 2 - Formatted', 		// Adresse (bureau), composée à partir de plusieurs champ de l'annuaire
+			20 => 'Address 2 - Type', 			// Ce champ aura toujours la valeur ï¿½ Work ï¿½
+			21 => 'Address 2 - Formatted', 		// Adresse (bureau), composï¿½e ï¿½ partir de plusieurs champ de l'annuaire
 			22 => 'Address 2 - Street', 			// Rue (bureau)
 			23 => 'Address 2 - City', 			// Ville (bureau)
-			24 => 'Address 2 - Region', 			// Dép/Région (bureau)
+			24 => 'Address 2 - Region', 			// Dï¿½p/Rï¿½gion (bureau)
 			25 => 'Address 2 - Postal Code',	 	// Code postal (bureau)
 			26 => 'Address 2 - Country', 		// Pays (bureau)
 			27 => 'Organization 1 - Type', 		// Toujours vide
-			28 => 'Organization 1 - Name', 		// Société
+			28 => 'Organization 1 - Name', 		// Sociï¿½tï¿½
 			29 => 'Organization 1 - Title', 		// Titre
 			30 => 'Organization 1 - Department', // Service
-			31 => 'Custom Field 1 - Type', 		// Ce champ aura toujours la valeur « Resume »
-			32 => 'Custom Field 1 - Value', 		// Resume (champ supplémentaire configuré dans l'annuaire)
-			33 => 'Custom Field 2 - Type', 		// Ce champ aura toujours la valeur « Spoken languages »
-			34 => 'Custom Field 2 - Value', 		// Spoken languages (champ supplémentaire configuré dans l'annuaire)
-			35 => 'Custom Field 3 - Type', 		// Ce champ aura toujours la valeur « UIC identifier »
-			36 => 'Custom Field 3 - Value' 		// UIC identifier (champ supplémentaire configuré dans l'annuaire)
+			31 => 'Custom Field 1 - Type', 		// Ce champ aura toujours la valeur ï¿½ Resume ï¿½
+			32 => 'Custom Field 1 - Value', 		// Resume (champ supplï¿½mentaire configurï¿½ dans l'annuaire)
+			33 => 'Custom Field 2 - Type', 		// Ce champ aura toujours la valeur ï¿½ Spoken languages ï¿½
+			34 => 'Custom Field 2 - Value', 		// Spoken languages (champ supplï¿½mentaire configurï¿½ dans l'annuaire)
+			35 => 'Custom Field 3 - Type', 		// Ce champ aura toujours la valeur ï¿½ UIC identifier ï¿½
+			36 => 'Custom Field 3 - Value' 		// UIC identifier (champ supplï¿½mentaire configurï¿½ dans l'annuaire)
 				
 				
 		);
@@ -552,12 +552,49 @@ class bab_dbdir_export_outlook_csv extends bab_dbdir_export_csv
 	
 	
 	/**
+	 * (non-PHPdoc)
+	 * @see bab_dbdir_export::outputText()
+	 */
+	protected function outputText()
+	{
+		global $babDB;
+		
+		$header = array();
+		foreach($this->getColumns() as $label)
+		{
+			$header[] = $label;
+		}
+		
+		echo implode($this->separator, $header)."\r\n";
+		
+		while ($row = $babDB->db_fetch_assoc($this->res))
+		{
+			
+			$this->outputRow($row);
+		}
+	}
+	
+	/**
+	 * Encode a value for CSV file
+	 * @param	string $v
+	 * @return string
+	 */
+	protected function csvencode($v)
+	{
+		if($v == ''){
+			return '';
+		}
+		return '"'.str_replace(array('"', "\n", '\r'), array('""', ' ', ''), $v).'"';
+	}
+	
+	
+	/**
 	 * Output row
 	 */
 	protected function outputRow(Array $row)
 	{
 		
-		$output = array_fill(0, 87, '""');
+		$output = array_fill(0, 87, '');
 		
 		
 		
@@ -589,10 +626,10 @@ class bab_dbdir_export_outlook_csv extends bab_dbdir_export_csv
 		$output[76] =  $this->csvencode($row['user2']);
 		$output[77] =  $this->csvencode($row['user3']);
 		$output[85] =  $this->csvencode('Normal');
-		$output[87] =  $this->directory['name'];
+		$output[87] =  $this->csvencode($this->directory['name']);
 		
 		
-		echo implode($this->separator, $output)."\n";
+		echo implode($this->separator, $output).",\r\n";
 	}
 	
 	
