@@ -71,9 +71,12 @@ function listUsers($pos, $grp, $deleteAction)
 		var $sSearchCaption			= '';
 		var $sSearchButtonCaption	= '';
 		var $sSearchText			= '';
-		var $iUseSearchText			= '0';
 			
 		var $sContent;
+		
+		private $baseurl;
+		
+		private $bUseInnerJoin;
 		
 		function temp($pos, $grp, $deleteAction)
 			{
@@ -105,18 +108,23 @@ function listUsers($pos, $grp, $deleteAction)
 			$canvas = $W->HtmlCanvas();
 			
 			$datePicker = $W->DatePicker();
-			$datePicker->setName('last_login')->setValue(bab_pp('last_login'));
+			$datePicker->setName('last_login')->setValue(bab_rp('last_login'));
 			$this->datewidget = $datePicker->display($canvas);
 			
-			$last_login = $datePicker->getISODate(bab_pp('last_login'));
+			$last_login = $datePicker->getISODate(bab_rp('last_login'));
 			
 			$select = $W->Select();
 			$select->addOption('before', bab_translate('Before the'));
 			$select->addOption('after', bab_translate('After the'));
-			$select->setName('last_login_option')->setValue(bab_pp('last_login_option'));
+			$select->setName('last_login_option')->setValue(bab_rp('last_login_option'));
 			$this->selectoption = $select->display($canvas);
 			
-			switch(bab_pp('last_login_option'))
+			$this->baseurl = bab_url::get_request('tg', 'bupd', 'sSearchText', 'last_login_option', 'last_login');
+			$this->baseurl->idx = 'List';
+			$this->baseurl->pos = $pos;
+			$this->baseurl->grp = $grp;
+			
+			switch(bab_rp('last_login_option'))
 			{
 				case 'before':
 					$sign = '<=';
@@ -132,8 +140,6 @@ function listUsers($pos, $grp, $deleteAction)
 
 			$this->grp		= bab_toHtml($grp);
 
-			$this->namesearch	= "lastname";
-			$this->namesearch2	= "firstname";
 
 			// group members
 			$this->group_members = array();
@@ -156,105 +162,13 @@ function listUsers($pos, $grp, $deleteAction)
 
 			$this->bupdate				= bab_toHtml(bab_rp('bupd', 0));
 			$this->sSearchText			= bab_toHtml(bab_rp('sSearchText', ''));
-			$this->iUseSearchText		= (0 == mb_strlen(trim($this->sSearchText))) ? '0' : '1';
+			
 			
 			$currentDGGroup = bab_getCurrentDGGroup();
+			$this->bUseInnerJoin = !(bab_getCurrentAdmGroup() == 0 || ($this->bupdate && bab_isDelegated('battach') && $this->grp == $currentDGGroup['id_group']));
 
-			if(0 == $this->iUseSearchText)
-			{
-				$req = "SELECT distinct u.* from ".BAB_USERS_TBL." u";
-	
-				if( isset($pos) &&  mb_strlen($pos) > 0 && $pos[0] == "-" )
-					{
-					$this->pos = mb_strlen($pos)>1? bab_toHtml($pos[1]): '';
-					$this->ord = bab_toHtml($pos[0]);
-					
-					
-					if( bab_getCurrentAdmGroup() == 0 || ($this->bupdate && bab_isDelegated('battach') && $this->grp == $currentDGGroup['id_group']))
-						{
-						$req .= " where ".$this->namesearch2." like '".$babDB->db_escape_string($this->pos)."%' ";
-						if ($last_login != '0000-00-00')
-						{
-							$req .= ' AND datelog'.$sign.$babDB->quote($last_login);
-						}
-						
-						$req .= " order by ".$babDB->db_escape_string($this->namesearch2).", ".$babDB->db_escape_string($this->namesearch)." asc";
-						}
-					else
-						{
-						$req .= ", ".BAB_USERS_GROUPS_TBL." ug, ".BAB_GROUPS_TBL." g 
-							where 
-								".bab_userInfos::queryAllowedUsers('u')." 
-								and ug.id_object=u.id 
-								and ug.id_group=g.id 
-								AND g.lf>='".$babDB->db_escape_string($currentDGGroup['lf'])."' 
-								AND g.lr<='".$babDB->db_escape_string($currentDGGroup['lr'])."' 
-								and u.".$babDB->db_escape_string($this->namesearch2)." like '".$babDB->db_escape_string($this->pos)."%' 
-						";
-						
-						if ($last_login != '0000-00-00')
-						{
-							$req .= ' AND u.datelog'.$sign.$babDB->quote($last_login);
-						}
-						
-						$req .= " order by u.".$babDB->db_escape_string($this->namesearch2).", u.".$babDB->db_escape_string($this->namesearch)." asc ";
-						}
-	
-					//$this->fullname = bab_toHtml(bab_composeUserName(bab_translate("Lastname"),bab_translate("Firstname")));
-					$this->fullnameurl = bab_toHtml( $GLOBALS['babUrlScript']."?tg=users&idx=chg&pos=".urlencode($this->ord.$this->pos)."&grp=".urlencode($this->grp));
-					}
-				else
-					{
-					$this->pos = bab_toHtml($pos);
-					$this->ord = "";
-					if( bab_getCurrentAdmGroup() == 0 || ($this->bupdate && bab_isDelegated('battach') && $this->grp == $currentDGGroup['id_group']))
-					{
-						$req .= " where ".$babDB->db_escape_string($this->namesearch)." like '".$babDB->db_escape_string($this->pos)."%'";
-					
-						if ($last_login != '0000-00-00')
-						{
-							$req .= ' AND datelog'.$sign.$babDB->quote($last_login);
-						}
-						
-						$req .= " order by ".$babDB->db_escape_string($this->namesearch).", ".$babDB->db_escape_string($this->namesearch2)." asc";
-					}
-					else {
-						$req .= ", ".BAB_USERS_GROUPS_TBL." ug, ".BAB_GROUPS_TBL." g 
-							where 
-								".bab_userInfos::queryAllowedUsers('u')." 
-								and ug.id_object=u.id 
-								and ug.id_group=g.id 
-								AND g.lf>='".$babDB->db_escape_string($currentDGGroup['lf'])."' 
-								AND g.lr<='".$babDB->db_escape_string($currentDGGroup['lr'])."' 
-								and u.".$babDB->db_escape_string($this->namesearch)." like '".$babDB->db_escape_string($this->pos)."%' 
-						";
-						
-						if ($last_login != '0000-00-00')
-						{
-							$req .= ' AND u.datelog'.$sign.$babDB->quote($last_login);
-						}
-						
-						
-						$req .= " order by u.".$babDB->db_escape_string($this->namesearch).", u.".$babDB->db_escape_string($this->namesearch2)." asc";
-					}
-					//$this->fullname = bab_toHtml(bab_composeUserName(bab_translate("Firstname"),bab_translate("Lastname")));
-					
-					$this->fullnameurl = bab_toHtml($GLOBALS['babUrlScript']."?tg=users&idx=chg&pos=".urlencode($this->ord.$this->pos)."&grp=".urlencode($this->grp));
-					}
-				if( !$this->ord == "-" ) {
-					$this->fullname = bab_toHtml(bab_translate("Lastname") . ' ' . bab_translate("Firstname"));
-				}
-				else {
-					$this->fullname = bab_toHtml(bab_translate("Firstname") . ' ' . bab_translate("Lastname"));
-				}
-				
-				//bab_debug($req);
-				$this->res = $babDB->db_query($req);
-			}
-			else
-			{
-				$this->selectFilteredUsers($pos, $grp, $last_login, $sign);
-			}
+			$this->selectFilteredUsers($pos, $last_login, $sign);
+			
 				
 			$this->count = $babDB->db_num_rows($this->res);
 
@@ -262,7 +176,11 @@ function listUsers($pos, $grp, $deleteAction)
 				$this->allselected = 1;
 			else
 				$this->allselected = 0;
-			$this->allurl = bab_toHtml($GLOBALS['babUrlScript']."?tg=users&idx=List&pos=&grp=".$this->grp."&bupd=".$this->bupdate);
+			
+			$url = clone $this->baseurl;
+			$url->pos = null;
+			
+			$this->allurl = bab_toHtml($url->toString());
 			$this->groupurl = bab_toHtml($GLOBALS['babUrlScript']."?tg=group&idx=Members&item=".$this->grp);
 			
 			if( (bab_isUserAdministrator() && bab_getCurrentAdmGroup() == 0))
@@ -341,9 +259,23 @@ function listUsers($pos, $grp, $deleteAction)
 			}
 			
 			
-		function selectFilteredUsers($pos, $grp, $last_login, $sign)
+		
+		/**
+		 * Create the search result
+		 * 
+		 * 
+		 * @param string $pos			ex : -A
+		 * 								- mean order by firstname, lastname otherwise the order is lastname firstname
+		 * 								the letter is a filter for the first letter of firstname or lastname (according to the minus prefix)
+		 * 								
+		 * @param string $last_login	Search by last login date
+		 * 
+		 * @param string $sign			"<=" or ">=" operator for last login date search
+		 */
+		private function selectFilteredUsers($pos, $last_login, $sign)
 		{
-			global $babDB, $babBody;
+			global $babDB;
+			$currentDGGroup = bab_getCurrentDGGroup();
 
 			$sOrderBy = '';
 			if(isset($pos) &&  mb_strlen($pos) > 0 && $pos[0] == "-" )
@@ -351,25 +283,24 @@ function listUsers($pos, $grp, $deleteAction)
 				$this->pos = mb_strlen($pos) > 1 ? $pos[1] : '';
 				$this->ord = $pos[0];
 			 
-				$sOrderBy = 'ORDER BY ' . $babDB->db_escape_string($this->namesearch2) . ', ' . $babDB->db_escape_string($this->namesearch) . ' asc';
+				$letterfilter = "u.firstname like '".$babDB->db_escape_like($this->pos)."%'";
+				$sOrderBy = 'ORDER BY firstname, lastname asc';
+				
+				
 			}
 			else
 			{
 				$this->pos = $pos;
 				$this->ord = "";
 			
-				$sOrderBy = 'ORDER BY ' . $babDB->db_escape_string($this->namesearch2) . ', ' . $babDB->db_escape_string($this->namesearch) . ' asc';
+				$letterfilter = "u.lastname like '".$babDB->db_escape_like($this->pos)."%'";
+				$sOrderBy = 'ORDER BY lastname, firstname asc';
 			}
-			
-			
-			$currentDGGroup = bab_getCurrentDGGroup();
-			
-			$bUseInnerJoin = !(bab_getCurrentAdmGroup() == 0 || ($this->bupdate && bab_isDelegated('battach') && $this->grp == $currentDGGroup['id_group']));
 			
 			$aWhereClauseItem	= array();
 			$sInnerJoin			= '';
 
-			if($bUseInnerJoin)
+			if($this->bUseInnerJoin)
 			{
 				$sInnerJoin = 
 					', ' . BAB_USERS_GROUPS_TBL . ' ug' . 
@@ -380,9 +311,26 @@ function listUsers($pos, $grp, $deleteAction)
 				$aWhereClauseItem[] = 'ug.id_group = g.id';
 				$aWhereClauseItem[] = 'g.lf >= ' . $babDB->db_escape_string($currentDGGroup['lf']);
 				$aWhereClauseItem[] = 'g.lr <= ' . $babDB->db_escape_string($currentDGGroup['lr']);
+				
 			}
 			
-			$sWhereClauseItem = (0 == count($aWhereClauseItem)) ? ' ' : implode(' AND ', $aWhereClauseItem) . ' AND ';
+			
+			$aWhereClauseItem[] = $letterfilter;
+			
+			$aWhereClauseItem[] = '(	' .
+					'u.email	 LIKE \'%' . $babDB->db_escape_like($this->sSearchText) . '%\' OR '  .
+					'u.nickname	 LIKE \'%' . $babDB->db_escape_like($this->sSearchText) . '%\' OR '  .
+					'u.firstname LIKE \'%' . $babDB->db_escape_like($this->sSearchText) . '%\' OR '  .
+					'u.lastname	 LIKE \'%' . $babDB->db_escape_like($this->sSearchText) . '%\' ' .
+					') ';
+			
+			if ($last_login != '0000-00-00')
+			{
+				$aWhereClauseItem[] = 'u.datelog'.$sign.$babDB->quote($last_login);
+			}
+			
+			
+			$sWhereClauseItem =  implode(' AND ', $aWhereClauseItem);
 			
 			$sQuery = 
 				'SELECT ' .
@@ -391,18 +339,9 @@ function listUsers($pos, $grp, $deleteAction)
 					BAB_USERS_TBL . ' u ' . 
 				$sInnerJoin . ' ' .
 				'WHERE ' .
-					$sWhereClauseItem .
-					'(	' .
-						'u.email	 LIKE \'%' . $babDB->db_escape_like($this->sSearchText) . '%\' OR '  .
-						'u.nickname	 LIKE \'%' . $babDB->db_escape_like($this->sSearchText) . '%\' OR '  .
-						'u.firstname LIKE \'%' . $babDB->db_escape_like($this->sSearchText) . '%\' OR '  .
-						'u.lastname	 LIKE \'%' . $babDB->db_escape_like($this->sSearchText) . '%\' ' . 
-					') ';
+					$sWhereClauseItem;
 			
-			if ($last_login != '0000-00-00')
-			{
-				$sQuery .= ' AND u.datelog'.$sign.$babDB->quote($last_login);
-			}
+			
 			
 			$sQuery .= $sOrderBy;
 			
@@ -414,9 +353,10 @@ function listUsers($pos, $grp, $deleteAction)
 			}else{
 				$this->fullname = bab_toHtml(bab_translate("Firstname") . ' ' . bab_translate("Lastname"));
 			}
-			$this->fullnameurl = bab_toHtml($GLOBALS['babUrlScript'].'?tg=users&idx=chg&pos='.
-				urlencode($this->ord.$this->pos).'&grp='.urlencode($this->grp).
-				'&sSearchText='.urlencode($this->sSearchText));
+			
+			$url = clone $this->baseurl;
+			$url->idx = 'chg';
+			$this->fullnameurl = bab_toHtml($url->toString());
 		}
 
 		
@@ -486,7 +426,11 @@ function listUsers($pos, $grp, $deleteAction)
 			if( $k < 26)
 				{
 				$this->selectname = mb_substr($t, $k, 1);
-				$this->selecturl = bab_toHtml( $GLOBALS['babUrlScript']."?tg=users&idx=List&pos=".urlencode($this->ord.$this->selectname)."&grp=".urlencode($this->grp)."&bupd=".urlencode($this->bupdate));
+
+				$url = clone $this->baseurl;
+				$url->pos = $this->ord.$this->selectname;
+				
+				$this->selecturl = bab_toHtml($url->toString());
 				$this->selected = 0;
 				
 				if( $this->pos == $this->selectname)
