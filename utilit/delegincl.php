@@ -46,21 +46,23 @@ function bab_getDelegationsObjects()
 	{
 		bab_functionality::includeOriginal('Icons');
 		
+		$babUrlScript	= $GLOBALS['babUrl'].bab_getSelf();
+		
 		$objects = array(
 			array("users"		, bab_translate("Create a new user")	, null				, null											, null, null),
 			array("groups"		, bab_translate("Manage groups")		, null				, null											, null, null),
 			array('battach'		, bab_translate("Assign/unassign a user to group and group children"), null, null							, null, null),
-			array("sections"	, bab_translate("Sections")				, 'AdminSections'	, $GLOBALS['babUrlScript'].'?tg=sections'		, null, Func_Icons::APPS_SECTIONS),
-			array("articles"	, bab_translate("Articles")				, 'AdminArticles'	, $GLOBALS['babUrlScript'].'?tg=topcats'		, bab_translate("Categories and topics management"), Func_Icons::APPS_ARTICLES),
-			array("faqs"		, bab_translate("Faq")					, 'AdminFaqs'		, $GLOBALS['babUrlScript'].'?tg=admfaqs'		, bab_translate("Frequently Asked Questions"), Func_Icons::APPS_FAQS),
-			array("forums"		, bab_translate("Forums")				, 'AdminForums'		, $GLOBALS['babUrlScript'].'?tg=forums'			, null, Func_Icons::APPS_FORUMS),
-			array("calendars"	, bab_translate("Calendar")				, 'AdminCalendars'	, $GLOBALS['babUrlScript'].'?tg=admcals'		, null, Func_Icons::APPS_CALENDAR),
-			array("mails"		, bab_translate("Mail")					, 'AdminMail'		, $GLOBALS['babUrlScript'].'?tg=maildoms&userid=0&bgrp=y' , null, Func_Icons::APPS_MAIL),
-			array("directories"	, bab_translate("Directories")			, 'AdminDir'		, $GLOBALS['babUrlScript'].'?tg=admdir'			, null, Func_Icons::APPS_DIRECTORIES),
-			array("approbations", bab_translate("Approbation schemas")	, 'AdminApprob'		, $GLOBALS['babUrlScript'].'?tg=apprflow'		, null, Func_Icons::APPS_APPROBATIONS),
-			array("filemanager"	, bab_translate("File manager")			, 'AdminFm'			, $GLOBALS['babUrlScript'].'?tg=admfms'			, null, Func_Icons::APPS_FILE_MANAGER),
-			array("orgchart"	, bab_translate("Charts")				, 'AdminCharts'		, $GLOBALS['babUrlScript'].'?tg=admocs'			, null, Func_Icons::APPS_ORGCHARTS),
-			array("taskmanager"	, bab_translate("Task Manager")			, 'AdminTm'			, $GLOBALS['babUrlScript'].'?tg=admTskMgr'		, null, Func_Icons::APPS_TASK_MANAGER)
+			array("sections"	, bab_translate("Sections")				, 'AdminSections'	, $babUrlScript.'?tg=sections'					, null, Func_Icons::APPS_SECTIONS),
+			array("articles"	, bab_translate("Articles")				, 'AdminArticles'	, $babUrlScript.'?tg=topcats'					, bab_translate("Categories and topics management"), Func_Icons::APPS_ARTICLES),
+			array("faqs"		, bab_translate("Faq")					, 'AdminFaqs'		, $babUrlScript.'?tg=admfaqs'					, bab_translate("Frequently Asked Questions"), Func_Icons::APPS_FAQS),
+			array("forums"		, bab_translate("Forums")				, 'AdminForums'		, $babUrlScript.'?tg=forums'					, null, Func_Icons::APPS_FORUMS),
+			array("calendars"	, bab_translate("Calendar")				, 'AdminCalendars'	, $babUrlScript.'?tg=admcals'					, null, Func_Icons::APPS_CALENDAR),
+			array("mails"		, bab_translate("Mail")					, 'AdminMail'		, $babUrlScript.'?tg=maildoms&userid=0&bgrp=y' 	, null, Func_Icons::APPS_MAIL),
+			array("directories"	, bab_translate("Directories")			, 'AdminDir'		, $babUrlScript.'?tg=admdir'					, null, Func_Icons::APPS_DIRECTORIES),
+			array("approbations", bab_translate("Approbation schemas")	, 'AdminApprob'		, $babUrlScript.'?tg=apprflow'					, null, Func_Icons::APPS_APPROBATIONS),
+			array("filemanager"	, bab_translate("File manager")			, 'AdminFm'			, $babUrlScript.'?tg=admfms'					, null, Func_Icons::APPS_FILE_MANAGER),
+			array("orgchart"	, bab_translate("Charts")				, 'AdminCharts'		, $babUrlScript.'?tg=admocs'					, null, Func_Icons::APPS_ORGCHARTS),
+			array("taskmanager"	, bab_translate("Task Manager")			, 'AdminTm'			, $babUrlScript.'?tg=admTskMgr'					, null, Func_Icons::APPS_TASK_MANAGER)
 		);
 	}
 	

@@ -448,6 +448,10 @@ function listUsers($pos, $grp, $deleteAction)
 			}
 		}
 	$temp = new temp($pos, $grp, $deleteAction);
+	
+	/*@var $babBody babBody */
+
+	
 	$babBody->babecho(	bab_printTemplate($temp, "users.html", "userslist"));
 	return $temp->count;
 	}
