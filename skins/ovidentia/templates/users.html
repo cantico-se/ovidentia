@@ -66,7 +66,7 @@ function bab_userListShowHideFilter()
 		<table width="100%" border="0" cellspacing="0" cellpadding="2" align="center">
 		<tfoot>
 			<tr class="BabSiteAdminTitleFontBackground">
-				<td colspan="4">&nbsp;</td>
+				<td colspan="5">&nbsp;</td>
 				<td align="center">
 				<!--#if bshowform -->
 					<a href="javascript:onCheckAll('users', true)"><img src="{ babSkinPath }images/Puces/Pucecheked.gif" alt="{ checkall }" width="10" height="10" border="0" /></a><a href="javascript:onCheckAll('users', false)"><img src="{ babSkinPath }images/Puces/PuceUncheked.gif" alt="{ uncheckall }" width="10" height="10" border="0" /></a>
@@ -84,6 +84,7 @@ function bab_userListShowHideFilter()
 			<td><a class="BabSiteAdminListLink" href="{ fullnameurl }">{ fullname }</a></td>
 			<td>{ nickname }</td>
 			<td>{ email }</td>
+			<td>{ t_lastlogin }</td>
 			<td align="center"><!--#if bshowform -->
 			<!--#if deleteAction  -->
 			{ t_deletedisable }
@@ -116,6 +117,7 @@ function bab_userListShowHideFilter()
 			</td>
 			<td>{ usersInfo[nickname] }</td>
 			<td><a class="BabNameEmailLink" href="mailto:{ usersInfo[email] }">{ usersInfo[email] }</a></td>
+			<td>{ lastlogin }</td>
 			<td align="center"><!--#if bshowform --><input type="checkbox" name="users[]" value="{ userid }" { checked } /><!--#endif bshowform --></td>
 		</tr>
 		<!--#endin getnext -->

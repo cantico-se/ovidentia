@@ -103,6 +103,7 @@ function listUsers($pos, $grp, $deleteAction)
 			$this->t_last_login		= bab_translate("By last login date");
 			$this->t_selected_users = bab_translate("the selected users");
 			$this->t_ok				= bab_translate('Ok');
+			$this->t_lastlogin		= bab_translate('Last login');
 			
 			$W = bab_Widgets();
 			$canvas = $W->HtmlCanvas();
@@ -409,6 +410,8 @@ function listUsers($pos, $grp, $deleteAction)
 				foreach($this->arr as $k => $v){
 					$this->usersInfo[$k] = bab_toHtml($v);
 				}
+				
+				$this->lastlogin = bab_toHtml(bab_shortDate(bab_mktime($this->arr['datelog'])));
 				
 				$i++;
 				return true;
