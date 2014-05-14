@@ -747,20 +747,20 @@ function modifyDelegatGroup($name, $description, $color, $delegitems, $id, $iIdC
 
 function updateDelegatMembers()
 {
-	global $babBody;
+	global $babBody, $babDB;
 	$db = &$GLOBALS['babDB'];
 
 	if (!empty($_POST['nuserid']) && !empty($_POST['id']))
 	{
-	$res = $db->db_query("SELECT COUNT(*) FROM ".BAB_DG_ADMIN_TBL." WHERE id_dg=" . $babDB->quote($_POST['id']) . " AND id_user=" . $babDB->quote($_POST['nuserid']));
-	list($n) = $db->db_fetch_array($res);
+	$res = $babDB->db_query("SELECT COUNT(*) FROM ".BAB_DG_ADMIN_TBL." WHERE id_dg=" . $babDB->quote($_POST['id']) . " AND id_user=" . $babDB->quote($_POST['nuserid']));
+	list($n) = $babDB->db_fetch_array($res);
 	if ($n > 0)
 		{
 		$babBody->msgerror = bab_translate("The user is in the list");
 		return false;
 		}
 
-	$db->db_query("INSERT INTO ".BAB_DG_ADMIN_TBL." (id_dg,id_user) VALUES (" . $babDB->quote($_POST['id']) . "," . $babDB->quote($_POST['nuserid']) . ")");
+	$babDB->db_query("INSERT INTO ".BAB_DG_ADMIN_TBL." (id_dg,id_user) VALUES (" . $babDB->quote($_POST['id']) . "," . $babDB->quote($_POST['nuserid']) . ")");
 
 	bab_siteMap::clearAll();
 
