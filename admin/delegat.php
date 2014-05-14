@@ -746,7 +746,7 @@ function modifyDelegatGroup($name, $description, $color, $delegitems, $id, $iIdC
 
 function updateDelegatMembers()
 {
-	global $babBody;
+	global $babBody, $babDB;
 	$db = &$GLOBALS['babDB'];
 
 	if (!empty($_POST['nuserid']) && !empty($_POST['id']))
