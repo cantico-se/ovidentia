@@ -8187,7 +8187,7 @@ class Func_Ovml_Function_Include extends Func_Ovml_Function {
 /**
  * Add a stylesheet to the current page
  * the file is relative to "style" folder of ovidentia core
- * <OFAddStylesheet file="addons/addonname/filename.css">
+ * <OFAddStyleSheet file="addons/addonname/filename.css">
  */
 class Func_Ovml_Function_AddStyleSheet extends Func_Ovml_Function {
 
