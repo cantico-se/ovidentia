@@ -432,7 +432,9 @@ function bab_addon_export_rd($d) {
 				if (is_dir($d.$file) && 'CVS' != $file && '.CVS' != $file ) {
 					$subdir[] = $d.$file;
 				} elseif (is_file($d.$file)) {
-					$res[] = $d.$file;
+					if(substr($file, 0, 2) !== '.#'){//Exclude version controle file
+						$res[] = $d.$file;
+					}
 				}
 			}
 		}
