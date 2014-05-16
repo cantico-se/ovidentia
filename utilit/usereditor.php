@@ -389,8 +389,8 @@ class Func_UserEditor extends bab_functionality {
 		$W = bab_Widgets();
 		$frame = $W->Frame(null, $W->VBoxLayout());
 		
-		$password1 = $this->labeledField($W->LineEdit()->obfuscate()->setMandatory()->setName('password1')->setAutoComplete(false), bab_translate('Password'));
-		$password2 = $this->labeledField($W->LineEdit()->obfuscate()->setMandatory()->setName('password2')->setAutoComplete(false), bab_translate('Retype Password'));
+		$password1 = $this->labeledField($W->LineEdit()->obfuscate()->setMandatory()->setName('password1')->setAutoComplete(false), bab_translate('Choose password'));
+		$password2 = $this->labeledField($W->LineEdit()->obfuscate()->setMandatory()->setName('password2')->setAutoComplete(false), bab_translate('Retype choosen password'));
 		$sendpwd = $this->boolField($W->CheckBox()->setName('sendpwd'), bab_translate('Send an e-mail to the user with its new password'));
 		
 		if (null !== $id_user)

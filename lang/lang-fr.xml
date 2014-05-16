@@ -3470,4 +3470,7 @@ L'administrateur</string>
 <string id="Before the">Avant le</string>
 <string id="After the">Après le</string>
 <string id="Last login">Dernière connexion</string>
+
+<string id="Choose password">Mot de passe</string>
+<string id="Retype choosen password">Retapez le mot de passe</string>
 </fr>
