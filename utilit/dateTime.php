@@ -230,7 +230,7 @@ class BAB_DateTime
 			if (0 !== $offset)
 			{
 				$datetime = $this->cloneDate();
-				$datetime->add($offset, BAB_DATETIME_SECOND);
+				$datetime->add(-$offset, BAB_DATETIME_SECOND);
 				return date("Ymd\THis\Z", $datetime->getTimeStamp());
 			}
 			
