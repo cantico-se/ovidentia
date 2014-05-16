@@ -974,7 +974,6 @@ class Func_UserEditor extends bab_functionality {
 		}
 		
 		
-		$form->addItem($this->getUserFrame($id_user));
 		
 		if ((null === $id_user && $this->canAddDirectoryEntry()) || $this->canEditDirectoryEntry($id_user))
 		{
@@ -982,6 +981,8 @@ class Func_UserEditor extends bab_functionality {
 		} else {
 			$form->addItem($this->getDefaultDirectoryFrame());
 		}
+		
+		$form->addItem($this->getUserFrame($id_user));
 		
 		if($this->register){
 			$form->addItem($this->getRegistrationFrame());
