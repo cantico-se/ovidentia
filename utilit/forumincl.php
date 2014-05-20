@@ -863,7 +863,8 @@ function bab_getForumContributor($id_forum, $id_author, $author)
 	if( $id_author && count($fields))
 	{
 		$author = '';
-		$entries = bab_getDirEntry($id_author, BAB_DIR_ENTRY_ID_USER);
+		//Rights on directory should not be checked for contributor name display.
+		$entries = bab_admGetDirEntry($id_author, BAB_DIR_ENTRY_ID_USER);
 		foreach($fields as $key => $info )
 		{
 			if( isset($entries[$info['name']]))
