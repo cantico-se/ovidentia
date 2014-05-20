@@ -883,10 +883,11 @@ function getDirEntry($id, $type, $id_directory, $accessCtrl)
 				if ($arr['id_group'] == BAB_REGISTERED_GROUP) {
 					$access = true;
 					$id_directory = $id_dir;
-					}
 				}
-			if (!$access)
+			}
+			if (!$access) {
 				return array();
+			}
 
 			break;
 
