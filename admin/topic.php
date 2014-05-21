@@ -1484,7 +1484,7 @@ if( isset($add) )
 	if( isset($submit))
 	{
 		$sAllowAddImg = bab_rp('sAllowAddImg', 'N');
-		if(!updateCategory($item, $category, $ncat, $saart, $sacom, $saupd, $bnotif, $lang, $atid, $disptid, $restrict, $bhpages, $bpubdates,$battachment, $bartupdate, $bmanmod, $maxarts, $bautoapp, $busetags, $sAllowAddImg, $allowarticlerating))
+		if(!updateCategory($item, $category, $ncat, $saart, $sacom, $saupd, $bnotif, $lang, $atid, $disptid, bab_rp('restrict'), $bhpages, $bpubdates,$battachment, $bartupdate, $bmanmod, $maxarts, $bautoapp, $busetags, $sAllowAddImg, $allowarticlerating))
 		{
 			$idx = "Modify";
 		}
