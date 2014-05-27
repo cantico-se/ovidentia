@@ -604,13 +604,16 @@ class Func_Ovml_Function_SitemapMenu extends Func_Ovml_Function {
 		$id = $node->getId();
 		$siteMapItem = $node->getData();
 		/* @var $siteMapItem bab_siteMapItem */
-		$truncateId = explode('-', $id);
-		$truncateId = $truncateId[0];
-		if($this->admindelegation
-			&& !isset($this->delegAdmin[bab_getCurrentAdmGroup()][$truncateId])
-			&& (substr($truncateId, 0, 8) == 'babAdmin' || $truncateId == 'babSearchIndex') && $truncateId != 'babAdmin')
-		{
-			return $return;
+		
+		if($siteMapItem->target){
+			$truncateId = $siteMapItem->target->id_function;
+			if($this->admindelegation
+				&& !isset($this->delegAdmin[bab_getCurrentAdmGroup()][$truncateId])
+				&& (substr($truncateId, 0, 8) == 'babAdmin' || $truncateId == 'babSearchIndex') && $truncateId != 'babAdmin')
+			{
+				//bab_debug($siteMapItem->target->id_function. ' == '.$siteMapItem->id_function);
+				return $return;
+			}
 		}
 		
 
