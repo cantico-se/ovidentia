@@ -1079,7 +1079,7 @@ class bab_addonInfos {
 		foreach(bab_addonsInfos::getDbRows() as $arr) {
 			$addon = bab_getAddonInfosInstance($arr['title']);
 			foreach($addon->getDependencies() as $addonname => $satisfaction) {
-				if ($addonname === $this->getName()) {
+				if ($addonname === $this->getName() && $addon->isInstalled()) {
 					$return[$addon->getName()] = $satisfaction;
 				}
 			}
