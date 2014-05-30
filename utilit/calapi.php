@@ -376,3 +376,78 @@ function bab_calGetWorkingDays($iIdUser, &$sWorkingDays)
 
 	$sWorkingDays = implode(',',$arr);
 }
+
+
+
+
+
+
+
+/**
+ * change personnal calendar backend without verification
+ * return true if backend changed, false if allready set
+ * 
+ * @param	int						$id_user
+ * @param	Func_CalendarBackend	$new_backend
+ * 
+ * @return bool
+ */
+function bab_setPersonnalCalendarBackend($id_user, Func_CalendarBackend $new_backend)
+{
+	require_once dirname(__FILE__).'/install.class.php';
+	global $babDB;
+	
+	$old_calendar = bab_getICalendars()->getPersonalCalendar();
+	
+	if (!($old_calendar instanceof bab_PersonalCalendar))
+	{
+		throw new Exception('Personal calendar not available on old backend');
+	}
+	
+	$new_calendar = $new_backend->PersonalCalendar($id_user);
+	$calendar_backend = $new_calendar->getBackend()->getUrlIdentifier();
+	
+	if ($calendar_backend === $old_calendar->getUrlIdentifier())
+	{
+		return false;
+	}
+
+
+	bab_installWindow::message(bab_translate('Update events where i am an attendee'));
+
+	// update all events with links to this personal calendar
+
+	$babDB->db_query('UPDATE '.BAB_CAL_EVENTS_OWNERS_TBL."
+		SET
+			calendar_backend=".$babDB->quote($calendar_backend).",
+			caltype=".$babDB->quote($new_calendar->getReferenceType())."
+		where
+
+			calendar_backend=".$babDB->quote(bab_getICalendars()->calendar_backend)."
+			AND caltype=".$babDB->quote($old_calendar->getReferenceType())."
+			AND id_cal=".$babDB->quote($old_calendar->getUid())."
+	");
+
+	bab_installWindow::message(bab_translate('Update my calendar sharing access'));
+
+
+	// update all sharing access
+
+	$babDB->db_query('UPDATE '.BAB_CALACCESS_USERS_TBL."
+		SET
+			caltype=".$babDB->quote($new_calendar->getReferenceType())."
+		where
+			caltype=".$babDB->quote($old_calendar->getReferenceType())."
+			AND id_cal=".$babDB->quote($old_calendar->getUid())."
+			");
+
+
+	$babDB->db_query('UPDATE '.BAB_CAL_USER_OPTIONS_TBL."
+		SET calendar_backend=".$babDB->quote($calendar_backend)."
+		where id_user=".$babDB->quote($id_user)
+	);
+	
+	
+	return true;
+}
+
