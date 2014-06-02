@@ -31,7 +31,6 @@ function bab_superAdminMenuItems()
 {
 	$list = array(
 		array('AdminDelegations', bab_translate("Delegation"), $GLOBALS['babUrlScript']."?tg=delegat", null, Func_Icons::APPS_DELEGATIONS),
-		array('AdminInstall', bab_translate("Add/remove programs"), $GLOBALS['babUrlScript']."?tg=addons", null, Func_Icons::ACTIONS_LIST_ADD),
 		array('AdminStats', bab_translate("Statistics"), $GLOBALS['babUrlScript']."?tg=admstats", null, Func_Icons::APPS_STATISTICS),
 		array('AdminThesaurus', bab_translate("Thesaurus"), $GLOBALS['babUrlScript']."?tg=admthesaurus", null, Func_Icons::APPS_THESAURUS)
 	);
@@ -178,6 +177,7 @@ function bab_sitemap_adminSection(bab_eventBeforeSiteMapCreated $event) {
 			$event->addFunction($item);
 		}
 
+		
 
 		$item = $event->createItem($dg_prefix.'AdminUsers');
 		$item->setLabel(bab_translate("Users"));
@@ -239,6 +239,45 @@ function bab_sitemap_adminSection(bab_eventBeforeSiteMapCreated $event) {
 					
 					$event->addFunction($item);
 				}
+				
+
+				$item = $event->createItem($dg_prefix.'AdminInstall');
+				$item->setLabel(bab_translate("Add/remove programs"));
+				$item->setLink($GLOBALS['babUrlScript']."?tg=addons");
+				$item->setPosition($position);
+				$item->addIconClassname(Func_Icons::ACTIONS_LIST_ADD);
+				$event->addFolder($item);
+				
+				$add_remove_programs = $position;
+				$add_remove_programs[] = $dg_prefix.'AdminInstall';
+				
+				$item = $event->createItem($dg_prefix.'AdminInstallVersion');
+				$item->setLabel(bab_translate("Version"));
+				$item->setLink($GLOBALS['babUrlScript']."?tg=addons&idx=version");
+				$item->setPosition($add_remove_programs);
+				$item->addIconClassname(Func_Icons::ACTIONS_LIST_ADD);
+				$event->addFunction($item);
+				
+				$item = $event->createItem($dg_prefix.'AdminInstallAddons');
+				$item->setLabel(bab_translate("Add-ons"));
+				$item->setLink($GLOBALS['babUrlScript']."?tg=addons&idx=list");
+				$item->setPosition($add_remove_programs);
+				$item->addIconClassname(Func_Icons::ACTIONS_LIST_ADD);
+				$event->addFunction($item);
+				
+				$item = $event->createItem($dg_prefix.'AdminInstallThemes');
+				$item->setLabel(bab_translate("Skins"));
+				$item->setLink($GLOBALS['babUrlScript']."?tg=addons&idx=theme");
+				$item->setPosition($add_remove_programs);
+				$item->addIconClassname(Func_Icons::ACTIONS_LIST_ADD);
+				$event->addFunction($item);
+				
+				$item = $event->createItem($dg_prefix.'AdminInstallLibraries');
+				$item->setLabel(bab_translate("Shared Libraries"));
+				$item->setLink($GLOBALS['babUrlScript']."?tg=addons&idx=library");
+				$item->setPosition($add_remove_programs);
+				$item->addIconClassname(Func_Icons::ACTIONS_LIST_ADD);
+				$event->addFunction($item);
 				
 				
 				

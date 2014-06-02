@@ -1256,10 +1256,12 @@ class Func_UserEditor extends bab_functionality {
 			}
 			
 			
-			$isconfirmed = 0;
+			$isconfirmed = 1;
 			
 			if($this->register)
 			{
+				
+				$isconfirmed = 0;
 				
 				$site = $this->getSiteSettings();
 				switch( $site['email_confirm'] )
