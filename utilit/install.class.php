@@ -387,14 +387,14 @@ class bab_InstallRepositoryFile
 	}
 	
 	/**
-	 * 
+	 * Get current version from ini file
 	 * @return string|null
 	 */
 	public function getCurrentVersion()
 	{
 		if ('ovidentia' === $this->name)
 		{
-			return bab_getDbVersion();
+			return bab_getIniVersion();
 		}
 		
 		$addon = bab_getAddonInfosInstance($this->name);
@@ -404,7 +404,7 @@ class bab_InstallRepositoryFile
 			return null;
 		}
 		
-		return $addon->getDbVersion();
+		return $addon->getIniVersion();
 	}
 	
 	

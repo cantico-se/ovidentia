@@ -1581,6 +1581,17 @@ function bab_getDbVersion() {
 	return $dbVersion;
 }
 
+/**
+ * Get ovidentia version from ini file
+ * @return string
+ */
+function bab_getIniVersion() {
+	
+	$arr = parse_ini_file($GLOBALS['babInstallPath'].'version.inc');
+	
+	return $arr['version'];
+}
+
 
 
 /**
