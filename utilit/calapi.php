@@ -440,14 +440,46 @@ function bab_setPersonnalCalendarBackend($id_user, Func_CalendarBackend $new_bac
 			caltype=".$babDB->quote($old_calendar->getReferenceType())."
 			AND id_cal=".$babDB->quote($old_calendar->getUid())."
 			");
-
-
-	$babDB->db_query('UPDATE '.BAB_CAL_USER_OPTIONS_TBL."
-		SET calendar_backend=".$babDB->quote($calendar_backend)."
-		where id_user=".$babDB->quote($id_user)
+	
+	
+	
+	$res = $babDB->db_query('SELECT COUNT(*) FROM '.BAB_CAL_USER_OPTIONS_TBL."
+			where id_user=".$babDB->quote($id_user)
 	);
 	
+	list($count) = $babDB->db_fetch_array($res);
 	
+	if ($count > 0)
+	{
+		$res = $babDB->db_query('UPDATE '.BAB_CAL_USER_OPTIONS_TBL."
+				SET calendar_backend=".$babDB->quote($calendar_backend)."
+				where id_user=".$babDB->quote($id_user)
+		);
+	} else {
+		
+		$babDB->db_query("insert into ".BAB_CAL_USER_OPTIONS_TBL."
+		(
+			id_user,
+			startday,
+			allday,
+			start_time,
+			end_time,
+			dispdays, 
+			calendar_backend  
+		)
+		VALUES (
+			".$babDB->quote($id_user).",
+			".$babDB->quote(1).",
+			".$babDB->quote('N').",
+			".$babDB->quote('09:00:00').",
+			".$babDB->quote('18:00:00').",
+			".$babDB->quote('1,2,3,4,5').", 
+			".$babDB->quote($calendar_backend)."
+		)
+		");
+	}
+
+		
 	return true;
 }
 
