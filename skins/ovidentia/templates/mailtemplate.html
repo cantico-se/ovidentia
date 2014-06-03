@@ -1,29 +1,39 @@
 <!--#begin default -->
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
-<HTML>
-<HEAD>
-<TITLE>{ babSiteName }</TITLE>
-<meta http-equiv="Content-type" content="{ sContent }"/>
-{ babMeta }
-</HEAD>
-<body bgcolor="#FFFFFF" text="#000000" link="#0000FF" vlink="#0000FF" alink="#0000FF" leftmargin="0" topmargin="0" marginwidth="0" marginheight="0">
-<BR><BR>
-<table width="50%" border="0" align="center" cellpadding="2" cellspacing="0">
-<tr>
-<td align="center" valign="middle" bgcolor="#003399"><font color="#FFFFFF" size="2" face="Arial, Helvetica, sans-serif"> 
-<a href="{ babUrl }" target="_blank" style="color:white;FONT-WEIGHT: bold ">{ babSiteName } </a><br>
-{ babSlogan }</font></td>
-</tr>
-<tr>
-<td align="center" valign="middle" style="border:solid 2pt;border-color:#003399">
-{ mailcontent }
-</td>
-</tr>
-<tr>
-<td align="center" valign="middle" style="border-right:dashed 1pt;border-left:dashed 1pt;border-bottom:dashed 1pt;border-color:#003399"><font size="1" face="Arial, Helvetica, sans-serif">Powered by <a href="http://www.ovidentia.org" target="_blank">Ovidentia&#8482;</a><br>
-Ovidentia&#8482; is a registered trademark of <a href="http://www.cantico.fr" target="_blank">Cantico</a></font></td>
-</tr>
-</table>
-</BODY>
-</HTML>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+	<head>
+		<meta name="viewport" content="width=device-width" />
+		<meta http-equiv="Content-type" content="{ sContent }"/>
+		{ babMeta }
+		<title>{ babSiteName }</title>
+	</head>
+	<body style="background-color: #ececec;">
+		<table cellpadding="20" style="background-color: #ececec;" width="100%">
+			<tr>
+				<td align="center">
+					<table cellpadding="15" width="800" style="width: 800px;">
+						<tr>
+							<td style="background-color:#232F4D; color:white;">
+								<a href="{ babUrl }" target="_blank" style="font-size: 24px; text-decoration:none;color:white;font-weight:bold;">{ babSiteName } </a><br/>
+								{ babSlogan }
+							</td>
+						</tr>
+						<tr>
+							<td style="background-color:#ffffff;">
+								{ mailcontent }
+							</td>
+						</tr>
+						<tr>
+							<td style="background-color:#232F4D;">
+								<span style="color:white;">
+									&nbsp;
+								</span>
+							</td>
+						</tr>
+					</table>
+				</td>
+			</tr>
+		</table>
+	</body>
+</html>
 <!--#end default -->
