@@ -356,12 +356,12 @@ class bab_UserPeriods implements Countable, seekableIterator {
 		$event = new bab_eventBeforePeriodsCreated($this);
 		$this->processCriteria($this->criteria);
 
-		$start = microtime(true);
+	//	$start = microtime(true);
 
 		bab_fireEvent($event);
 
-		$duration = microtime(true) - $start;
-		bab_debug(sprintf("createPeriods bab_fireEvent  : %s s", round($duration,3)), DBG_TRACE, 'Statistics');
+	//	$duration = microtime(true) - $start;
+	//	bab_debug(sprintf("createPeriods bab_fireEvent  : %s s", round($duration,3)), DBG_TRACE, 'Statistics');
 
 	}
 
