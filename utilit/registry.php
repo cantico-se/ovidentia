@@ -164,7 +164,7 @@ class bab_Registry
 				break;
 		}
 
-		$res = $babDB->db_query("SELECT COUNT(*) FROM ".BAB_REGISTRY_TBL." WHERE dirkey=".$babDB->quote($dirkey));
+		$res = $babDB->db_query("SELECT COUNT(*) FROM bab_registry WHERE dirkey=".$babDB->quote($dirkey));
 
 		list($n) = $babDB->db_fetch_array($res);
 
@@ -172,7 +172,7 @@ class bab_Registry
 
 			$res = $babDB->db_query("
 			
-			UPDATE ".BAB_REGISTRY_TBL." 
+			UPDATE bab_registry 
 				SET
 					value			= ".$babDB->quote($value).", 
 					value_type		= ".$babDB->quote($value_type).", 
@@ -190,7 +190,7 @@ class bab_Registry
 
 			$babDB->db_query("
 			
-			INSERT INTO ".BAB_REGISTRY_TBL." 
+			INSERT INTO bab_registry 
 				(
 					dirkey, 
 					value, 
@@ -231,7 +231,7 @@ class bab_Registry
 		global $babDB;
 
 		$dirkey = $this->dir.$key;
-		$res = $babDB->db_query("DELETE FROM ".BAB_REGISTRY_TBL." WHERE dirkey = ".$babDB->quote($dirkey));
+		$res = $babDB->db_query("DELETE FROM bab_registry WHERE dirkey = ".$babDB->quote($dirkey));
 
 		return 0 < $babDB->db_affected_rows($res);
 	}
@@ -305,7 +305,7 @@ class bab_Registry
 				update_id_user,
 				UNIX_TIMESTAMP(createdate) createdate,
 				UNIX_TIMESTAMP(lastupdate) lastupdate 
-			FROM ".BAB_REGISTRY_TBL." 
+			FROM bab_registry 
 			WHERE 
 				dirkey IN(".$babDB->quote($dirkey).")
 		");
@@ -343,7 +343,7 @@ class bab_Registry
 
 		$res = $babDB->db_query("
 			DELETE 
-			FROM ".BAB_REGISTRY_TBL." 
+			FROM bab_registry 
 			WHERE LEFT(dirkey,'".$l."') = " . $babDB->quote($this->dir)
 		);
 
@@ -365,7 +365,7 @@ class bab_Registry
 		$path = $this->getFullPath($path);
 
 		$sql = '
-			SELECT dirkey FROM ' . BAB_REGISTRY_TBL . '
+			SELECT dirkey FROM bab_registry 
 			WHERE LEFT(dirkey, ' . $babDB->quote(mb_strlen($path)) . ') = ' . $babDB->quote($path);
 		
 		$res = $babDB->db_query($sql);
@@ -396,7 +396,7 @@ class bab_Registry
 		$sourceLength = mb_strlen($source);
 
 		$sql = '
-			UPDATE ' . BAB_REGISTRY_TBL . '
+			UPDATE bab_registry 
 			SET dirkey = CONCAT(' . $babDB->quote($dest) . ', SUBSTRING(dirkey, ' . $babDB->quote($sourceLength + 1) . '))
 			WHERE LEFT(dirkey, ' . $babDB->quote($sourceLength) . ') = ' . $babDB->quote($source);
 		
@@ -422,7 +422,7 @@ class bab_Registry
 			
 			SELECT DISTINCT 
 				LEFT(RIGHT(dirkey,LENGTH(dirkey)-'$l'), LOCATE('/',RIGHT(dirkey,LENGTH(dirkey)-'$l')) ) dirkey  
-			FROM ".BAB_REGISTRY_TBL." 
+			FROM bab_registry 
 				WHERE dirkey REGEXP ".$babDB->quote('^'.$this->dir.'[^/]+/.+$')." 
 
 				");
@@ -454,7 +454,7 @@ class bab_Registry
 			
 			SELECT 
 				RIGHT(dirkey,LENGTH(dirkey)-'$l') dirkey  
-			FROM ".BAB_REGISTRY_TBL." 
+			FROM bab_registry 
 				WHERE dirkey REGEXP ".$babDB->quote('^'.$this->dir.'[^/]+$')." 
 
 				");

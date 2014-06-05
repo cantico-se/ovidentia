@@ -254,6 +254,20 @@ class bab_InstallRepositoryFile
 		return true;
 	}
 	
+	/**
+	 * @return string
+	 */
+	private function getTmpPath()
+	{
+		require_once dirname(__FILE__).'/settings.class.php';
+		$settings = bab_getInstance('bab_Settings');
+		/*@var $settings bab_Settings */
+		
+		$site = $settings->getSiteSettings();
+		
+		return $site['uploadpath'].'/tmp';
+	}
+	
 	
 	/**
 	 * Create a temporary local copy of the archive
@@ -273,7 +287,7 @@ class bab_InstallRepositoryFile
 		
 		$filename = $this->getFileName();
 		
-		$tmpfile = $GLOBALS['babUploadPath'].'/tmp/'.$filename;
+		$tmpfile = $this-> getTmpPath().'/'.$filename;
 		if (!$wfp = fopen($tmpfile, 'w')) {
 			throw new Exception(sprintf(bab_translate("Failed to write temporary file (%s)"), $tmpfile));
 		}
@@ -425,6 +439,22 @@ class bab_InstallSource {
 
 	private $archive = null;
 	private $folderpath = null;
+	
+	
+	/**
+	 * @return string
+	 */
+	private function getTmpPath()
+	{
+		require_once dirname(__FILE__).'/settings.class.php';
+		$settings = bab_getInstance('bab_Settings');
+		/*@var $settings bab_Settings */
+	
+		$site = $settings->getSiteSettings();
+	
+		return $site['uploadpath'].'/tmp';
+	}
+	
 
 
 	/**
@@ -494,48 +524,47 @@ class bab_InstallSource {
 
 	/**
 	 * Extract the archive into a temporary folder
+	 * 
+	 * @throws Exception
+	 * 
 	 * @return string full path to a temporary folder
 	 */
 	private function temporaryExtractArchive() {
 
+		
 		global $babBody;
 
 		if (null === $this->archive) {
 			return null;
 		}
+		
+		require_once dirname(__FILE__).'/path.class.php';
+		require_once dirname(__FILE__).'/session.class.php';
+		$session = bab_getInstance('bab_Session');
+		/*@var $session bab_Session */
+		
+		$temp = new bab_Path($this->getTmpPath());
 
-		$temp = $GLOBALS['babUploadPath'].'/tmp';
-
-		if (!is_dir($temp)) {
-			bab_mkdir($temp);
+		if (!$temp->isDir()) {
+			$temp->createDir();
 		}
 
-		$temp.= '/'.__CLASS__.session_id();
+		$temp->push(__CLASS__.'_'.$session->getId());
 
-		if (is_dir($temp)) {
-			include_once dirname(__FILE__).'/delincl.php';
-			$error = '';
-			if (!bab_deldir($temp, $error)) {
-				$babBody->addError($error);
-				return null;
-			}
+		if ($temp->isDir()) {
+			$temp->deleteDir();
 		}
 
-		bab_mkdir($temp);
+		$temp->createDir();
+		
+		chmod($temp->tostring(), 0777);
 
 		$zip = bab_functionality::get('Archive/Zip');
+		$zip->open($this->archive);
 
-		try {
-			$zip->open($this->archive);
-		} catch (Exception $e) {
-			$babBody->addError($e->getMessage());
-			return null;
-		}
+		$zip->extractTo($temp->tostring());
 
-
-		$zip->extractTo($temp);
-
-		return $temp;
+		return $temp->tostring();
 	}
 
 	/**
@@ -674,8 +703,12 @@ class bab_InstallSource {
 	private function installAddon(bab_AddonIniFile $ini) {
 		include_once dirname(__FILE__).'/upgradeincl.php';
 		include_once dirname(__FILE__).'/addonsincl.php';
+		include_once dirname(__FILE__).'/utilit.php';
 
-		global $babBody, $babDB;
+		global $babDB;
+		
+		$babBody = bab_getInstance('babBody');
+		/*@var $babBody babBody */
 
 		$addon_name = $ini->getName();
 
@@ -1153,7 +1186,9 @@ class bab_installWindow {
 	 * @param	mixed	$callback		array or string			the function must return a boolean
 	 */
 	public function startInstall($callback) {
-		global $babBody;
+		
+		require_once dirname(__FILE__).'/utilit.php';
+		$babBody = bab_getInstance('babBody');
 
 		if (function_exists('apache_setenv')) {
 			@apache_setenv('no-gzip'			, 1);

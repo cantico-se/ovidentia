@@ -27,12 +27,24 @@ include_once "base.php";
 class bab_Session
 {
 	
-	protected function start()
+	public function start()
 	{
 		global $babUrl;
 		
 		session_name(sprintf("OV%u", crc32($babUrl)));
 		session_start();
+	}
+	
+	/**
+	 * @return string
+	 */
+	public function getId()
+	{
+		if (!session_id()) {
+			$this->start();
+		}
+		
+		return session_id();
 	}
 	
 	public function __set($name , $value)

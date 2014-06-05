@@ -41,7 +41,7 @@ class bab_Settings
 		
 			$BAB_HASH_VAR = bab_getHashVar();
 			
-			$req="select *, DECODE(smtppassword, \"".$babDB->db_escape_string($BAB_HASH_VAR)."\") as smtppass, DECODE(ldap_adminpassword, \"".$babDB->db_escape_string($BAB_HASH_VAR)."\") as ldap_adminpassword from ".BAB_SITES_TBL." where name='".$babDB->db_escape_string($GLOBALS['babSiteName'])."'";
+			$req="select *, DECODE(smtppassword, \"".$babDB->db_escape_string($BAB_HASH_VAR)."\") as smtppass, DECODE(ldap_adminpassword, \"".$babDB->db_escape_string($BAB_HASH_VAR)."\") as ldap_adminpassword from bab_sites where name='".$babDB->db_escape_string($GLOBALS['babSiteName'])."'";
 			$res=$babDB->db_query($req);
 			if ($babDB->db_num_rows($res) == 0)
 			{

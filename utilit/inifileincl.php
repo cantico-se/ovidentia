@@ -1114,92 +1114,78 @@ class bab_inifile {
 	var $customscript = array();
 
 	public $inifile;
+	
+	
+	/**
+	 * @return string
+	 */
+	private function getTmpPath()
+	{
+		require_once dirname(__FILE__).'/settings.class.php';
+		$settings = bab_getInstance('bab_Settings');
+		/*@var $settings bab_Settings */
+	
+		$site = $settings->getSiteSettings();
+	
+		return $site['uploadpath'].'/tmp';
+	}
+	
 
 	/**
 	 * Use a ini file in a zip file
-	 * @param $zipfile absolute path to the zip file
-	 * @param $inifile path to the ini file in the zip archive
+	 * @param string $zipfile absolute path to the zip file
+	 * @param string $inifile path to the ini file in the zip archive
 	 */
-	function getfromzip($zipfile, $inifile) {
+	public function getfromzip($zipfile, $inifile) {
 
 		if (empty($zipfile)) {
 			throw new Exception(bab_translate('The archive does not exists'));
 			return false;
 		}
 
-
-		include_once dirname(__FILE__)."/zip.lib.php";
 		include_once dirname(__FILE__)."/addonsincl.php";
+		require_once dirname(__FILE__).'/session.class.php';
+		$session = bab_getInstance('bab_Session');
+		/*@var $session bab_Session */
 
 		$addon_paths = bab_getAddonsFilePath();
 		$program_path = $addon_paths['loc_out'][0].'/';
 
-
-		$filename = mb_substr( $inifile,(mb_strrpos( $inifile,'/')+1));
-
-		$zip = new Zip;
-		$zipcontents = $zip->get_List($zipfile);
-
-		if ($zipcontents) {
-			foreach ($zipcontents as $k => $arr) {
-				if ($inifile === $arr['filename']) {
-					$inifileindex = $arr['index'];
-					break;
-				}
-			}
-		}
-
-		if (!isset($inifileindex)) {
+		$zip = bab_functionality::get('Archive/Zip');
+		/*@var $zip Func_Archive_Zip  */
+		
+		$zip->open($zipfile);
+		
+		$tmp_extract = $this->getTmpPath().'/'.$session->getId().'_'.basename($zipfile);
+		$zip->extractTo($tmp_extract);
+		
+		if (!file_exists($tmp_extract.'/'.$inifile)) {
 			throw new Exception(bab_sprintf(bab_translate('The file %s could not be found in archive'), $inifile));
 			return false;
 		}
+		
+		$this->inifile($tmp_extract.'/'.$inifile);
 
+		
 
-		$zip->Extract($zipfile, $GLOBALS['babUploadPath'].'/tmp/', $inifileindex, false );
-		$this->inifile( $GLOBALS['babUploadPath'].'/tmp/'.$filename);
-
-		unlink($GLOBALS['babUploadPath'].'/tmp/'.$filename);
-
-
-		// si le ini contiens un preinstall script, le chercher dans le m�me repertoire
+		// si le ini contiens un preinstall script, le chercher dans le meme repertoire
 
 		if (isset($this->inifile['preinstall_script'])) {
 
-			$preinstall_script = $this->inifile['preinstall_script'];
-
-			$inifileindex = false;
-
-			foreach ($zipcontents as $k => $arr) {
-
-				if (0 === mb_strpos($arr['filename'], $program_path)) {
-					$archive_filename = mb_substr($arr['filename'], 9);
-
-					if ($preinstall_script === $archive_filename) {
-						$inifileindex = $arr['index'];
-						break;
-					}
-				}
-			}
-
-
-			$name = $this->getName();
-
-			if (false === $name) {
-				$name = basename($zipfile);
-			}
-
-
-			if ($inifileindex) {
-				$zip->Extract($zipfile, $GLOBALS['babUploadPath'].'/tmp/', $inifileindex, false );
-				$this->addCustomScript($name, $GLOBALS['babUploadPath'].'/tmp/'.$preinstall_script);
-				unlink($GLOBALS['babUploadPath'].'/tmp/'.$preinstall_script);
+			$preinstall_script = dirname($tmp_extract.'/'.$inifile).$this->inifile['preinstall_script'];
+			if (file_exists($preinstall_script))
+			{
+				$this->addCustomScript($name, $this->getTmpPath().'/'.$preinstall_script);
 			}
 		}
+		
+		require_once dirname(__FILE__).'/delincl.php';
+		bab_deldir($tmp_extract, $msgerror);
 	}
 
 
 
-	function parse($file) {
+	public function parse($file) {
 
 		if (!file_exists($file) || !is_readable($file)) {
 			$this->inifile = array();
