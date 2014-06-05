@@ -244,7 +244,7 @@ abstract class bab_dbdir_export
 	 * @param array $row
 	 * @return string
 	 */
-	protected function getAddress($prefix, Array $row)
+	protected function getAddress($prefix, Array $row, $linefeed = "\n")
 	{
 		$street = $row[$prefix.'streetaddress'];
 		$postalcode = $row[$prefix.'postalcode'];
@@ -255,7 +255,7 @@ abstract class bab_dbdir_export
 		$address = '';
 		if (!empty($street))
 		{
-			$address .= $street."\n";
+			$address .= $street.$linefeed;
 		}
 	
 		if (!empty($postalcode))
@@ -265,17 +265,17 @@ abstract class bab_dbdir_export
 	
 		if (!empty($city))
 		{
-			$address .= $city."\n";
+			$address .= $city.$linefeed;
 		}
 	
 		if (!empty($state))
 		{
-			$address .= $state."\n";
+			$address .= $state.$linefeed;
 		}
 	
 		if (!empty($country))
 		{
-			$address .= $country."\n";
+			$address .= $country.$linefeed;
 		}
 	
 		return trim($address);
@@ -433,103 +433,162 @@ class bab_dbdir_export_google_csv extends bab_dbdir_export_csv
 	 */
 	protected function outputRow(Array $row)
 	{
-		$output = array_fill(0, 38, '""');
+		$output = array_fill(0, 63, '');
 		
 		$output[0] = $this->csvencode($row['givenname'].' '.$row['sn']);
 		$output[1] = $this->csvencode($row['givenname']);
-		$output[2] = $this->csvencode($row['sn']);
+		$output[3] = $this->csvencode($row['sn']);
 		
-		$output[3] = $this->csvencode('*');
-		$output[4] = $this->csvencode($row['email']);
+		$output[27] = $this->csvencode('*');
+		$output[28] = $this->csvencode($row['email']);
 		
-		$output[5] = $this->csvencode('Home');
-		$output[6] = $this->csvencode($row['htel']);
+		$output[29] = $this->csvencode('Home');
+		$output[30] = $this->csvencode($row['htel']);
 		
-		$output[7] = $this->csvencode('Mobile');
-		$output[8] = $this->csvencode($row['mobile']);
+		$output[31] = $this->csvencode('Mobile');
+		$output[32] = $this->csvencode($row['mobile']);
 		
-		$output[9] = $this->csvencode('Work');
-		$output[10] = $this->csvencode($row['btel']);
+		$output[33] = $this->csvencode('Work');
+		$output[34] = $this->csvencode($row['btel']);
 		
-		$output[11] = $this->csvencode('Work Fax');
-		$output[12] = $this->csvencode($row['bfax']);
+		$output[35] = $this->csvencode('Work Fax');
+		$output[36] = $this->csvencode($row['bfax']);
 		
-		$output[13] =  $this->csvencode('Home');
-		$output[14] =  $this->csvencode($this->getAddress('h', $row));
-		$output[15] =  $this->csvencode($row['hstreetaddress']);
-		$output[16] =  $this->csvencode($row['hcity']);
-		$output[17] =  $this->csvencode($row['hstate']);
-		$output[18] =  $this->csvencode($row['hpostalcode']);
-		$output[19] =  $this->csvencode($row['hcountry']);
+		$output[37] =  $this->csvencode('Home');
+		$output[38] =  $this->csvencode($this->getAddress('h', $row, "\r\n"));
+		$output[39] =  $this->csvencode($row['hstreetaddress']);
+		$output[40] =  $this->csvencode($row['hcity']);
+		$output[42] =  $this->csvencode($row['hstate']);
+		$output[43] =  $this->csvencode($row['hpostalcode']);
+		$output[44] =  $this->csvencode($row['hcountry']);
 		
-		$output[20] =  $this->csvencode('Work');
-		$output[21] =  $this->csvencode($this->getAddress('b', $row));
-		$output[22] =  $this->csvencode($row['bstreetaddress']);
-		$output[23] =  $this->csvencode($row['bcity']);
-		$output[24] =  $this->csvencode($row['bstate']);
-		$output[25] =  $this->csvencode($row['bpostalcode']);
-		$output[26] =  $this->csvencode($row['bcountry']);
+		$output[46] =  $this->csvencode('Work');
+		$output[47] =  $this->csvencode($this->getAddress('b', $row, "\r\n"));
+		$output[48] =  $this->csvencode($row['bstreetaddress']);
+		$output[49] =  $this->csvencode($row['bcity']);
+		$output[51] =  $this->csvencode($row['bstate']);
+		$output[52] =  $this->csvencode($row['bpostalcode']);
+		$output[53] =  $this->csvencode($row['bcountry']);
 		
-		$output[28] =  $this->csvencode($row['organisationname']);
-		$output[29] =  $this->csvencode($row['title']);
-		$output[30] =  $this->csvencode($row['departmentnumber']);
+		$output[56] =  $this->csvencode($row['organisationname']);
+		$output[58] =  $this->csvencode($row['title']);
+		$output[59] =  $this->csvencode($row['departmentnumber']);
 		
-		$i = 31;
+		$i = 63;
 		
 		foreach($this->custom as $name => $label)
 		{
-			$output[$i++] =  $this->csvencode($label);
-			$output[$i++] =  $this->csvencode($row[$name]);
+			$output[$i] =  $this->csvencode($label);
+			$i++;
+			$output[$i] =  $this->csvencode($row[$name]);
+			$i++;
 		}
 
-		echo implode($this->separator, $output)."\n";
+		echo implode($this->separator, $output)."\r\n";
+	}
+
+	
+	/**
+	 * Encode a value for CSV file
+	 * @param	string $v
+	 * @return string
+	 */
+	protected function csvencode($v)
+	{
+		if(strstr($v, "\n") !== false){
+			return '"'.str_replace('"', '""', $v).'"';
+		}else{
+			return str_replace(array('"', ','), array('""', ''), $v);
+		}
 	}
 	
 	
 	protected function getColumns()
 	{
-		return array(
-				
-			0 => 'Name', 						// full name
+		$headers = array(
+			0 => 'Name',							// full name
 			1 => 'Given Name',
-			2 => 'Family Name',
-			3 => 'E-mail 1 - Type', 			// Ce champ aura toujours la valeur *
-			4 => 'E-mail 1 - Value', 
-			5 => 'Phone 1 - Type', 				// Ce champ aura toujours la valeur � Home �
-			6 => 'Phone 1 - Value', 			// T�l�phone (domicile)
-			7 => 'Phone 2 - Type', 				// Ce champ aura toujours la valeur � Mobile �
-			8 => 'Phone 2 - Value', 			// T�l. mobile
-			9 => 'Phone 3 - Type', 				// Ce champ aura toujours la valeur � Work �
-			10 => 'Phone 3 - Value', 			// T�l�phone (bureau)
-			11 => 'Phone 4 - Type', 				// Ce champ aura toujours la valeur � Work Fax �
-			12 => 'Phone 4 - Value', 			// T�l�copie (bureau)
-			13 => 'Address 1 - Type', 			// Ce champ aura toujours la valeur � Home �
-			14 => 'Address 1 - Formatted', 		// compos�e � partir de plusieurs champ de l'annuaire
-			15 => 'Address 1 - Street', 			// Rue (domicile)
-			16 => 'Address 1 - City', 			// Ville (domicile)
-			17 => 'Address 1 - Region', 			// D�p/R�gion (domicile)
-			18 => 'Address 1 - Postal Code', 	// Code postal (domicile)
-			19 => 'Address 1 - Country', 		// Pays (domicile)
-			20 => 'Address 2 - Type', 			// Ce champ aura toujours la valeur � Work �
-			21 => 'Address 2 - Formatted', 		// Adresse (bureau), compos�e � partir de plusieurs champ de l'annuaire
-			22 => 'Address 2 - Street', 			// Rue (bureau)
-			23 => 'Address 2 - City', 			// Ville (bureau)
-			24 => 'Address 2 - Region', 			// D�p/R�gion (bureau)
-			25 => 'Address 2 - Postal Code',	 	// Code postal (bureau)
-			26 => 'Address 2 - Country', 		// Pays (bureau)
-			27 => 'Organization 1 - Type', 		// Toujours vide
-			28 => 'Organization 1 - Name', 		// Soci�t�
-			29 => 'Organization 1 - Title', 		// Titre
-			30 => 'Organization 1 - Department', // Service
-			31 => 'Custom Field 1 - Type', 		// Ce champ aura toujours la valeur � Resume �
-			32 => 'Custom Field 1 - Value', 		// Resume (champ suppl�mentaire configur� dans l'annuaire)
-			33 => 'Custom Field 2 - Type', 		// Ce champ aura toujours la valeur � Spoken languages �
-			34 => 'Custom Field 2 - Value', 		// Spoken languages (champ suppl�mentaire configur� dans l'annuaire)
-			35 => 'Custom Field 3 - Type', 		// Ce champ aura toujours la valeur � UIC identifier �
-			36 => 'Custom Field 3 - Value' 		// UIC identifier (champ suppl�mentaire configur� dans l'annuaire)
-				
-				
+			2 => 'Additional Name',
+			3 => 'Family Name',
+			4 => 'Yomi Name',
+			5 => 'Given Name Yomi',
+			6 => 'Additional Name Yomi',
+			7 => 'Family Name Yomi',
+			8 => 'Name Prefix',
+			9 => 'Name Suffix',
+			10 => 'Initials',
+			11 => 'Nickname',
+			12 => 'Short Name',
+			13 => 'Maiden Name',
+			14 => 'Birthday',
+			15 => 'Gender',
+			16 => 'Location',
+			17 => 'Billing Information',
+			18 => 'Directory Server',
+			19 => 'Mileage',
+			20 => 'Occupation',
+			21 => 'Hobby',
+			22 => 'Sensitivity',
+			23 => 'Priority',
+			24 => 'Subject',
+			25 => 'Notes',
+			26 => 'Group Membership',
+			27 => 'E-mail 1 - Type',				// Ce champ aura toujours la valeur *
+			28 => 'E-mail 1 - Value',
+			29 => 'Phone 1 - Type',					// Ce champ aura toujours la valeur Home
+			30 => 'Phone 1 - Value',				// Telephone (domicile)
+			31 => 'Phone 2 - Type',					// Ce champ aura toujours la valeur Mobile
+			32 => 'Phone 2 - Value',				// Tel. mobile
+			33 => 'Phone 3 - Type',					// Ce champ aura toujours la valeur Work
+			34 => 'Phone 3 - Value',				// Telephone (bureau)
+			35 => 'Phone 4 - Type',					// Ce champ aura toujours la valeur Work Fax
+			36 => 'Phone 4 - Value',				// Telecopie (bureau)
+			37 => 'Address 1 - Type',				// Ce champ aura toujours la valeur Home
+			38 => 'Address 1 - Formatted',			// composee a partir de plusieurs champ de l'annuaire
+			39 => 'Address 1 - Street',				// Rue (domicile)
+			40 => 'Address 1 - City',				// Ville (domicile)
+			41 => 'Address 1 - PO Box',			
+			42 => 'Address 1 - Region',				// Dep/Region (domicile)
+			43 => 'Address 1 - Postal Code',		// Code postal (domicile)
+			44 => 'Address 1 - Country',			// Pays (domicile)
+			45 => 'Address 1 - Extended Address',
+			46 => 'Address 2 - Type',				// Ce champ aura toujours la valeur Work
+			47 => 'Address 2 - Formatted',			// Adresse (bureau), composee a partir de plusieurs champ de l'annuaire
+			48 => 'Address 2 - Street',				// Rue (bureau)
+			49 => 'Address 2 - City',				// Ville (bureau)
+			50 => 'Address 2 - PO Box',
+			51 => 'Address 2 - Region',				// Dep/Region (bureau)
+			52 => 'Address 2 - Postal Code',		// Code postal (bureau)
+			53 => 'Address 2 - Country',			// Pays (bureau)
+			54 => 'Address 2 - Extended Address',
+			55 => 'Organization 1 - Type',			// Toujours vide
+			56 => 'Organization 1 - Name',			// Societe
+			57 => 'Organization 1 - Yomi Name',
+			58 => 'Organization 1 - Title',			// Titre
+			59 => 'Organization 1 - Department',	// Service
+			60 => 'Organization 1 - Symbol',
+			61 => 'Organization 1 - Location',
+			62 => 'Organization 1 - Job Description'
+			/*63 => 'Custom Field 1 - Type', 		// Ce champ aura toujours la valeur Resume
+			64 => 'Custom Field 1 - Value', 	// Resume (champ supplementaire configure dans l'annuaire)
+			65 => 'Custom Field 2 - Type', 		// Ce champ aura toujours la valeur Spoken languages
+			66 => 'Custom Field 2 - Value', 	// Spoken languages (champ supplementaire configure dans l'annuaire)
+			67 => 'Custom Field 3 - Type', 		// Ce champ aura toujours la valeur UIC identifier
+			68 => 'Custom Field 3 - Value' 		// UIC identifier (champ supplementaire configure dans l'annuaire)*/
 		);
+		
+		$i = 63;
+		$j = 1;
+		foreach($this->custom as $name => $label)
+		{
+			$headers[$i] =  'Custom Field '.$j.' - Type';
+			$i++;
+			$headers[$i] =  'Custom Field '.$j.' - Value';
+			$i++;
+			$j++;
+		}
+		
+		return $headers;
 	}
 }
 
