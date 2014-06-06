@@ -793,20 +793,21 @@ class bab_UserPeriods implements Countable, seekableIterator {
 				$d_key = md5($event->ts_begin . $event->ts_end. $event->getProperty('SUMMARY').$event->getProperty('LOCATION').$event->getProperty('CATEGORIES').$event->getProperty('DESCRIPTION'));
 				
 				
-				if (isset($duplicates_index[$d_key]))
+				if ('CANCELLED' !== $event->getProperty('STATUS'))
 				{
-					// T7736 dedoublonner les evenements sur le meme agenda
-					if ($duplicates_index[$d_key] >= $event->getProperty('DTSTAMP'))
+					if (isset($duplicates_index[$d_key]))
 					{
-						// a duplicate allready added
-						// bab_debug('Ignore duplicate event '.$uid.' on calendar '.$calendar_uid);
-						continue;
+						// T7736 dedoublonner les evenements sur le meme agenda
+						if ($duplicates_index[$d_key] >= $event->getProperty('DTSTAMP'))
+						{
+							// a duplicate allready added
+							// bab_debug('Ignore duplicate event '.$uid.' on calendar '.$calendar_uid);
+							continue;
+						}
 					}
-				}
-
 				
-				$duplicates_index[$d_key] = $event->getProperty('DTSTAMP');
-
+					$duplicates_index[$d_key] = $event->getProperty('DTSTAMP');
+				}
 
 				if ($event->ts_end > $start && $event->ts_begin < $end) {
 
