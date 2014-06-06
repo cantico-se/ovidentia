@@ -335,14 +335,14 @@ abstract class bab_ICalendarObject
 	 */
 	public function getAllAttendees() {
 		$return = array();
-		$attendees = $this->getProperty('ATTENDEE');
 		
-		if (empty($attendees))
+		if (empty($this->properties['ATTENDEE']))
 		{
 			return array();
 		}
 		
-		foreach($attendees as $params => $value)
+		
+		foreach($this->properties['ATTENDEE'] as $params => $value)
 		{
 			$parameters = explode(';', $params);
 			array_shift($parameters);
