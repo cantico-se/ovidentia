@@ -37,8 +37,8 @@ $functionalities->register('Icons'						, $GLOBALS['babInstallPath'].'utilit/ico
 $functionalities->register('Icons/Default'				, $GLOBALS['babInstallPath'].'utilit/icons.php');
 $functionalities->register('Archive'					, $GLOBALS['babInstallPath'].'utilit/archiveincl.php');
 $functionalities->register('Archive/Zip'				, $GLOBALS['babInstallPath'].'utilit/archiveincl.php');
-$functionalities->register('Archive/Zip/Zlib'			, $GLOBALS['babInstallPath'].'utilit/archiveincl.php');
 $functionalities->register('Archive/Zip/ZipArchive'		, $GLOBALS['babInstallPath'].'utilit/archiveincl.php');
+$functionalities->register('Archive/Zip/Zlib'			, $GLOBALS['babInstallPath'].'utilit/archiveincl.php');
 $functionalities->register('CalendarBackend'			, $GLOBALS['babInstallPath'].'utilit/cal.backend.class.php');
 $functionalities->register('CalendarBackend/Ovi'		, $GLOBALS['babInstallPath'].'utilit/cal.backend.ovi.class.php');
 $functionalities->register('UserEditor'					, $GLOBALS['babInstallPath'].'utilit/usereditor.php');
