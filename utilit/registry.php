@@ -423,8 +423,7 @@ class bab_Registry
 			SELECT DISTINCT 
 				LEFT(RIGHT(dirkey,LENGTH(dirkey)-'$l'), LOCATE('/',RIGHT(dirkey,LENGTH(dirkey)-'$l')) ) dirkey  
 			FROM bab_registry 
-				WHERE dirkey REGEXP ".$babDB->quote('^'.$this->dir.'[^/]+/.+$')." 
-
+				WHERE dirkey REGEXP ".$babDB->quote('^'.preg_quote($this->dir).'[^/]+/.+$')." 
 				");
 		}
 		
@@ -454,9 +453,8 @@ class bab_Registry
 			
 			SELECT 
 				RIGHT(dirkey,LENGTH(dirkey)-'$l') dirkey  
-			FROM bab_registry 
-				WHERE dirkey REGEXP ".$babDB->quote('^'.$this->dir.'[^/]+$')." 
-
+			FROM bab_registry
+				WHERE dirkey REGEXP ".$babDB->quote('^'.preg_quote($this->dir).'[^/]+$')." 
 				");
 		}
 
@@ -470,6 +468,3 @@ class bab_Registry
 		return false;
 	}
 }
-
-
-?>
