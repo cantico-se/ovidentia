@@ -54,7 +54,7 @@ function changeAdmGroup()
 
 			if( bab_isUserAdministrator() )
 				{
-				$this->delegat[0] = bab_translate("All site");
+				$this->delegat[0] = bab_translate("Common content");
 				}
 			
 			$dgAdmGroups = bab_getDgAdmGroups();

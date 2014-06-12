@@ -3335,7 +3335,7 @@ function bab_getUserFmVisibleDelegations()
 
 		if($bMainSite)
 		{
-			$aVisibleDelegation = array(0 => bab_translate("All site")) + $aVisibleDelegation;
+			$aVisibleDelegation = array(0 => bab_translate("Common content")) + $aVisibleDelegation;
 		}
 	}
 	return $aVisibleDelegation;

@@ -1592,7 +1592,7 @@ function listFiles()
 			$this->aVisibleDelegation = bab_getUserFmVisibleDelegations();
 			// We force the All site delegation to appear in the list even if no folder is accessible.
 			if (!array_key_exists(0, $this->aVisibleDelegation)) {
-				$this->aVisibleDelegation = array(0 => bab_translate('All site')) + $this->aVisibleDelegation;
+				$this->aVisibleDelegation = array(0 => bab_translate('Common content')) + $this->aVisibleDelegation;
 			}
 			$this->bDisplayDelegationSelect = (count($this->aVisibleDelegation) > 1);
 			$this->iCurrentUserDelegation = bab_getCurrentUserDelegation();
