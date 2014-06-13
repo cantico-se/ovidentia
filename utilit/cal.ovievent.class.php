@@ -1545,8 +1545,14 @@ class bab_cal_OviEventSelect
 				bab_debug(sprintf('Error, loading of %d events from %s failed, the backend is not accessible', count($uid_list),'CalendarBackend/'.$calendarBackend), DBG_ERROR);
 				continue;
 			}
-
-			$periods = $backend->selectPeriods($inbox_criteria);
+			
+			try {
+				$periods = $backend->selectPeriods($inbox_criteria);
+			} catch(Exception $e)
+			{
+				bab_debug($e->getMessage());
+				$periods = array();
+			}
 
 			$success = false;
 

@@ -588,7 +588,7 @@ class bab_CalendarPeriod extends bab_ICalendarObject {
 		$html .= '<table class="itterable">';
 		foreach($this->getProperties() as $property)
 		{
-			$p = $this->parseProperty($property);
+			$p = new bab_ICalendarProperty($property);
 			
 			$paramlist = '';
 
@@ -622,52 +622,17 @@ class bab_CalendarPeriod extends bab_ICalendarObject {
 	 */
 	function getOrganizer()
 	{
-		$organizer = $this->getProperty('ORGANIZER');
+		$organizer = $this->parseProperty('ORGANIZER');
 
 		if (!$organizer)
 		{
 			return null;
 		}
-
-		if (is_array($organizer))
-		{
-			foreach($organizer as $params => $value)
-			{
-
-				list(,$email) = explode(':', $value);
-				$name = null;
-				$arrparams = explode(';', $params);
-				array_shift($arrparams);
-
-				foreach($arrparams as $param)
-				{
-					if ($param)
-					{
-						list($key, $paramvalue) = explode('=', $param);
-						if ($key === 'CN') {
-							$name = trim($paramvalue, '" ');
-							break;
-						}
-					}
-				}
-
-				return array(
-					'name' => $name,
-					'email' => $email
-				);
-			}
-
-		} else {
-
-			list(,$email) = explode(':', $organizer);
-
-			return array(
-				'name' => null,
-				'email' => $email
-			);
-		}
-
-		return null;
+		
+		return array(
+			'name' => $organizer->getParameter('CN'),
+			'email' =>  $organizer->value
+		);
 	}
 
 
@@ -863,7 +828,7 @@ class bab_CalendarPeriod extends bab_ICalendarObject {
 			
 			foreach($this->getProperties() as $p)
 			{
-				$property = $this->parseProperty($p);
+				$property = new bab_ICalendarProperty($p);
 				$newPeriod->setProperty($property->getPropertyId(), $property->value);
 			}
 			
@@ -882,7 +847,7 @@ class bab_CalendarPeriod extends bab_ICalendarObject {
 		$r = array();
 		foreach($this->getProperties() as $ps)
 		{
-			$property = $this->parseProperty($ps);
+			$property = new bab_ICalendarProperty($ps);
 			if ('' === trim($property->value) || $property->name === 'SEQUENCE' || $property->name === 'LAST-MODIFIED')
 			{
 				continue;

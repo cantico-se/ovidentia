@@ -139,7 +139,8 @@ abstract class bab_ICalendarObject
 			if (1 === count($this->properties[$icalProperty]) && isset($this->properties[$icalProperty][''])) {
 				return $this->properties[$icalProperty][''];
 			} else {
-				return reset($this->properties[$icalProperty]);
+				// return reset($this->properties[$icalProperty]);
+				return $this->properties[$icalProperty];
 			}
 			
 			
@@ -243,6 +244,8 @@ abstract class bab_ICalendarObject
 		$cn = bab_getUserName($id_user);
 		$email = bab_getUserEmail($id_user);
 		
+		
+		
 		$attendeekey = $this->attendeeKey($role, $partstat, $cn, $rsvp);
 		$insertkey = $cn.' '.$email;
 		$urlIdentifier = $calendar->getUrlIdentifier();
@@ -268,7 +271,6 @@ abstract class bab_ICalendarObject
 			$this->attendees[$urlIdentifier] = $attendee;
 			
 			$this->properties['ATTENDEE'][$attendeekey] = 'MAILTO:'.$email;
-			
 			
 			if (($this instanceof bab_CalendarPeriod)  && !isset($this->attendeesEvents[$urlIdentifier]))
 			{
@@ -703,9 +705,13 @@ abstract class bab_ICalendarObject
 	public function getProperties()
 	{
 		$return = array();
-		foreach($this->properties as $property => $dummy)
+		foreach($this->properties as $property => $propval)
 		{
-			$value = $this->getProperty($property);
+			if (1 === count($propval) && isset($propval[''])) {
+				$value = $propval[''];
+			} else {
+				$value = $propval;
+			}
 			
 			if (is_array($value))
 			{
@@ -748,60 +754,35 @@ abstract class bab_ICalendarObject
 	
 	
 	/**
-	 * Parse iCalendar property
-	 * @param string $property
-	 * @return array
+	 * Parse iCalendar property in object or return null if object does not exists
+	 * if icalendar object contain multiple property for the name, this method get the first
+	 * 
+	 * @param string $name		Property name
+	 * 
+	 * @return bab_ICalendarProperty
 	 */
-	public function parseProperty($property)
+	public function parseProperty($name)
 	{
-		
-		$o = new bab_ICalendarProperty;
-	
-	
-		if (preg_match('/^([^:^;]+)/', $property, $m))
+		if (!isset($this->properties[$name]))
 		{
-			$o->name = $m[1];
+			return null;
 		}
 		
+		$propval = $this->properties[$name];
 		
-		$property = substr($property, strlen($o->name));
 		
-	
-		if (preg_match('/^;(.+)$/', $property, $m))
-		{
-			
-			$o->parameters = preg_split('/\s*;\s*/', $m[1]);
-			$str = '';
-	
-			foreach($o->parameters as $key => $p)
-			{
-				if (preg_match('/^([^=]+)=(?:([^"][^:]+)|(?:"([^"]+)"))/', $p, $m))
-				{
-					$pname = $m[1];
-					if (isset($m[3]))
-					{
-						$pvalue = $m[3];
-					} else {
-						$pvalue = $m[2];
-					}
-	
-					
-					$str .= substr($p, 0,  strlen($m[0])).';';
-					$o->value = substr($p, (1 + strlen($m[0])));
-					
-	
-					$o->parameters[$key] = array('name' => $pname, 'value' => $pvalue);
-				}
-			}
-			
-			$o->parameters_str = substr($str,0, -1);
-	
+		if (1 === count($propval) && isset($propval[''])) {
+			$value = $name.':'.$propval[''];
 		} else {
-	
-			$o->value = substr($property, 1);
+			reset($propval);
+			list($key, $value) = each($propval);
+			
+			if (!is_numeric($key)) {
+				$value = $key.':'.$value;
+			}
 		}
-	
-		return $o;
+		
+		return new bab_ICalendarProperty($value);
 	}
 }
 
@@ -975,7 +956,69 @@ class bab_ICalendarProperty
 	 * 
 	 * @var array
 	 */
-	public $parameters = array();	
+	public $parameters = array();
+	
+	/**
+	 * 
+	 * @param string [$property]		Icalendar string to set object from
+	 */
+	public function __construct($property = null)
+	{
+		if (isset($property))
+		{
+			$this->setFromIcal($property);
+		}
+	}
+	
+	/**
+	 * @param	string	$property
+	 */ 
+	public function setFromIcal($property)
+	{
+		if (preg_match('/^([^:^;]+)/', $property, $m))
+		{
+			$this->name = $m[1];
+		}
+		
+		
+		$property = substr($property, strlen($this->name));
+		
+		
+		if (preg_match('/^;(.+)$/', $property, $m))
+		{
+		
+			$this->parameters = preg_split('/\s*;\s*/', $m[1]);
+			$str = '';
+		
+			foreach($this->parameters as $key => $p)
+			{
+				if (preg_match('/^([^=]+)=(?:([^"][^:]+)|(?:"([^"]+)"))/', $p, $m))
+				{
+					$pname = $m[1];
+					if (isset($m[3]))
+					{
+						$pvalue = $m[3];
+					} else {
+						$pvalue = $m[2];
+					}
+		
+		
+					$str .= substr($p, 0,  strlen($m[0])).';';
+					$this->value = substr($p, (1 + strlen($m[0])));
+		
+		
+					$this->parameters[$key] = array('name' => $pname, 'value' => $pvalue);
+				}
+			}
+		
+			$this->parameters_str = substr($str,0, -1);
+		
+		} else {
+		
+			$this->value = substr($property, 1);
+		}
+		
+	}
 	
 	
 	/**
@@ -991,5 +1034,24 @@ class bab_ICalendarProperty
 		
 		
 		return $this->name.';'.$this->parameters_str;
+	}
+	
+	
+	/**
+	 * return first parameter value if set or null if param name not found
+	 * @param string $paramname
+	 * @return string
+	 */
+	public function getParameter($paramname)
+	{
+		foreach($this->parameters as $arr)
+		{
+			if ($arr['name'] === $paramname)
+			{
+				return $arr['value'];
+			}
+		}
+		
+		return null;
 	}
 }
