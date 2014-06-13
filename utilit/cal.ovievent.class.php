@@ -1533,11 +1533,11 @@ class bab_cal_OviEventSelect
 			$inbox_criteria = clone $criteria;
 
 			// add the UID criteria
-
+			
 			$uid_criterion = $factory->Uid(array_keys($uid_list));
 			$uid_criterion->setCalendars($calendars);
 			$inbox_criteria->_AND_($uid_criterion);
-
+			
 
 			$backend = @bab_functionality::get('CalendarBackend/'.$calendarBackend);
 			if (false === $backend)
@@ -1546,13 +1546,8 @@ class bab_cal_OviEventSelect
 				continue;
 			}
 			
-			try {
-				$periods = $backend->selectPeriods($inbox_criteria);
-			} catch(Exception $e)
-			{
-				bab_debug($e->getMessage());
-				$periods = array();
-			}
+			$periods = $backend->selectPeriods($inbox_criteria);
+			
 
 			$success = false;
 
