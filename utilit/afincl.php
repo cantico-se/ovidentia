@@ -366,7 +366,7 @@ function bab_getSupervisor($id_user, $id_chart, $supervisor_pos)
 	for($i =0; $i < $iterations; $i++)
 	{
 		$arr = bab_getSuperior($id_user, $id_chart);
-		if (count($arr['iduser']) > 0)
+		if (isset($arr['iduser']) && count($arr['iduser']) > 0)
 		{
 			$id_user = $arr['iduser'][0]; // first user
 		} else {
