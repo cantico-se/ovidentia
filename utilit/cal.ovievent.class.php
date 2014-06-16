@@ -1553,16 +1553,16 @@ class bab_cal_OviEventSelect
 
 			foreach($periods as $p)
 			{
+				/*@var $p bab_CalendarPeriod */
 				$success = true;
 
-				$arr = $uid_list[$p->getProperty('UID')];
-				unset($uid_list[$p->getProperty('UID')]);
-
-				/*@var $p bab_CalendarPeriod */
 				if ($this->addInboxPeriod($uid_list, $p))
 				{
 					$user_periods->addPeriod($p);
 				}
+				
+				$arr = $uid_list[$p->getProperty('UID')];
+				unset($uid_list[$p->getProperty('UID')]);
 
 				$parent_calendar = '';
 				if ($collection = $p->getCollection())
@@ -1617,10 +1617,11 @@ class bab_cal_OviEventSelect
 	private function addInboxPeriod(Array $uid_list, bab_CalendarPeriod $p)
 	{
 
-		/*@var $p bab_CalendarPeriod */
 		$found_uid = $p->getProperty('UID');
+		
 		if (!isset($uid_list[$found_uid]))
 		{
+			
 			return false;
 		}
 
