@@ -109,6 +109,12 @@ if (isset($_GET['babHttpContext'])) {
 }
 
 
+if (!isset($_SERVER['HTTP_HOST']) && isset($_SERVER["argv"][1])) {
+	parse_str($_SERVER["argv"][1], $_GET);
+	parse_str($_SERVER["argv"][1], $_REQUEST);
+}
+
+
 // addon controller
 
 if (isset($_REQUEST['addon']))
@@ -151,9 +157,7 @@ if (isset($_REQUEST['WSSESSIONID'])) {
 
 
 
-if (!isset($_SERVER['HTTP_HOST']) && isset($_SERVER["argv"][1])) {
-	parse_str($_SERVER["argv"][1], $_GET);
-}
+
 
 
 

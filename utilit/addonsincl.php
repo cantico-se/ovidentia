@@ -240,9 +240,6 @@ class bab_addonsInfos {
 	 * Clear cache for addons
 	 */
 	public static function clear() {
-		global $babBody;
-	
-		$babBody->babaddons = array();
 		
 		$obj = bab_getInstance('bab_addonsInfos');
 		
