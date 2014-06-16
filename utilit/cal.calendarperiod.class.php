@@ -629,9 +629,16 @@ class bab_CalendarPeriod extends bab_ICalendarObject {
 			return null;
 		}
 		
+		$email = null;
+		if ('mailto:' === mb_strtolower(mb_substr($organizer->value, 0, 7)))
+		{
+			$email = mb_substr($organizer->value, 7);
+		}
+
+		
 		return array(
 			'name' => $organizer->getParameter('CN'),
-			'email' =>  $organizer->value
+			'email' => $email
 		);
 	}
 
