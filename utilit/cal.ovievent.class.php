@@ -1417,8 +1417,8 @@ class bab_cal_OviEventSelect
 		}
 
 		$dateCondition = 'start_date =' . $babDB->quote('0000-00-00 00:00:00');
-		if (!empty($dateBoundaries)) {
-			$dateCondition .= ' OR (' . implode(' AND ', $dateBoundaries) . ')';
+		if (!empty($dateBoundariesConditions)) {
+			$dateCondition .= ' OR (' . implode(' AND ', $dateBoundariesConditions) . ')';
 		}
 
 
