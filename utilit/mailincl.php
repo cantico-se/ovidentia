@@ -402,7 +402,11 @@ class babMail
 		$this->mailFrom($GLOBALS['babAdminEmail'], $GLOBALS['babAdminName']);
 		$this->mailSender($GLOBALS['babAdminEmail']);
 		$this->mail->SetLanguage('en', $GLOBALS['babInstallPath'].'utilit/');
+
 	}
+	
+
+	
 
 	public function mailFrom($email, $name = '')
 	{
@@ -754,13 +758,134 @@ class babMail
 
 class babMailSmtp extends babMail
 {
-
-	function babMailSmtp($server, $port)
+	private $smtp_conn;
+	
+	
+	public function __construct()
 	{
-		$this->babMail();
-		$this->mail->Host = $server;
-		$this->mail->Port = $port;
+		parent::__construct();
+		$this->mail->IsSMTP();
+
+		
+		
 	}
+	
+	/**
+	 * Authenticate SMTP connexion
+	 * @param string $smtpuser
+	 * @param string $smtppass
+	 */
+	public function setAuthenticated($smtpuser, $smtppass)
+	{
+		$this->mail->SMTPAuth = true;
+		$this->mail->Username = $smtpuser;
+		$this->mail->Password = $smtppass;
+		
+		$host = $this->mail->Host;
+		$port = $this->mail->Port;
+		
+		require_once dirname(__FILE__).'/session.class.php';
+		$session = bab_getInstance('bab_Session');
+		/*@var $session bab_Session */
+		
+		$property = 'bab_smtp_auth_type_'.md5($host.$port);
+		if (!isset($session->$property))
+		{
+			$session->$property = $this->getSmtpAuthTypes($host, $port);
+		}
+		
+		$server_allowed = $session->$property;
+		$client_allowed = array('LOGIN', 'PLAIN', 'NTLM', 'CRAM-MD5');
+		$allowed = array_intersect($server_allowed, $client_allowed);
+
+		$this->mail->AuthType = reset($allowed);
+	}
+	
+	
+	
+	/**
+	 * Fetch supported auth types from SMTP server
+	 * return null if connexion failed or if timed out
+	 * return false if auth types cant be found
+	 * 
+	 * @param string $server
+	 * @param int $port
+	 * 
+	 * @return array
+	 */
+	private function getSmtpAuthTypes($server, $port)
+	{
+		$CRLF = "\r\n";
+		
+		$this->smtp_conn = fsockopen(
+				$server,  // the host of the server
+				$port,    // the port to use
+				$errno,   // error number if any
+				$errstr,  // error message if any
+				10);   	  // give up on connexion after 10 secs
+		
+		if(empty($this->smtp_conn)) {
+			return null;
+		}
+		
+		stream_set_timeout($this->smtp_conn, 10); // give up on read after 10 sec
+		
+		$this->write('EHLO ' . $server . $CRLF);
+		$data = $this->read();
+		$code = substr($data, 0, 3);
+		if ($code != 250) {
+			$this->write('HELO ' . $server . $CRLF);
+			$data = $this->read();
+			$code = substr($data, 0, 3);
+			if($code != 250) {
+				fclose($this->smtp_conn);
+				return false;
+			}
+		}
+
+		fclose($this->smtp_conn);
+
+		if (preg_match('/^250-AUTH[\s=](.+)$/m', $data, $m))
+		{
+			return explode(' ', trim($m[1]));
+		}
+		
+		return false;
+	}
+	
+	
+	private function write($data)
+	{
+		//echo ">". $data."<br />";
+		
+		return fwrite($this->smtp_conn, $data);
+	}
+	
+	private function read()
+	{
+		
+		$data = '';
+		while(is_resource($this->smtp_conn) && !feof($this->smtp_conn)) {
+			$str = fgets($this->smtp_conn, 515);
+			$data .= $str;
+			
+			// if 4th character is a space, we are done reading, break the loop
+			if(substr($str, 3, 1) == ' ') {
+				break;
+			}
+		
+			// Timed-out
+			$info = stream_get_meta_data($this->smtp_conn);
+			if ($info['timed_out']) {
+				break;
+			}
+		}
+		
+		//echo "<". $data."<br />";
+		
+		return $data;
+	}
+	
 }
 
 /**
@@ -789,17 +914,15 @@ function bab_mail()
 			$mail->mail->Sendmail = $babBody->babsite['smtpserver'];
 			break;
 		case 'smtp':
-			$mail = new babMail();
-			$mail->mail->IsSMTP();
+			$mail = new babMailSmtp();
+			
 			$mail->mail->Host = $babBody->babsite['smtpserver'];
 			$mail->mail->Port = $babBody->babsite['smtpport'];
 			$mail->mail->SMTPSecure = $babBody->babsite['smtpsecurity'];
 
 			if( $babBody->babsite['smtpuser'] != '' ||  $babBody->babsite['smtppass'] != '')
 				{
-				$mail->mail->SMTPAuth = true;
-				$mail->mail->Username = $babBody->babsite['smtpuser'];
-				$mail->mail->Password = $babBody->babsite['smtppass'];
+				$mail->setAuthenticated($babBody->babsite['smtpuser'], $babBody->babsite['smtppass']);
 				}
 			break;
 	}
