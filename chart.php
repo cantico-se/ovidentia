@@ -25,50 +25,68 @@ include_once 'base.php';
 require_once dirname(__FILE__).'/utilit/registerglobals.php';
 
 function OrgChartPage($ocid, $oeid, $iduser, $disp)
-	{
+{
 	class temp
-		{
+	{
 
 		function temp($ocid, $oeid, $iduser, $disp)
+		{
+
+			$this->sContent	= 'text/html; charset=' . bab_charset::getIso();
+			
+			$this->mode = 'view';
+			if(bab_rp('mode', null) === 'edit')
 			{
-
-			$this->sContent		= 'text/html; charset=' . bab_charset::getIso();
-
-			$this->mode = bab_rp('mode', null) === 'edit' ? 'edit' : 'view';
+				$this->mode = 'edit';
+			}
 
 			$this->frurl = $GLOBALS['babUrlScript']."?tg=frchart&ocid=".$ocid."&oeid=".$oeid."&iduser=".$iduser."&disp=".$disp;
 			$this->frturl = $GLOBALS['babUrlScript']."?tg=frchart&idx=frt&ocid=".$ocid."&oeid=".$oeid."&iduser=".$iduser."&disp=".$disp;
 			$this->flturl = $GLOBALS['babUrlScript']."?tg=fltchart&ocid=".$ocid."&oeid=".$oeid."&iduser=".$iduser;
 
 			$this->unlockurl = $GLOBALS['babUrlScript']."?tg=charts&idx=unlock&ocid=".$ocid;
-			}
-
 		}
+
+	}
 
 	global $babBody;
 
 	$temp = new temp($ocid, $oeid, $iduser, $disp);
 	die(bab_printTemplate($temp,"chart.html", "chartpage"));
-	}
+}
 
-if (!isset($idx))
+if (!isset($idx)){
 	$idx = '';
+}
 
 if (!isset($oeid))
 {
-$oeinfo = $babDB->db_fetch_array($babDB->db_query("select oet.id from ".BAB_OC_ENTITIES_TBL." oet left join ".BAB_OC_TREES_TBL." ctt on ctt.id=oet.id_node where oet.id_oc='".$babDB->db_escape_string($ocid)."' and ctt.id_parent='0'"));
-$oeid = $oeinfo['id'];
+	$oeinfo = $babDB->db_fetch_array(
+		$babDB->db_query(
+			"select oet.id
+			from ".BAB_OC_ENTITIES_TBL." oet left join ".BAB_OC_TREES_TBL." ctt on ctt.id=oet.id_node
+			where oet.id_oc='".$babDB->db_escape_string($ocid)."' and ctt.id_parent='0'"
+		)
+	);
+	$oeid = $oeinfo['id'];
 }
 
 /* main */
 switch($idx)
-	{
+{
 	default:
-		if( !isset($oeid)) { $oeid = 0; }
-		if( !isset($iduser)) { $iduser = 0; }
-		if( !isset($disp)) { $disp = 'disp3'; }
+		if(!isset($oeid))
+		{
+			$oeid = 0;
+		}
+		if(!isset($iduser))
+		{
+			$iduser = 0;
+		}
+		if(!isset($disp))
+		{
+			$disp = 'disp3';
+		}
 		OrgChartPage($ocid, $oeid, $iduser, $disp);
-		exit;
 		break;
-	}
-?>
+}
