@@ -961,7 +961,6 @@ function bab_getDgAdmGroups()
 			$groups[] = $arr['id'];
 		}
 	}
-	
 	return $groups;
 }
 
@@ -1029,6 +1028,7 @@ class bab_currentDelegation
 	private function getDefaultDelegation()
 	{
 		
+
 		if(!bab_isUserAdministrator())
 		{
 			// not set by bab_users_log, use the first available delegation group
@@ -1051,7 +1051,6 @@ class bab_currentDelegation
 	 */
 	public function getCurrentAdmGroup()
 	{
-
 		if (null === $this->id)
 		{
 			$this->id = 0;
@@ -1062,9 +1061,7 @@ class bab_currentDelegation
 				$this->id = $id_dg;
 				
 			} else if ($id_dg = $this->getDefaultDelegation()) {
-				
 				$this->id = $id_dg;
-				
 			}
 		}
 		

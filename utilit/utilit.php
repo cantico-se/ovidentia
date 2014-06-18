@@ -1406,7 +1406,10 @@ class bab_UsersLog
 				
 				require_once dirname(__FILE__).'/delegincl.php';
 				$delegation = bab_getInstance('bab_currentDelegation');
-				$delegation->set($arr['id_dg']);
+				if($arr['id_dg'] != '0')
+				{
+					$delegation->set($arr['id_dg']);
+				}
 		
 				$babDB->db_query("update ".BAB_USERS_LOG_TBL." set
 						dateact=now(),

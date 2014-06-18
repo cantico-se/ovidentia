@@ -482,7 +482,7 @@ switch(bab_rp('tg'))
 	case "admdir":
 		$babLevelOne = bab_translate("Administration");
 		$babLevelTwo = bab_translate("Directories");
-		if( isset($BAB_SESS_LOGGED) && $BAB_SESS_LOGGED && (bab_isUserAdministrator() || bab_getCurrentAdmGroup() != 0))
+		if(isset($BAB_SESS_LOGGED) && $BAB_SESS_LOGGED && (bab_isUserAdministrator() || bab_getCurrentAdmGroup() != 0))
 			$incl = "admin/admdir";
 		break;
 	case "delegat":
