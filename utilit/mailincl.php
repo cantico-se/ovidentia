@@ -296,10 +296,16 @@ class bab_eventAfterMailSent extends bab_eventMail {
 	public $sent_status	= null;
 	
 	/**
-	 * error mesage from server or null if no error or no message
+	 * error message from server or null if no error or no message
 	 * @var string
 	 */
 	public $ErrorInfo = null;
+	
+	/**
+	 * Commplete SMTP trace if available
+	 * @var string
+	 */
+	public $smtp_trace = null;
 }
 
 
@@ -311,6 +317,13 @@ include_once $GLOBALS['babInstallPath'].'utilit/class.smtp.php';
 class bab_PHPMailer extends PHPMailer
 {
 
+	/**
+	 * A copy of the smtp_trace get using output buffering
+	 * @var string
+	 */
+	public $smtp_trace = '';
+	
+	
 	/**
 	 * Set after send, uniq ID used for Message-Id header
 	 * @var string
@@ -338,6 +351,9 @@ class bab_PHPMailer extends PHPMailer
 	 */
 	protected function SmtpSend($header, $body) {
 		
+		ob_start();
+		
+		
 		try {
 			$result = parent::SmtpSend($header, $body);
 		} catch (phpmailerException $e) {
@@ -361,6 +377,11 @@ class bab_PHPMailer extends PHPMailer
 			
 			throw new phpmailerException($_bab_message, self::STOP_CRITICAL);
 		}
+		
+		
+		$this->smtp_trace = ob_get_contents();
+		ob_end_clean();
+		
 		
 		return $result;
 	}
@@ -698,6 +719,9 @@ class babMail
 		$event->setMailInfos($this);
 		$event->sent_status = $this->sent_status;
 		$event->ErrorInfo = empty($this->mail->ErrorInfo) ? null : $this->mail->ErrorInfo;
+		$event->smtp_trace = $this->mail->smtp_trace;
+		
+		
 		
 		bab_fireEvent($event);
 		
@@ -755,7 +779,10 @@ class babMail
 
 
 
-
+/**
+ * 
+ *
+ */
 class babMailSmtp extends babMail
 {
 	private $smtp_conn;
@@ -766,7 +793,10 @@ class babMailSmtp extends babMail
 		parent::__construct();
 		$this->mail->IsSMTP();
 
-		
+		/**
+		 * To enable SMTP trace
+		 */
+		$this->mail->SMTPDebug = 2;
 		
 	}
 	
@@ -783,19 +813,25 @@ class babMailSmtp extends babMail
 		
 		$host = $this->mail->Host;
 		$port = $this->mail->Port;
+		$ssl = ($this->mail->SMTPSecure == 'ssl') ? '1' : '0';
 		
 		require_once dirname(__FILE__).'/session.class.php';
 		$session = bab_getInstance('bab_Session');
 		/*@var $session bab_Session */
 		
-		$property = 'bab_smtp_auth_type_'.md5($host.$port);
+		$property = 'bab_smtp_auth_type_'.md5($host.$port.$ssl);
 		if (!isset($session->$property))
 		{
-			$session->$property = $this->getSmtpAuthTypes($host, $port);
+			$arr = $this->getSmtpAuthTypes($host, $port);
+			if (is_array($arr) && count($arr) > 0)
+			{
+				$session->$property = $arr;
+			}
 		}
 		
-		$server_allowed = $session->$property;
-		$client_allowed = array('LOGIN', 'PLAIN', 'NTLM', 'CRAM-MD5');
+		$server_allowed = isset($session->$property) ? $session->$property : array('LOGIN');
+		$client_allowed = array('LOGIN', 'PLAIN', 'CRAM-MD5');
+		
 		$allowed = array_intersect($server_allowed, $client_allowed);
 
 		$this->mail->AuthType = reset($allowed);
@@ -816,9 +852,10 @@ class babMailSmtp extends babMail
 	private function getSmtpAuthTypes($server, $port)
 	{
 		$CRLF = "\r\n";
+		$ssl = ($this->mail->SMTPSecure == 'ssl');
 		
 		$this->smtp_conn = fsockopen(
-				$server,  // the host of the server
+				($ssl ? 'ssl://':'').$server,  // the host of the server
 				$port,    // the port to use
 				$errno,   // error number if any
 				$errstr,  // error message if any
@@ -830,11 +867,17 @@ class babMailSmtp extends babMail
 		
 		stream_set_timeout($this->smtp_conn, 10); // give up on read after 10 sec
 		
-		$this->write('EHLO ' . $server . $CRLF);
+		if (isset($_SERVER['SERVER_NAME'])) {
+			$from = $_SERVER['SERVER_NAME'];
+		} else {
+			$from = 'localhost.localdomain';
+		}
+		
+		$this->write('EHLO ' . $from . $CRLF);
 		$data = $this->read();
 		$code = substr($data, 0, 3);
 		if ($code != 250) {
-			$this->write('HELO ' . $server . $CRLF);
+			$this->write('HELO ' . $from . $CRLF);
 			$data = $this->read();
 			$code = substr($data, 0, 3);
 			if($code != 250) {
@@ -856,7 +899,7 @@ class babMailSmtp extends babMail
 	
 	private function write($data)
 	{
-		//echo ">". $data."<br />";
+		// echo ">". $data."<br />";
 		
 		return fwrite($this->smtp_conn, $data);
 	}
@@ -881,7 +924,7 @@ class babMailSmtp extends babMail
 			}
 		}
 		
-		//echo "<". $data."<br />";
+		// echo "<". $data."<br />";
 		
 		return $data;
 	}
