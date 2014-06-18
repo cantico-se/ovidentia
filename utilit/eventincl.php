@@ -50,7 +50,8 @@ class bab_event {
  *
  * @return boolean
  */
-function bab_addEventListener($event_class_name, $function_name, $require_file, $addon_name = BAB_ADDON_CORE_NAME, $priority = 0) {
+function bab_addEventListener($event_class_name, $function_name, $require_file, $addon_name = BAB_ADDON_CORE_NAME, $priority = 0)
+{
 
 	global $babDB;
 
@@ -96,7 +97,8 @@ function bab_addEventListener($event_class_name, $function_name, $require_file, 
  * @param	string	$function_name
  * @param	string	$require_file
  */
-function bab_removeEventListener($event_class_name, $function_name, $require_file) {
+function bab_removeEventListener($event_class_name, $function_name, $require_file)
+{
 	global $babDB;
 
 	$babDB->db_query('DELETE FROM '.BAB_EVENT_LISTENERS_TBL.' WHERE
@@ -108,8 +110,27 @@ function bab_removeEventListener($event_class_name, $function_name, $require_fil
 
 
 
+/**
+ * Remove all event listeners of the specified addon.
+ * 
+ * @see		bab_removeEventListener()
+ * @param	string	$addon_name
+ * @since   8.1.95
+ */
+function bab_removeAddonEventListeners($addon_name)
+{
+    global $babDB;
+    
+    $sql = 'DELETE FROM '.BAB_EVENT_LISTENERS_TBL.' WHERE addon_name = ' . $babDB->quote($addon_name);
+    
+    $babDB->db_query($sql);
+}
 
-function bab_fireEvent_addonCtxStack($arr = null) {
+
+
+
+function bab_fireEvent_addonCtxStack($arr = null)
+{
 	static $stack = array();
 	if (null === $arr) {
 		return array_pop($stack);
@@ -186,7 +207,8 @@ class bab_fireEvent_Obj {
  * @see	bab_addEventListener
  * @param	bab_Event	$event_obj
  */
-function bab_fireEvent(bab_Event $event_obj) {
+function bab_fireEvent(bab_Event $event_obj)
+{
 	//echo "<script type=\"text/javascript\">alert(\"" . get_class($event_obj) . "\")</script>";
 	//static $arrayEvent = array();
 	//$arrayEvent[] = get_class($event_obj);
@@ -275,10 +297,9 @@ function bab_fireEvent(bab_Event $event_obj) {
 	
 	
 
-	foreach($calls[$classkey] as $arr) {
+	foreach ($calls[$classkey] as $arr) {
 		
-		if ($event_obj->stop_propagation)
-		{
+		if ($event_obj->stop_propagation) {
 			break;
 		}
 		
