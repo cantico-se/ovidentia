@@ -22,7 +22,7 @@
  */
 include_once 'base.php';
 require_once dirname(__FILE__).'/addonapi.php';
-
+require_once dirname(__FILE__).'/eventaddon.php';
 
 
 
@@ -660,6 +660,10 @@ class bab_addonInfos {
 		global $babDB;
 		$babDB->db_query("UPDATE ".BAB_ADDONS_TBL." set enabled='N' WHERE id=".$babDB->quote($this->id_addon));
 		bab_addonsInfos::clear();
+		
+		$event = new bab_eventAddonDisabled($this->addonname);
+		bab_fireEvent($event);
+
 		return $this;
 	}
 	
@@ -672,10 +676,14 @@ class bab_addonInfos {
 		global $babDB;
 		$babDB->db_query("UPDATE ".BAB_ADDONS_TBL." set enabled='Y' WHERE id=".$babDB->quote($this->id_addon));
 		bab_addonsInfos::clear();
+				
+		$event = new bab_eventAddonEnabled($this->addonname);
+		bab_fireEvent($event);
+
 		return $this;
 	}
-	
-	
+
+
 	/**
 	 * Get version from ini file
 	 * @return string
@@ -685,8 +693,8 @@ class bab_addonInfos {
 		$ini = $this->getIni();
 		return $ini->getVersion();
 	}
-	
-	
+
+
 	/**
 	 * Get description from ini file
 	 * @return string
@@ -933,6 +941,7 @@ class bab_addonInfos {
 		if ((function_exists($func_name) && $func_name($vdb, $vini)) || !function_exists($func_name))
 			{
 
+				
 			if ($this->setDbVersion($vini)) {
 
 				if (empty($vdb)) {
@@ -941,6 +950,12 @@ class bab_addonInfos {
 					$from_version = $vdb;
 				}
 				bab_setUpgradeLogMsg($this->getName(), sprintf('The addon has been updated from %s to %s', $from_version, $vini));
+
+				$event = new bab_eventAddonUpgraded($this->addonname);
+				$event->previousVersion = $from_version;
+				$event->newVersion = $vini;
+				bab_fireEvent($event);
+				
 				
 				// clear sitemap for addons without access rights management
 				bab_siteMap::clearAll();
@@ -948,6 +963,11 @@ class bab_addonInfos {
 			}
 			
 			if ($vdb === $vini) {
+
+				$event = new bab_eventAddonUpgraded($this->addonname);
+				$event->previousVersion = $vini;
+				$event->newVersion = $vini;
+				bab_fireEvent($event);
 				return true;
 			}
 		}
@@ -1008,10 +1028,21 @@ class bab_addonInfos {
 			return false;
 		}
 
+		
+		$event = new bab_eventAddonBeforeDeleted($this->addonname);
+		bab_fireEvent($event);
+
 		$ini = $this->getIni();
 
 		if (!$ini->fileExists()) {
-			return $this->deleteInTables();
+			$deleteInTables = $this->deleteInTables();
+			
+			if ($deleteInTables) {
+				$event = new bab_eventAddonDeleted($this->addonname);
+				bab_fireEvent($event);
+			}
+			
+			return $deleteInTables;
 		}
 	
 	
@@ -1019,6 +1050,9 @@ class bab_addonInfos {
 			$msgerror = $babBody->msgerror;
 			return false;
 		}
+		
+		
+		
 			
 		// if addon return true, the addon is uninstalled in the table.
 		$babDB->db_query("UPDATE ".BAB_ADDONS_TBL." SET installed='N' where id=".$babDB->quote($this->getId()));
@@ -1043,8 +1077,14 @@ class bab_addonInfos {
 			}
 		}
 		
-		// si la suppression des fichiers c'est bien passee, supprimer rellement
-		return $this->deleteInTables();
+		$deleteInTables = $this->deleteInTables();
+
+		if ($deleteInTables) {
+			$event = new bab_eventAddonDeleted($this->addonname);
+			bab_fireEvent($event);
+		}
+		
+		return $deleteInTables;
 	}
 	
 	
