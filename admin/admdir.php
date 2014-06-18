@@ -106,7 +106,10 @@ function listAds()
 			$where = '';
 			if(bab_getCurrentAdmGroup()){
 				$groups = bab_getGroups();
-				$where = " WHERE id_group IN(".$this->db->quote($groups['id']).") ";
+				$where = " WHERE ( 
+								id_group IN(".$this->db->quote($groups['id']).")
+								OR id_dgowner='".$this->db->db_escape_string(bab_getCurrentAdmGroup())."'
+							) ";
 			}
 			$this->resdb			= $this->db->db_query("select * from ".BAB_DB_DIRECTORIES_TBL . $where . " ORDER BY name");
 			$this->countdb			= $this->db->db_num_rows($this->resdb);
