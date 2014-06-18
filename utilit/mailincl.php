@@ -854,6 +854,11 @@ class babMailSmtp extends babMail
 		$CRLF = "\r\n";
 		$ssl = ($this->mail->SMTPSecure == 'ssl');
 		
+		if (empty($port))
+		{
+			$port = $ssl ? 465  : 25;
+		}
+		
 		$this->smtp_conn = fsockopen(
 				($ssl ? 'ssl://':'').$server,  // the host of the server
 				$port,    // the port to use
