@@ -23,7 +23,6 @@
 ************************************************************************/
 include_once 'base.php';
 require_once $GLOBALS ['babInstallPath'] . 'utilit/eventincl.php';
-require_once $GLOBALS ['babInstallPath'] . 'utilit/dirincl.php';
 
 /**
  * The base event for all addon management related events.
