@@ -54,6 +54,12 @@ class bab_SearchRealmDirectories extends bab_SearchRealm {
 	 * @var string
 	 */
 	private $primary_search = null;
+	
+	/**
+	 * 
+	 * @var int
+	 */
+	private $max_left_join = 59;
 
 
 	/**
@@ -222,7 +228,7 @@ class bab_SearchRealmDirectories extends bab_SearchRealm {
 			);
 
 			$sd = array_keys($this->getSearchableDirectories());
-
+			$max = $this->max_left_join;
 			foreach(bab_getDirectoriesFields($sd) as $id_field => $arr) {
 				
 				if (BAB_DBDIR_ENTRIES_TBL === $arr['table']) {
@@ -232,6 +238,12 @@ class bab_SearchRealmDirectories extends bab_SearchRealm {
 				}
 
 				if (BAB_DBDIR_ENTRIES_EXTRA_TBL === $arr['table']) {
+					
+					if ($max <= 0) {
+						continue;
+					}
+						
+					$max--;
 
 					$field = $this->createField($arr['name'], $arr['description']);
 					$field->setTableAlias('extra_'.$arr['name']);
@@ -378,6 +390,7 @@ class bab_SearchRealmDirectories extends bab_SearchRealm {
 		$return = array();
 
 		foreach($this->getFields() as $field) {
+			
 			if ('extra_' === mb_substr($field->getTableAlias(),0,6)) {
 				$id_field = (int) mb_substr($field->getName(), strlen('babdirf'));
 
@@ -386,8 +399,6 @@ class bab_SearchRealmDirectories extends bab_SearchRealm {
 					ON  '.$field->getTableAlias().'.id_entry = e.id 
 					AND '.$field->getTableAlias().'.id_fieldx='.$babDB->quote($id_field).' 
 				';
-
-				// AND e.id_directory IN('.$babDB->quote().')
 			}
 		}
 
@@ -458,7 +469,6 @@ class bab_SearchRealmDirectories extends bab_SearchRealm {
 		$mysql = $this->getBackend('mysql');
 		$mysql->realm = $this;
 
-		
 
 		$req = "SELECT DISTINCT ";
 
