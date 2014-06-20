@@ -353,6 +353,82 @@ abstract class bab_Controller
 	}
 
 
+
+
+	/**
+	 * 
+	 * @param string $result   'success' or 'failed'
+	 * @param string $method
+	 * @return Widget_Action|NULL
+	 */
+	protected static function getRedirectAction($result, $method)
+	{
+	    // Check if the redirect url has been specified in the request for this method / result.
+	    if (isset($_REQUEST['_ctrl_' . $result][$method])) {
+	        return Widget_Action::fromUrl($_REQUEST['_ctrl_' . $result][$method]);
+	    }
+
+	    // Or we use the referer url if available.
+	    if (isset($_SERVER['HTTP_REFERER'])) {
+            return Widget_Action::fromUrl($_SERVER['HTTP_REFERER']);
+	    }
+
+	    return null;
+	}
+
+
+
+	
+	/**
+	 * Adds an error message to display on the page.
+	 * @param string $text
+	 * @since 8.2.0
+	 */
+	public function addError($text)
+	{
+	    $babBody = bab_getBody();
+	    $babBody->addError($text);
+	}
+
+
+
+	/**
+	 * Adds an information message to display on the page.
+	 * @param string $text
+	 * @since 8.2.0
+	 */
+	public function addMessage($text)
+	{
+	    $babBody = bab_getBody();
+	    $babBody->addMessage($text);
+	}
+
+
+
+
+	/**
+	 * Performs an http redirection to the specified action.
+	 * @param Widget_Action $action
+	 * @since 8.2.0
+	 */
+	public function redirect(Widget_Action $action)
+	{
+	    $babBody = bab_getBody();
+	    $errors = $babBody->errors;
+	    $messages = $babBody->messages;
+
+	    foreach ($errors as $error) {
+	        $babBody->addNextPageError($error);
+	    }
+	    foreach ($messages as $message) {
+	        $babBody->addNextPageMessage($message);
+	    }
+
+	    $action->location();
+	}
+
+
+
 	/**
 	 * Tries to dispatch the action to the correct sub-controller.
 	 *
@@ -380,26 +456,12 @@ abstract class bab_Controller
 		}
 
 
-		$successAction 	= null;
-		$failedAction 	= null;
-
-		if (isset($_REQUEST['_ctrl_success'][$method]))
-		{
-			$successAction = Widget_Action::fromUrl($_REQUEST['_ctrl_success'][$method]);
-		}
-
-		if (isset($_REQUEST['_ctrl_failed'][$method]))
-		{
-			$failedAction = Widget_Action::fromUrl($_REQUEST['_ctrl_failed'][$method]);
-		}
 		
-		
-		$babBody = bab_getInstance('babBody');
-		/*@var $babBody babBody */
+		$babBody = bab_getBody();
 
 		try {
 			$returnedValue = $objectController->execAction($action);
-		} catch(bab_AccessException $e) {
+		} catch (bab_AccessException $e) {
 			
 			if ($e->require_credential && !bab_isUserLogged())
 			{
@@ -409,12 +471,11 @@ abstract class bab_Controller
 				$returnedValue = bab_Widgets()->babPage();
 			}
 			
-		} catch(bab_SaveException $e) {
+		} catch (bab_SaveException $e) {
 			
-			if ($e->redirect)
-			{
-				if (!isset($failedAction))
-				{
+		    $failedAction = self::getRedirectAction('failed', $method);
+			if ($e->redirect) {
+				if (!isset($failedAction)) {
 					throw new Exception(sprintf('Missing the failed action to redirect from %s', $method));
 				}
 				
@@ -427,13 +488,13 @@ abstract class bab_Controller
 				$messageMethod = ($e instanceof bab_SaveErrorException) ? 'addError' : 'addMessage';
 				
 				$babBody->$messageMethod($e->getMessage());
-				if (0 == count($failedAction->getParameters()))
-				{
+				if (0 == count($failedAction->getParameters())) {
 					throw new Exception('Error, incorrect action');
 				}
 				$returnedValue = $objectController->execAction($failedAction);
 			}
 		}
+
 		
 		if ($returnedValue instanceof Widget_Displayable_Interface) {
 
@@ -477,18 +538,16 @@ abstract class bab_Controller
 
 		} else if (true === $returnedValue) {
 			// a save action return true, goto defaut location defined in the button
-			
-			if (!isset($successAction))
-			{
+
+		    $successAction = self::getRedirectAction('success', $method);
+			if (!isset($successAction)) {
 				throw new Exception(sprintf('Missing the success action to redirect from %s', $method));
 			} 
-			
-			$successAction->location();
+		
+			$this->redirect($successAction);
 		}
 
 		return $returnedValue;
 	}
-
-
 
 }
