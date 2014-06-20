@@ -3506,6 +3506,25 @@ function bab_getAddonInfosInstance($addonname) {
 }
 
 
+
+
+
+/**
+ * Checks if the current http request is an ajax request.
+ * 
+ * @since 8.2.0
+ * @return boolean
+ */
+function bab_isAjaxRequest()
+{
+	$isAjaxRequest = (isset($_SERVER['HTTP_X_REQUESTED_WITH'])
+		&& strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) == 'xmlhttprequest');
+	return $isAjaxRequest;
+}
+
+
+
+
 /**
  * Ensures that the user is logged in.
  * If the user is not logged the "PortalAutentication" functionality
@@ -3521,8 +3540,18 @@ function bab_getAddonInfosInstance($addonname) {
  *
  * @return boolean
  */
-function bab_requireCredential($sLoginMessage = '', $sAuthType = '') {
+function bab_requireCredential($sLoginMessage = '', $sAuthType = '')
+{
 	require_once $GLOBALS['babInstallPath'].'utilit/loginIncl.php';
+
+	if ($sAuthType === '') {
+		// If a requireCredential is triggerd during an ajax request
+		// we force AuthBasic to avoid silently failing requests. 
+		if (bab_isAjaxRequest()) {
+			$sAuthType = 'Basic';
+		}
+	}
+	
 	return bab_doRequireCredential($sLoginMessage, $sAuthType);
 }
 
