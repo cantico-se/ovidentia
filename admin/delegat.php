@@ -775,11 +775,11 @@ function updateDelegatMembers()
 
 function deleteDelegatMembers()
 {
-	$db = &$GLOBALS['babDB'];
+	global $babDB;
 
 	if (isset($_POST['users']) && count($_POST['users']) > 0 && !empty($_POST['id']))
 	{
-	$db->db_query("DELETE FROM ".BAB_DG_ADMIN_TBL." WHERE id_dg=" . $babDB->quote($_POST['id']) . " AND id_user IN(" . $babDB->quote($_POST['users']) . ")");
+		$babDB->db_query("DELETE FROM ".BAB_DG_ADMIN_TBL." WHERE id_dg=" . $babDB->quote($_POST['id']) . " AND id_user IN(" . $babDB->quote($_POST['users']) . ")");
 	}
 
 
