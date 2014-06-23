@@ -29,7 +29,7 @@ require_once dirname(__FILE__).'/../utilit/registerglobals.php';
 include_once $babInstallPath.'admin/acl.php';
 include_once $babInstallPath.'utilit/topincl.php';
 
-function addTopic($cat, $ncat, $category, $description, $saart, $sacom, $saupd, $bnotif, $atid, $disptid, $restrict, $bhpages, $bpubdates, $battachment, $bartupdate, $bmanmod, $maxarts, $bautoapp, $busetags)
+function addTopic($cat, $ncat, $category, $description, $saart, $sacom, $saupd, $bnotif, $atid, $disptid, $restrict, $bhpages, $bpubdates, $battachment, $bartupdate, $bmanmod, $maxarts, $bautoapp, $busetags, $allow_empty_head)
 	{
 	global $babBody;
 	class temp
@@ -101,7 +101,7 @@ function addTopic($cat, $ncat, $category, $description, $saart, $sacom, $saupd, 
 		var $sHiddenUploadUrl;
 		var $sImageUrl = '#';
 		
-		function temp($cat, $ncat, $category, $description, $saart, $sacom, $saupd, $bnotif, $atid, $disptid, $restrict, $bhpages, $bpubdates, $battachment, $bartupdate, $bmanmod, $maxarts, $bautoapp, $busetags)
+		function temp($cat, $ncat, $category, $description, $saart, $sacom, $saupd, $bnotif, $atid, $disptid, $restrict, $bhpages, $bpubdates, $battachment, $bartupdate, $bmanmod, $maxarts, $bautoapp, $busetags, $allow_empty_head)
 			{
 			global $babBody, $babDB;
 			$this->iMaxImgFileSize		= (int) $GLOBALS['babMaxImgFileSize'];
@@ -156,6 +156,7 @@ function addTopic($cat, $ncat, $category, $description, $saart, $sacom, $saupd, 
 			$this->sTempImgName			= bab_rp('sTempImgName', '');
 			$this->sImgName				= bab_rp('sImgName', '');
 			$this->sAltImagePreview		= bab_translate("Previsualization of the image");
+			$this->allow_empty_head_txt	= bab_translate("Allow empty introductions");
 			
 			$this->sHiddenUploadUrl		= $GLOBALS['babUrlScript'] . '?tg=topics&idx=getHiddenUpload&cat=' . $cat;
 			
@@ -380,6 +381,11 @@ function addTopic($cat, $ncat, $category, $description, $saart, $sacom, $saupd, 
 				{
 				$this->maxarticlesval = $maxarts;
 				}
+				
+			if (isset($allow_empty_head)) 
+			{
+				$this->allow_empty_head = $allow_empty_head;
+			}
 
 			$this->bdel = false;
 			
@@ -635,7 +641,7 @@ function addTopic($cat, $ncat, $category, $description, $saart, $sacom, $saupd, 
 	$babBody->addJavascriptFile($babScriptPath.'bab_dialog.js');
 	$babBody->addStyleSheet('publication.css');
 	
-	$temp = new temp($cat, $ncat, $category, $description, $saart, $sacom, $saupd, $bnotif, $atid, $disptid, $restrict, $bhpages, $bpubdates, $battachment, $bartupdate, $bmanmod, $maxarts, $bautoapp, $busetags);
+	$temp = new temp($cat, $ncat, $category, $description, $saart, $sacom, $saupd, $bnotif, $atid, $disptid, $restrict, $bhpages, $bpubdates, $battachment, $bartupdate, $bmanmod, $maxarts, $bautoapp, $busetags, $allow_empty_head);
 	$babBody->babecho(bab_printTemplate($temp, 'topics.html', 'topiccreate'));
 	}
 
@@ -714,7 +720,7 @@ function listCategories($cat)
 	return $temp->count;
 	}
 
-function saveCategory($category, $cat, $sacom, $saart, $saupd, $bnotif, $lang, $atid, $disptid, $restrict, $bhpages, $bpubdates, $battachment, $bartupdate, $bmanmod, $maxarts, $bautoapp, $busetags, $sAllowAddImg)
+function saveCategory($category, $cat, $sacom, $saart, $saupd, $bnotif, $lang, $atid, $disptid, $bhpages, $bpubdates, $battachment, $bartupdate, $bmanmod, $maxarts, $bautoapp, $busetags, $sAllowAddImg, $allow_empty_head)
 {
 	global $babBody, $babDB;
 	if(empty($category))
@@ -744,7 +750,6 @@ function saveCategory($category, $cat, $sacom, $saart, $saupd, $bnotif, $lang, $
 						'lang'=>$lang, 
 						'article_tmpl'=>$atid, 
 						'display_tmpl'=>$disptid, 
-						'restrict_access'=>$restrict, 
 						'allow_hpages'=>$bhpages,
 						'allow_pubdates'=>$bpubdates,
 						'allow_attachments'=>$battachment,
@@ -753,9 +758,10 @@ function saveCategory($category, $cat, $sacom, $saart, $saupd, $bnotif, $lang, $
 						'max_articles'=>$maxarts,
 						'auto_approbation'=>$bautoapp,
 						'busetags'=>$busetags,
-						'allow_addImg'=>$sAllowAddImg,
-						'allow_unsubscribe'=>bab_rp('allow_unsubscribe'),
-						'allow_meta'=>bab_rp('allow_meta')
+						'allow_addImg'=> $sAllowAddImg,
+						'allow_unsubscribe' => bab_rp('allow_unsubscribe'),
+						'allow_meta' => bab_rp('allow_meta'),
+						'allow_empty_head' => $allow_empty_head
 					);
 	
 	require_once dirname(__FILE__) . '/../utilit/editorincl.php';
@@ -966,7 +972,7 @@ $cat = intval(bab_rp('cat', 0));
 if(isset($_POST['add']))
 {
 	$sAllowAddImg = bab_rp('sAllowAddImg', 'N');
-	if(!saveCategory($category, $ncat, $sacom, $saart, $saupd, $bnotif, $lang, $atid, $disptid, $restrict, $bhpages, $bpubdates, $battachment, $bartupdate, $bmanmod, $maxarts, $bautoapp, $busetags, $sAllowAddImg))
+	if(!saveCategory($category, $ncat, $sacom, $saart, $saupd, $bnotif, $lang, $atid, $disptid, $bhpages, $bpubdates, $battachment, $bartupdate, $bmanmod, $maxarts, $bautoapp, $busetags, $sAllowAddImg, bab_rp('allow_empty_head')))
 	{
 		$idx = 'addtopic';
 	}
@@ -1027,7 +1033,9 @@ switch($idx)
 		$bmanmod = bab_pp('bmanmod', 'N');
 		$maxarts = bab_pp('maxarts', 10);
 		$busetags = bab_pp('busetags', 'N');
-		addTopic($cat, $ncat, $category, $topdesc, $saart, $sacom, $saupd, $bnotif, $atid, $disptid, $restrict, $bhpages, $bpubdates, $battachment, $bartupdate, $bmanmod, $maxarts, $bautoapp, $busetags);
+		$allow_empty_head = bab_rp('allow_empty_head', null);
+		
+		addTopic($cat, $ncat, $category, $topdesc, $saart, $sacom, $saupd, $bnotif, $atid, $disptid, $restrict, $bhpages, $bpubdates, $battachment, $bartupdate, $bmanmod, $maxarts, $bautoapp, $busetags, $allow_empty_head);
 		$babBody->addItemMenu("List", bab_translate("Categories"), $GLOBALS['babUrlScript']."?tg=topcats&idx=List&idp=".$idp);
 		$babBody->addItemMenu("addtopic", bab_translate("Create"), $GLOBALS['babUrlScript']."?tg=topics&idx=addtopic&cat=".$cat);
 		break;

@@ -176,7 +176,7 @@ function deleteArticles($art, $item)
 
 
 
-function modifyCategory($id, $cat, $category, $description, $saart, $sacom, $saupd, $bnotif, $atid, $disptid, $restrict, $bhpages, $bpubdates, $battachment, $bartupdate, $bmanmod, $maxarts, $bautoapp, $busetags, $allowarticlerating)
+function modifyCategory($id, $cat, $category, $description, $saart, $sacom, $saupd, $bnotif, $atid, $disptid, $restrict, $bhpages, $bpubdates, $battachment, $bartupdate, $bmanmod, $maxarts, $bautoapp, $busetags, $allowarticlerating, $allow_empty_head)
 	{
 	global $babBody, $babScriptPath;
 	if( !isset($id))
@@ -260,7 +260,7 @@ function modifyCategory($id, $cat, $category, $description, $saart, $sacom, $sau
 		var $sHiddenUploadUrl;
 		var $sImageUrl = '#';
 
-		function __construct($id, $cat, $category, $description, $saart, $sacom, $saupd, $bnotif, $atid, $disptid, $restrict, $bhpages, $bpubdates, $battachment, $bartupdate, $bmanmod, $maxarts, $bautoapp, $busetags, $allowarticlerating)
+		function __construct($id, $cat, $category, $description, $saart, $sacom, $saupd, $bnotif, $atid, $disptid, $restrict, $bhpages, $bpubdates, $battachment, $bartupdate, $bmanmod, $maxarts, $bautoapp, $busetags, $allowarticlerating, $allow_empty_head)
 			{
 			global $babBody, $babDB;
 
@@ -313,7 +313,8 @@ function modifyCategory($id, $cat, $category, $description, $saart, $sacom, $sau
 			$this->sHiddenUploadUrl		= $GLOBALS['babUrlScript'] . '?tg=topic&idx=getHiddenUpload&iIdTopic=' . $id . '&item=' . $id . '&cat=' . $cat;
 
 			$this->allowarticleratingtxt	= bab_translate("Allow commenters to rate articles");
-			$this->allow_unsubscribe	= bab_translate("Allow readers to subscribe and unsubsribe from notifications");
+			$this->allow_unsubscribe		= bab_translate("Allow readers to subscribe and unsubsribe from notifications");
+			$this->allow_empty_head_txt	= bab_translate("Allow empty introductions");
 			
 			//Si on ne vient pas d'un post alors recuperer l'image
 			if(!array_key_exists('sImgName', $_POST))
@@ -627,6 +628,14 @@ function modifyCategory($id, $cat, $category, $description, $saart, $sacom, $sau
 				{
 				$this->maxarticlesval = $maxarts;
 				}
+				
+			if (isset($allow_empty_head)) {
+				
+				$this->allow_empty_head = (int) $allow_empty_head;
+			} else {
+				$this->allow_empty_head = $this->arr['allow_empty_head'];
+			}
+				
 			$this->bdel = true;
 
 			/* Parent category */
@@ -882,7 +891,7 @@ function modifyCategory($id, $cat, $category, $description, $saart, $sacom, $sau
 	$babBody->addJavascriptFile($babScriptPath.'bab_dialog.js');
 	$babBody->addStyleSheet('publication.css');
 
-	$template = new ModifyCategoryTpl($id, $cat, $category, $description, $saart, $sacom, $saupd, $bnotif, $atid, $disptid, $restrict, $bhpages, $bpubdates, $battachment, $bartupdate, $bmanmod, $maxarts, $bautoapp, $busetags, $allowarticlerating);
+	$template = new ModifyCategoryTpl($id, $cat, $category, $description, $saart, $sacom, $saupd, $bnotif, $atid, $disptid, $restrict, $bhpages, $bpubdates, $battachment, $bartupdate, $bmanmod, $maxarts, $bautoapp, $busetags, $allowarticlerating, $allow_empty_head);
 	$babBody->babecho(bab_printTemplate($template, 'topics.html', 'topiccreate'));
 	}
 
@@ -999,7 +1008,7 @@ function warnRestrictionArticle($topics)
 	$babBody->babecho( bab_printTemplate($temp,"topics.html", "articlewarning"));
 	}
 
-function updateCategory($id, $category, $cat, $saart, $sacom, $saupd, $bnotif, $lang, $atid, $disptid, $restrict, $bhpages, $bpubdates,$battachment, $bartupdate, $bmanmod, $maxarts, $bautoapp, $busetags, $sAllowAddImg, $allowarticlerating)
+function updateCategory($id, $category, $cat, $saart, $sacom, $saupd, $bnotif, $lang, $atid, $disptid, $restrict, $bhpages, $bpubdates,$battachment, $bartupdate, $bmanmod, $maxarts, $bautoapp, $busetags, $sAllowAddImg, $allowarticlerating, $allow_empty_head)
 	{
 	include_once $GLOBALS['babInstallPath'].'utilit/afincl.php';
 	global $babBody;
@@ -1184,7 +1193,8 @@ function updateCategory($id, $category, $cat, $saart, $sacom, $saupd, $bnotif, $
 		allow_article_rating='".$db->db_escape_string($allowarticlerating)."', 
 		allow_addImg='".$db->db_escape_string($sAllowAddImg)."', 
 		allow_unsubscribe=".$db->quote(bab_rp('allow_unsubscribe')).",
-		allow_meta=".$db->quote(bab_rp('allow_meta')).",
+		allow_meta=".$db->quote(bab_rp('allow_meta')).", 
+		allow_empty_head=".$db->quote($allow_empty_head).", 
 		date_modification=NOW() 
 	WHERE 
 		id = '".$id."'";
@@ -1484,7 +1494,7 @@ if( isset($add) )
 	if( isset($submit))
 	{
 		$sAllowAddImg = bab_rp('sAllowAddImg', 'N');
-		if(!updateCategory($item, $category, $ncat, $saart, $sacom, $saupd, $bnotif, $lang, $atid, $disptid, bab_rp('restrict'), $bhpages, $bpubdates,$battachment, $bartupdate, $bmanmod, $maxarts, $bautoapp, $busetags, $sAllowAddImg, $allowarticlerating))
+		if(!updateCategory($item, $category, $ncat, $saart, $sacom, $saupd, $bnotif, $lang, $atid, $disptid, bab_rp('restrict'), $bhpages, $bpubdates,$battachment, $bartupdate, $bmanmod, $maxarts, $bautoapp, $busetags, $sAllowAddImg, $allowarticlerating, bab_rp('allow_empty_head')))
 		{
 			$idx = "Modify";
 		}
@@ -1614,8 +1624,9 @@ switch($idx)
 		$maxarts = bab_rp('maxarts', '');
 		$busetags = bab_rp('busetags', '');
 		$allowarticlerating = bab_rp('allowarticlerating', '');
+		$allow_empty_head = bab_rp('allow_empty_head', null);
 
-		modifyCategory($item, $ncat, $category, $topdesc, $saart, $sacom, $saupd, $bnotif, $atid, $disptid, $restrict, $bhpages, $bpubdates, $battachment, $bartupdate, $bmanmod, $maxarts, $bautoapp, $busetags, $allowarticlerating);
+		modifyCategory($item, $ncat, $category, $topdesc, $saart, $sacom, $saupd, $bnotif, $atid, $disptid, $restrict, $bhpages, $bpubdates, $battachment, $bartupdate, $bmanmod, $maxarts, $bautoapp, $busetags, $allowarticlerating, $allow_empty_head);
 		$babBody->addItemMenu('List', bab_translate('Categories'), $GLOBALS['babUrlScript'].'?tg=topcats');
 		$babBody->addItemMenu('Modify', bab_translate('Modify'), $GLOBALS['babUrlScript'].'?tg=topic&idx=Modify&item='.$item);
 		break;

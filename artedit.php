@@ -1143,16 +1143,16 @@ function bab_saveArticle(){
 		$head = $headeditor->getContent();
 		$head = trim($head);
 		
-		if (empty($head))
+		list($busetags, $allow_empty_head) = $babDB->db_fetch_array($babDB->db_query("
+				select busetags, allow_empty_head from bab_topics where id=".$babDB->quote($id_topic)));
+		
+		
+		if (empty($head) && !$allow_empty_head)
 		{
 			$babBody->addError(bab_translate('The article head is mandatory'));
 			return false;
 		}
-		
-		
-		
-	
-		list($busetags) = $babDB->db_fetch_array($babDB->db_query("select busetags from bab_topics where id=".$babDB->quote($id_topic)));
+
 		
 	
 		$taglist = array();

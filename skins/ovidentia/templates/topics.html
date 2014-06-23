@@ -544,6 +544,21 @@ function ovidentia_popuptreeviewselectparentcategory_topic() {
 		                    			</select>
 		                    		</td>
 		                		</tr>
+		                		
+		                		<tr> 
+		                  			<td align="right">{ allow_empty_head_txt }:</td>
+		                  			<td nowrap="nowrap">
+		                  				<select name="allow_empty_head">
+		                      				<!--#if arr[allow_empty_head] -->
+		                      				<option value="1" selected="selected">{ yes }</option>
+		                      				<option value="0">{ no }</option>
+		                      				<!--#else arr[allow_empty_head] --> 
+		                      				<option value="1">{ yes }</option>
+		                      				<option value="0" selected="selected">{ no }</option>
+		                      				<!--#endif arr[allow_empty_head] -->
+		                    			</select>
+		                    		</td>
+		                		</tr>
 
 		                		<tr> 
 		                  			<td align="right">{ sAllowAddImg }:</td>

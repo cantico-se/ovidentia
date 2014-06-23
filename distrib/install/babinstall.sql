@@ -545,6 +545,7 @@ CREATE TABLE bab_topics (
   allow_article_rating enum('N','Y') NOT NULL default 'N',
   allow_unsubscribe tinyint(1) unsigned NOT NULL default '0',
   `allow_meta` tinyint(1) unsigned NOT NULL default '0',
+  `allow_empty_head` tinyint(1) unsigned NOT NULL default '0',
   date_modification datetime NOT NULL default '0000-00-00 00:00:00',
   PRIMARY KEY  (id),
   KEY id_cat (id_cat),

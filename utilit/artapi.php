@@ -709,7 +709,6 @@ function bab_addTopic($name, $description, $idCategory, &$error, $topicArr = arr
 							'lang'=>$GLOBALS['babLanguage'], 
 							'article_tmpl'=>'', 
 							'display_tmpl'=>'', 
-							'restrict_access'=>'N', 
 							'allow_hpages'=>'N',
 							'allow_pubdates'=>'N',
 							'allow_attachments'=>'N',
@@ -721,6 +720,7 @@ function bab_addTopic($name, $description, $idCategory, &$error, $topicArr = arr
 							'allow_addImg'=>'N',
 							'allow_unsubscribe' => 0,
 							'allow_meta' => 0,
+							'allow_empty_head' => 0,
 							'uuid' => bab_uuid()
 							);
 	

@@ -7107,6 +7107,15 @@ function ovidentia_upgrade($version_base,$version_ini) {
 	}
 	
 	
+	
+	/**
+	 * Upgrade to 8.1.96
+	 */
+	if (!bab_isTableField('bab_topics', 'allow_empty_head')) {
+		$babDB->db_query("ALTER TABLE `bab_topics` ADD `allow_empty_head` tinyint(1) unsigned NOT NULL default '0'");
+	}
+	
+	
 	return true;
 
 }
