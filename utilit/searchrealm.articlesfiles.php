@@ -115,7 +115,7 @@ class bab_SearchRealmArticlesFiles extends bab_SearchRealmTopic {
 				$this->createField('id_article'			, bab_translate('Article numeric identifier'))			->searchable(false)->setTableAlias('a'),
 				$this->createField('id_author'			, bab_translate('Article author numeric identifier'))	->searchable(false)->setTableAlias('a'),
 				$this->createField('date_publication'	, bab_translate('Article publication date'))			->searchable(false)->setTableAlias('a')->setRealName('date'),
-				$this->createField('id_topic'			, bab_translate('Articles numeric identifier'))			->searchable(false)->setTableAlias('f'),
+				$this->createField('id_topic'			, bab_translate('Articles numeric identifier'))			->searchable(false)->setTableAlias('a'),
 				$this->createField('search'				, bab_translate('search in file content'))				->searchable(false),
 				$this->createField('id_dgowner'			, bab_translate('Delegation numeric identifier'))		->searchable(false)->setTableAlias('c')
 				
@@ -289,7 +289,7 @@ class bab_SearchRealmArticlesFiles extends bab_SearchRealmTopic {
 				AND a.id_topic IN('.$babDB->quote(bab_getUserIdObjects(BAB_TOPICSVIEW_GROUPS_TBL)).')
 		';
 
-		$mysql = $this->getBackend('mysql');
+		$mysql = $this->getBackend('mysql'); 
 		$where = $criteria->toString($mysql);
 
 		if ($where) {
@@ -297,6 +297,7 @@ class bab_SearchRealmArticlesFiles extends bab_SearchRealmTopic {
 		}
 
 		$query .= ' ORDER BY a.date DESC';
+
 
 		$return = array();
 
@@ -373,7 +374,7 @@ class bab_SearchRealmArticlesFiles extends bab_SearchRealmTopic {
 	 */
 	public function getSearchFormCriteria() {
 		// default search fields
-		$criteria = bab_SearchDefaultForm::getCriteria($this);
+		$criteria = parent::getSearchFormCriteria($this);
 
 		$this->sql_criteria = new bab_SearchInvariant;
 		
@@ -398,6 +399,7 @@ class bab_SearchRealmArticlesFiles extends bab_SearchRealmTopic {
 		
 		
 		if ($id_topic = self::getRequestedTopics()) {
+			
 			$this->sql_criteria = $this->sql_criteria->_AND_($this->id_topic->in($id_topic));
 		}
 		
