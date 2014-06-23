@@ -446,7 +446,7 @@ class listFiles
 				$aItem = array(
 					'iId' => $oFmFolder->getId(),
 					'bCanManageFolder' => haveRight($sRelativePath, BAB_FMMANAGERS_GROUPS_TBL),
-					'bCanBrowseFolder' => (canBrowse($sRelativePath) && 'Y' === $oFmFolder->getActive()),
+					'bCanBrowseFolder' => canBrowse($sRelativePath),
 					'bCanEditFolder' => canEdit($sRelativePath),
 					'bCanSetRightOnFolder' => canSetRight($sRelativePath),
 					'bCanCutFolder' => canCutFolder($sRelativePath),
