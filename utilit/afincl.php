@@ -380,7 +380,7 @@ function bab_getSupervisor($id_user, $id_chart, $supervisor_pos)
 
 
 /**
- * Updates an instance with user’s response.
+ * Updates an instance with user's response.
  *
  * @see bab_WFGetWaitingApproversInstance
  *
@@ -428,10 +428,10 @@ function updateFlowInstance($idschi, $iduser, $bool)
 					$idnroles[] = $roles[$i];
 				} else {
 					
-					$rr = bab_getSupervisor($id_user, $id_chart, $supervisor_pos);
+					$rr = bab_getSupervisor($scinfo['iduser'], $scinfo['id_oc'], $roles[$i]);
 					if( count($rr['iduser']) > 0  && in_array($rr['iduser'][0], $idusers) )
 					{
-						$idroles[] = 0;
+						$idroles[] = $roles[$i];
 					}
 				}
 			}
