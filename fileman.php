@@ -356,7 +356,7 @@ class listFiles
 				$sRootFmPath		= $this->oFileManagerEnv->getCollectiveRootFmPath();
 				$sGr				= 'Y';
 				$bAccessValid		= ($bCanManage || canUpload($sRelativePath) || canUpdate($sRelativePath) || ($bCanBrowse && 'N' === $this->oFileManagerEnv->oFmFolder->getHide()));
-				$bCanBrowseFolder	= ($bCanBrowse && 'Y' === $this->oFileManagerEnv->oFmFolder->getActive());
+				$bCanBrowseFolder	= $bCanBrowse;
 			}
 			else if($this->oFileManagerEnv->userIsInPersonnalFolder())
 			{
