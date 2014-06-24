@@ -926,7 +926,7 @@ class bab_changeCalendarBackend
 		
 		// the select can take a large amount of memory
 			
-		ini_set('memory_limit', '300M');
+		ini_set('memory_limit', '2048M');
 		
 		
 		if ($delete_destination)
@@ -1003,7 +1003,7 @@ class bab_changeCalendarBackend
 			
 			
 			$criteria = $factory->Calendar($old_calendar);
-			$criteria = $criteria->_AND_($factory->Collection(array('bab_CalendarEventCollection', 'bab_VacationPeriodCollection', 'bab_InboxEventCollection'))); 
+			$criteria = $criteria->_AND_($factory->Collection(array('bab_CalendarEventCollection' , 'bab_VacationPeriodCollection'))); //  , 'bab_InboxEventCollection'
 			
 			if ('' !== $this->start_copy_from)
 			{
@@ -1011,6 +1011,8 @@ class bab_changeCalendarBackend
 				$begin = BAB_DateTime::fromIsoDateTime($this->start_copy_from.' 00:00:00');
 				$criteria = $criteria->_AND_($factory->Begin($begin));
 			}
+			
+			
 			
 			$events = $old_backend->selectPeriods($criteria);
 			
@@ -1027,6 +1029,8 @@ class bab_changeCalendarBackend
 			$i = 0;
 			foreach($events as $event)
 			{
+				/*@var $event bab_CalendarPeriod */
+				
 				bab_setTimeLimit(10); // 10 seconds for each events
 				
 				$collection = $event->getCollection();
@@ -1044,6 +1048,9 @@ class bab_changeCalendarBackend
 				
 				$event->removeProperty('UID');
 				$event->removeProperty('RRULE');
+				
+				/* @var $new_backend Func_CalendarBackend_Caldav */
+				
 				$new_backend->savePeriod($event);
 				$event->commitEvent();
 				
