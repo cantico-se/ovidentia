@@ -824,7 +824,14 @@ class bab_CalendarPeriod extends bab_ICalendarObject {
 			{
 				continue;
 			}
-	
+			
+			if (!($backend instanceof $mainBackend))
+			{
+				// the updateCopies failed if the mailbackend is Ovi and the backend to update is caldav
+				// because a caldav calendar is needed to get the event, collection contain a bab_OviPersonalCalendar
+				continue;
+			}
+			
 			$copy = $backend->getPeriod($collection, $this->getProperty('UID'));
 	
 			if (!isset($copy))
