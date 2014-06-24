@@ -3317,6 +3317,6 @@
 <string id="This substitute is not available for this period">Ce suppléant n'est pas disponible pour cette période</string>
 <string id="This page does not exists">Cette page n'existe pas</string>
 <string id="The groupe of this directory have delegate administration. If you want to update rights on it you should probably contact the delegate administrator.">Cette anuaire est rataché à un groupe dont l'administration est délégué. Si vous voulez modifier les droits sur ce dernier vous devriez prendre contact avec l'administrateur délégué.</string>
-
+<string id="Copy all events from old calendar">Copier tous les événements de l'ancien agenda</string>
 <string id="Access denied to event modification">Accès refusé à la modification de l'événement</string>
 </fr>
