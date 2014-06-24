@@ -985,8 +985,7 @@ class bab_changeCalendarBackend
 		
 		// the select can take a large amount of memory
 			
-		ini_set('memory_limit', '300M');
-		
+		ini_set('memory_limit', '2048M');
 		
 		if ($delete_destination)
 		{
