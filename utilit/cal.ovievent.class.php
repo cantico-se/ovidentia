@@ -1326,13 +1326,32 @@ class bab_cal_OviEventSelect
 		}
 
 
-
+		$duplicates_index = array();
 
 		$query = $this->getQuery($where);
 		$res = $babDB->db_query($query);
 
 		while( $arr = $babDB->db_fetch_assoc($res))
 		{
+			$d_key = md5($arr['start_date'] . $arr['end_date']. $arr['title'].$arr['location'].$arr['id_cat'].$arr['description']);
+			
+			if (isset($duplicates_index[$d_key]))
+			{
+				// exemple de doublons elemines ici:
+				// les utilisateurs caldav ont des evenements avec des invites non-caldav, quand l'invite accepte il cree une copie
+				// dans son agenda, l'UID de l'evenement copie n'est pas le meme forcement le meme au moins pour les vieux evenemtent
+				// peut etre que le probleme de l'UID a ete corrige par la suite? avoir le meme UID pour tous les evenements copie resoudrais
+				// ce probleme
+			
+				// un autre test de doublon similaire existe au moment de l'affichage (fichier cal.userperiods.class.php)
+				// celui-ci a ete ajoute car les evenements sont accedes directement par l'api au moment du transfert d'un agenda
+				// de ovidentia vers caldav
+				continue;
+			}
+			
+			$duplicates_index[$d_key] = 1;
+			
+			
 			if (!empty($arr['hash'])) {
 				if (!isset($hashcollections[$arr['hash']]))
 				{
