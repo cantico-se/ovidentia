@@ -129,9 +129,9 @@ function addFolder()
 			$this->maxdownloadstxt		= bab_translate("Default value");
 			$this->downloadhistorytxt	= bab_translate("Manage downloads history");
 
-			$this->thelp1				= bab_translate("Deactivate a folder allows to archive it: it and its contents will not be visible in the file manager");
+			$this->thelp1				= bab_translate("Deactivate a folder allows to archive it: the folder content will not be accessible");
 			$this->thelp2				= bab_translate("Activate the management of the versions allows to keep a history of all the modifications brought to the same file");
-			$this->thelp3				= bab_translate("If the folder is hidden, it will not be visible in the file manager, its contents remain accessible except the file manager (link since an article, a file OVML...)");
+			$this->thelp3				= bab_translate("If the folder is hidden, it will not be visible in the file manager except from the manager, its contents remain accessible outside of the file manager (link since an article, a file OVML...)");
 			$this->thelp4				= bab_translate("If this option is activated, the keywords of files will be seized freely by their authors and automatically added in the thesaurus. If the option is deactivated, only the keywords seized by the managers of the thesaurus can be selected by the authors of files");
 			$this->thelp5				= bab_translate("Allows to specify how many times a file can be downloaded. Any user downloading the file adds one hit to this counter. Once the counter reaches the set value, the file cannot be downloaded anymore.");
 			$this->thelp6				= bab_translate("Sets the default value that appears in the upload form. The upolading user can change this value while filling the upload form.");
