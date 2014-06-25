@@ -1228,6 +1228,7 @@ class bab_installWindow {
 		echo '<br id="BAB_ADDON_INSTALL_END" />'."\n";
 		echo '</body></html>';
 	}
+	
 
 
 	/**
@@ -1240,6 +1241,10 @@ class bab_installWindow {
 	public static function message($html) {
 		if (defined('BAB_INSTALL_SCRIPT_BEGIN')) {
 			echo '<div class="bab_install_message">'.$html.'</div>'."\n";
+		}
+		
+		if (defined('BAB_INSTALL_TEXT_UTF8')) { // output install message to console
+			echo bab_convertStringFromDatabase(bab_unhtmlentities(strip_tags($html)), 'UTF-8')."\n";
 		}
 	}
 }
