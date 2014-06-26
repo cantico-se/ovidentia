@@ -230,6 +230,12 @@ class bab_synchronizeSql
 	public function addOrmSet(ORM_MySqlRecordSet $set)
 	{
 		$mysqlbackend = ORM_MySqlRecordSet::getBackend();
+		
+		if (!isset($mysqlbackend))
+		{
+			$mysqlbackend = new ORM_MySqlBackend($GLOBALS['babDB']);
+		}
+		
 		$this->fileContent .= $mysqlbackend->setToSql($set)."\n";
 	}
 	
