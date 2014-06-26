@@ -1003,7 +1003,7 @@ class bab_changeCalendarBackend
 			
 			
 			$criteria = $factory->Calendar($old_calendar);
-			$criteria = $criteria->_AND_($factory->Collection(array('bab_CalendarEventCollection' , 'bab_VacationPeriodCollection'))); //  , 'bab_InboxEventCollection'
+			$criteria = $criteria->_AND_($factory->Collection(array('bab_CalendarEventCollection' , 'bab_VacationPeriodCollection', 'bab_InboxEventCollection' )));
 			
 			if ('' !== $this->start_copy_from)
 			{

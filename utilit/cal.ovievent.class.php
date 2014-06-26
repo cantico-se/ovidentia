@@ -346,7 +346,9 @@ class bab_cal_OviEventUpdate
 			$block = $data['block'];
 		}
 
-
+		
+		$description_format = isset($data['description_format']) ? $data['description_format'] : 'html';
+		$description = isset($data['description']) ? $data['description'] : $period->getProperty('DESCRIPTION');
 
 
 		$hash = (string) $hash;
@@ -375,8 +377,8 @@ class bab_cal_OviEventUpdate
 
 			values (
 				".$babDB->quote($period->getProperty('SUMMARY')).",
-				".$babDB->quote($data['description']).",
-				".$babDB->quote($data['description_format']).",
+				".$babDB->quote($description).",
+				".$babDB->quote($description_format).",
 				".$babDB->quote($period->getProperty('LOCATION')).",
 				".$babDB->quote(BAB_DateTime::fromICal($period->getProperty('DTSTART'))->getIsoDateTime()).",
 				".$babDB->quote(BAB_DateTime::fromICal($period->getProperty('DTEND'))->getIsoDateTime()).",
@@ -1501,33 +1503,34 @@ class bab_cal_OviEventSelect
 				if ($this->addInboxPeriod($uid_list, $p))
 				{
 					$user_periods->addPeriod($p);
-				}
 				
-				$arr = $uid_list[$p->getProperty('UID')];
-				unset($uid_list[$p->getProperty('UID')]);
-
-				$parent_calendar = '';
-				if ($collection = $p->getCollection())
-				{
-					if ($calendar = $collection->getCalendar())
+				
+					$arr = $uid_list[$p->getProperty('UID')];
+					unset($uid_list[$p->getProperty('UID')]);
+	
+					$parent_calendar = '';
+					if ($collection = $p->getCollection())
 					{
-						$parent_calendar = $calendar->getUrlIdentifier();
+						if ($calendar = $collection->getCalendar())
+						{
+							$parent_calendar = $calendar->getUrlIdentifier();
+						}
 					}
-				}
-
-
-				if ('0000-00-00 00:00:00' === $arr['start_date'] || ('' === $arr['parent_calendar'] && $parent_calendar))
-				{
-					$babDB->db_query('UPDATE bab_cal_inbox SET
-							start_date='.$babDB->quote(date('Y-m-d H:i:s',$p->ts_begin)).',
-							end_date='.$babDB->quote(date('Y-m-d H:i:s',$p->ts_end)).',
-							parent_calendar='.$babDB->quote($parent_calendar).',
-							lastupdate='.$babDB->quote(date('Y-m-d H:i:s')).'
-						WHERE
-							uid ='.$babDB->quote($p->getProperty('UID')).'
-							AND calendar_backend='.$babDB->quote($calendarBackend)
-					);
-
+	
+	
+					if ('0000-00-00 00:00:00' === $arr['start_date'] || ('' === $arr['parent_calendar'] && $parent_calendar))
+					{
+						$babDB->db_query('UPDATE bab_cal_inbox SET
+								start_date='.$babDB->quote(date('Y-m-d H:i:s',$p->ts_begin)).',
+								end_date='.$babDB->quote(date('Y-m-d H:i:s',$p->ts_end)).',
+								parent_calendar='.$babDB->quote($parent_calendar).',
+								lastupdate='.$babDB->quote(date('Y-m-d H:i:s')).'
+							WHERE
+								uid ='.$babDB->quote($p->getProperty('UID')).'
+								AND calendar_backend='.$babDB->quote($calendarBackend)
+						);
+	
+					}
 				}
 			}
 
