@@ -74,13 +74,14 @@ class bab_InstallRepository {
 						continue;
 					}
 					
-					$name 			= $data[0];
+					$name 			= bab_getStringAccordingToDataBase($data[0], 'UTF-8');
 					$filepath 		= $data[1]; // url relative to root_url in configuration
 					$version 		= $data[2];
-					$description 	= $data[3];
+					$description 	= bab_getStringAccordingToDataBase($data[3], 'UTF-8');
+					$dependencies 	= $data[4];
 					
 					
-					$this->files[$name][$version] = new bab_InstallRepositoryFile($name, $filepath, $version, $description);
+					$this->files[$name][$version] = new bab_InstallRepositoryFile($name, $filepath, $version, $description, $dependencies);
 				}
 				
 				fclose($fp);
@@ -189,13 +190,28 @@ class bab_InstallRepositoryFile
 	public $filepath;
 	public $version;
 	public $description;
+	public $dependencies = array();
 	
-	public function __construct($name, $filepath, $version, $description)
+	public function __construct($name, $filepath, $version, $description, $dependencies)
 	{
 		$this->name = $name;
 		$this->filepath = $filepath;
 		$this->version = $version;
 		$this->description = $description;
+		$arr = explode('&', $dependencies);
+		foreach($arr as $d)
+		{
+			if (!empty($d) && preg_match('/([\w\d]+)([<>]*=)([\w\d\.]+)/', $d, $m))
+			{
+				$addonname = $m[1];
+				$operator = $m[2];
+				$version = $m[3];
+				
+				$this->dependencies[$addonname] = array($operator, $version);
+			} 
+		}
+		
+		
 	}
 	
 	
