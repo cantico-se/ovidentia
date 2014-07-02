@@ -457,8 +457,6 @@ abstract class bab_Controller
 
 
 		
-		$babBody = bab_getBody();
-
 		try {
 			$returnedValue = $objectController->execAction($action);
 		} catch (bab_AccessException $e) {
@@ -467,28 +465,27 @@ abstract class bab_Controller
 			{
 				bab_requireCredential($e->getMessage());
 			} else {
-				$babBody->addError($e->getMessage());
+				$this->addError($e->getMessage());
 				$returnedValue = bab_Widgets()->babPage();
 			}
 			
 		} catch (bab_SaveException $e) {
 			
 		    $failedAction = self::getRedirectAction('failed', $method);
+		    if ($e instanceof bab_SaveErrorException) {
+		        $this->addError($e->getMessage());
+		    } else {
+		        $this->addMessage($e->getMessage());
+		    }
 			if ($e->redirect) {
 				if (!isset($failedAction)) {
 					throw new Exception(sprintf('Missing the failed action to redirect from %s', $method));
 				}
 				
-				$messageMethod = ($e instanceof bab_SaveErrorException) ? 'addNextPageError' : 'addNextPageMessage';
-				
-				$babBody->$messageMethod($e->getMessage());
-				$failedAction->location();
+				$this->redirect($failedAction);
 			} else {
-				
-				$messageMethod = ($e instanceof bab_SaveErrorException) ? 'addError' : 'addMessage';
-				
-				$babBody->$messageMethod($e->getMessage());
-				if (0 == count($failedAction->getParameters())) {
+
+			    if (0 == count($failedAction->getParameters())) {
 					throw new Exception('Error, incorrect action');
 				}
 				$returnedValue = $objectController->execAction($failedAction);
@@ -537,7 +534,7 @@ abstract class bab_Controller
 			die(bab_json_encode($returnArray));
 
 		} else if (true === $returnedValue) {
-			// a save action return true, goto defaut location defined in the button
+			// If the method returns true, we redirect to the 'success' location defined in the button
 
 		    $successAction = self::getRedirectAction('success', $method);
 			if (!isset($successAction)) {
