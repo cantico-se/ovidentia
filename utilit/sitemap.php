@@ -890,6 +890,7 @@ class bab_siteMapItem {
 	 */
 	public function getRwPath()
 	{
+	    /* @var $node bab_Node */
 		$node = $this->node;
 		$arr = array();
 		
