@@ -147,6 +147,7 @@ class bab_Registry
 			return 0;
 		}
 		
+		$userId = (int)bab_getUserId();
 		
 		$dirkey = $this->dir.$key;
 
@@ -176,7 +177,7 @@ class bab_Registry
 				SET
 					value			= ".$babDB->quote($value).", 
 					value_type		= ".$babDB->quote($value_type).", 
-					update_id_user	= ".$babDB->quote((int) $GLOBALS['BAB_SESS_USERID']).", 
+					update_id_user	= ".$babDB->quote($userId).", 
 					lastupdate		= NOW() 
 				WHERE 
 					dirkey			= ".$babDB->quote($dirkey)."
@@ -205,8 +206,8 @@ class bab_Registry
 					".$babDB->quote($dirkey).",
 					".$babDB->quote($value).",
 					".$babDB->quote($value_type).",
-					".$babDB->quote((int) $GLOBALS['BAB_SESS_USERID']).",
-					".$babDB->quote((int) $GLOBALS['BAB_SESS_USERID']).",
+					".$babDB->quote($userId).",
+					".$babDB->quote($userId).",
 					NOW(),
 					NOW()
 				)
