@@ -52,7 +52,6 @@ class bab_SearchCalendarBackEnd extends bab_SearchBackEnd
 		
 		if (!($left instanceof bab_PeriodCriteria))
 		{
-			var_dump($left);
 			throw new Exception('transformation failed for leftCriteria');
 		}
 		
