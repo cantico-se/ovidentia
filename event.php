@@ -687,9 +687,9 @@ function modifyEvent($idcal, $collection, $evtid, $dtstart, $cci, $view, $date)
 
 			$selected_calendars = array();
 
-			foreach($event->getCalendars() as $calendar)
+			foreach($event->getCalendars() as $sub_calendar)
 			{
-				$selected_calendars[] = $calendar->getUrlIdentifier();
+				$selected_calendars[] = $sub_calendar->getUrlIdentifier();
 			}
 
 			$this->calendars = calendarchoice('vacform', $selected_calendars, $event);
