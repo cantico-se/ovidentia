@@ -300,6 +300,7 @@ class Func_Icons extends bab_Functionality
 	//-----------------------------------------------------------------------
 	const OBJECTS_USER							= 'objects-user';
 	const OBJECTS_GROUP							= 'objects-group';
+	const OBJECTS_MANAGER						= 'objects-manager';
 	const OBJECTS_PUBLICATION_ARTICLE			= 'objects-publication-article';
 	const OBJECTS_PUBLICATION_TOPIC				= 'objects-publication-topic';
 	const OBJECTS_PUBLICATION_CATEGORY			= 'objects-publication-category';
@@ -316,8 +317,8 @@ class Func_Icons extends bab_Functionality
 	const OBJECTS_RESOURCE						= 'objects-resource';
 	const OBJECTS_RESOURCE_CATEGORY				= 'objects-resource-category';
 	const OBJECTS_WAITING_ITEM					= 'objects-waiting-item'; // waiting for approval
-	
-	
+
+
 	//-----------------------------------------------------------------------
 	// Places	
 	//-----------------------------------------------------------------------
