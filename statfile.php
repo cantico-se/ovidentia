@@ -47,12 +47,20 @@ function summaryFileManager($col, $order)
 			$this->filestxt = bab_translate("Files");
 			$this->versionstxt = bab_translate("Versions");
 			$this->kilooctet = " ".bab_translate("Kb");
-			$req = "select fft.*, dg.name as dgname, fft.id_dgowner as iIdDgOwner, count(ft.id) as files from ".BAB_FM_FOLDERS_TBL." fft left join ".BAB_DG_GROUPS_TBL." dg on fft.id_dgowner=dg.id left join ".BAB_FILES_TBL." ft on ft.id_owner=fft.id";		
-			if( bab_getCurrentAdmGroup() != 0 )
-				{
-				$req .= " where fft.id_dgowner='".bab_getCurrentAdmGroup()."'";
-				}
+			$req = "
+			    SELECT fft.*, dg.name as dgname, fft.id_dgowner AS iIdDgOwner, count(ft.id) AS files
+			    FROM ".BAB_FM_FOLDERS_TBL." fft
+			    LEFT JOIN ".BAB_DG_GROUPS_TBL." dg ON fft.id_dgowner=dg.id
+			    LEFT JOIN ".BAB_FILES_TBL." ft ON ft.id_owner=fft.id";
+			
+			if (bab_getCurrentAdmGroup() != 0) {
+				$req .= " WHERE fft.sRelativePath='' AND fft.id_dgowner='".bab_getCurrentAdmGroup()."'";
+			} else {
+			    $req .= " WHERE fft.sRelativePath=''";
+			}
 			$req .= " group by fft.id";
+
+			
 
 			$res = $babDB->db_query($req);		
 			$order = mb_strtolower($order);
