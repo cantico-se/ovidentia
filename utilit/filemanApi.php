@@ -2023,24 +2023,19 @@ class bab_Directory
 	private function fileMove(bab_directoryRenameContext $oDirRenContext)
 	{
 		$this->sPathName = $oDirRenContext->getSanitizedTrgPathName();
-
-		if(!$this->setEnv($oDirRenContext->getTrgPathName()))
-		{
+        if (! $this->setEnv($oDirRenContext->getTrgPathName())) {
 			return false;
 		}
 
-		if(!$this->accessValid())
-		{
+        if (! $this->accessValid()) {
 			return false;
 		}
 
 		$sSanitizedSrcPathName	= $oDirRenContext->getSanitizedSrcPathName();
 		$sSanitizedTrgPathName	= $oDirRenContext->getSanitizedTrgPathName();
 
-		$oFmEnv					= &getEnvObject();
 		$iIdSrcRootFolder		= 0;
 		$sSrcPath				= BAB_PathUtil::removeEndSlashes($sSanitizedSrcPathName);
-		$bSrcPathIsCollective	= true;
 		$iIdTrgRootFolder		= 0;
 		$sTrgPath				= BAB_PathUtil::removeEndSlashes($oDirRenContext->getTrgPath());
 
@@ -2050,39 +2045,32 @@ class bab_Directory
 		$iIdSrcRootFolder = $oSrcRootFolder->getId();
 		$iIdTrgRootFolder = $oTrgRootFolder->getId();
 
-		if(canPasteFile($iIdSrcRootFolder, $sSrcPath, $iIdTrgRootFolder, $sTrgPath, $oDirRenContext->getSrcName()))
-		{
+		if (canPasteFile($iIdSrcRootFolder, $sSrcPath, $iIdTrgRootFolder, $sTrgPath, $oDirRenContext->getSrcName())) {
 			$oTrgFmFolder		= BAB_FmFolderSet::getFirstCollectiveFolder($sSanitizedTrgPathName);
 			$iTrgIdOwner		= $oTrgFmFolder->getId();
 
 			$sFullSrcPathName	= (string) $this->getRootFmPath() . $oDirRenContext->getSanitizedSrcPathName() . $oDirRenContext->getSrcName();
 			$sFullTrgPathName	= (string) $this->getRootFmPath() . $oDirRenContext->getSanitizedTrgPathName() . $oDirRenContext->getTrgName();
 
-			$oFmEnv			= &getEnvObject();
 			$oFolderFileSet	= bab_getInstance('BAB_FolderFileSet');
 			$oName			= $oFolderFileSet->aField['sName'];
 			$oPathName		= $oFolderFileSet->aField['sPathName'];
 			$oGroup			= $oFolderFileSet->aField['sGroup'];
-			$oIdOwner		= $oFolderFileSet->aField['iIdOwner'];
 			$oIdDgOwner		= $oFolderFileSet->aField['iIdDgOwner'];
 
 			$oCriteria		= $oName->in($oDirRenContext->getSrcName());
 			$oCriteria		= $oCriteria->_and($oPathName->in($oDirRenContext->getSrcPath()));
 			$oCriteria		= $oCriteria->_and($oGroup->in('Y'));
-			$oCriteria		= $oCriteria->_and($oIdOwner->in($oFmEnv->oFmFolder->getId()));
 			$oCriteria		= $oCriteria->_and($oIdDgOwner->in($this->getDelegationId()));
 
 			//bab_debug($oFolderFileSet->getSelectQuery($oCriteria));
 
 			$oFolderFile = $oFolderFileSet->get($oCriteria);
-			if(!($oFolderFile instanceof BAB_FolderFile))
-			{
+            if (! ($oFolderFile instanceof BAB_FolderFile)) {
 				$this->aError[]	= bab_translate("Error: cannot get the file from the database");
 				return false;
 			}
-
-			if($sFullSrcPathName === $sFullTrgPathName)
-			{
+            if ($sFullSrcPathName === $sFullTrgPathName) {
 				$oFolderFile->setState('');
 				$oFolderFile->save();
 				return true;
@@ -2096,15 +2084,12 @@ class bab_Directory
 			$this->sourceFileExist($oSrcFile);
 			$this->destinationFileExist($oTrgFile);
 			$this->destinationFolderExist($oDestPath);
-			//$this->nameReserved($oTrgFile);
-			//$this->nameSupportedByFileSystem($oTrgFile);
 
 			//Si on ne copie pas dans le meme rootFolder
 			$sFirstSrcPath = (string) getFirstPath($oDirRenContext->getSrcPath());
 			$sFirstTrgPath = (string) getFirstPath($oDirRenContext->getTrgPath());
 
-			if($sFirstSrcPath !== $sFirstTrgPath)
-			{
+            if ($sFirstSrcPath !== $sFirstTrgPath) {
 				$sBaseName = basename($oSrcFile->getPathname());
 				$iFileSize = $oSrcFile->getSize();
 				$this->sizeExceedFmLimit($iFileSize, $sBaseName);
@@ -2115,22 +2100,18 @@ class bab_Directory
 				$this->sizeExceedFolderLimit($iTotalSize, $sBaseName);
 			}
 
-			if(0 < count($this->getError()))
-			{
+            if (0 < count($this->getError())) {
 				return false;
 			}
 
-			if(rename($sFullSrcPathName, $sFullTrgPathName))
-			{
+			if (rename($sFullSrcPathName, $sFullTrgPathName)) {
 				$oFolderFile->setState('');
 				$oFolderFile->setOwnerId($iTrgIdOwner);
 				$oFolderFile->setPathName($oDirRenContext->getSanitizedTrgPathName());
 				$oFolderFile->save();
 
-				if(is_dir($sPathName . $oDirRenContext->getSanitizedSrcPathName() . BAB_FVERSION_FOLDER . '/'))
-				{
-					if(!is_dir($sPathName . $oDirRenContext->getSanitizedTrgPathName() . BAB_FVERSION_FOLDER . '/'))
-					{
+                if (is_dir($sPathName . $oDirRenContext->getSanitizedSrcPathName() . BAB_FVERSION_FOLDER . '/')) {
+                    if (! is_dir($sPathName . $oDirRenContext->getSanitizedTrgPathName() . BAB_FVERSION_FOLDER . '/')) {
 						bab_mkdir($sPathName . $oDirRenContext->getSanitizedTrgPathName() . BAB_FVERSION_FOLDER, $GLOBALS['babMkdirMode']);
 					}
 				}
@@ -2138,10 +2119,8 @@ class bab_Directory
 				$oFolderFileVersionSet = new BAB_FolderFileVersionSet();
 				$oIdFile = $oFolderFileVersionSet->aField['iIdFile'];
 
-				$sFn = $oDirRenContext->getSrcName();
 				$oFolderFileVersionSet->select($oIdFile->in($oFolderFile->getId()));
-				while(null !== ($oFolderFileVersion = $oFolderFileVersionSet->next()))
-				{
+                while (null !== ($oFolderFileVersion = $oFolderFileVersionSet->next())) {
 					$sFileName = $oFolderFileVersion->getMajorVer() . ',' . $oFolderFileVersion->getMinorVer() . ',' . $oDirRenContext->getSrcName();
 					$sSrc = $sPathName . $oDirRenContext->getSanitizedSrcPathName() . BAB_FVERSION_FOLDER . '/' . $sFileName;
 					$sTrg = $sPathName . $oDirRenContext->getSanitizedTrgPathName() . BAB_FVERSION_FOLDER . '/' . $sFileName;
