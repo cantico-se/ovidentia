@@ -298,8 +298,12 @@ class bab_OrgChart extends bab_TreeView
 			$this->t_nodeIcon =& $element->_icon;
 			
 			$this->_currentElement =& $element;
-			reset($this->_currentElement->_actions);
-			reset($this->_currentElement->_members);
+			if(is_array($this->_currentElement->_actions)){
+				reset($this->_currentElement->_actions);
+			}
+			if(is_array($this->_currentElement->_members)){
+				reset($this->_currentElement->_members);
+			}
 			$this->t_nbMembers = count($this->_currentElement->_members);
 			
 			$this->t_showRightElements = ($element->_info != '')
@@ -732,4 +736,46 @@ class bab_OvidentiaOrgChart extends bab_OrgChart
 		$this->_addEntities($this->_startEntityId);
 		parent::_updateTree();
 	}
+}
+
+
+
+
+
+
+class bab_OvidentiaOrgChartTreeView extends bab_OvidentiaOrgChart 
+{
+	function __construct($id, $orgChartId, $startEntityId = 0, $userId = 0, $startLevel = 0, $adminMode = false)
+	{
+		parent::__construct($id, $orgChartId, $startEntityId, $userId, $startLevel, $adminMode);
+	}
+	
+	
+	function _addActions(&$element)
+	{
+		$element->addAction('view_entity_directory',
+					bab_translate("View in directory"),
+					$GLOBALS['babSkinPath'] . 'images/nodetypes/collective_folder.png',
+					'',
+					'toggleMembers');
+	}
+
+
+	function &_addEntity($entityId, $entityParentId, $entityType, $entityName)
+	{
+		$elementIdPrefix = 'ENT';
+		
+		$element =& $this->createElement($elementIdPrefix . $entityId,
+										 $entityType,
+										 bab_toHtml($entityName),
+										 '',
+										 '');
+		//$this->_addMembers($element, $entityId);
+		
+		$element->setLink('javascript:window.parent.document.getElementById(\'frt\').contentWindow.updateFrFrame(\'disp5\',\'&pos=&xf=&q=&idx=list&entity=' .  $entityId . '\')');
+		$element->setIcon($GLOBALS['babSkinPath'] . 'images/nodetypes/folder.png');
+
+		return $element;
+	}
+	
 }

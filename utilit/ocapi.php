@@ -144,6 +144,22 @@ function bab_OCGetEntity($ide)
 }
 
 
+function bab_OCGetRole($idr)
+{
+	global $babDB;
+
+	$res = $babDB->db_query("select * from bab_oc_roles where id='".$idr."'");
+	if( $res && $babDB->db_num_rows($res) > 0 )
+	{
+		$arr = $babDB->db_fetch_array($res);
+		return array( 'name' => $arr['name'], 'description' => $arr['description']);
+
+	}
+
+	return false;
+}
+
+
 function bab_OCGetChildsEntities($idroot='', $idoc='')
 {
 	global $babDB;
@@ -372,6 +388,66 @@ function bab_OCGetUserOrgCharts($iduser)
 	}
 
 	return $orgCharts;
+}
+
+
+
+/**
+ * Returns the info of an organizational chart matching the id
+ *
+ * @param 	int		$idorgchart
+ * @return	array
+ */
+function bab_OCGetOrgChart($idorgchart)
+{
+	global $babDB;
+
+	$sql = '
+		SELECT distinct oct.name, oct.id, oct.id_directory
+		FROM '.BAB_ORG_CHARTS_TBL.' oct
+		WHERE oct.id='.$babDB->quote($idorgchart);
+
+	$orgChartRes = $babDB->db_query($sql);
+
+	return $babDB->db_fetch_assoc($orgChartRes);
+}
+
+
+
+/**
+ * Returns an array of an organizational chart which the user can access
+ *
+ * @param 	int		$typeAccess define the access right tested (1 = view, 2 = update, 3 = at least one of those first two)
+ * @return	array
+ */
+function bab_OCGetAccessibleOrgCharts($typeAccess = 3)
+{
+	global $babDB;
+
+	$sql = '
+		SELECT distinct oct.name, oct.id, oct.id_directory, oct.description
+		FROM '.BAB_ORG_CHARTS_TBL.' oct';
+
+	$orgChartRes = $babDB->db_query($sql);
+	
+	$orgchart = array();
+	while($arr = $babDB->db_fetch_assoc($orgChartRes)){
+		if( 
+			(
+				($typeAccess == 1 || $typeAccess == 3)
+				&& bab_isAccessValid(BAB_OCVIEW_GROUPS_TBL, $arr['id'])
+			)
+			|| 
+			(
+				($typeAccess == 2 || $typeAccess == 3)
+				&& bab_isAccessValid(BAB_OCUPDATE_GROUPS_TBL, $arr['id'])
+			)
+		){
+			$orgchart[$arr['id']] = $arr;
+		}
+	}
+
+	return $orgchart;
 }
 
 
@@ -620,7 +696,7 @@ function bab_OCSelectEntityCollaborators($entityId, $useNameOrder = true)
 	$sql .= ' FROM ' . BAB_OC_ROLES_USERS_TBL . ' AS users';
 	$sql .= ' LEFT JOIN ' . BAB_OC_ROLES_TBL . ' AS roles ON users.id_role = roles.id';
 	$sql .= ' LEFT JOIN ' . BAB_DBDIR_ENTRIES_TBL . ' AS dir_entries ON users.id_user = dir_entries.id';
-	$sql .= ' LEFT JOIN ' . BAB_USERS_TBL . ' AS babusers ON dir_entries.id_user = babusers.id';
+	$sql .= ' LEFT JOIN bab_users AS babusers ON dir_entries.id_user = babusers.id';
 	$sql .= ' WHERE roles.id_entity = ' . $babDB->quote($entityId);
 	$sql .= ' AND '.bab_userInfos::queryAllowedUsers('babusers');
 	$sql .= ' ORDER BY roles.ordering ASC, '; // We want role types to appear in the order 1,2,3,0
@@ -638,6 +714,47 @@ function bab_OCSelectEntityCollaborators($entityId, $useNameOrder = true)
 }
 
 
+/**
+ * Returns an ordered mysql result set containing users of a specified role.
+ *
+ * Results fetched from the result set have the following structure:
+ * array(
+ * 		'id' 				=> The user role id
+ * 		'id_user' 			=> The member user ID (can be empty if the member is a directory entry without associated user) 
+ * 		'sn' 				=>	The member's surname (last name)
+ * 		'givenname' 		=> The member's given name (first name)
+ * )
+ * The result set is ordered by role ordering (which is by default type
+ * in order 1,2,3,0 but can be manually reordered) and by user name
+ * (according to ovidentia name ordering rules by default).
+ * 
+ * @since 8.1.94
+ *
+ * @param int  $idRole			Id of role. 
+ *
+ * @return resource		The mysql resource or FALSE on error
+ */
+function bab_OCGetUsersByRole($idRole)
+{
+	global $babDB;
+	$sql = "SELECT";
+	$sql.= "	ort.id,";
+	$sql.= "	ort.id_user as id_dir,";
+	$sql.= "	dir.id_user,";
+	$sql.= "	dir.sn,";
+	$sql.= "	dir.givenname";
+	$sql.= " FROM bab_oc_roles_users ort";
+	
+	$sql.= " LEFT JOIN bab_dbdir_entries AS dir ON ort.id_user = dir.id";
+	
+	$sql.= " WHERE ort.id_role='".$idRole."'";
+	
+	$sql.= " ORDER BY dir.sn, dir.givenname asc";
+	
+	$members = $babDB->db_query($sql);
+	
+	return $members;
+}
 
 
 //-------------------------------------------------------------------------
@@ -1553,7 +1670,9 @@ class bab_OrgChartUtil
 
 	//-- Entity functions
 
-
+	/**
+	 * $sNote is not use
+	 */
 	function createEntity($iIdParentEntity, $sName, $sDescription, $sNote, $iPosition, $mixedGroup = null, $iIdParentGroup = BAB_REGISTERED_GROUP)
 	{
 		global $babBody;
@@ -2036,6 +2155,47 @@ class bab_OrgChartUtil
 		return false;
 	}
 
+	
+	//PERMUTATION
+	function swapEntity($entity1, $entity2, $movegroup = true)
+	{
+		global $babDB;
+		
+		if( $entity1 == $entity2 ){
+			return true;
+		}
+		$res = $babDB->db_query("select id_node from ".BAB_OC_ENTITIES_TBL." where id='".$entity1."' and id_oc='".$this->iIdOrgChart."'");
+		if( $res && $babDB->db_num_rows($res) == 1)
+		{
+			$arr = $babDB->db_fetch_assoc($res);
+			$res = $babDB->db_query("select id_node from ".BAB_OC_ENTITIES_TBL." where id='".$entity2."' and id_oc='".$this->iIdOrgChart."'");
+			if( $res && $babDB->db_num_rows($res) == 1)
+			{
+				$row = $babDB->db_fetch_assoc($res);
+				$babDB->db_query("update ".BAB_OC_ENTITIES_TBL." set id_node='".$row['id_node']."' where id='".$entity1."'");
+				$babDB->db_query("update ".BAB_OC_ENTITIES_TBL." set id_node='".$arr['id_node']."' where id='".$entity2."'");
+				
+				if($movegroup){
+					require_once dirname(__FILE__) . '/grpincl.php';
+					$entityUtil1 = $this->getEntity($entity1);
+					$entityUtil2 = $this->getEntity($entity2);
+					if($entityUtil1['id_group'] > 3 && $entityUtil2['id_group'] > 3){						
+						bab_SwapGroupPosition($entityUtil1['id_group'], $entityUtil2['id_group']);
+					}
+				}
+				
+				return true;
+			}
+			else
+			{
+				return false;
+			}
+		}
+		
+
+		return false;
+	}
+	
 
 	//-- Role functions
 
@@ -2105,6 +2265,66 @@ class bab_OrgChartUtil
 		if(false !== $oResult)
 		{
 			return $babDB->db_insert_id();
+		}
+		return false;
+	}
+
+
+	function updateRole($iIdRole, $sName, $sDescription)
+	{
+		if(!$this->isLockedBy($this->iIdSessUser))
+		{
+ 			return false;
+		}
+
+		global $babBody;
+
+		$sName = trim($sName);
+		if(0 === mb_strlen($sName))
+		{
+			$babBody->addError(bab_translate("ERROR: You must provide a name"). ' !');
+			return false;
+		}
+
+		global $babDB;
+
+		$sQuery =
+			'UPDATE bab_oc_roles '.
+			'SET ' .
+				'name = ' . $babDB->quote($sName) . ', ' .
+				'description = ' . $babDB->quote($sDescription) . ' ' .
+			'WHERE id = ' . $babDB->quote($iIdRole);
+
+		$oResult = $babDB->db_query($sQuery);
+		if(false !== $oResult)
+		{
+			return $iIdRole;
+		}
+		return false;
+	}
+
+
+	function updateRoleOrder($iIdRole, $order)
+	{
+		if(!$this->isLockedBy($this->iIdSessUser))
+		{
+ 			return false;
+		}
+
+		global $babBody;
+
+		global $babDB;
+
+		$sQuery =
+			'UPDATE bab_oc_roles '.
+			'SET ' .
+				'ordering = ' . $babDB->quote($order) . ' ' .
+			'WHERE id = ' . $babDB->quote($iIdRole);
+
+		$oResult = $babDB->db_query($sQuery);
+		if(false !== $oResult)
+		{
+			return $iIdRole;
 		}
 		return false;
 	}
@@ -2392,7 +2612,8 @@ class bab_OrgChartUtil
 			'FROM ' .
 				BAB_OC_ROLES_TBL . ' ' .
 			'WHERE ' .
-				implode('AND ', $aWhereClauseItem);
+				implode('AND ', $aWhereClauseItem) . ' ' .
+			'ORDER BY ordering=0 ASC, ordering ASC';
 
 		//bab_debug($sQuery);
 		$aDatas	= false;
@@ -2628,6 +2849,37 @@ class bab_OrgChartUtil
 			$this->deleteRoleUserByRoleUserId($IdRoleUser, $iIdUser);
 		}
 	}
+	
+	
+	/**
+	 * /!\ This also delete linked user and the user from group
+	 * This will also associate the user to an other primary role
+	 */
+	function deleteRole($IdRole)
+	{
+		if(!$this->isLockedBy($this->iIdSessUser))
+		{
+			return false;
+		}
+
+		$this->deleteRoleUserByRoleId($IdRole);
+
+		global $babDB;
+
+		$sQuery =
+			'DELETE FROM ' .
+				BAB_OC_ROLES_TBL . ' ' .
+			'WHERE ' .
+				'id = ' . $babDB->quote($IdRole);
+		$bRet = $babDB->db_query($sQuery);
+		if(false !== $bRet)
+		{
+			return true;
+		}
+		
+		return false;
+	}
+	
 
 
 	function deleteRoleUserByRoleUserId($IdRoleUser)
@@ -2773,6 +3025,10 @@ class bab_OrgChartUtil
 	}
 
 
+	/**
+	 * Associate primary role to a user if is primary role have been  deleted
+	 * and remove the user from the group if he is not in an other role for this entity
+	 */
 	private function commonDeleteRoleUserAction($iIdEntity, $iIdUser, $sIsPrimary)
 	{
 		global $babDB;

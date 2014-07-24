@@ -106,15 +106,17 @@ class bab_TreeViewElement
 	 * @param string	$link
 	 * @param string	$script
 	 * @param array		$scriptArgs
+	 * @param string	$class
 	 */
-	public function addAction($name, $caption, $icon, $link, $script, $scriptArgs = array('this'))
+	public function addAction($name, $caption, $icon, $link, $script, $scriptArgs = array('this'), $class = '')
 	{
 		$this->_actions[] = array('name' => $name,
 								  'caption' => $caption,
 								  'icon' => $icon,
 								  'link' => $link,
 								  'script' => $script,
-								  'args' => $scriptArgs);
+								  'args' => $scriptArgs,
+								  'class' => $class);
 	}
 
 
@@ -696,6 +698,7 @@ class bab_TreeView extends bab_Template
 			$this->action_url = $action['link'];
 			$this->action_script = $action['script'];
 			$this->action_script_args = implode(',', $action['args']);
+			$this->action_class = $action['class'];
 			return true;
 		}
 		reset($this->_currentElement->_actions);

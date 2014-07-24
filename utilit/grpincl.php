@@ -173,16 +173,53 @@ function bab_moveGroup($id, $id_parent, $moveoption, $groupname)
 	
 		
 
-	if ($node['id_parent'] != $id_parent)
-		{
-		if ($moveoption == 2)
+	if ($node['id_parent'] != $id_parent){
+		if ($moveoption == 2){
 			return $tree->moveTreeAlpha($id, $id_parent, $groupname);
-		else
+		} else {
 			return $tree->moveAlpha($id, $id_parent, $groupname);
 		}
-
-	return $tree->moveTreeAlpha($id, $id_parent, $groupname);
 	}
+	return $tree->moveTreeAlpha($id, $id_parent, $groupname);
+}
+
+/**
+ * Move group
+ *
+ * @param	int		$id_group1
+ * @param	int		$id_group2
+ *
+ * @return boolean
+ */
+function bab_SwapGroupPosition($id_group1, $id_group2)
+{
+	if( $id_group1 == $id_group2 )
+	{
+		return true;
+	}
+
+	$res = $babDB->db_query("select id_parent, lf, lr from bab_groups where id='".$id_group1."'");
+	if( $res && $babDB->db_num_rows($res) == 1)
+	{
+		$arr = $babDB->db_fetch_array($res);
+		$res = $babDB->db_query("select id_parent, lf, lr from bab_groups where id='".$id_group2."'");
+		if( $res && $babDB->db_num_rows($res) == 1)
+		{
+			$row = $babDB->db_fetch_array($res);
+			$babDB->db_query("update bab_groups set id_parent='".$row['id_parent']."', lf='".$row['lf']."', lr='".$row['lr']."' where id='".$id_group1."'");
+			$babDB->db_query("update bab_groups set id_parent='".$arr['id_parent']."', lf='".$arr['lf']."', lr='".$arr['lr']."' where id='".$id_group2."'");
+			return true;
+		}
+		else
+		{
+			return false;
+		}
+	}
+	else
+	{
+		return false;
+	}
+}
 
 /**
  * 

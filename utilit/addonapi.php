@@ -1351,6 +1351,8 @@ function bab_getGroupsMembers($ids, $nonConfirmed = false, $disabled = false)
 				{
 				$users[$i]['id'] = $arr['id'];
 				$users[$i]['name'] = bab_composeUserName($arr['firstname'],$arr['lastname']);
+				$users[$i]['firstname'] = $arr['firstname'];
+				$users[$i]['lastname'] = $arr['lastname'];
 				$users[$i]['email'] = $arr['email'];
 				$i++;
 				}
@@ -2180,6 +2182,13 @@ function bab_getUserDirFields($id = false)
 	}
 
 
+function bab_getDirInfo($directory) {
+	global $babDB;
+	$query = "select * from bab_db_directories where id=".$babDB->quote($directory);
+	$res = $babDB->db_query($query);
+	return $babDB->db_fetch_assoc($res);
+}
+	
 /**
  * Get a directory entry or a list of entries
  *

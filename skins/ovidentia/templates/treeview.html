@@ -52,7 +52,7 @@
 				<span class="actions">
 
 					<!--#in getNextAction -->
-					<a class="action" href="{ action_url }" title="{ action_caption }" onclick="{ action_script }"><img src="{ action_icon }" alt="{ action_caption }" /></a>
+					<a class="action { action_class }" href="{ action_url }" title="{ action_caption }" onclick="{ action_script }"><img src="{ action_icon }" alt="{ action_caption }" /></a>
 					<!--#endin getNextAction -->
 
 				</span>
@@ -552,7 +552,7 @@ document.write('</div>');
 
    <div class="actions">
   <!--#in getNextAction -->
-    <a href="{ action_url }" title="{ action_caption }" <!--#if action_script --> onclick="return bab_{ action_script }({ action_script_args });" <!--#endif action_script --> ><img class="action" src="{ action_icon }" alt="" /></a>
+    <a href="{ action_url }" class="{ action_class }" title="{ action_caption }" <!--#if action_script --> onclick="return bab_{ action_script }({ action_script_args });" <!--#endif action_script --> ><img class="action" src="{ action_icon }" alt="" /></a>
   <!--#endin getNextAction -->
    </div>
 
@@ -602,7 +602,7 @@ document.write('</div>');
 
   <div class="actions">
   <!--#in getNextAction -->
-  <a href="{ action_url }" title="{ action_caption }" <!--#if action_script --> onclick="return bab_{ action_script }({ action_script_args });" <!--#endif action_script --> ><img class="action" src="{ action_icon }" alt="" /></a>
+  <a href="{ action_url }" class="{ action_class }" title="{ action_caption }" <!--#if action_script --> onclick="return bab_{ action_script }({ action_script_args });" <!--#endif action_script --> ><img class="action" src="{ action_icon }" alt="" /></a>
   <!--#endin getNextAction -->
   </div>
   
