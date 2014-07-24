@@ -466,46 +466,6 @@ function displayChartTree($ocid, $oeid, $iduser, $adminMode)
 
 
 
-
-class bab_OvidentiaOrgChartTreeView extends bab_OvidentiaOrgChart 
-{
-	function __construct($id, $orgChartId, $startEntityId = 0, $userId = 0, $startLevel = 0, $adminMode = false)
-	{
-		parent::__construct($id, $orgChartId, $startEntityId, $userId, $startLevel, $adminMode);
-	}
-	
-	
-	function _addActions(&$element)
-	{
-		$element->addAction('view_entity_directory',
-					bab_translate("View in directory"),
-					$GLOBALS['babSkinPath'] . 'images/nodetypes/collective_folder.png',
-					'',
-					'toggleMembers');
-	}
-
-
-	function &_addEntity($entityId, $entityParentId, $entityType, $entityName)
-	{
-		$elementIdPrefix = 'ENT';
-		
-		$element =& $this->createElement($elementIdPrefix . $entityId,
-										 $entityType,
-										 bab_toHtml($entityName),
-										 '',
-										 '');
-		//$this->_addMembers($element, $entityId);
-		
-		$element->setLink('javascript:window.parent.document.getElementById(\'frt\').contentWindow.updateFrFrame(\'disp5\',\'&pos=&xf=&q=&idx=list&entity=' .  $entityId . '\')');
-		$element->setIcon($GLOBALS['babSkinPath'] . 'images/nodetypes/folder.png');
-
-		return $element;
-	}
-	
-}
-
-
-
 function displayChartTreeView($ocid, $oeid, $iduser, $adminMode)
 {
 	global $babBody;
