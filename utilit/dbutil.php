@@ -119,6 +119,9 @@ class babDatabase
 		return mysqli_close($this->db_connect());
 		}
 
+	/**
+	 * Set mysql connexion charset according to the charset of the database
+	 */
 	public function db_setCharset()
 		{
 			$oResult = $this->db_query("SHOW VARIABLES LIKE 'character_set_database'");
