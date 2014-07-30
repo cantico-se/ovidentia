@@ -1641,6 +1641,7 @@ class Func_Ovml_Container_ArticleFiles extends Func_Ovml_Container
 	public function setOvmlContext(babOvTemplate $ctx)
 	{
 		global $babDB;
+		require_once dirname(__FILE__).'/artincl.php';
 		parent::setOvmlContext($ctx);
 		$articleid = $ctx->get_value('articleid');
 		if( $articleid === false || $articleid === '' )
@@ -1676,6 +1677,7 @@ class Func_Ovml_Container_ArticleFiles extends Func_Ovml_Container
 			$this->ctx->curctx->push('ArticleFileName', $arr['name']);
 			$this->ctx->curctx->push('ArticleFileDescription', $arr['description']);
 			$this->ctx->curctx->push('ArticleFileUrlGet', $GLOBALS['babUrlScript']."?tg=articles&idx=getf&topics=".$arr['id_topic']."&idf=".$arr['id']);
+			$this->ctx->curctx->push('ArticleFileFullPath', bab_getUploadArticlesPath().$arr['id_article'].",".stripslashes($arr['name']));
 			$this->idx++;
 			$this->index = $this->idx;
 			return true;
@@ -3893,6 +3895,8 @@ class Func_Ovml_Container_RecentFiles extends Func_Ovml_Container
 				$this->ctx->curctx->push('FileDate', bab_mktime($arr['modified']));
 
 				$sFullPathname = BAB_FileManagerEnv::getCollectivePath($oFmFolder->getDelegationOwnerId()) . $arr['path'] . $arr['name'];
+				
+				$this->ctx->curctx->push('FileFullPath', $sFullPathname);
 				if (file_exists($sFullPathname))
 				{
 					$this->ctx->curctx->push('FileSize', bab_formatSizeFile(filesize($sFullPathname)));
