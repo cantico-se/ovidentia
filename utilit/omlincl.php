@@ -22,6 +22,9 @@
  * USA.																	*
 ************************************************************************/
 include_once 'base.php';
+require_once dirname(__FILE__).'/userincl.php';
+require_once dirname(__FILE__).'/sitemap.php';
+
 define('BAB_TAG_CONTAINER', 'OC');
 define('BAB_TAG_VARIABLE', 'OV');
 define('BAB_TAG_FUNCTION', 'OF');
@@ -719,7 +722,7 @@ class Func_Ovml_Container_ArticlesHomePages extends Func_Ovml_Container
 			else
 				$this->ctx->curctx->push('ArticleReadMore', 1);
 			$this->ctx->curctx->push('ArticleId', $arr['id']);
-			$this->ctx->curctx->push('ArticleUrl', $GLOBALS['babUrlScript']."?tg=entry&idx=more&article=".$arr['id']."&idg=".$this->idgroup);
+			$this->ctx->curctx->push('ArticleUrl', $GLOBALS['babUrl'].bab_getSelf()."?tg=entry&idx=more&article=".$arr['id']."&idg=".$this->idgroup);
 			$this->ctx->curctx->push('ArticleAuthor', $arr['id_author']);
 			if ($arr['date'] == $arr['date_modification'])
 				{
@@ -741,7 +744,7 @@ class Func_Ovml_Container_ArticlesHomePages extends Func_Ovml_Container
 
 			if( bab_isAccessValid(BAB_TOPICSMOD_GROUPS_TBL, $arr['id_topic']) )
 			{
-				$this->ctx->curctx->push('ArticleEditUrl', $GLOBALS['babUrlScript']."?tg=articles&idx=Modify&topics=".$arr['id_topic'].'&article='.$arr['id']);
+				$this->ctx->curctx->push('ArticleEditUrl', $GLOBALS['babUrl'].bab_getSelf()."?tg=articles&idx=Modify&topics=".$arr['id_topic'].'&article='.$arr['id']);
 				$this->ctx->curctx->push('ArticleEditName', bab_translate("Modify"));
 			} else {
 				$this->ctx->curctx->push('ArticleEditUrl', '');
@@ -817,7 +820,7 @@ class Func_Ovml_Container_ArticleCategories extends Func_Ovml_Container
 			$this->ctx->curctx->push('CategoryDescription', $arr['description']);
 			$this->ctx->curctx->push('CategoryId', $arr['id']);
 			$this->ctx->curctx->push('CategoryParentId', $arr['id_parent']);
-			$this->ctx->curctx->push('TopicsUrl', $GLOBALS['babUrlScript']."?tg=topusr&cat=".$arr['id']);
+			$this->ctx->curctx->push('TopicsUrl', $GLOBALS['babUrl'].bab_getSelf()."?tg=topusr&cat=".$arr['id']);
 			$this->ctx->curctx->push('CategoryDelegationId', $arr['id_dgowner']);
 			$this->idx++;
 			$this->index = $this->idx;
@@ -890,7 +893,7 @@ class Func_Ovml_Container_ParentsArticleCategory extends Func_Ovml_Container
 			$this->ctx->curctx->push('CategoryDescription', $arr['description']);
 			$this->ctx->curctx->push('CategoryId', $arr['id']);
 			$this->ctx->curctx->push('CategoryParentId', $arr['id_parent']);
-			$this->ctx->curctx->push('TopicsUrl', $GLOBALS['babUrlScript']."?tg=topusr&cat=".$arr['id']);
+			$this->ctx->curctx->push('TopicsUrl', $GLOBALS['babUrl'].bab_getSelf()."?tg=topusr&cat=".$arr['id']);
 			$this->ctx->curctx->push('CategoryDelegationId', $arr['id_dgowner']);
 			$this->idx++;
 			$this->index = $this->idx;
@@ -962,7 +965,7 @@ class Func_Ovml_Container_ArticleCategory extends Func_Ovml_Container
 			$this->ctx->curctx->push('CategoryDescription', $arr['description']);
 			$this->ctx->curctx->push('CategoryId', $arr['id']);
 			$this->ctx->curctx->push('CategoryParentId', $arr['id_parent']);
-			$this->ctx->curctx->push('TopicsUrl', $GLOBALS['babUrlScript']."?tg=topusr&cat=".$arr['id']);
+			$this->ctx->curctx->push('TopicsUrl', $GLOBALS['babUrl'].bab_getSelf()."?tg=topusr&cat=".$arr['id']);
 			$this->ctx->curctx->push('CategoryDelegationId', $arr['id_dgowner']);
 			$this->idx++;
 			$this->index = $this->idx;
@@ -1076,10 +1079,10 @@ class Func_Ovml_Container_ArticleTopics extends Func_Ovml_Container
 			$this->pushEditor('TopicDescription', $arr['description'], $arr['description_format'], 'bab_topic');
 			$this->ctx->curctx->push('TopicId', $arr['id']);
 			$this->ctx->curctx->push('TopicLanguage', $arr['lang']);
-			$this->ctx->curctx->push('ArticlesListUrl', $GLOBALS['babUrlScript']."?tg=articles&topics=".$arr['id']);
+			$this->ctx->curctx->push('ArticlesListUrl', $GLOBALS['babUrl'].bab_getSelf()."?tg=articles&topics=".$arr['id']);
 			if( bab_isAccessValid(BAB_TOPICSSUB_GROUPS_TBL, $arr['id']) )
 			{
-				$this->ctx->curctx->push('TopicSubmitUrl', $GLOBALS['babUrlScript']."?tg=articles&idx=Submit&topics=".$arr['id']);
+				$this->ctx->curctx->push('TopicSubmitUrl', $GLOBALS['babUrl'].bab_getSelf()."?tg=articles&idx=Submit&topics=".$arr['id']);
 				$this->ctx->curctx->push('TopicSubmitName', bab_translate("Submit"));
 			}
 			else
@@ -1089,7 +1092,7 @@ class Func_Ovml_Container_ArticleTopics extends Func_Ovml_Container
 			}
 			if( bab_isAccessValid(BAB_TOPICSMAN_GROUPS_TBL, $arr['id']) )
 			{
-				$this->ctx->curctx->push('TopicManageUrl', $GLOBALS['babUrlScript']."?tg=topman&idx=Articles&item=".$arr['id']);
+				$this->ctx->curctx->push('TopicManageUrl', $GLOBALS['babUrl'].bab_getSelf()."?tg=topman&idx=Articles&item=".$arr['id']);
 				$this->ctx->curctx->push('TopicManageName', bab_translate("Articles management"));
 			}
 			else
@@ -1111,7 +1114,7 @@ class Func_Ovml_Container_ArticleTopics extends Func_Ovml_Container
 				$this->ctx->curctx->push('TopicSubscriptionUrl', '');
 			} else {
 				$this->ctx->curctx->push('TopicSubscription', null === $arr['unsubscribed'] ? 1 : 0);
-				$this->ctx->curctx->push('TopicSubscriptionUrl', $GLOBALS['babUrlScript']."?tg=articles&idx=subscription&topic=".$arr['id']);
+				$this->ctx->curctx->push('TopicSubscriptionUrl', $GLOBALS['babUrl'].bab_getSelf()."?tg=articles&idx=subscription&topic=".$arr['id']);
 			}
 
 			$this->idx++;
@@ -1205,10 +1208,10 @@ class Func_Ovml_Container_ArticleTopic extends Func_Ovml_Container
 				$this->nbarticles[$arr['id']] = 0;
 			}
 			$this->ctx->curctx->push('TopicArticleNumber', $this->nbarticles[$arr['id']]);
-			$this->ctx->curctx->push('ArticlesListUrl', $GLOBALS['babUrlScript']."?tg=articles&topics=".$arr['id']);
+			$this->ctx->curctx->push('ArticlesListUrl', $GLOBALS['babUrl'].bab_getSelf()."?tg=articles&topics=".$arr['id']);
 			if( bab_isAccessValid(BAB_TOPICSSUB_GROUPS_TBL, $arr['id']) )
 			{
-				$this->ctx->curctx->push('TopicSubmitUrl', $GLOBALS['babUrlScript']."?tg=articles&idx=Submit&topics=".$arr['id']);
+				$this->ctx->curctx->push('TopicSubmitUrl', $GLOBALS['babUrl'].bab_getSelf()."?tg=articles&idx=Submit&topics=".$arr['id']);
 				$this->ctx->curctx->push('TopicSubmitName', bab_translate("Submit"));
 			}
 			else
@@ -1219,7 +1222,7 @@ class Func_Ovml_Container_ArticleTopic extends Func_Ovml_Container
 
 			if( bab_isAccessValid(BAB_TOPICSMAN_GROUPS_TBL, $arr['id']) )
 			{
-				$this->ctx->curctx->push('TopicManageUrl', $GLOBALS['babUrlScript']."?tg=topman&idx=Articles&item=".$arr['id']);
+				$this->ctx->curctx->push('TopicManageUrl', $GLOBALS['babUrl'].bab_getSelf()."?tg=topman&idx=Articles&item=".$arr['id']);
 				$this->ctx->curctx->push('TopicManageName', bab_translate("Articles management"));
 			}
 			else
@@ -1241,7 +1244,7 @@ class Func_Ovml_Container_ArticleTopic extends Func_Ovml_Container
 				$this->ctx->curctx->push('TopicSubscriptionUrl', '');
 			} else {
 				$this->ctx->curctx->push('TopicSubscription', null === $arr['unsubscribed'] ? 1 : 0);
-				$this->ctx->curctx->push('TopicSubscriptionUrl', $GLOBALS['babUrlScript']."?tg=articles&idx=subscription&topic=".$arr['id']);
+				$this->ctx->curctx->push('TopicSubscriptionUrl', $GLOBALS['babUrl'].bab_getSelf()."?tg=articles&idx=subscription&topic=".$arr['id']);
 			}
 
 
@@ -1498,8 +1501,8 @@ class Func_Ovml_Container_Articles extends Func_Ovml_Container
 			else
 				$this->ctx->curctx->push('ArticleReadMore', 1);
 			$this->ctx->curctx->push('ArticleId', $arr['id']);
-			$this->ctx->curctx->push('ArticleUrl', bab_sitemap::url('babArticle_'.$arr['id'], $GLOBALS['babUrlScript']."?tg=articles&idx=More&topics=".$arr['id_topic']."&article=".$arr['id']));
-			$this->ctx->curctx->push('ArticlePopupUrl', $GLOBALS['babUrlScript']."?tg=articles&idx=viewa&topics=".$arr['id_topic']."&article=".$arr['id']);
+			$this->ctx->curctx->push('ArticleUrl', bab_sitemap::url('babArticle_'.$arr['id'], $GLOBALS['babUrl'].bab_getSelf()."?tg=articles&idx=More&topics=".$arr['id_topic']."&article=".$arr['id']));
+			$this->ctx->curctx->push('ArticlePopupUrl', $GLOBALS['babUrl'].bab_getSelf()."?tg=articles&idx=viewa&topics=".$arr['id_topic']."&article=".$arr['id']);
 			$this->ctx->curctx->push('ArticleAuthor', $arr['id_author']);
 			if ($arr['date'] == $arr['date_modification'])
 				$this->ctx->curctx->push('ArticleModifiedBy', $arr['id_author']);
@@ -1514,7 +1517,7 @@ class Func_Ovml_Container_Articles extends Func_Ovml_Container
 			$this->ctx->curctx->push('ArticleFiles', $arr['nfiles']);
 			if( bab_isAccessValid(BAB_TOPICSMOD_GROUPS_TBL, $arr['id_topic']) )
 			{
-				$this->ctx->curctx->push('ArticleEditUrl', $GLOBALS['babUrlScript']."?tg=articles&idx=Modify&topics=".$arr['id_topic'].'&article='.$arr['id']);
+				$this->ctx->curctx->push('ArticleEditUrl', $GLOBALS['babUrl'].bab_getSelf()."?tg=articles&idx=Modify&topics=".$arr['id_topic'].'&article='.$arr['id']);
 				$this->ctx->curctx->push('ArticleEditName', bab_translate("Modify"));
 			} else {
 				$this->ctx->curctx->push('ArticleEditUrl', '');
@@ -1594,8 +1597,8 @@ class Func_Ovml_Container_Article extends Func_Ovml_Container
 			else
 				$this->ctx->curctx->push('ArticleReadMore', 1);
 			$this->ctx->curctx->push('ArticleId', $arr['id']);
-			$this->ctx->curctx->push('ArticleUrl', bab_sitemap::url('babArticle_'.$arr['id'], $GLOBALS['babUrlScript']."?tg=articles&idx=More&topics=".$arr['id_topic']."&article=".$arr['id']));
-			$this->ctx->curctx->push('ArticlePopupUrl', $GLOBALS['babUrlScript']."?tg=articles&idx=viewa&topics=".$arr['id_topic']."&article=".$arr['id']);
+			$this->ctx->curctx->push('ArticleUrl', bab_sitemap::url('babArticle_'.$arr['id'], $GLOBALS['babUrl'].bab_getSelf()."?tg=articles&idx=More&topics=".$arr['id_topic']."&article=".$arr['id']));
+			$this->ctx->curctx->push('ArticlePopupUrl', $GLOBALS['babUrl'].bab_getSelf()."?tg=articles&idx=viewa&topics=".$arr['id_topic']."&article=".$arr['id']);
 			$this->ctx->curctx->push('ArticleAuthor', $arr['id_author']);
 			if ($arr['date'] == $arr['date_modification'])
 				$this->ctx->curctx->push('ArticleModifiedBy', $arr['id_author']);
@@ -1610,7 +1613,7 @@ class Func_Ovml_Container_Article extends Func_Ovml_Container
 			$this->ctx->curctx->push('ArticleFiles', $arr['nfiles']);
 			if( bab_isAccessValid(BAB_TOPICSMOD_GROUPS_TBL, $arr['id_topic']) )
 			{
-				$this->ctx->curctx->push('ArticleEditUrl', $GLOBALS['babUrlScript']."?tg=articles&idx=Modify&topics=".$arr['id_topic'].'&article='.$arr['id']);
+				$this->ctx->curctx->push('ArticleEditUrl', $GLOBALS['babUrl'].bab_getSelf()."?tg=articles&idx=Modify&topics=".$arr['id_topic'].'&article='.$arr['id']);
 				$this->ctx->curctx->push('ArticleEditName', bab_translate("Modify"));
 			} else {
 				$this->ctx->curctx->push('ArticleEditUrl', '');
@@ -1676,7 +1679,7 @@ class Func_Ovml_Container_ArticleFiles extends Func_Ovml_Container
 			$this->ctx->curctx->push('CIndex', $this->idx);
 			$this->ctx->curctx->push('ArticleFileName', $arr['name']);
 			$this->ctx->curctx->push('ArticleFileDescription', $arr['description']);
-			$this->ctx->curctx->push('ArticleFileUrlGet', $GLOBALS['babUrlScript']."?tg=articles&idx=getf&topics=".$arr['id_topic']."&idf=".$arr['id']);
+			$this->ctx->curctx->push('ArticleFileUrlGet', $GLOBALS['babUrl'].bab_getSelf()."?tg=articles&idx=getf&topics=".$arr['id_topic']."&idf=".$arr['id']);
 			$this->ctx->curctx->push('ArticleFileFullPath', bab_getUploadArticlesPath().$arr['id_article'].",".stripslashes($arr['name']));
 			$this->idx++;
 			$this->index = $this->idx;
@@ -1778,10 +1781,10 @@ class Func_Ovml_Container_Forums extends Func_Ovml_Container
 			$this->ctx->curctx->push('ForumName', $arr['name']);
 			$this->ctx->curctx->push('ForumDescription', $arr['description']);
 			$this->ctx->curctx->push('ForumId', $arr['id']);
-			$this->ctx->curctx->push('ForumUrl', $GLOBALS['babUrlScript']."?tg=threads&forum=".$arr['id']);
+			$this->ctx->curctx->push('ForumUrl', $GLOBALS['babUrl'].bab_getSelf()."?tg=threads&forum=".$arr['id']);
 			if( bab_isAccessValid(BAB_FORUMSPOST_GROUPS_TBL, $arr['id']))
 			{
-				$this->ctx->curctx->push('ForumNewThreadUrl', $GLOBALS['babUrlScript']."?tg=threads&idx=newthread&forum=".$arr['id']);
+				$this->ctx->curctx->push('ForumNewThreadUrl', $GLOBALS['babUrl'].bab_getSelf()."?tg=threads&idx=newthread&forum=".$arr['id']);
 			}
 			else
 			{
@@ -1834,11 +1837,11 @@ class Func_Ovml_Container_Forum extends Func_Ovml_Container
 			$this->ctx->curctx->push('ForumName', $arr['name']);
 			$this->ctx->curctx->push('ForumDescription', $arr['description']);
 			$this->ctx->curctx->push('ForumId', $arr['id']);
-			$this->ctx->curctx->push('ForumUrl', $GLOBALS['babUrlScript']."?tg=threads&forum=".$arr['id']);
+			$this->ctx->curctx->push('ForumUrl', $GLOBALS['babUrl'].bab_getSelf()."?tg=threads&forum=".$arr['id']);
 			$this->ctx->curctx->push('ForumDelegationId', $arr['id_dgowner']);
 			if( bab_isAccessValid(BAB_FORUMSPOST_GROUPS_TBL, $arr['id']))
 			{
-				$this->ctx->curctx->push('ForumNewThreadUrl', $GLOBALS['babUrlScript']."?tg=threads&idx=newthread&forum=".$arr['id']);
+				$this->ctx->curctx->push('ForumNewThreadUrl', $GLOBALS['babUrl'].bab_getSelf()."?tg=threads&idx=newthread&forum=".$arr['id']);
 			}
 			else
 			{
@@ -1990,11 +1993,11 @@ class Func_Ovml_Container_Post extends Func_Ovml_Container
 			$this->ctx->curctx->push('PostAuthor', $author);
 			$this->ctx->curctx->push('PostAuthorId', $arr['id_author']);
 			$this->ctx->curctx->push('PostDate', bab_mktime($arr['date']));
-			$this->ctx->curctx->push('PostUrl', $GLOBALS['babUrlScript']."?tg=posts&idx=List&forum=".$this->arrfid[$this->idx]."&thread=".$arr['id_thread']."&post=".$arr['id'].'&views=1');
-			$this->ctx->curctx->push('PostPopupUrl', $GLOBALS['babUrlScript']."?tg=posts&idx=viewp&forum=".$this->arrfid[$this->idx]."&thread=".$arr['id_thread']."&post=".$arr['id'].'&views=1');
+			$this->ctx->curctx->push('PostUrl', $GLOBALS['babUrl'].bab_getSelf()."?tg=posts&idx=List&forum=".$this->arrfid[$this->idx]."&thread=".$arr['id_thread']."&post=".$arr['id'].'&views=1');
+			$this->ctx->curctx->push('PostPopupUrl', $GLOBALS['babUrl'].bab_getSelf()."?tg=posts&idx=viewp&forum=".$this->arrfid[$this->idx]."&thread=".$arr['id_thread']."&post=".$arr['id'].'&views=1');
 			if( bab_isAccessValid(BAB_FORUMSREPLY_GROUPS_TBL, $this->arrfid[$this->idx]))
 			{
-				$this->ctx->curctx->push('PostReplyUrl', $GLOBALS['babUrlScript']."?tg=posts&idx=reply&forum=".$this->arrfid[$this->idx]."&thread=".$arr['id_thread']."&post=".$arr['id'].'&views=1');
+				$this->ctx->curctx->push('PostReplyUrl', $GLOBALS['babUrl'].bab_getSelf()."?tg=posts&idx=reply&forum=".$this->arrfid[$this->idx]."&thread=".$arr['id_thread']."&post=".$arr['id'].'&views=1');
 			}
 			else
 			{
@@ -2002,7 +2005,7 @@ class Func_Ovml_Container_Post extends Func_Ovml_Container
 			}
 			if( ( bab_isAccessValid(BAB_FORUMSMAN_GROUPS_TBL, $this->arrfid[$this->idx]) && $arr['bupdatemoderator'] == 'Y') || ($arr["active"] == 'Y' && $BAB_SESS_USERID && $arr['bupdateauthor'] == 'Y' && $BAB_SESS_USERID == $arr['id_author']))
 			{
-				$this->ctx->curctx->push('PostModifyUrl', $GLOBALS['babUrlScript']."?tg=posts&idx=Modify&forum=".$this->arrfid[$this->idx]."&thread=".$arr['id_thread']."&post=".$arr['id']);
+				$this->ctx->curctx->push('PostModifyUrl', $GLOBALS['babUrl'].bab_getSelf()."?tg=posts&idx=Modify&forum=".$this->arrfid[$this->idx]."&thread=".$arr['id_thread']."&post=".$arr['id']);
 			}
 			else
 			{
@@ -2010,8 +2013,8 @@ class Func_Ovml_Container_Post extends Func_Ovml_Container
 			}
 			if( bab_isAccessValid(BAB_FORUMSMAN_GROUPS_TBL, $this->arrfid[$this->idx]) && $arr['confirmed'] == 'N')
 			{
-				$this->ctx->curctx->push('PostConfirmUrl', $GLOBALS['babUrlScript']."?tg=posts&idx=Modify&forum=".$this->arrfid[$this->idx]."&thread=".$arr['id_thread']."&post=".$arr['id']);
-				$this->ctx->curctx->push('PostDeleteUrl', $GLOBALS['babUrlScript']."?tg=posts&idx=Delete&forum=".$this->arrfid[$this->idx]."&thread=".$arr['id_thread']."&post=".$arr['id']);
+				$this->ctx->curctx->push('PostConfirmUrl', $GLOBALS['babUrl'].bab_getSelf()."?tg=posts&idx=Modify&forum=".$this->arrfid[$this->idx]."&thread=".$arr['id_thread']."&post=".$arr['id']);
+				$this->ctx->curctx->push('PostDeleteUrl', $GLOBALS['babUrl'].bab_getSelf()."?tg=posts&idx=Delete&forum=".$this->arrfid[$this->idx]."&thread=".$arr['id_thread']."&post=".$arr['id']);
 			}
 			else
 			{
@@ -2061,7 +2064,7 @@ class Func_Ovml_Container_PostFiles extends Func_Ovml_Container
 						{
 						$name = mb_substr($file, $iOffset+1);
 						$this->arr[] = array(
-								'url' => $GLOBALS['babUrlScript']."?tg=posts&idx=dlfile&forum=".$forum."&post=".$postid."&file=".urlencode($name),
+								'url' => $GLOBALS['babUrl'].bab_getSelf()."?tg=posts&idx=dlfile&forum=".$forum."&post=".$postid."&file=".urlencode($name),
 								'name' => $name
 								);
 						}
@@ -2165,7 +2168,7 @@ class Func_Ovml_Container_Thread extends Func_Ovml_Container
 			$starter = bab_getForumContributor($arr['forum'], $arr['starter'], bab_getUserName($arr['starter']));
 			$this->ctx->curctx->push('ThreadStarter',  $starter);
 			$this->ctx->curctx->push('ThreadStarterId',  $arr['starter']);
-			$this->ctx->curctx->push('ThreadUrl', $GLOBALS['babUrlScript']."?tg=posts&idx=List&forum=".$arr['forum']."&thread=".$arr['id']."&views=1");
+			$this->ctx->curctx->push('ThreadUrl', $GLOBALS['babUrl'].bab_getSelf()."?tg=posts&idx=List&forum=".$arr['forum']."&thread=".$arr['id']."&views=1");
 			$this->idx++;
 			$this->index = $this->idx;
 			return true;
@@ -2722,13 +2725,13 @@ bab_debug(
 
 				$sEncodedPath = urlencode(removeEndSlashes($oFolderFile->getPathName()));
 
-				$this->ctx->curctx->push('FileUrl', $GLOBALS['babUrlScript'] .'?tg=fileman&idx=list&id=' . $this->iIdRootFolder . '&gr=' .
+				$this->ctx->curctx->push('FileUrl', $GLOBALS['babUrl'].bab_getSelf() .'?tg=fileman&idx=list&id=' . $this->iIdRootFolder . '&gr=' .
 					$sGroup . '&path=' . $sEncodedPath);
 
-				$this->ctx->curctx->push('FilePopupUrl', $GLOBALS['babUrlScript'] . '?tg=fileman&idx=viewFile&idf=' . $oFolderFile->getId() .
+				$this->ctx->curctx->push('FilePopupUrl', $GLOBALS['babUrl'].bab_getSelf() . '?tg=fileman&idx=viewFile&idf=' . $oFolderFile->getId() .
 					'&id=' . $this->iIdRootFolder . '&gr=' . $sGroup . '&path=' . $sEncodedPath . '&file=' . urlencode($oFolderFile->getName()));
 
-				$this->ctx->curctx->push('FileUrlGet', $GLOBALS['babUrlScript'] . '?tg=fileman&sAction=getFile&id=' . $oFolderFile->getOwnerId() . '&gr=' .
+				$this->ctx->curctx->push('FileUrlGet', $GLOBALS['babUrl'].bab_getSelf() . '?tg=fileman&sAction=getFile&id=' . $oFolderFile->getOwnerId() . '&gr=' .
 					$sGroup . '&path=' . $sEncodedPath . '&file=' . urlencode($oFolderFile->getName()) . '&idf=' . $oFolderFile->getId());
 
 				$oFileManagerEnv =& getEnvObject();
@@ -2841,13 +2844,13 @@ class Func_Ovml_Container_File extends Func_Ovml_Container
 
 				$sGroup	= $this->oFolderFile->getGroup();
 
-				$this->ctx->curctx->push('FileUrl', $GLOBALS['babUrlScript'] .'?tg=fileman&idx=list&id=' . $this->iIdRootFolder . '&gr=' .
+				$this->ctx->curctx->push('FileUrl', $GLOBALS['babUrl'].bab_getSelf() .'?tg=fileman&idx=list&id=' . $this->iIdRootFolder . '&gr=' .
 					$sGroup . '&path=' . $sEncodedPath);
 
-				$this->ctx->curctx->push('FilePopupUrl', $GLOBALS['babUrlScript'] . '?tg=fileman&idx=viewFile&idf=' . $this->oFolderFile->getId() .
+				$this->ctx->curctx->push('FilePopupUrl', $GLOBALS['babUrl'].bab_getSelf() . '?tg=fileman&idx=viewFile&idf=' . $this->oFolderFile->getId() .
 					'&id=' . $this->iIdRootFolder . '&gr=' . $sGroup . '&path=' . $sEncodedPath . '&file=' . urlencode($this->oFolderFile->getName()));
 
-				$this->ctx->curctx->push('FileUrlGet', $GLOBALS['babUrlScript'] . '?tg=fileman&sAction=getFile&id=' . $this->oFolderFile->getOwnerId() . '&gr=' .
+				$this->ctx->curctx->push('FileUrlGet', $GLOBALS['babUrl'].bab_getSelf() . '?tg=fileman&sAction=getFile&id=' . $this->oFolderFile->getOwnerId() . '&gr=' .
 					$sGroup . '&path=' . $sEncodedPath . '&file=' . urlencode($this->oFolderFile->getName()) . '&idf=' . $this->oFolderFile->getId());
 
 				$sFullPathName = BAB_FileManagerEnv::getCollectivePath($this->oFolderFile->getDelegationOwnerId()) . $this->oFolderFile->getPathName() . $this->oFolderFile->getName();
@@ -2935,7 +2938,7 @@ class Func_Ovml_Container_Tags extends Func_Ovml_Container
 			$tag = $this->iterator->current();
 
 			$this->ctx->curctx->push('TagName', $tag->getName());
-			$this->ctx->curctx->push('TagSearchUrl', $GLOBALS['babUrlScript'] .'?tg=search&idx=find&item=tags&what='.urlencode($tag->getName()));
+			$this->ctx->curctx->push('TagSearchUrl', $GLOBALS['babUrl'].bab_getSelf() .'?tg=search&idx=find&item=tags&what='.urlencode($tag->getName()));
 
 			$this->iterator->next();
 			$this->index = $this->idx;
@@ -3310,15 +3313,15 @@ class Func_Ovml_Container_RecentArticles extends Func_Ovml_Container
 			$this->ctx->curctx->push('ArticleDateModification', bab_mktime($arr['date_modification']));
 			$this->ctx->curctx->push('ArticleDatePublication', bab_mktime($arr['date_publication']));
 			$this->ctx->curctx->push('ArticleDateCreation', bab_mktime($arr['date']));
-			$this->ctx->curctx->push('ArticleUrl', bab_sitemap::url('babArticle_'.$arr['id'], $GLOBALS['babUrlScript']."?tg=articles&idx=More&topics=".$arr['id_topic']."&article=".$arr['id']));
-			$this->ctx->curctx->push('ArticlePopupUrl', $GLOBALS['babUrlScript']."?tg=articles&idx=viewa&topics=".$arr['id_topic']."&article=".$arr['id']);
+			$this->ctx->curctx->push('ArticleUrl', bab_sitemap::url('babArticle_'.$arr['id'], $GLOBALS['babUrl'].bab_getSelf()."?tg=articles&idx=More&topics=".$arr['id_topic']."&article=".$arr['id']));
+			$this->ctx->curctx->push('ArticlePopupUrl', $GLOBALS['babUrl'].bab_getSelf()."?tg=articles&idx=viewa&topics=".$arr['id_topic']."&article=".$arr['id']);
 			$this->ctx->curctx->push('ArticleTopicId', $arr['id_topic']);
 			$this->ctx->curctx->push('ArticleLanguage', $arr['lang']);
 			$this->ctx->curctx->push('ArticleFiles', $arr['nfiles']);
 			$this->ctx->curctx->push('ArticleDelegationId', $arr['id_dgowner']);
 			if( bab_isAccessValid(BAB_TOPICSMOD_GROUPS_TBL, $arr['id_topic']) )
 			{
-				$this->ctx->curctx->push('ArticleEditUrl', $GLOBALS['babUrlScript']."?tg=articles&idx=Modify&topics=".$arr['id_topic'].'&article='.$arr['id']);
+				$this->ctx->curctx->push('ArticleEditUrl', $GLOBALS['babUrl'].bab_getSelf()."?tg=articles&idx=Modify&topics=".$arr['id_topic'].'&article='.$arr['id']);
 				$this->ctx->curctx->push('ArticleEditName', bab_translate("Modify"));
 			} else {
 				$this->ctx->curctx->push('ArticleEditUrl', '');
@@ -3456,8 +3459,8 @@ class Func_Ovml_Container_RecentComments extends Func_Ovml_Container
 				}
 
 			$this->ctx->curctx->push('CommentLanguage', $arr['lang']);
-			$this->ctx->curctx->push('CommentUrl', $GLOBALS['babUrlScript']."?tg=comments&idx=read&topics=".$arr['id_topic']."&article=".$arr['id_article']."&com=".$arr['id']);
-			$this->ctx->curctx->push('CommentPopupUrl', $GLOBALS['babUrlScript']."?tg=comments&idx=viewc&com=".$arr['id']."&article=".$arr['id_article']."&topics=".$arr['id_topic']);
+			$this->ctx->curctx->push('CommentUrl', $GLOBALS['babUrl'].bab_getSelf()."?tg=comments&idx=read&topics=".$arr['id_topic']."&article=".$arr['id_article']."&com=".$arr['id']);
+			$this->ctx->curctx->push('CommentPopupUrl', $GLOBALS['babUrl'].bab_getSelf()."?tg=comments&idx=viewc&com=".$arr['id']."&article=".$arr['id_article']."&topics=".$arr['id_topic']);
 			$this->ctx->curctx->push('CommentArticleRating', $arr['article_rating']);
 			$this->idx++;
 			$this->index = $this->idx;
@@ -3570,8 +3573,8 @@ class Func_Ovml_Container_RecentPosts extends Func_Ovml_Container
 			$this->ctx->curctx->push('PostForumId', $arr['id_forum']);
 			$this->ctx->curctx->push('PostAuthor', $arr['author']);
 			$this->ctx->curctx->push('PostDate', bab_mktime($arr['date']));
-			$this->ctx->curctx->push('PostUrl', $GLOBALS['babUrlScript']."?tg=posts&idx=List&forum=".$arr['id_forum']."&thread=".$arr['id_thread']."&post=".$arr['id'].'&views=1');
-			$this->ctx->curctx->push('PostPopupUrl', $GLOBALS['babUrlScript']."?tg=posts&idx=viewp&forum=".$arr['id_forum']."&thread=".$arr['id_thread']."&post=".$arr['id'].'&views=1');
+			$this->ctx->curctx->push('PostUrl', $GLOBALS['babUrl'].bab_getSelf()."?tg=posts&idx=List&forum=".$arr['id_forum']."&thread=".$arr['id_thread']."&post=".$arr['id'].'&views=1');
+			$this->ctx->curctx->push('PostPopupUrl', $GLOBALS['babUrl'].bab_getSelf()."?tg=posts&idx=viewp&forum=".$arr['id_forum']."&thread=".$arr['id_thread']."&post=".$arr['id'].'&views=1');
 			$this->ctx->curctx->push('PostDelegationId', $arr['id_dgowner']);
 			$this->idx++;
 			$this->index = $this->idx;
@@ -3713,8 +3716,8 @@ class Func_Ovml_Container_RecentThreads extends Func_Ovml_Container
 			$this->ctx->curctx->push('PostForumId', $this->arrfid[$this->idx]);
 			$this->ctx->curctx->push('PostAuthor', $arr['author']);
 			$this->ctx->curctx->push('PostDate', bab_mktime($arr['date']));
-			$this->ctx->curctx->push('PostUrl', $GLOBALS['babUrlScript']."?tg=posts&idx=List&forum=".$this->arrfid[$this->idx]."&thread=".$arr['id_thread']."&post=".$arr['id']);
-			$this->ctx->curctx->push('PostPopupUrl', $GLOBALS['babUrlScript']."?tg=posts&idx=viewp&forum=".$this->arrfid[$this->idx]."&thread=".$arr['id_thread']."&post=".$arr['id']);
+			$this->ctx->curctx->push('PostUrl', $GLOBALS['babUrl'].bab_getSelf()."?tg=posts&idx=List&forum=".$this->arrfid[$this->idx]."&thread=".$arr['id_thread']."&post=".$arr['id']);
+			$this->ctx->curctx->push('PostPopupUrl', $GLOBALS['babUrl'].bab_getSelf()."?tg=posts&idx=viewp&forum=".$this->arrfid[$this->idx]."&thread=".$arr['id_thread']."&post=".$arr['id']);
 			$this->ctx->curctx->push('PostDelegationId', $arr['id_dgowner']);
 			$this->idx++;
 			$this->index = $this->idx;
@@ -3887,9 +3890,9 @@ class Func_Ovml_Container_RecentFiles extends Func_Ovml_Container
 				$this->ctx->curctx->push('FileName', $arr['name']);
 				$this->ctx->curctx->push('FilePath', $arr['path']);
 				$this->ctx->curctx->push('FileDescription', $arr['description']);
-				$this->ctx->curctx->push('FileUrl', $GLOBALS['babUrlScript']."?tg=fileman&idx=list&id=".$iId."&gr=".$arr['bgroup']."&path=".urlencode(removeEndSlashes($sPath)));
-				$this->ctx->curctx->push('FilePopupUrl', $GLOBALS['babUrlScript']."?tg=fileman&idx=viewFile&idf=".$arr['id']."&id=".$iId."&gr=".$arr['bgroup']."&path=".urlencode(removeEndSlashes($sPath))."&file=".urlencode($arr['name']));
-				$this->ctx->curctx->push('FileUrlGet', $GLOBALS['babUrlScript']."?tg=fileman&sAction=getFile&id=".$iId."&gr=".$arr['bgroup']."&path=".urlencode(removeEndSlashes($sPath))."&file=".urlencode($arr['name']) . '&idf=' . $arr['id']);
+				$this->ctx->curctx->push('FileUrl', $GLOBALS['babUrl'].bab_getSelf()."?tg=fileman&idx=list&id=".$iId."&gr=".$arr['bgroup']."&path=".urlencode(removeEndSlashes($sPath)));
+				$this->ctx->curctx->push('FilePopupUrl', $GLOBALS['babUrl'].bab_getSelf()."?tg=fileman&idx=viewFile&idf=".$arr['id']."&id=".$iId."&gr=".$arr['bgroup']."&path=".urlencode(removeEndSlashes($sPath))."&file=".urlencode($arr['name']));
+				$this->ctx->curctx->push('FileUrlGet', $GLOBALS['babUrl'].bab_getSelf()."?tg=fileman&sAction=getFile&id=".$iId."&gr=".$arr['bgroup']."&path=".urlencode(removeEndSlashes($sPath))."&file=".urlencode($arr['name']) . '&idf=' . $arr['id']);
 				$this->ctx->curctx->push('FileAuthor', $arr['author']);
 				$this->ctx->curctx->push('FileModifiedBy', $arr['modifiedby']);
 				$this->ctx->curctx->push('FileDate', bab_mktime($arr['modified']));
@@ -4049,11 +4052,11 @@ class Func_Ovml_Container_WaitingArticles extends Func_Ovml_Container
 			$this->ctx->curctx->push('ArticleTopicId', $arr['id_topic']);
 			$this->ctx->curctx->push('ArticleLanguage', $arr['lang']);
 			$this->ctx->curctx->push('ArticleFiles', $arr['nfiles']);
-			$this->ctx->curctx->push('ArticleUrl', $GLOBALS['babUrlScript']."?tg=approb");
-			$this->ctx->curctx->push('ArticlePopupUrl', $GLOBALS['babUrlScript']."?tg=approb&idx=viewart&idart=".$arr['id']."&topics=".$arr['id_topic']);
+			$this->ctx->curctx->push('ArticleUrl', $GLOBALS['babUrl'].bab_getSelf()."?tg=approb");
+			$this->ctx->curctx->push('ArticlePopupUrl', $GLOBALS['babUrl'].bab_getSelf()."?tg=approb&idx=viewart&idart=".$arr['id']."&topics=".$arr['id_topic']);
 			if( bab_isAccessValid(BAB_TOPICSMOD_GROUPS_TBL, $arr['id_topic']) )
 			{
-				$this->ctx->curctx->push('ArticleEditUrl', $GLOBALS['babUrlScript']."?tg=articles&idx=Modify&topics=".$arr['id_topic'].'&article='.$arr['id']);
+				$this->ctx->curctx->push('ArticleEditUrl', $GLOBALS['babUrl'].bab_getSelf()."?tg=articles&idx=Modify&topics=".$arr['id_topic'].'&article='.$arr['id']);
 				$this->ctx->curctx->push('ArticleEditName', bab_translate("Modify"));
 			} else {
 				$this->ctx->curctx->push('ArticleEditUrl', '');
@@ -4160,8 +4163,8 @@ class Func_Ovml_Container_WaitingComments extends Func_Ovml_Container
 				$this->ctx->curctx->push('CommentAuthor', $arr['name']);
 				}
 			$this->ctx->curctx->push('CommentLanguage', $arr['lang']);
-			$this->ctx->curctx->push('CommentUrl', $GLOBALS['babUrlScript']."?tg=approb");
-			$this->ctx->curctx->push('CommentPopupUrl', $GLOBALS['babUrlScript']."?tg=approb&idx=viewcom&idcom=".$arr['id']."&idart=".$arr['id_article']."&topics=".$arr['id_topic']);
+			$this->ctx->curctx->push('CommentUrl', $GLOBALS['babUrl'].bab_getSelf()."?tg=approb");
+			$this->ctx->curctx->push('CommentPopupUrl', $GLOBALS['babUrl'].bab_getSelf()."?tg=approb&idx=viewcom&idcom=".$arr['id']."&idart=".$arr['id_article']."&topics=".$arr['id_topic']);
 			$this->ctx->curctx->push('CommentArticleRating', $arr['article_rating']);
 			$this->idx++;
 			$this->index = $this->idx;
@@ -4255,9 +4258,9 @@ class Func_Ovml_Container_WaitingFiles extends Func_Ovml_Container
 			$this->ctx->curctx->push('FileDescription', $arr['description']);
 			$this->ctx->curctx->push('FileAuthor', $arr['author']);
 			$this->ctx->curctx->push('FileDate', bab_mktime($arr['modified']));
-			$this->ctx->curctx->push('FileUrl', $GLOBALS['babUrlScript']."?tg=fileman&idx=list&id=".$arr['id_owner']."&gr=".$arr['bgroup']."&path=".urlencode($arr['path']));
-			$this->ctx->curctx->push('FilePopupUrl', $GLOBALS['babUrlScript']."?tg=fileman&idx=viewFile&idf=".$arr['id']."&id=".$arr['id_owner']."&gr=".$arr['bgroup']."&path=".urlencode($arr['path'])."&file=".urlencode($arr['name']));
-			$this->ctx->curctx->push('FileUrlGet', $GLOBALS['babUrlScript']."?tg=fileman&sAction=getFile&id=".$arr['id_owner']."&gr=".$arr['bgroup']."&path=".urlencode($arr['path'])."&file=".urlencode($arr['name']) . '&idf=' . $arr['id']);
+			$this->ctx->curctx->push('FileUrl', $GLOBALS['babUrl'].bab_getSelf()."?tg=fileman&idx=list&id=".$arr['id_owner']."&gr=".$arr['bgroup']."&path=".urlencode($arr['path']));
+			$this->ctx->curctx->push('FilePopupUrl', $GLOBALS['babUrl'].bab_getSelf()."?tg=fileman&idx=viewFile&idf=".$arr['id']."&id=".$arr['id_owner']."&gr=".$arr['bgroup']."&path=".urlencode($arr['path'])."&file=".urlencode($arr['name']));
+			$this->ctx->curctx->push('FileUrlGet', $GLOBALS['babUrl'].bab_getSelf()."?tg=fileman&sAction=getFile&id=".$arr['id_owner']."&gr=".$arr['bgroup']."&path=".urlencode($arr['path'])."&file=".urlencode($arr['name']) . '&idf=' . $arr['id']);
 			$this->ctx->curctx->push('FileFolderId', $arr['id_owner']);
 			$this->idx++;
 			$this->index = $this->idx;
@@ -4346,8 +4349,8 @@ class Func_Ovml_Container_WaitingPosts extends Func_Ovml_Container
 			$this->ctx->curctx->push('PostForumId', $arr['forum']);
 			$this->ctx->curctx->push('PostAuthor', $arr['author']);
 			$this->ctx->curctx->push('PostDate', bab_mktime($arr['date']));
-			$this->ctx->curctx->push('PostUrl', $GLOBALS['babUrlScript']."?tg=posts&idx=List&forum=".$arr['forum']."&thread=".$arr['id_thread']."&post=".$arr['id']);
-			$this->ctx->curctx->push('PostPopupUrl', $GLOBALS['babUrlScript']."?tg=posts&idx=viewp&forum=".$arr['forum']."&thread=".$arr['id_thread']."&post=".$arr['id']);
+			$this->ctx->curctx->push('PostUrl', $GLOBALS['babUrl'].bab_getSelf()."?tg=posts&idx=List&forum=".$arr['forum']."&thread=".$arr['id_thread']."&post=".$arr['id']);
+			$this->ctx->curctx->push('PostPopupUrl', $GLOBALS['babUrl'].bab_getSelf()."?tg=posts&idx=viewp&forum=".$arr['forum']."&thread=".$arr['id_thread']."&post=".$arr['id']);
 			$this->idx++;
 			$this->index = $this->idx;
 			return true;
@@ -4403,7 +4406,7 @@ class Func_Ovml_Container_Faqs extends Func_Ovml_Container
 			$this->ctx->curctx->push('FaqDescription', $arr['description']);
 			$this->ctx->curctx->push('FaqId', $arr['id']);
 			$this->ctx->curctx->push('FaqLanguage', $arr['lang']);
-			$this->ctx->curctx->push('FaqUrl', $GLOBALS['babUrlScript']."?tg=faq&idx=questions&item=".$arr['id']);
+			$this->ctx->curctx->push('FaqUrl', $GLOBALS['babUrl'].bab_getSelf()."?tg=faq&idx=questions&item=".$arr['id']);
 			$this->ctx->curctx->push('FaqDelegationId', $arr['id_dgowner']);
 			$this->idx++;
 			$this->index = $this->idx;
@@ -4446,7 +4449,7 @@ class Func_Ovml_Container_Faq extends Func_Ovml_Container
 			$this->ctx->curctx->push('FaqDescription', $arr['description']);
 			$this->ctx->curctx->push('FaqId', $arr['id']);
 			$this->ctx->curctx->push('FaqLanguage', $arr['lang']);
-			$this->ctx->curctx->push('FaqUrl', $GLOBALS['babUrlScript']."?tg=faq&idx=questions&item=".$arr['id']);
+			$this->ctx->curctx->push('FaqUrl', $GLOBALS['babUrl'].bab_getSelf()."?tg=faq&idx=questions&item=".$arr['id']);
 			$this->ctx->curctx->push('FaqDelegationId', $arr['id_dgowner']);
 			$this->idx++;
 			$this->index = $this->idx;
@@ -4546,7 +4549,7 @@ class Func_Ovml_Container_FaqSubCategories extends Func_Ovml_Container
 			}
 			$this->ctx->curctx->push('FaqId', $arr['id_cat']);
 			$this->ctx->curctx->push('FaqSubCatId', $arr['id']);
-			$this->ctx->curctx->push('FaqSubCatUrl', $GLOBALS['babUrlScript']."?tg=faq&idx=questions&item=".$arr['id_cat']."&idscat=".$arr['id']);
+			$this->ctx->curctx->push('FaqSubCatUrl', $GLOBALS['babUrl'].bab_getSelf()."?tg=faq&idx=questions&item=".$arr['id_cat']."&idscat=".$arr['id']);
 			$this->idx++;
 			$this->index = $this->idx;
 			return true;
@@ -4612,7 +4615,7 @@ class Func_Ovml_Container_FaqSubCategory extends Func_Ovml_Container
 			}
 			$this->ctx->curctx->push('FaqId', $arr['id_cat']);
 			$this->ctx->curctx->push('FaqSubCatId', $arr['id']);
-			$this->ctx->curctx->push('FaqSubCatUrl', $GLOBALS['babUrlScript']."?tg=faq&idx=questions&item=".$arr['id_cat']."&idscat=".$arr['id']);
+			$this->ctx->curctx->push('FaqSubCatUrl', $GLOBALS['babUrl'].bab_getSelf()."?tg=faq&idx=questions&item=".$arr['id_cat']."&idscat=".$arr['id']);
 			$this->idx++;
 			$this->index = $this->idx;
 			return true;
@@ -4681,8 +4684,8 @@ class Func_Ovml_Container_FaqQuestions extends Func_Ovml_Container
 			$this->ctx->curctx->push('FaqQuestion', $arr['question']);
 			$this->pushEditor('FaqResponse', $arr['response'], $arr['response_format'], 'bab_faq_response');
 			$this->ctx->curctx->push('FaqQuestionId', $arr['id']);
-			$this->ctx->curctx->push('FaqQuestionUrl', $GLOBALS['babUrlScript']."?tg=faq&idx=viewq&item=".$arr['idcat']."&idscat=".$arr['id_subcat']."&idq=".$arr['id']);
-			$this->ctx->curctx->push('FaqQuestionPopupUrl', $GLOBALS['babUrlScript']."?tg=faq&idx=viewpq&idcat=".$arr['idcat']."&idscat=".$arr['id_subcat']."&idq=".$arr['id']);
+			$this->ctx->curctx->push('FaqQuestionUrl', $GLOBALS['babUrl'].bab_getSelf()."?tg=faq&idx=viewq&item=".$arr['idcat']."&idscat=".$arr['id_subcat']."&idq=".$arr['id']);
+			$this->ctx->curctx->push('FaqQuestionPopupUrl', $GLOBALS['babUrl'].bab_getSelf()."?tg=faq&idx=viewpq&idcat=".$arr['idcat']."&idscat=".$arr['id_subcat']."&idq=".$arr['id']);
 			if( $arr['id_modifiedby'] )
 			{
 			$this->ctx->curctx->push('FaqQuestionDate', bab_mktime($arr['date_modification']));
@@ -4734,8 +4737,8 @@ class Func_Ovml_Container_FaqQuestion extends Func_Ovml_Container
 			$this->ctx->curctx->push('FaqQuestion', $arr['question']);
 			$this->pushEditor('FaqResponse', $arr['response'], $arr['response_format'], 'bab_faq_response');
 			$this->ctx->curctx->push('FaqQuestionId', $arr['id']);
-			$this->ctx->curctx->push('FaqQuestionUrl', $GLOBALS['babUrlScript']."?tg=faq&idx=viewq&item=".$arr['idcat']."&idscat=".$arr['id_subcat']."&idq=".$arr['id']);
-			$this->ctx->curctx->push('FaqQuestionPopupUrl', $GLOBALS['babUrlScript']."?tg=faq&idx=viewpq&item=".$arr['idcat']."&idscat=".$arr['id_subcat']."&idq=".$arr['id']);
+			$this->ctx->curctx->push('FaqQuestionUrl', $GLOBALS['babUrl'].bab_getSelf()."?tg=faq&idx=viewq&item=".$arr['idcat']."&idscat=".$arr['id_subcat']."&idq=".$arr['id']);
+			$this->ctx->curctx->push('FaqQuestionPopupUrl', $GLOBALS['babUrl'].bab_getSelf()."?tg=faq&idx=viewpq&item=".$arr['idcat']."&idscat=".$arr['id_subcat']."&idq=".$arr['id']);
 			if( $arr['id_modifiedby'] )
 			{
 			$this->ctx->curctx->push('FaqQuestionDate', bab_mktime($arr['date_modification']));
@@ -4886,8 +4889,8 @@ class Func_Ovml_Container_RecentFaqQuestions extends Func_Ovml_Container
 			$this->ctx->curctx->push('FaqQuestion', $arr['question']);
 			$this->pushEditor('FaqResponse', $arr['response'], $arr['response_format'], 'bab_faq_response');
 			$this->ctx->curctx->push('FaqQuestionId', $arr['id']);
-			$this->ctx->curctx->push('FaqQuestionUrl', $GLOBALS['babUrlScript']."?tg=faq&idx=viewq&item=".$arr['idcat']."&idscat=".$arr['id_subcat']."&idq=".$arr['id']);
-			$this->ctx->curctx->push('FaqQuestionPopupUrl', $GLOBALS['babUrlScript']."?tg=faq&idx=viewpq&idcat=".$arr['idcat']."&idscat=".$arr['id_subcat']."&idq=".$arr['id']);
+			$this->ctx->curctx->push('FaqQuestionUrl', $GLOBALS['babUrl'].bab_getSelf()."?tg=faq&idx=viewq&item=".$arr['idcat']."&idscat=".$arr['id_subcat']."&idq=".$arr['id']);
+			$this->ctx->curctx->push('FaqQuestionPopupUrl', $GLOBALS['babUrl'].bab_getSelf()."?tg=faq&idx=viewpq&idcat=".$arr['idcat']."&idscat=".$arr['id_subcat']."&idq=".$arr['id']);
 			if( $arr['id_modifiedby'] )
 			{
 				$this->ctx->curctx->push('FaqQuestionDate', bab_mktime($arr['date_modification']));
@@ -5013,7 +5016,7 @@ class Func_Ovml_Container_Calendars extends Func_Ovml_Container
 					break;
 			}
 
-			$this->ctx->curctx->push('CalendarUrl', $GLOBALS['babUrlScript']."?tg=".$this->view."&calid=".$calendar->getUrlIdentifier());
+			$this->ctx->curctx->push('CalendarUrl', $GLOBALS['babUrl'].bab_getSelf()."?tg=".$this->view."&calid=".$calendar->getUrlIdentifier());
 			$this->idx++;
 			$this->index = $this->idx;
 			next($this->Entries);
@@ -5473,9 +5476,9 @@ class Func_Ovml_Container_CalendarEvents extends Func_Ovml_Container
 			$this->ctx->curctx->push('EventColor'				, $color);
 			if ($calid_param)
 			{
-				$this->ctx->curctx->push('EventUrl'					, $GLOBALS['babUrlScript']."?tg=calendar&idx=vevent&evtid=".$id_event.$calid_param);
-				$this->ctx->curctx->push('EventCalendarUrl'			, $GLOBALS['babUrlScript']."?tg=".$this->view.$calid_param."&date=".$date);
-				$this->ctx->curctx->push('EventCategoriesPopupUrl'	, $GLOBALS['babUrlScript']."?tg=calendar&idx=viewc".$calid_param);
+				$this->ctx->curctx->push('EventUrl'					, $GLOBALS['babUrl'].bab_getSelf()."?tg=calendar&idx=vevent&evtid=".$id_event.$calid_param);
+				$this->ctx->curctx->push('EventCalendarUrl'			, $GLOBALS['babUrl'].bab_getSelf()."?tg=".$this->view.$calid_param."&date=".$date);
+				$this->ctx->curctx->push('EventCategoriesPopupUrl'	, $GLOBALS['babUrl'].bab_getSelf()."?tg=calendar&idx=viewc".$calid_param);
 			} else {
 				$this->ctx->curctx->push('EventUrl'					, '');
 				$this->ctx->curctx->push('EventCalendarUrl'			, '');
@@ -6385,9 +6388,15 @@ function setArticleAssociatedImageInfo($oCtx, $iMaxImageHeight, $iMaxImageWidth,
 	require_once dirname(__FILE__) . '/gdiincl.php';
 	require_once dirname(__FILE__) . '/artapi.php';
 	require_once dirname(__FILE__) . '/pathUtil.class.php';
+	require_once dirname(__FILE__) . '/settings.class.php';
+	
+
+	$settings = bab_getInstance('bab_Settings');
+	/*@var $settings bab_Settings */
+	$site = $settings->getSiteSettings();
 
 	$bProcessed		= false;
-	$sUploadPath	= BAB_PathUtil::addEndSlash(BAB_PathUtil::sanitize($GLOBALS['babUploadPath']));
+	$sUploadPath	= BAB_PathUtil::addEndSlash(BAB_PathUtil::sanitize($site['uploadpath']));
 
 	if (is_dir($sUploadPath)) {
 		$aImgInfo = bab_getImageArticle($iIdArticle);
@@ -6397,7 +6406,7 @@ function setArticleAssociatedImageInfo($oCtx, $iMaxImageHeight, $iMaxImageWidth,
 			$sName				= $aImgInfo['name'];
 			$sRelativePath		= $aImgInfo['relativePath'];
 			$sFullPathName		= $sUploadPath . $sRelativePath . $sName;
-			$sImageUrl			= $GLOBALS['babUrlScript'] . '?tg=articles&idx=getImage&sImage=' . urlencode($sName);
+			$sImageUrl			= $GLOBALS['babUrl'].bab_getSelf() . '?tg=articles&idx=getImage&sImage=' . urlencode($sName);
 			$sOriginalImageUrl	= $sImageUrl . '&iIdArticle=' . $iIdArticle;
 
 			$T = @bab_functionality::get('Thumbnailer');
@@ -6489,7 +6498,7 @@ function setCategoryAssociatedImageInfo($oCtx, $iMaxImageHeight, $iMaxImageWidth
 			$sName				= $aImgInfo['name'];
 			$sRelativePath		= $aImgInfo['relativePath'];
 			$sFullPathName		= $sUploadPath . $sRelativePath . $sName;
-			$sImageUrl			= $GLOBALS['babUrlScript'] . '?tg=topusr&idx=getCategoryImage&sImage=' . bab_toHtml($sName);
+			$sImageUrl			= $GLOBALS['babUrl'].bab_getSelf() . '?tg=topusr&idx=getCategoryImage&sImage=' . bab_toHtml($sName);
 			$sOriginalImageUrl	= $sImageUrl . '&iIdCategory=' . $iIdCategory;
 
 			$T = @bab_functionality::get('Thumbnailer');
@@ -6582,7 +6591,7 @@ function setTopicAssociatedImageInfo($oCtx, $iMaxImageHeight, $iMaxImageWidth, $
 			$sName				= $aImgInfo['name'];
 			$sRelativePath		= $aImgInfo['relativePath'];
 			$sFullPathName		= $sUploadPath . $sRelativePath . $sName;
-			$sImageUrl			= $GLOBALS['babUrlScript'] . '?tg=topusr&idx=getTopicImage&sImage=' . bab_toHtml($sName);
+			$sImageUrl			= $GLOBALS['babUrl'].bab_getSelf() . '?tg=topusr&idx=getTopicImage&sImage=' . bab_toHtml($sName);
 			$sOriginalImageUrl	= $sImageUrl . '&iIdTopic=' . $iIdTopic . '&item=' . $iIdTopic  . '&iIdCategory=' . $iIdCategory;
 
 			$T = @bab_functionality::get('Thumbnailer');
@@ -6712,13 +6721,18 @@ class babOvTemplate
 
 	public function __construct($args = array())
 	{
+	
 	global $babBody;
 	$this->gctx = new bab_context('bab_main');
 	$this->gctx->push("babSiteName", $GLOBALS['babSiteName']);
-	$this->gctx->push("babSiteSlogan", $babBody->babsite['babslogan']);
-	if( $GLOBALS['BAB_SESS_USERID'] != "" )
+	if (isset($babBody->babsite))
+	{
+		$this->gctx->push("babSiteSlogan", $babBody->babsite['babslogan']);
+	}
+	
+	if( bab_isUserLogged())
 		{
-		$this->gctx->push("babUserName", $GLOBALS['BAB_SESS_USER']);
+		$this->gctx->push("babUserName", bab_getUserName(bab_getUserId()));
 		}
 	else
 		{
@@ -8393,7 +8407,7 @@ class Func_Ovml_Function_FileTree extends Func_Ovml_Function {
 				while($arr = $babDB->db_fetch_assoc($res)){
 					$child[] = array(
 						'type' => 'file',
-						'url'=> htmlentities($GLOBALS['babUrlScript'].'?tg=fileman&gr=Y&sAction=getFile&idf='.$arr['id'].'&id='.$iIdRootFolder.'&path='.$arr['path']),
+						'url'=> htmlentities($GLOBALS['babUrl'].bab_getSelf().'?tg=fileman&gr=Y&sAction=getFile&idf='.$arr['id'].'&id='.$iIdRootFolder.'&path='.$arr['path']),
 						'name' => $arr['name'],
 						'child' => ''
 					);
@@ -8403,7 +8417,7 @@ class Func_Ovml_Function_FileTree extends Func_Ovml_Function {
 			if($this->emptyfolder || $child != ''){
 				$return = array(
 					'type' => 'folder',
-					'url'=> htmlentities($GLOBALS['babUrlScript'].'?tg=fileman&idx=list&gr=Y&path='.$this->path.$relativePath.'&id='.$iIdRootFolder),
+					'url'=> htmlentities($GLOBALS['babUrl'].bab_getSelf().'?tg=fileman&idx=list&gr=Y&path='.$this->path.$relativePath.'&id='.$iIdRootFolder),
 					'name' => $rPath->getBasename(),
 					'child' => $child
 				);
@@ -8596,7 +8610,7 @@ class Func_Ovml_Function_ArticleTree extends Func_Ovml_Function {
 			if(!($child == '' && ($this->hideempty == "all" || $this->hideempty == "category"))){
 				$return[] = array(
 					'type' => 'category',
-					'url'=> htmlentities($GLOBALS['babUrlScript'].'?tg=topusr&cat='.$arr['id']),
+					'url'=> htmlentities($GLOBALS['babUrl'].bab_getSelf().'?tg=topusr&cat='.$arr['id']),
 					'name' => $arr['title'],
 					'child' => $child,
 					'date' => ''
@@ -8656,7 +8670,7 @@ class Func_Ovml_Function_ArticleTree extends Func_Ovml_Function {
 						}
 						$child[] = array(
 							'type' => 'article '.$classNew,
-							'url'=> bab_toHtml(bab_sitemap::url($arrArticles['id'], $GLOBALS['babUrlScript']."?tg=articles&idx=More&topics=".$arrArticles['id_topic']."&article=".$arrArticles['id'])),
+							'url'=> bab_toHtml(bab_sitemap::url($arrArticles['id'], $GLOBALS['babUrl'].bab_getSelf()."?tg=articles&idx=More&topics=".$arrArticles['id_topic']."&article=".$arrArticles['id'])),
 							'name' => $arrArticles['title'],
 							'child' => '',
 							'date' => $date
@@ -8666,7 +8680,7 @@ class Func_Ovml_Function_ArticleTree extends Func_Ovml_Function {
 
 				$returnTempTopic = array(
 					'type' => 'topic',
-					'url'=> htmlentities($GLOBALS['babUrlScript'].'?tg=articles&idx=Articles&topics='.$arr['id']),
+					'url'=> htmlentities($GLOBALS['babUrl'].bab_getSelf().'?tg=articles&idx=Articles&topics='.$arr['id']),
 					'name' => $arr['category'],
 					'child' => $child,
 					'date' => ''
@@ -8794,7 +8808,7 @@ class Func_Ovml_Function_ArticleTree extends Func_Ovml_Function {
 		{
 			$core[]= array(
 				'type' => 'category',
-				'url' => htmlentities($GLOBALS['babUrlScript'].'?tg=topusr&cat='.$arr['id']),
+				'url' => htmlentities($GLOBALS['babUrl'].bab_getSelf().'?tg=topusr&cat='.$arr['id']),
 				'name' => $arr['title'],
 				'child' => $this->getChild($arr['id']),
 				'date' => '');
