@@ -3185,9 +3185,10 @@ function bab_printOvmlTemplate($file, $args=array())
 	}
 
 	$GLOBALS['babWebStat']->addOvmlFile($filepath);
+	
 	include_once $babInstallPath.'utilit/omlincl.php';
 	$tpl = new babOvTemplate($args);
-	$template = $tpl->printout(implode('', file($filepath)), $filepath);
+	$template = $tpl->printout(file_get_contents($filepath), $filepath);
 	$end = microtime();
 	//bab_debug($filepath. '(start: '.$start.', end:'.$end.', total:'.($end-$start).')');
 	return $template;

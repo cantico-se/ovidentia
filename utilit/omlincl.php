@@ -1163,7 +1163,7 @@ class Func_Ovml_Container_ArticleTopic extends Func_Ovml_Container
 				FROM ".BAB_TOPICS_TBL." t
 				
 				LEFT JOIN bab_topics_unsubscribe u
-				ON t.id=u.id_topic AND u.id_user=".$babDB->quote($GLOBALS['BAB_SESS_USERID'])."
+				ON t.id=u.id_topic AND u.id_user=".$babDB->quote(bab_getUserId())."
 				WHERE t.id IN (".$babDB->quote($this->IdEntries).")
 			";
 			if( $this->topicname !== false && $this->topicname !== '' )
@@ -6579,9 +6579,15 @@ function setTopicAssociatedImageInfo($oCtx, $iMaxImageHeight, $iMaxImageWidth, $
 	require_once dirname(__FILE__) . '/gdiincl.php';
 	require_once dirname(__FILE__) . '/artapi.php';
 	require_once dirname(__FILE__) . '/pathUtil.class.php';
-
+	require_once dirname(__FILE__) . '/settings.class.php';
+	
+	
+	$settings = bab_getInstance('bab_Settings');
+	/*@var $settings bab_Settings */
+	$site = $settings->getSiteSettings();
+	
 	$bProcessed		= false;
-	$sUploadPath	= BAB_PathUtil::addEndSlash(BAB_PathUtil::sanitize($GLOBALS['babUploadPath']));
+	$sUploadPath	= BAB_PathUtil::addEndSlash(BAB_PathUtil::sanitize($site['uploadpath']));
 
 	if(is_dir($sUploadPath)) {
 		$aImgInfo = bab_getImageTopic($iIdTopic);
