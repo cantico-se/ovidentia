@@ -955,13 +955,21 @@ function bab_getUploadDraftsPath()
 
 function bab_getUploadArticlesPath()
 {
-	if( mb_substr($GLOBALS['babUploadPath'], -1) == "/" )
+	require_once dirname(__FILE__) . '/settings.class.php';
+	
+	
+	$settings = bab_getInstance('bab_Settings');
+	/*@var $settings bab_Settings */
+	$site = $settings->getSiteSettings();
+	
+	
+	if( mb_substr($site['uploadpath'], -1) == "/" )
 		{
-		$path = $GLOBALS['babUploadPath'];
+		$path = $site['uploadpath'];
 		}
 	else
 		{
-		$path = $GLOBALS['babUploadPath']."/";
+		$path = $site['uploadpath']."/";
 		}
 
 	$path = $path."articles/";
