@@ -7116,286 +7116,278 @@ class babOvTemplate
 	}
 }
 
-
-
-
-
 /**
  * All methods of this objects are OVML attributes
  */
 class bab_OvmlAttributes
 {
-	/**
-	 *
-	 * @var babOvTemplate
-	 */
-	private $ctx;
 
+    /**
+     *
+     * @var babOvTemplate
+     */
+    private $ctx;
 
-	/**
-	 * OVML global context
-	 * @var bab_context
-	 */
-	private $gctx;
+    /**
+     * OVML global context
+     * 
+     * @var bab_context
+     */
+    private $gctx;
 
+    /**
+     * contain the list of called methods
+     * 
+     * @var bool
+     */
+    public $history = array();
 
-	/**
-	 * contain the list of called methods
-	 * @var bool
-	 */
-	public $history = array();
+    /**
+     * bab_context::TEXT | bab_context::HTML
+     * 
+     * @var int
+     */
+    private $format;
 
+    /**
+     *
+     * @param bab_context $gctx            
+     * @param int $format
+     *            bab_context::HTML
+     */
+    public function __construct(babOvTemplate $ctx, $format)
+    {
+        $this->ctx = $ctx;
+        $this->gctx = $ctx->gctx;
+        $this->format = $format;
+    }
 
-	/**
-	 * bab_context::TEXT | bab_context::HTML
-	 * @var int
-	 */
-	private $format;
+    /**
+     *
+     * @return bool
+     */
+    private function done($method, $option = null)
+    {
+        if (! isset($this->history[$method])) {
+            return false;
+        }
+        
+        if (null !== $option && $this->history[$method] !== $option) {
+            return false;
+        }
+        
+        return true;
+    }
 
+    /**
+     *
+     * @param string $method            
+     * @param array $args            
+     * @return string
+     */
+    public function __call($method, $args)
+    {
+        trigger_error(sprintf('Unknown OVML attribute %s="%s" in %s, attribute ignored', $method, $args[1], (string) $this->ctx->debug_location));
+        return $args[0];
+    }
 
-	/**
-	 * @param	bab_context 	$gctx
-	 * @param	int				$format		bab_context::TEXT | bab_context::HTML
-	 */
-	public function __construct(babOvTemplate $ctx, $format)
-	{
-		$this->ctx = $ctx;
-		$this->gctx = $ctx->gctx;
-		$this->format = $format;
-	}
+    /**
+     * Cut string,
+     * for html, remove tags if not allready removed
+     * 
+     * @param string $val            
+     * @param string $v            
+     * @return string
+     */
+    public function strlen($val, $v)
+    {
+        if (bab_context::HTML === $this->format) {
+            if (! $this->done('striptags')) {
+                $val = $this->striptags($val, '1');
+            }
+            
+            if (! $this->done('htmlentities', '2')) {
+                $val = $this->htmlentities($val, '2');
+            }
+            
+            if (! $this->done('trim')) {
+                $val = $this->trim($val, 'left');
+            }
+        }
+        
+        $arr = explode(',', $v);
+        if (mb_strlen($val) > $arr[0]) {
+            if (isset($arr[1])) {
+                $val = mb_substr($val, 0, $arr[0]) . $arr[1];
+            } else {
+                $val = mb_substr($val, 0, $v);
+            }
+            $this->gctx->push('substr', 1); // permet de savoir dans la suite du code ovml si la variable a ete coupe ou non
+        } else
+            $this->gctx->push('substr', 0);
+        
+        return $val;
+    }
 
-	/**
-	 * @return bool
-	 */
-	private function done($method, $option = null)
-	{
-		if (!isset($this->history[$method]))
-		{
-			return false;
-		}
+    public function striptags($val, $v)
+    {
+        switch ($v) {
+            case '1':
+                return strip_tags($val);
+            
+            case '2':
+                $val = eregi_replace('<BR[[:space:]]*/?[[:space:]]*>', "\n ", $val);
+                $val = eregi_replace('<P>|</P>|<P />|<P/>', "\n ", $val);
+                return strip_tags($val);
+        }
+    }
 
-		if (null !== $option && $this->history[$method] !== $option)
-		{
-			return false;
-		}
+    /**
+     * Encoding of html entites can be set only one time per variable
+     * 
+     * @param string $val            
+     * @param int $v            
+     * @return unknown_type
+     */
+    public function htmlentities($val, $v)
+    {
+        if ($this->done(__FUNCTION__, '0')) {
+            // auto htmlentities has been disabled with an attribute htmlentities="0", others htmlentities are ignored
+            return $val;
+        }
+        
+        if ($this->done(__FUNCTION__, '1') || $this->done(__FUNCTION__, '3')) {
+            // job allready done
+            return $val;
+        }
+        
+        switch ($v) {
+            case '0': // disable auto htmlentities
+                break;
+            
+            case '1':
+                $val = bab_toHtml($val);
+                break;
+            case '2':
+                require_once dirname(__FILE__) . '/tohtmlincl.php';
+                $val = bab_unhtmlentities($val);
+                break;
+            case '3':
+                $val = htmlspecialchars($val, ENT_COMPAT, bab_charset::getIso());
+                break;
+        }
+        
+        return $val;
+    }
 
-		return true;
-	}
+    public function stripslashes($val, $v)
+    {
+        if ($v == '1') {
+            $val = stripslashes($val);
+        }
+        return $val;
+    }
 
-	/**
-	 *
-	 * @param string $method
-	 * @param array $args
-	 * @return string
-	 */
-	public function __call($method, $args)
-	{
-		trigger_error(sprintf('Unknown OVML attribute %s="%s" in %s, attribute ignored', $method, $args[1], (string) $this->ctx->debug_location));
-		return $args[0];
-	}
+    public function urlencode($val, $v)
+    {
+        if ($v == '1') {
+            $val = urlencode($val);
+        }
+        
+        return $val;
+    }
 
+    public function jsencode($val, $v)
+    {
+        if ($v == '1') {
+            $val = bab_toHtml($val, BAB_HTML_JS);
+        }
+        return $val;
+    }
 
+    public function strcase($val, $v)
+    {
+        switch ($v) {
+            case 'upper':
+                $val = mb_strtoupper($val);
+                break;
+            case 'lower':
+                $val = mb_strtolower($val);
+                break;
+        }
+        return $val;
+    }
 
-	/**
-	 * Cut string,
-	 * for html, remove tags if not allready removed
-	 * @param string	$val
-	 * @param string	$v
-	 * @return string
-	 */
-	public function strlen($val, $v) {
+    public function nlremove($val, $v)
+    {
+        if ($v == '1') {
+            $val = preg_replace("(\r\n|\n|\r)", "", $val);
+        }
+        
+        return $val;
+    }
 
+    public function trim($val, $v)
+    {
+        switch ($v) {
+            case 'left':
+                $val = ltrim($val, " \x0B\0\n\t\r" . bab_nbsp());
+                break;
+            case 'right':
+                $val = rtrim($val, " \x0B\0\n\t\r" . bab_nbsp());
+                break;
+            case 'all':
+                $val = trim($val, " \x0B\0\n\t\r" . bab_nbsp());
+                break;
+        }
+        
+        return $val;
+    }
 
-		if (bab_context::HTML === $this->format )
-		{
-			if (!$this->done('striptags'))
-			{
-				$val = $this->striptags($val , '1');
-			}
+    public function nl2br($val, $v)
+    {
+        if ($v == '1') {
+            $val = nl2br($val);
+        }
+        
+        return $val;
+    }
 
-			if (!$this->done('htmlentities', '2'))
-			{
-				$val = $this->htmlentities($val , '2');
-			}
+    public function sprintf($val, $v)
+    {
+        return sprintf($v, $val);
+    }
 
-			if (!$this->done('trim'))
-			{
-				$val = $this->trim($val , 'left');
-			}
-		}
+    public function date($val, $v)
+    {
+        return bab_formatDate($v, $val);
+    }
 
-		$arr = explode(',', $v );
-		if( mb_strlen($val) > $arr[0] )
-			{
-			if (isset($arr[1])) {
-				$val = mb_substr($val, 0, $arr[0]).$arr[1];
-			} else {
-				$val = mb_substr($val, 0, $v);
-			}
-			$this->gctx->push('substr', 1); // permet de savoir dans la suite du code ovml si la variable a ete coupe ou non
-			}
-		else
-			$this->gctx->push('substr', 0);
+    public function author($val, $v)
+    {
+        return bab_formatAuthor($v, $val);
+    }
 
-		return $val;
-	}
+    public function saveas($val, $v)
+    {
+        $this->gctx->push($v, $val);
+        return $val;
+    }
 
-
-
-	public function striptags($val, $v) {
-		switch($v)
-			{
-			case '1':
-				return strip_tags($val);
-
-			case '2':
-				$val = eregi_replace('<BR[[:space:]]*/?[[:space:]]*>', "\n ", $val);
-				$val = eregi_replace('<P>|</P>|<P />|<P/>', "\n ", $val);
-				return strip_tags($val);
-			}
-	}
-
-	/**
-	 * Encoding of html entites can be set only one time per variable
-	 * @param string $val
-	 * @param int $v
-	 * @return unknown_type
-	 */
-	public function htmlentities($val, $v) {
-
-
-		if ($this->done(__FUNCTION__, '0'))
-		{
-			// auto htmlentities has been disabled with an attribute htmlentities="0", others htmlentities are ignored
-			return $val;
-		}
-
-		if ($this->done(__FUNCTION__, '1') || $this->done(__FUNCTION__, '3'))
-		{
-			// job allready done
-			return $val;
-		}
-
-		switch($v)
-			{
-			case '0': // disable auto htmlentities
-				break;
-
-			case '1':
-				$val = bab_toHtml($val);
-				break;
-			case '2':
-				require_once dirname(__FILE__).'/tohtmlincl.php';
-				$val = bab_unhtmlentities($val);
-				break;
-			case '3':
-				$val = htmlspecialchars($val, ENT_COMPAT, bab_charset::getIso());
-				break;
-			}
-
-		return $val;
-	}
-
-
-	public function stripslashes($val, $v) {
-
-		if( $v == '1') {
-			$val = stripslashes($val);
-		}
-		return $val;
-	}
-
-	public function urlencode($val, $v) {
-		if( $v == '1') {
-			$val = urlencode($val);
-		}
-
-		return $val;
-	}
-
-	public function jsencode($val, $v) {
-		if( $v == '1') {
-			$val = bab_toHtml($val, BAB_HTML_JS);
-		}
-		return $val;
-	}
-
-
-	public function strcase($val, $v) {
-		switch($v)
-			{
-			case 'upper':
-				$val = mb_strtoupper($val); break;
-			case 'lower':
-				$val = mb_strtolower($val); break;
-			}
-		return $val;
-	}
-
-	public function nlremove($val, $v) {
-		if( $v == '1') {
-			$val = preg_replace("(\r\n|\n|\r)", "", $val);
-		}
-
-		return $val;
-	}
-
-	public function trim($val, $v) {
-		switch($v)
-		{
-			case 'left':
-				$val = ltrim($val, " \x0B\0\n\t\r".bab_nbsp()); break;
-			case 'right':
-				$val = rtrim($val, " \x0B\0\n\t\r".bab_nbsp()); break;
-			case 'all':
-				$val = trim($val, " \x0B\0\n\t\r".bab_nbsp()); break;
-		}
-
-		return $val;
-	}
-
-	public function nl2br($val, $v) {
-		if( $v == '1') {
-			$val = nl2br($val);
-		}
-
-		return $val;
-	}
-
-	public function sprintf($val, $v) {
-		return sprintf($v, $val);
-	}
-
-	public function date($val, $v) {
-		return bab_formatDate($v, $val);
-	}
-
-	public function author($val, $v) {
-		return bab_formatAuthor($v, $val);
-	}
-
-	public function saveas($val, $v) {
-		$this->gctx->push($v, $val);
-		return $val;
-	}
-
-	public function strtr($val, $v) {
-		if( !empty($v))
-		{
-		$trans = array();
-		for( $i =0; $i < mb_strlen($v); $i +=2 )
-			{
-			$trans[mb_substr($v, $i, 1)] = mb_substr($v, $i+1, 1);
-			}
-		if( count($trans)> 0 )
-			{
-			$val = strtr($val, $trans);
-			}
-		}
-
-		return $val;
-	}
-
+    public function strtr($val, $v)
+    {
+        if (! empty($v)) {
+            $trans = array();
+            for ($i = 0; $i < mb_strlen($v); $i += 2) {
+                $trans[mb_substr($v, $i, 1)] = mb_substr($v, $i + 1, 1);
+            }
+            if (count($trans) > 0) {
+                $val = strtr($val, $trans);
+            }
+        }
+        
+        return $val;
+    }
 }
 
 
@@ -7410,39 +7402,44 @@ class bab_OvmlAttributes
 /**
  *  translate text
  */
-class Func_Ovml_Function_Translate extends Func_Ovml_Function {
+class Func_Ovml_Function_Translate extends Func_Ovml_Function
+{
 
-
-	/**
-	 * @return string
-	 */
-	public function toString()
-	{
-	$args = $this->args;
-	$lang = "";
-
-	if(count($args))
-		{
-		foreach( $args as $p => $v)
-			{
-			switch(mb_strtolower(trim($p)))
-				{
-				case 'text':
-					$text = $v;
-					unset($args[$p]);
-					break;
-				case 'lang':
-					$lang = $v;
-					unset($args[$p]);
-					break;
-				}
-			}
-
-		return $this->format_output(bab_translate($text, "", $lang), $args);
-		}
-	return '';
-	}
+    /**
+     *
+     * @return string
+     */
+    public function toString()
+    {
+        $args = $this->args;
+        $lang = '';
+        $folder = '';
+        
+        if (count($args) === 0) {
+            return '';
+        }
+        foreach ($args as $p => $value) {
+            switch (mb_strtolower(trim($p))) {
+                case 'text':
+                    $text = $value;
+                    unset($args[$p]);
+                    break;
+                case 'lang':
+                    $lang = $value;
+                    unset($args[$p]);
+                    break;
+                case 'folder':
+                    $folder = $value;
+                    unset($args[$p]);
+                    break;
+            }
+        }
+            
+        return $this->format_output(bab_translate($text, $folder, $lang), $args);
+    }
 }
+
+
 
 /**
  *  Web statistic
