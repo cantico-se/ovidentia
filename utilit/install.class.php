@@ -60,31 +60,27 @@ class bab_InstallRepository {
 			
 			if (null !== $this->list_url)
 			{
-				$fp = fopen($this->list_url, 'r');
-				if (false === $fp)
+				$json = file_get_contents($this->list_url);
+				if (false === $json)
 				{
 					throw new Exception(sprintf('Failed to download the configured url %s', $this->list_url));
 				}
 				
 				
-				while (($data = fgetcsv($fp, 0, "\t")) !== FALSE) {
-					
-					if (!isset($data[3]))
-					{
-						continue;
-					}
-					
-					$name 			= bab_getStringAccordingToDataBase($data[0], 'UTF-8');
-					$filepath 		= $data[1]; // url relative to root_url in configuration
-					$version 		= $data[2];
-					$description 	= bab_getStringAccordingToDataBase($data[3], 'UTF-8');
-					$dependencies 	= $data[4];
-					
-					
-					$this->files[$name][$version] = new bab_InstallRepositoryFile($name, $filepath, $version, $description, $dependencies);
+				$modules = json_decode($json);
+				
+				foreach ($modules as $name => $variations) {
+                    
+				    $name 			= bab_getStringAccordingToDataBase($name, 'UTF-8');
+				    
+				    foreach($variations as $data)
+				    {
+    					$description 	= bab_getStringAccordingToDataBase($data->description, 'UTF-8');
+    					
+    					$this->files[$name][$data->version] = new bab_InstallRepositoryFile($name, $data->relativePath, $data->version, $description, $data->dependencies);
+				    }
 				}
 				
-				fclose($fp);
 			}
 		}
 		
@@ -198,14 +194,13 @@ class bab_InstallRepositoryFile
 		$this->filepath = $filepath;
 		$this->version = $version;
 		$this->description = $description;
-		$arr = explode('&', $dependencies);
-		foreach($arr as $d)
+
+		foreach($dependencies as $addonname => $d )
 		{
-			if (!empty($d) && preg_match('/([\w\d]+)([<>]*=)([\w\d\.]+)/', $d, $m))
+			if (!empty($d) && preg_match('/([<>]*=)([\w\d\.]+)/', $d, $m))
 			{
-				$addonname = $m[1];
-				$operator = $m[2];
-				$version = $m[3];
+				$operator = $m[1];
+				$version = $m[2];
 				
 				$this->dependencies[$addonname] = array($operator, $version);
 			} 
