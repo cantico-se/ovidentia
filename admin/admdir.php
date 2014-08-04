@@ -1270,12 +1270,31 @@ function showDbFieldValuesModify($id, $idfieldx)
 			$this->t_value  = bab_translate("Value");
 			$this->t_delvalue = bab_translate("Delete value");
 			$this->js_error = bab_translate("You must enter two or more values");
+			$this->t_name = bab_translate("Field name");
 			$this->id = $id;
 			$this->idfield = $idfieldx;
 			$this->res = $babDB->db_query("select * from ".BAB_DBDIR_FIELDSVALUES_TBL." where id_fieldextra='".$babDB->db_escape_string($idfieldx)."' order by field_value asc");
 			$this->count = $babDB->db_num_rows($this->res);
 			$this->fvalnum = 1;
-			$rr = $babDB->db_fetch_array($babDB->db_query("select id_field, default_value, multi_values from ".BAB_DBDIR_FIELDSEXTRA_TBL." where id='".$babDB->db_escape_string($idfieldx)."'"));
+			$rr = $babDB->db_fetch_array($babDB->db_query("select 
+					e.id_field, 
+					e.default_value, 
+					e.multi_values,  
+					f.description,
+					a.name  
+				from 
+						
+						bab_dbdir_fieldsextra e 
+							LEFT JOIN bab_dbdir_fields f ON f.id=e.id_field 
+							LEFT JOIN bab_dbdir_fields_directory a ON (".BAB_DBDIR_MAX_COMMON_FIELDS."+a.id)=e.id_field
+				where 
+					e.id=".$babDB->quote($idfieldx)
+			));
+			
+
+			$this->description  = bab_toHtml(bab_translate($rr['description'])); // description du champ d'annuaire
+			$this->name = bab_toHtml($rr['name']); // nom du champ supplementaire
+			
 			$this->fvdefid = $rr['default_value'];
 
 			if( $rr['multi_values'] == 'Y' )
@@ -1710,7 +1729,7 @@ function deleteFieldsExtra($id, $fxid)
 	}
 }
 
-function updateFieldsExtraValues($id, $fxid, $fields_values, $fvdef,$value, $mvyn)
+function updateFieldsExtraValues($id, $fxid, $fields_values, $fvdef,$value, $mvyn, $name)
 {
 	global $babDB;
 	$addslashes = false;
@@ -1725,10 +1744,14 @@ function updateFieldsExtraValues($id, $fxid, $fields_values, $fvdef,$value, $mvy
 
 	if( $rr['id_field'] > BAB_DBDIR_MAX_COMMON_FIELDS )
 	{
-		if( isset($GLOBALS['fieldname']) && !empty($GLOBALS['fieldname']))
+		if(!empty($name))
 		{
 
-			$babDB->db_query("update ".BAB_DBDIR_FIELDS_DIRECTORY_TBL." set name='".$babDB->db_escape_string($GLOBALS['fieldname'])."' where id='".$babDB->db_escape_string(($rr['id_field']-BAB_DBDIR_MAX_COMMON_FIELDS))."'");
+			$babDB->db_query("
+			  update ".BAB_DBDIR_FIELDS_DIRECTORY_TBL." 
+			   set name='".$babDB->db_escape_string($name)."' 
+			  where id='".$babDB->db_escape_string(($rr['id_field']-BAB_DBDIR_MAX_COMMON_FIELDS))."'
+			");
 		}
 	}
 
@@ -1984,17 +2007,15 @@ if( isset($modify))
 		switch($modify)
 		{
 			case 'dbfval':
-				if( !isset($fvdef)) { $fvdef=0;}
-				if( !isset($mvyn)) { $mvyn='';}
 				if( isset($adfdel))
 					{
-					deleteFieldsExtra($id, $fxid);
+					deleteFieldsExtra($id, bab_pp('fxid'));
 					}
 				else
 					{
-					$fields_values = isset($_POST['fields_values']) ? $_POST['fields_values'] : array();
+					$fields_values = bab_pp('fields_values', array());
 
-					updateFieldsExtraValues($id, $fxid, $fields_values, $fvdef, bab_pp('value'), $mvyn);
+					updateFieldsExtraValues($id, bab_pp('fxid'), $fields_values, bab_pp('fvdef', 0), bab_pp('value'), bab_pp('mvyn'), bab_pp('name'));
 					}
 				if( isset($adfsav) || isset($adfdel))
 					{

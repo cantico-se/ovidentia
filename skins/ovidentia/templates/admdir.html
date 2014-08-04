@@ -825,6 +825,7 @@ function submitCtr()
 	}
 -->
 </script>
+<br />
 <form name="addfval" method="post" action="{ babPhpSelf }" onSubmit="return(submitCtr())">
 <input type="hidden" name="tg" value="admdir" />
 <input type="hidden" name="idx" value="addval" />
@@ -836,6 +837,13 @@ function submitCtr()
 <tr> 
 <td> 
 	<table class="BabLoginMenuBackground" width="100%" border="0" cellspacing="0" cellpadding="5" align="center">
+	
+	<!--#if name -->
+	<tr>
+	   <td align="right">{ t_name }</td>
+	   <td><input type="text" name="name" value="{ name }" /></td>
+	</tr>
+	<!--#endif name -->
 	<tr>
 		<td align="right">
 			{ multivaluestxt }
@@ -868,6 +876,7 @@ function submitCtr()
 			<option value="{ fval }">{ fval }</option>
 			<!--#endin getnextdbfieldvalue -->
 			</select>
+			<input type="button" value="{ t_delvalue }" onclick="remove_from_select()" />
 		</td>
 	</tr>
 	<tr>
@@ -875,9 +884,8 @@ function submitCtr()
 		{ addtxt }
 		</td>
 		<td>
-			<input type="text" name="value_to_add" value="" size="15" /><br />
-			<input type="button" value="{ addtxt }" onclick="add_to_select()" /><br />
-			<input type="button" value="{ t_delvalue }" onclick="remove_from_select()" />
+			<input type="text" name="value_to_add" value="" size="15" /><button onclick="add_to_select()"><img src="{ babSkinPath }images/Puces/edit_add.png" alt="{ addtxt }" /></button>
+			
 		</td>
 	</tr>
 	<tr>
