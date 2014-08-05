@@ -146,16 +146,18 @@ function bab_setTopicSettings(editor_delay){
 			
 			
 			// dynamic template work only with ckeditor
-			
-			setTimeout(function() {
-			
-				if (null != CKEDITOR && null != settings.template)
-				{
-					bab_fillEditorTemplate('bab_articlehead_section', 'bab_article_head', settings.template['head'], settings.confirm_message['head']);
-					bab_fillEditorTemplate('bab_articlebody_section', 'bab_article_body', settings.template['body'], settings.confirm_message['body']);
-				}
-			
-			}, editor_delay);
+			if (id_topic !== jQuery('[name="id_topic_db"]').val())
+			{
+				setTimeout(function() {
+				
+					if (null != CKEDITOR && null != settings.template)
+					{
+						bab_fillEditorTemplate('bab_articlehead_section', 'bab_article_head', settings.template['head'], settings.confirm_message['head']);
+						bab_fillEditorTemplate('bab_articlebody_section', 'bab_article_body', settings.template['body'], settings.confirm_message['body']);
+					}
+				
+				}, editor_delay);
+			}
 		}
 	});
 }
