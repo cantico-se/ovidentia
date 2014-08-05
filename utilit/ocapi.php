@@ -3026,7 +3026,7 @@ class bab_OrgChartUtil
 
 
 	/**
-	 * Associate primary role to a user if is primary role have been  deleted
+	 * Associate primary role to a user if is primary role have been deleted
 	 * and remove the user from the group if he is not in an other role for this entity
 	 */
 	private function commonDeleteRoleUserAction($iIdEntity, $iIdUser, $sIsPrimary)
@@ -3133,6 +3133,67 @@ class bab_OrgChartUtil
 			}
 		}
 	}
+
+
+	public function getUserRoles($iduser)
+	{
+		global $babDB;
+		
+		$req = "SELECT ocet.*, ocrt.name as r_name, ocrut.id as id_ru, ocrut.isprimary as isprimary
+				FROM ".BAB_OC_ROLES_USERS_TBL." ocrut
+				
+				LEFT JOIN ".BAB_OC_ROLES_TBL." ocrt
+				ON ocrut.id_role=ocrt.id
+				
+				LEFT JOIN ".BAB_OC_ENTITIES_TBL." ocet
+				ON ocrt.id_entity=ocet.id
+				
+				WHERE ocrut.id_user='".$iduser."'
+				AND ocrt.id_oc='".$this->iIdOrgChart."' ";
+		$res = $babDB->db_query($req);
+		
+		$return = array();
+		while($arr = $babDB->db_fetch_assoc($res)){
+			$return[] = $arr;
+		}
+		
+		return $return;
+	}
+
+	
+	public function updateUserPrimaryRole($iduser, $prole)
+	{
+		global $babDB;
+	
+		
+		if(!$this->isLockedBy($this->iIdSessUser))
+		{
+			return false;
+		}
+		
+		$req = "SELECT ocrut.id
+				FROM  ".BAB_OC_ROLES_USERS_TBL." ocrut
+				LEFT JOIN ".BAB_OC_ROLES_TBL." ocrt
+				ON ocrut.id_role=ocrt.id
+				WHERE ocrt.id_oc='".$this->iIdOrgChart."'
+				AND  ocrut.id_user='".$iduser."'
+				AND ocrut.isprimary='Y'";
+				
+		$res = $babDB->db_query($req);
+		
+		if( $res && $babDB->db_num_rows($res) > 0 )
+		{
+			while($row = $babDB->db_fetch_assoc($res))
+			{
+				$babDB->db_query("update ".BAB_OC_ROLES_USERS_TBL." set isprimary='N' where id='".$row['id']."'");
+			}
+		}
+	
+		$babDB->db_query("update ".BAB_OC_ROLES_USERS_TBL." set isprimary='Y' where id='".$prole."'");
+		
+		return true;
+	}
+
 
 	private function removeOrgChartEntity($iIdEntity, $iIdEntityGroup, $sIsOrgChartPrimary, $iIdOrgChartGroup)
 	{
