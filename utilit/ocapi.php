@@ -152,7 +152,12 @@ function bab_OCGetRole($idr)
 	if( $res && $babDB->db_num_rows($res) > 0 )
 	{
 		$arr = $babDB->db_fetch_array($res);
-		return array( 'name' => $arr['name'], 'description' => $arr['description']);
+		return array(
+			'name' => $arr['name'],
+			'description' => $arr['description'], 
+			'type' => $arr['type'],
+			'cardinality' => $arr['cardinality']
+		);
 
 	}
 
@@ -747,7 +752,9 @@ function bab_OCGetUsersByRole($idRole)
 	
 	$sql.= " LEFT JOIN bab_dbdir_entries AS dir ON ort.id_user = dir.id";
 	
+	$sql.= ' LEFT JOIN bab_users AS babusers ON dir.id_user = babusers.id';
 	$sql.= " WHERE ort.id_role='".$idRole."'";
+	$sql.= ' AND '.bab_userInfos::queryAllowedUsers('babusers');
 	
 	$sql.= " ORDER BY dir.sn, dir.givenname asc";
 	
