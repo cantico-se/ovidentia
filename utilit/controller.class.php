@@ -141,6 +141,45 @@ abstract class bab_Controller
 		}
 		return self::$acceptHtml;
 	}
+	
+	
+	/**
+	 * PHP code
+	 * @return string
+	 */ 
+	protected static function getClassCode($proxyClassname, $classname, Array $methods) {
+	    
+	    $classStr = 'class ' . $proxyClassname . ' extends ' . $classname . ' {' . "\n";
+	    
+	    
+	    foreach ($methods as $method) {
+	        if ($method->name === '__construct' || !$method->isPublic() || $method->isStatic() || $method->isFinal()) {
+	            continue;
+	        }
+	    
+	    
+	        $classStr .= '	public function ' . $method->name . '(';
+	        $parameters = $method->getParameters();
+	        $parametersStr = array();
+	        foreach ($parameters as $parameter) {
+	    
+	            if ($parameter->isDefaultValueAvailable()) {
+	                $parametersStr[] = '$' . $parameter->name . ' = ' . var_export($parameter->getDefaultValue(), true);
+	            } else {
+	                $parametersStr[] = '$' . $parameter->name;
+	            }
+	        }
+	        $classStr .= implode(', ', $parametersStr);
+	        $classStr .= ') {' . "\n";
+	        $classStr .= '		$args = func_get_args();' . "\n";
+	        $classStr .= '		return $this->getMethodAction(__FUNCTION__, $args);' . "\n";
+	        $classStr .= '	}' . "\n";
+	    }
+	    $classStr .= '}' . "\n";
+	    
+	    
+	    return $classStr;
+	}
 
 
 
@@ -151,51 +190,67 @@ abstract class bab_Controller
 	 * @param string $classname
 	 * @return bab_Controller
 	 */
-	static function getProxyInstance($classname)
+	protected static function getProxyInstance($classname)
 	{
 		$class = new ReflectionClass($classname);
-		$proxyClassname = $class->name . self::PROXY_CLASS_SUFFIX;
+		$proxyClassname = $classname . self::PROXY_CLASS_SUFFIX;
 		if (!class_exists($proxyClassname)) {
-			$classStr = 'class ' . $proxyClassname . ' extends ' . $class->name . ' {' . "\n";
-			$methods = $class->getMethods();
-
-			foreach ($methods as $method) {
-				if ($method->name === '__construct' || !$method->isPublic() || $method->isStatic() || $method->isFinal()) {
-					continue;
-				}
-
-
-				$classStr .= '	public function ' . $method->name . '(';
-				$parameters = $method->getParameters();
-				$parametersStr = array();
-				foreach ($parameters as $parameter) {
-
-					if ($parameter->isDefaultValueAvailable()) {
-						$parametersStr[] = '$' . $parameter->name . ' = ' . var_export($parameter->getDefaultValue(), true);
-					} else {
-						$parametersStr[] = '$' . $parameter->name;
-					}
-				}
-				$classStr .= implode(', ', $parametersStr);
-				$classStr .= ') {' . "\n";
-				$classStr .= '		$args = func_get_args();' . "\n";
-				$classStr .= '		return $this->getMethodAction(__FUNCTION__, $args);' . "\n";
-				$classStr .= '	}' . "\n";
-			}
-			$classStr .= '}' . "\n";
-
+		    
+		    $methods = $class->getMethods();
+			
 			// We define the proxy class
-			eval($classStr);
+			eval(self::getClassCode($proxyClassname, $classname, $methods));
 		}
 
 		return new $proxyClassname();
 	}
+	
+	
+	
+	/**
+	 * Dynamically creates a proxy class in the current namespace for this controller with all public, non-final and non-static functions
+	 * overriden so that they return an action (Widget_Action) corresponding to each of them.
+	 * 
+	 * @param string $namespace
+	 * @param string $classname
+	 * @return bab_Controller
+	 */
+	protected static function getNsProxyInstance($namespace, $classname)
+	{
+	    $class = new \ReflectionClass($namespace.'\\'.$classname);
+	    $proxyClassname = $classname . self::PROXY_CLASS_SUFFIX;
+	    if (!class_exists($namespace.'\\'.$proxyClassname)) {
 
-
+	        $methods = $class->getMethods();
+	        	
+	        // We define the proxy class
+	        eval('namespace '.$namespace.';'. "\n".self::getClassCode($proxyClassname, $classname, $methods));
+	    }
+	
+	    $proxyClassname = $namespace.'\\'.$proxyClassname;
+	    
+	    return new $proxyClassname();
+	}
+	
+    
+	
+    /**
+     * @return bab_Controller
+     */ 
 	protected function proxy()
 	{
-		return self::getProxyInstance(get_class($this));
+	    $className = get_class($this);
+	    if (false === strpos($className, '\\')) {
+	        return self::getProxyInstance($className);
+	    }
+	    
+	    $namespace = array_slice(explode('\\', $className), 0, -1);
+	    $className = join('', array_slice(explode('\\', $className), -1));
+	    
+		return nsGetProxyInstance($namespace, $className);
 	}
+	
+	
 	
 	/**
 	 * Instanciates a controller class.
@@ -205,11 +260,34 @@ abstract class bab_Controller
 	public static function ControllerProxy($className, $proxy = true)
 	{
 		if ($proxy) {
-			return bab_Controller::getProxyInstance($className);
+			return self::getProxyInstance($className);
 		}
 	
 		return new $className();
 	}
+	
+	
+	
+	/**
+	 * Instanciates a controller class.
+	 * 
+	 * @param  string  $namespace  Namespace of your controller class
+	 * @param  string  $className  Class name without the namespace
+	 * @param  bool    get the proxy instance insead
+	 *
+	 * @return bab_Controller
+	 */
+	public static function nsControllerProxy($namespace, $className, $proxy = true)
+	{
+	    if ($proxy) {
+	        return self::getNsProxyInstance($namespace, $className);
+	    }
+	    
+	    $className = $namespace.'\\'.$className;
+	
+	    return new $className();
+	}
+	
 
 
 	/**
