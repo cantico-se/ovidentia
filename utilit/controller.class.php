@@ -45,6 +45,11 @@ class bab_MissingActionParameterException extends Exception
 	}
 }
 
+class bab_InvalidActionException extends Exception
+{
+    
+}
+
 
 /**
  * bab_AccessException are thrown when the user tries to
@@ -378,10 +383,13 @@ abstract class bab_Controller
 	
 	/**
 	 * Get object name to use in URL from the controller classname
-	 * @param string $classname
+	 * @param string $classname        Does not include the namespace
 	 * @return string
 	 */
-	abstract protected function getObjectName($classname);
+	protected function getObjectName($classname)
+	{
+	    return strtolower($classname);
+	}
 	
 
 
@@ -395,14 +403,15 @@ abstract class bab_Controller
 	 */
 	protected function getMethodAction($methodName, $args)
 	{
-		$classname = substr(get_class($this), 0, -strlen(self::PROXY_CLASS_SUFFIX));
-		if (!method_exists($classname, $methodName)) {
-			throw new bab_InvalidActionException($classname . '::' . $methodName);
+        $fullClassName = substr(get_class($this), 0, -strlen(self::PROXY_CLASS_SUFFIX));
+	    $className = join('', array_slice(explode('\\', $fullClassName), -1));
+		$classname = substr($className, 0, -strlen(self::PROXY_CLASS_SUFFIX));
+		if (!method_exists($fullClassName, $methodName)) {
+			throw new bab_InvalidActionException($fullClassName . '::' . $methodName);
 		}
-		$method = new ReflectionMethod($classname, $methodName);
-		
+		$method = new ReflectionMethod($fullClassName, $methodName);
 
-		$objectName = $this->getObjectName($method->class);
+		$objectName = $this->getObjectName($className);
 		$parameters = $method->getParameters();
 		$actionParams = array();
 		$argNumber = 0;
