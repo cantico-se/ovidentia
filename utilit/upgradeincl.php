@@ -498,10 +498,10 @@ function bab_upgradeAddonsFromInstall($install, $upgrade) {
 						$addon = new bab_addonInfos();
 						if (false !== $addon->setAddonName($sAddonName, false))
 						{
-							$inifile = $sInstallDir . '/' . $sAddonName . '/programs/addonini.php';
+							$inifile = $sInstallDir . '/' . $sAddonName . '/'.$addon->getPackageIniFilePath();
 							if (!is_file($inifile))
 							{
-								throw new Exception(sprintf('The addon %s found in addons.ini file does not contain an addonini.php file',$sAddonName));
+								throw new Exception(sprintf('The addon %s found in addons.ini file does not contain a ini file',$sAddonName));
 								return false;
 							}
 

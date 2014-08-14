@@ -1762,7 +1762,6 @@ class bab_inifile {
 
 /**
  * Ini file for addon
- * addonini.php
  * @package inifile
  */
 class bab_AddonIniFile extends bab_inifile {
