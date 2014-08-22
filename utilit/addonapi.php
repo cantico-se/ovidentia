@@ -410,7 +410,7 @@ function bab_sprintf($sFormat)
  *
  * @param string $string 	The string to process.
  * @param string $charset 	Optional charset, default is database charset
- * 
+ *
  * @return string The processed string (in ascii).
  */
 function bab_removeDiacritics($string, $charset = null)
@@ -666,9 +666,9 @@ function bab_time($time)
  * Returns a unix timestamp corresponding to the string $time formatted as a MYSQL DATETIME
  *
  * @access  public
- * 
+ *
  * @param   string	$time	(eg. '2006-03-10 17:37:02')
- * 
+ *
  * @return  int	unix timestamp
  */
 function bab_mktime($time)
@@ -690,7 +690,7 @@ function bab_mktime($time)
 class bab_DateStrings
 {
 	/**
-	 * 
+	 *
 	 * @return array
 	 */
 	public static function getMonths()
@@ -700,17 +700,17 @@ class bab_DateStrings
 		if (null === $arr)
 		{
 			$arr = array(
-				1=>bab_translate("January"), 
-				bab_translate("February"), 
-				bab_translate("March"), 
+				1=>bab_translate("January"),
+				bab_translate("February"),
+				bab_translate("March"),
 				bab_translate("April"),
-	            bab_translate("May"), 
-	            bab_translate("June"), 
-	            bab_translate("July"), 
+	            bab_translate("May"),
+	            bab_translate("June"),
+	            bab_translate("July"),
 	            bab_translate("August"),
-	            bab_translate("September"), 
-	            bab_translate("October"), 
-	            bab_translate("November"), 
+	            bab_translate("September"),
+	            bab_translate("October"),
+	            bab_translate("November"),
 	            bab_translate("December")
 	        );
 		}
@@ -719,7 +719,7 @@ class bab_DateStrings
 	}
 	
 	/**
-	 * 
+	 *
 	 * @param int $i
 	 * @return string
 	 */
@@ -730,7 +730,7 @@ class bab_DateStrings
 	}
 	
 	/**
-	 * 
+	 *
 	 * @return array
 	 */
 	public static function getShortMonths()
@@ -761,7 +761,7 @@ class bab_DateStrings
 	}
 	
 	/**
-	 * 
+	 *
 	 * @return arrray
 	 */
 	public static function getDays()
@@ -771,12 +771,12 @@ class bab_DateStrings
 		if (null === $arr)
 		{
 			$arr = array(
-				bab_translate('Sunday'), 
+				bab_translate('Sunday'),
 				bab_translate('Monday'),
-				bab_translate('Tuesday'), 
-				bab_translate('Wednesday'), 
+				bab_translate('Tuesday'),
+				bab_translate('Wednesday'),
 				bab_translate('Thursday'),
-				bab_translate('Friday'), 
+				bab_translate('Friday'),
 				bab_translate('Saturday')
 			);
 		}
@@ -786,7 +786,7 @@ class bab_DateStrings
 	
 	
 	/**
-	 * 
+	 *
 	 * @param int $i
 	 * @return string
 	 */
@@ -1333,10 +1333,10 @@ function bab_getGroupsMembers($ids, $nonConfirmed = false, $disabled = false)
 					}
 				}
 
-			$req = "SELECT distinct u.id, u.email, u.firstname, u.lastname FROM ".BAB_USERS_GROUPS_TBL." g, ".BAB_USERS_TBL." u 
-				WHERE 
-					".bab_userInfos::queryAllowedUsers('u', $nonConfirmed, $disabled)." 
-					and g.id_group IN (".$babDB->quote($ids).") 
+			$req = "SELECT distinct u.id, u.email, u.firstname, u.lastname FROM ".BAB_USERS_GROUPS_TBL." g, ".BAB_USERS_TBL." u
+				WHERE
+					".bab_userInfos::queryAllowedUsers('u', $nonConfirmed, $disabled)."
+					and g.id_group IN (".$babDB->quote($ids).")
 					AND g.id_object=u.id
 				";
 			}
@@ -1416,7 +1416,7 @@ function bab_isMemberOfGroup($group, $userid="")
 		} else {
 			return false;
 		}
-	} 
+	}
 
 	switch($id_group) {
 		case BAB_ALLUSERS_GROUP:
@@ -1733,7 +1733,7 @@ function bab_getAccessibleObjects($table, $userId)
 				}
 			}
 		}
-		elseif ( ($object['id_group'] < BAB_ACL_GROUP_TREE && in_array($object['id_group'], $userGroupIds)) 
+		elseif ( ($object['id_group'] < BAB_ACL_GROUP_TREE && in_array($object['id_group'], $userGroupIds))
 		|| ($object['id_group'] > BAB_ACL_GROUP_TREE && bab_Groups::isMemberOfTree($object['id_group'] - BAB_ACL_GROUP_TREE, $userId))) {
 			$objects[$object['id_object']] = $object['id_object'];
 		}
@@ -1782,7 +1782,7 @@ function bab_getUserIdObjects($table)
 					}
 				}
 			}
-			elseif ( ($row['id_group'] < BAB_ACL_GROUP_TREE && bab_isMemberOfGroup($row['id_group'])) 
+			elseif ( ($row['id_group'] < BAB_ACL_GROUP_TREE && bab_isMemberOfGroup($row['id_group']))
 				|| ($row['id_group'] > BAB_ACL_GROUP_TREE && bab_Groups::isMemberOfTree($row['id_group'] - BAB_ACL_GROUP_TREE))) {
 				$groupAccess['acltables'][$table][$row['id_object']] = $row['id_object'];
 			}
@@ -1865,33 +1865,31 @@ function bab_calendarPopup($callback, $month='', $year='', $low='', $high='')
 /**
  * Create a directory
  */
-function bab_mkdir($path, $mode='')
+function bab_mkdir($path, $mode = '')
 {
-	if( mb_substr($path, -1) == "/" )
-		{
-		$path = mb_substr($path, 0, -1);
-		}
-		
-	$umaskmode = isset($GLOBALS['babUmaskMode']) ? $GLOBALS['babUmaskMode'] : 0;
-		
-	$umask = umask($umaskmode);
-	if( $mode === '' )
-	{
-		if (isset($GLOBALS['babMkdirMode']))
-		{
-			$mode = $GLOBALS['babMkdirMode'];
-		} else{
-			$mode = '0770';
-		}
-	}
-	$res = mkdir($path, $mode);
-	if (!$res) {
-		include_once $GLOBALS['babInstallPath'] . 'utilit/devtools.php';
-		bab_debug_print_backtrace();
-	}
-	umask($umask);
-	return $res;
+    if (mb_substr($path, - 1) == '/') {
+        $path = mb_substr($path, 0, - 1);
+    }
+    
+    $umaskmode = isset($GLOBALS['babUmaskMode']) ? $GLOBALS['babUmaskMode'] : 0;
+    
+    $umask = umask($umaskmode);
+    if ($mode === '') {
+        if (isset($GLOBALS['babMkdirMode'])) {
+            $mode = $GLOBALS['babMkdirMode'];
+        } else {
+            $mode = 0770;
+        }
+    }
+    $res = mkdir($path, $mode);
+    if (! $res) {
+        include_once $GLOBALS['babInstallPath'] . 'utilit/devtools.php';
+        bab_debug_print_backtrace();
+    }
+    umask($umask);
+    return $res;
 }
+
 
 /**
  * since ovidentia 5.8.6 quotes are always striped
@@ -2144,9 +2142,9 @@ function bab_getFileMimeType($file)
 /* API Directories */
 /**
  * Get the directory id from the user id
- * 
+ *
  * @since 7.8.95
- * 
+ *
  * @param	int		$userId
  * @return  int
  */
@@ -2939,14 +2937,14 @@ function bab_toHtml($str, $option = BAB_HTML_ENTITIES) {
 
 
 /**
- * Remove html entities 
- * 
- * 
+ * Remove html entities
+ *
+ *
  * @param	string	$string
  * @return string
  */
 function bab_unhtmlentities($string)
-{	
+{
 	return html_entity_decode($string, ENT_QUOTES, bab_charset::getIso());
 }
 
@@ -3111,21 +3109,21 @@ function bab_getFileContentDisposition() {
  * 			['timestamp'] => timestamp of cached content creation
  * 			['content'] => parsed ovml content
  *      ...
- *      
- *      
+ *
+ *
  * for other cacheing method, use the _ovml_cache_type parameter, the value can be :
  * 	session : cache in session variable (default)
  * 	sitemap : cache in file based on sitemap profile UID
  * 	file : cache in file
- * 
+ *
  * @example $OVMLCACHE(menu.html,_ovml_cache_duration=120,_ovml_cache_type=sitemap)
- * 
+ *
  *
  * @since 7.1.94
- * 
+ *
  * @param	string	$file
  * @param	array	$args
- * 
+ *
  * @return	string	html
  */
 function bab_printCachedOvmlTemplate($file, $args = array())
@@ -3143,7 +3141,7 @@ function bab_printCachedOvmlTemplate($file, $args = array())
 	if (isset($args['_ovml_cache_duration']))
 	{
 		$cache->setCacheDuration((int) $args['_ovml_cache_duration']);
-	}	
+	}
 	
 	return $cache->$cache_type();
 }
@@ -3397,9 +3395,9 @@ class bab_functionality {
 	
 	/**
 	 * Include original php file with the functionality class
-	 * 
+	 *
 	 * @since 7.8.90
-	 * 
+	 *
 	 * @param string $path 			path to functionality
 	 * @return string | false		the object class name or false if the file already included or false if the include failed
 	 */
@@ -3415,12 +3413,12 @@ class bab_functionality {
 	 * If $singleton is set to true, the functionality object will be instanciated as
 	 * a singleton, i.e. there will be at most one instance of the functionality
 	 * at a given time.
-	 * 
+	 *
 	 * @since 7.8.90
-	 * 
+	 *
 	 * @param string 	$path
 	 * @param bool 		$singleton
-	 * 
+	 *
 	 * @return bab_functionality
 	 */
 	public static function getOriginal($path, $singleton = true)
@@ -3521,7 +3519,7 @@ function bab_getAddonInfosInstance($addonname) {
 
 /**
  * Checks if the current http request is an ajax request.
- * 
+ *
  * @since 8.2.0
  * @return boolean
  */
@@ -3556,7 +3554,7 @@ function bab_requireCredential($sLoginMessage = '', $sAuthType = '')
 
 	if ($sAuthType === '') {
 		// If a requireCredential is triggerd during an ajax request
-		// we force AuthBasic to avoid silently failing requests. 
+		// we force AuthBasic to avoid silently failing requests.
 		if (bab_isAjaxRequest()) {
 			$sAuthType = 'Basic';
 		}
@@ -3781,9 +3779,9 @@ function bab_getStaticUrl()
 /**
  * Get the current user language code,
  * if not set for user or not logged in, get the site language code
- * 
+ *
  * @since 8.0.94
- * 
+ *
  * @return string
  */
 function bab_getLanguage()
