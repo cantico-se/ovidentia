@@ -153,7 +153,7 @@ abstract class bab_AddonLocation
         /*@var $settings bab_Settings */
         $site = $settings->getSiteSettings();
     
-        return $site['uploadpath'].'/addons/'.$this->$addonName.'/';
+        return $site['uploadpath'].'/addons/'.$this->addonName.'/';
     }
 }
 
