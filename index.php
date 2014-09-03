@@ -875,28 +875,28 @@ switch(bab_rp('tg'))
 			{
 				$arr[1] = bab_addonsInfos::getAddonIdByName($arr[1], false);
 			}
+			
+			$addon_row = bab_addonsInfos::getDbRow($arr[1]);
+			$addon = bab_getAddonInfosInstance($addon_row['title']);
 				
 			
-			if(!bab_isAddonAccessValid($arr[1])) {
-				$addon_row = bab_addonsInfos::getDbRow($arr[1]);
-				$addon = bab_getAddonInfosInstance($addon_row['title']);
-				
+			if(!$addon->isAccessValid()) {
 				if ($addon && $addon->hasAccessControl() && $addon->isInstalled() && !$addon->isDisabled())
 				{
-					bab_requireAccess('bab_addons_groups', $arr[1], bab_translate('You must be logged in to access this page.'));
+					bab_requireAccess('bab_addons_groups', $addon->getId(), bab_translate('You must be logged in to access this page.'));
 				}
 				
 				$babBody->addError(bab_translate("Access denied"));
 				
 			} else {
 				
-				$row = bab_addonsInfos::getDbRow($arr[1]);
-				$incl = "addons/".$row['title'];
-				$module = "/".preg_replace("/[^A-Za-z0-9_\-]/", "", $arr[2]);
-				bab_setAddonGlobals($arr[1]);
-				$babWebStat->addon($row['title']);
-				$babWebStat->module($module);
-				$incl .= $module;
+				$module = preg_replace("/[^A-Za-z0-9_\-]/", "", $arr[2]);
+				bab_setAddonGlobals($addon->getId());
+				$babWebStat->addon($addon->getName());
+				$babWebStat->module("/".$module);
+				
+				$incl = null;
+				require_once $addon->getPhpPath().$module.'.php';
 			}
 		}
 		else
