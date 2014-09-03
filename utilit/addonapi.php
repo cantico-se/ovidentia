@@ -1961,7 +1961,7 @@ function bab_getAvailableLanguages()
  *
  * @return string
  */
-function bab_printTemplate(&$class, $file, $section = '')
+function bab_printTemplate($class, $file, $section = '')
 {
 	//bab_debug('Template file : '.$file.'<br />'.'Section in template file : '.$section);
 
