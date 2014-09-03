@@ -693,7 +693,7 @@ function modifyCategory($id, $cat, $category, $description, $saart, $sacom, $sau
 				}
 			if( file_exists( $filepath ) )
 				{
-				$tpl = new babTemplate();
+				$tpl = new bab_Template();
 				$arr = $tpl->getTemplates($filepath);
 				for( $i=0; $i < count($arr); $i++)
 					{
@@ -716,7 +716,7 @@ function modifyCategory($id, $cat, $category, $description, $saart, $sacom, $sau
 				}
 			if( file_exists( $filepath ) )
 				{
-				$tpl = new babTemplate();
+				$tpl = new bab_Template();
 				$arr = $tpl->getTemplates($filepath);
 				for( $i=0; $i < count($arr); $i++)
 					{

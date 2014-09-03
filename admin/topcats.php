@@ -238,7 +238,7 @@ function topcatCreate($idp)
 			
 			if(file_exists($filepath))
 			{
-				$tpl = new babTemplate();
+				$tpl = new bab_Template();
 				$this->arrtmpl = $tpl->getTemplates($filepath);
 			}
 			$this->counttmpl = count($this->arrtmpl);
@@ -256,7 +256,7 @@ function topcatCreate($idp)
 				
 			if(file_exists($filepath))
 			{
-				$tpl = new babTemplate();
+				$tpl = new bab_Template();
 				$this->arrdisptmpl = $tpl->getTemplates($filepath);
 			}
 			$this->countdisptmpl = count($this->arrdisptmpl);

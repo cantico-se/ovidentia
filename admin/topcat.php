@@ -195,7 +195,7 @@ function topcatModify($id)
 			
 			if(file_exists($filepath))
 			{
-				$tpl = new babTemplate();
+				$tpl = new bab_Template();
 				$this->arrtmpl = $tpl->getTemplates($filepath);
 			}
 			$this->counttmpl = count($this->arrtmpl);
@@ -213,7 +213,7 @@ function topcatModify($id)
 			
 			if(file_exists($filepath))
 			{
-				$tpl = new babTemplate();
+				$tpl = new bab_Template();
 				$this->arrdisptmpl = $tpl->getTemplates($filepath);
 			}
 			

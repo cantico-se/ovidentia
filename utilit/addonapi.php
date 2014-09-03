@@ -1966,81 +1966,13 @@ function bab_printTemplate(&$class, $file, $section = '')
 	//bab_debug('Template file : '.$file.'<br />'.'Section in template file : '.$section);
 
 	global $babInstallPath, $babSkinPath, $babSkin;
-	$tplfound = false;
 
-	if( isset($GLOBALS['babUseNewTemplateParser']) && $GLOBALS['babUseNewTemplateParser'] === false)
-	{
-		$tpl = new babTemplate(); /* old template parser */
+	$tpl = new bab_Template();
+	if ($html = $tpl->printTemplate($class, 'skins/'.$GLOBALS['babSkin'].'/templates/'. $file, $section)) {
+	    return $html;
 	}
-	else
-	{
-		
-		
-		$tpl = new bab_Template();
-		if (bab_TemplateCache::get('skins/'.$babSkin.'/templates/'. $file, $section)) {
-			return $tpl->printTemplate($class, 'skins/'.$GLOBALS['babSkin'].'/templates/'. $file, $section);
-		}
-		if (bab_TemplateCache::get($babSkinPath.'templates/'.$file, $section)) {
-			return $tpl->printTemplate($class, $babSkinPath.'templates/'.$file, $section);
-		}
-		if (bab_TemplateCache::get($babInstallPath.'skins/ovidentia/templates/'.$file, $section)) {
-			return $tpl->printTemplate($class, $babInstallPath.'skins/ovidentia/templates/'.$file, $section);
-		}
-	}
-
-	$filepath = "skins/".$GLOBALS['babSkin']."/templates/". $file;
-	if( file_exists( $filepath ) )
-		{
-		if( empty($section))
-			{
-				return $tpl->printTemplate($class,$filepath, '');
-			}
-
-		$arr = $tpl->getTemplates($filepath);
-		$tplfound = in_array($section, $arr);
-		}
-
-	if( !$tplfound )
-		{
-		$filepath = $babSkinPath."templates/". $file;
-		if( file_exists( $filepath ) )
-			{
-			if( empty($section))
-				{
-					return $tpl->printTemplate($class,$filepath, '');
-				}
-
-			$arr = $tpl->getTemplates($filepath);
-			$tplfound = in_array($section, $arr);
-			}
-
-		}
-
-	if( !$tplfound )
-		{
-		$filepath = $babInstallPath."skins/ovidentia/templates/". $file;
-		if( file_exists( $filepath ) )
-			{
-			if( empty($section))
-				{
-					return $tpl->printTemplate($class,$filepath, '');
-				}
-
-			$arr = $tpl->getTemplates($filepath);
-			$tplfound = in_array($section, $arr);
-			}
-
-		}
-
-	if( $tplfound ) {
-//		$start = microtime(true);
-		$t = $tpl->printTemplate($class,$filepath, $section);
-//		bab_debug($filepath . ':' . $section . '=' . (int)((microtime(true) - $start) * 1000000));
-		return $t;
-//		return $tpl->printTemplate($class,$filepath, $section);
-	} else {
-		return '';
-	}
+	
+	return $tpl->printTemplate($class, $babInstallPath.'skins/ovidentia/templates/'.$file, $section);
 }
 
 

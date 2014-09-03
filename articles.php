@@ -114,8 +114,8 @@ abstract class bab_listArticles extends categoriesHierarchy
 			$tplfound = false;
 			if( file_exists( $filepath ) )
 				{
-				$tpl = new babTemplate();
-				$arr = $tpl->getTemplates($filepath);
+				$tpl = new bab_Template();
+				$arr = $tpl->get_Templates($filepath);
 				for( $i=0; $i < count($arr); $i++)
 					{
 					if( mb_substr($arr[$i], 5) == $this->template )
@@ -1042,8 +1042,8 @@ function readMore($topics, $article)
 		$tplfound = false;
 		if( file_exists( $filepath ) )
 			{
-			$tpl = new babTemplate();
-			$arr = $tpl->getTemplates($filepath);
+			$tpl = new bab_Template();
+			$arr = $tpl->get_Templates($filepath);
 			for( $i=0; $i < count($arr); $i++)
 				{
 				if( mb_substr($arr[$i], 5) == $template )

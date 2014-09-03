@@ -474,7 +474,7 @@ function sectionCreate($jscript)
 				}
 			if( file_exists( $filepath ) )
 				{
-				$tpl = new babTemplate();
+				$tpl = new bab_Template();
 				$this->arrtmpl = $tpl->getTemplates($filepath);
 				}
 			$this->counttmpl = count($this->arrtmpl);
