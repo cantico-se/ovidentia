@@ -1019,6 +1019,56 @@ function bab_OCGetLastChild($iIdEntity)
 }
 
 
+/**
+ * Returns the array of id of the specified entity's children.
+ *
+ * @param $iIdEntity
+ * @return array
+ */
+function bab_OCGetChildren($iIdEntity)
+{
+	static $children = null;
+	if($children === null){
+		$children = array();
+	}
+	if(isset($children[$iIdEntity])){
+		return $children[$iIdEntity];
+	}
+	global $babDB;
+
+	$sQuery =
+		'SELECT ' .
+			'octChEntity.id iIdEntity ' .
+		'FROM ' .
+			BAB_OC_ENTITIES_TBL . ' octEntity ' .
+		'LEFT JOIN ' .
+			BAB_OC_TREES_TBL . ' octPr ON octPr.id = octEntity.id_node ' .
+		'LEFT JOIN ' .
+			BAB_OC_TREES_TBL . ' octCh ON octCh.id_parent = octPr.id ' .
+		'LEFT JOIN ' .
+			BAB_OC_ENTITIES_TBL . ' octChEntity ON octChEntity.id_node = octCh.id ' .
+		'WHERE ' .
+			'octEntity.id IN (' . $babDB->quote($iIdEntity) . ') ' .
+		'ORDER BY ' .
+			'octCh.lr DESC';
+
+	//bab_debug($sQuery);
+	$oResult = $babDB->db_query($sQuery);
+	if(false !== $oResult){
+		$children[$iIdEntity] = array();
+		while($aData = $babDB->db_fetch_assoc($oResult)){
+			 $children[$iIdEntity][$aData['iIdEntity']] = $aData['iIdEntity'];
+			 $recurses = bab_OCGetChildren($aData['iIdEntity']);
+			 foreach($recurses as $recurse){
+			 	$children[$iIdEntity][$recurse] = $recurse;
+			 }
+		}
+		return $children[$iIdEntity];
+	}
+	return array();
+}
+
+
 function bab_OCSelectTreeQuery($iIdTree)
 {
 	global $babDB;
