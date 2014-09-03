@@ -245,6 +245,32 @@ class bab_addonInfos {
     {
         return $this->getLocation()->getPackageIniFilePath();
     }
+    
+    
+    /**
+     * Get a template full path from a file name
+     * @param string $filename
+     * @return string
+     */
+    public function getTemplate($filename)
+    {
+        return $this->getTemplatePath().$filename;
+    }
+    
+    /**
+     * Convert template to html
+     * 
+     * @param object $class           object class instance with getnext methods on public properties
+     * @param string $filename        File in addon template path
+     * @param string $section         optional section name in template
+     * 
+     * @return string
+     */
+    public function printTemplate($class, $filename, $section = '')
+    {
+        $tpl = new bab_Template();
+        return $tpl->printTemplate($class, $this->getTemplate($filename), $section);
+    }
 
 
     /**
