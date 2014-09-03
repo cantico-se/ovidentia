@@ -596,8 +596,8 @@ function createToolbarGroup(label, className)
 	spanLabel.className = 'bab_label';
 	toolbarGroup.appendChild(spanLabel);
 	toolbarGroup.getControlledElement = getControlledElement;
-	toolbarGroup.onselectstart = function () { return false; } // ie
-	toolbarGroup.onmousedown = function () { return false; } // mozilla
+	//toolbarGroup.onselectstart = function () { return false; } // ie
+	//toolbarGroup.onmousedown = function () { return false; } // mozilla
 	return toolbarGroup;
 }
 
