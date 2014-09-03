@@ -93,12 +93,13 @@ class bab_functionalities {
 		$includePath = str_replace('\\','/',$filePath);
 		
 		// include in relative path if file is under install path
-		if (false !== mb_strpos($includePath, $installPath)) {
-			$pos = mb_strlen($includePath) - mb_strpos( strrev($includePath) , strrev($installPath)) - mb_strlen($installPath);
-			$includePath = mb_substr($includePath, $pos);
+		if (0 === mb_strpos($includePath, $installPath)) {
+			$includePath = mb_substr($includePath, mb_strlen($installPath));
+			
+			return '\'.$GLOBALS[\'babInstallPath\'].\''.$includePath;
 		}
 		
-		return str_replace($GLOBALS['babInstallPath'], '\'.$GLOBALS[\'babInstallPath\'].\'', $includePath);
+		return $includePath;
 	}
 	
 	
