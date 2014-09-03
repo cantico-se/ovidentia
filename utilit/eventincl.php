@@ -247,13 +247,20 @@ function bab_fireEvent(bab_Event $event_obj)
 
 			if (0 < $babDB->db_num_rows($res)) {
 				while ($arr = $babDB->db_fetch_assoc($res)) {
-
+				    
+				    
+				    
 					$id_addon = $arr['id_addon'];
 					if (BAB_ADDON_CORE_NAME === $arr['addon_name'] ||
 					bab_isAddonAccessValid($id_addon)) {
+					    
+					    if (!is_file($arr['require_file']) && is_file($GLOBALS['babInstallPath'].$arr['require_file'])) {
+					        // accept relative path
+					        $arr['require_file'] = $GLOBALS['babInstallPath'].$arr['require_file'];
+					    }
 
 
-						if (empty($arr['require_file']) || is_file($GLOBALS['babInstallPath'].$arr['require_file'])) {
+						if (empty($arr['require_file']) || is_file($arr['require_file'])) {
 
 							$calls[$classkey][] = array(
 								'require_file' => $arr['require_file'],
@@ -269,7 +276,6 @@ function bab_fireEvent(bab_Event $event_obj)
 							file : '.$arr['require_file'].'
 							');
 						}
-
 					}
 
 					if (NULL === $id_addon && BAB_ADDON_CORE_NAME !== $arr['addon_name']) {
@@ -307,7 +313,7 @@ function bab_fireEvent(bab_Event $event_obj)
 		$obj->setAddonCtx($arr['addon_id'], $arr['addon_name']);
 
 		if (!empty($arr['require_file'])) {
-			require_once $GLOBALS['babInstallPath'].$arr['require_file'];
+			require_once $arr['require_file'];
 		}
 		
 		

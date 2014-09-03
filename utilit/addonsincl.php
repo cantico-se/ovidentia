@@ -59,7 +59,14 @@ class bab_addonsInfos {
 		global $babDB;
 		
 		$ini = new bab_inifile();
-		$ini->inifileGeneral($GLOBALS['babInstallPath'].'addons/'.$title.'/addonini.php');
+		
+		$standard = new bab_AddonStandardLocation($title);
+		if (file_exists($standard->getIniFilePath())) {
+		    $ini->inifileGeneral($standard->getIniFilePath());
+		} else {
+		    $core = new bab_AddonInCoreLocation($title);
+		    $ini->inifileGeneral($core->getIniFilePath());
+		}
 		$arr_ini = $ini->inifile;
 
 		$access_control = isset($arr_ini['addon_access_control']) ? (int) $arr_ini['addon_access_control'] : 1;
