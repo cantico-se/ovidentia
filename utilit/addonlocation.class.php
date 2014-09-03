@@ -43,6 +43,12 @@ abstract class bab_AddonLocation
     }
     
     /**
+     * get the list of available addon names in this location
+     * @return array
+     */
+    abstract public static function getList();
+    
+    /**
      * Path to php source files
      * relative to the ovidentia root folder (config.php)
      * with a terminal slash
@@ -174,6 +180,30 @@ class bab_AddonInCoreLocation extends bab_AddonLocation
         return 'addons/'.$this->addonName.'/';
     }
     
+    /**
+     * List of addons in core
+     * @see bab_AddonLocation::getList()
+     * 
+     * @return array
+     */
+    public static function getList()
+    {
+        $list = array();
+        $h = opendir($GLOBALS['babInstallPath'].'addons/');
+        while (($f = readdir($h)) != false)
+        {
+            if ($f != "." and $f != "..")
+            {
+                if (is_dir($GLOBALS['babInstallPath'].'addons/'.$f) && is_file($GLOBALS['babInstallPath'].'addons/'.$f."/init.php"))
+                {
+                    $list[] = $f;
+                }
+            }
+        }
+        closedir($h);
+        return $list;
+    }
+    
 
     public function getPhpPath()
     {
@@ -246,7 +276,31 @@ class bab_AddonStandardLocation extends bab_AddonLocation
      */
     protected function getBasePath()
     {
-        return 'vendor/ovidentia/'.$this->addonName;
+        return 'vendor/ovidentia/'.$this->addonName.'/';
+    }
+    
+    /**
+     * Get list of addons in vendor
+     * @see bab_AddonLocation::getList()
+     * 
+     * @return array
+     */
+    public static function getList()
+    {
+        $list = array();
+        $h = opendir('vendor/ovidentia');
+        while (($f = readdir($h)) != false)
+        {
+            if ($f != "." and $f != "..")
+            {
+                if (is_dir('vendor/ovidentia/'.$f) && is_file('vendor/ovidentia/'.$f."/programs/init.php"))
+                {
+                    $list[] = $f;
+                }
+            }
+        }
+        
+        return $list;
     }
     
     

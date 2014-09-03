@@ -287,34 +287,32 @@ class bab_addonsInfos {
 	/**
 	 * Browse addons folder and add missing addons to bab_addons
 	 */
-	public static function insertMissingAddonsInTable() {
-	
-		global $babDB;
-	
-		$h = opendir($GLOBALS['babInstallPath'].'addons/');
-		while (($f = readdir($h)) != false)
-			{
-			if ($f != "." and $f != "..") 
-				{
-				if (is_dir($GLOBALS['babInstallPath'].'addons/'.$f) && is_file($GLOBALS['babInstallPath'].'addons/'.$f."/init.php"))
-					{
-					$res = $babDB->db_query("SELECT * FROM ".BAB_ADDONS_TBL." 
-					where title='".$babDB->db_escape_string($f)."' ORDER BY title ASC");
-					if( $res && $babDB->db_num_rows($res) < 1)
-						{
-							$babDB->db_query("
-							INSERT INTO ".BAB_ADDONS_TBL." (title, enabled) 
-							VALUES ('".$babDB->db_escape_string($f)."', 'Y')
-							");
-						}
-					}
-				}
-			}
-		closedir($h);
+	public static function insertMissingAddonsInTable()
+	{
+
+		foreach(bab_AddonInCoreLocation::getList() as $addonName) {
+		    self::insertAddon($addonName);
+		}
+
+		foreach(bab_AddonStandardLocation::getList() as $addonName) {
+		    self::insertAddon($addonName);
+		}
 	}
 	
 	
-	
+	private static function insertAddon($title)
+	{
+	    global $babDB;
+	    $res = $babDB->db_query("SELECT * FROM ".BAB_ADDONS_TBL."
+	            where title='".$babDB->db_escape_string($title)."' ORDER BY title ASC");
+	    if( $res && $babDB->db_num_rows($res) < 1)
+	    {
+	        $babDB->db_query("
+	                INSERT INTO ".BAB_ADDONS_TBL." (title, enabled)
+	                VALUES ('".$babDB->db_escape_string($title)."', 'Y')
+	                ");
+	    }
+	}
 }
 
 

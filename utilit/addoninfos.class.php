@@ -98,9 +98,11 @@ class bab_addonInfos {
             if (!isset($this->addonname)) {
                 throw new Exception('The addonname must be set');
             }
+            
+            $standard = new bab_AddonStandardLocation($this->addonname);
 
-            if (file_exists(sprintf('vendor/ovidentia/%s/version.ini', strtolower($this->addonname)))) {
-                $this->location = new bab_AddonStandardLocation($this->addonname);
+            if (file_exists($standard->getIniFilePath())) {
+                $this->location = $standard;
             } else {
             
                 $this->location = new bab_AddonInCoreLocation($this->addonname);
