@@ -102,9 +102,10 @@ class bab_addonsInfos {
 			while( $arr = $babDB->db_fetch_assoc($res)) {
 
 				$arr['access'] = self::isAccessible($arr['id'], $arr['title'], $arr['version'],'Y', 'Y');
+				$name = mb_strtolower($arr['title']);
 					
-				$this->indexById[$arr['id']] 		= $arr;
-				$this->indexByName[$arr['title']] 	= $arr;
+				$this->indexById[$arr['id']] = $arr;
+				$this->indexByName[$name] 	 = $arr;
 			}
 		}
 		
@@ -126,9 +127,11 @@ class bab_addonsInfos {
 	
 			$res = $babDB->db_query("select * from bab_addons");
 			while( $arr = $babDB->db_fetch_array($res)) {
+			    
+			    $name = mb_strtolower($arr['title']);
 					
-				$this->fullIndexById[$arr['id']] 		= $arr;
-				$this->fullIndexByName[$arr['title']] 	= $arr;
+				$this->fullIndexById[$arr['id']] = $arr;
+				$this->fullIndexByName[$name] 	 = $arr;
 			}
 		}
 		
@@ -259,7 +262,7 @@ class bab_addonsInfos {
 	
 	
 	/**
-	 * Get addon id by name
+	 * Get addon id by name (case insensitive)
 	 *
 	 * @param	string	$name
 	 * @param	boolean	$access_rights
@@ -272,6 +275,8 @@ class bab_addonsInfos {
 		
 		$obj = bab_getInstance('bab_addonsInfos');
 		$obj->createFullIndex();
+		
+		$name = mb_strtolower($name);
 		
 		if (!isset($obj->fullIndexByName[$name])) {
 			return false;
