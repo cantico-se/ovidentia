@@ -271,6 +271,17 @@ class bab_AddonStandardLocation extends bab_AddonLocation
 {
     
     /**
+     * Addon name will be lowercase in paths for this location
+     * @param string $addonName
+     */
+    public function __construct($addonName)
+    {
+        parent::__construct(mb_strtolower($addonName));
+    }
+    
+    
+    
+    /**
      * In standard location
      * All addon files are under one base folder
      */
