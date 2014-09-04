@@ -606,7 +606,7 @@ CREATE TABLE bab_topics_categories (
    UNIQUE KEY uuid (uuid)
 );
 
-INSERT INTO bab_topics_categories (id, uuid, title, description, enabled) VALUES ('1', '973c971c-4c30-4c6f-ad95-378f96a6802c', 'Catégorie par défaut', '', 'Y');
+INSERT INTO bab_topics_categories (id, uuid, title, description, enabled) VALUES ('1', '973c971c-4c30-4c6f-ad95-378f96a6802c', 'Catï¿½gorie par dï¿½faut', '', 'Y');
 
 # --------------------------------------------------------
 #
@@ -1541,8 +1541,8 @@ CREATE TABLE bab_dbdir_entries (
   KEY id_directory (id_directory)
 );
 
-INSERT INTO bab_dbdir_entries (sn, email, id_directory, id_user, bstreetaddress, hstreetaddress, user1, user2, user3, photo_data) 
- VALUES ('Administrator', 'admin@admin.bab', '0', '1', '', '', '', '', '', '');
+INSERT INTO bab_dbdir_entries (sn, givenname, email, id_directory, id_user, bstreetaddress, hstreetaddress, user1, user2, user3, photo_data) 
+ VALUES ('Ovidentia', 'Administrateur', 'admin@admin.bab', '0', '1', '', '', '', '', '', '');
 
 
 #
