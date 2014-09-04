@@ -1541,8 +1541,8 @@ CREATE TABLE bab_dbdir_entries (
   KEY id_directory (id_directory)
 );
 
-INSERT INTO bab_dbdir_entries (sn, email, id_directory, id_user, bstreetaddress, hstreetaddress, user1, user2, user3, photo_data) 
- VALUES ('Administrator', 'admin@admin.bab', '0', '1', '', '', '', '', '', '');
+INSERT INTO bab_dbdir_entries (sn, givenname, email, id_directory, id_user, bstreetaddress, hstreetaddress, user1, user2, user3, photo_data) 
+ VALUES ('Ovidentia', 'Administrateur', 'admin@admin.bab', '0', '1', '', '', '', '', '', '');
 
 
 #
