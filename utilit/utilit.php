@@ -1068,7 +1068,7 @@ class babBody
 			// $filename can be relative to styles folders
 			// or a full path relative to main folder
 	
-			if ($GLOBALS['babInstallPath'] === mb_substr($filename, 0, mb_strlen($GLOBALS['babInstallPath'])))
+			if ($GLOBALS['babInstallPath'] === mb_substr($filename, 0, mb_strlen($GLOBALS['babInstallPath'])) || 'vendor' === mb_substr($filename, 0, mb_strlen('vendor')))
 			{
 				$this->styleSheet[] = '../../'.$filename;
 			} else {
