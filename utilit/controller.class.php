@@ -249,10 +249,10 @@ abstract class bab_Controller
 	        return self::getProxyInstance($className);
 	    }
 	    
-	    $namespace = array_slice(explode('\\', $className), 0, -1);
+	    $namespace = join('\\', array_slice(explode('\\', $className), 0, -1));
 	    $className = join('', array_slice(explode('\\', $className), -1));
 	    
-		return nsGetProxyInstance($namespace, $className);
+		return self::getNsProxyInstance($namespace, $className);
 	}
 	
 	
