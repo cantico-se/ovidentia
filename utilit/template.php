@@ -263,6 +263,11 @@ class bab_Template
 		if (!empty($section)) {
 			return $this->_loadSection($pathname, $section);
 		}
+		
+		if (!file_exists($pathname)) {
+		    return false;
+		}
+		
 		return file_get_contents($pathname);
 	}
 
