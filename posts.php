@@ -209,7 +209,7 @@ function listPosts($forum, $thread, $post)
 					if( bab_isAccessValid(BAB_DBDIRVIEW_GROUPS_TBL, $this->iddir))
 						{
 						list($iddbuser) = $babDB->db_fetch_row($babDB->db_query("select id from ".BAB_DBDIR_ENTRIES_TBL." where id_user='".$babDB->db_escape_string($arr['id_author'])."' and id_directory='0'"));
-						$this->postauthordetailsurl = bab_toHtml($GLOBALS['babUrlScript']."?tg=directory&idx=ddbovml&directoryid=".urlencode($this->iddir)."&userid=".urlencode($iddbuser));	
+						$this->postauthordetailsurl = bab_toHtml($GLOBALS['babUrlScript']."?tg=directory&idx=ddbovml&directoryid=".urlencode($this->iddir)."&userid=".urlencode($iddbuser));
 						}
 					}
 
@@ -217,7 +217,7 @@ function listPosts($forum, $thread, $post)
 				$this->postauthoremail = '';
 				if( $this->forums[$this->forum]['bdisplayemailaddress'] == 'Y' )
 					{
-					$idauthor = $arr['id_author'] != 0? $arr['id_author']: bab_getUserId( $arr['author']); 
+					$idauthor = $arr['id_author'] != 0? $arr['id_author']: bab_getUserId( $arr['author']);
 					if( $idauthor )
 						{
 						$res = $babDB->db_query("select email from ".BAB_USERS_TBL." where id='".$babDB->db_escape_string($idauthor)."'");
@@ -262,7 +262,7 @@ function listPosts($forum, $thread, $post)
 				return;
 			$arr = $babDB->db_fetch_array($res);
 			$idx = $k;
-			$this->arrresult["id"][$k] = $arr['id']; 
+			$this->arrresult["id"][$k] = $arr['id'];
 			$this->arrresult["delta"][$k] = $delta;
 			$this->arrresult["parent"][$k] = 1;
 			$this->arrresult["iparent"][$k] = $iparent;
@@ -674,7 +674,7 @@ function listPostsFlat($forum, $thread, $open, $pos)
 					if( bab_isAccessValid(BAB_DBDIRVIEW_GROUPS_TBL, $this->iddir))
 						{
 						list($iddbuser) = $babDB->db_fetch_row($babDB->db_query("select id from ".BAB_DBDIR_ENTRIES_TBL." where id_user='".$babDB->db_escape_string($arr['id_author'])."' and id_directory='0'"));
-						$this->postauthordetailsurl = bab_toHtml($GLOBALS['babUrlScript']."?tg=directory&idx=ddbovml&directoryid=".urlencode($this->iddir)."&userid=".urlencode($iddbuser));	
+						$this->postauthordetailsurl = bab_toHtml($GLOBALS['babUrlScript']."?tg=directory&idx=ddbovml&directoryid=".urlencode($this->iddir)."&userid=".urlencode($iddbuser));
 						}
 					}
 
@@ -682,7 +682,7 @@ function listPostsFlat($forum, $thread, $open, $pos)
 				$this->postauthoremail = '';
 				if( $this->arrforum['bdisplayemailaddress'] == 'Y' )
 					{
-					$idauthor = $arr['id_author'] != 0? $arr['id_author']: bab_getUserId( $arr['author']); 
+					$idauthor = $arr['id_author'] != 0? $arr['id_author']: bab_getUserId( $arr['author']);
 					if( $idauthor )
 						{
 						$res = $babDB->db_query("select email from ".BAB_USERS_TBL." where id='".$babDB->db_escape_string($idauthor)."'");
@@ -1237,19 +1237,6 @@ function updateReply($forum, $thread, $subject, $post)
 
 	}
 
-function closeThread($thread)
-	{
-	global $babDB;
-	$req = "update ".BAB_THREADS_TBL." set active='N' where id='".$babDB->db_escape_string($thread)."'";
-	$res = $babDB->db_query($req);
-	}
-
-function openThread($thread)
-	{
-	global $babDB;
-	$req = "update ".BAB_THREADS_TBL." set active='Y' where id='".$babDB->db_escape_string($thread)."'";
-	$res = $babDB->db_query($req);
-	}
 
 function confirmDeleteThread($forum, $thread)
 	{
@@ -1308,6 +1295,9 @@ $idx = bab_rp('idx', 'List');
 $pos = bab_rp('pos', 0);
 $flat = bab_rp('flat', 0);
 $forum = bab_rp('forum', 0);
+$thread = bab_rp('thread', 0);
+$add = bab_rp('add', null);
+$action = bab_rp('action', null);
 
 bab_siteMap::setPosition('bab', 'UserForum'.$forum);
 
@@ -1338,20 +1328,19 @@ if( $update == 'updatereply' )
 $move = bab_rp('move', '');
 if( $move == 'movet' )
 	{
-	$thread = bab_pp('thread', 0);
 	$newforum = bab_pp('newforum', 0);
 	confirmMoveThread($forum, $thread, $newforum, $flat);
 	}
 
 if( $idx == 'Close' && $moderator)
 	{
-	closeThread($thread);
+	bab_closeThread($thread);
 	$idx = 'List';
 	}
 
 if( $idx == 'Open' && $moderator)
 	{
-	openThread($thread);
+	bab_openThread($thread);
 	$idx = 'List';
 	}
 
@@ -1428,7 +1417,7 @@ switch($idx)
 					$babBody->addItemMenu('Open', bab_translate("Open thread"), $GLOBALS['babUrlScript'].'?tg=posts&idx=Open&forum='.$forum.'&thread='.$thread.'&flat='.$flat);
 					}
 				}
-			}		
+			}
 		break;
 
 	case 'Modify':
@@ -1465,7 +1454,7 @@ switch($idx)
 				$babBody->title = bab_getForumName($forum);
 				$babBody->addItemMenu('List', bab_translate("List"), $GLOBALS['babUrlScript'].'?tg=posts&idx=List&forum='.$forum.'&thread='.$thread.'&post='.$post.'&flat='.$flat);
 				$babBody->addItemMenu('DeleteT', bab_translate("Delete thread"), $GLOBALS['babUrlScript'].'?tg=posts&idx=DeleteT&forum='.$forum.'&thread='.$thread.'&flat='.$flat);
-				}		
+				}
 			}
 		break;
 
@@ -1478,7 +1467,7 @@ switch($idx)
 				$babBody->title = bab_getForumName($forum);
 				$babBody->addItemMenu('List', bab_translate("List"), $GLOBALS['babUrlScript'].'?tg=posts&idx=List&forum='.$forum.'&thread='.$thread.'&post='.$post.'&flat='.$flat);
 				$babBody->addItemMenu('MoveT', bab_translate("Move thread"), $GLOBALS['babUrlScript'].'?tg=posts&idx=MoveT&forum='.$forum.'&thread='.$thread.'&flat='.$flat);
-				}		
+				}
 			}
 		break;
 
@@ -1535,5 +1524,3 @@ switch($idx)
 		break;
 	}
 $babBody->setCurrentItemMenu($idx);
-
-?>

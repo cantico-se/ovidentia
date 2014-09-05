@@ -41,10 +41,10 @@ function bab_getForumsRes($forumid = false, $delegationid = false) {
 	$fv = bab_getUserIdObjects(BAB_FORUMSVIEW_GROUPS_TBL);
 
 	$req = "
-		SELECT * from ".BAB_FORUMS_TBL." 
-		WHERE 
-			active='Y' 
-			AND id IN(".$babDB->quote(array_keys($fv)).') 
+		SELECT * from ".BAB_FORUMS_TBL."
+		WHERE
+			active='Y'
+			AND id IN(".$babDB->quote(array_keys($fv)).')
 	';
 
 	if ($delegationid !== false) {
@@ -60,7 +60,7 @@ function bab_getForumsRes($forumid = false, $delegationid = false) {
 	}
 
 	$req .= '
-			ORDER BY ordering ASC 
+			ORDER BY ordering ASC
 	';
 
 	$res = $babDB->db_query($req);
@@ -173,6 +173,39 @@ function bab_isForumThreadOpen($forum, $thread)
 		}
 	return false;
 	}
+	
+	
+/**
+ * Marks the specified thread as closed.
+ *
+ * @since 8.2.0
+ * @param int $thread       The thread id
+ */
+function bab_closeThread($thread)
+{
+    global $babDB;
+    $query = 'UPDATE ' .BAB_THREADS_TBL . '
+        SET active=' . $babDB->quote('N') . '
+        WHERE id=' . $babDB->quote($thread);
+    $babDB->db_query($query);
+}
+
+/**
+ * Marks the specified thread as open.
+ *
+ * @since 8.2.0
+ * @param int $thread       The thread id
+ */
+function bab_openThread($thread)
+{
+    global $babDB;
+    $query = 'UPDATE ' .BAB_THREADS_TBL . '
+        SET active=' . $babDB->quote('Y') . '
+        WHERE id=' . $babDB->quote($thread);
+    $babDB->db_query($query);
+}
+
+
 
 function bab_getForumThreadTitle($id)
 	{
@@ -261,7 +294,7 @@ function notifyForumGroups(bab_eventForumPost $event)
 		return;
 		
 	$forum = $event->getForumId();
-	$thread = $event->getThreadId();	
+	$thread = $event->getThreadId();
 	$threadTitle = $event->getThreadTitle();
 	$author = $event->getPostAuthor();
 	$author = bab_getNoticesContributor($event->getPostId(), $event->getPostAuthor());
@@ -342,7 +375,7 @@ function bab_getForumNotices()
 		$fields = bab_getDirectoriesFields(array($iddir));
 		$res = $babDB->db_query("select * from ".BAB_FORUMS_NOTICES_TBL." order by field_order asc");
 		while($arr = $babDB->db_fetch_array($res))
-		{	
+		{
 			if( isset($fields[$arr['id_field']]))
 			{
 				$ret[] = $fields[$arr['id_field']];
@@ -354,11 +387,11 @@ function bab_getForumNotices()
 
 /**
  * Return name to display instead of full name.
- *  
+ *
  * @param int		$id_author		The post id.
  * @param array		$fields			fields to fetch.
  * @param string	$author			return value if not found
- */	
+ */
 function bab_getNoticesContributor($id_post, $author)
 {
 	global $babDB;
@@ -470,7 +503,7 @@ function bab_uploadPostFiles($postid, $id_forum) {
 		
 
 		if (move_uploaded_file($file['tmp_name'], $dest)) {
-			$postfiles[$file['name']] = $dest;	
+			$postfiles[$file['name']] = $dest;
 		}
 
 	}
@@ -494,13 +527,13 @@ function bab_uploadPostFiles($postid, $id_forum) {
 			
 		} else {
 			// new file
-			$babDB->db_query("INSERT INTO ".BAB_FORUMSFILES_TBL." 
-					(id_post, name, index_status) 
-				VALUES 
+			$babDB->db_query("INSERT INTO ".BAB_FORUMSFILES_TBL."
+					(id_post, name, index_status)
+				VALUES
 					('".$postid."', '".$babDB->db_escape_string($name)."', '".$index_status."')
 			");
 		}
-	}	
+	}
 
 
 
@@ -515,7 +548,7 @@ function bab_uploadPostFiles($postid, $id_forum) {
 
 /**
  * get parts of a forum file as stored in upload directory
- * @param	string	$file	full path name or file name	
+ * @param	string	$file	full path name or file name
  * @return array | false if the file is not compliant
  */
 function bab_getForumFileParts($file) {
@@ -623,20 +656,20 @@ function indexAllForumFiles($status, $prepare) {
 
 	$res = $babDB->db_query("
 	
-		SELECT 
+		SELECT
 			f.id,
 			f.name,
-			f.id_post, 
-			t.forum 
+			f.id_post,
+			t.forum
 
-		FROM 
+		FROM
 			".BAB_FORUMSFILES_TBL." f,
 			".BAB_POSTS_TBL." p,
-			".BAB_THREADS_TBL." t 
-		WHERE 
-			f.index_status IN(".$babDB->quote($status).") 
-			AND p.id = f.id_post 
-			AND t.id = p.id_thread 
+			".BAB_THREADS_TBL." t
+		WHERE
+			f.index_status IN(".$babDB->quote($status).")
+			AND p.id = f.id_post
+			AND t.id = p.id_thread
 		
 	");
 
@@ -693,7 +726,7 @@ function indexAllForumFiles_end($param) {
 	$babDB->db_query("
 	
 		UPDATE ".BAB_FORUMSFILES_TBL." SET index_status='".BAB_INDEX_STATUS_INDEXED."'
-		WHERE 
+		WHERE
 			index_status IN(".$babDB->quote($param['status']).")
 	");
 
@@ -720,13 +753,13 @@ function bab_confirmPost($forum, $thread, $post)
 	$res = $babDB->db_query($req);
 
 	$req = "
-		select 
-			t.*, p.subject 
-		from  
-			".BAB_THREADS_TBL." t, 
-			".BAB_POSTS_TBL." p 
-		where 
-			p.id=t.post 
+		select
+			t.*, p.subject
+		from
+			".BAB_THREADS_TBL." t,
+			".BAB_POSTS_TBL." p
+		where
+			p.id=t.post
 			AND t.id='".$babDB->db_escape_string($thread)."'
 		";
 	
@@ -769,7 +802,7 @@ function bab_confirmPost($forum, $thread, $post)
 
 /**
  * Deletes the specified post.
- *  
+ *
  * @param int	$forum		The forum id.
  * @param int	$post		The post id.
  */
@@ -813,7 +846,7 @@ function bab_deletePost($forum, $post)
 
 /**
  * Return fields to display for a forum.
- *  
+ *
  * @param int	$forum		The forum id.
  */
 function bab_getForumFields($forum)
@@ -844,11 +877,11 @@ function bab_getForumFields($forum)
 
 /**
  * Return name to display instead of full name.
- *  
+ *
  * @param int		$id_author		The author id.
  * @param array		$fields			fields to fetch.
  * @param string	$author			return value if not found
- */	
+ */
 function bab_getForumContributor($id_forum, $id_author, $author)
 {
 	static $forums_contributors = array();
