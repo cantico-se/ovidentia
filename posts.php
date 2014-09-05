@@ -1295,6 +1295,9 @@ $idx = bab_rp('idx', 'List');
 $pos = bab_rp('pos', 0);
 $flat = bab_rp('flat', 0);
 $forum = bab_rp('forum', 0);
+$thread = bab_rp('thread', 0);
+$add = bab_rp('add', null);
+$action = bab_rp('action', null);
 
 bab_siteMap::setPosition('bab', 'UserForum'.$forum);
 
@@ -1325,7 +1328,6 @@ if( $update == 'updatereply' )
 $move = bab_rp('move', '');
 if( $move == 'movet' )
 	{
-	$thread = bab_pp('thread', 0);
 	$newforum = bab_pp('newforum', 0);
 	confirmMoveThread($forum, $thread, $newforum, $flat);
 	}
@@ -1522,5 +1524,3 @@ switch($idx)
 		break;
 	}
 $babBody->setCurrentItemMenu($idx);
-
-?>
