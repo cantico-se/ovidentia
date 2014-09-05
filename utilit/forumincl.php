@@ -178,6 +178,7 @@ function bab_isForumThreadOpen($forum, $thread)
 /**
  * Marks the specified thread as closed.
  *
+ * @since 8.2.0
  * @param int $thread       The thread id
  */
 function bab_closeThread($thread)
@@ -192,6 +193,7 @@ function bab_closeThread($thread)
 /**
  * Marks the specified thread as open.
  *
+ * @since 8.2.0
  * @param int $thread       The thread id
  */
 function bab_openThread($thread)
