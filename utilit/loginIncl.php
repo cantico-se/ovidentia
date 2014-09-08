@@ -1159,7 +1159,7 @@ function displayAuthenticationForm($title, $errorMessages)
 		$babBody->addItemMenu('register', bab_translate("Register"), $GLOBALS['babUrlScript'].'?tg=login&cmd=register');
 	}
 
-	if(isEmailPassword())
+	if(bab_isEmailPassword())
 	{
 		$babBody->addItemMenu('emailpwd', bab_translate("Lost Password"), $GLOBALS['babUrlScript'].'?tg=login&cmd=emailpwd');
 	}
@@ -1213,22 +1213,36 @@ function loginRedirect($url)
 
 
 /**
+ * 
+ *
+* @deprecated use bab_isEmailPassword function
+ */
+function isEmailPassword()
+{
+	return bab_isEmailPassword();
+}
+
+
+/**
  * Checks whether a user who has forgotten his password
  * can ask for it to be resent by email.
  *
  * @return bool
  */
-function isEmailPassword()
+function bab_isEmailPassword()
 {
-	global $babBody;
-	if($GLOBALS['babEmailPassword'])
+	$settings = bab_getInstance('bab_Settings');
+	/*@var $settings bab_Settings */
+	$site = $settings->getSiteSettings();
+	
+	if($site['email_password'] == 'Y')
 	{
-		switch($babBody->babsite['authentification'])
+		switch($site['authentification'])
 		{
 			case BAB_AUTHENTIFICATION_AD:
 				return false;
 			case BAB_AUTHENTIFICATION_LDAP:
-				if(!empty($babBody->babsite['ldap_encryptiontype']))
+				if(!empty($site['ldap_encryptiontype']))
 				{
 					return true;
 				}
