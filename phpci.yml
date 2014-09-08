@@ -6,22 +6,10 @@ build_settings:
         - "styles"
 
 test:
-    php_unit:  
-    php_code_sniffer:
-        standard: "PSR2"
-        tab_width: 4
-        allow_failures: true
-    php_mess_detector:
-        allow_failures: true
     php_cpd:
         allow_failures: true
     php_loc:
-        allow_failures: false
-    php_docblock_checker:
-        path: "programs"
         allow_failures: true
-        allowed_warnings: 10
-        skip_classes: false
 
 failure:
   email:
