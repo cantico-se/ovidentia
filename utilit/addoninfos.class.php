@@ -271,6 +271,54 @@ class bab_addonInfos {
         $tpl = new bab_Template();
         return $tpl->printTemplate($class, $this->getTemplate($filename), $section);
     }
+    
+    
+    /**
+     * Add event listener
+     * Register an addon function on an event listener
+     * Once the listener is added, the function $function_name will be fired if bab_fireEvent is called with an event
+     * inherited or instancied from the class $event_class_name
+     *
+     * The function return false if the event listener is already created
+     * 
+     * @param	string	$eventClassName
+     * @param	string	$functionName			function name without (), if the function_name string contain a ->, the text before -> will be evaluated to get an object and the text after will be the method (not evaluated)
+     * @param	string	$requireFile			file path relative to addon php path, the file where $function_name is declared, this can be an empty string if function exists in global scope
+     * @param	int		[$priority]				for mutiple calls on one event, the calls will be ordered by priority descending
+     *
+     * @return boolean
+     */
+    public function addEventListener($eventClassName, $functionName, $requireFile, $priority = 0)
+    {
+        require_once dirname(__FILE__).'/eventincl.php';
+        
+        return bab_addEventListener(
+            $eventClassName, 
+            $functionName, 
+            $this->getPhpPath().$requireFile, 
+            $this->getName(), 
+            $priority
+        );
+    }
+    
+    /**
+     * Remove event listener
+     * @see		bab_addEventListener()
+     * @param	string	$eventClassName
+     * @param	string	$functionName
+     * @param	string	$requireFile          file path relative to addon php path
+     */
+    public function removeEventListener()
+    {
+        require_once dirname(__FILE__).'/eventincl.php';
+        
+        return bab_removeEventListener(
+            $eventClassName, 
+            $functionName, 
+            $this->getPhpPath().$requireFile
+        );
+    }
+    
 
 
     /**

@@ -44,7 +44,7 @@ class bab_event {
  *
  * @param	string	$event_class_name
  * @param	string	$function_name			function name without (), if the function_name string contain a ->, the text before -> will be evaluated to get an object and the text after will be the method (not evaluated)
- * @param	string	$require_file			file path relative to ovidentia core, the file where $function_name is declared, this can be an empty string if function exists in global scope
+ * @param	string	$require_file			file path relative to ovidentia core or relative to ovidentia root path, the file where $function_name is declared, this can be an empty string if function exists in global scope
  * @param	string	[$addon_name]			if addon name is set, additional tests will be verified on access rights before the call, and environement varaibles of addon will be set correctly
  * @param	int		[$priority]				for mutiple calls on one event, the calls will be ordered by priority descending
  *
