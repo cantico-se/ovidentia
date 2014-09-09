@@ -500,8 +500,11 @@ class displayEventCls
 
 			$backend = self::$calendar->getBackend();
 			self::$calendarPeriod = $backend->getPeriod($backend->CalendarEventCollection(self::$calendar), $this->evtid, $this->dtstart);
-			
-			self::$calendarPeriod->updateCopies();
+
+			if (isset(self::$calendarPeriod))
+			{
+			    self::$calendarPeriod->updateCopies();
+			}
 		}
 
 		return self::$calendarPeriod;
