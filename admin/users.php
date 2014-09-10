@@ -137,7 +137,7 @@ function listUsers($pos, $grp, $deleteAction)
 			}
 			
 			$this->group	= bab_toHtml(bab_getGroupName($grp));
-			$this->deleteAction = $deleteAction;	
+			$this->deleteAction = $deleteAction;
 
 			$this->grp		= bab_toHtml($grp);
 
@@ -235,22 +235,22 @@ function listUsers($pos, $grp, $deleteAction)
 			if( (bab_isUserAdministrator() && bab_getCurrentAdmGroup() == 0) || bab_isDelegated('users'))
 				{
 					$oToolbar->addToolbarItem(
-						new BAB_ToolbarItem(bab_translate("Create a user"), $sCreateUserUrl, 
+						new BAB_ToolbarItem(bab_translate("Create a user"), $sCreateUserUrl,
 							$sImgPath . 'list-add-user.png', bab_translate("Create a user"), bab_translate("Add a user"), '')
 					);
 				}
 			if( bab_getCurrentAdmGroup() != 0 && bab_isDelegated('battach') && isset($_REQUEST['bupd']) && $_REQUEST['bupd'] == 0)
 				{
 					$oToolbar->addToolbarItem(
-						new BAB_ToolbarItem(bab_translate("Attach"), $sAttachUserUrl, 
+						new BAB_ToolbarItem(bab_translate("Attach"), $sAttachUserUrl,
 							$sImgPath . 'user-group-new.png', bab_translate("Attach"), bab_translate("Attach"), '')
 					);
 				}
 			
-			if($this->bshowform) 
+			if($this->bshowform)
 				{
 				$oToolbar->addToolbarItem(
-					new BAB_ToolbarItem(bab_translate("Search"), $sSearchUserUrl, 
+					new BAB_ToolbarItem(bab_translate("Search"), $sSearchUserUrl,
 						$sImgPath . 'searchSmall.png', bab_translate("Search"), bab_translate("Search"), 'oSearchImg')
 					);
 				}
@@ -263,14 +263,14 @@ function listUsers($pos, $grp, $deleteAction)
 		
 		/**
 		 * Create the search result
-		 * 
-		 * 
+		 *
+		 *
 		 * @param string $pos			ex : -A
 		 * 								- mean order by firstname, lastname otherwise the order is lastname firstname
 		 * 								the letter is a filter for the first letter of firstname or lastname (according to the minus prefix)
-		 * 								
+		 *
 		 * @param string $last_login	Search by last login date
-		 * 
+		 *
 		 * @param string $sign			"<=" or ">=" operator for last login date search
 		 */
 		private function selectFilteredUsers($pos, $last_login, $sign)
@@ -303,9 +303,9 @@ function listUsers($pos, $grp, $deleteAction)
 
 			if($this->bUseInnerJoin)
 			{
-				$sInnerJoin = 
-					', ' . BAB_USERS_GROUPS_TBL . ' ug' . 
-					', ' . BAB_GROUPS_TBL . ' g ';	
+				$sInnerJoin =
+					', ' . BAB_USERS_GROUPS_TBL . ' ug' .
+					', ' . BAB_GROUPS_TBL . ' g ';
 
 				$aWhereClauseItem[] = bab_userInfos::queryAllowedUsers('u');
 				$aWhereClauseItem[] = 'ug.id_object = u.id';
@@ -333,11 +333,11 @@ function listUsers($pos, $grp, $deleteAction)
 			
 			$sWhereClauseItem =  implode(' AND ', $aWhereClauseItem);
 			
-			$sQuery = 
+			$sQuery =
 				'SELECT ' .
 					'DISTINCT u.* ' .
-				'FROM ' . 
-					BAB_USERS_TBL . ' u ' . 
+				'FROM ' .
+					BAB_USERS_TBL . ' u ' .
 				$sInnerJoin . ' ' .
 				'WHERE ' .
 					$sWhereClauseItem;
@@ -397,7 +397,7 @@ function listUsers($pos, $grp, $deleteAction)
 					
 				$today = date('Y-m-d');
 
-				$this->disabled = ($this->arr['disabled'] || 
+				$this->disabled = ($this->arr['disabled'] ||
 						(($this->arr['validity_start'] != '0000-00-00' && $today < $this->arr['validity_start'])
 						||  ($this->arr['validity_end'] != '0000-00-00' && $today > $this->arr['validity_end']))
 				);
@@ -493,7 +493,7 @@ function deleteUsers($users, $deleteaction)
 			$db = $GLOBALS['babDB'];
 			for($i = 0; $i < count($users); $i++)
 				{
-				$req = 'select * from '.BAB_USERS_TBL.' where id='.$db->quote($users[$i]);	
+				$req = 'select * from '.BAB_USERS_TBL.' where id='.$db->quote($users[$i]);
 				$res = $db->db_query($req);
 				if( $db->db_num_rows($res) > 0)
 					{
@@ -776,7 +776,7 @@ if( isset($aclnotif))
 
 switch($idx)
 	{
-	case "dirv": 
+	case "dirv":
 
 		dir_view($_GET['id_user']);
 		exit;
@@ -785,7 +785,7 @@ switch($idx)
 	case "brow": // Used by add-ons but deprecated
 		if( bab_isUserAdministrator() || bab_getCurrentAdmGroup() != 0 )
 			{
-			browseUsers($pos, $cb);
+			bab_adminBrowseUsers($pos, $cb);
 			}
 		else
 			{
