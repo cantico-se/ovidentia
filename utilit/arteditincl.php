@@ -599,7 +599,7 @@ class bab_ArticleDraftEditor {
 
 		$LeftFrame->addItem(
 			$W->Frame()->addItem(
-				$W->Label(bab_translate('The topic is restricted by an approbation, the article will not be visible imediately'))
+				$W->Label(bab_translate('The topic is restricted by an approbation, the article will not be visible immediately'))
 			)
 			->addClass('bab-article-approbation')
 		);
@@ -725,7 +725,7 @@ class bab_ArticleDraftEditor {
 			
 			$draft = new bab_ArtDraft;
 			$draft->getFromIdDraft($idDraft);
-		} 
+		}
 		
 		
 		$topicList = bab_getArticleTopicsAsTextTree(0, false, BAB_TOPICSSUB_GROUPS_TBL);
