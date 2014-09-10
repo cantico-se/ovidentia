@@ -1489,7 +1489,7 @@ class bab_inifile {
 		
 				// value can be "Available" or "Recommended"
 		
-				$obj = bab_functionality::get($name);
+				$obj = @bab_functionality::get($name);
 		
 				switch(mb_strtolower($value)) {
 					case 'available':
