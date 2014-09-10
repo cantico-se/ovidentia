@@ -141,9 +141,7 @@ abstract class bab_AddonLocation
      * 
      * @return string
      */
-    public function getThemePath() {
-        return 'skins/'.$this->addonName.'/';
-    }
+    abstract public function getThemePath();
     
     
     /**
@@ -244,6 +242,11 @@ class bab_AddonInCoreLocation extends bab_AddonLocation
     public function getIniFilePath()
     {
         return $this->getPhpPath().'addonini.php';
+    }
+    
+    public function getThemePath()
+    {
+        return 'skins/'.$this->addonName.'/';
     }
     
     public function getPackageIniFilePath()
@@ -362,6 +365,11 @@ class bab_AddonStandardLocation extends bab_AddonLocation
     {
         // return 'version.ini';
         return 'programs/addonini.php';
+    }
+    
+    public function getThemePath()
+    {
+        return $this->getBasePath().'theme/';
     }
     
     

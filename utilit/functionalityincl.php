@@ -364,12 +364,11 @@ class bab_functionalities {
 	 * Registers the specified functionality path into the functionality tree.
 	 * Duplicate registration link into parent directories while nothing is registered.
 	 *
-	 * @access	public
 	 * @param	string	$func_path		path to functionality
 	 * @param	string	$include_file	file to include before calling this functionality
 	 * @return  boolean
 	 */
-	function register($func_path, $include_file) {
+	public function register($func_path, $include_file) {
 
 		// verify parent functionality
 		$parent_original = $this->treeRootPath.'/'.dirname($func_path).'/'.$this->original;
@@ -478,15 +477,31 @@ class bab_functionalities {
 	 * Similar to bab_Functionalities::register but uses classname instead of functionality path.
 	 * @see bab_Functionalities::register
 	 *
-	 * @access	public
 	 * @param	string	$classname		Name of functionality class
 	 * @param	string	$include_file	File to include before calling this functionality
 	 * @return  boolean
 	 * @since 6.6.92
 	 */
-	function registerClass($classname, $include_file)
+	public function registerClass($classname, $include_file)
 	{
 		return $this->register(bab_Functionalities::getPath($classname), $include_file);
+	}
+	
+	
+	/**
+	 * Unregister a functionality.
+	 * If the functionality is not registered, this method return true
+	 * Removes the link in this directory
+	 * If link is present in parent functionality, delete or replace with another
+	 *
+	 * @param	string	$classname		Name of functionality class
+	 * @return boolean
+	 * 
+	 * @since 8.1.98
+	 */
+	public function unregisterClass($classname)
+	{
+	    return $this->unregister(bab_Functionalities::getPath($classname));
 	}
 
 
