@@ -1965,10 +1965,14 @@ function bab_printTemplate($class, $file, $section = '')
 {
 	//bab_debug('Template file : '.$file.'<br />'.'Section in template file : '.$section);
 
-	global $babInstallPath, $babSkinPath, $babSkin;
+	global $babInstallPath, $babSkinPath;
+	
+	
+	$skin = bab_Skin::getDefaultSkin();
+	bab_debug($skin->getStyles());
 
 	$tpl = new bab_Template();
-	if ($html = $tpl->printTemplate($class, 'skins/'.$GLOBALS['babSkin'].'/templates/'. $file, $section)) {
+	if ($html = $tpl->printTemplate($class, $skin->getThemePath().'templates/'. $file, $section)) {
 	    return $html;
 	}
 	

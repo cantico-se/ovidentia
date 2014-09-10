@@ -150,8 +150,6 @@ class bab_addons_list
 				$this->upgradeurl = false;
 			}
 
-
-
 			if ('THEME' === $addon->getAddonType() && $addon->isAccessValid() && $GLOBALS['babSkin'] !== $addon->getName())
 			{
 				$this->chosethemeurl = bab_toHtml($GLOBALS['babUrlScript']."?tg=addons&idx=chosetheme&item=".$addon->getId());

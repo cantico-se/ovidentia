@@ -129,10 +129,18 @@ function bab_isEmailValid($email)
 		return true;
 	}
 
+	
+/**
+ * Get stylesheet url selected in options
+ * @return string
+ */
 function bab_getCssUrl()
 	{
 	global $babInstallPath, $babSkinPath;
-	$filepath = 'skins/'.$GLOBALS['babSkin'].'/styles/'. $GLOBALS['babStyle'];
+	
+	$skin = bab_Skin::getDefaultSkin();
+	
+	$filepath = $skin->getThemePath().'styles/'. $GLOBALS['babStyle'];
 	if( !file_exists( $filepath ) )
 		{
 		$filepath = $babSkinPath.'styles/'. $GLOBALS['babStyle'];

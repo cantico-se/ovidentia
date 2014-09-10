@@ -252,6 +252,18 @@ class bab_addonInfos {
     
     
     /**
+     * Get theme path
+     * relative to the ovidentia root folder (config.php)
+     * 
+     * @return string
+     */
+    public function getThemePath()
+    {
+        return $this->getLocation()->getThemePath();
+    }
+    
+    
+    /**
      * Get a template full path from a file name
      * 
      * @param string $filename

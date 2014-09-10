@@ -37,6 +37,8 @@ class bab_skin {
 	private static $skins = array();
 	private $skinname = null;
 	
+	private static $defaultSkin = null;
+	
 	/**
 	 * Get a skin with or without access rights verification
 	 * @param   string $skinname
@@ -61,9 +63,12 @@ class bab_skin {
 	 */
 	public static function applyOnCurrentPage($skinname, $stylesname) {
 		global $babSkin, $babStyle, $babOvmlPath;
+		
+		$skin = new bab_skin($skinname);
+		
 		$babSkin = $skinname;
 		$babStyle = $stylesname;
-		$babOvmlPath = self::SKINS_PATH . $babSkin . '/' . self::OVML_PATH;
+		$babOvmlPath = $skin->getThemePath() . self::OVML_PATH;
 	}
 	
 	/**
@@ -124,6 +129,16 @@ class bab_skin {
 				} 
 			}
 		closedir($h);
+		
+		// add addons in vendor
+		
+		$list = bab_AddonStandardLocation::getList();
+		foreach($list as $name) {
+		    $addon = bab_getAddonInfosInstance($name);
+		    if ('THEME' === $addon->getAddonType()) {
+		        self::$skins[] = new bab_skin($name);
+		    }
+		}
 
 
 		if (empty(self::$skins)) {
@@ -152,35 +167,41 @@ class bab_skin {
 	 * @return bab_skin 
 	 */
 	public static function getDefaultSkin() {
+	    
+	    if (!isset(self::$defaultSkin)) {
+	    
 		
-		if (isset($GLOBALS['babSiteName'])) {
-			
-			global $babDB;
-			
-			$res = $babDB->db_query('SELECT skin FROM bab_sites WHERE name='.$babDB->quote($GLOBALS['babSiteName']));
-			if ($arr = $babDB->db_fetch_assoc($res)) {
-		
-				// if site skin is accessible use it
-				if (null !== $skin = self::get($arr['skin'])) {
-					return $skin;
-				}
-			}
-		}
-		
-		// if ovidentia is accessible use it
-		if (null !== $skin = self::get('ovidentia')) {
-			return $skin;
-		}
-
-		$accessibles = self::getList();
-
-		// if no accessibles skins, use ovidentia anyway
-		if (empty($accessibles)) {
-			return new bab_skin('ovidentia');
-		}
-
-		// use the first accessible skin
-		return reset($accessibles);
+    		if (isset($GLOBALS['babSiteName'])) {
+    			
+    			global $babDB;
+    			
+    			$res = $babDB->db_query('SELECT skin FROM bab_sites WHERE name='.$babDB->quote($GLOBALS['babSiteName']));
+    			if ($arr = $babDB->db_fetch_assoc($res)) {
+    		
+    				// if site skin is accessible use it
+    				if (null !== $skin = self::get($arr['skin'])) {
+    					return $skin;
+    				}
+    			}
+    		}
+    		
+    		// if ovidentia is accessible use it
+    		if (null !== $skin = self::get('ovidentia')) {
+    			return $skin;
+    		}
+    
+    		$accessibles = self::getList();
+    
+    		// if no accessibles skins, use ovidentia anyway
+    		if (empty($accessibles)) {
+    			return new bab_skin('ovidentia');
+    		}
+    
+    		// use the first accessible skin
+    		self::$defaultSkin = reset($accessibles); 
+	    }
+	    
+	    return self::$defaultSkin;
 	}
 
 
@@ -190,6 +211,23 @@ class bab_skin {
 		$this->skinname = $skinname;
 	}
 
+	/**
+	 * Get theme path for the skin
+	 * if the skin is an addon use bab_addonInfos::getThemePath
+	 * else return skins/<skiname>/
+	 * 
+	 * @see bab_addonInfos::getThemePath
+	 */
+	public function getThemePath() {
+	    $addon = @bab_getAddonInfosInstance($this->skinname);
+	    
+	    if (false === $addon) {
+	        return 'skins/'.$this->skinname.'/';
+	    }
+	    
+	    return $addon->getThemePath();
+	}
+	
 
 	/**
 	 * test access rights on skin, 
@@ -198,14 +236,9 @@ class bab_skin {
 	 * @return boolean
 	 */
 	public function isAccessValid() {
-		
-		if (!file_exists('skins/'.$this->skinname)) {
-			return false;
-		}
-		
-		
-		$charset = bab_charset::getDatabase();
-		$addon = bab_getAddonInfosInstance($this->skinname);
+	    
+	    $charset = bab_charset::getDatabase();
+	    $addon = @bab_getAddonInfosInstance($this->skinname);
 
 		if (false === $addon) {
 			if ('latin1' === $charset) {
@@ -214,6 +247,10 @@ class bab_skin {
 				bab_debug(bab_sprintf('The skin "%s" is not accessible, since ovidentia is in UTF-8, all skins must be embeded in addons',$this->skinname));
 				return false;
 			}
+		}
+		
+		if (!file_exists($addon->getThemePath())) {
+		    return false;
 		}
 		
 		try {
@@ -292,7 +329,8 @@ class bab_skin {
 	public function getStyles() {
 		$arrstyles = array();
 		
-		$arrstyles += $this->getStylesFromPath(self::SKINS_PATH.$this->skinname.'/'.self::STYLES_PATH);
+		
+		$arrstyles += $this->getStylesFromPath($this->getThemePath().self::STYLES_PATH);
 		$arrstyles += $this->getStylesFromPath($GLOBALS['babInstallPath'].self::SKINS_PATH.$this->skinname.'/'.self::STYLES_PATH);
 
 		return $arrstyles;
