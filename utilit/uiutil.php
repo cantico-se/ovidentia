@@ -112,7 +112,7 @@ class babBodyPopup
 			}
 		return $this->content;
 	}
-} 
+}
 
 
 function printBabBodyPopup()
@@ -142,7 +142,7 @@ function printBabBodyPopup()
 			$this->content .= $babBodyPopup->printout();
 			$this->title = &$babBodyPopup->title;
 			$this->msgerror = &$babBodyPopup->msgerror;
-			$this->styleSheet = &$babBodyPopup->styleSheet;
+			$this->styleSheets = &$babBodyPopup->styleSheet;
 			}
 
 		function getNextMenu()
@@ -182,9 +182,14 @@ function printBabBodyPopup()
 			}
 
 		function getnextstylesheet()
-			{
-			return list(,$this->file) = each($this->styleSheet);
+		{
+			list(,$this->file) = each($this->styleSheets);
+			if ($this->file) {
+			    $this->styleSheet = bab_getStaticUrl().$GLOBALS['babInstallPath'] . 'styles/' . bab_toHtml($this->file);
+			    return true;
 			}
+			return false;
+		}
 
 	}
 
