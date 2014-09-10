@@ -1592,22 +1592,22 @@ class bab_inifile {
 			$res = $db->db_query("SELECT title, version FROM ".BAB_ADDONS_TBL." WHERE title IN('".implode("','",array_keys($this->addons))."') AND installed='Y' AND enabled='Y'");
 			$installed = array();
 			while ($arr = $db->db_fetch_assoc($res)) {
-				$installed[$arr['title']] = $arr['version'];
+				$installed[mb_strtolower($arr['title'])] = $arr['version'];
 			}
 
 			foreach($this->addons as $name => $required) {
 
+			    $key = mb_strtolower($name);
 
-
-				if (isset($installed[$name])) {
+				if (isset($installed[$key])) {
 
 					$return[] = array(
 						'name'			=> $name,
 						'description'	=> bab_translate('Ovidentia addon').' : '.$name,
 						'required'		=> $required,
 						'recommended'	=> false,
-						'current'		=> $installed[$name],
-						'result'		=> bab_inifile_requirements::multicompare($installed[$name], $required)
+						'current'		=> $installed[$key],
+						'result'		=> bab_inifile_requirements::multicompare($installed[$key], $required)
 					);
 				} else {
 					$return[] = array(
