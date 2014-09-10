@@ -323,6 +323,9 @@ function printBody()
 					}
 
 					return '';
+					
+				case 'themePath':
+				    return bab_Skin::getDefaultSkin()->getThemePath();
 
 				default:
 					return $this->$propertyName;
@@ -374,6 +377,7 @@ function printBody()
 				case 'pageTitle':
 				case 'canonicalUrl':
 				case 'imageUrl':
+				case 'themePath':
 					return true;
 			}
 			return false;

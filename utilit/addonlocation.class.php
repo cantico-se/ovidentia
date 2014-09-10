@@ -186,6 +186,11 @@ class bab_AddonInCoreLocation extends bab_AddonLocation
      */
     public static function getList()
     {
+        if (!file_exists($GLOBALS['babInstallPath'].'addons')) {
+            return array();
+        }
+        
+        
         $list = array();
         $h = opendir($GLOBALS['babInstallPath'].'addons/');
         while (($f = readdir($h)) != false)
