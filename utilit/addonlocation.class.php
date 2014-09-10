@@ -306,7 +306,12 @@ class bab_AddonStandardLocation extends bab_AddonLocation
      */
     public static function getList()
     {
+        if (!file_exists('vendor/ovidentia')) {
+            return array();
+        }
+        
         $list = array();
+        
         $h = opendir('vendor/ovidentia');
         while (($f = readdir($h)) != false)
         {
