@@ -3408,7 +3408,7 @@ L'administrateur</string>
 <string id="# selected"># séléctionné(s)</string>
 <string id="Select options">À saisir ...</string>
 <string id="Domain(s)">Domaine(s)</string>
-<string id="Warning: Only not empty folder are displaid.">Attention: Les répertoires vide ne sont pas affichés.</string>
+<string id="Warning: Only non-empty folders are displayed.">Attention : les répertoires vides ne sont pas affichés.</string>
 <string id="Your contact has been created">Votre contact a été créé</string>
 <string id="Access denied to event modification">Accès refusé à la modification de l'événement</string>
 <string id="(%d approbators)">(%d approbateurs)</string>
