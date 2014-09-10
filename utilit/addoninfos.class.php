@@ -249,8 +249,11 @@ class bab_addonInfos {
     
     /**
      * Get a template full path from a file name
+     * 
      * @param string $filename
      * @return string
+     * 
+     * @since 8.1.98
      */
     public function getTemplate($filename)
     {
@@ -265,6 +268,8 @@ class bab_addonInfos {
      * @param string $section         optional section name in template
      * 
      * @return string
+     * 
+     * @since 8.1.98
      */
     public function printTemplate($class, $filename, $section = '')
     {
@@ -287,6 +292,8 @@ class bab_addonInfos {
      * @param	int		[$priority]				for mutiple calls on one event, the calls will be ordered by priority descending
      *
      * @return boolean
+     * 
+     * @since 8.1.98
      */
     public function addEventListener($eventClassName, $functionName, $requireFile, $priority = 0)
     {
@@ -307,6 +314,8 @@ class bab_addonInfos {
      * @param	string	$eventClassName
      * @param	string	$functionName
      * @param	string	$requireFile          file path relative to addon php path
+     * 
+     * @since 8.1.98
      */
     public function removeEventListener()
     {
@@ -317,6 +326,57 @@ class bab_addonInfos {
             $functionName, 
             $this->getPhpPath().$requireFile
         );
+    }
+    
+    
+    
+    /**
+     * Registers the specified functionality path into the functionality tree.
+     * Duplicate registration link into parent directories while nothing is registered.
+     *
+     * @param	string	$path		    path to functionality or functionality class name
+     * @param	string	$file	        file to include before calling this functionality, relative to addon php path
+     * 
+     * @return  boolean
+     * 
+     * @since 8.1.98
+     */
+    public function registerFunctionality($path, $file)
+    {
+        require_once dirname(__FILE__).'/functionalityincl.php';
+        
+        $functionalities = new bab_functionalities();
+        
+        if ('Func_' === substr($path, 0, 5)) {
+            return $functionalities->registerClass($path, $this->getPhpPath() . $file);
+        }
+        
+        return $functionalities->register($path, $this->getPhpPath() . $file);
+    }
+    
+    
+    /**
+     * Unregister a functionality.
+     * If the functionality is not registered, this method return true
+     * Removes the link in this directory
+     * If link is present in parent functionality, delete or replace with another
+     *
+     * @param	string	$path		path to functionality or functionality class name
+     * @return boolean
+     *
+     * @since 8.1.98
+     */
+    public function unregisterFunctionality($path)
+    {
+        require_once dirname(__FILE__).'/functionalityincl.php';
+        
+        $functionalities = new bab_functionalities();
+        
+        if ('Func_' === substr($path, 0, 5)) {
+            return $functionalities->unregisterClass($path);
+        }
+        
+        return $functionalities->unregister($path);
     }
     
 
