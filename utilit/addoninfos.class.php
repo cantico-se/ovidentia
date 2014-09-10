@@ -156,6 +156,10 @@ class bab_addonInfos {
      * @deprecated Do not use relative path in addons
      *             Addons are subject to move out of the core folder in futures version
      *             
+     *             for bab_printTemplate, replace with $addon->printTemplate()
+     *             for babBody->addStyleSheet use $addon->getStylePath() instead of relative path
+     *             the addStyleSheet method support full path starting with vendor/ since the 8.1.98 version
+     *             
      * 
      * @return string
      */
