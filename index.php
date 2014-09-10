@@ -213,7 +213,7 @@ include_once $babInstallPath.'utilit/statincl.php';
 $babWebStat =new bab_WebStatEvent();
 
 include $babInstallPath.'utilit/utilit.php';
-
+include $babInstallPath.'utilit/skinincl.php';
 
 bab_initMbString();
 bab_UsersLog::check();

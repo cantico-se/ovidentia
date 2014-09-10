@@ -9129,3 +9129,45 @@ class Func_Ovml_Function_PreviousArticle extends Func_Ovml_Function_PreviousOrNe
 }
 
 
+
+/**
+ * Get a path relative to site root folder
+ * <OFGetPath path="" file_relative="1" saveas="">
+ * 
+ * file_relative: convert a path relative to the ovml file to a path relative to ovidentia root
+ */
+class Func_Ovml_Function_GetPath extends Func_Ovml_Function {
+    
+    
+    public function toString()
+    {
+        $path = null;
+        $saveas = null;
+        $rootpath = dirname('.');
+        
+        foreach ($this->args as $p => $v) {
+			switch (mb_strtolower(trim($p))) {
+			    
+			    case 'path':
+			        $path = trim($v);
+			        break;
+				
+				case 'saveas':
+				    $saveas = $v;
+				    break;
+				    
+				case 'file_relative':
+				    $absolute = dirname($this->template->debug_location).'/'.$path;
+				    $path = mb_substr($absolute, mb_strlen($rootpath) -1);
+				    break;
+			}
+        }
+        
+        
+        if (isset($saveas)) {
+            $this->gctx->push($saveas, $path);
+            return '';
+        }
+    }
+}
+

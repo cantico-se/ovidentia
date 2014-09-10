@@ -132,6 +132,7 @@ class bab_skin {
 		
 		// add addons in vendor
 		
+		require_once dirname(__FILE__).'/addonlocation.class.php';
 		$list = bab_AddonStandardLocation::getList();
 		foreach($list as $name) {
 		    $addon = bab_getAddonInfosInstance($name);
