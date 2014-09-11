@@ -1969,7 +1969,6 @@ function bab_printTemplate($class, $file, $section = '')
 	
 	
 	$skin = bab_Skin::getDefaultSkin();
-	bab_debug($skin->getStyles());
 
 	$tpl = new bab_Template();
 	if ($html = $tpl->printTemplate($class, $skin->getThemePath().'templates/'. $file, $section)) {
