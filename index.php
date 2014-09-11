@@ -880,7 +880,7 @@ switch(bab_rp('tg'))
 			$addon = bab_getAddonInfosInstance($addon_row['title']);
 				
 			
-			if(!$addon->isAccessValid()) {
+			if(false === $addon || !$addon->isAccessValid()) {
 				if ($addon && $addon->hasAccessControl() && $addon->isInstalled() && !$addon->isDisabled())
 				{
 					bab_requireAccess('bab_addons_groups', $addon->getId(), bab_translate('You must be logged in to access this page.'));
