@@ -136,9 +136,9 @@ function bab_isEmailValid($email)
  */
 function bab_getCssUrl()
 	{
-	global $babInstallPath, $babSkinPath;
+	global $babInstallPath, $babSkinPath, $babSkin;
 	
-	$skin = bab_Skin::getDefaultSkin();
+	$skin = new bab_Skin($babSkin);
 	
 	$filepath = $skin->getThemePath().'styles/'. $GLOBALS['babStyle'];
 	if( !file_exists( $filepath ) )
