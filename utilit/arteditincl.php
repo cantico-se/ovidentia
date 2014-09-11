@@ -78,14 +78,19 @@ class bab_ArticleDraftEditor {
 	{
 		global $babBody;
 
-		if (!bab_isDraftModifiable($idDraft))
-		{
+		try {
+		    $this->draft->getFromIdDraft($idDraft);
+		} catch (Exception $e) {
+		    $babBody->addError($e->getMessage());
+		    $this->draft = null;
+		    return $this;
+		}
+		
+		if (!$this->draft->isModifiable()) {
 			$babBody->addError(bab_translate('Error, this draft is not modifiable'));
 			$this->draft = null;
-			return $this;
 		}
 
-		$this->draft->getFromIdDraft($idDraft);
 		return $this;
 	}
 

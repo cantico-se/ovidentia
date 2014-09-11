@@ -49,11 +49,11 @@ function bab_getCategoryTitle($id)
  * Topic description
  * @deprecated replaced by bab_getTopicDescription
  * @see	bab_getTopicDescription
- */	
+ */
 function bab_getCategoryDescription($id)
 	{
 		return bab_getTopicDescription($id);
-	}	
+	}
 
 	
 /**
@@ -96,7 +96,7 @@ function bab_getTopicCategoryDescription($id)
 		{
 		return "";
 		}
-	}	
+	}
 
 /**
  * Get category delegation ID
@@ -175,9 +175,9 @@ function bab_getTopicArray($identifier)
 	
 	
 /**
- * 
+ *
  * @throws ErrorException
- * 
+ *
  * @param string 	$name
  * @param string 	$description		HTML
  * @param string 	$benabled			Y | N		section
@@ -185,7 +185,7 @@ function bab_getTopicArray($identifier)
  * @param string 	$disptmpl
  * @param int 		$topcatid
  * @param int 		$dgowner			Delegation
- * 
+ *
  * @return int
  */
 function bab_addTopicsCategory($name, $description, $benabled, $template, $disptmpl, $topcatid, $dgowner=0)
@@ -208,10 +208,10 @@ function bab_addTopicsCategory($name, $description, $benabled, $template, $dispt
 		$req = "insert into ".BAB_TOPICS_CATEGORIES_TBL." (title, description, enabled, template, id_dgowner, id_parent, display_tmpl, date_modification, uuid) VALUES (
 		'" .$babDB->db_escape_string($name). "',
 		'" . $babDB->db_escape_string($description). "',
-		'" . $babDB->db_escape_string($benabled). "', 
+		'" . $babDB->db_escape_string($benabled). "',
 		'" . $babDB->db_escape_string($template). "',
-		'" . $babDB->db_escape_string($dgowner). "', 
-		'" . $babDB->db_escape_string($topcatid). "', 
+		'" . $babDB->db_escape_string($dgowner). "',
+		'" . $babDB->db_escape_string($topcatid). "',
 		'" . $babDB->db_escape_string($disptmpl). "',
 		NOW(),
 		".$babDB->quote(bab_uuid())."
@@ -248,7 +248,7 @@ function bab_addTopicsCategory($name, $description, $benabled, $template, $dispt
 		aclCloneRights(BAB_DEF_TOPCATSUB_GROUPS_TBL, $topcatid, BAB_DEF_TOPCATSUB_GROUPS_TBL, $id);
 		aclCloneRights(BAB_DEF_TOPCATCOM_GROUPS_TBL, $topcatid, BAB_DEF_TOPCATCOM_GROUPS_TBL, $id);
 		aclCloneRights(BAB_DEF_TOPCATMOD_GROUPS_TBL, $topcatid, BAB_DEF_TOPCATMOD_GROUPS_TBL, $id);
-		aclCloneRights(BAB_DEF_TOPCATMAN_GROUPS_TBL, $topcatid, BAB_DEF_TOPCATMAN_GROUPS_TBL, $id);		
+		aclCloneRights(BAB_DEF_TOPCATMAN_GROUPS_TBL, $topcatid, BAB_DEF_TOPCATMAN_GROUPS_TBL, $id);
 		return $id;
 		}
 	}
@@ -267,7 +267,7 @@ function bab_addTopicsCategory($name, $description, $benabled, $template, $dispt
  * @param int 		$topcatid					This value can be null
  * @param int 		$dgowner					This value can be null
  * @return bool
- */	
+ */
 function bab_updateTopicsCategory($id_category, $name, $description, $benabled, $template, $disptmpl, $topcatid, $dgowner=null)
 {
 	global $babBody, $babDB;
@@ -286,7 +286,7 @@ function bab_updateTopicsCategory($id_category, $name, $description, $benabled, 
 	else
 	{
 		$old = $babDB->db_fetch_assoc($res);
-		$tmp = array();	
+		$tmp = array();
 		
 		
 		if (isset($name)) 		{	$tmp[]= "title			=".$babDB->quote($name);		}
@@ -322,7 +322,7 @@ function bab_updateTopicsCategory($id_category, $name, $description, $benabled, 
 	}
 	
 	return true;
-}	
+}
 	
 
 	
@@ -333,14 +333,14 @@ function bab_getArticleDelegationId($iIdArticle)
 {
 	global $babDB;
 	
-	$sQuery = 
-		'SELECT 
+	$sQuery =
+		'SELECT
 			topicCategories.id_dgowner iIdDelegation
-		FROM ' . 
+		FROM ' .
 			BAB_ARTICLES_TBL . ' articles, ' .
 			BAB_TOPICS_TBL . ' topics, ' .
-			BAB_TOPICS_CATEGORIES_TBL . ' topicCategories 
-		WHERE 
+			BAB_TOPICS_CATEGORIES_TBL . ' topicCategories
+		WHERE
 			articles.id=' . $babDB->quote($iIdArticle) . ' AND
 			topics.id = articles.id_topic AND
 			topicCategories.id = topics.id_cat';
@@ -432,8 +432,8 @@ function bab_getReadableArticleCategories()
  *
  * @param	int|array		$parentid			: list of id of the parent category
  * @param	int|false		$delegationid		: if delegationid is false, categories are not filtered
- * @param   string|false   $rightaccesstable   : name of the right access table in topic. If false, categories are not filtered by user's rights 
- * 
+ * @param   string|false   $rightaccesstable   : name of the right access table in topic. If false, categories are not filtered by user's rights
+ *
  * Values of $rightsaccesstable :
  * 	false : administrator access
  *  BAB_TOPICSCOM_GROUPS_TBL : right submit comments
@@ -447,7 +447,7 @@ function bab_getReadableArticleCategories()
 function bab_getArticleCategoriesRes($parentid, $delegationid = false, $rightaccesstable = BAB_TOPICSVIEW_GROUPS_TBL) {
 	global $babDB;
 	
-	// Verify the type array of $parentid 
+	// Verify the type array of $parentid
 	if (!is_array($parentid)) {
 		$parentid = array($parentid);
 	}
@@ -458,7 +458,7 @@ function bab_getArticleCategoriesRes($parentid, $delegationid = false, $rightacc
 		$sDelegation = ' AND tc.id_dgowner = \'' . $babDB->db_escape_string($delegationid) . '\' ';
 	}
 	
-	// List of id categories 
+	// List of id categories
 	$IdEntries = array();
 	
 	
@@ -468,9 +468,9 @@ function bab_getArticleCategoriesRes($parentid, $delegationid = false, $rightacc
 		// All categories, childs of $parentid
 		$res = $babDB->db_query("select id from ".BAB_TOPICS_CATEGORIES_TBL." where id_parent IN (".$babDB->quote($parentid).")");
 		
-		// Specifics rights or all rights ? 
+		// Specifics rights or all rights ?
 		if (false === $rightaccesstable) {
-			// Administrator rights 
+			// Administrator rights
 			
 			while ($row = $babDB->db_fetch_assoc($res)) {
 				$IdEntries[$row['id']] = $row['id'];
@@ -490,8 +490,8 @@ function bab_getArticleCategoriesRes($parentid, $delegationid = false, $rightacc
 			} else {
 			
 				$res2 = $babDB->db_query("
-					select id_cat 
-					from ".BAB_TOPICS_TBL." 
+					select id_cat
+					from ".BAB_TOPICS_TBL."
 					where id in(".$babDB->quote($idtopicsbyrights).") AND id_cat NOT IN(".$babDB->quote($idcategoriesbyrights).")
 				");
 				
@@ -500,7 +500,7 @@ function bab_getArticleCategoriesRes($parentid, $delegationid = false, $rightacc
 				}
 				
 				
-				// All parents of categories accessibles 
+				// All parents of categories accessibles
 				$idcategoriesbyrightstmp = $idcategoriesbyrights;
 				
 				foreach($idcategoriesbyrightstmp as $idcategory => $dummy) {
@@ -522,17 +522,17 @@ function bab_getArticleCategoriesRes($parentid, $delegationid = false, $rightacc
 		}
 	}
 
-	// All fields and values of categories 
+	// All fields and values of categories
 	if($IdEntries) {
-		$req = "SELECT 
-				tc.* 
+		$req = "SELECT
+				tc.*
 				
-			from ".BAB_TOPICS_CATEGORIES_TBL." tc 
-				LEFT JOIN ".BAB_TOPCAT_ORDER_TBL." tot on tc.id=tot.id_topcat 
+			from ".BAB_TOPICS_CATEGORIES_TBL." tc
+				LEFT JOIN ".BAB_TOPCAT_ORDER_TBL." tot on tc.id=tot.id_topcat
 				
-			WHERE 
-				tc.id IN (".$babDB->quote($IdEntries).") 
-				and (tot.id IS NULL OR tot.type='1') " . $sDelegation .  " 
+			WHERE
+				tc.id IN (".$babDB->quote($IdEntries).")
+				and (tot.id IS NULL OR tot.type='1') " . $sDelegation .  "
 				
 			order by tot.ordering asc
 		";
@@ -550,8 +550,8 @@ function bab_getArticleCategoriesRes($parentid, $delegationid = false, $rightacc
  *
  * @param	array		$parentid		: list of id of the parent category (0 )
  * @param	int|false	$delegationid	: if delegationid is false, categories are not filtered
- * @param   string|false   $rightaccesstable    : name of the right access table in topic. If false, categories are not filtered by user's rights 
- * 
+ * @param   string|false   $rightaccesstable    : name of the right access table in topic. If false, categories are not filtered by user's rights
+ *
  * Values of $rightsaccesstable :
  *   	false : administrator access
  *	BAB_TOPICSCOM_GROUPS_TBL : right submit comments
@@ -702,13 +702,13 @@ function bab_addTopic($name, $description, $idCategory, &$error, $topicArr = arr
 	global $babBody, $babDB;
 	require_once dirname(__FILE__).'/uuid.php';
 	
-	$arrdefaults = array(	'idsaart'=> 0, 
-							'idsacom'=> 0, 
-							'idsa_update'=> 0, 
-							'notify'=> 'N', 
-							'lang'=>$GLOBALS['babLanguage'], 
-							'article_tmpl'=>'', 
-							'display_tmpl'=>'', 
+	$arrdefaults = array(	'idsaart'=> 0,
+							'idsacom'=> 0,
+							'idsa_update'=> 0,
+							'notify'=> 'N',
+							'lang'=>$GLOBALS['babLanguage'],
+							'article_tmpl'=>'',
+							'display_tmpl'=>'',
 							'allow_hpages'=>'N',
 							'allow_pubdates'=>'N',
 							'allow_attachments'=>'N',
@@ -781,9 +781,9 @@ function bab_addTopic($name, $description, $idCategory, &$error, $topicArr = arr
 
 /**
  * Update a topic
- * 
+ *
  * @since 7.3.95
- * 
+ *
  * @param int 		$id_topic
  * @param string 	$name
  * @param string 	$description
@@ -863,8 +863,8 @@ function bab_updateTopic($id_topic, $name, $description, $idCategory, &$error, $
  * Get articles topics (in db_query resource )
  * @param	array		$categoryid		: list of articles categories
  * @param	int|false	$delegationid	: if delegationid is false, topics are not filtered
- * @param   string|false   $rightaccesstable    : name of the right access table in topic. If false, topics are not filtered by user's rights 
- * 
+ * @param   string|false   $rightaccesstable    : name of the right access table in topic. If false, topics are not filtered by user's rights
+ *
  * Values of $rightsaccesstable :
  * 	false : administrator access
  *	BAB_TOPICSCOM_GROUPS_TBL : right submit comments
@@ -872,7 +872,7 @@ function bab_updateTopic($id_topic, $name, $description, $idCategory, &$error, $
  *	BAB_TOPICSMOD_GROUPS_TBL : right modify articles
  *	BAB_TOPICSSUB_GROUPS_TBL : right submit articles
  *	BAB_TOPICSVIEW_GROUPS_TBL : right view articles (value by default)
- * 
+ *
  * @return 	resource|false
  */
 function bab_getArticleTopicsRes($categoryid, $delegationid = false, $rightaccesstable = BAB_TOPICSVIEW_GROUPS_TBL) {
@@ -884,7 +884,7 @@ function bab_getArticleTopicsRes($categoryid, $delegationid = false, $rightacces
 	$sLeftJoin = ' ';
 	/* Request with delegation */
 	if (false !== $delegationid) {
-		$sLeftJoin = 
+		$sLeftJoin =
 			'LEFT JOIN ' .
 				BAB_TOPICS_TBL . ' tc ON tc.id = id_topcat ' .
 			'LEFT JOIN ' .
@@ -913,15 +913,15 @@ function bab_getArticleTopicsRes($categoryid, $delegationid = false, $rightacces
 	}
 
 	if (count($IdEntries) > 0) {
-		$req = "select 
+		$req = "select
 				tc.*,
-				u.id_user unsubscribed 
-			from 
-			".BAB_TOPICS_TBL." tc 
-				LEFT JOIN ".BAB_TOPCAT_ORDER_TBL." tot ON tc.id=tot.id_topcat 
-				LEFT JOIN bab_topics_unsubscribe u ON tc.id=u.id_topic AND u.id_user=".$babDB->quote(bab_getUserId())." 
+				u.id_user unsubscribed
+			from
+			".BAB_TOPICS_TBL." tc
+				LEFT JOIN ".BAB_TOPCAT_ORDER_TBL." tot ON tc.id=tot.id_topcat
+				LEFT JOIN bab_topics_unsubscribe u ON tc.id=u.id_topic AND u.id_user=".$babDB->quote(bab_getUserId())."
 				
-			where tc.id IN (".$babDB->quote($IdEntries).") and tot.type='2' 
+			where tc.id IN (".$babDB->quote($IdEntries).") and tot.type='2'
 			order by tot.ordering asc
 		";
 		return $babDB->db_query($req);
@@ -934,8 +934,8 @@ function bab_getArticleTopicsRes($categoryid, $delegationid = false, $rightacces
  * Get articles topics information, first children of categories (id, title, description)
  * @param	array		$categoryid		: list of articles categories
  * @param	int|false	$delegationid	: if delegationid is false, topics are not filtered
- * @param   string|false   $rightaccesstable    : name of the right access table in topic. If false, topics are not filtered by user's rights 
- * 
+ * @param   string|false   $rightaccesstable    : name of the right access table in topic. If false, topics are not filtered by user's rights
+ *
  * Values of $rightsaccesstable :
  * 	false : administrator access
  *	BAB_TOPICSCOM_GROUPS_TBL : right submit comments
@@ -943,7 +943,7 @@ function bab_getArticleTopicsRes($categoryid, $delegationid = false, $rightacces
  *	BAB_TOPICSMOD_GROUPS_TBL : right modify articles
  *	BAB_TOPICSSUB_GROUPS_TBL : right submit articles
  *	BAB_TOPICSVIEW_GROUPS_TBL : right view articles (value by default)
- * 
+ *
  * @return 	array
  */
 function bab_getChildrenArticleTopicsInformation($categoryid, $delegationid = false, $rightaccesstable = BAB_TOPICSVIEW_GROUPS_TBL) {
@@ -972,13 +972,13 @@ function bab_getTopicDelegationId($idTopic)
 {
 	global $babDB;
 	
-	$sQuery = 
-		'SELECT 
+	$sQuery =
+		'SELECT
 			topicCategories.id_dgowner iIdDelegation
-		FROM ' . 
+		FROM ' .
 			BAB_TOPICS_TBL . ' topics, ' .
-			BAB_TOPICS_CATEGORIES_TBL . ' topicCategories 
-		WHERE 
+			BAB_TOPICS_CATEGORIES_TBL . ' topicCategories
+		WHERE
 			topics.id = ' . $babDB->quote($idTopic) . ' AND
 			topicCategories.id = topics.id_cat';
 	
@@ -994,7 +994,7 @@ function bab_getTopicDelegationId($idTopic)
 
 
 
-/* ARTICLES API */	
+/* ARTICLES API */
 
 
 
@@ -1020,7 +1020,7 @@ function bab_getArticleTitle($article)
  * @param int | string 	$article	 article id or UUID
  * @param bool			$fullpath	 Add CategoriesHierarchy key into array
  * @return array
- */ 
+ */
 function bab_getArticleArray($article, $fullpath = false)
 	{
 	global $babDB;
@@ -1108,7 +1108,7 @@ function bab_getArticleAuthor($article)
 
 
 
-/* ARTICLES API */	
+/* ARTICLES API */
 
 
 /**
@@ -1116,8 +1116,8 @@ function bab_getArticleAuthor($article)
  * @param	int		    $topicid		: id parent topic
  * @param   boolean     $fullpath       : add CategoriesHierarchy in results
  * @param   int     	$articlestype   : if 1 : articles & articles archives are added, if 2 : only articles are added, if 3 : only articles archives are added
- * @param   string|false   $rightaccesstable    : name of the right access table in topic. If false, articles are not filtered by user's rights 
- * 
+ * @param   string|false   $rightaccesstable    : name of the right access table in topic. If false, articles are not filtered by user's rights
+ *
  * Values of $rightsaccesstable :
  * 	false : all rights
  *	BAB_TOPICSCOM_GROUPS_TBL : right submit comments
@@ -1125,7 +1125,7 @@ function bab_getArticleAuthor($article)
  *	BAB_TOPICSMOD_GROUPS_TBL : right modify articles
  *	BAB_TOPICSSUB_GROUPS_TBL : right submit articles
  *	BAB_TOPICSVIEW_GROUPS_TBL : right view articles (value by default)
- * 
+ *
  * @return 	array
  */
 function bab_getChildrenArticlesInformation($topicid, $fullpath = false, $articlestype = 2, $rightaccesstable = BAB_TOPICSVIEW_GROUPS_TBL) {
@@ -1203,14 +1203,14 @@ function bab_submitArticleDraft($idart, &$articleid = null)
 
 /**
  * Adds an article draft
- * 
+ *
  * @param string	$title		Title of the new article draft
  * @param string	$head		Head of the new article draft
  * @param string	$body		Body of the new article draft
  * @param int		$idTopic	Id of the topic where we create the article draft
  * @param string	$error 		Returned error message
  * @param array		$articleArr	An array which contains options for the new article draft : date_submission, notify_members...
- * 
+ *
  * @return int 		Id of the new article draft
  */
 function bab_addArticleDraft($title, $head, $body, $idTopic, &$error, $articleArr = array(), $headFormat = 'html', $bodyFormat = 'html')
@@ -1220,13 +1220,13 @@ function bab_addArticleDraft($title, $head, $body, $idTopic, &$error, $articleAr
 
 	/* Options by default */
 	$arrdefaults = array(	'id_author'			=> (int) $GLOBALS['BAB_SESS_USERID'],
-							'lang'				=> $GLOBALS['babLanguage'], 
-							'date_submission'	=> '0000-00-00 00:00:00', 
-							'date_archiving'	=> '0000-00-00 00:00:00', 
-							'date_publication'	=> '0000-00-00 00:00:00', 
-							'hpage_private'		=> 'N', 
-							'hpage_public'		=> 'N', 
-							'notify_members'	=> 'N', 
+							'lang'				=> $GLOBALS['babLanguage'],
+							'date_submission'	=> '0000-00-00 00:00:00',
+							'date_archiving'	=> '0000-00-00 00:00:00',
+							'date_publication'	=> '0000-00-00 00:00:00',
+							'hpage_private'		=> 'N',
+							'hpage_public'		=> 'N',
+							'notify_members'	=> 'N',
 							'update_datemodif'	=> 'N',
 							'restriction'		=> ''
 						);
@@ -1300,9 +1300,9 @@ function bab_addArticleDraft($title, $head, $body, $idTopic, &$error, $articleAr
 	$arrdefaults['id_topic'] = $idTopic;
 	$arrdefaults['id_anonymous'] = $idanonymous;
 
-	$babDB->db_query('INSERT INTO '.BAB_ART_DRAFTS_TBL.' 
-			('.implode(',', array_keys($arrdefaults)).', date_creation, date_modification) 
-		VALUES 
+	$babDB->db_query('INSERT INTO '.BAB_ART_DRAFTS_TBL.'
+			('.implode(',', array_keys($arrdefaults)).', date_creation, date_modification)
+		VALUES
 			('.$babDB->quote($arrdefaults).', NOW(), NOW())
 	');
 	
@@ -1316,14 +1316,14 @@ function bab_addArticleDraft($title, $head, $body, $idTopic, &$error, $articleAr
 
 /**
  * Adds an article
- * 
+ *
  * @param string	$title		Title of the new article
  * @param string	$head		Head of the new article
  * @param string	$body		Body of the new article
  * @param int		$idTopic	Id of the topic where we create the article
  * @param string	$error 		Returned error message
  * @param array		$articleArr	An array which contains options for the new article: date_submission, notify_members...
- * 
+ *
  * @return bool
  */
 function bab_addArticle($title, $head, $body, $idTopic, &$error, $articleArr = array(), $headFormat = 'html', $bodyFormat = 'html', &$articleId = null)
@@ -1338,7 +1338,7 @@ function bab_addArticle($title, $head, $body, $idTopic, &$error, $articleArr = a
 
 
 
-/* COMMENTS API */	
+/* COMMENTS API */
 	
 
 
@@ -1357,7 +1357,7 @@ function bab_getCommentTitle($com)
 	} else {
 		return '';
 	}
-}	
+}
 	
 
 
@@ -1442,8 +1442,8 @@ function bab_saveArticleComment($topicId, $articleId, $subject, $message, $paren
 						' . $babDB->quote($parentId). ',
 						NOW(),
 						' . $babDB->quote($subject) . ',
-						' . $babDB->quote($message) . ', 
-						' . $babDB->quote($messageFormat) . ', 
+						' . $babDB->quote($message) . ',
+						' . $babDB->quote($messageFormat) . ',
 						' . $babDB->quote($articleRating) . ',
 						' . $babDB->quote($authorId) . ',
 						' . $babDB->quote($authorName). ',
@@ -1488,7 +1488,7 @@ function bab_saveArticleComment($topicId, $articleId, $subject, $message, $paren
  * If the returned value is 0, the article has not been rated yet.
  *
  * @param $articleId
- * @return float			
+ * @return float
  */
 function bab_getArticleAverageRating($articleId)
 {
@@ -1511,7 +1511,7 @@ function bab_getArticleAverageRating($articleId)
  * Returns the number of ratings for this article.
  *
  * @param $articleId
- * @return int			
+ * @return int
  */
 function bab_getArticleNbRatings($articleId)
 {
@@ -1535,7 +1535,7 @@ function bab_getArticleNbRatings($articleId)
 
 /**
  * This function insert a record in the database.
- * Before using this function, upload the file using 
+ * Before using this function, upload the file using
  * class bab_PublicationImageUploader.
  * For now only one image can be attached
  *
@@ -1543,7 +1543,7 @@ function bab_getArticleNbRatings($articleId)
  * @param string	$sName			Name of the image
  * @param string	$sRelativePath	Relative path of the image.
  * 									The relative path should be completed by the character '/'.
- * @return bool						True on success, false otherwise 
+ * @return bool						True on success, false otherwise
  */
 function bab_addImageToCategory($iIdCategory, $sName, $sRelativePath)
 {
@@ -1564,7 +1564,7 @@ function bab_addImageToCategory($iIdCategory, $sName, $sRelativePath)
 
 /**
  * This function update a record from the database.
- * Before using this function, upload the file using 
+ * Before using this function, upload the file using
  * class bab_PublicationImageUploader
  * For now only one image can be attached
  *
@@ -1616,7 +1616,7 @@ function bab_getImageCategory($iIdCategory)
 
 /**
  * Delete a record
- * For now only one image can be attached 
+ * For now only one image can be attached
  *
  * @param int $iIdCategory
  * @return bool
@@ -1637,7 +1637,7 @@ function bab_deleteImageCategory($iIdCategory)
 
 /**
  * This function insert a record in the database.
- * Before using this function, upload the file using 
+ * Before using this function, upload the file using
  * class bab_PublicationImageUploader.
  * For now only one image can be attached
  *
@@ -1645,7 +1645,7 @@ function bab_deleteImageCategory($iIdCategory)
  * @param string	$sName			Name of the image
  * @param string	$sRelativePath	Relative path of the image.
  * 									The relative path should be completed by the character '/'.
- * @return bool						True on success, false otherwise 
+ * @return bool						True on success, false otherwise
  */
 function bab_addImageToTopic($iIdTopic, $sName, $sRelativePath)
 {
@@ -1666,7 +1666,7 @@ function bab_addImageToTopic($iIdTopic, $sName, $sRelativePath)
 
 /**
  * This function update a record from the database.
- * Before using this function, upload the file using 
+ * Before using this function, upload the file using
  * class bab_PublicationImageUploader
  * For now only one image can be attached
  *
@@ -1718,7 +1718,7 @@ function bab_getImageTopic($iIdTopic)
 
 /**
  * Delete a record
- * For now only one image can be attached 
+ * For now only one image can be attached
  *
  * @param int $iIdTopic
  * @return bool
@@ -1741,7 +1741,7 @@ function bab_deleteImageTopic($iIdTopic)
 
 /**
  * This function insert a record in the database.
- * Before using this function, upload the file using 
+ * Before using this function, upload the file using
  * class bab_PublicationImageUploader.
  * For now only one image can be attached
  *
@@ -1749,7 +1749,7 @@ function bab_deleteImageTopic($iIdTopic)
  * @param string	$sName			Name of the image
  * @param string	$sRelativePath	Relative path of the image.
  * 									The relative path should be completed by the character '/'.
- * @return bool						True on success, false otherwise 
+ * @return bool						True on success, false otherwise
  */
 function bab_addImageToDraftArticle($iIdDraft, $sName, $sRelativePath)
 {
@@ -1792,7 +1792,7 @@ function bab_getImageDraftArticle($iIdDraft)
 
 /**
  * Delete a record
- * For now only one image can be attached 
+ * For now only one image can be attached
  *
  * @param int $iIdCategory
  * @return bool
@@ -1813,7 +1813,7 @@ function bab_deleteImageDraftArticle($iIdDraft)
 
 /**
  * This function insert a record in the database.
- * Before using this function, upload the file using 
+ * Before using this function, upload the file using
  * class bab_PublicationImageUploader.
  * For now only one image can be attached
  *
@@ -1821,7 +1821,7 @@ function bab_deleteImageDraftArticle($iIdDraft)
  * @param string	$sName			Name of the image
  * @param string	$sRelativePath	Relative path of the image.
  * 									The relative path should be completed by the character '/'.
- * @return bool						True on success, false otherwise 
+ * @return bool						True on success, false otherwise
  */
 function bab_addImageToArticle($iIdArticle, $sName, $sRelativePath)
 {
@@ -1841,7 +1841,7 @@ function bab_addImageToArticle($iIdArticle, $sName, $sRelativePath)
 
 /**
  * This function update a record from the database.
- * Before using this function, upload the file using 
+ * Before using this function, upload the file using
  * class bab_PublicationImageUploader
  * For now only one image can be attached
  *
@@ -1893,7 +1893,7 @@ function bab_getImageArticle($iIdArticle)
 
 /**
  * Delete a record
- * For now only one image can be attached 
+ * For now only one image can be attached
  *
  * @param int $iIdCategory
  * @return bool
@@ -1928,6 +1928,12 @@ function bab_isDraftModifiable($iddraft)
 {
 	require_once dirname(__FILE__).'/artdraft.class.php';
 	$draft = new bab_ArtDraft;
+	
+	try {
+	    $draft->getFromIdDraft($iddraft);
+	} catch (Exception $e) {
+	    return false;
+	}
 	$draft->getFromIdDraft($iddraft);
 	return $draft->isModifiable();
 }
@@ -1942,12 +1948,12 @@ function bab_isArticleModifiable($id_article)
 {
 	global $babDB;
 	
-	$res = $babDB->db_query('SELECT 
+	$res = $babDB->db_query('SELECT
 		a.id_topic,
-		t.allow_update, 
-		a.id_author, 
-		t.allow_manupdate   
-		FROM bab_topics t, bab_articles a 
+		t.allow_update,
+		a.id_author,
+		t.allow_manupdate
+		FROM bab_topics t, bab_articles a
 		WHERE a.id_topic=t.id AND a.id='.$babDB->quote($id_article));
 	$arr = $babDB->db_fetch_assoc($res);
 	
@@ -1974,14 +1980,14 @@ function bab_isArticleModifiable($id_article)
  * Return -1 if unsubscription not allowed in topic or notification disabled or not accessible in topic or user logged out
  * Return 0 if user unsubscribed and notifications activated in topic and unsubscription allowed in topic
  * Return 1 if user subscribed and notifications activated in topic and unsubscription allowed in topic
- * 
- * 
+ *
+ *
  * @param	int		$id_topic
  * @param	int		$id_user
  * @param	bool	$set		Set subscription status of user to topic
  * 								true : subscribe to notifications (remove table row)
  * 								false : unsubscribe to notifications (add row in table)
- * 
+ *
  * @return int
  */
 function bab_TopicNotificationSubscription($id_topic, $id_user, $set = null)
@@ -1993,12 +1999,12 @@ function bab_TopicNotificationSubscription($id_topic, $id_user, $set = null)
 		return -1;
 	}
 	
-	$res = $babDB->db_query("SELECT 
-			t.notify, 
-			t.allow_unsubscribe, 
-			u.id_user   
-		FROM bab_topics t LEFT JOIN bab_topics_unsubscribe u ON u.id_topic=t.id AND u.id_user=".$babDB->quote($id_user)." 
-		WHERE 
+	$res = $babDB->db_query("SELECT
+			t.notify,
+			t.allow_unsubscribe,
+			u.id_user
+		FROM bab_topics t LEFT JOIN bab_topics_unsubscribe u ON u.id_topic=t.id AND u.id_user=".$babDB->quote($id_user)."
+		WHERE
 			t.id=".$babDB->quote($id_topic)
 	);
 	
@@ -2026,7 +2032,7 @@ function bab_TopicNotificationSubscription($id_topic, $id_user, $set = null)
 		{
 			bab_debug('unsubscribe');
 			
-			$babDB->db_query("INSERT INTO bab_topics_unsubscribe (id_topic, id_user) 
+			$babDB->db_query("INSERT INTO bab_topics_unsubscribe (id_topic, id_user)
 				VALUES (".$babDB->quote($id_topic).", ".$babDB->quote($id_user).")");
 			
 			return 1;
