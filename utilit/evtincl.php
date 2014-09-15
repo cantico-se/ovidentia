@@ -314,8 +314,8 @@ function bab_createCalendarPeriod(Func_CalendarBackend $backend, $args, bab_Peri
 
 		$oldcollection = $period->getCollection();
 
-	} else {
-
+    } else {
+        
 		$begin 	= bab_event_posted::getDateTime($args['startdate']);
 		$end 	= bab_event_posted::getDateTime($args['enddate']);
 
@@ -858,11 +858,11 @@ function confirmApprobEvent($uid, $idcal, $relationcal, $status, $comment, $dtst
 
 /**
  * set relation status in all events of period list
- * 
+ *
  * @param Func_CalendarBackend 	$backend
  * @param array 				$period_list
  * @param string 				$relationcal
- * @param string				$status			new status for relation		ACCEPTED | DECLINED	
+ * @param string				$status			new status for relation		ACCEPTED | DECLINED
  */
 function confirmApprobEvent_setRelationStatus(Func_CalendarBackend $backend, $period_list, $relationcal, $status)
 {
@@ -890,7 +890,7 @@ function confirmApprobEvent_setRelationStatus(Func_CalendarBackend $backend, $pe
  * @param array 				$period_list
  * @param string				$relationcal
  * @param int 					$wf_instance	old instance to replace
- * 
+ *
  * @return bool
  */
 function confirmApprobEvent_replaceInstance($period_list, $relationcal, $wf_instance)
@@ -2189,90 +2189,90 @@ class bab_event_posted {
 
 	/**
 	 * Create calendar period
-	 * 
-	 * 
+	 *
+	 *
 	 * @throws ErrorException
-	 * 
-	 * 
+	 *
+	 *
 	 * @param	bool	$delete				allow delete of event if calid not in selected calendars (event moved from one calendar to another)
 	 * 										do not delete existing event in availability check
-	 * 
+	 *
 	 * @param	bool	$createinstance		Create approbation instance for the calendar period
 	 * 										do not create instance in availablity check
 	 * 										approvers are maked notified if instance is created
-	 * 
+	 *
 	 * @return bab_CalendarPeriod
 	 */
 	private function getCalendarPeriod($delete = true, $createinstance = true)
 	{
 		if (!isset($this->calendarPeriod))
 		{
-			if (!empty($this->args['evtid'])) {
-
-				// calid is the calendar where the event is recorded
-				// if calid is not in the list of selected calendars, the event must be canceled and a new calendar must be chosen to record the event
-				
-				$allowed = array_flip($this->args['selected_calendars']);
-				$calendar = bab_getICalendars()->getEventCalendar($this->args['calid']);
-				
-				if (isset($allowed[$this->args['calid']]))
-				{
-					
-					
-					if (!$calendar)
-					{
-						throw new Exception('Missing calendar '.$this->args['calid']);
-					}
-				} else if ($delete) {
-					
+    		if (!empty($this->args['evtid'])) {
+    
+    			// calid is the calendar where the event is recorded
+    			// if calid is not in the list of selected calendars, the event must be canceled and a new calendar must be chosen to record the event
+    			
+    			$allowed = array_flip($this->args['selected_calendars']);
+    			$calendar = bab_getICalendars()->getEventCalendar($this->args['calid']);
+    			
+    			if (isset($allowed[$this->args['calid']]))
+    			{
+    				
+    				
+    				if (!$calendar)
+    				{
+    					throw new Exception('Missing calendar '.$this->args['calid']);
+    				}
+    			} elseif ($delete) {
+    				
 					// delete event
-				
-					$backend = $calendar->getBackend();
-					$collection = $backend->CalendarEventCollection($calendar);
-					
+    
+    				$backend = $calendar->getBackend();
+    				$collection = $backend->CalendarEventCollection($calendar);
+    				
 					$period = bab_createCalendarPeriod($backend, $this->args, $collection, $createinstance);
-					
-					$period->setProperty('STATUS', 'CANCELLED');
-					$period->cancelFromAllCalendars($calendar);
-				
-					
-					$this->args['evtid'] = null;
-				} 
-			} 
-
-			
-			
-			
-			if (empty($this->args['evtid']))
-			{
-				$calendar = bab_getMainCalendar($this->args['selected_calendars']);
-			}	
-			
-			
-			$backend = $calendar->getBackend();
-			$collection = $backend->CalendarEventCollection($calendar);
-			
-			
-			$calendarPeriod = bab_createCalendarPeriod($backend, $this->args, $collection, $createinstance);
-			
-			if (empty($this->args['evtid'])) {
-				
-				// creation
-				
-				$calendarPeriod->setProperty(
-					'ORGANIZER;CN='.$calendarPeriod->escape($GLOBALS['BAB_SESS_USER']), 
-					'MAILTO:'.bab_getUserEmail($GLOBALS['BAB_SESS_USERID'])
-				);
-			}
-			
-			
-			if (!$delete || !$createinstance)
-			{
-				// do not save in cache if delete not allowed 
-				return $calendarPeriod;
-			}
-			
-			$this->calendarPeriod = $calendarPeriod;
+    				
+    				$period->setProperty('STATUS', 'CANCELLED');
+    				$period->cancelFromAllCalendars($calendar);
+    			
+    				
+    				$this->args['evtid'] = null;
+    			}
+    		}
+    		
+    		
+    			
+    			
+    		if (empty($this->args['evtid']))
+    		{
+    			$calendar = bab_getMainCalendar($this->args['selected_calendars']);
+    		}
+    		
+    		
+    		$backend = $calendar->getBackend();
+    		$collection = $backend->CalendarEventCollection($calendar);
+    		
+    		
+    		$calendarPeriod = bab_createCalendarPeriod($backend, $this->args, $collection, $createinstance);
+    		
+    		if (empty($this->args['evtid'])) {
+    			
+    			// creation
+    			
+    			$calendarPeriod->setProperty(
+    				'ORGANIZER;CN='.$calendarPeriod->escape($GLOBALS['BAB_SESS_USER']),
+    				'MAILTO:'.bab_getUserEmail($GLOBALS['BAB_SESS_USERID'])
+    			);
+    		}
+    		
+    		
+    		if (!$delete || !$createinstance)
+    		{
+    			// do not save in cache if delete not allowed
+    			return $calendarPeriod;
+    		}
+    		
+    		$this->calendarPeriod = $calendarPeriod;
 		}
 
 		return $this->calendarPeriod;
@@ -2280,15 +2280,96 @@ class bab_event_posted {
 
 
 
+
+	/**
+	 * Delete event
+	 *
+	 * @param 	bab_EventCalendar    $calendar
+	 * @param 	string               $calendar
+	 * @param 	string               $dtstart
+	 * @param	string               $updateMethod
+	 * @return unknown_type
+	 */
+	function deleteEvent($calendar, $evtid, $dtstart, $updateMethod)
+	{
+	    $backend = $calendar->getBackend();
+	    /*@var $backend Func_CalendarBackend */
+	
+	    $calendarPeriod = $backend->getPeriod($backend->CalendarEventCollection($calendar), $evtid, $dtstart);
+	
+	    $calendarPeriod->setProperty('STATUS', 'CANCELLED');
+	
+	    $collection = $calendarPeriod->getCollection();
+	    bab_addHashEventsToCollection($collection, $calendarPeriod, $updateMethod);
+	
+	    $date_min = $calendarPeriod->ts_begin;
+	    $date_max = $calendarPeriod->ts_end;
+	
+	    foreach ($collection as $period) {
+	        if ($period->ts_begin < $date_min) {
+	            $date_min = $period->ts_begin;
+	        }
+	        if ($period->ts_end > $date_max) {
+	            $date_max = $period->ts_end;
+	        }
+	    }
+	
+	    try {
+	        $calendarPeriod->cancelFromAllCalendars($calendar);
+	    } catch(ErrorException $e) {
+	        return false;
+	    }
+	}
+
+
+
 	/**
 	 * Save event
 	 *
-	 * @param	string &$message
-	 *
+	 * @param  string  &$message
+     * @param  int     $method    BAB_CAL_EVT_ALL | BAB_CAL_EVT_CURRENT | BAB_CAL_EVT_PREVIOUS | BAB_CAL_EVT_NEXT
 	 * @return bool
 	 */
-	public function save(&$message, $updateMethod = null) {
+	public function save(&$message, $updateMethod = null)
+	{
+	    $originalEventId = $this->args['evtid'];
+	    $dtstart = $this->args['dtstart'];
+	    $originalCalendarId = $this->args['calid'];
+	    
+	    $newAllowedCalendarIds = array_flip($this->args['selected_calendars']);
+	    $calendar = bab_getICalendars()->getEventCalendar($this->args['calid']);
+	    	
+	    if (isset($updateMethod) && $updateMethod != BAB_CAL_EVT_CURRENT && !isset($newAllowedCalendarIds[$originalCalendarId])) {
 
+	        // In this case, we must change the calendar of recurring periods.
+	        
+	        $originalPeriod = $this->getCalendarPeriod(false, false);
+	        $originalCollection = $originalPeriod->getCollection();
+	        bab_addHashEventsToCollection($originalCollection, $originalPeriod, $updateMethod);
+
+	        // We find the new main calendar.
+	        $mainCalendar = bab_getMainCalendar($this->args['selected_calendars']);
+
+	        $backend = $mainCalendar->getBackend();
+
+ 	        // We recreate the collection on a new calendar...
+	        $collection = $backend->CalendarEventCollection($mainCalendar);
+	        
+	        // ...and add all the periods of the original calendar.
+	        foreach ($originalCollection as $p) {
+	            /* @var $p bab_CalendarPeriod */
+	            $p->setProperty('UID', false);
+	            $collection->addPeriod($p);
+	            $backend->savePeriod($p);
+	        }
+	        
+	        // We delete the periods from the original calendar.
+  	        $this->deleteEvent($calendar, $originalEventId, $dtstart, $updateMethod);
+
+	        return true;
+	    }
+	    
+	    
 		try {
 			$calendarPeriod = $this->getCalendarPeriod();
 		} catch(ErrorException $e) {
@@ -2770,7 +2851,7 @@ function bab_addHashEventsToCollection(bab_CalendarEventCollection $collection, 
 	$userperiods = $backend->selectPeriods($criteria);
 
 
-
+	
 	$ref_begin = BAB_DateTime::fromTimeStamp($calendarPeriod->ts_begin);
 	$ref_end = BAB_DateTime::fromTimeStamp($calendarPeriod->ts_end);
 
