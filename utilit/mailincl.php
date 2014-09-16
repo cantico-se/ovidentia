@@ -371,7 +371,6 @@ class bab_SMTP extends SMTP
     
     /**
      * Outputs debugging info via user-defined method
-     * debug output is activated for SMTP only via the babMailSmtp->mail->SMTPDebug property
      * This method is NOT protected in the default SMTP class, the method has been made
      * protected specifically for ovidentia
      * @param string $str
@@ -384,6 +383,17 @@ class bab_SMTP extends SMTP
         
         $this->smtp_trace .= $str;
     }
+    
+    /**
+     * Force debug mode for SMTP class
+     * necessary to get the smtp trace
+     */
+     public function Connected() {
+         
+         $this->do_debug = 2;
+         
+         return parent::Connected();
+     }
 }
 
 
@@ -793,13 +803,6 @@ class babMailSmtp extends babMail
 	{
 		parent::__construct();
 		$this->mail->IsSMTP();
-
-		/**
-		 * To enable SMTP trace
-		 */
-		$this->mail->SMTPDebug = 2;
-		
-		
 	}
 	
 	/**
