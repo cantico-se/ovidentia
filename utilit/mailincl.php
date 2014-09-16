@@ -314,21 +314,25 @@ class bab_eventAfterMailSent extends bab_eventMail {
 include_once $GLOBALS['babInstallPath'].'utilit/class.phpmailer.php';
 include_once $GLOBALS['babInstallPath'].'utilit/class.smtp.php';
 
+/**
+ * @property bab_SMTP $smtp
+ */
 class bab_PHPMailer extends PHPMailer
 {
 
-	/**
-	 * A copy of the smtp_trace get using output buffering
-	 * @var string
-	 */
-	public $smtp_trace = '';
-	
-	
 	/**
 	 * Set after send, uniq ID used for Message-Id header
 	 * @var string
 	 */
 	public $uniq_id = null;
+	
+	
+	public function __construct() {
+	    
+	    $this->smtp = new bab_SMTP();
+	    
+	    parent::__construct();
+	}
 
 
 	/**
@@ -343,51 +347,44 @@ class bab_PHPMailer extends PHPMailer
 
 		return $result;
 	}
-
-
-	/**
-	 * (non-PHPdoc)
-	 * @see PHPMailer::SmtpSend()
-	 */
-	protected function SmtpSend($header, $body) {
-		
-		ob_start();
-		
-		
-		try {
-			$result = parent::SmtpSend($header, $body);
-		} catch (phpmailerException $e) {
-			$_bab_message = $this->Lang('data_not_accepted');
-			$_bab_smtperror = $this->smtp->getError();
-			 
-			if (isset($_bab_smtperror['error']))
-			{
-				$_bab_message .= ' / '.$_bab_smtperror['error'];
-			}
-			 
-			if (isset($_bab_smtperror['smtp_code']))
-			{
-				$_bab_message .= ' / '.$_bab_smtperror['smtp_code'];
-			}
-			 
-			if (isset($_bab_smtperror['smtp_msg']))
-			{
-				$_bab_message .= ' / '.$_bab_smtperror['smtp_msg'];
-			}
-			
-			throw new phpmailerException($_bab_message, self::STOP_CRITICAL);
-		}
-		
-		
-		$this->smtp_trace = ob_get_contents();
-		ob_end_clean();
-		
-		
-		return $result;
+	
+	
+	public function getSmtpTrace() {
+	    
+	    return $this->smtp->smtp_trace;
 	}
 }
 
 
+
+/**
+ * Custom SMTP class
+ */
+class bab_SMTP extends SMTP
+{
+    /**
+     * A copy of the smtp_trace get using output buffering
+     * @var string
+     */
+    public $smtp_trace = '';
+    
+    
+    /**
+     * Outputs debugging info via user-defined method
+     * debug output is activated for SMTP only via the babMailSmtp->mail->SMTPDebug property
+     * This method is NOT protected in the default SMTP class, the method has been made
+     * protected specifically for ovidentia
+     * @param string $str
+     */
+    protected function edebug($str) {
+        
+        if ('<br />' === substr($str, -6)) {
+            $str = substr($str, 0, -6);
+        }
+        
+        $this->smtp_trace .= $str;
+    }
+}
 
 
 
@@ -397,7 +394,11 @@ class bab_PHPMailer extends PHPMailer
  */ 
 class babMail
 {
+    /**
+     * @var bab_PHPMailer
+     */
 	public $mail;
+	
 	public $mailTo = array();
 	public $mailCc = array();
 	public $mailBcc = array();
@@ -719,7 +720,7 @@ class babMail
 		$event->setMailInfos($this);
 		$event->sent_status = $this->sent_status;
 		$event->ErrorInfo = empty($this->mail->ErrorInfo) ? null : $this->mail->ErrorInfo;
-		$event->smtp_trace = $this->mail->smtp_trace;
+		$event->smtp_trace = $this->mail->getSmtpTrace();
 		
 		
 		
@@ -797,6 +798,7 @@ class babMailSmtp extends babMail
 		 * To enable SMTP trace
 		 */
 		$this->mail->SMTPDebug = 2;
+		
 		
 	}
 	
