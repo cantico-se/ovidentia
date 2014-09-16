@@ -7117,7 +7117,7 @@ function ovidentia_upgrade($version_base,$version_ini) {
 	
 	
 	/**
-	 * Upgrade to 8.1.98
+	 * Upgrade to 8.1.99
 	 */
 	if(!bab_isTableField(BAB_SITES_TBL, 'calendar_notif_author'))
 	{
