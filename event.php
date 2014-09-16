@@ -1272,10 +1272,11 @@ function addEvent(&$message)
 
 /**
  * Update an event (save the posted form)
- * @param string &$message
+ * @param  string   &$message
+ * @param  int     $method    BAB_CAL_EVT_ALL | BAB_CAL_EVT_CURRENT | BAB_CAL_EVT_PREVIOUS | BAB_CAL_EVT_NEXT
  * @return bool
  */
-function updateEvent(&$message)
+function updateEvent(&$message, $updateMethod)
 {
 	$posted = new bab_event_posted();
 	$posted->createArgsData();
@@ -1286,7 +1287,7 @@ function updateEvent(&$message)
 
 	// if period is available
 	if ($posted->availabilityCheckAllEvents($message)) {
-		return $posted->save($message);
+		return $posted->save($message, $updateMethod);
 	}
 
 
@@ -1295,7 +1296,7 @@ function updateEvent(&$message)
 
 		// if availability is NOT mandatory
 		if (!bab_event_posted::availabilityIsMandatory($posted->args['selected_calendars'])) {
-			return $posted->save($message);
+			return $posted->save($message, $updateMethod);
 		}
 	}
 
@@ -1539,7 +1540,8 @@ if (isset($_REQUEST['action']))
 			if( isset($_POST['Submit']) || isset($_POST['test_conflicts']))
 				{
 				$message = '';
-				if (updateEvent($message))
+				$updateMethod = (int)bab_pp('bupdrec', BAB_CAL_EVT_CURRENT);
+				if (updateEvent($message, $updateMethod))
 					{
 					$idx = "unload";
 					}

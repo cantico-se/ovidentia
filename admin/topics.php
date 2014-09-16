@@ -466,7 +466,7 @@ function addTopic($cat, $ncat, $category, $description, $saart, $sacom, $saupd, 
 			if( file_exists( $filepath ) )
 				{
 				$tpl = new bab_Template();
-				$arr = $tpl->get_Templates($filepath);
+				$arr = $tpl->getTemplates($filepath);
 				for( $i=0; $i < count($arr); $i++)
 					{
 					if( mb_strpos($arr[$i], "head_") !== false ||  mb_strpos($arr[$i], "body_") !== false )

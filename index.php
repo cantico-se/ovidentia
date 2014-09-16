@@ -259,7 +259,7 @@ if ('version' !== bab_rp('tg') || 'upgrade' !== bab_rp('idx')) {
 $babSkinPath = bab_getSkinPath();
 $babScriptPath = bab_getStaticUrl().$babInstallPath."scripts/";
 $babOvidentiaJs = $babScriptPath."ovidentia.js";
-$babOvmlPath = bab_Skin::getDefaultSkin()->getThemePath()."ovml/";
+$babOvmlPath = 'skins/'.$GLOBALS['babSkin']."/ovml/";
 
 
 

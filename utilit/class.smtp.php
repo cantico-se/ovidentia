@@ -115,7 +115,7 @@ class SMTP {
    * Outputs debugging info via user-defined method
    * @param string $str
    */
-  private function edebug($str) {
+  protected function edebug($str) {
     if ($this->Debugoutput == 'error_log') {
         error_log($str);
     } else {
