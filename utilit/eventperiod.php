@@ -410,13 +410,27 @@ class bab_eventCalendarEvent extends bab_event implements bab_eventNotifyRecipie
 			}
 		}
 
-
-
-
-		if (isset($users[$GLOBALS['BAB_SESS_USERID']]))
-		{
-			// do not notify current user
-			unset($users[$GLOBALS['BAB_SESS_USERID']]);
+		require_once $GLOBALS['babInstallPath'].'utilit/settings.class.php';
+		$settings = bab_getInstance('bab_Settings');
+		/*@var $settings bab_Settings */
+		$site = $settings->getSiteSettings();
+		if($settings['calendar_notif_author'] == "Y"){
+			if (!isset($users[$GLOBALS['BAB_SESS_USERID']]))
+			{
+				$row = bab_userInfos::getRow($GLOBALS['BAB_SESS_USERID']);
+				$users[$GLOBALS['BAB_SESS_USERID']] = array(
+					'name' 		=> bab_composeUserName($row['firstname'], $row['lastname']),
+					'firstname'	=> $row['firstname'],
+					'lastname'	=> $row['lastname'],
+					'email'		=> $row['email']
+				);
+			}
+		}else{
+			if (isset($users[$GLOBALS['BAB_SESS_USERID']]))
+			{
+				// do not notify current user only if set to not notify
+				unset($users[$GLOBALS['BAB_SESS_USERID']]);
+			}
 		}
 
 		foreach($users as $id_user => $dummy)

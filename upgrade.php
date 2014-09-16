@@ -7116,6 +7116,14 @@ function ovidentia_upgrade($version_base,$version_ini) {
 	}
 	
 	
+	/**
+	 * Upgrade to 8.1.98
+	 */
+	if(!bab_isTableField(BAB_SITES_TBL, 'calendar_notif_author'))
+	{
+		$babDB->db_query("ALTER TABLE `".BAB_SITES_TBL."` ADD calendar_notif_author ENUM('N','Y') DEFAULT 'N' NOT NULL");
+	}
+	
 	return true;
 
 }

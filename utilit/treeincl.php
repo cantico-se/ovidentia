@@ -541,9 +541,14 @@ class bab_dbtree
 				{
 					$idprev = $this->getPreviousSibling($previousId);
 					if( $idprev )
-						{
+					{
 						$previousId = $idprev['id'];
-						}
+					}else{//FIX: Move to the right then move the previous to the right
+						$this->moveTree($id, $parentId, $previousId);
+						$tempid = $id;
+						$id = $previousId;
+						$previousId = $tempid;
+					}
 
 				}
 				if( $id == $previousId )

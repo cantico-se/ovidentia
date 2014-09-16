@@ -542,6 +542,8 @@ function site_menu6($id)
 			$this->t_defaultCalAccess = bab_translate("Default calendar access for new user");
 			$this->t_personalCalAccess = bab_translate("Users that doesn't have personal agenda can view other personal agendas");
 			
+			$this->t_callendarnotif = bab_translate("When notification is selected, also notify the author");
+			
 			$this->ypcalaccess = 'selected';
 			$this->npcalaccess = '';
 			
@@ -576,11 +578,14 @@ function site_menu6($id)
 				}
 			}
 			
-			$this->dispdays = array_flip(explode(',',$GLOBALS['babBody']->babsite['dispdays']));
-			$this->startday = $GLOBALS['babBody']->babsite['startday'];
-			$this->sttime = $GLOBALS['babBody']->babsite['start_time'];
+			$site = new site_configuration_cls($id);
+			$site = $site->arr;
+			
+			$this->dispdays = array_flip(explode(',',$site['dispdays']));
+			$this->startday = $site['startday'];
+			$this->sttime = $site['start_time'];
 			$this->arrdv = array(bab_translate("Month"), bab_translate("Week"),bab_translate("Day"));
-			if( $GLOBALS['babBody']->babsite['allday'] ==  'Y')
+			if( $site['allday'] ==  'Y')
 				{
 				$this->yallday = 'selected';
 				$this->nallday = '';
@@ -591,7 +596,7 @@ function site_menu6($id)
 				$this->yallday = '';
 				}
 
-			if( $GLOBALS['babBody']->babsite['usebgcolor'] ==  'Y')
+			if( $site['usebgcolor'] ==  'Y')
 				{
 				$this->yusebgcolor = 'selected';
 				$this->nusebgcolor = '';
@@ -602,7 +607,7 @@ function site_menu6($id)
 				$this->yusebgcolor = '';
 				}
 
-			if( $GLOBALS['babBody']->babsite['show_update_info'] ==  'Y')
+			if( $site['show_update_info'] ==  'Y')
 				{
 				$this->yshowupdateinfo = 'selected';
 				$this->nshowupdateinfo = '';
@@ -613,7 +618,7 @@ function site_menu6($id)
 				$this->yshowupdateinfo = '';
 				}
 			
-			if( $GLOBALS['babBody']->babsite['show_onlydays_of_month'] ==  'Y')
+			if( $site['show_onlydays_of_month'] ==  'Y')
 				{
 				$this->yshowonlydaysmonthinfo = 'selected';
 				$this->nshowonlydaysmonthinfo = '';
@@ -622,6 +627,17 @@ function site_menu6($id)
 				{
 				$this->nshowonlydaysmonthinfo = 'selected';
 				$this->yshowonlydaysmonthinfo = '';
+				}
+			
+			if( $site['calendar_notif_author'] ==  'Y')
+				{
+				$this->ycallendarnotif = 'selected';
+				$this->ncallendarnotif = '';
+				}
+			else
+				{
+				$this->ncallendarnotif = 'selected';
+				$this->ycallendarnotif = '';
 				}
 			}
 
@@ -2204,6 +2220,11 @@ function siteUpdate_menu6($item)
 	if (isset($_POST['iPersonalCalendarAccess']) )
 		{
 		$reqarr[] = "iPersonalCalendarAccess='".$babDB->db_escape_string($_POST['iPersonalCalendarAccess'])."'";
+		}
+
+	if (isset($_POST['calendar_notif_author']) )
+		{
+		$reqarr[] = "calendar_notif_author='".$babDB->db_escape_string($_POST['calendar_notif_author'])."'";
 		}
 		
 	$babDB->db_query("update ".BAB_SITES_TBL." set ".implode(',',$reqarr)." where id='".$babDB->db_escape_string($item)."'");

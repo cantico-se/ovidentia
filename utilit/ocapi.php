@@ -1783,8 +1783,8 @@ class bab_OrgChartUtil
 			switch($mixedGroup)
 			{
 				case 'new':
-					if('Y' === (string) $this->aCachedOrgChart['isprimary'] && 1 === (int) $this->aCachedOrgChart['id_group'])
-					{
+					//if('Y' === (string) $this->aCachedOrgChart['isprimary'] && 1 === (int) $this->aCachedOrgChart['id_group'])
+					//{
 						require_once dirname(__FILE__) . '/grpincl.php';
 
 						$iIdDelegation = 0;
@@ -1794,7 +1794,7 @@ class bab_OrgChartUtil
 						{
 							$iIdGroup = bab_addGroup($sName, $sDescription, $iIdManager, $iIdDelegation, $iIdParentGroup);
 						}
-					}
+					//}
 					break;
 				case 'none':
 					$iIdGroup = 0;
@@ -2076,7 +2076,9 @@ class bab_OrgChartUtil
 			$iIdManager	= 0;
 			$iIdGroup	= (int) $aEntity['id_group'];
 
-			bab_updateGroup($iIdGroup, $sName, $sDescription, $iIdManager);
+			if($iIdGroup > 3){
+				bab_updateGroup($iIdGroup, $sName, $sDescription, $iIdManager);
+			}
 
 			return true;
 		}
