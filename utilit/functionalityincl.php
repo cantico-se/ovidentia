@@ -369,6 +369,8 @@ class bab_functionalities {
 	 * @return  boolean
 	 */
 	public function register($func_path, $include_file) {
+	    
+	    
 
 		// verify parent functionality
 		$parent_original = $this->treeRootPath.'/'.dirname($func_path).'/'.$this->original;
@@ -376,6 +378,16 @@ class bab_functionalities {
 		if ('.' !== dirname($func_path) && !file_exists($parent_original)) {
 			trigger_error(sprintf('The functionality "%s" cannot be registered because parent functionality does not exists', $func_path));
 			return false;
+		}
+		
+		// force the registred include path to be relative to the site root path
+		$rootPath = dirname('.');
+		if (0 === mb_strpos($include_file, $rootPath)) {
+		    $include_file = mb_substr($include_file, mb_strlen($rootPath));
+		}
+		
+		if ('/' === mb_substr($include_file, 0, 1) && class_exists('bab_installWindow')) {
+		    bab_installWindow::message(bab_toHtml(sprintf('Warning: the file path %s should be relative to ovidentia root path', $include_file)));
 		}
 
 		if (!file_exists($include_file)) {
