@@ -125,15 +125,13 @@ if (isset($_REQUEST['addon']))
 	$babDB = new babDatabase();
 	$babDB->db_setCharset();
 	
-	$addon = explode('.',$_REQUEST['addon']);
+	$controller = explode('.',$_REQUEST['addon']);
+	$addon = bab_getAddonInfosInstance($controller[0]);
 
-	if($id_addon = bab_addonsInfos::getAddonIdByName($addon[0]))
+	if($addon)
 	{
-		$row = bab_addonsInfos::getDbRow($id_addon);
-		$incl = "addons/".$row['title'];
-		$incl .= "/".preg_replace("/[^A-Za-z0-9_\-]/", "", $addon[1]);
-		
-		include $babInstallPath.$incl.'.php';
+		$file = preg_replace("/[^A-Za-z0-9_\-]/", "", $controller[1]);
+		include $addon->getPhpPath().$file.'.php';
 	}
 	
 	die();
@@ -259,7 +257,7 @@ if ('version' !== bab_rp('tg') || 'upgrade' !== bab_rp('idx')) {
 $babSkinPath = bab_getSkinPath();
 $babScriptPath = bab_getStaticUrl().$babInstallPath."scripts/";
 $babOvidentiaJs = $babScriptPath."ovidentia.js";
-$babOvmlPath = 'skins/'.$GLOBALS['babSkin']."/ovml/";
+$babOvmlPath = bab_Skin::getUserSkin()->getThemePath().'ovml/';
 
 
 
