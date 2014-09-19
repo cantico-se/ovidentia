@@ -1185,7 +1185,7 @@ class Func_Ovml_Container_ArticleTopic extends Func_Ovml_Container
 			$res = $babDB->db_query($req);
 			while($arr = $babDB->db_fetch_array($res)){
 				$this->nbarticles[$arr['id']] = $arr['nb'];
-			} 
+			}
 		}
 		$this->ctx->curctx->push('CCount', $this->count);
 	}
@@ -3154,13 +3154,12 @@ class Func_Ovml_Container_RecentArticles extends Func_Ovml_Container
 					'(at.date_publication = \'0000-00-00 00:00:00\' OR at.date_publication <= now()) ' .
 					$sDelegation;
 
-			if( $this->nbdays !== false)
-				{
+			if ($this->nbdays !== false && bab_isUserLogged()) {
 				require_once dirname(__FILE__).'/userinfosincl.php';
 				$usersettings = bab_userInfos::getUserSettings();
 
-				$req .= " AND at.date >= DATE_ADD(\"".$babDB->db_escape_string($usersettings['lastlog'])."\", INTERVAL -".$babDB->db_escape_string($this->nbdays)." DAY)";
-				}
+				$req .= " AND at.date >= DATE_ADD(" . $babDB->quote($usersettings['lastlog']) . ", INTERVAL -" . $babDB->db_escape_string($this->nbdays) . " DAY)";
+			}
 
 
 			if ($lang !== false ) {
@@ -7130,28 +7129,28 @@ class bab_OvmlAttributes
 
     /**
      * OVML global context
-     * 
+     *
      * @var bab_context
      */
     private $gctx;
 
     /**
      * contain the list of called methods
-     * 
+     *
      * @var bool
      */
     public $history = array();
 
     /**
      * bab_context::TEXT | bab_context::HTML
-     * 
+     *
      * @var int
      */
     private $format;
 
     /**
      *
-     * @param bab_context $gctx            
+     * @param bab_context $gctx
      * @param int $format
      *            bab_context::HTML
      */
@@ -7181,8 +7180,8 @@ class bab_OvmlAttributes
 
     /**
      *
-     * @param string $method            
-     * @param array $args            
+     * @param string $method
+     * @param array $args
      * @return string
      */
     public function __call($method, $args)
@@ -7194,9 +7193,9 @@ class bab_OvmlAttributes
     /**
      * Cut string,
      * for html, remove tags if not allready removed
-     * 
-     * @param string $val            
-     * @param string $v            
+     *
+     * @param string $val
+     * @param string $v
      * @return string
      */
     public function strlen($val, $v)
@@ -7244,9 +7243,9 @@ class bab_OvmlAttributes
 
     /**
      * Encoding of html entites can be set only one time per variable
-     * 
-     * @param string $val            
-     * @param int $v            
+     *
+     * @param string $val
+     * @param int $v
      * @return unknown_type
      */
     public function htmlentities($val, $v)
@@ -8861,7 +8860,7 @@ class Func_Ovml_Function_PreviousOrNextArticle extends Func_Ovml_Function {
 	protected $articleid = null;
 	protected $topicid = null;
 	protected $excludetopicid = null;
-	protected $delegationid = null;	
+	protected $delegationid = null;
 	protected $archive = null;
 	protected $orderby = null;
 	protected $order = null;
@@ -8991,7 +8990,7 @@ class Func_Ovml_Function_PreviousOrNextArticle extends Func_Ovml_Function {
 			$this->orderby = 'at.date';
 		} else {
 			switch (mb_strtolower($this->orderby )) {
-				case 'title': 
+				case 'title':
 					$this->orderby = 'at.title';
 					break;
 				case 'rating':
@@ -9089,7 +9088,7 @@ class Func_Ovml_Function_NextArticle extends Func_Ovml_Function_PreviousOrNextAr
 			$this->gctx->push($this->saveas, $nextArticleId);
 			return;
 		}
-		return $nextArticleId;				
+		return $nextArticleId;
 	}
 	
 }
@@ -9110,7 +9109,7 @@ class Func_Ovml_Function_PreviousArticle extends Func_Ovml_Function_PreviousOrNe
 		}
 		
 		$previousArticleId = '';
-		while ($arr = $babDB->db_fetch_assoc($this->articles)) 
+		while ($arr = $babDB->db_fetch_assoc($this->articles))
 		{
 			if ($arr['id'] == $this->articleid) {
 				break;
@@ -9133,7 +9132,7 @@ class Func_Ovml_Function_PreviousArticle extends Func_Ovml_Function_PreviousOrNe
 /**
  * Get a path relative to site root folder
  * <OFGetPath path="" file_relative="1" saveas="">
- * 
+ *
  * file_relative: convert a path relative to the ovml file to a path relative to ovidentia root
  */
 class Func_Ovml_Function_GetPath extends Func_Ovml_Function {
