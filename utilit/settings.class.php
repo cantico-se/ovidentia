@@ -27,6 +27,8 @@ class bab_Settings
 {
 	private $siteSettings = null;
 	
+	private $userSettings = null;
+	
 	/**
 	 * Get get current site settings
 	 * @throws ErrorException
@@ -66,5 +68,51 @@ class bab_Settings
 	{
 		global $babDB;
 		$babDB->db_query('UPDATE bab_sites SET '.$babDB->backTick($key).'='.$babDB->quote($value));
+	}
+	
+	/**
+	 * @return array()
+	 */
+	public function getUserSettings()
+	{
+        if (!bab_isUserLogged()) {
+            return null;
+        }
+	    
+	    if (null === $this->userSettings)
+	    {
+	        global $babDB;
+	        $res = $babDB->db_query('
+	            SELECT
+	                lang,
+	                skin,
+	                style,
+	                lastlog,
+	                langfilter,
+	                date_shortformat,
+	                date_longformat,
+	                time_format
+	            FROM
+	                '.BAB_USERS_TBL.'
+	            WHERE id='.$babDB->quote(bab_getUserId())
+	        );
+	    
+	        if (!$res || 0 === $babDB->db_num_rows($res))
+	        {
+	            $this->userSettings = false;
+	        } else {
+	            $this->userSettings = $babDB->db_fetch_assoc($res);
+	        }
+	    }
+	    
+	    return $this->userSettings;
+	}
+	
+	/**
+	 * @return bab_Settings
+	 */
+	public static function get()
+	{
+	    return bab_getInstance(__CLASS__);
 	}
 }

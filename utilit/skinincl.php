@@ -170,20 +170,16 @@ class bab_skin {
 	public static function getDefaultSkin() {
 	    
 	    if (!isset(self::$defaultSkin)) {
-	    
-		
+
     		if (isset($GLOBALS['babSiteName'])) {
     			
-    			global $babDB;
+    			require_once dirname(__FILE__).'/settings.class.php';
+    			$site = bab_Settings::get()->getSiteSettings();
     			
-    			$res = $babDB->db_query('SELECT skin FROM bab_sites WHERE name='.$babDB->quote($GLOBALS['babSiteName']));
-    			if ($arr = $babDB->db_fetch_assoc($res)) {
-    		
-    				// if site skin is accessible use it
-    				if (null !== $skin = self::get($arr['skin'])) {
-    					return $skin;
-    				}
-    			}
+				// if site skin is accessible use it
+				if (null !== $skin = self::get($site['skin'])) {
+					return $skin;
+				}
     		}
     		
     		// if ovidentia is accessible use it
@@ -203,6 +199,21 @@ class bab_skin {
 	    }
 	    
 	    return self::$defaultSkin;
+	}
+	
+	
+	/**
+	 * Get the skin for the currently logged in user
+	 * if the user is not logged in or has no such option defined,
+	 * the default skin is used (from site settings if available)
+	 * 
+	 * @return bab_Skin
+	 * 
+	 */
+	public static function getUserSkin() {
+	    
+	    global $babSkin;
+	    return new bab_skin($babSkin);
 	}
 
 
@@ -291,7 +302,11 @@ class bab_skin {
 	}
 
 
-
+    /**
+     * 
+     * @param string $path
+     * @return array
+     */
 	private function getStylesFromPath($path) {
 
 		$arrstyles = array();
