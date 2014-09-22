@@ -222,7 +222,7 @@ abstract class bab_Controller
 	 */
 	protected static function getNsProxyInstance($namespace, $classname)
 	{
-	    $class = new \ReflectionClass($namespace.'\\'.$classname);
+	    $class = new ReflectionClass($namespace.'\\'.$classname);
 	    $proxyClassname = $classname . self::PROXY_CLASS_SUFFIX;
 	    if (!class_exists($namespace.'\\'.$proxyClassname)) {
 
