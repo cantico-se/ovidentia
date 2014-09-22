@@ -156,8 +156,11 @@ updateFlbFrame('{ currentoe }&idx=mode');
 <!--#else update -->
 updateFlbFrame('{ currentoe }&idx=detr'); 
 <!--#endif update -->
-updateFltFrame('{ currentoe }&idx=listr'); 
-location.href = '#ENT{ coeid }';
+updateFltFrame('{ currentoe }&idx=listr');
+
+var scrollElement = document.getElementById('#ENT{ coeid }');
+scrollElement.scrollIntoView(true);
+//location.href = '#ENT{ coeid }';
 
 //-->
 </script>
