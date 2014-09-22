@@ -109,6 +109,7 @@ function displayChart($ocid, $oeid, $update, $iduser, $disp='')
 				else
 					{
 					$this->superior = '';
+					$this->superiorurl = '';
 					}
 				if( !in_array($row['id_node'], $this->arr))
 					{
@@ -296,6 +297,7 @@ class orgtemp
 		else
 			{
 			$this->superior = '';
+			$this->superiorurl = '';
 			}
 
 		$this->oeid = $this->obj->babTree->nodes[$id]['datas']['id'];
