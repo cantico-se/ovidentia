@@ -163,7 +163,7 @@ function bab_listWaitingPosts(bab_eventBeforeWaitingItemsDisplayed $event)
 	while( $arr = $babDB->db_fetch_assoc($res) )
 	{
 
-		$postdate = $arr['date'] == '0000-00-00 00:00:00'? '':$W->Label(bab_shortDate(bab_mktime($arr['date']), true));
+		$postdate = $arr['date'] == '0000-00-00 00:00:00'? null:$W->Label(bab_shortDate(bab_mktime($arr['date']), true));
 		$postpath = $W->Link($arr['forumname'].' / '.$arr['threadtitle'], $GLOBALS['babUrlScript']."?tg=posts&idx=List&forum=".$arr['forumid']."&thread=".$arr['threadid']."&post=".$arr['id']."&flat=1");
 		$author = $W->Label(bab_getForumContributor($arr['forumid'], $arr['id_author'], $arr['author']));
 		$confirmurl = $GLOBALS['babUrlScript']."?tg=approb&idx=confpost&idpost=".$arr['id']."&thread=".$arr['threadid'];
