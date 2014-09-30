@@ -315,10 +315,21 @@ class bab_addonInfos {
     {
         require_once dirname(__FILE__).'/eventincl.php';
         
+        // filepath from ovidentia root folder
+        $filepath = $this->getPhpPath().$requireFile;
+        
+        if ($this->getLocation() instanceof bab_AddonInCoreLocation) {
+            // if addon is in core do not include the core folder name in the database
+            // because it may be changed
+            
+            $filepath = $this->getRelativePath().$requireFile;
+        }
+        
+        
         return bab_addEventListener(
             $eventClassName, 
             $functionName, 
-            $this->getPhpPath().$requireFile, 
+            $filepath, 
             $this->getName(), 
             $priority
         );
