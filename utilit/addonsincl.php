@@ -62,10 +62,10 @@ class bab_addonsInfos {
 		
 		$standard = new bab_AddonStandardLocation($title);
 		if (file_exists($standard->getIniFilePath())) {
-		    $ini->inifileGeneral($standard->getIniFilePath());
+		    $ini->inifile($standard->getIniFilePath());
 		} else {
 		    $core = new bab_AddonInCoreLocation($title);
-		    $ini->inifileGeneral($core->getIniFilePath());
+		    $ini->inifile($core->getIniFilePath());
 		}
 		$arr_ini = $ini->inifile;
 

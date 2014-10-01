@@ -422,9 +422,11 @@ class bab_addonInfos {
                 throw new Exception(sprintf('Error, the file %s must be readable', $inifile));
             }
             	
-            if (!$this->ini->inifileGeneral($inifile)) {
+            if (!$this->ini->inifile($inifile)) {
                 throw new Exception(sprintf('Error, the file %s is missing or has syntax errors', $inifile));
             }
+            
+            bab_debug($this->ini);
         }
 
         return $this->ini;

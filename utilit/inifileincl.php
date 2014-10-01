@@ -1194,6 +1194,7 @@ class bab_inifile {
 
 
 		if ($arr = parse_ini_file($file, true)) {
+
 			if (isset($arr['general']['encoding'])) {
 				// the charset of the ini file
 
@@ -1278,6 +1279,7 @@ class bab_inifile {
 
 
 	/**
+	 * @deprecated use ->inifile() instead to have a full object
 	 * @return boolean
 	 */
 	function inifileGeneral($file) {
