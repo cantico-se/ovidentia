@@ -425,8 +425,6 @@ class bab_addonInfos {
             if (!$this->ini->inifile($inifile)) {
                 throw new Exception(sprintf('Error, the file %s is missing or has syntax errors', $inifile));
             }
-            
-            bab_debug($this->ini);
         }
 
         return $this->ini;
