@@ -149,6 +149,24 @@ class babDatabase
 		}
 
 	/**
+	 * prepare a query (multiple queries are not supported) and return the stmt.
+	 * @param	string	$query
+	 * @return	stmt|false
+	 */
+	public function db_stmt($query)
+		{
+		$mysqli = $this->db_connect();
+		$stmt = $mysqli->prepare($query);
+		if (!$stmt)
+			{
+			$this->db_print_error("Can't execute query : <br><pre>" . htmlspecialchars($query) . "</pre>");
+			}
+		$this->db_prepare_done = true;
+		return $stmt;
+		
+		}
+
+	/**
 	 * sends an unique query (multiple queries are not supported)
 	 * @param	string	$query
 	 * @return	resource|false
