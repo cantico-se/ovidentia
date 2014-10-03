@@ -21,7 +21,7 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307,*
  * USA.																	*
 ************************************************************************/
-	include "base.php";
+	
 
 	DEFINE('BAB_NONE', -1);
 	DEFINE('BAB_ALL_ATTRIBUTS', -2);
