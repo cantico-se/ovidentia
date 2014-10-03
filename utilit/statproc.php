@@ -24,7 +24,7 @@
 /**
 * @internal SEC1 NA 11/12/2006 FULL
 */
-include_once 'base.php';
+
 require_once dirname(__FILE__).'/registerglobals.php';
 require_once dirname(__FILE__).'/statprocincl.php';
 

@@ -22,7 +22,7 @@
  * USA.																	*
 ************************************************************************/
 
-require_once 'base.php';
+
 require_once dirname(__FILE__) . '/artapi.php';
 require_once dirname(__FILE__) . '/artdraft.class.php';
 

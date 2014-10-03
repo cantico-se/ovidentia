@@ -23,7 +23,7 @@
  * @package Core
  */
 
-include_once 'base.php';
+
 
 
 

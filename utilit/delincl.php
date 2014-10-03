@@ -24,7 +24,7 @@
 /**
 * @internal SEC1 NA 14/12/2006 FULL
 */
-include_once 'base.php';
+
 include_once $GLOBALS['babInstallPath'].'utilit/imgincl.php';
 include_once $GLOBALS['babInstallPath'].'utilit/afincl.php';
 include_once $GLOBALS['babInstallPath'].'utilit/artincl.php';
