@@ -355,7 +355,19 @@ class bab_addonInfos {
         );
     }
     
-
+    
+    
+    /**
+     * Removes all event listeners on this addon.
+     *
+     * @see bab_removeAddonEventListeners()
+     *
+     * @since 8.1.100
+     */
+    public function removeAllEventListeners()
+    {
+        bab_removeAddonEventListeners($this->getName());
+    }
     
     
     /**
