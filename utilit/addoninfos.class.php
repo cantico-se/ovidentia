@@ -152,15 +152,15 @@ class bab_addonInfos {
     /**
      * addon/addon-name/
      * a replacement for $babAddonHtmlPath
-     * 
+     *
      * @deprecated Do not use relative path in addons
      *             Addons are subject to move out of the core folder in futures version
-     *             
+     *
      *             for bab_printTemplate, replace with $addon->printTemplate()
      *             for babBody->addStyleSheet use $addon->getStylePath() instead of relative path
      *             the addStyleSheet method support full path starting with vendor/ since the 8.1.98 version
-     *             
-     * 
+     *
+     *
      * @return string
      */
     public function getRelativePath() {
@@ -254,7 +254,7 @@ class bab_addonInfos {
     /**
      * Get theme path
      * relative to the ovidentia root folder (config.php)
-     * 
+     *
      * @return string
      */
     public function getThemePath()
@@ -265,10 +265,10 @@ class bab_addonInfos {
     
     /**
      * Get a template full path from a file name
-     * 
+     *
      * @param string $filename
      * @return string
-     * 
+     *
      * @since 8.1.98
      */
     public function getTemplate($filename)
@@ -278,13 +278,13 @@ class bab_addonInfos {
     
     /**
      * Convert template to html
-     * 
+     *
      * @param object $class           object class instance with getnext methods on public properties
      * @param string $filename        File in addon template path
      * @param string $section         optional section name in template
-     * 
+     *
      * @return string
-     * 
+     *
      * @since 8.1.98
      */
     public function printTemplate($class, $filename, $section = '')
@@ -301,14 +301,14 @@ class bab_addonInfos {
      * inherited or instancied from the class $event_class_name
      *
      * The function return false if the event listener is already created
-     * 
+     *
      * @param	string	$eventClassName
      * @param	string	$functionName			function name without (), if the function_name string contain a ->, the text before -> will be evaluated to get an object and the text after will be the method (not evaluated)
      * @param	string	$requireFile			file path relative to addon php path, the file where $function_name is declared, this can be an empty string if function exists in global scope
      * @param	int		[$priority]				for mutiple calls on one event, the calls will be ordered by priority descending
      *
      * @return boolean
-     * 
+     *
      * @since 8.1.98
      */
     public function addEventListener($eventClassName, $functionName, $requireFile, $priority = 0)
@@ -327,10 +327,10 @@ class bab_addonInfos {
         
         
         return bab_addEventListener(
-            $eventClassName, 
-            $functionName, 
-            $filepath, 
-            $this->getName(), 
+            $eventClassName,
+            $functionName,
+            $filepath,
+            $this->getName(),
             $priority
         );
     }
@@ -341,20 +341,21 @@ class bab_addonInfos {
      * @param	string	$eventClassName
      * @param	string	$functionName
      * @param	string	$requireFile          file path relative to addon php path
-     * 
+     *
      * @since 8.1.98
      */
-    public function removeEventListener()
+    public function removeEventListener($eventClassName, $functionName, $requireFile)
     {
         require_once dirname(__FILE__).'/eventincl.php';
         
         return bab_removeEventListener(
-            $eventClassName, 
-            $functionName, 
+            $eventClassName,
+            $functionName,
             $this->getPhpPath().$requireFile
         );
     }
     
+
     
     
     /**
@@ -363,9 +364,9 @@ class bab_addonInfos {
      *
      * @param	string	$path		    path to functionality or functionality class name
      * @param	string	$file	        file to include before calling this functionality, relative to addon php path
-     * 
+     *
      * @return  boolean
-     * 
+     *
      * @since 8.1.98
      */
     public function registerFunctionality($path, $file)
