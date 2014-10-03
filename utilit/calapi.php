@@ -26,7 +26,7 @@
 * @internal SEC1 PR 20/02/2007 FULL
 */
 
-include_once "base.php";
+
 
 
 /**

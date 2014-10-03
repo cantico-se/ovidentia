@@ -26,7 +26,7 @@
 * @internal SEC1 PR 2006-12-12 FULL
 */
 
-include_once "base.php";
+
 
 define("BAB_ART_STATUS_DRAFT", 0); /* Used with BAB_ART_DRAFTS_TBL table in column result */
 define("BAB_ART_STATUS_WAIT", 1); /* Used with BAB_ART_DRAFTS_TBL table in column result : article draft is waiting to approbation */
