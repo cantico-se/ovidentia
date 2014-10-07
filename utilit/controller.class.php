@@ -55,7 +55,7 @@ class bab_InvalidActionException extends Exception
  * bab_AccessException are thrown when the user tries to
  * perform an action or access a page that she is not
  * allowed to.
- * 
+ *
  */
 class bab_AccessException extends Exception
 {
@@ -70,10 +70,10 @@ class bab_AccessException extends Exception
 /**
  * bab_SaveException are thrown in save methods of controller.
  * this will go the failed action set on the submit button
- * 
+ *
  * display message in page
  */
-class bab_SaveException extends Exception 
+class bab_SaveException extends Exception
 {
 	/**
 	 * true : redirect to failed action
@@ -151,7 +151,7 @@ abstract class bab_Controller
 	/**
 	 * PHP code
 	 * @return string
-	 */ 
+	 */
 	protected static function getClassCode($proxyClassname, $classname, Array $methods) {
 	    
 	    $classStr = 'class ' . $proxyClassname . ' extends ' . $classname . ' {' . "\n";
@@ -215,7 +215,7 @@ abstract class bab_Controller
 	/**
 	 * Dynamically creates a proxy class in the current namespace for this controller with all public, non-final and non-static functions
 	 * overriden so that they return an action (Widget_Action) corresponding to each of them.
-	 * 
+	 *
 	 * @param string $namespace
 	 * @param string $classname
 	 * @return bab_Controller
@@ -241,7 +241,7 @@ abstract class bab_Controller
 	
     /**
      * @return bab_Controller
-     */ 
+     */
 	protected function proxy()
 	{
 	    $className = get_class($this);
@@ -275,7 +275,7 @@ abstract class bab_Controller
 	
 	/**
 	 * Instanciates a controller class.
-	 * 
+	 *
 	 * @param  string  $namespace  Namespace of your controller class
 	 * @param  string  $className  Class name without the namespace
 	 * @param  bool    get the proxy instance insead
@@ -443,7 +443,7 @@ abstract class bab_Controller
 
 
 	/**
-	 * 
+	 *
 	 * @param string $result   'success' or 'failed'
 	 * @param string $method
 	 * @return Widget_Action|NULL
@@ -583,8 +583,9 @@ abstract class bab_Controller
 		if ($returnedValue instanceof Widget_Displayable_Interface) {
 
 			$W = bab_Widgets();
-			if ($returnedValue instanceof Widget_BabPage) {
-			    
+
+		    if ($returnedValue instanceof Widget_BabPage) {
+			         
 				// If the action returned a page, we display it.
 				$returnedValue->displayHtml();
 
@@ -593,11 +594,11 @@ abstract class bab_Controller
 				$htmlCanvas = $W->HtmlCanvas();
 				if (self::$acceptJson) {
 					$itemId = $returnedValue->getId();
-					$returnArray = array($itemId => $returnedValue->display($htmlCanvas));
+					$returnedArray = array($itemId => $returnedValue->display($htmlCanvas));
 					header('Cache-Control: no-cache, must-revalidate');
 					header('Expires: Mon, 26 Jul 1997 05:00:00 GMT');
 					header('Content-type: application/json');
-					die(bab_json_encode($returnArray));
+					die(bab_json_encode($returnedArray));
 				} else {
 					header('Cache-Control: no-cache, must-revalidate');
 					header('Expires: Mon, 26 Jul 1997 05:00:00 GMT');
@@ -618,7 +619,7 @@ abstract class bab_Controller
 			header('Cache-Control: no-cache, must-revalidate');
 			header('Expires: Mon, 26 Jul 1997 05:00:00 GMT');
 			header('Content-type: application/json');
-			die(bab_json_encode($returnArray));
+			die(bab_json_encode($returnedArray));
 
 		} else if (true === $returnedValue) {
 			// If the method returns true, we redirect to the 'success' location defined in the button
@@ -626,7 +627,7 @@ abstract class bab_Controller
 		    $successAction = self::getRedirectAction('success', $method);
 			if (!isset($successAction)) {
 				throw new Exception(sprintf('Missing the success action to redirect from %s', $method));
-			} 
+			}
 		
 			$this->redirect($successAction);
 		}
