@@ -584,7 +584,7 @@ abstract class bab_Controller
 
 			$W = bab_Widgets();
 
-		    if ($returnedValue instanceof Widget_BabPage) {
+		    if ($returnedValue instanceof Widget_BabPage && !bab_isAjaxRequest()) {
 			         
 				// If the action returned a page, we display it.
 				$returnedValue->displayHtml();
