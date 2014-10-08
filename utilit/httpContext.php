@@ -20,7 +20,7 @@
  * @license http://opensource.org/licenses/gpl-license.php GNU General Public License (GPL)
  * @copyright Copyright (c) 2008 by CANTICO ({@link http://www.cantico.fr})
  */
-include_once 'base.php';
+
 include_once dirname(__FILE__).'/addonapi.php';
 include_once dirname(__FILE__).'/session.class.php';
 

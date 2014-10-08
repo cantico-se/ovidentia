@@ -20,7 +20,6 @@
  * @license http://opensource.org/licenses/gpl-license.php GNU General Public License (GPL)
  * @copyright Copyright (c) 2006 by CANTICO ({@link http://www.cantico.fr})
  */
-require_once 'base.php';
 
 
 abstract class BAB_MySqlResultIterator implements SeekableIterator, Countable

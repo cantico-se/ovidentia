@@ -22,7 +22,7 @@
  * USA.																	*
 ************************************************************************/
 
-include_once 'base.php';
+
 
 
 require_once dirname(__FILE__).'/cal.criteria.class.php';

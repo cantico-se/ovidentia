@@ -21,7 +21,7 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307,*
  * USA.																	*
 ************************************************************************/
-include_once "base.php";
+
 include_once $GLOBALS['babInstallPath'].'utilit/defines.php';
 include_once $GLOBALS['babInstallPath'].'utilit/treebase.php';
 include_once $GLOBALS['babInstallPath'].'utilit/eventincl.php';

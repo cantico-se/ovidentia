@@ -26,7 +26,7 @@
 */
 
 
-include_once 'base.php';
+
 include_once $GLOBALS['babInstallPath'].'utilit/addonapi.php';
 include_once $GLOBALS['babInstallPath'].'utilit/template.php';
 include_once $GLOBALS['babInstallPath'].'utilit/userincl.php';

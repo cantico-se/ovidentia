@@ -24,7 +24,7 @@
 /**
 * @internal SEC1 NA 05/12/2006 FULL
 */
-include_once 'base.php';
+
 
 /** 
  * Security : destroy primary globals variables of Ovidentia (function used in index.php)

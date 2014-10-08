@@ -22,7 +22,7 @@
  * USA.																	*
 ************************************************************************/
 
-include_once 'base.php';
+
 
 /**
  * RRULE iCalendar property methods

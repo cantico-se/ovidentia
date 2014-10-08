@@ -24,7 +24,7 @@
 /**
 * @internal SEC1 NA 08/12/2006 FULL
 */
-require_once 'base.php';
+
 require_once dirname(__FILE__) . '/artapi.php';
 
 

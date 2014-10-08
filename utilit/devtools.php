@@ -27,7 +27,7 @@
 */
 
 
-include_once "base.php";
+
 
 // Used in addons from 5.4.1
 class bab_myAddonSection

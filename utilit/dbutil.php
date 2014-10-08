@@ -27,7 +27,7 @@
 */
 
 
-include_once "base.php";
+
 
 
 /**
@@ -146,6 +146,24 @@ class babDatabase
 	public function db_drop_db($dbname)
 		{
 		return $this->db_query('DROP DATABASE '.$this->backTick($dbname));
+		}
+
+	/**
+	 * prepare a query (multiple queries are not supported) and return the stmt.
+	 * @param	string	$query
+	 * @return	stmt|false
+	 */
+	public function db_stmt($query)
+		{
+		$mysqli = $this->db_connect();
+		$stmt = $mysqli->prepare($query);
+		if (!$stmt)
+			{
+			$this->db_print_error("Can't execute query : <br><pre>" . htmlspecialchars($query) . "</pre>");
+			}
+		$this->db_prepare_done = true;
+		return $stmt;
+		
 		}
 
 	/**

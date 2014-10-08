@@ -22,7 +22,7 @@
  * USA.																	*
 ************************************************************************/
 
-include_once 'base.php';
+
 
 /**
  * Ovidentia calendar backend event manipulation

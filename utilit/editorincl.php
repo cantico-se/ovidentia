@@ -22,7 +22,7 @@
  * USA.																	*
 ************************************************************************/
 
-include_once 'base.php';
+
 include_once $GLOBALS['babInstallPath']."utilit/eventincl.php";
 
 

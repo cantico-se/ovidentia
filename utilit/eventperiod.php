@@ -21,7 +21,7 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307,*
  * USA.																	*
 ************************************************************************/
-include_once 'base.php';
+
 require_once $GLOBALS['babInstallPath'].'utilit/eventincl.php';
 require_once $GLOBALS['babInstallPath'].'utilit/eventnotifyincl.php';
 
@@ -414,7 +414,7 @@ class bab_eventCalendarEvent extends bab_event implements bab_eventNotifyRecipie
 		$settings = bab_getInstance('bab_Settings');
 		/*@var $settings bab_Settings */
 		$site = $settings->getSiteSettings();
-		if($settings['calendar_notif_author'] == "Y"){
+		if($site['calendar_notif_author'] == "Y"){
 			if (!isset($users[$GLOBALS['BAB_SESS_USERID']]))
 			{
 				$row = bab_userInfos::getRow($GLOBALS['BAB_SESS_USERID']);

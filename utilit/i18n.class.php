@@ -21,7 +21,7 @@
  * @license http://opensource.org/licenses/gpl-license.php GNU General Public License (GPL)
  * @copyright Copyright (c) 2008 by CANTICO ({@link http://www.cantico.fr})
  */
-require_once 'base.php';
+
 
 
 if(!class_exists('Collator'))

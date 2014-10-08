@@ -26,7 +26,7 @@
 * @internal SEC1 PR 20/02/2007 FULL
 */
 
-include_once 'base.php';
+
 
 define('BAB_CAL_NAME_LENGTH', 18);
 define('BAB_CAL_EVENT_LENGTH', 18);

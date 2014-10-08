@@ -23,7 +23,7 @@
 /**
 * @internal SEC1 NA 12/12/2006 FULL
 */
-include_once 'base.php';
+
 
 
 $babLdapServerTypes = array(BAB_LDAP_SERVER_OL => "OPENLDAP", BAB_LDAP_SERVER_AD => "ACTIVE DIRECTORY");

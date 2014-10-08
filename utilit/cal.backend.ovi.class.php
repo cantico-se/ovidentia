@@ -22,7 +22,7 @@
  * USA.																	*
 ************************************************************************/
 
-include_once 'base.php';
+
 
 bab_functionality::includefile('CalendarBackend');
 

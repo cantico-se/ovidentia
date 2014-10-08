@@ -21,7 +21,7 @@
  * @license http://opensource.org/licenses/gpl-license.php GNU General Public License (GPL)
  * @copyright Copyright (c) 2006 by CANTICO ({@link http://www.cantico.fr})
  */
-include_once 'base.php';
+
 require_once dirname(__FILE__).'/iterator/iterator.php';
 
 
