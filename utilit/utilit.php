@@ -1071,17 +1071,14 @@ class babBody
 	 */
 	public function addStyleSheet($filename)
 	{
+	    if ('vendor' === mb_substr($filename, 0, mb_strlen('vendor')))
+	    {
+	        $filename = '../../'.$filename;
+	    }
+	    
 		if (!in_array($filename, $this->styleSheet))
 		{
-			// $filename can be relative to styles folders
-			// or a full path relative to main folder
-	
-			if ($GLOBALS['babInstallPath'] === mb_substr($filename, 0, mb_strlen($GLOBALS['babInstallPath'])) || 'vendor' === mb_substr($filename, 0, mb_strlen('vendor')))
-			{
-				$this->styleSheet[] = '../../'.$filename;
-			} else {
-				$this->styleSheet[] = $filename;
-			}
+		    $this->styleSheet[] = $filename;
 		}
 	}
 	
