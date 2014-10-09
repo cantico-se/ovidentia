@@ -66,7 +66,7 @@ class BAB_DateTime
 		$this->_iDay		= $this->_aDate['mday'];
 		$this->_iHours		= $this->_aDate['hours'];
 		$this->_iMinutes	= $this->_aDate['minutes'];
-		$this->_iSeconds	= $this->_aDate['seconds'];		
+		$this->_iSeconds	= $this->_aDate['seconds'];
 	}
 	
 	/**
@@ -74,13 +74,13 @@ class BAB_DateTime
 	 *
 	 * @param int $iTimeStamp	A unix timestamp
 	 * @return BAB_DateTime
-     * 
+     *
 	 */
 	public static function fromTimeStamp($iTimeStamp)
 	{
 		$aDate = getdate($iTimeStamp);
 		
-		return new BAB_DateTime($aDate['year'], $aDate['mon'], $aDate['mday'], 
+		return new BAB_DateTime($aDate['year'], $aDate['mon'], $aDate['mday'],
 			$aDate['hours'], $aDate['minutes'], $aDate['seconds']);
 	}
 	
@@ -89,13 +89,13 @@ class BAB_DateTime
 	 *
 	 * @param string $sIsoDateTime	Iso-formatted datetime string (eg. '2006-12-25 17:35:17')
 	 * @return BAB_DateTime
-     * 
+     *
 	 */
 	public static function fromIsoDateTime($sIsoDateTime)
 	{
 		$aDate = getdate(strtotime($sIsoDateTime));
 		
-		return new BAB_DateTime($aDate['year'], $aDate['mon'], $aDate['mday'], 
+		return new BAB_DateTime($aDate['year'], $aDate['mon'], $aDate['mday'],
 			$aDate['hours'], $aDate['minutes'], $aDate['seconds']);
 	}
 	
@@ -105,26 +105,26 @@ class BAB_DateTime
 	 * 	The format for the value type is expressed as the [ISO 8601] complete representation, basic format for a calendar date. The
 	 *  textual format specifies a four-digit year, two-digit month, and two-digit day of the month. There are no separator characters between
 	 *	the year, month and day component text.
-	 * 
+	 *
 	 * datetime:
 	 *  The format is based on the [ISO 8601] complete representation, basic format for a calendar date
 	 *  and time of day. The text format is a concatenation of the "date",
 	 *  followed by the LATIN CAPITAL LETTER T character (US-ASCII decimal 84) time designator, followed by the "time" format.
-	 * 
+	 *
 	 * FORM #1: DATE WITH LOCAL TIME
 	 * 		exemple : 19980118T230000
-	 * 
+	 *
 	 * FORM #2: DATE WITH UTC TIME
 	 * 		exemple : 19980119T070000Z
-	 * 
+	 *
 	 * FORM #3: DATE WITH LOCAL TIME AND TIME ZONE REFERENCE
 	 * 		exemple : 19980119T020000 with timezone id ex : US-Eastern or US/Eastern
-	 * 
+	 *
 	 * @link http://www.kanzaki.com/docs/ical/dateTime.html
-	 * 
+	 *
 	 * @param 	string 	$icaldatetime	Datetime or date string
 	 * @param	string	$tzid			Timezone ID	(only for form #3)
-	 * 
+	 *
 	 * @return BAB_DateTime
 	 */
 	public static function fromICal($icaldatetime, $tzid = null)
@@ -157,7 +157,7 @@ class BAB_DateTime
 	 * Returns a new BAB_DateTime corresponding to the present date and time.
 	 *
 	 * @return BAB_DateTime
-     * 
+     *
 	 */
 	public static function now()
 	{
@@ -168,11 +168,11 @@ class BAB_DateTime
 	 * Returns an iso-formatted datetime string (YYYY-MM-DD HH:MM:SS) corresponding to the BAB_DateTime.
 	 *
 	 * @return string
-     * 
+     *
 	 */
 	public function getIsoDateTime()
 	{
-		return date('Y-m-d H:i:s', mktime($this->_iHours, $this->_iMinutes, 
+		return date('Y-m-d H:i:s', mktime($this->_iHours, $this->_iMinutes,
 			$this->_iSeconds, $this->_iMonth, $this->_iDay, $this->_iYear));
 	}
 	
@@ -180,11 +180,11 @@ class BAB_DateTime
 	 * Returns an iso-formatted date string (YYYY-MM-DD) corresponding to the BAB_DateTime.
 	 *
 	 * @return string
-     * 
+     *
 	 */
 	public function getIsoDate()
 	{
-		return date("Y-m-d", mktime($this->_iHours, $this->_iMinutes, 
+		return date("Y-m-d", mktime($this->_iHours, $this->_iMinutes,
 			$this->_iSeconds, $this->_iMonth, $this->_iDay, $this->_iYear));
 	}
 	
@@ -192,11 +192,11 @@ class BAB_DateTime
 	 * Returns an french formatted date string (DD-MM-YYYY) corresponding to the BAB_DateTime.
 	 *
 	 * @return string
-     * 
+     *
 	 */
 	public function getFrenchDate()
 	{
-		return date("d-m-Y", mktime($this->_iHours, $this->_iMinutes, 
+		return date("d-m-Y", mktime($this->_iHours, $this->_iMinutes,
 			$this->_iSeconds, $this->_iMonth, $this->_iDay, $this->_iYear));
 	}
 
@@ -205,11 +205,11 @@ class BAB_DateTime
 	 * Returns an iso-formatted time string (HH:MM:SS) corresponding to the BAB_DateTime.
 	 *
 	 * @return string
-     * 
+     *
 	 */
 	public function getIsoTime()
 	{
-		return date('H:i:s', mktime($this->_iHours, $this->_iMinutes, 
+		return date('H:i:s', mktime($this->_iHours, $this->_iMinutes,
 			$this->_iSeconds, $this->_iMonth, $this->_iDay, $this->_iYear));
 		
 	}
@@ -217,8 +217,8 @@ class BAB_DateTime
 	
 	/**
 	 * Return a datetime string for iCal format
-	 * 
-	 * @param	bool	$utc	default false the time is in local time and event will not take place at the same moment in different timezones, 
+	 *
+	 * @param	bool	$utc	default false the time is in local time and event will not take place at the same moment in different timezones,
 	 * 							set this parameter to true to get the result in UTC time and have the event take place at the same moment
 	 * @return string
 	 */
@@ -243,16 +243,16 @@ class BAB_DateTime
 	
 	/**
 	 * @see http://www.w3.org/Protocols/rfc2616/rfc2616-sec3.html#sec3.3.1
-	 * 
+	 *
 	 * @todo DO not accept other formats than the allowed
-	 * 
+	 *
 	 * Sun, 06 Nov 1994 08:49:37 GMT  ; RFC 822, updated by RFC 1123
      * Sunday, 06-Nov-94 08:49:37 GMT ; RFC 850, obsoleted by RFC 1036
      * Sun Nov  6 08:49:37 1994       ; ANSI C's asctime() format
 	 */
 	public static function fromHttp($httpdate)
 	{
-		return self::fromTimeStamp(strtotime($httpdate)); 
+		return self::fromTimeStamp(strtotime($httpdate));
 	}
 	
 	
@@ -260,9 +260,9 @@ class BAB_DateTime
 	/**
 	 * Return a datetime string as an HTTP-date
 	 * @see http://www.w3.org/Protocols/rfc2616/rfc2616-sec3.html#sec3.3.1
-	 * 
+	 *
 	 * RFC 822, updated by RFC 1123
-	 * 
+	 *
 	 * @return string
 	 */
 	public function getHttp()
@@ -283,7 +283,7 @@ class BAB_DateTime
 	
 	/**
 	 * @return int
-     * 
+     *
 	 */
 	public function getYear()
 	{
@@ -292,7 +292,7 @@ class BAB_DateTime
 	
 	/**
 	 * @return int
-     * 
+     *
 	 */
 	public function getMonth()
 	{
@@ -301,7 +301,7 @@ class BAB_DateTime
 	
 	/**
 	 * @return int
-     * 
+     *
 	 */
 	public function getDayOfMonth()
 	{
@@ -310,7 +310,7 @@ class BAB_DateTime
 	
 	/**
 	 * @return int
-     * 
+     *
 	 */
 	public function getDayOfYear()
 	{
@@ -319,7 +319,7 @@ class BAB_DateTime
 
 	/**
 	 * @return int
-     * 
+     *
 	 */
 	public function getDayOfWeek()
 	{
@@ -328,40 +328,40 @@ class BAB_DateTime
 
 	/**
 	 * @return int
-     * 
+     *
 	 */
-	public function getHour() 
+	public function getHour()
 	{
 		return $this->_iHours;
 	}
 
 	/**
 	 * @return int
-     * 
+     *
 	 */
-	public function getMinute() 
+	public function getMinute()
 	{
 		return $this->_iMinutes;
 	}
 
 	/**
 	 * @return int
-     * 
+     *
 	 */
-	public function getSecond() 
+	public function getSecond()
 	{
 		return $this->_iSeconds;
 	}
 	
 	/**
 	 * Set time
-	 * 
+	 *
 	 * @param int $hours
 	 * @param int $minutes
 	 * @param int $seconds
-	 * 
+	 *
 	 * @since 7.3.90
-	 * 
+	 *
 	 * @return BAB_DateTime
 	 */
 	public function setTime($hours, $minutes, $seconds)
@@ -372,10 +372,10 @@ class BAB_DateTime
 	
 	/**
 	 * Set time with an ISO string
-	 * 
+	 *
 	 * @param string $hours
 	 * @since 7.5.92
-	 * 
+	 *
 	 * @return BAB_DateTime
 	 */
 	public function setIsoTime($str)
@@ -389,7 +389,7 @@ class BAB_DateTime
 	/**
 	 * Elapsed time in the current day
 	 * @return int (seconds)
-     * 
+     *
 	 */
 	public function getDayTime()
 	{
@@ -400,9 +400,9 @@ class BAB_DateTime
 	 * Returns a unix timestamp corresponding to the BAB_DateTime.
 	 *
 	 * @return int
-     * 
+     *
 	 */
-	public function getTimeStamp()  
+	public function getTimeStamp()
 	{
 		if (!is_null($this->_aDate) && isset($this->_aDate[0])) {
 			return $this->_aDate[0];
@@ -419,7 +419,7 @@ class BAB_DateTime
      *
      * @return int  the number of the week in the year
      *
-     * 
+     *
      */
     public static function getWeekOfYear($day = 0, $month = 0, $year = 0)
     {
@@ -440,7 +440,7 @@ class BAB_DateTime
 
     /**
      * Adds a number of units to the datetime.
-     * 
+     *
      * @param int $iNbUnits		The number of units to add
      * @param int $iUnitType	The type of units to add, can be one of:
      * 							- BAB_DATETIME_YEAR
@@ -480,7 +480,7 @@ class BAB_DateTime
 					$days = 0;
 					$hours = 0;
 					$minutes = 0;
-					$seconds = 0;					
+					$seconds = 0;
 					foreach($m as $trigger)
 					{
 						$val = $trigger['value'];
@@ -494,7 +494,7 @@ class BAB_DateTime
 						}
 					}
 					$this->init($this->_iYear, $this->_iMonth, $this->_iDay + $days, $this->_iHours + $hours, $this->_iMinutes + $minutes, $this->_iSeconds + $seconds);
-				}				
+				}
 				break;
 		}
 	}
@@ -531,11 +531,11 @@ class BAB_DateTime
      *
      * Compares two dates.  Suitable for use in sorting functions.
      *
-     * 
+     *
      * @param object BAB_DateTime $d1 the first date
      * @param object BAB_DateTime $d2 the second date
      * @return int 0 if the dates are equal, -1 if d1 is before d2, 1 if d1 is after d2
-     * 
+     *
      */
     public static function compare($d1, $d2)
     {
@@ -611,13 +611,13 @@ class BAB_DateTime
      *
      * @return integer  the number of days since the Date_Calc epoch
      *
-     * 
+     *
      */
     public static function dateToDays($iDay, $iMonth, $iYear)
     {
         $iCentury = (int)mb_substr($iYear, 0, 2);
         $iYear = (int)mb_substr($iYear, 2, 2);
-        if($iMonth > 2) 
+        if($iMonth > 2)
         {
             $iMonth -= 3;
         }
@@ -659,8 +659,8 @@ class BAB_DateTime
      */
     public static function gregorianToISO($day, $month, $year) {
         $mnth = array (0, 31, 59, 90, 120, 151, 181, 212, 243, 273, 304, 334);
-        $y_isleap = isLeapYear($year);
-        $y_1_isleap = isLeapYear($year - 1);
+        $y_isleap = self::isLeapYear($year);
+        $y_1_isleap = self::isLeapYear($year - 1);
         $day_of_year_number = $day + $mnth[$month - 1];
         if ($y_isleap && $month > 2) {
             $day_of_year_number++;
@@ -709,7 +709,7 @@ class BAB_DateTime
             $weeknumber = '0'.$weeknumber;
         }
         return $yearnumber . '-' . $weeknumber . '-' . $weekday;
-    } 
+    }
     
     /**
      * Returns true for a leap year, else false
@@ -767,7 +767,7 @@ class BAB_DateTime
     
 	/**
 	 * Extract the year, the month and the day from a string representing a date.
-	 * 
+	 *
 	 * The extraction tries to guess the position of the day, month and year value in the
 	 * string according to the short date output format of the function bab_shortDate.
 	 * @param string $value
@@ -818,7 +818,7 @@ class BAB_DateTime
 	}
     
 	/**
-	 * 
+	 *
 	 * @param string $sDate
 	 * @return BAB_DateTime
 	 */
@@ -839,15 +839,15 @@ class BAB_DateTime
 
 	/**
 	 * Intersection of two periods
-	 * 
+	 *
 	 * All attributes must be ISO date OR ISO datetime
-	 * 
+	 *
 	 * @param	string		$p1_begin
 	 * @param	string		$p1_end
 	 * @param	string		$p2_begin
 	 * @param	string		$p2_end
 	 * @return	array|false
-	 * 
+	 *
 	 */
 	public static function periodIntersect($p1_begin, $p1_end, $p2_begin, $p2_end) {
 		if ($p1_begin >= $p2_end || $p1_end <= $p2_begin) {
@@ -867,17 +867,17 @@ class BAB_DateTime
 		}
 
 		return array(
-			'begin' => $begin, 
-			'end'	=> $end	
+			'begin' => $begin,
+			'end'	=> $end
 		);
 	}
 
 
 	/**
 	 * Creates a copy
-	 * 
+	 *
 	 * @return BAB_DateTime
-	 * 
+	 *
 	 */
 	public function cloneDate() {
 
@@ -888,7 +888,7 @@ class BAB_DateTime
 			$this->_iHours,
 			$this->_iMinutes,
 			$this->_iSeconds
-			);	
+			);
 	}
 	
 	
@@ -899,9 +899,9 @@ class BAB_DateTime
 	/**
 	 * Get offset for timezone
 	 * timezone for current date is the default timezone defined by the date_default_timezone_set() function
-	 * 
+	 *
 	 * @param	string	$tzid		timezone string exemple : Europe/Berlin
-	 * 
+	 *
 	 * @return int
 	 */
 	public function getTimeZoneOffset($tzid)
@@ -970,7 +970,7 @@ class BAB_DateTimeUtil
 {
 
 	/**
-	 * 
+	 *
 	 * @param string $sStartIsoDate
 	 * @param string $sEndIsoDate
 	 * @return int
@@ -985,7 +985,7 @@ class BAB_DateTimeUtil
 		{
 			$iNWorkingDays = BAB_DateTimeUtil::getNoWorkingDaysBetween($sStartIsoDate, $sEndIsoDate);
 
-			$iNbDays = BAB_DateTime::dateDiff($oStartDate->_iDay, $oStartDate->_iMonth, $oStartDate->_iYear, 
+			$iNbDays = BAB_DateTime::dateDiff($oStartDate->_iDay, $oStartDate->_iMonth, $oStartDate->_iYear,
 				$oEndDate->_iDay, $oEndDate->_iMonth, $oEndDate->_iYear);
 
 			$iNbNoWDaysInWeekend = 2;
@@ -1025,13 +1025,13 @@ class BAB_DateTimeUtil
 					$iIdx++;
 				}
 			}
-			return ($iNbDays - $iNWorkingDays); 
+			return ($iNbDays - $iNWorkingDays);
 		}
 		return $iNWorkingDays;
 	}
 
 	/**
-	 * 
+	 *
 	 * @param string $sStartIsoDate
 	 * @param string $sEndIsoDate
 	 * @return int
@@ -1069,7 +1069,7 @@ class BAB_DateTimeUtil
 	/**
 	 * Date display in relatives forms
 	 * @since 7.5.91
-	 * 
+	 *
 	 * @param	string	$datetime	ISO datetime
 	 * @param	bool	$long		Display a long date format or not
 	 * @param	bool	$hours		always display hours or not
@@ -1171,7 +1171,7 @@ class BAB_DateTimeUtil
 				return bab_sprintf(bab_translate('Today at %s'), date('H:i',$ts));
 			} else {
 				return bab_translate('Today');
-			} 
+			}
 		}
 		
 		$towmorrow = mktime(0, 0, 0, date('n'), (date('j') + 1), date('Y'));
@@ -1180,7 +1180,7 @@ class BAB_DateTimeUtil
 				return bab_sprintf(bab_translate('Tomorrow at %s'), date('H:i',$ts));
 			} else {
 				return bab_translate('Tomorrow');
-			} 
+			}
 		}
 		
 		if ($long) {
