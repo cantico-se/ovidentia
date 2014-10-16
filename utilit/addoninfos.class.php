@@ -978,7 +978,7 @@ class bab_addonInfos {
         }
 
 
-
+        bab_removeAddonEventListeners($this->addonname);
         	
         // if addon return true, the addon is uninstalled in the table.
         $babDB->db_query("UPDATE ".BAB_ADDONS_TBL." SET installed='N' where id=".$babDB->quote($this->getId()));
@@ -1002,6 +1002,8 @@ class bab_addonInfos {
         }
 
         $deleteInTables = $this->deleteInTables();
+        
+        
 
         if ($deleteInTables) {
             $event = new bab_eventAddonDeleted($this->addonname);

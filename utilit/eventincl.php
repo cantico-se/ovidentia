@@ -112,6 +112,9 @@ function bab_removeEventListener($event_class_name, $function_name, $require_fil
 
 /**
  * Remove all event listeners of the specified addon.
+ * since ovidentia 8.1.101, this function is called when an addon is deleted
+ * addons will not need to unregister in the onDeleteAddon callback if 
+ * the addon require a greater version than 8.1.101
  * 
  * @see		bab_removeEventListener()
  * @param	string	$addon_name
