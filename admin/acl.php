@@ -21,7 +21,6 @@
  * @copyright Copyright (c) 2008 by CANTICO ({@link http://www.cantico.fr})
  */
 
-include_once "base.php";
 require_once $GLOBALS['babInstallPath']."utilit/grptreeincl.php";
 require_once $GLOBALS['babInstallPath']."utilit/session.class.php";
 require_once $GLOBALS['babInstallPath']."utilit/userinfosincl.php";	
