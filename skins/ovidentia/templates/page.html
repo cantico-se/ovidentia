@@ -1,17 +1,39 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="{ babLanguage }" lang="{ babLanguage }">
-	<head>
-	{ babMeta }	
-	<title>{ babSiteName } <!--#if title --> : { title }<!--#endif title --></title>
-	<meta http-equiv="Content-type" content="{ sContent }"/>
-	<link rel="stylesheet" type="text/css" href="{ babCssPath }" media="screen" title="Default" />
-	<link rel="stylesheet" type="text/css" href="{ babSkinPath }print.css" media="print" title="Default" />
-
-	<script type="text/javascript" src="{ babOvidentiaJs }"></script>
-	<!--#if script -->
-	<script type="text/javascript"><!--	{ script }	--></script>
-	<!--#endif script -->
-	</head>
+<head>
+    <meta http-equiv="Content-type" content="{ sContent }"/>
+ 
+    <base href="{ babUrlScript }" />
+ 
+    <title>{ babSiteName }<!--#if pageTitle --> - { pageTitle }<!--#endif pageTitle --></title>
+ 
+    <!--#if pageKeywords -->
+    <meta name="keywords" content="{ pageKeywords }" />
+    <!--#endif pageKeywords -->
+ 
+    <!--#if pageDescription -->
+    <meta name="description" content="{ pageDescription }" />
+    <!--#endif pageDescription -->
+ 
+    <meta name="generator" content="Ovidentia" />
+ 
+    <!--#if canonicalUrl -->
+    <link rel="canonical" href="{ canonicalUrl }" />
+    <!--#endif canonicalUrl -->
+ 
+    <!--#if imageUrl -->
+    <link rel="image_src" href="{ imageUrl }" />
+    <!--#endif imageUrl -->
+ 
+    <script type="text/javascript" src="{ babOvidentiaJs }"></script>
+    <!--#if script -->
+    <script type="text/javascript"><!-- { script } --></script>
+    <!--#endif script -->
+ 
+    <link rel="stylesheet" type="text/css" href="{ babCssPath }" media="screen" title="Default" />
+ 
+    { babHeadStyleSheets }
+</head>
 
 	<body  class="page <!--#if tg --> { tg }<!--#else tg --> home<!--#endif tg --> <!--#if BAB_SESS_LOGGED --> logged_1<!--#else BAB_SESS_LOGGED --> logged_0<!--#endif BAB_SESS_LOGGED -->" >
 		<div id="ovfx_head">
