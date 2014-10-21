@@ -112,7 +112,7 @@ top.flb.document.location.href=url;
 <!--#endif update -->
 { entity }</a>
 <!--#if superior -->
-&nbsp;&nbsp;<b>[<a class="BabSiteAdminListLink" href="#" onclick="top.flb.document.location.href='{ superiorurl }';updateFltFrame('{ oeid }&idx=listr');">{ superior }</a>]</b>
+&nbsp;&nbsp;<b>[<a class="BabSiteAdminListLink" href="#" onclick="top.flb.document.location.href='{ superiorurl }';updateFltFrame('{ oeid }&idx=listr');return false;">{ superior }</a>]</b>
 <!--#endif superior -->
 <!--#if current -->
 <script type="text/javascript">
@@ -159,7 +159,7 @@ updateFlbFrame('{ currentoe }&idx=detr');
 updateFltFrame('{ currentoe }&idx=listr');
 
 var scrollElement = document.getElementById('#ENT{ coeid }');
-scrollElement.scrollIntoView(true);
+scrollElement && scrollElement.scrollIntoView(true);
 //location.href = '#ENT{ coeid }';
 
 //-->
