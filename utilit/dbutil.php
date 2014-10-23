@@ -77,7 +77,7 @@ class babDatabase
 		}
 		
 	public function db_print_error($text) {
-		if (function_exists('bab_isUserAdministrator') && bab_isUserAdministrator()) {
+		if (session_id() && function_exists('bab_isUserAdministrator') && bab_isUserAdministrator()) {
 			include_once dirname(__FILE__).'/devtools.php';
 			bab_debug_print_backtrace(true);
 		}
