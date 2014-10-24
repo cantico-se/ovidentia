@@ -872,7 +872,7 @@ function getDirEntry($id, $type, $id_directory, $accessCtrl)
 			$id_fieldextra_directory = 0;
 			$colname = 'e.id_user';
 
-			if ($id == $GLOBALS['BAB_SESS_USERID']) {
+			if ($id == bab_getUserId()) {
 				break; // user can always view his dir entry
 			}
 
