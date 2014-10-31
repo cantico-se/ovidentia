@@ -2325,6 +2325,7 @@ function siteUpdate_authentification($id, $authtype, $host, $hostname, $ldpapchk
 	$ldap_groups = bab_pp('ldap_groups');
 	$ldap_groups_create = bab_pp('ldap_groups_create', '0');
 	$ldap_groups_remove = bab_pp('ldap_groups_remove', '0');
+	$ldap_usercreate_test = bab_pp('ldap_usercreate_test', '0');
 
 	if( $authtype != BAB_AUTHENTIFICATION_OVIDENTIA )
 		{
@@ -2401,6 +2402,7 @@ function siteUpdate_authentification($id, $authtype, $host, $hostname, $ldpapchk
 			ldap_userdn='".$babDB->db_escape_string($userdn)."', 
 			ldap_allowadmincnx='".$babDB->db_escape_string($ldpapchkcnx)."', 
 			ldap_notifyadministrators='".$babDB->db_escape_string($ldpapchknotif)."', 
+			ldap_usercreate_test='".$babDB->db_escape_string($ldap_usercreate_test)."',
 			ldap_searchdn='".$babDB->db_escape_string($searchdn)."', 
 			ldap_attribute='".$babDB->db_escape_string($ldapattr)."', 
 			ldap_encryptiontype='".$babDB->db_escape_string($crypttype)."', 
