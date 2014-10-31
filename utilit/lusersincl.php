@@ -74,17 +74,21 @@ function bab_browseUsers($pos, $cb)
 			} else {
 				$reqa = "select * from ".BAB_USERS_TBL." where ".bab_userInfos::queryAllowedUsers();
 			}
+			
+			
+			list($filterColumn) = explode(' ',bab_composeUserName('firstname', 'lastname'));
+			
 
 			if (mb_strlen($pos) > 0 && $pos[0] == "-" ) {
 				$this->pos = isset($pos[1]) ? $pos[1] : '';
 				$this->ord = $pos[0];
-				$reqa .= " and lastname like '".$babDB->db_escape_like($this->pos)."%' order by lastname, firstname asc";
+				$reqa .= " and ".$babDB->backTick($filterColumn)." like '".$babDB->db_escape_like($this->pos)."%' order by lastname, firstname asc";
 				$this->fullname = bab_composeUserName(bab_translate("Lastname"), bab_translate("Firstname"));
 				$this->fullnameurl = bab_toHtml($GLOBALS['babUrlScript']."?tg=lusers&idx=brow&pos=".$this->pos."&cb=".$cb);
 			} else {
 				$this->pos = $pos;
 				$this->ord = "";
-				$reqa .= " and firstname like '".$babDB->db_escape_like($this->pos)."%' order by firstname, lastname asc";
+				$reqa .= " and ".$babDB->backTick($filterColumn)." like '".$babDB->db_escape_like($this->pos)."%' order by firstname, lastname asc";
 				$this->fullname = bab_composeUserName(bab_translate("Firstname"),bab_translate("Lastname"));
 				$this->fullnameurl = bab_toHtml($GLOBALS['babUrlScript']."?tg=lusers&idx=brow&pos=-".$this->pos."&cb=".$cb);
 			}
