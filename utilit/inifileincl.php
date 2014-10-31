@@ -1112,6 +1112,8 @@ class bab_inifile {
 	var $recommendations = array();
 	var $functionalities;
 	var $customscript = array();
+	
+	static private $custom_script_result = array();
 
 	public $inifile;
 	
@@ -1369,13 +1371,11 @@ class bab_inifile {
 			return false;
 		}
 
-		static $custom_script_result = array();
-
-		if (!isset($custom_script_result[$addonname])) {
-			$custom_script_result[$addonname] = include $filepath;
+		if (!isset(self::$custom_script_result[$addonname])) {
+			self::$custom_script_result[$addonname] = include $filepath;
 		}
 
-		$arr = $custom_script_result[$addonname];
+		$arr = self::$custom_script_result[$addonname];
 
 		if (!is_array($arr)) {
 			trigger_error('preinstall script must return an array');
@@ -1407,7 +1407,7 @@ class bab_inifile {
 	/**
 	 * Get the requierments classified in mutiple sub array
 	 * mandatory, optional
-	 * 
+	 *
 	 * @return array
 	 */
 	public function getRequirementsCategories()
@@ -1677,7 +1677,7 @@ class bab_inifile {
 		if (!$this->fileExists())
 		{
 			return false;
-		}		
+		}
 		
 		$requirements = $this->getUnsortedRequirements();
 		foreach($requirements as $arr) {
