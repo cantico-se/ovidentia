@@ -1875,11 +1875,11 @@ function assignList($id)
 					$this->url = bab_toHtml($GLOBALS['babUrlScript']."?tg=directory&idx=assign&id=".$this->id."&order=".$this->orderBy . "&pos=".$this->pos);
 					if(!$this->orderBy)
 						{
-						$this->urlname = bab_toHtml(bab_composeUserName($this->arr['lastname'],$this->arr['firstname']));
+						$this->urlname = bab_toHtml($this->arr['lastname'] . ' ' . $this->arr['firstname']);
 						}
 					else
 						{
-						$this->urlname = bab_toHtml(bab_composeUserName($this->arr['firstname'],$this->arr['lastname']));
+						$this->urlname = bab_toHtml($this->arr['firstname'] . ' ' . $this->arr['lastname']);
 						}
 
 					$this->userid = bab_toHtml($this->arr['id']);
