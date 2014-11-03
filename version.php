@@ -134,6 +134,9 @@ switch($idx)
 		if (!$addon->isValid())
 		{
 			trigger_error('Invalid addon prerequists');
+			foreach ($addon->getIni()->getRequirementErrors() as $req) {
+			    echo $req['description'].' '.$req['current']."<br />";
+			}
 			die(bab_translate("Failed"));
 		}
 		
