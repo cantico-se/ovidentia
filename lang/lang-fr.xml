@@ -2836,7 +2836,7 @@
 <string id="Modification date descending">Date de modification descendante</string>
 <string id="Content of old versions">Contenu des anciennes versions</string>
 <string id="Folders, names and descriptions">Répertoires, noms et descriptions</string>
-<string id="Aditionnal metadata">Métadonnés supplémentaires</string>
+<string id="Aditionnal metadata">Métadonnées supplémentaires</string>
 <string id="File numeric identifier">Identifiant numérique du fichier</string>
 <string id="Owner numeric identifier">Identifiant numérique du propriétaire</string>
 <string id="File path">Chemin du fichier</string>
@@ -2845,7 +2845,7 @@
 <string id="Approbation status">Statut d'approbation</string>
 <string id="Delete state">Statut de suppression</string>
 <string id="Delegation numeric identifier">Identifiant numérique de la délégation</string>
-<string id="search on metadata and file content">Recherche sur les métadonnés et le contenu des fichiers</string>
+<string id="search on metadata and file content">Recherche sur les métadonnées et le contenu des fichiers</string>
 <string id="Provides an icon theme.">Fournit un thème d'icône.</string>
 <string id="Provides the default icon theme.">Fournit un thème par défaut.</string>
 <string id="can't create directory %s">Impossible de créer le répertoire %s</string>
@@ -3428,8 +3428,8 @@ L'administrateur</string>
 
 <string id="The security code is not correct">Le code de sécurité est incorrecte</string>
 
-<string id="Allow author to modify HTML metadata">Permettre à l'auteur de modifier les métadonnés HTML</string>
-<string id="HTML metadata">Métadonnés HTML</string>
+<string id="Allow author to modify HTML metadata">Permettre à l'auteur de modifier les métadonnées HTML</string>
+<string id="HTML metadata">Métadonnées HTML</string>
 <string id="Page title">Titre de la page</string>
 <string id="Page description">Description de la page</string>
 <string id="Page keywords">Mots clés de la page</string>
