@@ -341,6 +341,8 @@ class bab_ArticleDraftEditor {
 			)->setFoldable(true)
 		);
 
+		
+		
 
 		$bodyEditor = new bab_contentEditor('bab_article_body');
 		$bodyEditor->setRequestFieldName('body');
@@ -350,7 +352,7 @@ class bab_ArticleDraftEditor {
 		{
 			$bodyEditor->setContent($_POST['body']);
 		}elseif($tpl){
-			$headEditor->setContent($tpl['body']);
+			$bodyEditor->setContent($tpl['body']);
 		}
 		$bodyEditor->setParameters(array('height' => '300'));
 
