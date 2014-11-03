@@ -37,12 +37,32 @@ define('BAB_FUNCTIONALITY_CLASS_PREFIX', 'Func_');
  */
 class bab_functionalities {
 
-	var $treeRootPath;
-	var $filename;
-	var $original;
-	var $rootDirName;
+    /**
+     * @var string
+     */
+	private $treeRootPath;
 	
-	var $treeLinks = array();
+	/**
+	 * link.inc
+	 * @var string
+	 */
+	private $filename;
+	
+	/**
+	 * link.inc.original
+	 * @var string
+	 */
+	private $original;
+	
+	/**
+	 * @var string
+	 */
+	private $rootDirName;
+	
+	/**
+	 * @var array
+	 */
+	private $treeLinks = array();
 	
 
 	/**
@@ -51,7 +71,7 @@ class bab_functionalities {
 	 * @return bab_functionalities
 	 * @access	public
 	 */
-	function bab_functionalities() {
+	public function __construct() {
 		$this->filename = BAB_FUNCTIONALITY_LINK_FILENAME;
 		$this->original = BAB_FUNCTIONALITY_LINK_ORIGINAL_FILENAME;
 		$this->rootDirName = BAB_FUNCTIONALITY_ROOT_DIRNAME;
@@ -69,7 +89,7 @@ class bab_functionalities {
 	 * @access	private
 	 * @param	string	$location
 	 */
-	function onInsertNode($location) {
+	private function onInsertNode($location) {
 		if (is_dir($location)) {
 			chmod($location, 0770);
 		} else {
@@ -86,7 +106,7 @@ class bab_functionalities {
 	 * @param	string	$filePath
 	 * @return 	string
 	 */
-	function getIncludeFilePath($filePath) {
+	private function getIncludeFilePath($filePath) {
 	
 		// replace \ with / for windows platform
 		$installPath = str_replace('\\','/',$GLOBALS['babInstallPath']);
@@ -119,7 +139,7 @@ class bab_functionalities {
 	 * @param	string	$linkfilename	Link file name
 	 * @return 	boolean
 	 */
-	function recordLink($path, $funcpath, $include_file, $linkfilename) {
+	private function recordLink($path, $funcpath, $include_file, $linkfilename) {
 	
 		if (file_exists($this->treeRootPath.$path.'/'.$linkfilename)) {
 			return false;
@@ -154,7 +174,7 @@ class bab_functionalities {
 	 * @access private
 	 * @return boolean
 	 */
-	function recordLinkToLink($path, $funcpath) {
+	private function recordLinkToLink($path, $funcpath) {
 		
 		if (file_exists($this->treeRootPath.$path.'/'.$this->filename)) {
 			return false;
@@ -207,11 +227,11 @@ class bab_functionalities {
 
 
 	/**
-	 * @access	private
+	 * Get number of sub functionalities
 	 * @param	array $func_path
 	 * @return 	int
 	 */
-	function nbChildren($func_path) {
+	public function nbChildren($func_path) {
 		return count($this->getChildren($func_path));
 	}
 
@@ -223,7 +243,7 @@ class bab_functionalities {
 	 * @param	string	$filename
 	 * @return 	int
 	 */
-	function getCrc($func_path, $filename) {
+	private function getCrc($func_path, $filename) {
 		$path = trim($func_path,'/ ');
 		$link = $this->treeRootPath.$func_path.'/'.$filename;
 		$file = file($link);
@@ -241,7 +261,7 @@ class bab_functionalities {
 	 * @param	array $func_path
 	 * @return 	false|string
 	 */
-	function getParentPath($func_path) {
+	public function getParentPath($func_path) {
 		$arr = explode('/', $func_path);
 
 		if (2 > count($arr)) {
@@ -259,7 +279,7 @@ class bab_functionalities {
 	 * @param	array $func_path
 	 * @return 	boolean
 	 */
-	function copyToParent($func_path) {
+	public function copyToParent($func_path) {
 		$parent_path = $this->getParentPath($func_path);
 
 		if (false === $parent_path) {
@@ -285,7 +305,7 @@ class bab_functionalities {
 	 * @param	string	$func_path
 	 * @return 	boolean
 	 */
-	function deleteOrReplaceWithFirstChild($func_path) {
+	private function deleteOrReplaceWithFirstChild($func_path) {
 
 		$children = $this->getChildren($func_path);
 
@@ -335,7 +355,7 @@ class bab_functionalities {
 	 *
 	 * @return boolean
 	 */
-	function compare($parentPath, $childPath, $include_file) {
+	public function compare($parentPath, $childPath, $include_file) {
 
 		$parent = $this->getOriginal($parentPath);
 		if (false === $parent) {
@@ -523,7 +543,7 @@ class bab_functionalities {
 	 *
 	 * @return boolean
 	 */
-	function isValidLinks($funcPath) {
+	public function isValidLinks($funcPath) {
 		return (file_exists($this->treeRootPath.$funcPath.'/'.$this->filename) && file_exists($this->treeRootPath.$funcPath.'/'.$this->original));
 	}
 
@@ -535,7 +555,7 @@ class bab_functionalities {
 	 *
 	 * @return boolean
 	 */
-	function normalizeNodeWithChild($verifyPath, $childPath) {
+	public function normalizeNodeWithChild($verifyPath, $childPath) {
 		
 		if ($this->isValidLinks($verifyPath)) {
 			if ($this->getCrc($verifyPath, $this->filename) === $this->getCrc($verifyPath, $this->original)) {
@@ -562,7 +582,7 @@ class bab_functionalities {
 	 * @return boolean
 	 * @access 	public
 	 */
-	function unregister($func_path) {
+	public function unregister($func_path) {
 
 		if (!file_exists($this->treeRootPath.$func_path)) {
 			return true;
@@ -582,13 +602,13 @@ class bab_functionalities {
 	 * Remove dead links
 	 * @param	string	[$path]
 	 */
-	function cleanTree($path = '') {
+	public function cleanTree($path = '') {
 
 		$children = $this->getChildren($path);
 		foreach ($children as $child) {
 			$this->cleanTree($path.$child.'/');
 			$file = $this->treeRootPath.$path.$child.'/'.$this->filename;
-			if (true !== (include_once $file)) {
+			if (false === (@include_once $file)) {
 				// la destionation du lien n'existe pas
 				$this->unregister($path.$child);
 			}
@@ -605,7 +625,7 @@ class bab_functionalities {
 	 * @since 6.6.92
 	 * @static
 	 */
-	function sanitize($sPath) {
+	public static function sanitize($sPath) {
 		$aPattern = array('#[^0-9a-zA-Z/]#i', '#/+#i');
 		$aReplacement = array('', '/');
 		return trim(preg_replace($aPattern, $aReplacement, $sPath), '/');
@@ -622,7 +642,7 @@ class bab_functionalities {
 	 * @since 6.6.92
 	 * @static
 	 */
-	function getClassname($path) {
+	public static function getClassname($path) {
 		return BAB_FUNCTIONALITY_CLASS_PREFIX . str_replace('/', '_', $path);
 	}
 
@@ -637,7 +657,7 @@ class bab_functionalities {
 	 * @since 6.6.92
 	 * @static
 	 */
-	function getPath($classname) {
+	public static function getPath($classname) {
 		return str_replace('_', '/', mb_substr($classname, mb_strlen(BAB_FUNCTIONALITY_CLASS_PREFIX)));
 	}
 }
@@ -657,13 +677,13 @@ class bab_eventFunctionalityRegistered extends bab_event
 	 * @access private
 	 * @var string
 	 */
-	var $functionalityPath;
+	private $functionalityPath;
 
 	/**
 	 * @param string	$functionalityPath		The path identifying the functionality
 	 * @return bab_eventFunctionalityRegistered
 	 */
-	function bab_eventFunctionalityRegistered($functionalityPath)
+	public function __construct($functionalityPath)
 	{
 		$this->functionalityPath = $functionalityPath;
 	}
@@ -684,13 +704,13 @@ class bab_eventFunctionalityUnregistered extends bab_event
 	 * @access private
 	 * @var string
 	 */
-	var $functionalityPath;
+	private $functionalityPath;
 
 	/**
 	 * @param string	$functionalityPath		The path identifying the functionality
 	 * @return bab_eventFunctionalityUnregistered
 	 */
-	function bab_eventFunctionalityUnregistered($functionalityPath)
+	public function __construct($functionalityPath)
 	{
 		$this->functionalityPath = $functionalityPath;
 	}

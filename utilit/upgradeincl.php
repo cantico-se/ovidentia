@@ -343,13 +343,32 @@ function bab_upgrade($core_dir, &$ret, $forceUpgrade = false)
 	}
 	
 	bab_setTimeLimit(120);
+	
+	// verify the functionality tree, remove links to unknown files
+	// if links are deleted, the upgrade program from core and addons
+	// will get the chance to recreate them in a correct way.
+	// since 8.1.100 the register method save only relatives path (this
+	// fix registration of absolutes paths)
+	require_once dirname(__FILE__).'/functionalityincl.php';
+	$functionalities = new bab_functionalities();
+	$functionalities->cleanTree();
+	
 
 	include_once $core_dir.'upgrade.php';
 	if (true === ovidentia_upgrade($ver_from, $ini->getVersion())) {
+	    
+	    // upgrade for all active addons 
+	    foreach(bab_addonsInfos::getDbAddonsByName() as $addon) {
+	        if ($addon->isInstalled() && !$addon->isDisabled()) {
+	            $addon->upgrade();
+	        }
+	    }
 
 		// the core has been upgraded correctly
 		// update addons if necessary using the install/addons.ini file
 		bab_upgradeAddonsFromInstall(false, $ini->getVersion());
+		
+		
 
 
 		putIniDbKey('ver_major', $bab_ver_major);
