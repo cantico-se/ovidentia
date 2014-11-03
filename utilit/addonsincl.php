@@ -211,8 +211,7 @@ class bab_addonsInfos {
 
 	/**
 	 * Get all addons objects indexed by name
-	 * @return array	of bab_addonInfos
-	 * @see bab_addonInfos
+	 * @return bab_addonInfos[]
 	 */
 	public static function getDbAddonsByName() {
 		$return = array();
