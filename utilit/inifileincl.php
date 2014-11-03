@@ -1571,7 +1571,16 @@ class bab_inifile {
 	}
 
 
-
+    public function getRequirementErrors() {
+        $return = array();
+        foreach($this->getRequirements() as $arr) {
+            if (!$arr['result']) {
+                $return[] = $arr;
+            }
+        }
+        
+        return $return;
+    }
 
 
 
