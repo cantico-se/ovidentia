@@ -54,6 +54,12 @@ function bab_addEventListener($event_class_name, $function_name, $require_file, 
 {
 
 	global $babDB;
+	
+	
+	if (0 === mb_strpos($require_file, $GLOBALS['babInstallPath'])) {
+	    $require_file = mb_substr($require_file, mb_strlen($GLOBALS['babInstallPath']));
+	}
+	
 
 	$res = $babDB->db_query('SELECT * FROM
 		'.BAB_EVENT_LISTENERS_TBL.'
@@ -66,6 +72,7 @@ function bab_addEventListener($event_class_name, $function_name, $require_file, 
 	if (0 < $babDB->db_num_rows($res)) {
 		return false;
 	}
+	
 
 	$babDB->db_query('
 		INSERT INTO '.BAB_EVENT_LISTENERS_TBL.'
