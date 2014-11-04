@@ -4676,6 +4676,8 @@ function deleteFolderForUserDir()
 
 	$oFileManagerEnv =& getEnvObject();
 
+	
+	
 	if(userHavePersonnalStorage() && canCreateFolder($oFileManagerEnv->sRelativePath))
 	{
 		$sDirName = (string) bab_pp('sDirName', '');
@@ -4687,12 +4689,17 @@ function deleteFolderForUserDir()
 
 				global $babDB;
 
-				$sPathName = BAB_PathUtil::addEndSlash(BAB_PathUtil::sanitize($oFileManagerEnv->sRelativePath . '/' . $sDirName . '/'));
-				$sFullPathName = BAB_PathUtil::addEndSlash(BAB_PathUtil::sanitize($sUploadPath . $sPathName));
+				$sPathName = $oFileManagerEnv->sRelativePath . '/' . $sDirName . '/';
+				$sFullPathName = $sUploadPath . $sPathName;
 				
 				$sPathNameDirFile = $sPathName;
 				if(substr($sPathName, 0, 1) == '/'){
 					$sPathNameDirFile = substr($sPathName, 1);
+				}
+				
+				if (!file_exists($sFullPathName)) {
+				    $babBody->msgerror = sprintf(bab_translate("The folder %s does not exists"), $sPathNameDirFile);
+				    return false;
 				}
 
 				$oFolderFileSet = new BAB_FolderFileSet();
