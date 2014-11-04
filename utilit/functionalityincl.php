@@ -608,8 +608,8 @@ class bab_functionalities {
 		foreach ($children as $child) {
 			$this->cleanTree($path.$child.'/');
 			$file = $this->treeRootPath.$path.$child.'/'.$this->filename;
-			if (false === (@include_once $file)) {
-				// la destionation du lien n'existe pas
+			if (false === (include_once $file)) {
+				// la destination du lien n'existe pas
 				$this->unregister($path.$child);
 			}
 		}
