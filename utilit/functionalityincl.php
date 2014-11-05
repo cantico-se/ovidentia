@@ -463,6 +463,11 @@ class bab_functionalities {
 			if (false === $this->recordLink($func_path, $func_path, $include_file, $this->original)) {
 				return false;
 			}
+			
+			// auto repair link in no childnode
+			if (0 === $this->nbChildren($func_path) && file_exists($this->treeRootPath.$func_path.'/'.$this->filename)) {
+			    unlink($this->treeRootPath.$func_path.'/'.$this->filename);
+			}
 
 			if (!file_exists($this->treeRootPath.$func_path.'/'.$this->filename)) {
 				if (false === $this->recordLink($func_path, $func_path, $include_file, $this->filename)) {
