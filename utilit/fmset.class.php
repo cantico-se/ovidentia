@@ -559,7 +559,7 @@ class BAB_FmFolderSet extends BAB_BaseSet
 		global $babBody, $babDB;
 
 		$oFileManagerEnv	=& getEnvObject();
-		$sUplaodPath		= BAB_PathUtil::addEndSlash(BAB_PathUtil::sanitize($oFileManagerEnv->getRootFmPath()));
+		$sUploadPath		= BAB_PathUtil::addEndSlash($oFileManagerEnv->getRootFmPath());
 
 		$bDbRecordOnly	= false;
 		$oFmFolderSet	= new BAB_FmFolderSet();
@@ -567,7 +567,7 @@ class BAB_FmFolderSet extends BAB_BaseSet
 		$oIdDgOwner		=& $oFmFolderSet->aField['iIdDgOwner'];
 		$oName			=& $oFmFolderSet->aField['sName'];
 
-		$sRelativePath = BAB_PathUtil::addEndSlash(BAB_PathUtil::sanitize($sRelativePath));
+		$sRelativePath = BAB_PathUtil::addEndSlash($sRelativePath);
 
 		$oCriteria = $oIdDgOwner->in(bab_getCurrentUserDelegation());
 		$oCriteria = $oCriteria->_and($oRelativePath->like($babDB->db_escape_like($sRelativePath)));
@@ -582,7 +582,7 @@ class BAB_FmFolderSet extends BAB_BaseSet
 			}
 		}
 
-		$sFullPathName = $sUplaodPath . $sRelativePath;
+		$sFullPathName = $sUploadPath . $sRelativePath;
 
 		if(is_dir($sFullPathName))
 		{
@@ -600,7 +600,7 @@ class BAB_FmFolderSet extends BAB_BaseSet
 				}
 				else
 				{
-					$sFullPathName = $sUplaodPath . $sRelativePath . $sEntry;
+					$sFullPathName = $sUploadPath . $sRelativePath . $sEntry;
 
 					if(is_dir($sFullPathName))
 					{
@@ -617,7 +617,7 @@ class BAB_FmFolderSet extends BAB_BaseSet
 				}
 			}
 			$oDir->close();
-			rmdir($sUplaodPath . $sRelativePath);
+			rmdir($sUploadPath . $sRelativePath);
 
 			$sName			= getLastPath($sRelativePath);
 			$sRelativePath	= removeLastPath($sRelativePath);

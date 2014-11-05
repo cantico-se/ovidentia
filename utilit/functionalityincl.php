@@ -463,6 +463,11 @@ class bab_functionalities {
 			if (false === $this->recordLink($func_path, $func_path, $include_file, $this->original)) {
 				return false;
 			}
+			
+			// auto repair link in no childnode
+			if (0 === $this->nbChildren($func_path) && file_exists($this->treeRootPath.$func_path.'/'.$this->filename)) {
+			    unlink($this->treeRootPath.$func_path.'/'.$this->filename);
+			}
 
 			if (!file_exists($this->treeRootPath.$func_path.'/'.$this->filename)) {
 				if (false === $this->recordLink($func_path, $func_path, $include_file, $this->filename)) {
@@ -608,8 +613,8 @@ class bab_functionalities {
 		foreach ($children as $child) {
 			$this->cleanTree($path.$child.'/');
 			$file = $this->treeRootPath.$path.$child.'/'.$this->filename;
-			if (false === (@include_once $file)) {
-				// la destionation du lien n'existe pas
+			if (false === (include_once $file)) {
+				// la destination du lien n'existe pas
 				$this->unregister($path.$child);
 			}
 		}

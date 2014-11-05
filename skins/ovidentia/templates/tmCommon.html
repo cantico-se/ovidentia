@@ -372,7 +372,7 @@ function on_cancel()
 		
 		<tr>
 			<td class="BabWarningBodyBackground" align="center">
-				<a class="BabWarningLinkColor" href="#" onclick="on_delete()">{ m_captions[yes] }</a> | <a class="BabWarningLinkColor" href="#" onclick="on_cancel()">{ m_captions[no] }</a>
+				<a class="BabWarningLinkColor" href="#" onclick="on_delete(); return false;">{ m_captions[yes] }</a> | <a class="BabWarningLinkColor" href="#" onclick="on_cancel(); return false;">{ m_captions[no] }</a>
 			</td>
 		</tr>
 	</table>
@@ -428,7 +428,7 @@ function on_cancel()
 		</tr>
 		<tr>
 			<td class="BabWarningBodyBackground" align="center">
-				<a class="BabWarningLinkColor" href="#" onclick="on_cancel()">{ m_captions[no] }</a>
+				<a class="BabWarningLinkColor" href="#" onclick="on_cancel(); return false;">{ m_captions[no] }</a>
 			</td>
 		</tr>
 	</table>

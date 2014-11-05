@@ -212,6 +212,33 @@ class bab_fireEvent_Obj {
 }
 
 
+
+/**
+ * 
+ * @return bool
+ */
+function bab_isEventFileValid($filepath)
+{
+    if (empty($filepath)) {
+        return true;
+    }
+    
+    if (!is_file($filepath)) {
+        return false;
+    }
+    
+    $core = $GLOBALS['babInstallPath'];
+    
+    if ('vendor/' !== mb_substr($filepath, 0, 7)
+        && $core !== mb_substr($filepath, 0, mb_strlen($core))) {
+            return false;
+    }
+        
+    return true;
+}
+
+
+
 /**
  * Fire all event registered as listeners
  * @see	bab_addEventListener
@@ -270,7 +297,7 @@ function bab_fireEvent(bab_Event $event_obj)
 					    }
 
 
-						if (empty($arr['require_file']) || is_file($arr['require_file'])) {
+						if (bab_isEventFileValid($arr['require_file'])) {
 
 							$calls[$classkey][] = array(
 								'require_file' => $arr['require_file'],

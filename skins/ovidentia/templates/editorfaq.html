@@ -36,7 +36,7 @@ function func(faqid,title)
 	<!--#if display -->
 	<li>
 	<!--#if q -->
-	<a href="#" title="{ resp }" onclick="func({ faqid },'{ title }')"><img src="{ babSkinPath }images/Puces/defaut.gif" alt="" align="absmiddle" /> { titledisp }</a>
+	<a href="#" title="{ resp }" onclick="func({ faqid },'{ title }'); return false;"><img src="{ babSkinPath }images/Puces/defaut.gif" alt="" align="absmiddle" /> { titledisp }</a>
 	<!--#else q -->
 	<a title="{ desc }" href="{ url }"><img src="{ babSkinPath }images/Puces/folder.gif" alt="" align="absmiddle" /> { title }</a>
 	<!--#endif q -->
