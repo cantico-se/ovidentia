@@ -249,7 +249,7 @@ class bab_dumpToDb
 				$query = $m[0][$k];
 				if (!$this->db_queryWem($query))
 					{
-					$this->error->add($this->trans->str('There is an error into sql dump file at query : ')."\n\n".$query."\n".mysqli_error());
+					$this->error->add($this->trans->str('There is an error into sql dump file at query : ')."\n\n".$query."\n".mysqli_error($this->db));
 					return false;
 					}
 				
