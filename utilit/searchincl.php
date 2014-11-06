@@ -51,6 +51,7 @@ function bab_highlightWord( $w, $text)
 
 /**
  * Search a string with bab_toHtml
+ * @deprecated repalced by the search API
  */
 function bab_sql_finder_he($tbl, $str, $not="")
 	{
@@ -63,6 +64,10 @@ function bab_sql_finder_he($tbl, $str, $not="")
 		return " ".$op." ".$tbl.$not." like '%".$babDB->db_escape_like($tmp)."%'";
 	}
 
+	
+/**
+ * @deprecated repalced by the search API
+ */
 function bab_sql_finder($req2,$tablename,$option = "OR",$req1="")
 {
 	global $babDB;
