@@ -355,7 +355,7 @@ function bab_fireEvent(bab_Event $event_obj)
 		
 		
 
-		if (function_exists($arr['function_name'])) {
+		if (is_callable($arr['function_name'])) {
 			call_user_func_array($arr['function_name'], array(&$event_obj));
 		} else {
 
