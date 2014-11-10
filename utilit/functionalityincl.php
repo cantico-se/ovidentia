@@ -401,9 +401,10 @@ class bab_functionalities {
 		}
 		
 		// force the registred include path to be relative to the site root path
-		$rootPath = dirname('.');
+		$rootPath = realpath('.');
+		
 		if (0 === mb_strpos($include_file, $rootPath)) {
-		    $include_file = mb_substr($include_file, mb_strlen($rootPath));
+		    $include_file = mb_substr($include_file, 1+mb_strlen($rootPath));
 		}
 		
 		if ('/' === mb_substr($include_file, 0, 1) && class_exists('bab_installWindow')) {
