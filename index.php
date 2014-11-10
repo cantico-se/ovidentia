@@ -722,11 +722,6 @@ switch(bab_rp('tg'))
 		$babLevelTwo = bab_translate("Faqs");
 		$incl = "faq";
 		break;
-	case "search":
-		$babLevelOne = bab_translate("Home");
-		$babLevelTwo = bab_translate("Search");
-		$incl = "search";
-		break;
 	case "fileman":
 		$babLevelOne = bab_translate("User's section");
 		$babLevelTwo = bab_translate("File manager");

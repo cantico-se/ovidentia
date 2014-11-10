@@ -94,7 +94,7 @@ function printBody()
 			}
 
 			$this->search = bab_translate("Search");
-			$this->searchurl = bab_toHtml($GLOBALS['babUrlScript'].'?tg=search');
+			$this->searchurl = bab_toHtml($GLOBALS['babUrlScript'].'?tg=addon/search/main');
 
 			if (!isset($GLOBALS['babMarquee']) || $GLOBALS['babMarquee'] == '') {
 				$this->babSlogan = $babSlogan;
