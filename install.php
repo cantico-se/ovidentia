@@ -46,6 +46,7 @@ $functionalities->register('SitemapDynamicNode'			, $GLOBALS['babInstallPath'].'
 $functionalities->register('SitemapDynamicNode/Topic'	, $GLOBALS['babInstallPath'].'utilit/sitemap_dyntopic.php');
 $functionalities->register('WorkingHours'				, $GLOBALS['babInstallPath'].'utilit/workinghoursincl.php');
 $functionalities->register('WorkingHours/Ovidentia'		, $GLOBALS['babInstallPath'].'utilit/workinghoursincl.php');
+$functionalities->register('SearchUi'		            , $GLOBALS['babInstallPath'].'utilit/searchui.class.php');
 
 
 $func_to_register = $functionalities->parseFile(dirname(__FILE__).'/utilit/omlincl.php');

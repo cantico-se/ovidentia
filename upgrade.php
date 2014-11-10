@@ -7124,6 +7124,17 @@ function ovidentia_upgrade($version_base,$version_ini) {
 		$babDB->db_query("ALTER TABLE `".BAB_SITES_TBL."` ADD calendar_notif_author ENUM('N','Y') DEFAULT 'N' NOT NULL");
 	}
 	
+	
+	
+	
+	/**
+	 * Upgrade to 8.2.90
+	 */
+	$functionalities->register('SearchUi', $GLOBALS['babInstallPath'].'utilit/searchui.class.php');
+	
+	
+	
+	
 	return true;
 
 }
