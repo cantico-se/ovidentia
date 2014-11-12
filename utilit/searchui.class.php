@@ -42,6 +42,17 @@ class Func_SearchUi extends bab_functionality
     }
     
     
+    
+    /**
+     * Get search form as HTML string
+     * @param string bab_SearchRealm
+     * @return string
+     */
+    public function getSearchFormHtml(bab_SearchRealm $realm = null) {
+        throw new Exception('Not implemented');
+    }
+    
+    
     /**
      * Optional article url to the preview
      * @param int $id_article
