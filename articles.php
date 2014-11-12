@@ -217,11 +217,9 @@ abstract class bab_listArticles extends categoriesHierarchy
 		if (list(, $tag) = each($this->tags))
 		{
 			$this->tagname = bab_toHtml($tag);
-			$searchurl = bab_url::get_request();
-			$searchurl->tg = 'addon/search/main';
-			$searchurl->idx = 'find';
-			$searchurl->what = $tag;
-			$this->searchurl = bab_toHtml($searchurl->toString());
+			$searchUi = bab_functionality::get('SearchUi');
+			/*@var $searchUi Func_SearchUi */
+			$this->searchurl = bab_toHtml($searchUi->getUrl('tags', $tag));
 			return true;
 		}
 

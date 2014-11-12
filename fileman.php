@@ -3109,9 +3109,11 @@ function viewFile()
 				$bmanager = false;
 			}
 
-			$bversion = $oFileManagerEnv->oFmFolder->getVersioning();
-			if (0 !== $oFolderFile->getFolderFileVersionId() || $bversion ==  'Y') {
-				$bupdate = false;
+			if (isset($oFileManagerEnv->oFmFolder)) {
+    			$bversion = $oFileManagerEnv->oFmFolder->getVersioning();
+    			if (0 !== $oFolderFile->getFolderFileVersionId() || $bversion ==  'Y') {
+    				$bupdate = false;
+    			}
 			}
 		}
 	}

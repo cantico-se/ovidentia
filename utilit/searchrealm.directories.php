@@ -1033,6 +1033,9 @@ class bab_SearchRealmDirectories_ResultTemplate extends bab_SearchTemplate {
 			$fields = $record->getRealm()->getColumnsSettings();
 		}
 
+		$searchUi = bab_functionality::get('SearchUi');
+		/*@var $searchUi Func_SearchUi */
+		
 
 		if( list($name , $description) = each($fields))
 			{
@@ -1041,14 +1044,20 @@ class bab_SearchRealmDirectories_ResultTemplate extends bab_SearchTemplate {
 			$this->vcard_classname = '';
 			$this->dirurl = false;
 			
+			$previewUrl = $searchUi->getDirEntryPopupUrl($record->id, bab_SearchDefaultForm::highlightKeyword());
+			if (!isset($previewUrl)) {
+			    $previewUrl = bab_getUserDirEntryLink($record->id, BAB_DIR_ENTRY_ID);
+			}
+
+			
 			switch ($this->name)
 				{
 				case 'sn':
-					$this->dirurl = bab_toHtml($GLOBALS['babUrlScript']."?tg=search&idx=directories&id=".$record->id."&w=".bab_SearchDefaultForm::highlightKeyword());	
+					$this->dirurl = bab_toHtml($previewUrl);	
 					$this->popup = true;
 					break;
 				case 'givenname':
-					$this->dirurl = bab_toHtml($GLOBALS['babUrlScript']."?tg=search&idx=directories&id=".$record->id."&w=".bab_SearchDefaultForm::highlightKeyword());	
+					$this->dirurl = bab_toHtml($previewUrl);	
 					$this->popup = true;
 					break;
 				case 'email':

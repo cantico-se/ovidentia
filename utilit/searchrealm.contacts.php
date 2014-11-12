@@ -305,8 +305,16 @@ class bab_SearchRealmContacts_ResultTemplate extends bab_SearchTemplate {
 			$this->conlastname 	= bab_toHtml($record->lastname);
 			$this->conemail 	= bab_toHtml($record->email);
 			$this->concompany 	= bab_toHtml($record->compagny);
-			$this->fullnameurl 	= bab_toHtml($GLOBALS['babUrlScript']."?tg=search&idx=contacts&id=".$record->id."&w=".bab_SearchDefaultForm::highlightKeyword());
-
+			
+			$searchUi = bab_functionality::get('SearchUi');
+			/*@var $searchUi Func_SearchUi */
+			
+			if ($contactUrl = $searchUi->getContactPopupUrl($record->id, bab_SearchDefaultForm::highlightKeyword())) {
+			    $this->fullnameurl 	= bab_toHtml($contactUrl);
+			} else {
+			    $this->fullnameurl 	= bab_toHtml('?tg=contact&idx=modify&item='.$record->id.'&bliste=1');
+			}
+			
 			$this->rescon->next();
 			return true;
 			}

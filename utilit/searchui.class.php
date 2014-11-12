@@ -32,57 +32,54 @@ class Func_SearchUi extends bab_functionality
     
     
     /**
-     * Mandatory method to get the serach interface
+     * Mandatory method to get the search interface
      * @param string $realmName Optional serach realm name
+     * @param string $keyword Optional search keyword(s) to initialize search results
      * @return string
      */
-    public function getUrl($realmName = null) {
+    public function getUrl($realmName = null, $keyword = null) {
         throw new Exception('Not implemented');
     }
     
     
     /**
      * Optional article url to the preview
+     * @param int $id_article
      * @param string $keyword   A keyword to highlight in the preview
      * @return string
      */
-    public function getArticlePopupUrl($keyword) {
+    public function getArticlePopupUrl($id_article, $keyword) {
         return null;
     }
     
     /**
      * Optional contact url to the preview
+     * @param int $id_contact
      * @param string $keyword   A keyword to highlight in the preview
      * @return string
      */
-    public function getContactPopupUrl($keyword) {
+    public function getContactPopupUrl($id_contact, $keyword) {
         return null;
     }
     
     /**
      * Optional directory entry url to the preview popup
+     * @param int $id_entry
      * @param string $keyword   A keyword to highlight in the preview
      * @return string
      */
-    public function getDirEntryPopupUrl($keyword) {
+    public function getDirEntryPopupUrl($id_entry, $keyword) {
         return null;
     }
     
-    /**
-     * Optional FAQ question url to the preview popup
-     * @param string $keyword   A keyword to highlight in the preview
-     * @return string
-     */
-    public function getFaqQuestionPopupUrl($keyword) {
-        return null;
-    }
     
     /**
      * Optional filemanager file url to the preview popup
+     * @param int $id_file 
      * @param string $keyword   A keyword to highlight in the preview
      * @return string
      */
-    public function getFilePopupUrl($keyword) {
+    public function getFilePopupUrl($id_file, $keyword) {
         return null;
     }
 }

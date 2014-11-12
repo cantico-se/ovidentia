@@ -1150,7 +1150,6 @@ function getUserDirectories($accessCtrl = true, $delegationid = false)
 				);
 			}
 		}
-
 	
 	return $return;
 	}

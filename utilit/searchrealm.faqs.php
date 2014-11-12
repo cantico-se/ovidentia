@@ -234,6 +234,9 @@ class bab_SearchFaqsResult extends bab_SearchSqlResult {
 		include_once dirname(__FILE__).'/dateTime.php';
 		require_once dirname(__FILE__).'/faqincl.php';
 		$return = '';
+		
+		$searchUi = bab_functionality::get('SearchUi');
+		/*@var $searchUi Func_SearchUi */
 
 
 		while ($this->valid() && 0 < $count) {
@@ -250,7 +253,6 @@ class bab_SearchFaqsResult extends bab_SearchSqlResult {
 
 
 			$title 			= implode(' <img src="'.$GLOBALS['babSkinPath'].'images/Puces/arrow_right.gif" alt="/" /> ', $cat);
-			$questionurlpop = bab_toHtml($GLOBALS['babUrlScript']."?tg=search&idx=faqs&idc=".$record->idcat."&idq=".$record->id."&w=".bab_SearchDefaultForm::highlightKeyword()); 
 			$questionurl 	= bab_toHtml($GLOBALS['babUrlScript']."?tg=faq&idx=Print&item=".$record->idcat."#".$record->id);
 			$response		= bab_abbr(bab_unhtmlentities(strip_tags(bab_toHtml($record->response, BAB_HTML_REPLACE))), BAB_ABBR_FULL_WORDS, 500);
 

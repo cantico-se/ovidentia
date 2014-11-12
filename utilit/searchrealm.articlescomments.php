@@ -234,7 +234,6 @@ class bab_SearchArticlesCommentsResult extends bab_SearchSqlResult {
 			$date 			= BAB_DateTimeUtil::relativePastDate($record->date_publication);
 			$author 		= empty($record->id_author) ? bab_translate("Anonymous") : bab_toHtml(bab_getUserName($record->id_author));
 			$arttopic 		= bab_SearchRealmTopic::categoriesHierarchy($record->id_topic);
-			$articleurlpop 	= bab_toHtml($GLOBALS['babUrlScript']."?tg=search&idx=articles&id=".$record->id."&w=".bab_SearchDefaultForm::highlightKeyword());
 			$articleurl 	= bab_toHtml(bab_sitemap::url('babArticle_'.$record->id, $GLOBALS['babUrlScript']."?tg=articles&idx=More&topics=".$record->id_topic."&article=".$record->id));
 			$message 		= bab_abbr(bab_unhtmlentities(strip_tags(bab_toHtml($record->message, BAB_HTML_REPLACE))), BAB_ABBR_FULL_WORDS, 500);
 
@@ -242,14 +241,16 @@ class bab_SearchArticlesCommentsResult extends bab_SearchSqlResult {
 			$author			= bab_sprintf('<strong>%s :</strong> %s', bab_translate('Author'), bab_toHtml($author));
 			$creation_date	= $date ? bab_sprintf('<strong>%s :</strong> %s', bab_translate('Date'), bab_toHtml($date)) : '';
 
-			$position		= bab_sprintf('<strong>%s :</strong> %s / <a href="%s">%s</a> <a href="%s" onclick="bab_popup(this.href);return false;">%s</a>',
+			$position		= bab_sprintf('<strong>%s :</strong> %s / <a href="%s">%s</a>',
 								bab_translate('Comment on article'),
 								$arttopic,
 								$articleurl,
-								bab_toHtml(bab_getArticleTitle($record->id_article)),
-								$articleurlpop,
-								$popupicon
+								bab_toHtml(bab_getArticleTitle($record->id_article))
 							);
+			
+			if ($articleurlpop = $searchUi->getArticlePopupUrl(bab_SearchDefaultForm::highlightKeyword())) {
+			    $position .= bab_sprintf(' <a href="%s" onclick="bab_popup(this.href);return false;">%s</a>', $articleurlpop, $popupicon);
+			}
 
 			$return .= bab_SearchResult::getRecordHtml(
 								bab_toHtml($record->subject),

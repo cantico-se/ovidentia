@@ -2938,7 +2938,12 @@ class Func_Ovml_Container_Tags extends Func_Ovml_Container
 			$tag = $this->iterator->current();
 
 			$this->ctx->curctx->push('TagName', $tag->getName());
-			$this->ctx->curctx->push('TagSearchUrl', $GLOBALS['babUrl'].bab_getSelf() .'?tg=addon/search/main&idx=find&item=tags&what='.urlencode($tag->getName()));
+			
+			$searchUi = bab_functionality::get('SearchUi');
+			/*@var $searchUi Func_SearchUi */
+			
+			
+			$this->ctx->curctx->push('TagSearchUrl', $searchUi->getUrl('tags', $tag->getName()));
 
 			$this->iterator->next();
 			$this->index = $this->idx;

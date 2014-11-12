@@ -811,8 +811,20 @@ class bab_SearchRealmFiles_ResultTemplate extends bab_SearchTemplate {
 			$this->artauthor 	= bab_toHtml(bab_getUserName($record->author));
 			$this->filedesc 	= bab_toHtml($record->description);
 			$this->path 		= bab_toHtml($record->path);
+			
+			$searchUi = bab_functionality::get('SearchUi');
+			/*@var $searchUi Func_SearchUi */
+			
+			if ($fileurl = $searchUi->getFilePopupUrl($record->id, bab_SearchDefaultForm::highlightKeyword())) {
+			    // with search interface
+			    $this->fileurl 		= bab_toHtml($fileurl);
+			} else {
+			    
+			    // default popup url
+			    $this->fileurl 		= bab_toHtml($GLOBALS['babUrlScript'].'?tg=fileman&idx=viewFile&idf='.$record->id.'&gr='.$record->collective.'&id='.$record->id_owner.'&path='.urlencode(removeEndSlah($this->path)));
+			}
 
-			$this->fileurl 		= bab_toHtml($GLOBALS['babUrlScript'].'?tg=search&idx=files&id='.$record->id.'&w='.bab_SearchDefaultForm::highlightKeyword()); 
+			
 			
 			if ('Y' === $record->collective) {
 				$this->folderurl	= bab_toHtml($GLOBALS['babUrlScript'].'?tg=fileman&idx=list&gr=Y&id='.$record->id_owner.'&path='.urlencode(removeEndSlah($this->path)));

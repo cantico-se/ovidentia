@@ -428,6 +428,9 @@ class bab_SearchArticlesResult extends bab_SearchSqlResult {
 		include_once dirname(__FILE__).'/userinfosincl.php';
 
 		$return = '';
+		
+		$searchUi = bab_functionality::get('SearchUi');
+		/*@var $searchUi Func_SearchUi */
 
 
 		while ($this->valid() && 0 < $count) {
@@ -438,7 +441,7 @@ class bab_SearchArticlesResult extends bab_SearchSqlResult {
 			$artdate 		= BAB_DateTimeUtil::relativePastDate($record->date_publication);
 			$artauthor 		= empty($record->id_author) ? bab_translate("Anonymous") : bab_userInfos::composeHtml($record->id_author);
 			$arttopic 		= bab_SearchRealmTopic::categoriesHierarchy($record->id_topic);
-			$articleurlpop 	= bab_toHtml($GLOBALS['babUrlScript']."?tg=search&idx=articles&id=".$record->id."&w=".bab_SearchDefaultForm::highlightKeyword());
+			
 			$articleurl 	= bab_toHtml(bab_sitemap::url('babArticle_'.$record->id, $GLOBALS['babUrlScript']."?tg=articles&idx=More&topics=".$record->id_topic."&article=".$record->id));
 			$intro 			= bab_abbr(bab_unhtmlentities(bab_strip_tags(bab_toHtml($record->head, BAB_HTML_REPLACE))), BAB_ABBR_FULL_WORDS, 600);
 
@@ -446,13 +449,15 @@ class bab_SearchArticlesResult extends bab_SearchSqlResult {
 			$author			= bab_sprintf('<strong>%s :</strong> %s', bab_translate('Author'), $artauthor);
 			$creation_date	= $artdate ? bab_sprintf('<strong>%s :</strong> %s', bab_translate('Date'), bab_toHtml($artdate)) : '';
 
-			$title			= bab_sprintf('%s / <a href="%s">%s</a> <a href="%s" onclick="bab_popup(this.href);return false;">%s</a>',
+			$title			= bab_sprintf('%s / <a href="%s">%s</a>',
 								$arttopic,
 								$articleurl,
-								bab_toHtml($record->title),
-								$articleurlpop,
-								$popupicon	
+								bab_toHtml($record->title)
 							);
+			
+			if ($articleurlpop = $searchUi->getArticlePopupUrl(bab_SearchDefaultForm::highlightKeyword())) {
+			    $title .= bab_sprintf(' <a href="%s" onclick="bab_popup(this.href);return false;">%s</a>', $articleurlpop, $popupicon);
+			}
 
 			$return .= bab_SearchResult::getRecordHtml(
 								$title,
