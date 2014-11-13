@@ -218,7 +218,7 @@ function printBody()
 				case 'babHeadStyleSheets':
 					if (!isset($this->babHeadStyleSheets)) {
 						foreach ($babBody->styleSheet as $sheet) {
-							$this->babHeadStyleSheets .= '<link rel="stylesheet" type="text/css" href="' . bab_toHtml($GLOBALS['babInstallPath'] . 'styles/' . $sheet) . '" />' . "\n";
+							$this->babHeadStyleSheets .= '<link rel="stylesheet" type="text/css" href="' . bab_toHtml($sheet) . '" />' . "\n";
 						}
 						$babBody->styleSheet = array();
 					}

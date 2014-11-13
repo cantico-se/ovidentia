@@ -572,6 +572,8 @@ class babBody
 	
 	/**
 	 * List of stylesheets
+	 * paths are relative to the site root folder
+	 * 
 	 * @var array
 	 */
 	public $styleSheet = array();
@@ -1066,26 +1068,38 @@ class babBody
 	
 	/**
 	 * Add a stylesheet to the page
-	 * @param string $filename
+	 * @param string $filepath relative to the site root
+	 * 
+	 */
+	public function addCssStyleSheet($filepath)
+	{
+	    if (!in_array($filepath, $this->styleSheet))
+	    {
+	        $this->styleSheet[] = $filepath;
+	    }
+	}
+	
+	/**
+	 * Add a stylesheet to the page
+	 * @param string $filename relative to the site root only in allowed paths or relative to the styles/ folder
 	 * @return void
 	 */
 	public function addStyleSheet($filename)
 	{
-	    $allowedprefix = $GLOBALS['babInstallPath'].'styles/';
-	    $length = mb_strlen($allowedprefix);
+	    $allowedprefix = array(
+	        $GLOBALS['babInstallPath'].'styles/',
+	        'vendor/ovidentia'
+	    );
 	    
-	    // $filename can be relative to styles folders
-	    // or a full path relative to main folder
-	    if ($allowedprefix === mb_substr($filename, 0, $length))
-	    {
-	        $filename = mb_substr($filename, $length);
+	    foreach($allowedprefix as $test) {
+	        $length = mb_strlen($test);
+	        if ($test === mb_substr($filename, 0, $length)) {
+	            return $this->addCssStyleSheet($filename);
+	        }
 	    }
 	    
 	    
-	    if (!in_array($filename, $this->styleSheet))
-		{
-			$this->styleSheet[] = $filename;
-		}
+	    return $this->addCssStyleSheet($GLOBALS['babInstallPath'].'styles/'.$filename);
 	}
 	
 	
@@ -1129,10 +1143,18 @@ class babBody
 		$this->script .= "\n" . $code;
 	}
 	
-	
+	/**
+	 * template method
+	 */
 	public function getnextstylesheet()
 	{
-		return list(,$this->file) = each($this->styleSheet);
+		if(list(, $csspath) = each($this->styleSheet)){
+	      $this->csspath  = bab_toHtml($csspath); // relative to site root
+	      $this->file     = bab_toHtml('../../'.$csspath); // relative to the styles directory in core for backward compatibility
+	      return true;
+		}
+		
+		return false;
 	}
 	
 	
