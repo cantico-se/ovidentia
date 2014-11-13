@@ -455,7 +455,7 @@ class bab_SearchArticlesResult extends bab_SearchSqlResult {
 								bab_toHtml($record->title)
 							);
 			
-			if ($articleurlpop = $searchUi->getArticlePopupUrl(bab_SearchDefaultForm::highlightKeyword())) {
+			if ($articleurlpop = $searchUi->getArticlePopupUrl($record->id, bab_SearchDefaultForm::highlightKeyword())) {
 			    $title .= bab_sprintf(' <a href="%s" onclick="bab_popup(this.href);return false;">%s</a>', $articleurlpop, $popupicon);
 			}
 
