@@ -1144,14 +1144,13 @@ class babBody
 	}
 	
 	/**
-	 * template method
+	 * Template method for uiutil.html#styleSheet
 	 */
 	public function getnextstylesheet()
 	{
-		if(list(, $csspath) = each($this->styleSheet)){
-	      $this->csspath  = bab_toHtml($csspath); // relative to site root
-	      $this->file     = bab_toHtml('../../'.$csspath); // relative to the styles directory in core for backward compatibility
-	      return true;
+		if(list(, $csspath) = each($this->styleSheet)) {
+    		$this->file = bab_toHtml(bab_getStaticUrl().$csspath);
+    	    return true;
 		}
 		
 		return false;

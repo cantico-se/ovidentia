@@ -181,11 +181,11 @@ function printBabBodyPopup()
 				return false;
 			}
 
-		function getnextstylesheet()
+		public function getnextstylesheet()
 		{
-			list(,$this->file) = each($this->styleSheets);
-			if ($this->file) {
-			    $this->styleSheet = bab_getStaticUrl().$GLOBALS['babInstallPath'] . 'styles/' . bab_toHtml($this->file);
+			if ($csspath = each($this->styleSheets)) {
+			    $this->file = bab_toHtml(bab_getStaticUrl().'../../'.$csspath);
+			    $this->styleSheet = bab_toHtml(bab_getStaticUrl().$csspath);
 			    return true;
 			}
 			return false;
@@ -196,4 +196,3 @@ function printBabBodyPopup()
 	$temp = new clsPrintBabBodyPopup();
 	echo bab_printTemplate($temp,"uiutil.html", "babbodypopup");
 	}
-?>

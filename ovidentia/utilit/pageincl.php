@@ -488,12 +488,12 @@ function printBody()
 
 		public function getNextStyleSheet()
 		{
-			$babBody = bab_getInstance('babBody');
+			$babBody = bab_getBody();
 
-			list(,$this->styleSheet) = $babBody->getnextstylesheet();
-			if ($this->styleSheet) {
-				$this->styleSheet = bab_getStaticUrl().$GLOBALS['babInstallPath'] . 'styles/' . bab_toHtml($this->styleSheet);
+			if (list(, $csspath) = each($babBody->styleSheet)) {
+			    $this->styleSheet = bab_toHtml(bab_getStaticUrl().$csspath); 
 				return true;
+			    
 			}
 			return false;
 		}
