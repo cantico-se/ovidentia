@@ -183,7 +183,7 @@ function printBabBodyPopup()
 
 		public function getnextstylesheet()
 		{
-			if ($csspath = each($this->styleSheets)) {
+			if (list(,$csspath) = each($this->styleSheets)) {
 			    $this->file = bab_toHtml(bab_getStaticUrl().'../../'.$csspath);
 			    $this->styleSheet = bab_toHtml(bab_getStaticUrl().$csspath);
 			    return true;
