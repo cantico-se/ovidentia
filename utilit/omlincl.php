@@ -3149,7 +3149,7 @@ class Func_Ovml_Container_RecentArticles extends Func_Ovml_Container
 					'(at.date_publication = \'0000-00-00 00:00:00\' OR at.date_publication <= now()) ' .
 					$sDelegation;
 
-			if( $this->nbdays !== false)
+			if( $this->nbdays !== false && bab_isUserLogged())
 				{
 				require_once dirname(__FILE__).'/userinfosincl.php';
 				$usersettings = bab_userInfos::getUserSettings();
