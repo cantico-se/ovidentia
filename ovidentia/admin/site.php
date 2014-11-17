@@ -1655,22 +1655,82 @@ global $babBody;
 }
 
 
+
+
+class bab_siteSearchTpl {
+    
+    /**
+     * @var int
+     */
+    private $id_site;
+    
+    /**
+     * @var array
+     */
+    private $searchUi;
+    
+
+    public function __construct($id_site)
+    {
+        $this->item = bab_toHtml($id_site);
+        $this->id_site = $id_site;
+        $this->engine_options = $this->getEngine();
+        
+        $this->t_interface = bab_translate('Search engine user interface');
+        $this->t_record = bab_translate('Save');
+        
+        require_once $GLOBALS['babInstallPath'].'utilit/functionalityincl.php';
+        
+        $func = new bab_functionalities();
+        $this->searchUi = $func->getChildren('SearchUi');
+    }
+    
+    
+    public function getnextinterface()
+    {
+        if (list(, $name) = each($this->searchUi)) {
+            $searchUi = bab_functionality::get('SearchUi/'.$name);
+            $this->name = bab_toHtml($name);
+            $this->description = bab_toHtml($searchUi->getDescription());
+            $this->selected = get_class(bab_functionality::get('SearchUi')) === get_class($searchUi);
+            return true;
+        }
+        
+        return false;
+    }
+    
+    
+    /**
+     * @return string
+     */
+    private function getEngine()
+    {
+        $arr = bab_searchEngineInfos();
+        
+        if (false === $arr) {
+            return '';
+        }
+        
+        switch($arr['name'])
+        {
+            case 'swish':
+                include_once $GLOBALS['babInstallPath']."admin/sitesearch.swish.php";
+                break;
+        }
+        
+        return site_menu11($this->id_site);
+    }
+}
+
+
+
+
 function call_site_menu11($item) {
+    
+    $babBody = bab_getBody();
 
-	$arr = bab_searchEngineInfos();
-
-	if (false === $arr) {
-		return false;
-	}
-
-	switch($arr['name'])
-		{
-		case 'swish':
-			include_once $GLOBALS['babInstallPath']."admin/sitesearch.swish.php";
-			break;
-		}
-
-	site_menu11($item);
+	$template = new bab_siteSearchTpl($item);
+	$babBody->babecho(bab_printTemplate($template, "sitesearch.html"));
 }
 
 
@@ -2549,6 +2609,16 @@ function call_record_site_menu11($item) {
 		}
 
 	record_site_menu11($item);
+	
+	// search interface
+	
+	require_once $GLOBALS['babInstallPath'].'utilit/functionalityincl.php';
+	
+	$func = new bab_functionalities();
+	
+	if ($interface = bab_pp('interface', 'Default')) {
+	   $func->copyToParent('SearchUi/'.$interface);
+	}
 }
 
 

@@ -1,0 +1,34 @@
+<form name="formsite" method="post" action="{ babPhpSelf }">
+<input type="hidden" name="tg" value="site" />
+<input type="hidden" name="idx" value="menusite" />
+<input type="hidden" name="item" value="{ item }" />
+<input type="hidden" name="action" value="menu11" />
+<table width="70%" border="0" cellspacing="0" cellpadding="2" align="center">
+<tr> 
+<td class="BabLoginCadreBackground"> 
+        <table width="100%" border="0" cellspacing="0" cellpadding="5" align="center" class="BabLoginMenuBackground">
+          <tr> 
+            <td>
+            
+                { engine_options }
+                
+                <p>{ t_interface } :<br />
+                <select name="interface">
+                    <!--#in getnextinterface -->
+                    <option value="{ name }" <!--#if selected --> selected="selected"<!--#endif selected --> >{ description }</option>
+                    <!--#endin getnextinterface -->
+                </select>
+                </p>
+            </td>
+         </tr>
+
+        <tr>
+            <td align="center"><br />
+            <input type="submit" value="{ t_record }" />
+            </td>
+        </tr>
+    </table>
+    </td>
+    </tr>
+</table>
+</form>

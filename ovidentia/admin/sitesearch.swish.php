@@ -24,6 +24,10 @@
 include_once "base.php";
 
 
+/**
+ * Get options for the swish-e serach engine
+ * @return string
+ */
 function site_menu11($id_site)
 {
 	global $babBody;
@@ -67,7 +71,7 @@ function site_menu11($id_site)
 		}
 
 	$temp = new temp($id_site);
-	$babBody->babecho(bab_printTemplate($temp,"sitesearch.swish.html"));
+	return bab_printTemplate($temp,"sitesearch.swish.html");
 }
 
 
