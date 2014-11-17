@@ -36,6 +36,7 @@ class babLittleBody
 	function babLittleBody()
 	{
 		global $babDB;
+		require_once dirname(__FILE__) . '/menu.class.php';
 		$this->menu = new babMenu();
 		$this->message = "";
 		$this->title = "";
