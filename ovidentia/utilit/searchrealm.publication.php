@@ -79,7 +79,8 @@ class bab_SearchRealmPublication extends bab_SearchRealm {
 	public function getAllSearchLocations() {
 
 		return array(
-			'all' => bab_translate('Articles, comments, articles files attachements')
+			'dbtable' => bab_translate('Articles in database'),
+			'content' => bab_translate('Indexed articles')
 		);
 	}
 
@@ -130,27 +131,36 @@ class bab_SearchRealmPublication extends bab_SearchRealm {
 
 		$locations = $this->getSearchLocations();
 
-		// only one location possible in this search realm
-
-		if (isset($locations['all'])) {
-
-			$articles 	= new bab_SearchRealmArticles;
-			$files 		= new bab_SearchRealmArticlesFiles;
-			$comments 	= new bab_SearchRealmArticlesComments;
-
-			$arr = array(
-				$articles	->search($articles	->getSearchFormCriteria()), 
-				$files		->search($files		->getSearchFormCriteria()),
-				$comments	->search($comments	->getSearchFormCriteria())
-			);
-
-
-			$collection = new bab_SearchResultCollection($arr);
-
-			$collection->setTitle('Articles, comments, articles attachements');
-			
-			return $collection;
+		$articles 	= new bab_SearchRealmArticles;
+		$files 		= new bab_SearchRealmArticlesFiles;
+		$comments 	= new bab_SearchRealmArticlesComments;
+		
+		if (isset($locations['dbtable'])) {
+		    $articles->addSearchLocation('dbtable');
+		    $files->addSearchLocation('dbtable');
+		    $comments->addSearchLocation('dbtable');
 		}
+		
+		if (isset($locations['content'])) {
+		    $articles->addSearchLocation('content');
+		    $files->addSearchLocation('content');
+		   // no indexation for articles comments
+		   // $comments->addSearchLocation('content');
+		}
+		
+		$arr = array(
+			$articles	->search($articles	->getSearchFormCriteria()), 
+			$files		->search($files		->getSearchFormCriteria()),
+			$comments	->search($comments	->getSearchFormCriteria())
+		);
+
+
+		$collection = new bab_SearchResultCollection($arr);
+
+		$collection->setTitle('Articles, comments, articles attachements');
+		
+		return $collection;
+	
 		
 		throw new Exception('No valid search location');
 	}
