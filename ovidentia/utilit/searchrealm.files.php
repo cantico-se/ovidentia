@@ -546,7 +546,7 @@ class bab_SearchRealmFiles extends bab_SearchRealm {
 				break;
 
 			case 'relevance':
-				$orderby = 'relevance DESC';
+				$orderby = 'relevance DESC, modified DESC';
 				break;
 
 			default:
