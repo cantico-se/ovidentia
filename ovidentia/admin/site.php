@@ -1686,10 +1686,16 @@ class bab_siteSearchTpl {
     }
     
     
-    public function getnextinterface()
+    public function getnextinterface(&$skip)
     {
         if (list(, $name) = each($this->searchUi)) {
             $searchUi = bab_functionality::get('SearchUi/'.$name);
+            
+            if (!$searchUi) {
+                $skip = true;
+                return true;
+            }
+            
             $this->name = bab_toHtml($name);
             $this->description = bab_toHtml($searchUi->getDescription());
             $this->selected = get_class(bab_functionality::get('SearchUi')) === get_class($searchUi);

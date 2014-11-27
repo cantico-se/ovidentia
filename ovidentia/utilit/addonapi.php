@@ -3319,10 +3319,10 @@ class bab_functionality {
 	 * @return string | false		the object class name or false if the file already included or false if the include failed
 	 */
 	public static function includefile($path) {
-		$include_result = /*@*/include self::getRootPath().'/'.$path.'/'.BAB_FUNCTIONALITY_LINK_FILENAME;
+		$include_result = include self::getRootPath().'/'.$path.'/'.BAB_FUNCTIONALITY_LINK_FILENAME;
 
 		if (false === $include_result) {
-			trigger_error(sprintf('The functionality %s is not available', $path));
+			bab_debug(sprintf('The functionality %s is not available', $path), DBG_ERROR, __CLASS__);
 		}
 
 		return $include_result;
