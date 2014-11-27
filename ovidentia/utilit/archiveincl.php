@@ -114,11 +114,15 @@ class Func_Archive_Zip extends Func_Archive {
 			{
 				bab_locale();
 				
-				if ('windows' === bab_browserOS()) {
-					$this->charset = 'IBM437';
-				} else {
+				// T8371
+				// it seem that the IBM437 charset does not allways work for windows users
+				// it can be set manually with setCharset() if required
+				
+				// if ('windows' === bab_browserOS()) {
+				//	  $this->charset = 'IBM437';
+				// } else {
 					$this->charset = 'ASCII';
-				}
+				// }
 			}
 			
 			$filename = iconv(bab_charset::getDatabase(), $this->charset.'//TRANSLIT', $filename);
