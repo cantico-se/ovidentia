@@ -407,7 +407,7 @@ class bab_ArtDraft
 		$image = bab_getImageDraftArticle($this->getId());
 		if ($image)
 		{
-			if ($T = @bab_functionality::get('Thumbnailer'))
+			if ($T = bab_functionality::get('Thumbnailer'))
 			{
 				/*@var $T Func_Thumbnailer */
 				$T->setSourceFile($GLOBALS['babUploadPath'].'/'.$image['relativePath'].$image['name']);

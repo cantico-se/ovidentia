@@ -38,13 +38,13 @@ if (isset($_COOKIE['c_password']))
 			require_once $GLOBALS['babInstallPath'] . 'admin/register.php';
 			require_once $GLOBALS['babInstallPath'] . 'utilit/loginIncl.php';
 			
-			$oAuthObject = @bab_functionality::get('PortalAuthentication/AuthOvidentia');
+			$oAuthObject = bab_functionality::get('PortalAuthentication/AuthOvidentia');
 			if (false === $oAuthObject)
 			{
 				// If the default authentication method 'AuthOvidentia' does not exist
 				// for example during first installation we (re)create it.
 				Func_PortalAuthentication_AuthOvidentia::registerAuthType();
-				$oAuthObject = @bab_functionality::get('PortalAuthentication/AuthOvidentia');
+				$oAuthObject = bab_functionality::get('PortalAuthentication/AuthOvidentia');
 			}
 			if (false === $oAuthObject)
 			{

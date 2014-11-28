@@ -230,7 +230,7 @@ class bab_grp_node
 	$this->bupdate = bab_getCurrentAdmGroup() == 0 || bab_isDelegated('groups');
 	
 	/* Icons functionality */
-	$icons = @bab_functionality::get('Icons');
+	$icons = bab_functionality::get('Icons');
 	if ($icons != false) {
 		$icons->includeCss();
 	}

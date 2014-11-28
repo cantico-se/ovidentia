@@ -246,7 +246,7 @@ abstract class bab_listArticles extends categoriesHierarchy
 			return null;
 		}
 
-		if ($T = @bab_functionality::get('Thumbnailer'))
+		if ($T = bab_functionality::get('Thumbnailer'))
 		{
 			require_once dirname(__FILE__) . '/utilit/pathUtil.class.php';
 

@@ -196,7 +196,7 @@ class bab_userModify {
 				
 				while ($arrc = $babDB->db_fetch_assoc($resc))
 				{
-					$backend = @bab_functionality::get('CalendarBackend/'.$arrc['calendar_backend']);
+					$backend = bab_functionality::get('CalendarBackend/'.$arrc['calendar_backend']);
 					if (!$backend)
 					{
 						continue;

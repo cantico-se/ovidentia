@@ -6413,7 +6413,7 @@ function setArticleAssociatedImageInfo($oCtx, $iMaxImageHeight, $iMaxImageWidth,
 			$sImageUrl			= $GLOBALS['babUrl'].bab_getSelf() . '?tg=articles&idx=getImage&sImage=' . urlencode($sName);
 			$sOriginalImageUrl	= $sImageUrl . '&iIdArticle=' . $iIdArticle;
 
-			$T = @bab_functionality::get('Thumbnailer');
+			$T = bab_functionality::get('Thumbnailer');
 			$thumbnailUrl = null;
 
 			if ($T) {
@@ -6505,7 +6505,7 @@ function setCategoryAssociatedImageInfo($oCtx, $iMaxImageHeight, $iMaxImageWidth
 			$sImageUrl			= $GLOBALS['babUrl'].bab_getSelf() . '?tg=topusr&idx=getCategoryImage&sImage=' . bab_toHtml($sName);
 			$sOriginalImageUrl	= $sImageUrl . '&iIdCategory=' . $iIdCategory;
 
-			$T = @bab_functionality::get('Thumbnailer');
+			$T = bab_functionality::get('Thumbnailer');
 			$thumbnailUrl = null;
 
 			if ($T && $iWidth && $iHeight) {
@@ -6604,7 +6604,7 @@ function setTopicAssociatedImageInfo($oCtx, $iMaxImageHeight, $iMaxImageWidth, $
 			$sImageUrl			= $GLOBALS['babUrl'].bab_getSelf() . '?tg=topusr&idx=getTopicImage&sImage=' . bab_toHtml($sName);
 			$sOriginalImageUrl	= $sImageUrl . '&iIdTopic=' . $iIdTopic . '&item=' . $iIdTopic  . '&iIdCategory=' . $iIdCategory;
 
-			$T = @bab_functionality::get('Thumbnailer');
+			$T = bab_functionality::get('Thumbnailer');
 			$thumbnailUrl = null;
 
 			if ($T && $iWidth && $iHeight) {
@@ -6690,7 +6690,7 @@ function setImageInfo($oCtx, $iMaxImageHeight, $iMaxImageWidth, $path)
 	$iWidth				= $iMaxImageWidth ? $iMaxImageWidth : 2048;
 	$sFullPathName		= $path;
 
-	$T = @bab_functionality::get('Thumbnailer');
+	$T = bab_functionality::get('Thumbnailer');
 	$thumbnailUrl = null;
 
 	if ($T && $iWidth && $iHeight) {

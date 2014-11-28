@@ -804,7 +804,7 @@ function newReply($forum, $thread, $post)
 			$this->postid = bab_toHtml($post);
 			$this->flat = bab_toHtml($flat);
 			
-			$oCaptcha = @bab_functionality::get('Captcha');
+			$oCaptcha = bab_functionality::get('Captcha');
 			$this->bUseCaptcha = false;
 			if(false !== $oCaptcha && (!isset($BAB_SESS_USERID) || empty($BAB_SESS_USERID)))
 			{
@@ -1120,7 +1120,7 @@ function saveReply($forum, $thread, $post, $name, $subject)
 		return;
 		}
 
-	$oCaptcha = @bab_functionality::get('Captcha');
+	$oCaptcha = bab_functionality::get('Captcha');
 	if(false !== $oCaptcha && (!isset($BAB_SESS_USERID) || empty($BAB_SESS_USERID)))
 		{
 		$sCaptchaSecurityCode = bab_pp('sCaptchaSecurityCode', '');

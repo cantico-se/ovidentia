@@ -428,7 +428,7 @@ class bab_functionalities {
 
 
 		if ($parent = $this->getParentPath($func_path)) {
-			if (false !== @bab_functionality::get($parent) && !$this->compare($parent, $func_path, $include_file)) {
+			if (false !== bab_functionality::get($parent) && !$this->compare($parent, $func_path, $include_file)) {
 				trigger_error(sprintf('The functionality %s does not implement interface from parent functionality %s', $func_path, $parent));
 				return false;
 			}
