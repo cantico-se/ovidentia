@@ -42,6 +42,45 @@ class Func_PortalAuthentication extends bab_functionality
 	{
 		return bab_translate("Authentication functionality");
 	}
+	
+	
+	/**
+	 * Get authentication type name used in menu before authentication (visible by the anonymous user)
+	 * must be internationalized
+	 * 
+	 * @since 8.2.90
+	 * 
+	 * @return string
+	 */
+	public function getMenuName()
+	{
+	    return $this->getDescription();
+	}
+	
+	/**
+	 * Get url to the authentication type icon in 16x16px format
+	 * 
+	 * @since 8.2.90
+	 * 
+	 * @return string
+	 */
+	public function getMenuIcon16()
+	{
+	    return null;
+	}
+	
+	/**
+	 * Get url to the authentication type icon in 48x48px format
+	 * 
+	 * @since 8.2.90
+	 * 
+	 * @return string
+	 */
+	public function getMenuIcon48()
+	{
+	    return null;
+	}
+	
 
 	/**
 	 * Sets the message that will be displayed to the user when asked for his credentials.
