@@ -419,7 +419,7 @@ function bab_removeDiacritics($string, $charset = null)
 	{
         return $string;
 	}
-	
+
 	if (null === $charset)
 	{
 		$charset = bab_charset::getIso();
@@ -549,7 +549,7 @@ function bab_removeDiacritics($string, $charset = null)
     }
 
     return $string;
-	
+
 }
 
 
@@ -685,8 +685,8 @@ function bab_mktime($time)
 		return mktime(0,0,0,$arr0[1],$arr0[2],$arr0[0]);
 		}
 	}
-	
-	
+
+
 class bab_DateStrings
 {
 	/**
@@ -696,7 +696,7 @@ class bab_DateStrings
 	public static function getMonths()
 	{
 		static $arr = null;
-		
+
 		if (null === $arr)
 		{
 			$arr = array(
@@ -714,10 +714,10 @@ class bab_DateStrings
 	            bab_translate("December")
 	        );
 		}
-		
+
 		return $arr;
 	}
-	
+
 	/**
 	 *
 	 * @param int $i
@@ -728,7 +728,7 @@ class bab_DateStrings
 		$months = self::getMonths();
 		return $months[$i];
 	}
-	
+
 	/**
 	 *
 	 * @return array
@@ -736,11 +736,11 @@ class bab_DateStrings
 	public static function getShortMonths()
 	{
 		static $arr = null;
-		
+
 		if (null === $arr)
 		{
 			$months = self::getMonths();
-			
+
 			$arr = array();
 			foreach($months as $key => $val) {
 				$sm = mb_substr($val, 0 , 3);
@@ -751,15 +751,15 @@ class bab_DateStrings
 					while(in_array($sm, $arr) && $m < mb_strlen($val)) {
 						$sm = mb_substr($val, 0 , $m++);
 					}
-			
+
 					$arr[$key] = $sm;
 				}
 			}
 		}
-		
+
 		return $arr;
 	}
-	
+
 	/**
 	 *
 	 * @return arrray
@@ -767,7 +767,7 @@ class bab_DateStrings
 	public static function getDays()
 	{
 		static $arr = null;
-		
+
 		if (null === $arr)
 		{
 			$arr = array(
@@ -780,11 +780,11 @@ class bab_DateStrings
 				bab_translate('Saturday')
 			);
 		}
-		
+
 		return $arr;
 	}
-	
-	
+
+
 	/**
 	 *
 	 * @param int $i
@@ -796,7 +796,7 @@ class bab_DateStrings
 		return $days[$i];
 	}
 }
-	
+
 
 /**
  * Returns a string containing the time formatted according to the format
@@ -1173,7 +1173,7 @@ function bab_translate($str, $folder = "", $lang="")
 		}
 	}
 
-	
+
 /**
  * Test if the user is member of administrators group
  * @return false | int
@@ -1182,12 +1182,12 @@ function bab_isUserAdministrator()
 {
 	require_once dirname(__FILE__).'/defines.php';
 	static $admin = null;
-	
+
 	if (!isset($admin))
 	{
 		$admin = bab_isMemberOfGroup(BAB_ADMINISTRATOR_GROUP);
 	}
-	
+
 	return $admin;
 }
 
@@ -1376,12 +1376,12 @@ function bab_getGroupsMembers($ids, $nonConfirmed = false, $disabled = false)
 function bab_isMemberOfGroup($group, $userid="")
 {
 	global $babDB;
-	
+
 	if (is_numeric($group) && BAB_ALLUSERS_GROUP === (int) $group)
 	{
 		return true;
 	}
-	
+
 	if('' === $group) {
 		return false;
 	}
@@ -1404,11 +1404,11 @@ function bab_isMemberOfGroup($group, $userid="")
 			return false;
 		}
 	}
-	
+
 	if ($userid == bab_getUserId())
 	{
 		require_once dirname(__FILE__).'/groupsincl.php';
-		
+
 		// use session cache
 		if (bab_Groups::inUserGroups($id_group))
 		{
@@ -1435,9 +1435,9 @@ function bab_isMemberOfGroup($group, $userid="")
 			{
 				return $id_group;
 			}
-				
+
 	}
-	
+
 	return false;
 }
 
@@ -1462,7 +1462,7 @@ function bab_getUserIdByEmail($email)
 		}
 	}
 
-	
+
 /**
  * Get user ID by nickname
  * @param string $nickname
@@ -1483,7 +1483,7 @@ function bab_getUserIdByNickname($nickname)
 		}
 	}
 
-	
+
 /**
  * Get the user ID from logged in user or from the fullname
  * @since 7.8.90 the name parameter is optional since the 7.8.90
@@ -1492,21 +1492,21 @@ function bab_getUserIdByNickname($nickname)
  */
 function bab_getUserId($name = null)
 {
-		
+
 	if (null === $name)
 	{
 		require_once dirname(__FILE__).'/session.class.php';
 		$session = bab_getInstance('bab_Session');
-		
+
 		if (!isset($session->BAB_SESS_USERID))
 		{
 			return 0;
 		}
-		
+
 		return ((int) $session->BAB_SESS_USERID);
 	}
-		
-		
+
+
 	global $babDB;
 	$replace = array( " " => "", "-" => "");
 	$hash = md5(mb_strtolower(strtr($name, $replace)));
@@ -1517,7 +1517,7 @@ function bab_getUserId($name = null)
 		$arr = $babDB->db_fetch_array($res);
 		return (int) $arr['id'];
 	}
-	
+
 	return 0;
 }
 
@@ -1666,7 +1666,7 @@ function bab_isAccessValid($table, $idobject, $iduser='')
 {
 	require_once $GLOBALS['babInstallPath'].'utilit/session.class.php';
 	$session = bab_getInstance('bab_Session');
-	
+
 	if( $iduser != '' && ((int) $iduser) !== (int) $session->BAB_SESS_USERID)
 		{
 			include_once $GLOBALS['babInstallPath']."admin/acl.php";
@@ -1679,7 +1679,7 @@ function bab_isAccessValid($table, $idobject, $iduser='')
 			}
 			return false;
 		}
-		
+
 	$objects = bab_getUserIdObjects($table);
 
 	return isset($objects[$idobject]);
@@ -1753,23 +1753,23 @@ function bab_getUserIdObjects($table)
 	require_once dirname(__FILE__).'/defines.php';
 	require_once dirname(__FILE__).'/groupsincl.php';
 	require_once $GLOBALS['babInstallPath'].'utilit/session.class.php';
-	
+
 	global $babDB;
 	$session = bab_getInstance('bab_Session');
-	
+
 	if (!isset($session->bab_groupAccess))
 	{
 		$groupAccess = array();
 	} else {
 		$groupAccess = $session->bab_groupAccess;
 	}
-	
+
 	if(!isset($groupAccess['acltables'][$table]))
 	{
 		$groupAccess['acltables'][$table] = array();
-	
+
 		$res = $babDB->db_query("SELECT t.id_object, t.id_group, g.nb_groups FROM ".$babDB->backTick($table)." t left join ".BAB_GROUPS_TBL." g on g.id=t.id_group");
-	
+
 		while ($row = $babDB->db_fetch_assoc($res)) {
 			if( $row['nb_groups'] !== null )
 			{
@@ -1787,7 +1787,7 @@ function bab_getUserIdObjects($table)
 				$groupAccess['acltables'][$table][$row['id_object']] = $row['id_object'];
 			}
 		}
-		
+
 		$session->bab_groupAccess = $groupAccess;
 	}
 
@@ -1870,9 +1870,9 @@ function bab_mkdir($path, $mode = '')
     if (mb_substr($path, - 1) == '/') {
         $path = mb_substr($path, 0, - 1);
     }
-    
+
     $umaskmode = isset($GLOBALS['babUmaskMode']) ? $GLOBALS['babUmaskMode'] : 0;
-    
+
     $umask = umask($umaskmode);
     if ($mode === '') {
         if (isset($GLOBALS['babMkdirMode'])) {
@@ -1947,7 +1947,7 @@ function bab_getAvailableLanguages()
 	}
 
 
-	
+
 
 
 
@@ -1966,15 +1966,15 @@ function bab_printTemplate($class, $file, $section = '')
 	//bab_debug('Template file : '.$file.'<br />'.'Section in template file : '.$section);
 
 	global $babInstallPath, $babSkinPath, $babSkin;
-	
-	
+
+
 	$skin = new bab_Skin($babSkin);
 
 	$tpl = new bab_Template();
 	if ($html = $tpl->printTemplate($class, $skin->getThemePath().'templates/'. $file, $section)) {
 	    return $html;
 	}
-	
+
 	return $tpl->printTemplate($class, $babInstallPath.'skins/ovidentia/templates/'.$file, $section);
 }
 
@@ -2086,7 +2086,7 @@ function bab_getFileMimeType($file)
 function bab_getUserDirEntryId($userId)
 {
 	global $babDB;
-	
+
 	$query = "select id from ".BAB_DBDIR_ENTRIES_TBL." where id_user='".$babDB->db_escape_string($userId)."'";
 	$res = $babDB->db_query($query);
 	if( $res && $arr = $babDB->db_fetch_assoc($res)) {
@@ -2121,7 +2121,7 @@ function bab_getDirInfo($directory) {
 	$res = $babDB->db_query($query);
 	return $babDB->db_fetch_assoc($res);
 }
-	
+
 /**
  * Get a directory entry or a list of entries
  *
@@ -2227,13 +2227,13 @@ function bab_getUserDirEntryLink($id = false, $type = BAB_DIR_ENTRY_ID_USER, $id
 function bab_getGroupName($id, $fpn=true)
 {
 	require_once dirname(__FILE__).'/defines.php';
-	
+
 	$id = (int) $id;
 
 	if (BAB_ALLUSERS_GROUP === $id || BAB_REGISTERED_GROUP === $id || BAB_UNREGISTERED_GROUP === $id || BAB_ADMINISTRATOR_GROUP === $id) {
 		return bab_translate(bab_Groups::getName($id));
 	}
-	
+
 	if($fpn)
 	{
 		$name = bab_Groups::getGroupPathName($id);
@@ -2243,9 +2243,9 @@ function bab_getGroupName($id, $fpn=true)
 			return $name;
 		}
 	}
-	
+
 	return bab_Groups::getName($id);
-	
+
 }
 
 
@@ -2263,8 +2263,8 @@ function bab_getGroupName($id, $fpn=true)
  */
 function bab_getGroups($parent=BAB_REGISTERED_GROUP, $all=true)
 {
-		
-		
+
+
 	if (null === $parent)
 	{
 		// list of groups sets
@@ -2277,10 +2277,10 @@ function bab_getGroups($parent=BAB_REGISTERED_GROUP, $all=true)
 			$arr['name'][] = $row['name'];
 			$arr['description'][] = $row['description'];
 		}
-		
+
 		return $arr;
 	}
-		
+
 	include_once $GLOBALS['babInstallPath']."utilit/grptreeincl.php";
 
 	$tree = new bab_grptree();
@@ -2477,7 +2477,7 @@ function bab_canCurrentUserUpdateUser($userId) {
 	{
 		return false;
 	}
-	
+
 	// Mantis #1867
 	// this test was used from 7.5.91 to 7.7.3
 
@@ -3064,7 +3064,7 @@ function bab_getFileContentDisposition() {
 function bab_printCachedOvmlTemplate($file, $args = array())
 {
 	require_once dirname(__FILE__).'/ovmlcache.php';
-	
+
 	$cache = new bab_ovml_cache($file, $args);
 
 	$cache_type = 'session';
@@ -3072,12 +3072,12 @@ function bab_printCachedOvmlTemplate($file, $args = array())
 	{
 		$cache_type = $args['_ovml_cache_type'];
 	}
-	
+
 	if (isset($args['_ovml_cache_duration']))
 	{
 		$cache->setCacheDuration((int) $args['_ovml_cache_duration']);
 	}
-	
+
 	return $cache->$cache_type();
 }
 
@@ -3118,7 +3118,7 @@ function bab_printOvmlTemplate($file, $args=array())
 	}
 
 	$GLOBALS['babWebStat']->addOvmlFile($filepath);
-	
+
 	include_once $babInstallPath.'utilit/omlincl.php';
 	$tpl = new babOvTemplate($args);
 	$template = $tpl->printout(file_get_contents($filepath), $filepath);
@@ -3327,7 +3327,7 @@ class bab_functionality {
 
 		return $include_result;
 	}
-	
+
 	/**
 	 * Include original php file with the functionality class
 	 *
@@ -3340,8 +3340,8 @@ class bab_functionality {
 	{
 		return include self::getRootPath().'/'.$path.'/'.BAB_FUNCTIONALITY_LINK_ORIGINAL_FILENAME;
 	}
-	
-	
+
+
 	/**
 	 * Returns the specified functionality object without the default inherithed object.
 	 *
@@ -3367,7 +3367,7 @@ class bab_functionality {
 		}
 		return new $classname();
 	}
-	
+
 
 
 	/**
@@ -3494,7 +3494,7 @@ function bab_requireCredential($sLoginMessage = '', $sAuthType = '')
 			$sAuthType = 'Basic';
 		}
 	}
-	
+
 	return bab_doRequireCredential($sLoginMessage, $sAuthType);
 }
 
@@ -3598,7 +3598,7 @@ function bab_downloadFile(bab_Path $path, $filename = null, $inline = true, $exi
 
 		if (mb_strtolower(bab_browserAgent()) == 'msie') {
 			// header('Cache-Control: public');
-			
+
 			// IE8 + https bug : http://stackoverflow.com/questions/1242900/problems-with-header-when-displaying-a-pdf-file-in-ie8
 			header("Cache-Control: must-revalidate, post-check=0, pre-check=0");
 			header("Pragma: public");
@@ -3665,7 +3665,7 @@ function bab_jQuery()
 function bab_strip_tags($str)
 {
 	$str = preg_replace('/\<[^<]+\>/', '${0} ', $str);
-	
+
 	return strip_tags($str);
 }
 
@@ -3701,7 +3701,7 @@ function bab_getStaticUrl()
 	$settings = bab_getInstance('bab_Settings');
 	/*@var $settings bab_Settings */
 	$site = $settings->getSiteSettings();
-	
+
 	if (!isset($site['staticurl']))
 	{
 		return '';
@@ -3723,18 +3723,18 @@ function bab_getLanguage()
 {
 	require_once dirname(__FILE__).'/settings.class.php';
 	require_once dirname(__FILE__).'/userincl.php';
-	
+
 	$settings = bab_getInstance('bab_Settings');
 	/*@var $settings bab_Settings */
 	$site = $settings->getSiteSettings();
-	
+
 	if ('Y' !== $site['change_lang'] || !bab_isUserLogged())
 	{
 		return $site['lang'];
 	}
-	
+
 	require_once dirname(__FILE__).'/userinfosincl.php';
-	
+
 	if($arr = bab_userInfos::getUserSettings())
 	{
 		if (!empty($arr['lang']))
@@ -3742,11 +3742,13 @@ function bab_getLanguage()
 			return $arr['lang'];
 		}
 	}
-	
+
 	return $site['lang'];
 }
 
 /**
+ * @since 8.0.95
+ *
  * @return babBody
  */
 function bab_getBody()
