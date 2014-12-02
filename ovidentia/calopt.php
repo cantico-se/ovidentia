@@ -279,7 +279,7 @@ function calendarOptions($urla)
 			
 			foreach($arr as $backend)
 			{
-				$obj = @bab_functionality::get('CalendarBackend/'.$backend);
+				$obj = bab_functionality::get('CalendarBackend/'.$backend);
 				if ($obj && $obj->StorageBackend())
 				{
 					$this->allbackends[] = $backend;
@@ -480,7 +480,7 @@ function calendarOptions($urla)
 				if (list(,$func) = each($this->allbackends))
 				{
 					$this->name = bab_toHtml($func);
-					$backend = @bab_functionality::get('CalendarBackend/'.$func);
+					$backend = bab_functionality::get('CalendarBackend/'.$func);
 					if ($backend)
 					{
 						$this->description = bab_toHtml($backend->getDescription());
@@ -796,8 +796,8 @@ function bab_changeCalendarBackend($calendar_backend)
 {
 	global $babBody;
 	
-	$old_backend = @bab_functionality::get('CalendarBackend/'.bab_getICalendars()->calendar_backend);
-	$new_backend = @bab_functionality::get('CalendarBackend/'.$calendar_backend);
+	$old_backend = bab_functionality::get('CalendarBackend/'.bab_getICalendars()->calendar_backend);
+	$new_backend = bab_functionality::get('CalendarBackend/'.$calendar_backend);
 	
 	if (!$old_backend || !$new_backend)
 	{

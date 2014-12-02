@@ -239,7 +239,7 @@ function addComment($topics, $article, $subject, $message, $com = '', $messageFo
 			// We use the captcha if it is available as a functionality.
 			if (!$GLOBALS['BAB_SESS_LOGGED']) {
 //				$this->rate_articles = false;
-				$captcha = @bab_functionality::get('Captcha');
+				$captcha = bab_functionality::get('Captcha');
 				if (false !== $captcha) {
 					$this->useCaptcha = true;
 					$this->captchaCaption1 = bab_translate('Word Verification');
@@ -279,7 +279,7 @@ function saveComment($topics, $article, $subject, $message, $com, $articleRating
 
 	// We first check that the user entered the correct captcha.
 	if (!$GLOBALS['BAB_SESS_LOGGED']) {
-		$captcha = @bab_functionality::get('Captcha');
+		$captcha = bab_functionality::get('Captcha');
 		if (false !== $captcha) {
 			$captchaSecurityCode = bab_pp('captchaSecurityCode', '');
 

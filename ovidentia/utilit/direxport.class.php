@@ -849,7 +849,7 @@ class bab_dbdir_export_vcard extends bab_dbdir_export
 		}
 		
 		
-		$T = @bab_functionality::get('Thumbnailer');
+		$T = bab_functionality::get('Thumbnailer');
 		$vcard_image_type = $this->getPhotoType($photo_type);
 		$b64 = '';
 		

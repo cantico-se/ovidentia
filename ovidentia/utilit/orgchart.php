@@ -604,7 +604,7 @@ class bab_OvidentiaOrgChart extends bab_OrgChart
 						$dirEntry['jpegphoto']['value'] = $photo->getUrl();
 						if(!empty($dirEntry['jpegphoto']['value'])){
 							/* @var $T Func_Thumbnailer */
-							$T = @bab_functionality::get('Thumbnailer');
+							$T = bab_functionality::get('Thumbnailer');
 							
 							if ($T) {
 								// The thumbnailer functionality is available.

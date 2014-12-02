@@ -413,7 +413,7 @@ function newThread($forum)
 			$this->forum = bab_toHtml($forum);
 			$this->flat = bab_toHtml(bab_rp('flat', 1));
 			
-			$oCaptcha = @bab_functionality::get('Captcha');
+			$oCaptcha = bab_functionality::get('Captcha');
 			$this->bUseCaptcha = false;
 			if(false !== $oCaptcha && (!isset($BAB_SESS_USERID) || empty($BAB_SESS_USERID)))
 			{
@@ -497,7 +497,7 @@ function saveThread()
 		return false;
 		}
 
-	$oCaptcha = @bab_functionality::get('Captcha');
+	$oCaptcha = bab_functionality::get('Captcha');
 	if(false !== $oCaptcha && (!isset($BAB_SESS_USERID) || empty($BAB_SESS_USERID)))
 		{
 		$sCaptchaSecurityCode = bab_pp('sCaptchaSecurityCode', '');

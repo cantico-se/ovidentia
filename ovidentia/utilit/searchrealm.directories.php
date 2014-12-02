@@ -907,7 +907,7 @@ class bab_SearchRealmDirectories_ResultTemplate extends bab_SearchTemplate {
 					$this->popup = true;
 					$this->dirurl = bab_toHtml($src);
 
-					if ($thumb = @bab_functionality::get('Thumbnailer')) {
+					if ($thumb = bab_functionality::get('Thumbnailer')) {
 
 						$data = $record->$name->getData();
 						if ($data) {

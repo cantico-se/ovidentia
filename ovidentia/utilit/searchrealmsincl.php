@@ -411,7 +411,7 @@ class bab_SearchTemplate {
 
 		$icon = '';
 
-		if ($thumbnail = @bab_functionality::get('Thumbnailer')) {
+		if ($thumbnail = bab_functionality::get('Thumbnailer')) {
 			if (method_exists($thumbnail, 'getIcon')) {
 				$src = $thumbnail->getIcon($filepath, 100, 100);
 				$type = (false !== $src->getThumbnail()) ? 'thumbnail' : 'icon';

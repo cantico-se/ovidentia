@@ -1013,7 +1013,7 @@ function bab_ajaxAttachments()
 			
 			// try to get default description for new file
 			
-			$FileInfos = @bab_functionality::get('FileInfos');
+			$FileInfos = bab_functionality::get('FileInfos');
 			if ($FileInfos)
 			{
 				$meta = $FileInfos->getMetadata($f->getFilePath()->toString());

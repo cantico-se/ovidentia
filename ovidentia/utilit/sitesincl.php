@@ -63,14 +63,11 @@ function bab_getSitesConfigurationMenus() {
 		7 => bab_translate('Home page managers'),
 		8 => bab_translate('Authentification configuration'),
 		9 => bab_translate('Inscription configuration'),
-		10=> bab_translate('WYSIWYG editor configuration')
+		10 => bab_translate('WYSIWYG editor configuration'),
+	    11 => bab_translate('Search engine configuration'),
+	    12 => bab_translate('Web services')
 	);
 
-	if (bab_searchEngineInfos())
-		{
-		$menu[11] = bab_translate('Search engine configuration');
-		}
-	$menu[12] = bab_translate('Web services');
 
 	return $menu;
 }

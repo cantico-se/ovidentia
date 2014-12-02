@@ -93,11 +93,20 @@ function printBody()
 				$this->logurl = bab_toHtml($GLOBALS['babUrlScript'].'?tg=login&cmd=signon');
 			}
 
-			$this->search = bab_translate("Search");
-			$searchUi = bab_functionality::get('SearchUi');
-			/*@var $searchUi Func_SearchUi */
+			$this->search = '';
+			$this->searchurl = '';
 			
-			$this->searchurl = bab_toHtml($searchUi->getUrl());
+			if ($searchUi = bab_functionality::get('SearchUi')) {
+			    
+			    /*@var $searchUi Func_SearchUi */
+			
+			    try {
+			        $this->search = bab_translate("Search");
+			        $this->searchurl = bab_toHtml($searchUi->getUrl());
+			    } catch (Exception $e) {
+			        // Not implemented, need the search addon
+			    }
+			}
 
 			if (!isset($GLOBALS['babMarquee']) || $GLOBALS['babMarquee'] == '') {
 				$this->babSlogan = $babSlogan;

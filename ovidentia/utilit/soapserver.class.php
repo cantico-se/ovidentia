@@ -189,13 +189,13 @@ function login($nickname, $password)
 
 	if( $access )
 		{
-		$oAuthObject = @bab_functionality::get('PortalAuthentication/AuthOvidentia');
+		$oAuthObject = bab_functionality::get('PortalAuthentication/AuthOvidentia');
 		if (false === $oAuthObject)
 		{
 		   // If the default authentication method 'AuthOvidentia' does not exist
 		   // for example during first installation we (re)create it.
 		   Func_PortalAuthentication_AuthOvidentia::registerAuthType();
-		   $oAuthObject = @bab_functionality::get('PortalAuthentication/AuthOvidentia');
+		   $oAuthObject = bab_functionality::get('PortalAuthentication/AuthOvidentia');
 		}
 		
 		/*@var $oAuthObject Func_PortalAuthentication */

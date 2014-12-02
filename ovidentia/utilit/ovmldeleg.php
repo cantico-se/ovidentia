@@ -101,7 +101,7 @@ function setDelegationAssociatedImageInfo($oCtx, $iMaxImageHeight, $iMaxImageWid
 			$sImageUrl			= $GLOBALS['babUrlScript'] . '?tg=delegation&idx=getImage&iWidth='.$iWidth.'&iHeight='.$iHeight.'&iIdDeleg=' .$iIdDeleg;
 			$sRealImageUrl		= $GLOBALS['babUrlScript'] . '?tg=delegation&idx=getImage&iWidth='.$iWidth.'&iHeight='.$iHeight.'&realFile=1&iIdDeleg=' .$iIdDeleg;
 
-			$T = @bab_functionality::get('Thumbnailer');
+			$T = bab_functionality::get('Thumbnailer');
 			$thumbnailUrl = null;
 
 			if ($T && $iHeight && $iWidth) {
