@@ -2603,6 +2603,17 @@ function siteUpdateDisclaimer($item)
 
 function call_record_site_menu11($item) {
 
+    // search interface
+    
+    require_once $GLOBALS['babInstallPath'].'utilit/functionalityincl.php';
+    
+    $func = new bab_functionalities();
+    
+    if ($interface = bab_pp('interface', 'Default')) {
+        $func->copyToParent('SearchUi/'.$interface);
+    }
+    
+    
 	$arr = bab_searchEngineInfos();
 	if (false === $arr)
 		return false;
@@ -2615,16 +2626,6 @@ function call_record_site_menu11($item) {
 		}
 
 	record_site_menu11($item);
-	
-	// search interface
-	
-	require_once $GLOBALS['babInstallPath'].'utilit/functionalityincl.php';
-	
-	$func = new bab_functionalities();
-	
-	if ($interface = bab_pp('interface', 'Default')) {
-	   $func->copyToParent('SearchUi/'.$interface);
-	}
 }
 
 
