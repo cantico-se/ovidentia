@@ -320,15 +320,6 @@ abstract class bab_SearchRealm extends bab_SearchTestable {
 		return $this;
 	}
 
-
-
-	/**
-	 * Get search form as HTML string
-	 * @return string
-	 */
-	public function getSearchFormHtml() {
-		return bab_SearchDefaultForm::getHTML();
-	}
 	
 	/**
 	 * Display a select for delegation filter
@@ -338,32 +329,6 @@ abstract class bab_SearchRealm extends bab_SearchTestable {
 		return false;
 	}
 	
-
-	/**
-	 * get a criteria from a search query made with the form generated with the method <code>getSearchFormHtml()</code>
-	 * @see bab_SearchRealm::getSearchFormHtml()
-	 * @return bab_SearchCriteria
-	 */
-	public function getSearchFormCriteria() {
-		return bab_SearchDefaultForm::getCriteria($this);
-	}
-
-	/**
-	 * get a criteria without field criterions from a search query made with the form generated with the method <code>getSearchFormHtml()</code>
-	 * @see bab_SearchRealm::getSearchFormHtml()
-	 * @return bab_SearchCriteria
-	 */
-	public function getSearchFormFieldLessCriteria() {
-		return bab_SearchDefaultForm::getFieldLessCriteria($this);
-	}
-
-	
-	
-
-
-	
-
-
 	
 
 	/**
@@ -375,6 +340,32 @@ abstract class bab_SearchRealm extends bab_SearchTestable {
 		return true;
 	}
 
+	
+	
+	/**
+	 * Create the search form criteria from the submited form result
+	 * @param bab_SearchRealm $realm
+	 * @return bab_SearchCriteria
+	 */
+	public function getSearchFormCriteria() {
+	    $searchUi = bab_functionality::get('SearchUi');
+	    /*@var $searchUi Func_SearchUi */
+	    return $searchUi->getSearchFormCriteria($this);
+	}
+	
+	
+	/**
+	 * get a criteria without field criterions from a search query made with the form generated with the method <code>getSearchFormHtml()</code>
+	 *
+	 * @param bab_SearchRealm $realm
+	 *
+	 * @return bab_SearchCriteria
+	 */
+	public function getSearchFormFieldLessCriteria() {
+	    $searchUi = bab_functionality::get('SearchUi');
+	    /*@var $searchUi Func_SearchUi */
+	    return $searchUi->getSearchFormFieldLessCriteria($this);
+	}
 }
 
 

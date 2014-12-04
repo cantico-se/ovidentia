@@ -165,68 +165,6 @@ class bab_SearchRealmCalendars extends bab_SearchRealm {
 		throw new Exception('No valid search location');
 	}
 
-
-
-
-	/**
-	 * Get search form as HTML string
-	 * @return string
-	 */
-	public function getSearchFormHtml() {
-
-		$html = parent::getSearchFormHtml();
-
-		$template = new bab_SearchRealmCalendar_SearchTemplate();
-		$html .= bab_printTemplate($template, 'search.html', 'calendar_form');
-
-		return $html;
-	}
-
-
-
-
-
-
-
-	/**
-	 * get a criteria from a search query made with the form generated with the method <code>getSearchFormHtml()</code>
-	 * @see bab_SearchRealm::getSearchFormHtml()
-	 * @return bab_SearchCriteria
-	 */
-	public function getSearchFormCriteria() {
-		// default search fields
-		$criteria = bab_SearchDefaultForm::getCriteria($this);
-
-		
-		$h_calendar = bab_rp('h_calendar');
-		if ($h_calendar) {
-			$criteria = $criteria->_AND_($this->calendar->is($h_calendar));
-		}
-
-		include_once $GLOBALS['babInstallPath'].'utilit/dateTime.php';
-		
-		$after = BAB_DateTime::fromUserInput(bab_rp('after'));
-		
-		if (!$after) {
-			$after = BAB_DateTime::now();
-			$after->less(1, BAB_DATETIME_DAY);
-		}
-		
-		$criteria = $criteria->_AND_($this->end_date->greaterThanOrEqual($after->getIsoDateTime()));
-
-		if ($before = BAB_DateTime::fromUserInput(bab_rp('before'))) {
-			$before->add(1, BAB_DATETIME_DAY);
-			
-		} else {
-			$before = BAB_DateTime::now();
-			$before->add(1, BAB_DATETIME_DAY);
-		}
-		
-		$criteria = $criteria->_AND_($this->start_date->lessThanOrEqual($before->getIsoDateTime()));
-
-		return $criteria;
-	}
-	
 	
 	
 	/**

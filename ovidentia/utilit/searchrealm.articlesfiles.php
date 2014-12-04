@@ -361,67 +361,7 @@ class bab_SearchRealmArticlesFiles extends bab_SearchRealmTopic {
 	}
 
 
-
-
-
-
-
-
-	/**
-	 * get a criteria from a search query made with the form generated with the method <code>getSearchFormHtml()</code>
-	 * @see bab_SearchRealm::getSearchFormHtml()
-	 * @return bab_SearchCriteria
-	 */
-	public function getSearchFormCriteria() {
-		// default search fields
-		$criteria = parent::getSearchFormCriteria($this);
-
-		$this->sql_criteria = new bab_SearchInvariant;
-		
-		
-		$delegation = bab_rp('delegation', null);
-		
-		if (null !== $delegation && 'DGAll' !== $delegation)
-		{
-			// if id_dgowner field exist on search real, filter by delegation
-			
-			require_once dirname(__FILE__).'/delegincl.php';
-			$arr = bab_getUserVisiblesDelegations();
-			
-			if (isset($arr[$delegation]))
-			{
-				$id_dgowner = $arr[$delegation]['id'];
-				$this->sql_criteria = $this->sql_criteria->_AND_($this->id_dgowner->is($id_dgowner));
-			}
-			$id_dgowner = str_replace('DG', '', $delegation);
-			$this->sql_criteria = $this->sql_criteria->_AND_($this->id_dgowner->is($id_dgowner));
-		}
-		
-		
-		if ($id_topic = self::getRequestedTopics()) {
-			
-			$this->sql_criteria = $this->sql_criteria->_AND_($this->id_topic->in($id_topic));
-		}
-		
-
-		$a_authorid = (int) bab_rp('a_authorid');
-		if ($a_authorid) {
-			$this->sql_criteria = $this->sql_criteria->_AND_($this->id_author->is($a_authorid));
-		}
-
-		include_once $GLOBALS['babInstallPath'].'utilit/dateTime.php';
-		if ($after = BAB_DateTime::fromUserInput(bab_rp('after'))) {
-			$this->sql_criteria = $this->sql_criteria->_AND_($this->date_publication->greaterThanOrEqual($after->getIsoDateTime()));
-		}
-
-		if ($before = BAB_DateTime::fromUserInput(bab_rp('before'))) {
-			$before->add(1, BAB_DATETIME_DAY);
-			$this->sql_criteria = $this->sql_criteria->_AND_($this->date_publication->lessThan($before->getIsoDateTime()));
-		}
-
-
-		return $criteria;
-	}
+	
 }
 
 

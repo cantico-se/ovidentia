@@ -820,7 +820,7 @@ class bab_SearchRealmFiles_ResultTemplate extends bab_SearchTemplate {
 			$searchUi = bab_functionality::get('SearchUi');
 			/*@var $searchUi Func_SearchUi */
 			
-			if ($fileurl = $searchUi->getFilePopupUrl($record->id, bab_SearchDefaultForm::highlightKeyword())) {
+			if ($fileurl = $searchUi->getFilePopupUrl($record->id)) {
 			    // with search interface
 			    $this->fileurl 		= bab_toHtml($fileurl);
 			} else {

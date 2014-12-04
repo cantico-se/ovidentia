@@ -309,7 +309,7 @@ class bab_SearchRealmContacts_ResultTemplate extends bab_SearchTemplate {
 			$searchUi = bab_functionality::get('SearchUi');
 			/*@var $searchUi Func_SearchUi */
 			
-			if ($contactUrl = $searchUi->getContactPopupUrl($record->id, bab_SearchDefaultForm::highlightKeyword())) {
+			if ($contactUrl = $searchUi->getContactPopupUrl($record->id)) {
 			    $this->fullnameurl 	= bab_toHtml($contactUrl);
 			} else {
 			    $this->fullnameurl 	= bab_toHtml('?tg=contact&idx=modify&item='.$record->id.'&bliste=1');

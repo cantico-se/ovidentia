@@ -346,31 +346,19 @@ class bab_SearchRealmArticles extends bab_SearchRealmTopic {
 		return $babDB->db_query($query);
 	}
 
-
-
-
-
-
-
-
-
-	/**
-	 * get a criteria from a search query made with the form generated with the method <code>getSearchFormHtml()</code>
-	 * @see bab_SearchRealm::getSearchFormHtml()
-	 * @return bab_SearchCriteria
-	 */
-	public function getSearchFormCriteria() {
-		
-		return parent::getSearchFormCriteria();
-	}
-
+	
+	
+	
 	/**
 	 * Get criteria used to search in articles content
 	 * @return 	bab_SearchRealmFiles
 	 */
 	public function getFieldLessCriteria() {
-		return bab_SearchDefaultForm::getFieldLessCriteria($this);
+	    $searchUi = bab_functionality::get('SearchUi');
+	    
+	    return $searchUi->getSearchFormFieldLessCriteria($this);
 	}
+
 }
 
 
@@ -455,7 +443,7 @@ class bab_SearchArticlesResult extends bab_SearchSqlResult {
 								bab_toHtml($record->title)
 							);
 			
-			if ($articleurlpop = $searchUi->getArticlePopupUrl($record->id, bab_SearchDefaultForm::highlightKeyword())) {
+			if ($articleurlpop = $searchUi->getArticlePopupUrl($record->id)) {
 			    $title .= bab_sprintf(' <a href="%s" onclick="bab_popup(this.href);return false;">%s</a>', $articleurlpop, $popupicon);
 			}
 

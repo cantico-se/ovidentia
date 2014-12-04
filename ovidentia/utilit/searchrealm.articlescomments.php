@@ -248,7 +248,10 @@ class bab_SearchArticlesCommentsResult extends bab_SearchSqlResult {
 								bab_toHtml(bab_getArticleTitle($record->id_article))
 							);
 			
-			if ($articleurlpop = $searchUi->getArticlePopupUrl(bab_SearchDefaultForm::highlightKeyword())) {
+			$searchUi = bab_functionality::get('SearchUi');
+			/*@var $searchUi Func_SearchUi */
+			
+			if ($articleurlpop = $searchUi->getArticlePopupUrl($record->id_article)) {
 			    $position .= bab_sprintf(' <a href="%s" onclick="bab_popup(this.href);return false;">%s</a>', $articleurlpop, $popupicon);
 			}
 

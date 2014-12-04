@@ -67,63 +67,7 @@ abstract class bab_SearchRealmTopic extends bab_SearchRealm {
 	}
 
 
-	/**
-	 * Get search form as HTML string
-	 * @return string
-	 */
-	public function getSearchFormHtml() {
-
-		$html = parent::getSearchFormHtml();
-
-		$template = new bab_SearchRealmArticles_SearchTemplate();
-		$html .= bab_printTemplate($template, 'search.html', 'articles_form');
-
-		return $html;
-	}
-
 	
-	/**
-	 * Get requested topics from drop down list
-	 * @return array
-	 */
-	protected static function getRequestedTopics() {
-
-		$return = array();
-		$a_topiccategory = bab_rp('a_topiccategory');
-
-		if (trim($a_topiccategory) != "") {
-
-			$id_category = false;
-			$id_topic = false;
-
-			if (false !== mb_strpos($a_topiccategory, 'category-')) {
-				$id_category = (int) mb_substr($a_topiccategory, strlen('category-'));
-			}
-
-			if (false !== mb_strpos($a_topiccategory, 'topic-')) {
-				$id_topic = (int) mb_substr($a_topiccategory, strlen('topic-'));
-			}
-
-			if ($id_topic) {
-				$return[] = $id_topic;
-			}
-
-
-			if ($id_category) {
-				include_once $GLOBALS['babInstallPath'].'utilit/topincl.php';
-				$return = bab_getTopicsFromCategory($id_category);
-			}
-		}
-		
-		// list only allowed topics
-		if ($return)
-		{
-			$topview = bab_getUserIdObjects(BAB_TOPICSVIEW_GROUPS_TBL);
-			$return = array_intersect($return, $topview);
-		}
-
-		return $return;
-	}
 
 	
 	/**
@@ -148,40 +92,6 @@ abstract class bab_SearchRealmTopic extends bab_SearchRealm {
 
 
 
-	/**
-	 * get a criteria from a search query made with the form generated with the method <code>getSearchFormHtml()</code>
-	 * @see bab_SearchRealm::getSearchFormHtml()
-	 * @return bab_SearchCriteria
-	 */
-	public function getSearchFormCriteria() {
-		// default search fields
-		$criteria = bab_SearchDefaultForm::getCriteria($this);
-		
-		if ($topics = self::getRequestedTopics()) {
-			$criteria = $criteria->_AND_($this->id_topic->in($topics));
-		} else {
-			$criteria = $criteria->_AND_($this->id_topic->in(bab_getUserIdObjects(BAB_TOPICSVIEW_GROUPS_TBL)));
-		}
-		
-
-		$a_authorid = (int) bab_rp('a_authorid');
-		if ($a_authorid) {
-			$criteria = $criteria->_AND_($this->id_author->is($a_authorid));
-		}
-
-		include_once $GLOBALS['babInstallPath'].'utilit/dateTime.php';
-		if ($after = BAB_DateTime::fromUserInput(bab_rp('after'))) {
-			$criteria = $criteria->_AND_($this->date_publication->greaterThanOrEqual($after->getIsoDateTime()));
-		}
-
-		if ($before = BAB_DateTime::fromUserInput(bab_rp('before'))) {
-			$before->add(1, BAB_DATETIME_DAY);
-			$criteria = $criteria->_AND_($this->date_publication->lessThan($before->getIsoDateTime()));
-		}
-
-
-		return $criteria;
-	}
 
 }
 

@@ -165,17 +165,6 @@ class bab_SearchRealmPublication extends bab_SearchRealm {
 		throw new Exception('No valid search location');
 	}
 
-
-	/**
-	 * Get search form as HTML string
-	 * @return string
-	 */
-	public function getSearchFormHtml() {
-
-		$articles 	= new bab_SearchRealmArticles;
-		return $articles->getSearchFormHtml();
-	}
-	
 	
 	/**
 	 * Display a select for delegation

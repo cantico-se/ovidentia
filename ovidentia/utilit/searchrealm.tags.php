@@ -120,6 +120,57 @@ class bab_SearchRealmTags extends bab_SearchRealm {
 		return $criteria;
 	}
 
+	
+	
+	/**
+	 * Get array of tags references found using default form
+	 * @return array
+	 */
+	public function getTagsReferences() {
+	
+	    $option = bab_rp('option');
+	
+	    require_once dirname(__FILE__) . '/tagApi.php';
+	    $oRefMgr = new bab_ReferenceMgr();
+	
+	    $primary = array();
+	    $secondary = array();
+	
+	
+	    if (bab_rp('what')) {
+	        $primary_search 	= $oRefMgr->get(bab_rp('what'));
+	        if ($primary_search) {
+	            foreach($primary_search as $ref) {
+	                $primary[(string) $ref] = $ref;
+	            }
+	        }
+	    }
+	
+	
+	    if (bab_rp('what2')) {
+	        $secondary_search 	= $oRefMgr->get(bab_rp('what2'));
+	        if ($secondary_search) {
+	            foreach($secondary_search as $ref) {
+	                $secondary[(string) $ref] = $ref;
+	            }
+	        }
+	    } else {
+	        $option = 'OR';
+	    }
+	
+	    switch($option) {
+	        case 'AND':
+	            return array_intersect($primary, $secondary);
+	
+	        case 'NOT':
+	            return array_diff_assoc($primary, $secondary);
+	
+	        case 'OR':
+	        default:
+	            return ($primary + $secondary);
+	    }
+	}
+	
 
 
 	/**
@@ -130,7 +181,7 @@ class bab_SearchRealmTags extends bab_SearchRealm {
 	 */
 	public function search(bab_SearchCriteria $criteria) {
 
-		$arr = bab_SearchDefaultForm::getTagsReferences();
+		$arr = $this->getTagsReferences();
 		$result = array();
 
 		foreach($arr as $reference) {
@@ -185,55 +236,6 @@ class bab_SearchRealmTags extends bab_SearchRealm {
 	}
 
 
-	/**
-	 * Get search form as HTML string
-	 * @return string
-	 */
-	public function getSearchFormHtml() {
-
-		$html = parent::getSearchFormHtml();
-
-		$tags = bab_getInstance('bab_TagMgr');
-		$display = array();
-		$i = 0;
-		$maxrefcount = 0;
-
-		foreach($tags->selectRefCount() as $tag) {
-			
-			if ($i > 50) {
-				break;
-			}
-
-			$refcount = $tag->getRefCount();
-			if ($maxrefcount < $refcount) {
-				$maxrefcount = $refcount;
-			}
-
-			$display[strtolower($tag->getName())] = $tag;
-			$i++;
-		}
-
-		bab_sort::ksort($display);
-
-		$minsize = 9;
-		$maxsize = 15;
-
-		$url = bab_SearchRealmTags::getUrl();
-		
-		$html .= '<div class="tag_cloud">';
-		foreach($display as $tag) {
-			$size = $minsize + (($maxsize * $tag->getRefCount()) / $maxrefcount);
-
-			$html .= bab_sprintf(' <a href="%s" style="font-size:%spx">%s</a> ', 
-				bab_toHtml(bab_url::mod($url, 'what', $tag->getName())), 
-				round($size), 
-				bab_toHtml($tag->getName())
-			);
-		}
-		$html .= '</div>';
-
-		return $html;
-	}
 
 }
 

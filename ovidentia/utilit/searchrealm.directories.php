@@ -650,25 +650,6 @@ class bab_SearchRealmDirectories extends bab_SearchRealm {
 	
 	
 	
-	
-	
-	
-
-
-	/**
-	 * Get search form as HTML string
-	 * @return string
-	 */
-	public function getSearchFormHtml() {
-
-		$html = parent::getSearchFormHtml();
-
-		$template = new bab_SearchRealmDirectories_SearchTemplate($this);
-		$html .= bab_printTemplate($template, 'search.html', 'directories_form');
-
-		return $html;
-	}
-	
 	/**
 	 * Display a select for delegation
 	 */
@@ -676,42 +657,6 @@ class bab_SearchRealmDirectories extends bab_SearchRealm {
 		return true;
 	}
 
-
-	/**
-	 * get a criteria from a search query made with the form generated with the method <code>getSearchFormHtml()</code>
-	 * @see bab_SearchRealm::getSearchFormHtml()
-	 * @return bab_SearchCriteria
-	 */
-	public function getSearchFormCriteria() {
-
-		$directoryid = (int) bab_rp('directoryid');
-		if ($directoryid) {
-			$this->setDirectory($directoryid);
-		}
-
-		// default serach fields
-		$criteria = bab_SearchDefaultForm::getCriteria($this);
-
-		$select = bab_rp('f');
-		$values = bab_rp('v');
-
-		if ($select && is_array($select)) {
-			foreach($select as $key => $customfield) {
-				if (isset($this->$customfield) && !empty($values[$key])) {
-					$criteria = $criteria->_AND_($this->$customfield->contain($values[$key]));
-				}
-			}
-		}
-
-		return $criteria;
-	}
-
-
-
-
-
-
-	
 
 }
 
@@ -860,7 +805,7 @@ class bab_SearchRealmDirectories_ResultTemplate extends bab_SearchTemplate {
 			$this->vcard_classname = '';
 			$this->dirurl = false;
 			
-			$previewUrl = $searchUi->getDirEntryPopupUrl($record->id, bab_SearchDefaultForm::highlightKeyword());
+			$previewUrl = $searchUi->getDirEntryPopupUrl($record->id);
 			if (!isset($previewUrl)) {
 			    $previewUrl = bab_getUserDirEntryLink($record->id, BAB_DIR_ENTRY_ID);
 			}

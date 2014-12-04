@@ -54,32 +54,53 @@ class Func_SearchUi extends bab_functionality
     
     
     /**
+     * Create the search form criteria from the submited form result
+     * @param bab_SearchRealm $realm
+     * @return bab_SearchCriteria
+     */
+    public function getSearchFormCriteria(bab_SearchRealm $realm)
+    {
+        throw new Exception('Not implemented');
+    }
+    
+    
+    /**
+     * get a criteria without field criterions from a search query made with the form generated with the method <code>getSearchFormHtml()</code>
+     *
+     * @param bab_SearchRealm $realm
+     *
+     * @return bab_SearchCriteria
+     */
+    public function getSearchFormFieldLessCriteria(bab_SearchRealm $realm)
+    {
+        throw new Exception('Not implemented');
+    }
+    
+    
+    /**
      * Optional article url to the preview
      * @param int $id_article
-     * @param string $keyword   A keyword to highlight in the preview
      * @return string
      */
-    public function getArticlePopupUrl($id_article, $keyword) {
+    public function getArticlePopupUrl($id_article) {
         return null;
     }
     
     /**
      * Optional contact url to the preview
      * @param int $id_contact
-     * @param string $keyword   A keyword to highlight in the preview
      * @return string
      */
-    public function getContactPopupUrl($id_contact, $keyword) {
+    public function getContactPopupUrl($id_contact) {
         return null;
     }
     
     /**
      * Optional directory entry url to the preview popup
      * @param int $id_entry
-     * @param string $keyword   A keyword to highlight in the preview
      * @return string
      */
-    public function getDirEntryPopupUrl($id_entry, $keyword) {
+    public function getDirEntryPopupUrl($id_entry) {
         return null;
     }
     
@@ -87,10 +108,19 @@ class Func_SearchUi extends bab_functionality
     /**
      * Optional filemanager file url to the preview popup
      * @param int $id_file 
-     * @param string $keyword   A keyword to highlight in the preview
      * @return string
      */
-    public function getFilePopupUrl($id_file, $keyword) {
+    public function getFilePopupUrl($id_file) {
+        return null;
+    }
+    
+
+    /**
+     * Get a string to highlight on a result page
+     * @param string $realmName search realm name
+     * @return string
+     */
+    public function highlightKeyword($realmName) {
         return null;
     }
 }
