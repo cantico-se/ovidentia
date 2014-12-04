@@ -475,6 +475,7 @@ class bab_SearchRealmFiles extends bab_SearchRealm {
 			$query .= ' WHERE '.$where;
 		}
 
+		bab_debug($query);
 		return $babDB->db_query($query);
 
 	}
@@ -540,13 +541,17 @@ class bab_SearchRealmFiles extends bab_SearchRealm {
 		}
 
 		switch($this->sort_method) {
+		    
+		    case 'createddesc':
+		        $orderby = 'created DESC';
+		        break;
 
 			case 'modifieddesc':
 				$orderby = 'modified DESC';
 				break;
 
 			case 'relevance':
-				$orderby = 'relevance DESC, modified DESC';
+				$orderby = 'relevance DESC, created DESC';
 				break;
 
 			default:
@@ -584,7 +589,7 @@ class bab_SearchRealmFiles extends bab_SearchRealm {
 			ORDER BY '.$orderby.' 
 		';
 
-
+        bab_debug($query);
 		return $babDB->db_query($query);
 	}
 
@@ -686,8 +691,8 @@ class bab_SearchRealmFiles extends bab_SearchRealm {
 	
 		return $criteria;
 	}
-
-
+	
+	
 
 
 	/**
