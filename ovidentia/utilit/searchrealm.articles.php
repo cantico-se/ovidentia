@@ -99,11 +99,11 @@ class bab_SearchRealmArticles extends bab_SearchRealmTopic {
 			$this->createField('head_format'		, bab_translate('Head format'))							->searchable(false)	->setTableAlias('a'),
 			$this->createField('body'				, bab_translate('Body'))													->setTableAlias('a'),
 			$this->createField('body_format'		, bab_translate('Body format'))							->searchable(false)	->setTableAlias('a'),
-			$this->createField('date_publication'	, bab_translate('Creation date'))->setRealName('date')	->searchable(false)->setTableAlias('a'),
+			$this->createField('date_publication'	, bab_translate('Creation date'))->setRealName('date')	->searchable(false) ->setTableAlias('a'),
 			$this->createField('archive'			, bab_translate('Archived article'))					->searchable(false)	->setTableAlias('a'),
 			$this->createField('relevance'			, bab_translate('Relevance'))							->searchable(false)	->setTableAlias('a'),
 			$this->createField('id_dgowner'			, bab_translate('Delegation'))							->searchable(false)	->setTableAlias('c'),
-			$this->createField('search'				, bab_translate('search in file content'))				->searchable(false)	->setTableAlias('a')
+		    $this->createField('search'				, bab_translate('search in file content'))              ->searchable(false) ->setTableAlias('a')
 		);
 	}
 
@@ -157,6 +157,8 @@ class bab_SearchRealmArticles extends bab_SearchRealmTopic {
 		global $babDB;
 
 		$mysql = $this->getBackend('mysql');
+		/*@var $mysql bab_SearchMySqlBackEnd */
+		
 		$req = 'INSERT INTO artresults 
 			SELECT 
 				a.id,
@@ -172,7 +174,7 @@ class bab_SearchRealmArticles extends bab_SearchRealmTopic {
 
 		ORDER BY a.`title` DESC';
 
-		bab_debug($req, DBG_INFO, 'Search');
+		// bab_debug($req, DBG_INFO, 'Search');
 
 		$babDB->db_query($req);
 	}
