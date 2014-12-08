@@ -66,7 +66,7 @@ function bab_WFDeleteInstance($idschi)
 
 
 /**
- * Updates an instance with user’s response.
+ * Updates an instance with user's response.
  * 
  * @see bab_WFGetWaitingApproversInstance
  * 
