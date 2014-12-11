@@ -2491,7 +2491,7 @@ $db = & $GLOBALS['babDB'];
 
 $res = $db->db_query("SELECT uploadpath FROM ".BAB_SITES_TBL." WHERE name=".$db->quote($GLOBALS['babSiteName']));
 $arr = $db->db_fetch_assoc($res);
-$GLOBALS['babUploadPath'] = $arr['uploadpath'];
+$GLOBALS['babUploadPath'] = realpath($arr['uploadpath']);
 
 if (!bab_isTable(BAB_FORUMSFILES_TBL)) {
 

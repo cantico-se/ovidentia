@@ -1060,15 +1060,8 @@ function bab_updateSiteSettings()
 
 	$GLOBALS['babQuotaFM'] = $arr['quota_total'];
 	$GLOBALS['babQuotaFolder'] = $arr['quota_folder'];
-	
-	if( !empty($arr['uploadpath']))
-		{
-		$GLOBALS['babUploadPath'] = $arr['uploadpath'];
-		}
-	else
-		{
-		$GLOBALS['babUploadPath'] = '';
-		}
+	$GLOBALS['babUploadPath'] = $settings->getUploadPath();
+
 
 	if( $arr['babslogan'] != '')
 		{

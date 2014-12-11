@@ -6397,10 +6397,9 @@ function setArticleAssociatedImageInfo($oCtx, $iMaxImageHeight, $iMaxImageWidth,
 
 	$settings = bab_getInstance('bab_Settings');
 	/*@var $settings bab_Settings */
-	$site = $settings->getSiteSettings();
 
 	$bProcessed		= false;
-	$sUploadPath	= BAB_PathUtil::addEndSlash(BAB_PathUtil::sanitize($site['uploadpath']));
+	$sUploadPath	= BAB_PathUtil::addEndSlash(BAB_PathUtil::sanitize($settings->getUploadPath()));
 
 	if (is_dir($sUploadPath)) {
 		$aImgInfo = bab_getImageArticle($iIdArticle);
@@ -6588,10 +6587,9 @@ function setTopicAssociatedImageInfo($oCtx, $iMaxImageHeight, $iMaxImageWidth, $
 	
 	$settings = bab_getInstance('bab_Settings');
 	/*@var $settings bab_Settings */
-	$site = $settings->getSiteSettings();
 	
 	$bProcessed		= false;
-	$sUploadPath	= BAB_PathUtil::addEndSlash(BAB_PathUtil::sanitize($site['uploadpath']));
+	$sUploadPath	= BAB_PathUtil::addEndSlash(BAB_PathUtil::sanitize($settings->getUploadPath()));
 
 	if(is_dir($sUploadPath)) {
 		$aImgInfo = bab_getImageTopic($iIdTopic);

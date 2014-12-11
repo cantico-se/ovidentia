@@ -22,6 +22,8 @@
  * USA.																	*
 ************************************************************************/
 
+require_once dirname(__FILE__).'/settings.class.php';
+
 
 /**
  * Search with Swish-e search engine on system
@@ -51,7 +53,7 @@ class swishCls
 
 	$this->system_charset = $registry->getValue('system_charset', $default_charset);
 	
-	$this->uploadDir = $GLOBALS['babBody']->babsite['uploadpath'];
+	$this->uploadDir = bab_getInstance('bab_Settings')->getUploadPath();
 
 	if (!is_dir($this->uploadDir.'/tmp/'))
 		bab_mkdir($this->uploadDir.'/tmp/');

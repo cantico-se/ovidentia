@@ -155,9 +155,7 @@ abstract class bab_AddonLocation
         require_once dirname(__FILE__).'/settings.class.php';
         $settings = bab_getInstance('bab_Settings');
         /*@var $settings bab_Settings */
-        $site = $settings->getSiteSettings();
-    
-        return $site['uploadpath'].'/addons/'.$this->addonName.'/';
+        return $settings->getUploadPath().'/addons/'.$this->addonName.'/';
     }
 }
 

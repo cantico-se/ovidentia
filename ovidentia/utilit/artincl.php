@@ -963,13 +963,13 @@ function bab_getUploadArticlesPath()
 	$site = $settings->getSiteSettings();
 	
 	
-	if( mb_substr($site['uploadpath'], -1) == "/" )
+	if( mb_substr($settings->getUploadPath(), -1) == "/" )
 		{
-		$path = $site['uploadpath'];
+		$path = $settings->getUploadPath();
 		}
 	else
 		{
-		$path = $site['uploadpath']."/";
+		$path = $settings->getUploadPath()."/";
 		}
 
 	$path = $path."articles/";

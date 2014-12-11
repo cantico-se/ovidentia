@@ -27,6 +27,7 @@ require_once dirname(__FILE__) . '/../utilit/baseFormProcessingClass.php';
 require_once dirname(__FILE__) . '/../utilit/fileincl.php';
 require_once dirname(__FILE__) . '/../utilit/iterator/iterator.php';
 require_once dirname(__FILE__) . '/../utilit/addonsincl.php';
+require_once dirname(__FILE__) . '/../utilit/settings.class.php';
 
 //Begin of helpers classes, functions
 
@@ -351,33 +352,6 @@ function lookupForOrphanUserFileInFileSystem($sPathName)
 }
 
 
-/**
- * This function return the upload path
- *
- * @return string The upload path
- */
-function getUploadPathFromDataBase()	
-{
-	global $babDB;
-	
-	$aData = $babDB->db_fetch_array($babDB->db_query('SELECT uploadpath FROM ' . BAB_SITES_TBL . ' WHERE name= ' . $babDB->quote($GLOBALS['babSiteName'])));
-	if(false != $aData)
-	{
-		$sUploadPath	= (string) $aData['uploadpath'];
-		$sUploadPath	= realpath($sUploadPath);
-		$sUploadPath	= str_replace('\\', '/', $sUploadPath);
-		$iLength		= mb_strlen($sUploadPath);
-		$sLastChar		= mb_substr($sUploadPath, -1);
-		
-		if($iLength && '/' !== $sLastChar)
-		{
-			$sUploadPath .= '/';
-			return $sUploadPath;
-		}
-		return $sUploadPath;
-	}
-}	
-
 
 
 
@@ -665,10 +639,12 @@ function convertSite()
 
 	if(bab_isUserAdministrator())
 	{
+	    $site = 
+	    
 		$sFromCharset		= (string) bab_charset::getDatabase();
 		$sToCharset			= ($sFromCharset == 'utf8') ? 'latin1' : 'utf8';
 		$iConvertFileSystem	= (int) bab_gp('convertFileSystem', 0);
-		$sUploadPath		= (string) getUploadPathFromDataBase();
+		$sUploadPath		= bab_getInstance('bab_Settings')->getUploadPath();
 		$aSearch			= array('%convertFrom%', '%convertTo%');
 		$aReplace			= array($sFromCharset, $sToCharset);
 		$sMessage			= str_replace($aSearch, $aReplace, bab_translate('The site may not be converted %convertFrom% in %convertTo% because of errors below'));
@@ -778,7 +754,7 @@ function convertFileManager()
 		$sToCharset		= (string) bab_gp('sToCharset');
 		$aReplace		= array($sFromCharset, $sToCharset);
 		$sMessage		= str_replace($aSearch, $aReplace, bab_translate('The site may not be converted %convertFrom% in %convertTo% because of errors below'));
-		$sUploadPath	= (string) getUploadPathFromDataBase();
+		$sUploadPath	= bab_getInstance('bab_Settings')->getUploadPath();
 
 		$sDbCharset		= (string) bab_charset::getDatabase();
 		$sFsCharset		= ($sDbCharset == 'utf8') ? 'latin1' : 'utf8';

@@ -62,6 +62,21 @@ class bab_Settings
 		return $this->siteSettings;
 	}
 	
+	/**
+	 * Get absolute upload path
+	 * @return string
+	 */
+	public function getUploadPath()
+	{
+	    $site = $this->getSiteSettings();
+	    
+	    if ('' === $site['uploadpath']) {
+	        return '';
+	    }
+	    
+	    return realpath($site['uploadpath']); 
+	}
+	
 	
 	public function setForCurrentSite($key, $value)
 	{

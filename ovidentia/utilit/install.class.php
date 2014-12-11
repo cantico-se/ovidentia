@@ -273,10 +273,7 @@ class bab_InstallRepositoryFile
 		require_once dirname(__FILE__).'/settings.class.php';
 		$settings = bab_getInstance('bab_Settings');
 		/*@var $settings bab_Settings */
-		
-		$site = $settings->getSiteSettings();
-		
-		return $site['uploadpath'].'/tmp';
+		return $settings->getUploadPath().'/tmp';
 	}
 	
 	
@@ -460,10 +457,7 @@ class bab_InstallSource {
 		require_once dirname(__FILE__).'/settings.class.php';
 		$settings = bab_getInstance('bab_Settings');
 		/*@var $settings bab_Settings */
-	
-		$site = $settings->getSiteSettings();
-	
-		return $site['uploadpath'].'/tmp';
+		return $settings->getUploadPath().'/tmp';
 	}
 	
 

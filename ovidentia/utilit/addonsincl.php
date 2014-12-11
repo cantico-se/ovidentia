@@ -406,7 +406,7 @@ function bab_setAddonGlobals($id_addon) {
 		$res = $babDB->db_query($req);
 		$row = $babDB->db_fetch_assoc($res);
 
-		$GLOBALS['babAddonUpload'] = $row['uploadpath'].'/addons/'.$arr['title'].'/';
+		$GLOBALS['babAddonUpload'] = realpath($row['uploadpath']).'/addons/'.$arr['title'].'/';
 	}
 	
 	return true;

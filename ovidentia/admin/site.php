@@ -2079,13 +2079,125 @@ function isAbsolutePath($path)
 }
 
 
+
+function bab_initUploadPath($sUploadPath)
+{
+    $babBody = bab_getBody();
+    
+    $sFmUploadPath				= $sUploadPath . '/fileManager';
+    $sCollectiveUploadPath		= $sFmUploadPath . '/collectives';
+    $sUserUploadPath			= $sFmUploadPath . '/users';
+    $sCollectiveDgUploadPath	= $sCollectiveUploadPath . '/DG' . bab_getCurrentAdmGroup();
+    
+    if(!is_writable($sUploadPath))
+    {
+        $error = __LINE__ . ' ' . basename(__FILE__) . ' ' .
+            sprintf(bab_translate(" The directory: %s is not writable"), $sUploadPath);
+        $babBody->addError($error);
+        return false;
+    }
+    
+    if(!is_dir($sFmUploadPath))
+    {
+        if(!@mkdir($sFmUploadPath, 0777))
+        {
+            $error = __LINE__ . ' ' . basename(__FILE__) . ' ' .
+                sprintf(bab_translate(" The directory: %s have not been created"), $sFmUploadPath);
+            $babBody->addError($error);
+        }
+    }
+    
+    if(!is_dir($sCollectiveUploadPath))
+    {
+        if(!@mkdir($sCollectiveUploadPath, 0777))
+        {
+            $error = __LINE__ . ' ' . basename(__FILE__) . ' ' .
+                sprintf(bab_translate(" The directory: %s have not been created"), $sCollectiveUploadPath);
+            $babBody->addError($error);
+        }
+    }
+    
+    if(!is_dir($sCollectiveDgUploadPath))
+    {
+        if(!@mkdir($sCollectiveDgUploadPath, 0777))
+        {
+            $error = __LINE__ . ' ' . basename(__FILE__) . ' ' .
+                sprintf(bab_translate(" The directory: %s have not been created"), $sCollectiveDgUploadPath);
+            $babBody->addError($error);
+        }
+    }
+    
+    if(!is_dir($sUserUploadPath))
+    {
+        if(!@mkdir($sUserUploadPath, 0777))
+        {
+            $error = __LINE__ . ' ' . basename(__FILE__) . ' ' .
+                sprintf(bab_translate(" The directory: %s have not been created"), $sUserUploadPath);
+            $babBody->addError($error);
+        }
+    }
+}
+
+
+
+function bab_createUploadPath($uploadpath)
+{
+    $babBody = bab_getBody();
+    
+    $iLength = mb_strlen(trim($uploadpath));
+    if($iLength > 0)
+    {
+        $sUploadPath = str_replace('\\', '/', trim($uploadpath));
+        $iLength = mb_strlen($sUploadPath);
+        if($iLength > 0)
+        {
+    
+            if (!is_dir($sUploadPath)) {
+                $aPaths = explode('/', $sUploadPath);
+                if(is_array($aPaths) && count($aPaths) > 0)
+                {
+                    $sPath = '';
+                    foreach($aPaths as $sPathItem)
+                    {
+                        if ($sPathItem) {
+    
+                            if (empty($sPath) && '/' !== mb_substr($sUploadPath,0,1)) {
+                                $sPath .= $sPathItem;
+                            } else {
+                                $sPath .= '/' . $sPathItem;
+                            }
+    
+                            if(!is_dir($sPath))
+                            {
+                                if(!mkdir($sPath, 0777))
+                                {
+                                    $babBody->addError(sprintf(bab_translate('The directory: %s have not been created'), $sPath));
+                                    break;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+    
+            if(is_dir($sUploadPath))
+            {
+                bab_initUploadPath($sUploadPath);
+            }
+        }
+    }
+}
+
+
+
+
 function siteUpdate_menuUpload()
 {
 	global $babDB, $babBody;
 
 	$errors = false;
-	if (!isAbsolutePath($_POST['uploadpath'])) {
-		$babBody->addError(bab_translate("ERROR: The upload path must be an absolute path."));
+	if (!isAbsolutePath($_POST['uploadpath']) && !file_exists(realpath($_POST['uploadpath']))) {
+		$babBody->addError(bab_translate("ERROR: The upload path must be an absolute path or relative to ovidentia root folder."));
 		$errors = true;
 	}
 	
@@ -2118,100 +2230,12 @@ function siteUpdate_menuUpload()
 	$babDB->db_query($req);
 
 	
-	global $babBody;
-	$iLength = mb_strlen(trim($uploadpath));
-	if($iLength > 0)
-	{
-		$sUploadPath = str_replace('\\', '/', trim($uploadpath));
-		$iLength = mb_strlen($sUploadPath);
-		if($iLength > 0)
-		{
-
-			if (!is_dir($sUploadPath)) {
-				$aPaths = explode('/', $sUploadPath);
-				if(is_array($aPaths) && count($aPaths) > 0)
-				{
-					$sPath = '';
-					foreach($aPaths as $sPathItem)
-					{
-						if ($sPathItem) {
-						
-							if (empty($sPath) && '/' !== mb_substr($sUploadPath,0,1)) {
-								$sPath .= $sPathItem;
-							} else {
-								$sPath .= '/' . $sPathItem;
-							}
-
-							if(!is_dir($sPath))
-							{
-								if(!mkdir($sPath, 0777))
-								{
-									$babBody->addError(sprintf(bab_translate('The directory: %s have not been created'), $sPath));
-									break;
-								}
-							}
-						}
-					}
-				}
-			}
-
-			if(is_dir($sUploadPath))
-			{
-				$sFmUploadPath				= $sUploadPath . '/fileManager';
-				$sCollectiveUploadPath		= $sFmUploadPath . '/collectives';
-				$sUserUploadPath			= $sFmUploadPath . '/users';
-				$sCollectiveDgUploadPath	= $sCollectiveUploadPath . '/DG' . bab_getCurrentAdmGroup();
-
-				if(!is_writable($sUploadPath))
-				{
-					$error = __LINE__ . ' ' . basename(__FILE__) . ' ' .  
-						sprintf(bab_translate(" The directory: %s is not writable"), $sUploadPath);
-					$babBody->addError($error);
-					return false;
-				}
-				
-				if(!is_dir($sFmUploadPath))
-				{
-					if(!@mkdir($sFmUploadPath, 0777))
-					{
-						$error = __LINE__ . ' ' . basename(__FILE__) . ' ' . 
-							sprintf(bab_translate(" The directory: %s have not been created"), $sFmUploadPath);
-						$babBody->addError($error);
-					}
-				}
-
-				if(!is_dir($sCollectiveUploadPath))
-				{
-					if(!@mkdir($sCollectiveUploadPath, 0777))
-					{
-						$error = __LINE__ . ' ' . basename(__FILE__) . ' ' .
-							sprintf(bab_translate(" The directory: %s have not been created"), $sCollectiveUploadPath);
-						$babBody->addError($error);
-					}
-				}
-
-				if(!is_dir($sCollectiveDgUploadPath))
-				{
-					if(!@mkdir($sCollectiveDgUploadPath, 0777))
-					{
-						$error = __LINE__ . ' ' . basename(__FILE__) . ' ' .
-							sprintf(bab_translate(" The directory: %s have not been created"), $sCollectiveDgUploadPath);
-						$babBody->addError($error);
-					}
-				}
-				
-				if(!is_dir($sUserUploadPath))
-				{
-					if(!@mkdir($sUserUploadPath, 0777))
-					{
-						$error = __LINE__ . ' ' . basename(__FILE__) . ' ' . 
-							sprintf(bab_translate(" The directory: %s have not been created"), $sUserUploadPath);
-						$babBody->addError($error);
-					}
-				}
-			}
-		}
+	if (isAbsolutePath($uploadpath)) {
+	    bab_createUploadPath($uploadpath);
+	} else {
+	    bab_initUploadPath($uploadpath);
 	}
+	
 	return true;
 }
 

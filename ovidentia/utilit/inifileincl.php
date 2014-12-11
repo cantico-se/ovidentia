@@ -450,9 +450,6 @@ class bab_inifile_requirements {
 		$status = false;
 		$error = null;
 
-		// $babBody->babsite not available in upgrade
-		// $ul = $GLOBALS['babBody']->babsite['uploadpath'];
-
 		$sitename = isset($GLOBALS['babSiteName']) ? $GLOBALS['babSiteName'] : 'Ovidentia';
 
 
@@ -467,7 +464,7 @@ class bab_inifile_requirements {
 		}
 
 		$babsite = $babDB->db_fetch_assoc($res);
-		$ul = new bab_Path($babsite['uploadpath']);
+		$ul = new bab_Path(realpath($babsite['uploadpath']));
 
 		try {
 			$status = $ul->isFolderWriteable();
@@ -1126,10 +1123,7 @@ class bab_inifile {
 		require_once dirname(__FILE__).'/settings.class.php';
 		$settings = bab_getInstance('bab_Settings');
 		/*@var $settings bab_Settings */
-	
-		$site = $settings->getSiteSettings();
-	
-		return $site['uploadpath'].'/tmp';
+		return $settings->getUploadPath().'/tmp';
 	}
 	
 
