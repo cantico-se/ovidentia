@@ -219,7 +219,7 @@ class bab_Template
 		if ($templateFile === false) {
 			return false;
 		}
-		$quotedSection = preg_quote($section);
+		$quotedSection = preg_quote($section, '/');
 		$sectionStart = '/<!--#begin\s+' . $quotedSection . '\s+-->/';
 		$sectionEnd = '/<!--#end\s+' . $quotedSection . '\s+-->/';
 
