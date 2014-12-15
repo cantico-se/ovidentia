@@ -351,7 +351,7 @@ class bab_ArticleDraftEditor {
 		if (isset($_POST['body']))
 		{
 			$bodyEditor->setContent($_POST['body']);
-		}elseif($tpl){
+		}elseif($tpl && !$this->draft->body){
 			$bodyEditor->setContent($tpl['body']);
 		}
 		$bodyEditor->setParameters(array('height' => '300'));
