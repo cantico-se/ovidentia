@@ -46,6 +46,12 @@ class bab_FileInfo extends SplFileInfo
 	 * @var string
 	 */
 	private $fmPathname = null;
+	
+	
+	/**
+	 * @var bool
+	 */
+	private $_isDir = null;
 
 
 	/**
@@ -66,6 +72,7 @@ class bab_FileInfo extends SplFileInfo
 		foreach ($oIt as $oFile) {
 			$iCount++;
 		}
+		
 		return $iCount - 2; // We do not count '.' and '..'.
 	}
 
@@ -162,6 +169,22 @@ class bab_FileInfo extends SplFileInfo
 	}
 
 
+
+	/**
+	 * (non-PHPdoc)
+	 * @see SplFileInfo::isDir()
+	 */
+	public function isDir () {
+	    
+	    if (!isset($this->_isDir)) {
+	        $this->_isDir = parent::isDir();
+ 	    }
+	    
+	    return $this->_isDir;
+	}
+	
+	
+	
 	/**
 	 * Returns the corresponding BAB_FmFolderFile object.
 	 *
@@ -173,7 +196,6 @@ class bab_FileInfo extends SplFileInfo
 			if ($this->isDir()) {
 				$this->fmFile = $this->getFmFolder();
 			} else {
-
 				$this->fmFile = $this->getFolderFile();
 			}
 		}
