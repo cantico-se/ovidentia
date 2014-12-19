@@ -47,7 +47,12 @@ class bab_FileInfo extends SplFileInfo
 	 */
 	private $fmPathname = null;
 
-
+	/**
+	 * @var bool
+	 */
+	private $_isDir = null;
+	
+	
 	/**
 	 * Returns the number of files (directory or regular files) contained in the
 	 * this file (the file is not a directory 0 is returned).
@@ -161,6 +166,22 @@ class bab_FileInfo extends SplFileInfo
 		return $oFolderFileSet->get($oCriteria);
 	}
 
+	
+	
+	/**
+	 * (non-PHPdoc)
+	 * @see SplFileInfo::isDir()
+	 */
+	public function isDir () {
+	
+	    if (!isset($this->_isDir)) {
+	        $this->_isDir = parent::isDir();
+	    }
+	
+	    return $this->_isDir;
+	}
+	
+	
 
 	/**
 	 * Returns the corresponding BAB_FmFolderFile object.
