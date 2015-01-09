@@ -164,7 +164,9 @@ function bab_OCGetRole($idr)
     return false;
 }
 
-
+/**
+ *
+ */
 function bab_OCGetChildsEntities($idroot='', $idoc='')
 {
     global $babDB;
@@ -223,7 +225,15 @@ function bab_OCGetSuperior($identity)
 {
     global $babDB;
 
-    $res = $babDB->db_query("SELECT det.id_user, det.sn lastname, det.givenname firstname, det.mn middlename FROM ".BAB_OC_ROLES_USERS_TBL." ocrut LEFT JOIN ".BAB_OC_ROLES_TBL." ocrt ON ocrt.id = ocrut.id_role left join ".BAB_DBDIR_ENTRIES_TBL." det on det.id=ocrut.id_user WHERE ocrt.id_entity='".$identity."'  AND ocrt.type = '1'");
+    $res = $babDB->db_query("SELECT det.id_user, det.sn lastname, det.givenname firstname, det.mn middlename
+                            FROM ".BAB_OC_ROLES_USERS_TBL." ocrut
+                            LEFT JOIN ".BAB_OC_ROLES_TBL." ocrt
+                            ON ocrt.id = ocrut.id_role
+                            LEFT JOIN ".BAB_DBDIR_ENTRIES_TBL." det
+                            ON det.id=ocrut.id_user
+                            WHERE ocrt.id_entity='".$identity."'
+                            AND ocrt.type = '1'
+                            ORDER BY lastname, firstname ASC");
     if( $res && $babDB->db_num_rows($res) == 1 )
     {
         $arr = $babDB->db_fetch_array($res);
@@ -327,8 +337,9 @@ function bab_OCGetCollaborators($identity)
                              FROM ".BAB_OC_ROLES_USERS_TBL." ocrut
                              LEFT JOIN ".BAB_OC_ROLES_TBL." ocrt ON ocrt.id = ocrut.id_role
                              LEFT JOIN ".BAB_DBDIR_ENTRIES_TBL." det ON det.id = ocrut.id_user
-                              WHERE ocrt.id_entity = '".$identity."'
-                               AND ocrt.type != '1' and ocrut.isprimary = 'Y'");
+                             WHERE ocrt.id_entity = '".$identity."'
+                             AND ocrt.type != '1' and ocrut.isprimary = 'Y'
+                             ORDER BY lastname, firstname ASC");
     if( $res && $babDB->db_num_rows($res) > 0 )
     {
         while( $arr = $babDB->db_fetch_array($res))
