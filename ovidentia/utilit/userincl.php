@@ -712,7 +712,6 @@ function bab_getSuperior($iduser, $idoc = '')
 			ocrt.id_oc='".$babDB->db_escape_string($idoc)."' 
 			AND det.id_user IN ( ".$babDB->db_escape_string($iduser)."  )  
 			AND det.id_directory = '0' 
-			AND ocrut.isprimary='Y'
 	";
 	$res = $babDB->db_query($query." AND ocrut.isprimary='Y'");
 	
