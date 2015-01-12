@@ -564,19 +564,22 @@ abstract class bab_Controller
 		    } else {
 		        $this->addMessage($e->getMessage());
 		    }
+		    
+		    if (!isset($failedAction)) {
+		        bab_debug(sprintf('Missing the failed action to redirect or execute action from %s', $method));
+		        return;
+		    }
+		    
 			if ($e->redirect) {
-				if (!isset($failedAction)) {
-					throw new Exception(sprintf('Missing the failed action to redirect from %s', $method));
-				}
-				
-				$this->redirect($failedAction);
-			} else {
-
-			    if (0 == count($failedAction->getParameters())) {
-					throw new Exception('Error, incorrect action');
-				}
-				$returnedValue = $objectController->execAction($failedAction);
+			     return $this->redirect($failedAction);
 			}
+			
+
+		    if (0 == count($failedAction->getParameters())) {
+				throw new Exception('Error, incorrect action');
+			}
+			$returnedValue = $objectController->execAction($failedAction);
+			
 		}
 
 		
