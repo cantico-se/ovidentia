@@ -236,7 +236,7 @@ class bab_UserPeriods implements Countable, seekableIterator {
 		}
 
 		foreach($this->periodCollection as $periodCollection) {
-			if ($collection === $periodCollection || ($collection instanceof $periodCollection)) {
+			if ($collection === $periodCollection || ($collection instanceof $periodCollection) || ($periodCollection instanceof $collection)) {
 				return true;
 			}
 		}
