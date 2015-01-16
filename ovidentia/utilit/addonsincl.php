@@ -572,5 +572,3 @@ function bab_getAddonsFilePath() {
 
 }
 
-
-?>

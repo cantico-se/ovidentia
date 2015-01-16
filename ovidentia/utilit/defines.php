@@ -391,4 +391,3 @@ define('BAB_TSKMGR_TASK_LIST_FILTER_TBL', 'bab_tskmgr_task_list_filter');
 define('BAB_TSKMGR_TASK_FIELDS_TBL', 'bab_tskmgr_task_fields');
 define('BAB_TSKMGR_SELECTED_TASK_FIELDS_TBL', 'bab_tskmgr_task_selected_fields');
 
-?>

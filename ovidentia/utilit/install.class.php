@@ -66,7 +66,7 @@ class bab_InstallRepository {
 					throw new Exception(sprintf('Failed to download the configured url %s', $this->list_url));
 				}
 				
-				
+				// warning, json_decode need php 5.2
 				$modules = json_decode($json);
 				
 				foreach ($modules as $name => $variations) {
