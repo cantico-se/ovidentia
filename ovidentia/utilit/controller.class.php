@@ -607,8 +607,9 @@ abstract class bab_Controller
 					header('Expires: Mon, 26 Jul 1997 05:00:00 GMT');
 					header('Content-type: text/html');
 					
-					if ($returnedValue instanceof Widget_BabPage) {
-					   header('X-Cto-PageTitle: '.bab_convertStringFromDatabase($returnedValue->getTitle(), 'ISO-8859-1'));
+					// widgets >= 1.0.65
+					if ($returnedValue instanceof Widget_BabPage && method_exists($returnedValue, 'getPageTitle')) {
+					   header('X-Cto-PageTitle: '.bab_convertStringFromDatabase($returnedValue->getPageTitle(), 'ISO-8859-1'));
 					}
 					
 					die($returnedValue->display($htmlCanvas));
