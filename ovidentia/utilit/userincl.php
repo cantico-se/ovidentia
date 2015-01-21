@@ -717,7 +717,7 @@ function bab_getSuperior($iduser, $idoc = '')
 	
 	if (0 === $babDB->db_num_rows($res))
 	{
-		bab_debug(sprintf('No primary role found in chart %d for user %s', $idoc, bab_getUserName($iduser)));
+		bab_debug(sprintf('No primary role found in chart %d for user %s', $idoc, $iduser.' '.bab_getUserName($iduser)));
 		
 		// try on each roles
 		$res = $babDB->db_query($query);

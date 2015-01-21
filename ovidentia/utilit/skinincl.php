@@ -136,7 +136,7 @@ class bab_skin {
 		$list = bab_AddonStandardLocation::getList();
 		foreach($list as $name) {
 		    $addon = bab_getAddonInfosInstance($name);
-		    if ('THEME' === $addon->getAddonType()) {
+		    if ($addon && 'THEME' === $addon->getAddonType()) {
 		        self::$skins[] = new bab_skin($name);
 		    }
 		}

@@ -563,9 +563,6 @@ class bab_searchFilesCls extends swishCls
 		if (empty($this->swishCmd)) {
 			return array();
 		}
-			
-		bab_debug($this->query, DBG_INFO ,'swish-e');
-
 
 		// try with php extension
 		$return  = $this->searchFilesPecl();
@@ -600,7 +597,12 @@ class bab_searchFilesCls extends swishCls
 				$debug .= $matches[1][$j].' - '.$matches[2][$j]."\n";
 				}
 			}
-		bab_debug('swish-e query : \''.$this->query."'\n\n".$debug, DBG_INFO ,'swish-e');
+			
+			
+	    if (empty($debug)) {
+	        $debug .= 'No results.';
+	    }
+		bab_debug('swish-e '.basename($this->mainIndex).' query : \''.$this->query."'\n\n".$debug, DBG_INFO ,'swish-e');
 		return $files;
 		}
 
