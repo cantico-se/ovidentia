@@ -1126,34 +1126,29 @@ function modifyEvent($idcal, $collection, $evtid, $dtstart, $cci, $view, $date)
 		}
 
 
-	$calendar = bab_getICalendars()->getEventCalendar($idcal);
-	if (!isset($calendar))
-	{
-		throw new Exception('Access denied to calendar '.$idcal);
+	$event = bab_getUpdateEventFromIdCal($idcal, $evtid, $dtstart);
+	if (!$event) {
+	    // l'evenement n'a pas ete trouve dans l'agenda
+	    // mais une copie subsite dans un autre backend
+    	foreach(explode(',', $cci) as $alternateIdcal) {
+    	    if ($idcal !== $alternateIdcal) {
+    	        if ($event = bab_getUpdateEventFromIdCal($alternateIdcal, $evtid, $dtstart)) {
+    	            
+    	            break;
+    	        }
+    	    }
+    	}
 	}
-
-
-
-
-	$backend = $calendar->getBackend();
-
-	$collection = $backend->CalendarEventCollection($calendar);
-
-	$event = $backend->getPeriod($collection, $evtid, $dtstart);
-
+	
+	
 	if (!($event instanceof bab_CalendarPeriod))
 	{
-		bab_debug('Error, the event '.$evtid.' cannot be reached with the backend '.get_class($backend));
-		$babBody->addError(bab_translate('The requested event could not be found or the calendar is not accessible'));
-		$babBody->babpopup('');
+	    $babBody->addError(bab_translate('The requested event could not be found or the calendar is not accessible'));
+	    $babBody->babpopup('');
 	}
+		
 
-
-	if (!$calendar->canUpdateEvent($event))
-	{
-		$babBody->addError(bab_translate('Access denied to event modification'));
-		$babBody->babpopup('');
-	}
+	$calendar = $event->getCollection()->getCalendar();
 
 
 	$temp = new temp($calendar, $cci, $view, $date, $event);
@@ -1161,7 +1156,56 @@ function modifyEvent($idcal, $collection, $evtid, $dtstart, $cci, $view, $date)
 	$babBody->babecho(bab_printTemplate($temp,"event.html", "scripts"));
 	$babBody->babecho(bab_printTemplate($temp,"jquery-ui-multiselect-widget.html", "script"));
 	$babBody->babpopup(bab_printTemplate($temp,"event.html", "modifyevent"));
+}
+	
+
+/**
+ * Cette fonction permet de chercher si l'evenent existe dans l'agenda
+ * elle a ete cree pour gerer le cas ou un evenement est supprime de caldav mais reste dans 
+ * ovidentia, le champ parent_calendar de la table bab_cal_events pointe toujours sur le backend caldav
+ * si l'evenement est trouve dans ovidentia, on modifie la collection pour le pas tenir compte de parent_calendar
+ * 
+ * backend->getPeriod utilise parent_calendar pour crer le lien evenement>collection>agenda>backend
+ * 
+ * 
+ * @param string $idcal
+ * @param string $evtid
+ * @param string $dtstart
+ * 
+ * @return bab_CalendarPeriod
+ */
+function bab_getUpdateEventFromIdCal($idcal, $evtid, $dtstart)
+{
+    $calendar = bab_getICalendars()->getEventCalendar($idcal);
+    if (!isset($calendar))
+    {
+        throw new Exception('Access denied to calendar '.$idcal);
+    }
+    
+    $backend = $calendar->getBackend();
+    $collection = $backend->CalendarEventCollection($calendar);
+    $event = $backend->getPeriod($collection, $evtid, $dtstart);
+    
+    $event->setCollection($collection);
+    
+    if (!($event instanceof bab_CalendarPeriod))
+    {
+        bab_debug('Error, the event '.$evtid.' cannot be reached with the backend '.get_class($backend));
+        return false;
+    }
+    
+    if (!$calendar->canUpdateEvent($event))
+	{
+		$babBody->addError(bab_translate('Access denied to event modification'));
+		$babBody->babpopup('');
 	}
+	
+	
+	// force collection to overwrite de parent calendar
+	$event->setCollection($collection);
+	
+	return $event;
+}
 
 function deleteEvent()
 	{
