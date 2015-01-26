@@ -1263,6 +1263,28 @@ function bab_OCEmptyOrgChart($orgChartId)
 }
 
 
+/**
+ * Get orgchart name by the ID.
+ *
+ * @return string
+ */
+function bab_getOrgChartName($id)
+{
+    $db = $GLOBALS['babDB'];
+    $query = "select name from ".BAB_ORG_CHARTS_TBL." where id=" . $db->quote($id);
+    $res = $db->db_query($query);
+    if( $res && $db->db_num_rows($res) > 0)
+    {
+        $arr = $db->db_fetch_array($res);
+        return $arr['name'];
+    }
+    else
+    {
+        return "";
+    }
+}
+
+
 
 class bab_OrgChartUtil
 {
