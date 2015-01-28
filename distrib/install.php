@@ -59,12 +59,12 @@ class messageStore
 	public $arr = array();
 		
 		
-	public function __construct($label) 
+	public function __construct($label)
 		{
 		$this->prefix = $label;
 		}
 		
-	function add($str) 
+	function add($str)
 		{
 			global $install;
 			
@@ -146,8 +146,8 @@ class bab_dumpToDb
 				
 				if(mb_strtolower($aDbCharset['Value']) !== $sDbCharsetToCompare)
 				{
-					$this->error->add($this->trans->str('Incompatible database charset, you have selected : ') . 
-						$sDBCharset . $this->trans->str(' and the charset of the database is : ') . 
+					$this->error->add($this->trans->str('Incompatible database charset, you have selected : ') .
+						$sDBCharset . $this->trans->str(' and the charset of the database is : ') .
 						$aDbCharset['Value']);
 					return false;
 				}
@@ -190,7 +190,7 @@ class bab_dumpToDb
 		return true;
 	}
 
-	function db_queryWem($query) 
+	function db_queryWem($query)
 		{
 		return mysqli_query($this->db, $query);
 		}
@@ -209,7 +209,7 @@ class bab_dumpToDb
 		{
 		if (is_array($param)) {
 
-				$keys = array_keys($param); 
+				$keys = array_keys($param);
 			
 				foreach($keys as $key) {
 					$param[$key] = mysqli_real_escape_string($this->db, $param[$key]);
@@ -231,7 +231,7 @@ class bab_dumpToDb
 			$this->error->add($this->trans->str('There is an error into configuration, can\'t read sql dump file'));
 			return false;
 			}
-		while (!feof($f)) 
+		while (!feof($f))
 			{
 			$this->fileContent .= fread($f, 1024);
 			}
@@ -243,13 +243,13 @@ class bab_dumpToDb
 		$reg = "/(?:INSERT|CREATE)(?:[^';]*'(?:[^']|\\\\'|'')*')*[^';]*;/";
 		if (preg_match_all($reg, $this->fileContent, $m))
 			{
-			$this->succes->add(count($m[0]).' '.$this->trans->str('query founded into dump file'));
+			$this->succes->add(count($m[0]).' '.$this->trans->str('queries found in dump file'));
 			for ($k = 0; $k < count($m[0]); $k++ )
 				{
 				$query = $m[0][$k];
 				if (!$this->db_queryWem($query))
 					{
-					$this->error->add($this->trans->str('There is an error into sql dump file at query : ')."\n\n".$query."\n".mysqli_error($this->db));
+					$this->error->add($this->trans->str('There is an error in sql dump file at query : ')."\n\n".$query."\n".mysqli_error($this->db));
 					return false;
 					}
 				
@@ -265,7 +265,40 @@ class bab_dumpToDb
 		return true;
 		}
 
-		
+	
+    function executeSqlFile($file)
+    {
+        $file = fopen($file, 'r');
+
+        if ($file === false) {
+            $this->error->add($this->trans->str('There is an error into configuration, can\'t read sql dump file'));
+            return false;
+        }
+
+        $regExp = '/\;\s*$/s';
+        $query = '';
+
+        while (feof($file) === false) {
+            $line = fgets($file);
+            if (substr($line, 0, 1) === '#') {
+                continue;
+            }
+            $query .= $line;
+            if (preg_match($regExp, $line) === 1) {
+                $query = trim($query);
+                if (!$this->db_queryWem($query)) {
+                    $this->error->add($this->trans->str('There is an error in sql dump file at query : ')."\n\n".$query."\n".mysqli_error($this->db));
+                    return false;
+                }
+               $query = '';
+            }
+        }
+        $this->succes->add($this->trans->str('Database initialisation done'));
+
+        return fclose($file);
+    }
+
+
 	function dbConfig()
 		{
 		global $install;
@@ -401,7 +434,7 @@ function _createFmDirectories()
 			return false;
 		}
 	}
-	else 
+	else
 	{
 		$bCollDirCreated = true;
 	}
@@ -415,7 +448,7 @@ function _createFmDirectories()
 			return false;
 		}
 	}
-	else 
+	else
 	{
 		$bUserDirCreated = true;
 	}
@@ -428,7 +461,7 @@ function _createFmDirectories()
  * Checks whether the path is an absolute path.
  * On Windows something like C:/example/path or C:\example\path or C:/example\path
  * On unix something like /example/path
- * 
+ *
  * @return bool
  */
 function isAbsolutePath($path)
@@ -552,7 +585,7 @@ class installInfos {
 	/**
 	 * If install informations are confirmed by the user return true
 	 * @return bool
-	 */ 
+	 */
 	public function getFromUser() {
 		if (isset($_POST) && count($_POST) > 0) {
 			$this->getFromPost();
@@ -681,25 +714,22 @@ if ($install->getFromUser())
 			$dump = new bab_dumpToDb();
 			if ($dump->db_connect())
 				{
-				if ($ini->isInstallValid($dump, $strerror)) 
+				if ($ini->isInstallValid($dump, $strerror))
 					{
 					$succes->add($trans->str('Configuration requirements tests successful'));
 					
-					if ($dump->getDatabase()) 
+					if ($dump->getDatabase())
 						{
-						if ($dump->getFileContent())
+						if ($dump->executeSqlFile(BABINSTALL))
 							{
-							if ($dump->workOnQuery())
+							if ($dump->dbConfig())
 								{
-								if ($dump->dbConfig())
+								if (writeConfig())
 									{
-									if (writeConfig())
+									if (renameFile())
 										{
-										if (renameFile())
-											{
-											$succes->add($trans->str('Configuration done'));
-											$all_is_ok = true;
-											}
+										$succes->add($trans->str('Configuration done'));
+										$all_is_ok = true;
 										}
 									}
 								}
@@ -780,7 +810,7 @@ h4 {
 	margin-top:1em;
 	margin-bottom:2em;
 	padding:1em;
-	background: ButtonFace; 
+	background: ButtonFace;
 	border: 1px solid;
 	border-color: ButtonHighlight ButtonShadow ButtonShadow ButtonHighlight;
 	text-align:center;
@@ -872,9 +902,9 @@ a:hover {
 					<dt><label for="babDBName"><?php echo $trans->str('Database name') ?> :</label><input type="text" id="babDBName" name="babDBName" value="<?php echo $install->babDBName; ?>" /></dt>
 					
 					<dt>
-						<label for="babDBCharset"><?php echo $trans->str('Charset') ?> :</label>					
+						<label for="babDBCharset"><?php echo $trans->str('Charset') ?> :</label>
 						<select id="babDBCharset" name="babDBCharset">
-						<?php 					
+						<?php
 						$sSelectedCharset = $install->babDBCharset;
 						if('utf8' == $sSelectedCharset)
 						{
@@ -885,7 +915,7 @@ a:hover {
 							echo '<option value="utf8">utf8</option><option value="latin1" selected="selected">latin1</option>';
 						}
 						?>
-						</select>					
+						</select>
 					</dt>
 										
 					<dt><label for="babDBName"><?php echo $trans->str('Drop database') ?> :</label><input type="checkbox" id="clearDb" name="clearDb" <?php if($install->clearDb) echo 'checked="checked"'; ?> /></dt>
@@ -898,7 +928,7 @@ a:hover {
 					<legend>Ovidentia</legend>
 					<dt><label for="babInstallPath"><?php echo $trans->str('Relative path to ovidentia core') ?> :</label><input type="text" id="babInstallPath" name="babInstallPath" value="<?php echo $install->babInstallPath;?>" /></dt>
 					<dt><label for="babUploadPath"><?php echo $trans->str('Upload directory') ?> :</label><input type="text" id="babUploadPath" name="babUploadPath" value="<?php echo $install->babUploadPath;?>" /></dt>
-						<dd><?php 
+						<dd><?php
 						
 							echo $trans->str('Full path to upload the files, ');
 						
