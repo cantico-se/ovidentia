@@ -144,6 +144,25 @@ function bab_OCGetEntity($ide)
 }
 
 
+function bab_OCGetEntitiesByGroupID($idGroup)
+{
+    global $babDB;
+    $groupsId = array();
+
+    $res = $babDB->db_query("select * from ".BAB_OC_ENTITIES_TBL." where id_group='".$idGroup."'");
+    if( $res && $babDB->db_num_rows($res) > 0 )
+    {
+        while($arr = $babDB->db_fetch_array($res)){
+            $groupsId[$arr['id']] = $arr;
+
+        }
+
+    }
+
+    return $groupsId;
+}
+
+
 function bab_OCGetRole($idr)
 {
     global $babDB;
@@ -1080,6 +1099,45 @@ function bab_OCGetChildren($iIdEntity)
 }
 
 
+/**
+ * Returns the array of id of the specified entity's children.
+ *
+ * @param $iIdEntity
+ * @return array
+ */
+function bab_OCGetDirectChildren($iIdEntity)
+{
+    $children = array();
+
+    global $babDB;
+
+    $sQuery =
+        'SELECT ' .
+            'octChEntity.* ' .
+        'FROM ' .
+            BAB_OC_ENTITIES_TBL . ' octEntity ' .
+        'LEFT JOIN ' .
+            BAB_OC_TREES_TBL . ' octPr ON octPr.id = octEntity.id_node ' .
+        'LEFT JOIN ' .
+            BAB_OC_TREES_TBL . ' octCh ON octCh.id_parent = octPr.id ' .
+        'LEFT JOIN ' .
+            BAB_OC_ENTITIES_TBL . ' octChEntity ON octChEntity.id_node = octCh.id ' .
+        'WHERE ' .
+            'octEntity.id IN (' . $babDB->quote($iIdEntity) . ') ' .
+        'ORDER BY ' .
+            'octCh.lr DESC';
+
+    //bab_debug($sQuery);
+    $oResult = $babDB->db_query($sQuery);
+    if(false !== $oResult){
+        while($aData = $babDB->db_fetch_assoc($oResult)){
+             $children[$aData['id']] = $aData;
+        }
+    }
+    return $children;
+}
+
+
 function bab_OCSelectTreeQuery($iIdTree)
 {
     global $babDB;
@@ -1116,6 +1174,14 @@ function bab_OCSelectTreeQuery($iIdTree)
 }
 
 
+/**
+ * Return the query to get a specific tree path to go to a specific node.
+ * @param string $iIdEntity
+ * @param bool $bIncludeEntity
+ * @param string $sOrder
+ *
+ * @return string
+ */
 function bab_OCGetPathToNodeQuery($iIdEntity, $bIncludeEntity = false, $sOrder = 'ASC')
 {
     global $babDB;
@@ -1789,6 +1855,14 @@ class bab_OrgChartUtil
             return false;
         }
 
+        //You can not create two sub entity with the same name.
+        $children = bab_OCGetDirectChildren($iIdParentEntity);
+        foreach($children as $child){
+            if($child['name'] == $sName){
+                return false;
+            }
+        }
+
         $iIdParentNode = 0;
         if(0 !== $iIdParentEntity)
         {
@@ -1808,44 +1882,6 @@ class bab_OrgChartUtil
             return false;
         }
 
-        $iIdGroup = 0;
-        {
-            if(is_null($mixedGroup))
-            {
-                $mixedGroup = 'none';
-            }
-
-            switch($mixedGroup)
-            {
-                case 'new':
-                    //if('Y' === (string) $this->aCachedOrgChart['isprimary'] && 1 === (int) $this->aCachedOrgChart['id_group'])
-                    //{
-                        require_once dirname(__FILE__) . '/grpincl.php';
-
-                        $iIdDelegation = 0;
-                        $iIdManager = 0;
-                        $iIdGroup = bab_groupIsChildOf($iIdParentGroup, $sName);
-                        if(false === $iIdGroup)
-                        {
-                            $iIdGroup = bab_addGroup($sName, $sDescription, $iIdManager, $iIdDelegation, $iIdParentGroup);
-                        }
-                    //}
-                    break;
-                case 'none':
-                    $iIdGroup = 0;
-                    break;
-                default:
-                    $iIdGroup = (int) $mixedGroup;
-                    break;
-            }
-        }
-
-        $bIsGroup = true;
-        if(0 !== $iIdGroup)
-        {
-            $bIsGroup = bab_isGroup($iIdParentGroup);
-        }
-
         global $babDB;
 
         $sQuery =
@@ -1860,7 +1896,7 @@ class bab_OrgChartUtil
                     $babDB->quote($sDescription) . ', ' .
                     $babDB->quote($this->iIdOrgChart) . ', ' .
                     $babDB->quote($iIdTreeNode) . ', ' .
-                    $babDB->quote($iIdGroup) .
+                    $babDB->quote('0') .
                 ')';
 
         //bab_debug($sQuery);
@@ -1871,31 +1907,46 @@ class bab_OrgChartUtil
             $iIdEntity = $babDB->db_insert_id();
         }
 
-        if(0 === $iIdEntity || !$bIsGroup)
+        if(0 === $iIdEntity)
         {
             $oBabTree = new bab_dbtree(BAB_OC_TREES_TBL, $this->iIdOrgChart);
             $oBabTree->remove($iIdTreeNode);
-            if('new' === (string) $mixedGroup)
-            {
-                bab_deleteGroup($iIdGroup);
-            }
-
             $babBody->addError(bab_translate("Error: Cannot create the entity"));
             return false;
         }
 
         if('none' !== (string) $mixedGroup)
         {
-            $sQuery =
-                'UPDATE ' .
-                    BAB_GROUPS_TBL . ' ' .
-                'SET ' .
-                    'id_ocentity = ' . $babDB->quote($iIdEntity) . ' ' .
-                'WHERE ' .
-                    'id = ' . $babDB->quote($iIdGroup);
+            $iIdGroup = 0;
+            {
+                if(is_null($mixedGroup))
+                {
+                    $mixedGroup = 'none';
+                }
 
-            //bab_debug($sQuery);
-            $babDB->db_query($sQuery);
+                switch($mixedGroup)
+                {
+                    case 'new':
+                        require_once dirname(__FILE__) . '/grpincl.php';
+
+                        $iIdDelegation = 0;
+                        $iIdManager = 0;
+                        $iIdGroup = bab_groupIsChildOf($iIdParentGroup, $sName);
+                        if(false === $iIdGroup)
+                        {
+                            $iIdGroup = bab_addGroup($sName, $sDescription, $iIdManager, $iIdDelegation, $iIdParentGroup);
+                        }
+                        break;
+                    case 'none':
+                        $iIdGroup = 0;
+                        break;
+                    default:
+                        $iIdGroup = (int) $mixedGroup;
+                        break;
+                }
+            }
+
+            $this->updateGroupEntity($iIdEntity, $iIdGroup);
         }
 
         $iIdSuperiorRole	= $this->createRole($iIdEntity, bab_translate("Superior"), '', BAB_OC_ROLE_SUPERIOR, 'N');
@@ -2050,7 +2101,7 @@ class bab_OrgChartUtil
             'WHERE ' .
                 implode(' AND ', $aWhereClauseItem);
 
-        bab_debug($sQuery);
+        //bab_debug($sQuery);
         $aEntity = array();
         $oResult = $babDB->db_query($sQuery);
         if(false !== $oResult)
@@ -2114,6 +2165,51 @@ class bab_OrgChartUtil
             if($iIdGroup > 3){
                 bab_updateGroup($iIdGroup, $sName, $sDescription, $iIdManager);
             }
+
+            return true;
+        }
+        return false;
+    }
+
+
+    /**
+     *
+     * @param int $iIdEntity
+     * @param int $idGroup
+     */
+    function updateGroupEntity($iIdEntity, $idGroup)
+    {
+        if(!$this->isLockedBy($this->iIdSessUser))
+        {
+            return false;
+        }
+
+        global $babBody, $babDB;
+
+        $aEntity = $this->getEntity($iIdEntity);
+        if(false !== $aEntity)
+        {
+            $sQuery =
+                'UPDATE ' .
+                    BAB_OC_ENTITIES_TBL . ' ' .
+                'SET ' .
+                    'id_group = ' . $babDB->quote($idGroup) . ' ' .
+                'WHERE ' .
+                    'id = ' . $babDB->quote($iIdEntity);
+
+            //bab_debug($sQuery);
+            $babDB->db_query($sQuery);
+
+            $sQuery =
+                'UPDATE ' .
+                    BAB_GROUPS_TBL . ' ' .
+                'SET ' .
+                    'id_ocentity = ' . $babDB->quote($iIdEntity) . ' ' .
+                'WHERE ' .
+                    'id = ' . $babDB->quote($idGroup);
+
+            //bab_debug($sQuery);
+            $babDB->db_query($sQuery);
 
             return true;
         }
