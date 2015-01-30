@@ -30,9 +30,9 @@ include_once $babInstallPath.'admin/register.php';
 
 /**
  * Formats a date to an input format: 2009-12-31 => 31/12/2009
- *   
+ *
  * @param string	$isoDate		The iso-formatted date to format
- * 
+ *
  * @return string
  */
 function formatInputDate($isoDate)
@@ -46,7 +46,7 @@ function formatInputDate($isoDate)
 }
 
 
-/* 
+/*
  * Display the form for modify options of a user
  * $userId : id of the user who must be modify
  * $pos : filter for the list of the users when you clic a letter (a letter (A, B...) or nothing (all letters))
@@ -60,9 +60,10 @@ function modifyUser($userId, $pos, $grp)
 		$babBody->msgerror = bab_translate("ERROR: You must choose a valid user !!");
 		return;
 	}
-	
+
 	class ModifyUser_Temp
 	{
+		var $creationdatetxt;
 		var $changepassword;
 		var $isconfirmed;
 		var $primarygroup;
@@ -88,6 +89,7 @@ function modifyUser($userId, $pos, $grp)
 			global $babBody, $babDB;
 
 			$this->showprimary = false;
+			$this->creationdatetxt = bab_translate("Date of account creation");
 			$this->changepassword = bab_translate("Can user change password ?");
 			$this->isconfirmed = bab_translate("Account confirmed ?");
 			$this->isdisabled = bab_translate("Account disabled ?");
@@ -106,6 +108,8 @@ function modifyUser($userId, $pos, $grp)
 			$req = 'SELECT * FROM ' . BAB_USERS_TBL . ' WHERE id=' . $babDB->quote($userId);
 			$this->res = $babDB->db_query($req);
 			$this->arr = $babDB->db_fetch_assoc($this->res);
+
+			$this->creation_date = formatInputDate($this->arr['date']);
 
 			$this->validity_start = formatInputDate($this->arr['validity_start']);
 			$this->validity_end = formatInputDate($this->arr['validity_end']);
@@ -128,7 +132,7 @@ function modifyUser($userId, $pos, $grp)
 					$this->nselected = 'selected';
 				}
 			}
-	
+
 			/* If the current user is admin of a delegation, he can't delete the user */
 			if (bab_getCurrentAdmGroup() != 0) {
 				$this->bdelete = false;
@@ -175,7 +179,7 @@ function deleteUser($id)
 		$babBody->msgerror = bab_translate("Sorry, you cannot delete this user. He is already logged");
 		return;
 	}
-	
+
 	class DeleteUser_Temp
 	{
 		var $warning;
@@ -203,15 +207,15 @@ function deleteUser($id)
 }
 
 
-/** 
+/**
  * Display the form for modify nickname of a user
  * $item : id of the user who must be modify
  * $pos : filter for the list of the users when you clic a letter (a letter (A, B...) or nothing (all letters))
  * $grp : filter for the list of the users when you attach a user in a group (id of a group or nothing)
- * 
- * 
+ *
+ *
  * @deprecated use the userEditor functionality instead
- * 
+ *
  */
 function changeNickname($item, $pos, $grp)
 {
@@ -244,13 +248,13 @@ function changeNickname($item, $pos, $grp)
 
 
 
-/** 
+/**
  * Display the form for modify password of a user
  * $userId : id of the user who must be modify
  * $pos : filter for the list of the users when you clic a letter (a letter (A, B...) or nothing (all letters))
  * $grp : filter for the list of the users when you attach a user in a group (id of a group or nothing)
- * 
- * 
+ *
+ *
  * @deprecated use the userEditor functionality instead
  */
 function changePassword($userId, $pos, $grp)
@@ -313,8 +317,8 @@ function changePassword($userId, $pos, $grp)
 	$tempb = new changePasswordCls($userId, $pos, $grp);
 	$babBody->babEcho(bab_printTemplate($tempb, 'users.html', 'changepassword'));
 }
-	
-	
+
+
 
 
 function viewgroups()
@@ -322,7 +326,7 @@ function viewgroups()
 	global $babBody;
 
 	class ViewGroups_Temp
-	{		
+	{
 		var $altbg = true;
 
 		function ViewGroups_Temp()
@@ -335,15 +339,15 @@ function viewgroups()
 			$id_user = (int) bab_rp('id_user');
 
 			$req = '
-				SELECT 
+				SELECT
 					g.id,
-					g.description  
-				FROM 
-					'.BAB_USERS_GROUPS_TBL.' u, 
-					'.BAB_GROUPS_TBL.' g 
-				WHERE 
+					g.description
+				FROM
+					'.BAB_USERS_GROUPS_TBL.' u,
+					'.BAB_GROUPS_TBL.' g
+				WHERE
 					u.id_object=' . $babDB->quote($id_user).'
-					AND g.id=u.id_group 
+					AND g.id=u.id_group
 				ORDER BY g.name
 			';
 //			bab_debug($req);
@@ -353,7 +357,7 @@ function viewgroups()
 		function getnextgroup()
 		{
 			global $babDB;
-	
+
 			if ($arr = $babDB->db_fetch_assoc($this->res)) {
 				$this->altbg = !$this->altbg;
 				$this->name = bab_toHtml(bab_getGroupName($arr['id']));
@@ -365,7 +369,7 @@ function viewgroups()
 		}
 
 	}
-	
+
 	$tempb = new ViewGroups_Temp();
 	$html = bab_printTemplate($tempb, 'users.html', 'viewgroups');
 	if (false === bab_rp('popup', false)) {
@@ -375,8 +379,8 @@ function viewgroups()
 	}
 
 }
-	
-	
+
+
 
 function notifyUserconfirmation($name, $email)
 {
@@ -399,7 +403,7 @@ function notifyUserconfirmation($name, $email)
 			$this->message = $msg;
 		}
 	}
-	
+
 	$mail = bab_mail();
 	if ($mail == false) {
 		return;
@@ -408,7 +412,7 @@ function notifyUserconfirmation($name, $email)
 	$mail->mailTo($email, $name);
 	$mail->mailFrom($babAdminEmail, $GLOBALS['babAdminName']);
 	$mail->mailSubject(bab_translate("Registration Confirmation"));
-	
+
 
 	$message = bab_translate("Thank You For Registering at our site");
 	$message .= "<br>". bab_translate("Your registration has been confirmed.");
@@ -431,7 +435,7 @@ function notifyUserconfirmation($name, $email)
 
 
 /**
- * 
+ *
  * @param int	$userId		The user id
  */
 function updateGroups($userId)
@@ -467,7 +471,7 @@ function updateGroups($userId)
 
 /**
  * Updates the user information.
- * 
+ *
  * @param int		$userId				The user id
  * @param int		$changepwd			1 => User is allowed to change password, 0 => User cannot change her password
  * @param int		$isConfirmed		1 => User is confirmed, 0 => User is not confirmed
@@ -553,10 +557,10 @@ function updateUser($userId, $changepwd, $isConfirmed, $disabled, $validityStart
 
 	require_once $GLOBALS['babInstallPath'] . 'utilit/eventdirectory.php';
 	require_once $GLOBALS['babInstallPath'] . 'utilit/addonsincl.php';
-	
+
 	$event = new bab_eventUserModified($userId);
 	bab_fireEvent($event);
-	
+
 	$pos = bab_rp('pos', 'A');
 	$grp = bab_rp('grp', '');
 	header('Location: ' . $GLOBALS['babUrlScript'] . '?tg=users&idx=List&pos=' . $pos . '&grp=' . $grp);
@@ -584,23 +588,23 @@ function confirmDeleteUser($userId)
 
 /**
  * Updates the specified user's nickname and add error in babBody
- * 
- * @param int		$userId			The user id		
+ *
+ * @param int		$userId			The user id
  * @param string	$newNickname	The new user nickname
- * 
+ *
  * @return bool		true on success, false on error
  */
 function updateNickname($userId, $newNickname)
 {
-	
+
 	$error = '';
 	$res = bab_updateUserNicknameById($userId, $newNickname, false, $error);
-	
+
 	if (!$res) {
 		global $babBody;
 		$babBody->msgerror = $error;
 	}
-	
+
 	return $res;
 }
 
@@ -608,26 +612,26 @@ function updateNickname($userId, $newNickname)
 
 /**
  * Updates the specified user's password.
- * 
+ *
  * @deprecated use bab_updateUserPasswordById instead
- * 
- * @param int		$userId		The user id		
+ *
+ * @param int		$userId		The user id
  * @param string	$newpwd1	The new password
  * @param string	$newpwd2	The new password (again)
- * 
+ *
  * @return bool
  */
 function updatePassword($userId, $newpwd1, $newpwd2)
 {
 	$error = '';
 	$res = bab_updateUserPasswordById($userId, $newpwd1, $newpwd2, false, false, $error);
-	
+
 	if (!$res) {
 		global $babBody;
 		$babBody->msgerror = $error;
 	}
-	
-	return $res;	
+
+	return $res;
 }
 
 
@@ -654,7 +658,7 @@ if ((!bab_isUserAdministrator() && !bab_isDelegated('users')) && bab_getCurrentA
 	$pos = bab_rp('pos');
 	$grp = bab_rp('grp');
 	$item = null;
-	
+
 	$modify = null;
 	$bupdate = null;
 	$bdelete = null;
@@ -684,40 +688,40 @@ if (isset($update) && $update == 'password') {
 		if ($vSendConfirmationEmail == 'yes') {
 			global $babInstallPath;
 			include_once $babInstallPath.'utilit/mailincl.php';
-			
+
 			$mail = bab_mail();
 			if ($mail !== false) {
 				global $babBody, $babAdminEmail, $babAdminName, $babInstallPath, $babSiteName;
-				
+
 				$userName = bab_getUserName($item);
 				$userEmail = bab_getUserEmail($item);
 				list($nickname) = $babDB->db_fetch_row($babDB->db_query("select nickname from ".BAB_USERS_TBL." where id='".$item."'"));
 				$newPassword = $newpwd1;
-				
+
 				$mail->mailTo($userEmail, $userName);
 				$mail->mailFrom($babAdminEmail, $babAdminName);
-				
+
 				$subject = bab_translate('Your password of connexion in the site').' '.$babSiteName.' '.bab_translate('was changed');
 				$mail->mailSubject($subject);
-				
+
 				$HTMLmessage = $userName.', '.bab_translate('your password of connexion in the site').' '.$babSiteName.' '.bab_translate('was changed').'.<br />';
 				$HTMLmessage .= '<br />';
 				$HTMLmessage .= bab_translate('Your nickname').' : '.$nickname.'<br />';
 				$HTMLmessage .= bab_translate('Your new password').' : '.$newPassword.'<br /><br />';
 				$HTMLmessage .= bab_translate('Access to the site').' : <a href="'.$GLOBALS['babUrl'].'">'.$GLOBALS['babUrl'];
 				$mail->mailBody($mail->mailTemplate($HTMLmessage));
-				
+
 				$TEXTmessage = $userName.', '.bab_translate('your password of connexion in the site').' '.$babSiteName.' '.bab_translate('was changed').".\n";
 				$TEXTmessage .= "\n";
 				$TEXTmessage .= bab_translate('Your nickname').' : '.$nickname."\n";
 				$TEXTmessage .= bab_translate('Your new password').' : '.$newPassword."\n\n";
 				$TEXTmessage .= bab_translate('Access to the site').' : <a href="'.$GLOBALS['babUrl'].'">'.$GLOBALS['babUrl'];
 				$mail->mailAltBody($TEXTmessage);
-				
+
 				$mail->send();
 			}
-		}		
-		
+		}
+
 		/* Return to the list of the users */
 		header('Location: '.$GLOBALS['babUrlScript'].'?tg=users&idx=List&pos='.$pos.'&grp='.$grp);
 		return;
@@ -731,10 +735,10 @@ function bab_adm_userEditor()
 	require_once $GLOBALS['babInstallPath'].'utilit/urlincl.php';
 	$list = bab_url::get_request('pos', 'grp');
 	$list->tg = 'users';
-	
-	
+
+
 	$usereditor = bab_functionality::get('UserEditor');
-	
+
 	$usereditor->getAsPage(bab_rp('item'), $list)->displayHtml();
 }
 
@@ -807,8 +811,8 @@ switch($idx) {
 		$babBody->addItemMenu('List', bab_translate("Users"), $GLOBALS['babUrlScript']."?tg=users&idx=List&pos=".$pos."&grp=".$grp);
 		$babBody->addItemMenu('Modify', bab_translate("User"), $GLOBALS['babUrlScript']."?tg=user&idx=Modify&item=".$item."&pos=".$pos."&grp=".$grp);
 		$babBody->addItemMenu('Groups', bab_translate("Groups"), $GLOBALS['babUrlScript']."?tg=user&idx=Groups&item=".$item."&pos=".$pos."&grp=".$grp);
-		$babBody->addItemMenu('unav', bab_translate("Unavailability"), $GLOBALS['babUrlScript']."?tg=options&idx=unav&iduser=".$item);	
-		
+		$babBody->addItemMenu('unav', bab_translate("Unavailability"), $GLOBALS['babUrlScript']."?tg=options&idx=unav&iduser=".$item);
+
 		break;
 
 
@@ -819,10 +823,10 @@ switch($idx) {
 			$babBody->addItemMenu('List', bab_translate("Users"), $GLOBALS['babUrlScript']."?tg=users&idx=List&pos=".$pos."&grp=".$grp);
 			$babBody->addItemMenu('viewgroups', bab_translate("Groups"), $GLOBALS['babUrlScript']."?tg=users&idx=viewgroups&pos=".$pos."&grp=".$grp);
 		}
-		
+
 		$babBody->setTitle(bab_translate("The user's groups"));
 		viewgroups();
-		
+
 		break;
 
 
@@ -830,31 +834,31 @@ switch($idx) {
 	case 'Modify':
 		/* $item : contains id of the user who must be modified */
 		if (is_numeric($item)) {
-			
+
 			if (!bab_canCurrentUserUpdateUser($item))
 			{
 				$babBody->addError(bab_translate('Access denied'));
 				break;
 			}
-			
-			
+
+
 			$babBody->title = bab_getUserName($item);
 			/* $pos : filter for the list of the users when you clic a letter (a letter (A, B...) or nothing (all letters))
 			 * $grp : filter for the list of the users when you attach a user in a group (id of a group or nothing)
 			 */
 			modifyUser($item, $pos, $grp);
-			
-			
+
+
 			/*
 			changeNickname($item, $pos, $grp);
 			changePassword($item, $pos, $grp);
 			*/
-			
+
 			$babBody->addItemMenu('List', bab_translate("Users"), $GLOBALS['babUrlScript']."?tg=users&idx=List&pos=".$pos."&grp=".$grp);
 			$babBody->addItemMenu('Modify', bab_translate("Modify"), $GLOBALS['babUrlScript']."?tg=user&idx=Modify&item=".$item."&pos=".$pos."&grp=".$grp);
 			$babBody->addItemMenu('Groups', bab_translate("Groups"), $GLOBALS['babUrlScript']."?tg=user&idx=Groups&item=".$item."&pos=".$pos."&grp=".$grp);
 			$babBody->addItemMenu('unav', bab_translate("Unavailability"), $GLOBALS['babUrlScript']."?tg=options&idx=unav&iduser=".$item);
-			
+
 			bab_adm_userEditor();
 		}
 		break;
