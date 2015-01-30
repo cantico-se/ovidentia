@@ -227,7 +227,7 @@ class bab_synchronizeSql
 	 * @param ORM_MySqlRecordSet $set
 	 * @since 8.0.93
 	 */
-	public function addOrmSet(ORM_MySqlRecordSet $set)
+	public function addOrmSet(ORM_RecordSet $set)
 	{
 		$mysqlbackend = ORM_MySqlRecordSet::getBackend();
 		

@@ -564,19 +564,22 @@ abstract class bab_Controller
 		    } else {
 		        $this->addMessage($e->getMessage());
 		    }
+		    
+		    if (!isset($failedAction)) {
+		        bab_debug(sprintf('Missing the failed action to redirect or execute action from %s', $method));
+		        return;
+		    }
+		    
 			if ($e->redirect) {
-				if (!isset($failedAction)) {
-					throw new Exception(sprintf('Missing the failed action to redirect from %s', $method));
-				}
-				
-				$this->redirect($failedAction);
-			} else {
-
-			    if (0 == count($failedAction->getParameters())) {
-					throw new Exception('Error, incorrect action');
-				}
-				$returnedValue = $objectController->execAction($failedAction);
+			     return $this->redirect($failedAction);
 			}
+			
+
+		    if (0 == count($failedAction->getParameters())) {
+				throw new Exception('Error, incorrect action');
+			}
+			$returnedValue = $objectController->execAction($failedAction);
+			
 		}
 
 		
@@ -603,6 +606,12 @@ abstract class bab_Controller
 					header('Cache-Control: no-cache, must-revalidate');
 					header('Expires: Mon, 26 Jul 1997 05:00:00 GMT');
 					header('Content-type: text/html');
+					
+					// widgets >= 1.0.65
+					if ($returnedValue instanceof Widget_BabPage && method_exists($returnedValue, 'getPageTitle')) {
+					   header('X-Cto-PageTitle: '.bab_convertStringFromDatabase($returnedValue->getPageTitle(), 'ISO-8859-1'));
+					}
+					
 					die($returnedValue->display($htmlCanvas));
 				}
 			}

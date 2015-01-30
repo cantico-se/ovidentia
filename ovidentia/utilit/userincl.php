@@ -712,13 +712,12 @@ function bab_getSuperior($iduser, $idoc = '')
 			ocrt.id_oc='".$babDB->db_escape_string($idoc)."' 
 			AND det.id_user IN ( ".$babDB->db_escape_string($iduser)."  )  
 			AND det.id_directory = '0' 
-			AND ocrut.isprimary='Y'
 	";
 	$res = $babDB->db_query($query." AND ocrut.isprimary='Y'");
 	
 	if (0 === $babDB->db_num_rows($res))
 	{
-		bab_debug(sprintf('No primary role found in chart %d for user %s', $idoc, bab_getUserName($iduser)));
+		bab_debug(sprintf('No primary role found in chart %d for user %s', $idoc, $iduser.' '.bab_getUserName($iduser)));
 		
 		// try on each roles
 		$res = $babDB->db_query($query);

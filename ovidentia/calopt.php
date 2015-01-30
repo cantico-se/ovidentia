@@ -1094,6 +1094,11 @@ class bab_changeCalendarBackend
 					
 					$vacationCollection->addPeriod($event);
 					
+					if (!($new_backend instanceof Func_CalendarBackend_Ovi)) {
+					    // enregistrer les conges que si le nouveau backend n'est pas ovidentia
+					    $vacationCollection->setCalendar($new_calendar);
+					}
+					
 				} else {
 					throw new Exception('Unsupported collection');
 				}

@@ -866,7 +866,7 @@ function bab_doRequireCredential($sLoginMessage, $sAuthType)
 
 	if (false === $oAuthObject)
 	{
-		$oAuthObject = bab_functionality::get('PortalAuthentication/AuthOvidentia');
+		$oAuthObject = @bab_functionality::get('PortalAuthentication/AuthOvidentia');
 		if (false === $oAuthObject)
 		{
 			// If the default authentication method 'AuthOvidentia' does not exist

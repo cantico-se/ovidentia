@@ -925,4 +925,3 @@ function getWaitingApprobations($iduser, $update=false)
 }
 
 
-?>
