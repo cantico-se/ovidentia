@@ -399,7 +399,7 @@ class BAB_FmFolderSet extends BAB_BaseSet
 	 * @param unknown_type $sRelativePath
 	 * @return BAB_FmFolder
 	 */
-	function getFirstCollectiveFolder($sRelativePath, $delegation_id = null)
+	public static function getFirstCollectiveFolder($sRelativePath, $delegation_id = null)
 	{
 		global $babBody;
 
@@ -952,7 +952,7 @@ class BAB_FolderFileSet extends BAB_BaseSet
 	 * @param int $iFileId
 	 * @return BAB_FolderFile
 	 */
-	function getById($iFileId)
+	public static function getById($iFileId)
 	{
 		$oFolderFileSet = new BAB_FolderFileSet();
 		$oId = $oFolderFileSet->aField['iId'];
