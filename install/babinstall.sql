@@ -816,6 +816,7 @@ CREATE TABLE bab_cal_events (
   location varchar(255) NOT NULL default '',
   start_date datetime NOT NULL default '0000-00-00 00:00:00',
   end_date datetime NOT NULL default '0000-00-00 00:00:00',
+  fullday tinyint(1) unsigned NOT NULL default '0',
   id_cat int(11) unsigned NOT NULL default '0',
   id_creator int(11) unsigned NOT NULL default '0',
   hash varchar(34) NOT NULL default '',

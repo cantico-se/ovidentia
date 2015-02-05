@@ -7133,6 +7133,13 @@ function ovidentia_upgrade($version_base,$version_ini) {
 	$functionalities->register('SearchUi', $GLOBALS['babInstallPath'].'utilit/searchui.class.php');
 	
 	
+	/**
+	 * Upgrade tu 8.2.91
+	 */
+	if(!bab_isTableField('bab_cal_events', 'fullday'))
+	{
+	    $babDB->db_query("ALTER TABLE bab_cal_events ADD fullday tinyint(1) unsigned NOT NULL default '0'");
+	}
 	
 	
 	return true;

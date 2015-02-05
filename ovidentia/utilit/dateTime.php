@@ -418,9 +418,9 @@ class BAB_DateTime
 	/**
 	 * Set time
 	 *
-	 * @param int $hours
-	 * @param int $minutes
-	 * @param int $seconds
+	 * @param int | null $hours
+	 * @param int | null $minutes
+	 * @param int | null $seconds
 	 *
 	 * @since 7.3.90
 	 *
