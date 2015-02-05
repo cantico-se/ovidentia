@@ -311,6 +311,10 @@ function bab_createCalendarPeriod(Func_CalendarBackend $backend, $args, bab_Peri
 
 		$begin 	= bab_event_posted::getDateTime($args['startdate'], $period->ts_begin);
 		$end 	= bab_event_posted::getDateTime($args['enddate'], $period->ts_end);
+		
+		if (null === $end->getHour()) {
+		    $end->add(1, BAB_DATETIME_DAY);
+		}
 
 		$oldcollection = $period->getCollection();
 
@@ -318,10 +322,17 @@ function bab_createCalendarPeriod(Func_CalendarBackend $backend, $args, bab_Peri
         
 		$begin 	= bab_event_posted::getDateTime($args['startdate']);
 		$end 	= bab_event_posted::getDateTime($args['enddate']);
+		
+		if (null === $end->getHour()) {
+		    $end->add(1, BAB_DATETIME_DAY);
+		}
 
 		// create empty period
 		$period = $backend->CalendarPeriod($begin->getTimeStamp(), $end->getTimeStamp());
 	}
+	
+	
+	
 
 	$collection->addPeriod($period);
 	if (isset($oldcollection))
@@ -1788,15 +1799,19 @@ class bab_event_posted {
 			$arr['day'] = date('d', $default_ts);
 		}
 
-		if (!isset($arr['hours'])) {
-			$arr['hours'] = 0;
+		if (!isset($arr['hours']) && !isset($arr['minutes'])) {
+			$hours = null;
+		    $minutes = null;
+		    $seconds = null;
+		} else {
+		    
+		    $hours = (int) $arr['hours'];
+		    $minutes = (int) $arr['minutes'];
+		    $seconds = 0;
 		}
 
-		if (!isset($arr['minutes'])) {
-			$arr['minutes'] = 0;
-		}
 
-		return new BAB_DateTime($arr['year'], $arr['month'], $arr['day'], $arr['hours'],$arr['minutes']);
+		return new BAB_DateTime($arr['year'], $arr['month'], $arr['day'], $hours, $minutes, $seconds);
 	}
 
 
@@ -1927,32 +1942,22 @@ class bab_event_posted {
 		$this->args['startdate']['day'] = isset($data['daybegin']) ? $data['daybegin'] : null;
 
 		if (isset($data['timebegin'])) {
-			$timebegin = $data['timebegin'];
-		} else {
-			$timebegin = bab_getICalendars()->starttime;
+			$tb = explode(':', $data['timebegin']);
+			$this->args['startdate']['hours'] = $tb[0];
+			$this->args['startdate']['minutes'] = $tb[1];
 		}
-
-		$tb = explode(':',$timebegin);
-		$this->args['startdate']['hours'] = $tb[0];
-		$this->args['startdate']['minutes'] = $tb[1];
 
 		$this->args['enddate']['year'] = isset($data['yearend']) ? $data['yearend'] : null;
 		$this->args['enddate']['month'] = isset($data['monthend']) ? $data['monthend'] : null;
 		$this->args['enddate']['day'] = isset($data['dayend']) ? $data['dayend'] : null;
 
 		if (isset($data['timeend'])) {
-			$timeend = $data['timeend'];
-		} else {
-			if (bab_getICalendars()->endtime > $timebegin) {
-				$timeend = bab_getICalendars()->endtime;
-			} else {
-				$timeend = '23:59:59';
-			}
+			$tb = explode(':', $data['timeend']);
+			$this->args['enddate']['hours'] = $tb[0];
+			$this->args['enddate']['minutes'] = $tb[1];
 		}
 
-		$tb = explode(':',$timeend);
-		$this->args['enddate']['hours'] = $tb[0];
-		$this->args['enddate']['minutes'] = $tb[1];
+		
 
 
 		if( isset($data['bprivate']) && $data['bprivate'] ==  'Y' )
@@ -2127,6 +2132,10 @@ class bab_event_posted {
 
 			$begin 	= bab_event_posted::getDateTime($this->args['startdate']);
 			$end 	= bab_event_posted::getDateTime($this->args['enddate']);
+		}
+		
+		if (null === $end->getHour()) {
+		    $end->add(1, BAB_DATETIME_DAY);
 		}
 
 
@@ -2729,7 +2738,7 @@ class bab_event_posted {
 	 * @param	array	[$arr]
 	 * @param	array
 	 */
-	function availabilityConflictsStore($object_key, $arr = NULL) {
+	public static function availabilityConflictsStore($object_key, $arr = NULL) {
 
 		static $memory = array();
 
