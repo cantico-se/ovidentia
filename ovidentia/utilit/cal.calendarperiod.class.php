@@ -470,6 +470,23 @@ class bab_CalendarPeriod extends bab_ICalendarObject {
 
 		return false;
 	}
+	
+	
+	/**
+	 * Test if dates contain no time (the all day checkbox)
+	 * @return bool
+	 */
+	public function isAllDay()
+	{
+	    $dtstart = $this->getProperty('DTSTART');
+	    $dtend = $this->getProperty('DTEND');
+	    
+	    if (8 === strlen($dtstart) && 8 === strlen($dtend)) {
+	        return true;
+	    }
+	    
+	    return false;
+	}
 
 
 	/**

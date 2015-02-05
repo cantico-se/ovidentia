@@ -598,6 +598,9 @@ bab_event_alert_ed();
 			</select >
 			
 			<a href="javascript: Start('{ dateend }', 'CalendarWindow', 'width=250,height=250,status=no,resizable=no,top=200,left=200');"><img src="{ babSkinPath }images/Puces/calendar.gif" alt="{ datebegintxt }" /></a>
+		
+		    &nbsp;&nbsp;&nbsp; <label><input style="vertical-align:middle" type="checkbox" name="daytype" value="y" OnClick="daytypeswitch()" { daytypechecked } />&nbsp;{ daytype }</label> &nbsp;
+            
 		</td>
 	</tr>
 	
@@ -740,9 +743,17 @@ bab_event_alert_ed();
 </form>
 <script type="text/javascript">
 <!--
-if (typeof bupdrec_onchange != 'undefined') {
-	bupdrec_onchange(document.forms['vacform'].bupdrec);
-}
+
+
+bab_initFunctions.push(function() { 
+
+    if (typeof bupdrec_onchange != 'undefined') {
+	    bupdrec_onchange(document.forms['vacform'].bupdrec);
+	}
+    daytypeswitch();
+});
+
+
 -->
 </script>
 <br />
