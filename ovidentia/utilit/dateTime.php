@@ -33,40 +33,97 @@ define('BAB_DATETIME_ICAL', 6);
 
 class BAB_DateTime
 {
-	var $_iYear		= 0;
-	var $_iMonth 	= 0;
-	var $_iDay		= 0;
-	var $_iHours	= 0;
-	var $_iMinutes	= 0;
-	var $_iSeconds	= 0;
-	var $_aDate		= null;
+    /**
+     * year
+     * @var int
+     */
+	private $_iYear		= 0;
+	
+	/**
+	 * Month [1..12]
+	 * @var int
+	 */
+	private $_iMonth 	= 0;
+	
+	/**
+	 * @var day
+	 */
+	private $_iDay		= 0;
+	
+	/**
+	 * Hours, can be set to null
+	 * @var int
+	 */
+	private $_iHours	= 0;
+	
+	/**
+	 * Minutes, can be set to null
+	 * @var int
+	 */
+	private $_iMinutes	= 0;
+	
+	/**
+	 * Seconds, can be set to null
+	 * @var int
+	 */
+	private $_iSeconds	= 0;
+	
+	
+	/**
+	 * @var array
+	 */
+	private $_aDate		= null;
 	
 	
 	/**
 	 * @param int $iYear
 	 * @param int $iMonth
 	 * @param int $iDay
-	 * @param int $iHours
-	 * @param int $iMinutes
-	 * @param int $iSeconds
-	 * @return BAB_DateTime
-     * @access public
+	 * @param int | null $iHours
+	 * @param int | null $iMinutes
+	 * @param int | null $iSeconds
+	 * 
+     * 
 	 */
 	public function __construct($iYear, $iMonth, $iDay, $iHours = 0, $iMinutes = 0, $iSeconds = 0)
 	{
 		$this->init($iYear, $iMonth, $iDay, $iHours, $iMinutes, $iSeconds);
 	}
 	
+	
+	/**
+	 * @param int $iYear
+	 * @param int $iMonth
+	 * @param int $iDay
+	 * @param int | null $iHours
+	 * @param int | null $iMinutes
+	 * @param int | null $iSeconds
+	 *
+	 *
+	 */
 	public function init($iYear, $iMonth, $iDay, $iHours = 0, $iMinutes = 0, $iSeconds = 0)
 	{
-		$this->_aDate = getdate(mktime($iHours, $iMinutes, $iSeconds, $iMonth, $iDay, $iYear));
-
-		$this->_iYear		= $this->_aDate['year'];
-		$this->_iMonth		= $this->_aDate['mon'];
-		$this->_iDay		= $this->_aDate['mday'];
-		$this->_iHours		= $this->_aDate['hours'];
-		$this->_iMinutes	= $this->_aDate['minutes'];
-		$this->_iSeconds	= $this->_aDate['seconds'];
+	    if (isset($iHours) || isset($iMinutes) || isset($iSeconds)) {
+	    
+    		$this->_aDate = getdate(mktime($iHours, $iMinutes, $iSeconds, $iMonth, $iDay, $iYear));
+    
+    		$this->_iYear		= $this->_aDate['year'];
+    		$this->_iMonth		= $this->_aDate['mon'];
+    		$this->_iDay		= $this->_aDate['mday'];
+    		$this->_iHours		= $this->_aDate['hours'];
+    		$this->_iMinutes	= $this->_aDate['minutes'];
+    		$this->_iSeconds	= $this->_aDate['seconds'];
+	    } else {
+	        
+	        $this->_aDate = getdate(mktime($iHours, $iMinutes, $iSeconds, $iMonth, $iDay, $iYear));
+	        
+	        $this->_iYear		= $this->_aDate['year'];
+	        $this->_iMonth		= $this->_aDate['mon'];
+	        $this->_iDay		= $this->_aDate['mday'];
+	        $this->_iHours		= null;
+	        $this->_iMinutes	= null;
+	        $this->_iSeconds	= null;
+	    }
 	}
 	
 	/**
@@ -216,7 +273,7 @@ class BAB_DateTime
 	
 	
 	/**
-	 * Return a datetime string for iCal format
+	 * Return a datetime or date string for iCal format
 	 *
 	 * @param	bool	$utc	default false the time is in local time and event will not take place at the same moment in different timezones,
 	 * 							set this parameter to true to get the result in UTC time and have the event take place at the same moment
@@ -224,6 +281,10 @@ class BAB_DateTime
 	 */
 	public function getICal($utc = false)
 	{
+	    if (!isset($this->_iHours) && !isset($this->_iMinutes) && !isset($this->_iSeconds)) {
+	        return date("Ymd", $this->getTimeStamp());
+	    }
+	    
 		if ($utc) {
 			
 			$offset = $this->getTimeZoneOffset('UTC');
@@ -327,7 +388,7 @@ class BAB_DateTime
 	}
 
 	/**
-	 * @return int
+	 * @return int | null
      *
 	 */
 	public function getHour()
@@ -336,7 +397,7 @@ class BAB_DateTime
 	}
 
 	/**
-	 * @return int
+	 * @return int | null
      *
 	 */
 	public function getMinute()
@@ -345,7 +406,7 @@ class BAB_DateTime
 	}
 
 	/**
-	 * @return int
+	 * @return int | null
      *
 	 */
 	public function getSecond()
@@ -393,7 +454,21 @@ class BAB_DateTime
 	 */
 	public function getDayTime()
 	{
-		return $this->_iSeconds + (60*$this->_iMinutes) + (3600*$this->_iHours);
+	    $total = 0;
+	    
+	    if (isset($this->_iSeconds)) {
+	        $total += $this->_iSeconds;
+	    }
+	    
+	    if (isset($this->_iMinutes)) {
+	        $total += (60*$this->_iMinutes);
+	    }
+	    
+	    if (isset($this->_iHours)) {
+	        $total += (3600*$this->_iHours);
+	    }
+	    
+		return $total;
 	}
     
 	/**
@@ -465,13 +540,13 @@ class BAB_DateTime
 				$this->init($this->_iYear, $this->_iMonth, ($this->_iDay + $iNbUnits), $this->_iHours, $this->_iMinutes, $this->_iSeconds);
 				break;
 			case BAB_DATETIME_HOUR:
-				$this->init($this->_iYear, $this->_iMonth, $this->_iDay, ($iNbUnits + $this->_iHours), $this->_iMinutes, $this->_iSeconds);
+				$this->init($this->_iYear, $this->_iMonth, $this->_iDay, ($iNbUnits + (int) $this->_iHours), $this->_iMinutes, $this->_iSeconds);
 				break;
 			case BAB_DATETIME_MINUTE:
-				$this->init($this->_iYear, $this->_iMonth, $this->_iDay, $this->_iHours, ($iNbUnits + $this->_iMinutes), $this->_iSeconds);
+				$this->init($this->_iYear, $this->_iMonth, $this->_iDay, $this->_iHours, ($iNbUnits + (int) $this->_iMinutes), $this->_iSeconds);
 				break;
 			case BAB_DATETIME_SECOND:
-				$this->init($this->_iYear, $this->_iMonth, $this->_iDay, $this->_iHours, $this->_iMinutes, ($iNbUnits + $this->_iSeconds));
+				$this->init($this->_iYear, $this->_iMonth, $this->_iDay, $this->_iHours, $this->_iMinutes, ($iNbUnits + (int) $this->_iSeconds));
 				break;
 			
 			case BAB_DATETIME_ICAL:
@@ -514,13 +589,13 @@ class BAB_DateTime
 				$this->init($this->_iYear, $this->_iMonth, ($this->_iDay - $iNbUnits), $this->_iHours, $this->_iMinutes, $this->_iSeconds);
 				break;
 			case BAB_DATETIME_HOUR:
-				$this->init($this->_iYear, $this->_iMonth, $this->_iDay, ($this->_iHours - $iNbUnits), $this->_iMinutes, $this->_iSeconds);
+				$this->init($this->_iYear, $this->_iMonth, $this->_iDay, ((int) $this->_iHours - $iNbUnits), $this->_iMinutes, $this->_iSeconds);
 				break;
 			case BAB_DATETIME_MINUTE:
-				$this->init($this->_iYear, $this->_iMonth, $this->_iDay, $this->_iHours, ($this->_iMinutes - $iNbUnits), $this->_iSeconds);
+				$this->init($this->_iYear, $this->_iMonth, $this->_iDay, $this->_iHours, ((int) $this->_iMinutes - $iNbUnits), $this->_iSeconds);
 				break;
 			case BAB_DATETIME_SECOND:
-				$this->init($this->_iYear, $this->_iMonth, $this->_iDay, $this->_iHours, $this->_iMinutes, ($this->_iSeconds - $iNbUnits));
+				$this->init($this->_iYear, $this->_iMonth, $this->_iDay, $this->_iHours, $this->_iMinutes, ((int) $this->_iSeconds - $iNbUnits));
 				break;
 		}
 	}
