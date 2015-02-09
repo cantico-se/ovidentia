@@ -2336,7 +2336,7 @@ class bab_event_posted {
 	 * Save event
 	 *
 	 * @param  string  &$message
-     * @param  int     $method    BAB_CAL_EVT_ALL | BAB_CAL_EVT_CURRENT | BAB_CAL_EVT_PREVIOUS | BAB_CAL_EVT_NEXT
+     * @param  int     $updateMethod    BAB_CAL_EVT_ALL | BAB_CAL_EVT_CURRENT | BAB_CAL_EVT_PREVIOUS | BAB_CAL_EVT_NEXT
 	 * @return bool
 	 */
 	public function save(&$message, $updateMethod = null)
@@ -2347,6 +2347,7 @@ class bab_event_posted {
 	    
 	    $newAllowedCalendarIds = array_flip($this->args['selected_calendars']);
 	    $calendar = bab_getICalendars()->getEventCalendar($this->args['calid']);
+	    
 	    	
 	    if (isset($updateMethod) && $updateMethod != BAB_CAL_EVT_CURRENT && !isset($newAllowedCalendarIds[$originalCalendarId])) {
 
@@ -2426,6 +2427,19 @@ class bab_event_posted {
 			$message = sprintf(bab_translate('Creation of an event on calendar %s is not allowed'), $calendar->getName());
 			return false;
 		}
+		
+		
+		// remove from backend where the event is no more
+		$newcalendars = $calendarPeriod->getCalendars();
+		foreach($oldcalendars as $oldcalendar) {
+		    /*@var $oldcalendar bab_EventCalendar */
+		    if (!isset($newcalendars[$oldcalendar->getUrlIdentifier()])) {
+		        $_b = $oldcalendar->getBackend();
+		        $_b->deletePeriod($calendarPeriod);
+		    }
+		}
+		
+		
 
 		bab_debug('<h1>$backend->SavePeriod()</h1>'. $calendarPeriod->toHtml(), DBG_TRACE, 'CalendarBackend');
 		
