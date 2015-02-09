@@ -2418,6 +2418,19 @@ class bab_event_posted {
 			return false;
 		}
 
+		
+
+		// remove from backend where the event is no more
+		$newcalendars = $calendarPeriod->getCalendars();
+		foreach($oldcalendars as $oldcalendar) {
+		    /*@var $oldcalendar bab_EventCalendar */
+		    if (!isset($newcalendars[$oldcalendar->getUrlIdentifier()])) {
+		        $_b = $oldcalendar->getBackend();
+		        $_b->deletePeriod($calendarPeriod);
+		    }
+		}
+		
+		
 		bab_debug('<h1>$backend->SavePeriod()</h1>'. $calendarPeriod->toHtml(), DBG_TRACE, 'CalendarBackend');
 		
 		try {
