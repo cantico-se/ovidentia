@@ -30,11 +30,14 @@ include_once $babInstallPath.'admin/register.php';
 
 function bab_menuDisplay()
 {
+    /* @var Func_Icons $I */
+    $I = bab_functionality::get('Icons');
+    $I->includeCss();
 
     $W = bab_Widgets();
     /* @var $W Func_Widgets */
 
-    $sitemap = bab_siteMap::getByUid('My sitemap');
+    $sitemap = bab_siteMap::getByUid('core');
 
     $page = $W->babPage('bab-menu');
 
@@ -42,6 +45,7 @@ function bab_menuDisplay()
     $completeLayout->setHorizontalSpacing(2.5,'em');
     $completeLayout->addClass('BabLoginMenuBackground');
     $completeLayout->addClass('widget-bordered');
+    $completeLayout->addClass('icon-16x16 icon-left-16');
 
     $adminLayout = $W->VBoxLayout();
     $adminLink = false;
@@ -57,14 +61,14 @@ function bab_menuDisplay()
         while($node){
             $adminLink = true;
             $item = $node->getData();
-            $tempLink[] = array('name' => $item->name, 'url' => $item->url);
+            $tempLink[] = array('name' => $item->name, 'url' => $item->url, 'class' => $item->iconClassnames);
             $node = $node->nextSibling();
         }
 
         bab_Sort::asort($tempLink, 'name');
 
         foreach($tempLink as $link){
-            $layout->addItem($W->Link($link['name'], $link['url']));
+            $layout->addItem($W->Link($link['name'], $link['url'])->addClass('icon '.$link['class']));
         }
 
         $adminLayout->addItem($W->Html('<hr>'));
@@ -80,14 +84,14 @@ function bab_menuDisplay()
         while($node){
             $adminLink = true;
             $item = $node->getData();
-            $tempLink[] = array('name' => $item->name, 'url' => $item->url);
+            $tempLink[] = array('name' => $item->name, 'url' => $item->url, 'class' => $item->iconClassnames);
             $node = $node->nextSibling();
         }
 
         bab_Sort::asort($tempLink, 'name');
 
         foreach($tempLink as $link){
-            $layout->addItem($W->Link($link['name'], $link['url']));
+            $layout->addItem($W->Link($link['name'], $link['url'])->addClass('icon '.$link['class']));
         }
     }
 
@@ -111,14 +115,14 @@ function bab_menuDisplay()
         $tempLink = array();
         while($node){
             $item = $node->getData();
-            $tempLink[] = array('name' => $item->name, 'url' => $item->url);
+            $tempLink[] = array('name' => $item->name, 'url' => $item->url, 'class' => $item->iconClassnames);
             $node = $node->nextSibling();
         }
 
         bab_Sort::asort($tempLink, 'name');
 
         foreach($tempLink as $link){
-            $layout->addItem($W->Link($link['name'], $link['url']));
+            $layout->addItem($W->Link($link['name'], $link['url'])->addClass('icon '.$link['class']));
         }
 
         $userLayout->addItem($W->Html('<hr>'));
@@ -133,14 +137,14 @@ function bab_menuDisplay()
         $tempLink = array();
         while($node){
             $item = $node->getData();
-            $tempLink[] = array('name' => $item->name, 'url' => $item->url);
+            $tempLink[] = array('name' => $item->name, 'url' => $item->url, 'class' => $item->iconClassnames);
             $node = $node->nextSibling();
         }
 
         bab_Sort::asort($tempLink, 'name');
 
         foreach($tempLink as $link){
-            $layout->addItem($W->Link($link['name'], $link['url']));
+            $layout->addItem($W->Link($link['name'], $link['url'])->addClass('icon '.$link['class']));
         }
     }
 

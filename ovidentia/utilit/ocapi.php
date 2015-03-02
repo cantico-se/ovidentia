@@ -175,7 +175,8 @@ function bab_OCGetRole($idr)
             'name' => $arr['name'],
             'description' => $arr['description'],
             'type' => $arr['type'],
-            'cardinality' => $arr['cardinality']
+            'cardinality' => $arr['cardinality'],
+            'id_entity' => $arr['id_entity']
         );
 
     }
@@ -1512,6 +1513,9 @@ class bab_OrgChartUtil
 
 
     /**
+     *
+     *  /!\ CURRENT DOCUMENTATION IS WRONG
+     *
      * Returns information about a specified organizational chart.
      *
      * The current user must have "view" or "update" access to the organizational chart.
@@ -3345,6 +3349,32 @@ class bab_OrgChartUtil
         $return = array();
         while($arr = $babDB->db_fetch_assoc($res)){
             $return[] = $arr;
+        }
+
+        return $return;
+    }
+
+
+    public function getUsersRole($idrole)
+    {
+        global $babDB;
+
+        $req = "SELECT ocrut.id_user as id_user
+                FROM ".BAB_OC_ROLES_USERS_TBL." ocrut
+
+                LEFT JOIN ".BAB_OC_ROLES_TBL." ocrt
+                ON ocrut.id_role=ocrt.id
+
+                LEFT JOIN ".BAB_OC_ENTITIES_TBL." ocet
+                ON ocrt.id_entity=ocet.id
+
+                WHERE ocrt.id='".$idrole."'
+                AND ocrt.id_oc='".$this->iIdOrgChart."' ";
+        $res = $babDB->db_query($req);
+
+        $return = array();
+        while($arr = $babDB->db_fetch_assoc($res)){
+            $return[$arr['id_user']] = $arr['id_user'];
         }
 
         return $return;
