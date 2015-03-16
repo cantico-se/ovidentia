@@ -29,229 +29,229 @@
  */
 class bab_Sort
 {
-	private static $sKeyName		= null;
-	private static $sortKeyMethod	= null;
+    private static $sKeyName		= null;
+    private static $sortKeyMethod	= null;
 
-	const CASE_SENSITIVE			= 0;
-	const CASE_INSENSITIVE			= 1;
-
-
-
-	/**
-	 * Sort an array
-	 *
-	 * @param array		$aToSort	array to sort
-	 * @param int		$iCase		Case used in compare
-	 * @return bool
-	 */
-	public static function sort(array &$aToSort, $iCase = bab_Sort::CASE_SENSITIVE)
-	{
-		if (bab_Sort::CASE_INSENSITIVE == $iCase) {
-			$sortCallback = 'compareStringsInsensitive';
-		} else {
-			$sortCallback = 'compareStringsSensitive';
-		}
-		return usort($aToSort, array('bab_sort', $sortCallback));
-	}
+    const CASE_SENSITIVE			= 0;
+    const CASE_INSENSITIVE			= 1;
 
 
+
+    /**
+     * Sort an array
+     *
+     * @param array		$aToSort	array to sort
+     * @param int		$iCase		Case used in compare
+     * @return bool
+     */
+    public static function sort(array &$aToSort, $iCase = bab_Sort::CASE_SENSITIVE)
+    {
+        if (bab_Sort::CASE_INSENSITIVE == $iCase) {
+            $sortCallback = 'compareStringsInsensitive';
+        } else {
+            $sortCallback = 'compareStringsSensitive';
+        }
+        return usort($aToSort, array('bab_sort', $sortCallback));
+    }
 
 
 
 
 
-	/**
-	 * Sort an array using a case insensitive "natural order" algorithm.
-	 *
-	 * @param array		$aToSort	The array to sort
-	 * @return bool
-	 */
-	public static function natcasesort(array &$aToSort)
-	{
-		return uasort($aToSort, array('bab_sort', 'compareStringsInsensitive'));
-	}
-
-	/**
-	 * Sort an array of objects according to a value returned by a method of the objects in the array
-	 *
-	 * @param	array	$aToSort			The array of objects to sort
-	 * @param	string	$sortKeyMethod		method of objects of the array to get a sortable value (string, int, float)
-	 *										the default value is __tostring, it will be really called as a method.
-	 *										the __tostring method is usable for object string casting since php 5.2
-	 * @param	int		$iCase				Case used in compare
-	 * @return	bool
-	 */
-	public static function sortObjects(array &$aToSort, $sortKeyMethod = '__tostring', $iCase = bab_Sort::CASE_INSENSITIVE) {
-
-		self::$sortKeyMethod = $sortKeyMethod;
-
-		if (bab_Sort::CASE_INSENSITIVE == $iCase) {
-			$sortCallback = 'compareObjectsInsensitive';
-		} else {
-			$sortCallback = 'compareObjectsSensitive';
-		}
-
-		return uasort($aToSort, array('bab_sort', $sortCallback));
-	}
 
 
-	/**
-	 * Compare case-sensitively two objects.
-	 *
-	 * @see 	bab_compare
-	 * @param 	object 	$obj1
-	 * @param 	object 	$obj2
-	 * @return 	int		Same values as bab_compare
-	 */
-	private static function compareObjectsSensitive($obj1, $obj2)
-	{
-		$method = self::$sortKeyMethod;
+    /**
+     * Sort an array using a case insensitive "natural order" algorithm.
+     *
+     * @param array		$aToSort	The array to sort
+     * @return bool
+     */
+    public static function natcasesort(array &$aToSort)
+    {
+        return uasort($aToSort, array('bab_sort', 'compareStringsInsensitive'));
+    }
 
-		$str1 = $obj1->$method();
-		$str2 = $obj2->$method();
+    /**
+     * Sort an array of objects according to a value returned by a method of the objects in the array
+     *
+     * @param	array	$aToSort			The array of objects to sort
+     * @param	string	$sortKeyMethod		method of objects of the array to get a sortable value (string, int, float)
+     *										the default value is __tostring, it will be really called as a method.
+     *										the __tostring method is usable for object string casting since php 5.2
+     * @param	int		$iCase				Case used in compare
+     * @return	bool
+     */
+    public static function sortObjects(array &$aToSort, $sortKeyMethod = '__tostring', $iCase = bab_Sort::CASE_INSENSITIVE) {
 
-		return self::compareStringsSensitive($str1, $str2);
-	}
+        self::$sortKeyMethod = $sortKeyMethod;
 
+        if (bab_Sort::CASE_INSENSITIVE == $iCase) {
+            $sortCallback = 'compareObjectsInsensitive';
+        } else {
+            $sortCallback = 'compareObjectsSensitive';
+        }
 
-	/**
-	 * Compare case-insensitively two objects.
-	 *
-	 * @see 	bab_compare
-	 * @param 	object 	$obj1
-	 * @param 	object 	$obj2
-	 * @return 	int		Same values as bab_compare
-	 */
-	private static function compareObjectsInsensitive($obj1, $obj2)
-	{
-		$method = self::$sortKeyMethod;
-
-		$str1 = $obj1->$method();
-		$str2 = $obj2->$method();
-
-		return self::compareStringsInsensitive($str1, $str2);
-	}
+        return uasort($aToSort, array('bab_sort', $sortCallback));
+    }
 
 
+    /**
+     * Compare case-sensitively two objects.
+     *
+     * @see 	bab_compare
+     * @param 	object 	$obj1
+     * @param 	object 	$obj2
+     * @return 	int		Same values as bab_compare
+     */
+    private static function compareObjectsSensitive($obj1, $obj2)
+    {
+        $method = self::$sortKeyMethod;
 
-	/**
-	 * Sort an array using a case sensitive "natural order" algorithm.
-	 *
-	 * @param array		$aToSort	The array to sort
-	 * @return bool
-	 */
-	public static function natsort(array &$aToSort)
-	{
-		return uasort($aToSort, array('bab_sort', 'compareStringsSensitive'));
-	}
+        $str1 = $obj1->$method();
+        $str2 = $obj2->$method();
+
+        return self::compareStringsSensitive($str1, $str2);
+    }
+
+
+    /**
+     * Compare case-insensitively two objects.
+     *
+     * @see 	bab_compare
+     * @param 	object 	$obj1
+     * @param 	object 	$obj2
+     * @return 	int		Same values as bab_compare
+     */
+    private static function compareObjectsInsensitive($obj1, $obj2)
+    {
+        $method = self::$sortKeyMethod;
+
+        $str1 = $obj1->$method();
+        $str2 = $obj2->$method();
+
+        return self::compareStringsInsensitive($str1, $str2);
+    }
 
 
 
-	/**
-	 * Sort an array and maintain index association
-	 *
-	 * @param array		$aToSort	array to sort
-	 * @param string	$sKeyName	If $aToSort is an array of array $sKeyName is the sort key
-	 * @param int		$iCase		Case sensitivity used in comparison
-	 * @return bool
-	 */
-	public static function asort(array &$aToSort, $sKeyName = null, $iCase = bab_Sort::CASE_SENSITIVE)
-	{
-		self::$sKeyName = $sKeyName;
-
-		if(isset(self::$sKeyName)) {
-			if (bab_Sort::CASE_INSENSITIVE == $iCase) {
-				$sortCallback = 'compareKeysInsensitive';
-			} else {
-				$sortCallback = 'compareKeysSensitive';
-			}
-		} else {
-			if (bab_Sort::CASE_INSENSITIVE == $iCase) {
-				$sortCallback = 'compareStringsInsensitive';
-			} else {
-				$sortCallback = 'compareStringsSensitive';
-			}
-		}
-		return uasort($aToSort, array('bab_sort', $sortCallback));
-	}
-
-
-	/**
-	 * Sort an array by key
-	 *
-	 * @param array		$aToSort	array to sort
-	 * @param int		$iCase		Case sensitivity used in comparison
-	 * @return bool
-	 */
-	public static function ksort(array &$aToSort, $iCase = bab_Sort::CASE_SENSITIVE)
-	{
-
-		if (bab_Sort::CASE_INSENSITIVE == $iCase) {
-			$sortCallback = 'compareStringsInsensitive';
-		} else {
-			$sortCallback = 'compareStringsSensitive';
-		}
-		return uksort($aToSort, array('bab_sort', $sortCallback));
-	}
+    /**
+     * Sort an array using a case sensitive "natural order" algorithm.
+     *
+     * @param array		$aToSort	The array to sort
+     * @return bool
+     */
+    public static function natsort(array &$aToSort)
+    {
+        return uasort($aToSort, array('bab_sort', 'compareStringsSensitive'));
+    }
 
 
 
-	/**
-	 * Compare case-sensitively two strings.
-	 *
-	 * @see bab_compare
-	 * @param string $string1
-	 * @param string $string2
-	 * @return int		Same values as bab_compare
-	 */
-	private static function compareStringsSensitive($sStr1, $sStr2)
-	{
-		return bab_compare($sStr1, $sStr2);
-	}
+    /**
+     * Sort an array and maintain index association
+     *
+     * @param array		$aToSort	array to sort
+     * @param string	$sKeyName	If $aToSort is an array of array $sKeyName is the sort key
+     * @param int		$iCase		Case sensitivity used in comparison
+     * @return bool
+     */
+    public static function asort(array &$aToSort, $sKeyName = null, $iCase = bab_Sort::CASE_SENSITIVE)
+    {
+        self::$sKeyName = $sKeyName;
+
+        if(isset(self::$sKeyName)) {
+            if (bab_Sort::CASE_INSENSITIVE == $iCase) {
+                $sortCallback = 'compareKeysInsensitive';
+            } else {
+                $sortCallback = 'compareKeysSensitive';
+            }
+        } else {
+            if (bab_Sort::CASE_INSENSITIVE == $iCase) {
+                $sortCallback = 'compareStringsInsensitive';
+            } else {
+                $sortCallback = 'compareStringsSensitive';
+            }
+        }
+        return uasort($aToSort, array('bab_sort', $sortCallback));
+    }
 
 
-	/**
-	 * Compare case-insensitively two strings.
-	 *
-	 * @see bab_compare
-	 * @param string $string1
-	 * @param string $string2
-	 * @return int		Same values as bab_compare
-	 */
-	private static function compareStringsInsensitive($sStr1, $sStr2)
-	{
-		return bab_compare(mb_strtolower((string) $sStr1), mb_strtolower((string) $sStr2));
-	}
+    /**
+     * Sort an array by key
+     *
+     * @param array		$aToSort	array to sort
+     * @param int		$iCase		Case sensitivity used in comparison
+     * @return bool
+     */
+    public static function ksort(array &$aToSort, $iCase = bab_Sort::CASE_SENSITIVE)
+    {
+
+        if (bab_Sort::CASE_INSENSITIVE == $iCase) {
+            $sortCallback = 'compareStringsInsensitive';
+        } else {
+            $sortCallback = 'compareStringsSensitive';
+        }
+        return uksort($aToSort, array('bab_sort', $sortCallback));
+    }
 
 
 
-	/**
-	 * Compare case-sensitively two arrays according to the specified key (self::$sKeyName).
-	 *
-	 * @see bab_compare
-	 * @param array $array1
-	 * @param array $array2
-	 * @return int
-	 */
-	private static function compareKeysSensitive(array $array1, array $array2)
-	{
-		return bab_compare($array1[self::$sKeyName], $array2[self::$sKeyName]);
-	}
+    /**
+     * Compare case-sensitively two strings.
+     *
+     * @see bab_compare
+     * @param string $string1
+     * @param string $string2
+     * @return int		Same values as bab_compare
+     */
+    private static function compareStringsSensitive($sStr1, $sStr2)
+    {
+        return bab_compare($sStr1, $sStr2);
+    }
+
+
+    /**
+     * Compare case-insensitively two strings.
+     *
+     * @see bab_compare
+     * @param string $string1
+     * @param string $string2
+     * @return int		Same values as bab_compare
+     */
+    private static function compareStringsInsensitive($sStr1, $sStr2)
+    {
+        return bab_compare(mb_strtolower((string) $sStr1), mb_strtolower((string) $sStr2));
+    }
 
 
 
-	/**
-	 * Compare case-insensitively two arrays according to the specified key (self::$sKeyName).
-	 *
-	 * @see bab_compare
-	 * @param array $array1
-	 * @param array $array2
-	 * @return int
-	 */
-	private static function compareKeysInsensitive(array $array1, array $array2)
-	{
-		return bab_compare(mb_strtolower($array1[self::$sKeyName]), mb_strtolower($array2[self::$sKeyName]));
-	}
+    /**
+     * Compare case-sensitively two arrays according to the specified key (self::$sKeyName).
+     *
+     * @see bab_compare
+     * @param array $array1
+     * @param array $array2
+     * @return int
+     */
+    private static function compareKeysSensitive(array $array1, array $array2)
+    {
+        return bab_compare($array1[self::$sKeyName], $array2[self::$sKeyName]);
+    }
+
+
+
+    /**
+     * Compare case-insensitively two arrays according to the specified key (self::$sKeyName).
+     *
+     * @see bab_compare
+     * @param array $array1
+     * @param array $array2
+     * @return int
+     */
+    private static function compareKeysInsensitive(array $array1, array $array2)
+    {
+        return bab_compare(mb_strtolower($array1[self::$sKeyName]), mb_strtolower($array2[self::$sKeyName]));
+    }
 }
 
 
@@ -272,22 +272,22 @@ class bab_Sort
  */
 function bab_compare($sStr1, $sStr2, $sInputStringIsoCharset = null)
 {
-	if (!isset($sInputStringIsoCharset))
-	{
-		$sInputStringIsoCharset = bab_charset::getIso();
-	}
+    if (!isset($sInputStringIsoCharset))
+    {
+        $sInputStringIsoCharset = bab_charset::getIso();
+    }
 
-	if (bab_charset::UTF_8 != $sInputStringIsoCharset)
-	{
-		// warning, characters with diacritics in ISO-8859-15 are not ordered correctly with strnatcmp
+    if (bab_charset::UTF_8 != $sInputStringIsoCharset)
+    {
+        // warning, characters with diacritics in ISO-8859-15 are not ordered correctly with strnatcmp
 
-		// return strnatcmp($sStr1, $sStr2);
-		return strnatcmp(bab_removeDiacritics($sStr1), bab_removeDiacritics($sStr2));
-	}
+        // return strnatcmp($sStr1, $sStr2);
+        return strnatcmp(bab_removeDiacritics($sStr1), bab_removeDiacritics($sStr2));
+    }
 
-	$oCollator = bab_getCollatorInstance();
+    $oCollator = bab_getCollatorInstance();
 
-	return $oCollator->compare($sStr1, $sStr2);
+    return $oCollator->compare($sStr1, $sStr2);
 }
 
 
@@ -302,23 +302,23 @@ function bab_compare($sStr1, $sStr2, $sInputStringIsoCharset = null)
  */
 function bab_getStringAccordingToDataBase($input, $sStringIsoCharset)
 {
-	if (bab_charset::getIso() === $sStringIsoCharset) {
-		return $input;
-	}
+    if (bab_charset::getIso() === $sStringIsoCharset) {
+        return $input;
+    }
 
-	if (is_array($input)) {
-		foreach($input as $k => $data) {
-			$input[$k] = bab_getStringAccordingToDataBase($data, $sStringIsoCharset);
-		}
+    if (is_array($input)) {
+        foreach($input as $k => $data) {
+            $input[$k] = bab_getStringAccordingToDataBase($data, $sStringIsoCharset);
+        }
 
-		return $input;
-	}
+        return $input;
+    }
 
-	//if (function_exists('iconv')) {
-	//	return @iconv($sStringIsoCharset, bab_charset::getIso().'//TRANSLIT//IGNORE', $input);
-	//} else {
-		return mb_convert_encoding($input, bab_charset::getIso(), $sStringIsoCharset);
-	//}
+    //if (function_exists('iconv')) {
+    //	return @iconv($sStringIsoCharset, bab_charset::getIso().'//TRANSLIT//IGNORE', $input);
+    //} else {
+        return mb_convert_encoding($input, bab_charset::getIso(), $sStringIsoCharset);
+    //}
 }
 
 
@@ -332,15 +332,15 @@ function bab_getStringAccordingToDataBase($input, $sStringIsoCharset)
  */
 function bab_convertStringFromDatabase($input, $sIsoCharset)
 {
-	if (bab_charset::getIso() === $sIsoCharset) {
-		return $input;
-	}
+    if (bab_charset::getIso() === $sIsoCharset) {
+        return $input;
+    }
 
-	//if (function_exists('iconv')) {
-	//	return iconv(bab_charset::getIso(), $sIsoCharset.'//TRANSLIT//IGNORE', $input);
-	//} else {
-		return mb_convert_encoding($input, $sIsoCharset, bab_charset::getIso());
-	//}
+    //if (function_exists('iconv')) {
+    //	return iconv(bab_charset::getIso(), $sIsoCharset.'//TRANSLIT//IGNORE', $input);
+    //} else {
+        return mb_convert_encoding($input, $sIsoCharset, bab_charset::getIso());
+    //}
 }
 
 
@@ -357,22 +357,22 @@ function bab_convertStringFromDatabase($input, $sIsoCharset)
  */
 function bab_getCollatorInstance($locale = 'en_US')
 {
-	require_once $GLOBALS['babInstallPath'].'utilit/i18n.class.php';
+    require_once $GLOBALS['babInstallPath'].'utilit/i18n.class.php';
 
-	static $oCollator = null;
-	if(!isset($oCollator))
-	{
-		$oCollator = new Collator($locale);
-	}
-	return $oCollator;
+    static $oCollator = null;
+    if(!isset($oCollator))
+    {
+        $oCollator = new Collator($locale);
+    }
+    return $oCollator;
 }
 
 function bab_multibyteToHex($sBuffer)
 {
     $sHexs	= '';
-	$iCount = mb_strlen($sBuffer, 'UTF-8');
-	for($iIndex = 0; $iIndex < $iCount; $iIndex++)
-	{
+    $iCount = mb_strlen($sBuffer, 'UTF-8');
+    for($iIndex = 0; $iIndex < $iCount; $iIndex++)
+    {
         $sCh	= mb_substr($sBuffer, $iIndex, 1, 'UTF-8');
         $iChlen	= mb_strwidth($sCh, 'UTF-8');
         for($iIdx = 0; $iIdx < $iChlen; $iIdx++)
@@ -390,14 +390,14 @@ function bab_multibyteToHex($sBuffer)
  * Return a formatted string, Wrapper for sprintf function
  * @param	string 	$format
  * @param	mixed 	$args
-		[ 	mixed 	$...  ]
+        [ 	mixed 	$...  ]
  * @return
  * @see http://www.php.net/sprintf
  */
 function bab_sprintf($sFormat)
 {
-	$aArgs = func_get_args();
-	return call_user_func_array('sprintf', $aArgs);
+    $aArgs = func_get_args();
+    return call_user_func_array('sprintf', $aArgs);
 }
 
 
@@ -415,15 +415,15 @@ function bab_sprintf($sFormat)
  */
 function bab_removeDiacritics($string, $charset = null)
 {
-	if ( !preg_match('/[\x80-\xff]/', $string) )
-	{
+    if ( !preg_match('/[\x80-\xff]/', $string) )
+    {
         return $string;
-	}
+    }
 
-	if (null === $charset)
-	{
-		$charset = bab_charset::getIso();
-	}
+    if (null === $charset)
+    {
+        $charset = bab_charset::getIso();
+    }
 
     if (bab_charset::UTF_8 === $charset) {
         $chars = array(
@@ -555,92 +555,92 @@ function bab_removeDiacritics($string, $charset = null)
 
 class bab_charset
 {
-	private static $sCharset = null;
-	private static $sIsoCharset = null;
+    private static $sCharset = null;
+    private static $sIsoCharset = null;
 
-	/**
-	 * UTF-8 encoding.
-	 *
-	 * @var string
-	 */
-	const	UTF_8 = 'UTF-8';
+    /**
+     * UTF-8 encoding.
+     *
+     * @var string
+     */
+    const	UTF_8 = 'UTF-8';
 
-	/**
-	 * ISO-8859-15 (latin1) encoding.
-	 *
-	 * @var string
-	 */
-	const	ISO_8859_15 = 'ISO-8859-15';
+    /**
+     * ISO-8859-15 (latin1) encoding.
+     *
+     * @var string
+     */
+    const	ISO_8859_15 = 'ISO-8859-15';
 
-	/**
-	 * Returns the database charset
-	 *
-	 * @static
-	 * @return   string	The database charset
-	 */
-	public static function getDatabase()
-	{
-		if(!isset(self::$sCharset))
-		{
-			global $babDB;
-			$oResult = $babDB->db_query("SHOW VARIABLES LIKE 'character_set_database'");
-			if(false === $oResult)
-			{
-				self::$sCharset = 'latin1';
-			}
+    /**
+     * Returns the database charset
+     *
+     * @static
+     * @return   string	The database charset
+     */
+    public static function getDatabase()
+    {
+        if(!isset(self::$sCharset))
+        {
+            global $babDB;
+            $oResult = $babDB->db_query("SHOW VARIABLES LIKE 'character_set_database'");
+            if(false === $oResult)
+            {
+                self::$sCharset = 'latin1';
+            }
 
-			$aDbCharset = $babDB->db_fetch_assoc($oResult);
-			if(false === $aDbCharset)
-			{
-				self::$sCharset = 'latin1';
-			}
+            $aDbCharset = $babDB->db_fetch_assoc($oResult);
+            if(false === $aDbCharset)
+            {
+                self::$sCharset = 'latin1';
+            }
 
-			self::$sCharset = $aDbCharset['Value'];
-		}
-		return self::$sCharset;
-	}
+            self::$sCharset = $aDbCharset['Value'];
+        }
+        return self::$sCharset;
+    }
 
-	private static function resetCharset()
-	{
-		self::$sCharset = null;
-		bab_charset::getDatabase();
-	}
+    private static function resetCharset()
+    {
+        self::$sCharset = null;
+        bab_charset::getDatabase();
+    }
 
 
-	/**
-	 * Returns the ISO code of the database encoding.
-	 *
-	 * @return string
-	 */
-	public static function getIso()
-	{
-		if(!isset(self::$sIsoCharset)) {
-			 self::$sIsoCharset = self::getIsoCharsetFromDataBaseCharset(self::getDatabase());
-		}
-		return self::$sIsoCharset;
-	}
+    /**
+     * Returns the ISO code of the database encoding.
+     *
+     * @return string
+     */
+    public static function getIso()
+    {
+        if(!isset(self::$sIsoCharset)) {
+             self::$sIsoCharset = self::getIsoCharsetFromDataBaseCharset(self::getDatabase());
+        }
+        return self::$sIsoCharset;
+    }
 
-	/**
-	 * Converts the code of the database encoding to the ISO code.
-	 *
-	 * @param string $sCharset The charset code as returned by bab_charset::getDatabase().
-	 *
-	 * @return string
-	 */
-	public static function getIsoCharsetFromDataBaseCharset($sCharset)
-	{
-		switch($sCharset)
-		{
-			case 'utf8':
-				return self::UTF_8;
+    /**
+     * Converts the code of the database encoding to the ISO code.
+     *
+     * @param string $sCharset The charset code as returned by bab_charset::getDatabase().
+     *
+     * @return string
+     */
+    public static function getIsoCharsetFromDataBaseCharset($sCharset)
+    {
+        switch($sCharset)
+        {
+            case 'utf8':
+                return self::UTF_8;
 
-			case 'latin1':
-				return self::ISO_8859_15;
+            case 'latin1':
+                return self::ISO_8859_15;
 
-			default:
-				return '';
-		}
-	}
+            default:
+                return '';
+        }
+    }
 }
 
 
@@ -656,11 +656,11 @@ class bab_charset
  * @param   int	$time	unix timestamp
  */
 function bab_time($time)
-	{
-	if( $time < 0)
-		return "";
-	return date($GLOBALS['babTimeFormat'], $time);
-	}
+    {
+    if( $time < 0)
+        return "";
+    return date($GLOBALS['babTimeFormat'], $time);
+    }
 
 /**
  * Returns a unix timestamp corresponding to the string $time formatted as a MYSQL DATETIME
@@ -672,129 +672,129 @@ function bab_time($time)
  * @return  int	unix timestamp
  */
 function bab_mktime($time)
-	{
-	$arr = explode(" ", $time); //Split days and hours
-	if ('0000-00-00' == $arr[0] || '' == $arr[0]) {
-		return null;
-	}
-	$arr0 = explode("-", $arr[0]); //Split year, month et day
-	if (isset($arr[1])) { //If the hours exist we send back days and hours
-		$arr1 = explode(":", $arr[1]);
-		return mktime( $arr1[0],$arr1[1],$arr1[2],$arr0[1],$arr0[2],$arr0[0]);
-		} else { //If the hours do not exist, we send back only days
-		return mktime(0,0,0,$arr0[1],$arr0[2],$arr0[0]);
-		}
-	}
+    {
+    $arr = explode(" ", $time); //Split days and hours
+    if ('0000-00-00' == $arr[0] || '' == $arr[0]) {
+        return null;
+    }
+    $arr0 = explode("-", $arr[0]); //Split year, month et day
+    if (isset($arr[1])) { //If the hours exist we send back days and hours
+        $arr1 = explode(":", $arr[1]);
+        return mktime( $arr1[0],$arr1[1],$arr1[2],$arr0[1],$arr0[2],$arr0[0]);
+        } else { //If the hours do not exist, we send back only days
+        return mktime(0,0,0,$arr0[1],$arr0[2],$arr0[0]);
+        }
+    }
 
 
 class bab_DateStrings
 {
-	/**
-	 *
-	 * @return array
-	 */
-	public static function getMonths()
-	{
-		static $arr = null;
+    /**
+     *
+     * @return array
+     */
+    public static function getMonths()
+    {
+        static $arr = null;
 
-		if (null === $arr)
-		{
-			$arr = array(
-				1=>bab_translate("January"),
-				bab_translate("February"),
-				bab_translate("March"),
-				bab_translate("April"),
-	            bab_translate("May"),
-	            bab_translate("June"),
-	            bab_translate("July"),
-	            bab_translate("August"),
-	            bab_translate("September"),
-	            bab_translate("October"),
-	            bab_translate("November"),
-	            bab_translate("December")
-	        );
-		}
+        if (null === $arr)
+        {
+            $arr = array(
+                1=>bab_translate("January"),
+                bab_translate("February"),
+                bab_translate("March"),
+                bab_translate("April"),
+                bab_translate("May"),
+                bab_translate("June"),
+                bab_translate("July"),
+                bab_translate("August"),
+                bab_translate("September"),
+                bab_translate("October"),
+                bab_translate("November"),
+                bab_translate("December")
+            );
+        }
 
-		return $arr;
-	}
+        return $arr;
+    }
 
-	/**
-	 *
-	 * @param int $i
-	 * @return string
-	 */
-	public static function getMonth($i)
-	{
-		$months = self::getMonths();
-		return $months[$i];
-	}
+    /**
+     *
+     * @param int $i
+     * @return string
+     */
+    public static function getMonth($i)
+    {
+        $months = self::getMonths();
+        return $months[$i];
+    }
 
-	/**
-	 *
-	 * @return array
-	 */
-	public static function getShortMonths()
-	{
-		static $arr = null;
+    /**
+     *
+     * @return array
+     */
+    public static function getShortMonths()
+    {
+        static $arr = null;
 
-		if (null === $arr)
-		{
-			$months = self::getMonths();
+        if (null === $arr)
+        {
+            $months = self::getMonths();
 
-			$arr = array();
-			foreach($months as $key => $val) {
-				$sm = mb_substr($val, 0 , 3);
-				if (count($arr) == 0 || !in_array($sm, $arr)) {
-					$arr[$key] = $sm;
-				} else {
-					$m=4;
-					while(in_array($sm, $arr) && $m < mb_strlen($val)) {
-						$sm = mb_substr($val, 0 , $m++);
-					}
+            $arr = array();
+            foreach($months as $key => $val) {
+                $sm = mb_substr($val, 0 , 3);
+                if (count($arr) == 0 || !in_array($sm, $arr)) {
+                    $arr[$key] = $sm;
+                } else {
+                    $m=4;
+                    while(in_array($sm, $arr) && $m < mb_strlen($val)) {
+                        $sm = mb_substr($val, 0 , $m++);
+                    }
 
-					$arr[$key] = $sm;
-				}
-			}
-		}
+                    $arr[$key] = $sm;
+                }
+            }
+        }
 
-		return $arr;
-	}
+        return $arr;
+    }
 
-	/**
-	 *
-	 * @return arrray
-	 */
-	public static function getDays()
-	{
-		static $arr = null;
+    /**
+     *
+     * @return arrray
+     */
+    public static function getDays()
+    {
+        static $arr = null;
 
-		if (null === $arr)
-		{
-			$arr = array(
-				bab_translate('Sunday'),
-				bab_translate('Monday'),
-				bab_translate('Tuesday'),
-				bab_translate('Wednesday'),
-				bab_translate('Thursday'),
-				bab_translate('Friday'),
-				bab_translate('Saturday')
-			);
-		}
+        if (null === $arr)
+        {
+            $arr = array(
+                bab_translate('Sunday'),
+                bab_translate('Monday'),
+                bab_translate('Tuesday'),
+                bab_translate('Wednesday'),
+                bab_translate('Thursday'),
+                bab_translate('Friday'),
+                bab_translate('Saturday')
+            );
+        }
 
-		return $arr;
-	}
+        return $arr;
+    }
 
 
-	/**
-	 *
-	 * @param int $i
-	 * @return string
-	 */
-	public static function getDay($i)
-	{
-		$days = self::getDays();
-		return $days[$i];
-	}
+    /**
+     *
+     * @param int $i
+     * @return string
+     */
+    public static function getDay($i)
+    {
+        $days = self::getDays();
+        return $days[$i];
+    }
 }
 
 
@@ -826,72 +826,72 @@ class bab_DateStrings
  */
 function bab_formatDate($format, $time)
 {
-	$txt = $format;
-	if(preg_match_all("/%(.)/", $format, $m))
-		{
-		for( $i = 0; $i< count($m[1]); $i++)
-			{
-			switch($m[1][$i])
-				{
-				case 'd': /* A short textual representation of a day, three letters */
-					$days = bab_DateStrings::getDays();
-					$val = mb_substr($days[date("w", $time)], 0 , 3);
-					break;
-				case 'D': /* day */
-					$days = bab_DateStrings::getDays();
-					$val = $days[date("w", $time)];
-					break;
-				case 'j': /* Day of the month with leading zeros */
-					$val = date("d", $time);
-					break;
-				case 'm': /* A short textual representation of a month, three letters */
-					$shortMonths = bab_DateStrings::getShortMonths();
-					$val = $shortMonths[date("n", $time)];
-					break;
-				case 'M': /* Month */
-					$month = bab_DateStrings::getMonths();
-					$val = $month[date("n", $time)];
-					break;
-				case 'n': /* Numeric representation of a month, with leading zeros */
-					$val = date("m", $time);
-					break;
-				case 'Y': /* A full numeric representation of a year, 4 digits */
-					$val = date("Y", $time);
-					break;
-				case 'y': /* A two digit representation of a year */
-					$val = date("y", $time);
-					break;
-				case 'H': /* 24-hour format of an hour with leading zeros */
-					$val = date("H", $time);
-					break;
-				case 'i': /* Minutes with leading zeros */
-					$val = date("i", $time);
-					break;
-				case 'S': /* user short date  */
-					$val = bab_shortDate($time, false);
-					break;
-				case 'L': /* user long date  */
-					$val = bab_longDate($time, false);
-					break;
-				case 'T': /* user time format  */
-					$val = bab_time($time);
-					break;
-				case 'r': /* relative short date  */
-					require_once dirname(__FILE__).'/dateTime.php';
-					$val = BAB_DateTimeUtil::relativeDate(date('Y-m-d H:i:s', $time), false, false);
-					break;
-				case 'R': /* relative long date  */
-					require_once dirname(__FILE__).'/dateTime.php';
-					$val = BAB_DateTimeUtil::relativeDate(date('Y-m-d H:i:s', $time), true, false);
-					break;
-				}
-			if( isset($val))
-				{
-				$txt = preg_replace("/".preg_quote($m[0][$i])."/", $val, $txt);
-				}
-			}
-		}
-	return $txt;
+    $txt = $format;
+    if(preg_match_all("/%(.)/", $format, $m))
+        {
+        for( $i = 0; $i< count($m[1]); $i++)
+            {
+            switch($m[1][$i])
+                {
+                case 'd': /* A short textual representation of a day, three letters */
+                    $days = bab_DateStrings::getDays();
+                    $val = mb_substr($days[date("w", $time)], 0 , 3);
+                    break;
+                case 'D': /* day */
+                    $days = bab_DateStrings::getDays();
+                    $val = $days[date("w", $time)];
+                    break;
+                case 'j': /* Day of the month with leading zeros */
+                    $val = date("d", $time);
+                    break;
+                case 'm': /* A short textual representation of a month, three letters */
+                    $shortMonths = bab_DateStrings::getShortMonths();
+                    $val = $shortMonths[date("n", $time)];
+                    break;
+                case 'M': /* Month */
+                    $month = bab_DateStrings::getMonths();
+                    $val = $month[date("n", $time)];
+                    break;
+                case 'n': /* Numeric representation of a month, with leading zeros */
+                    $val = date("m", $time);
+                    break;
+                case 'Y': /* A full numeric representation of a year, 4 digits */
+                    $val = date("Y", $time);
+                    break;
+                case 'y': /* A two digit representation of a year */
+                    $val = date("y", $time);
+                    break;
+                case 'H': /* 24-hour format of an hour with leading zeros */
+                    $val = date("H", $time);
+                    break;
+                case 'i': /* Minutes with leading zeros */
+                    $val = date("i", $time);
+                    break;
+                case 'S': /* user short date  */
+                    $val = bab_shortDate($time, false);
+                    break;
+                case 'L': /* user long date  */
+                    $val = bab_longDate($time, false);
+                    break;
+                case 'T': /* user time format  */
+                    $val = bab_time($time);
+                    break;
+                case 'r': /* relative short date  */
+                    require_once dirname(__FILE__).'/dateTime.php';
+                    $val = BAB_DateTimeUtil::relativeDate(date('Y-m-d H:i:s', $time), false, false);
+                    break;
+                case 'R': /* relative long date  */
+                    require_once dirname(__FILE__).'/dateTime.php';
+                    $val = BAB_DateTimeUtil::relativeDate(date('Y-m-d H:i:s', $time), true, false);
+                    break;
+                }
+            if( isset($val))
+                {
+                $txt = preg_replace("/".preg_quote($m[0][$i])."/", $val, $txt);
+                }
+            }
+        }
+    return $txt;
 }
 
 /**
@@ -904,25 +904,25 @@ function bab_formatDate($format, $time)
  *							false == 'Ven 17 Mars 2006 10:11')
  */
 function bab_longDate($time, $hour=true)
-	{
-	if( null === $time)
-		return "";
+    {
+    if( null === $time)
+        return "";
 
-	if( !isset($GLOBALS['babLongDateFormat']))
-		{
-		$GLOBALS['babLongDateFormat'] = bab_getDateFormat("ddd dd MMMM yyyy");
-		$GLOBALS['babTimeFormat'] = bab_getTimeFormat("HH:mm");
-		}
+    if( !isset($GLOBALS['babLongDateFormat']))
+        {
+        $GLOBALS['babLongDateFormat'] = bab_getDateFormat("ddd dd MMMM yyyy");
+        $GLOBALS['babTimeFormat'] = bab_getTimeFormat("HH:mm");
+        }
 
-	if( !$hour )
-		{
-		return bab_formatDate($GLOBALS['babLongDateFormat'], $time );
-		}
-	else
-		{
-		return bab_formatDate($GLOBALS['babLongDateFormat'], $time )." ".date($GLOBALS['babTimeFormat'], $time);
-		}
-	}
+    if( !$hour )
+        {
+        return bab_formatDate($GLOBALS['babLongDateFormat'], $time );
+        }
+    else
+        {
+        return bab_formatDate($GLOBALS['babLongDateFormat'], $time )." ".date($GLOBALS['babTimeFormat'], $time);
+        }
+    }
 
 
 /**
@@ -935,149 +935,149 @@ function bab_longDate($time, $hour=true)
  *							false == '17/03/2006 10:11'
  */
 function bab_shortDate($time, $hour=true)
-	{
-	if( null === $time)
-		return "";
+    {
+    if( null === $time)
+        return "";
 
-	if( !isset($GLOBALS['babShortDateFormat']))
-		{
-		require_once dirname(__FILE__).'/utilit.php';
-		$GLOBALS['babShortDateFormat'] = bab_getDateFormat("dd/mm/yyyy");
-		$GLOBALS['babTimeFormat'] = bab_getTimeFormat("HH:mm");
-		}
+    if( !isset($GLOBALS['babShortDateFormat']))
+        {
+        require_once dirname(__FILE__).'/utilit.php';
+        $GLOBALS['babShortDateFormat'] = bab_getDateFormat("dd/mm/yyyy");
+        $GLOBALS['babTimeFormat'] = bab_getTimeFormat("HH:mm");
+        }
 
-	if( !$hour )
-		{
-		return bab_formatDate($GLOBALS['babShortDateFormat'], $time );
-		}
-	else
-		{
-		return bab_formatDate($GLOBALS['babShortDateFormat'], $time )." ".date($GLOBALS['babTimeFormat'], $time);
-		}
-	}
+    if( !$hour )
+        {
+        return bab_formatDate($GLOBALS['babShortDateFormat'], $time );
+        }
+    else
+        {
+        return bab_formatDate($GLOBALS['babShortDateFormat'], $time )." ".date($GLOBALS['babTimeFormat'], $time);
+        }
+    }
 
 
 /**
  * @deprecated
  */
 function bab_strftime($time, $hour=true)
-	{
-	return bab_longDate($time, $hour);
-	}
+    {
+    return bab_longDate($time, $hour);
+    }
 
 /**
  * @deprecated
  */
 function bab_editor($content, $editname, $formname, $heightpx=300, $what=3)
-	{
-	return '<textarea name="'.bab_toHtml($editname).'" cols="50" rows="10">'.bab_toHtml($content).'</textarea>';
-	}
+    {
+    return '<textarea name="'.bab_toHtml($editname).'" cols="50" rows="10">'.bab_toHtml($content).'</textarea>';
+    }
 
 /**
  * Transform a html string with the security filter configured in site options
  */
 function bab_editor_record(&$str)
-	{
+    {
 
-	global $babDB;
-	$str = preg_replace("/((href|src)=['\"]?)".preg_quote($GLOBALS['babUrl'],'/').'/i', "\\1", $str);
+    global $babDB;
+    $str = preg_replace("/((href|src)=['\"]?)".preg_quote($GLOBALS['babUrl'],'/').'/i', "\\1", $str);
 
-	if (!$arr = $babDB->db_fetch_array($babDB->db_query("SELECT * FROM ".BAB_SITES_EDITOR_TBL." WHERE id_site='".$babDB->db_escape_string($GLOBALS['babBody']->babsite['id'])."'")))
-		{
-		return;
-		}
+    if (!$arr = $babDB->db_fetch_array($babDB->db_query("SELECT * FROM ".BAB_SITES_EDITOR_TBL." WHERE id_site='".$babDB->db_escape_string($GLOBALS['babBody']->babsite['id'])."'")))
+        {
+        return;
+        }
 
-	if ($arr['filter_html'] == 0)
-		{
-		return;
-		}
+    if ($arr['filter_html'] == 0)
+        {
+        return;
+        }
 
-	$allowed_tags = explode(' ',$arr['tags']);
-	$allowed_tags = array_flip($allowed_tags);
+    $allowed_tags = explode(' ',$arr['tags']);
+    $allowed_tags = array_flip($allowed_tags);
 
-	$allowed_attributes = explode(' ',$arr['attributes']);
-	$allowed_attributes = array_flip($allowed_attributes);
+    $allowed_attributes = explode(' ',$arr['attributes']);
+    $allowed_attributes = array_flip($allowed_attributes);
 
-	$worked = array();
+    $worked = array();
 
-	preg_match_all("/<\/?([^>]+?)\/?>/i",$str,$out);
+    preg_match_all("/<\/?([^>]+?)\/?>/i",$str,$out);
 
-	$nbtags = count($out[0]);
-	for($i = 0; $i < $nbtags ; $i++)
-		{
-		$tag  = &$out[0][$i];
+    $nbtags = count($out[0]);
+    for($i = 0; $i < $nbtags ; $i++)
+        {
+        $tag  = &$out[0][$i];
 
-		list($tmp) = explode(' ',trim($out[1][$i]));
-		$name = mb_strtolower($tmp);
+        list($tmp) = explode(' ',trim($out[1][$i]));
+        $name = mb_strtolower($tmp);
 
-		if (!isset($worked[$tag]))
-			{
-			$worked[$tag] = 1;
-			if (isset($allowed_tags[$name]))
-				{
-				// work on attributes
-				preg_match_all("/(\w+)\s*=\s*([\"'])(.*?)\\2/", $out[1][$i], $elements);
+        if (!isset($worked[$tag]))
+            {
+            $worked[$tag] = 1;
+            if (isset($allowed_tags[$name]))
+                {
+                // work on attributes
+                preg_match_all("/(\w+)\s*=\s*([\"'])(.*?)\\2/", $out[1][$i], $elements);
 
-				$worked_attributes = array();
+                $worked_attributes = array();
 
-				for($j = 0 ; $j < count($elements[0]) ; $j++ )
-					{
-					$att_elem = &$elements[0][$j];
-					$att_name = mb_strtolower($elements[1][$j]);
+                for($j = 0 ; $j < count($elements[0]) ; $j++ )
+                    {
+                    $att_elem = &$elements[0][$j];
+                    $att_name = mb_strtolower($elements[1][$j]);
 
-					if (!empty($att_name) && !isset($allowed_attributes[$att_name]))
-						{
-						$worked_attributes[$att_elem] = 1;
-						$replace_tag = str_replace($att_elem,'',$tag);
-						$str = preg_replace("/".preg_quote($tag,"/")."/", $replace_tag, $str);
-						}
+                    if (!empty($att_name) && !isset($allowed_attributes[$att_name]))
+                        {
+                        $worked_attributes[$att_elem] = 1;
+                        $replace_tag = str_replace($att_elem,'',$tag);
+                        $str = preg_replace("/".preg_quote($tag,"/")."/", $replace_tag, $str);
+                        }
 
 
-					if (!empty($att_name) && isset($allowed_attributes[$att_name]) && $att_name == 'href' && $arr['verify_href'] == 1)
-						{
-						$worked_attributes[$att_elem] = 1;
-						$clean_href = ereg_replace("[\"']([^(http|ftp|#|".preg_quote(basename($_SERVER['SCRIPT_NAME'])).")].*)[\"']", '"#"', $att_elem);
-						$replace_tag = str_replace($att_elem, $clean_href, $tag);
+                    if (!empty($att_name) && isset($allowed_attributes[$att_name]) && $att_name == 'href' && $arr['verify_href'] == 1)
+                        {
+                        $worked_attributes[$att_elem] = 1;
+                        $clean_href = ereg_replace("[\"']([^(http|ftp|#|".preg_quote(basename($_SERVER['SCRIPT_NAME'])).")].*)[\"']", '"#"', $att_elem);
+                        $replace_tag = str_replace($att_elem, $clean_href, $tag);
 
-						$str = preg_replace("/".preg_quote($tag,"/")."/", $replace_tag, $str);
+                        $str = preg_replace("/".preg_quote($tag,"/")."/", $replace_tag, $str);
 
-						}
-					}
-				}
-			else
-				{
-				$str = preg_replace("/".preg_quote($tag,"/")."/", ' ', $str);
-				}
-			}
-		}
-	}
+                        }
+                    }
+                }
+            else
+                {
+                $str = preg_replace("/".preg_quote($tag,"/")."/", ' ', $str);
+                }
+            }
+        }
+    }
 
 /**
  * get browser OS from windows, macos, linux
  * @return string
  */
 function bab_browserOS()
-	{
-	if (!isset($_SERVER['HTTP_USER_AGENT'])) {
-		return '';
-		}
+    {
+    if (!isset($_SERVER['HTTP_USER_AGENT'])) {
+        return '';
+        }
 
-	$HTTP_USER_AGENT = $_SERVER['HTTP_USER_AGENT'];
+    $HTTP_USER_AGENT = $_SERVER['HTTP_USER_AGENT'];
 
-	if (false !== mb_strrpos(mb_strtolower($HTTP_USER_AGENT), "windows"))
-		{
-	 	return "windows";
-		}
-	if (false !== mb_strrpos(mb_strtolower($HTTP_USER_AGENT), "mac"))
-		{
-		return "macos";
-		}
-	if (false !== mb_strrpos(mb_strtolower($HTTP_USER_AGENT), "linux"))
-		{
-		return "linux";
-		}
-	return "";
-	}
+    if (false !== mb_strrpos(mb_strtolower($HTTP_USER_AGENT), "windows"))
+        {
+         return "windows";
+        }
+    if (false !== mb_strrpos(mb_strtolower($HTTP_USER_AGENT), "mac"))
+        {
+        return "macos";
+        }
+    if (false !== mb_strrpos(mb_strtolower($HTTP_USER_AGENT), "linux"))
+        {
+        return "linux";
+        }
+    return "";
+    }
 
 
 /**
@@ -1085,34 +1085,34 @@ function bab_browserOS()
  * @return string
  */
 function bab_browserAgent()
-	{
-	if (!isset($_SERVER['HTTP_USER_AGENT'])) {
-		return '';
-		}
+    {
+    if (!isset($_SERVER['HTTP_USER_AGENT'])) {
+        return '';
+        }
 
-	$HTTP_USER_AGENT = $_SERVER['HTTP_USER_AGENT'];
+    $HTTP_USER_AGENT = $_SERVER['HTTP_USER_AGENT'];
 
-	if (false !== mb_strrpos(mb_strtolower($HTTP_USER_AGENT), "konqueror"))
-		{
-		return "konqueror";
-		}
-	if(false !== mb_strrpos(mb_strtolower($HTTP_USER_AGENT), "opera"))
-		{
-		return "opera";
-		}
-	if(false !== mb_strrpos(mb_strtolower($HTTP_USER_AGENT), "msie"))
-		{
-		return "msie";
-		}
-	if(false !== mb_strrpos(mb_strtolower($HTTP_USER_AGENT), "mozilla"))
-		{
-		if(false !== mb_strrpos(mb_strtolower($HTTP_USER_AGENT), "gecko"))
-			return "nn6";
-		else
-			return "nn4";
-		}
-	return "";
-	}
+    if (false !== mb_strrpos(mb_strtolower($HTTP_USER_AGENT), "konqueror"))
+        {
+        return "konqueror";
+        }
+    if(false !== mb_strrpos(mb_strtolower($HTTP_USER_AGENT), "opera"))
+        {
+        return "opera";
+        }
+    if(false !== mb_strrpos(mb_strtolower($HTTP_USER_AGENT), "msie"))
+        {
+        return "msie";
+        }
+    if(false !== mb_strrpos(mb_strtolower($HTTP_USER_AGENT), "mozilla"))
+        {
+        if(false !== mb_strrpos(mb_strtolower($HTTP_USER_AGENT), "gecko"))
+            return "nn6";
+        else
+            return "nn4";
+        }
+    return "";
+    }
 
 
 /**
@@ -1120,58 +1120,58 @@ function bab_browserAgent()
  * @return string | 0
  */
 function bab_browserVersion()
-	{
-	if (!isset($_SERVER['HTTP_USER_AGENT'])) {
-		return 0;
-		}
+    {
+    if (!isset($_SERVER['HTTP_USER_AGENT'])) {
+        return 0;
+        }
 
-	$tab = explode(";", $_SERVER['HTTP_USER_AGENT']);
-	if( ereg("([^(]*)([0-9].[0-9]{1,2})",$tab[1],$res))
-		{
-		return trim($res[2]);
-		}
-	return 0;
-	}
+    $tab = explode(";", $_SERVER['HTTP_USER_AGENT']);
+    if( ereg("([^(]*)([0-9].[0-9]{1,2})",$tab[1],$res))
+        {
+        return trim($res[2]);
+        }
+    return 0;
+    }
 
 
 function bab_translate($str, $folder = "", $lang="")
-	{
-	static $babLA = array();
+    {
+    static $babLA = array();
 
-	if( empty($lang)) {
-		if (!isset($GLOBALS['babLanguage'])) {
-			$lang = 'fr';
-		} else {
-			$lang = $GLOBALS['babLanguage'];
-		}
-	}
+    if( empty($lang)) {
+        if (!isset($GLOBALS['babLanguage'])) {
+            $lang = 'fr';
+        } else {
+            $lang = $GLOBALS['babLanguage'];
+        }
+    }
 
-	if( empty($lang) || empty($str))
-		return $str;
+    if( empty($lang) || empty($str))
+        return $str;
 
-	if( !empty($folder))
-		$tag = $folder."/".$lang;
-	else
-		$tag = "bab/".$lang;
+    if( !empty($folder))
+        $tag = $folder."/".$lang;
+    else
+        $tag = "bab/".$lang;
 
-	if( !isset($babLA[$tag])) {
-		require_once dirname(__FILE__).'/loadlanguage.php';
-		babLoadLanguage($lang, $folder, $babLA[$tag]);
+    if( !isset($babLA[$tag])) {
+        require_once dirname(__FILE__).'/loadlanguage.php';
+        babLoadLanguage($lang, $folder, $babLA[$tag]);
 
-		if (!isset($babLA[$tag])) {
-			$babLA[$tag] = array();
-		}
-	}
+        if (!isset($babLA[$tag])) {
+            $babLA[$tag] = array();
+        }
+    }
 
-	if(isset($babLA[$tag][$str]))
-		{
-			return $babLA[$tag][$str];
-		}
-	else
-		{
-			return $str;
-		}
-	}
+    if(isset($babLA[$tag][$str]))
+        {
+            return $babLA[$tag][$str];
+        }
+    else
+        {
+            return $str;
+        }
+    }
 
 
 /**
@@ -1180,15 +1180,15 @@ function bab_translate($str, $folder = "", $lang="")
  */
 function bab_isUserAdministrator()
 {
-	require_once dirname(__FILE__).'/defines.php';
-	static $admin = null;
+    require_once dirname(__FILE__).'/defines.php';
+    static $admin = null;
 
-	if (!isset($admin))
-	{
-		$admin = bab_isMemberOfGroup(BAB_ADMINISTRATOR_GROUP);
-	}
+    if (!isset($admin))
+    {
+        $admin = bab_isMemberOfGroup(BAB_ADMINISTRATOR_GROUP);
+    }
 
-	return $admin;
+    return $admin;
 }
 
 
@@ -1198,10 +1198,10 @@ function bab_isUserAdministrator()
  * @return bool
  */
 function bab_isUserGroupManager($grpid="")
-	{
-	trigger_error('deprecated function');
-	return false;
-	}
+    {
+    trigger_error('deprecated function');
+    return false;
+    }
 
 /**
 * Return the username of a given user
@@ -1219,13 +1219,13 @@ function bab_isUserGroupManager($grpid="")
 */
 function bab_getUserName($iIdUser, $bComposeUserName = true)
 {
-	include_once dirname(__FILE__).'/userinfosincl.php';
+    include_once dirname(__FILE__).'/userinfosincl.php';
 
-	if (true === $bComposeUserName) {
-		return bab_userInfos::composeName($iIdUser);
-	} else {
-		return bab_userInfos::arrName($iIdUser);
-	}
+    if (true === $bComposeUserName) {
+        return bab_userInfos::composeName($iIdUser);
+    } else {
+        return bab_userInfos::arrName($iIdUser);
+    }
 }
 
 
@@ -1235,64 +1235,64 @@ function bab_getUserName($iIdUser, $bComposeUserName = true)
  * @return string
  */
 function bab_getUserEmail($id)
-	{
+    {
 
-	include_once dirname(__FILE__).'/userinfosincl.php';
-	if ($row = bab_userInfos::getRow($id)) {
-		return $row['email'];
-		}
+    include_once dirname(__FILE__).'/userinfosincl.php';
+    if ($row = bab_userInfos::getRow($id)) {
+        return $row['email'];
+        }
 
-	return '';
-	}
+    return '';
+    }
 
 /**
  * @return string
  */
 function bab_getUserNickname($id)
-	{
-	include_once dirname(__FILE__).'/userinfosincl.php';
-	if ($row = bab_userInfos::getRow($id)) {
-		return $row['nickname'];
-		}
+    {
+    include_once dirname(__FILE__).'/userinfosincl.php';
+    if ($row = bab_userInfos::getRow($id)) {
+        return $row['nickname'];
+        }
 
-	return '';
-	}
+    return '';
+    }
 
 
 
 function bab_getUserSetting($id, $what)
-	{
-	global $babDB;
-	$query = "select ".$babDB->db_escape_string($what)." from ".BAB_USERS_TBL." where id='".$babDB->db_escape_string($id)."'";
-	$res = $babDB->db_query($query);
-	if( $res && $babDB->db_num_rows($res) > 0)
-		{
-		$arr = $babDB->db_fetch_array($res);
-		return $arr[$what];
-		}
-	else
-		{
-		return "";
-		}
-	}
+    {
+    global $babDB;
+    $query = "select ".$babDB->db_escape_string($what)." from ".BAB_USERS_TBL." where id='".$babDB->db_escape_string($id)."'";
+    $res = $babDB->db_query($query);
+    if( $res && $babDB->db_num_rows($res) > 0)
+        {
+        $arr = $babDB->db_fetch_array($res);
+        return $arr[$what];
+        }
+    else
+        {
+        return "";
+        }
+    }
 
 function bab_getPrimaryGroupId($userid)
-	{
-	global $babDB;
-	if( empty($userid) || $userid == 0 )
-		return "";
-	$query = "select id_group from ".BAB_USERS_GROUPS_TBL." where id_object='".$babDB->db_escape_string($userid)."' and isprimary='Y'";
-	$res = $babDB->db_query($query);
-	if( $res && $babDB->db_num_rows($res) > 0)
-		{
-		$arr = $babDB->db_fetch_array($res);
-		return $arr['id_group'];
-		}
-	else
-		{
-		return "";
-		}
-	}
+    {
+    global $babDB;
+    if( empty($userid) || $userid == 0 )
+        return "";
+    $query = "select id_group from ".BAB_USERS_GROUPS_TBL." where id_object='".$babDB->db_escape_string($userid)."' and isprimary='Y'";
+    $res = $babDB->db_query($query);
+    if( $res && $babDB->db_num_rows($res) > 0)
+        {
+        $arr = $babDB->db_fetch_array($res);
+        return $arr['id_group'];
+        }
+    else
+        {
+        return "";
+        }
+    }
 
 
 /**
@@ -1303,65 +1303,65 @@ function bab_getPrimaryGroupId($userid)
  * @return false|array
  */
 function bab_getGroupsMembers($ids, $nonConfirmed = false, $disabled = false)
-	{
-	require_once dirname(__FILE__).'/userinfosincl.php';
-	global $babDB;
-	if (!is_array($ids))
-		{
-		$ids = array($ids);
-		}
+    {
+    require_once dirname(__FILE__).'/userinfosincl.php';
+    global $babDB;
+    if (!is_array($ids))
+        {
+        $ids = array($ids);
+        }
 
-	if( is_array($ids) && count($ids) > 0 )
-		{
-		if( in_array(BAB_REGISTERED_GROUP, $ids))
-			{
-			$req = "SELECT id, email, firstname, lastname FROM ".BAB_USERS_TBL." where ".bab_userInfos::queryAllowedUsers(null, $nonConfirmed, $disabled);
-			}
-		else
-			{
-			global $babBody;
+    if( is_array($ids) && count($ids) > 0 )
+        {
+        if( in_array(BAB_REGISTERED_GROUP, $ids))
+            {
+            $req = "SELECT id, email, firstname, lastname FROM ".BAB_USERS_TBL." where ".bab_userInfos::queryAllowedUsers(null, $nonConfirmed, $disabled);
+            }
+        else
+            {
+            global $babBody;
 
-			foreach($ids as $idg)
-				{
-				if (bab_Groups::isGroupSet($idg))
-					{
-					$res = $babDB->db_query("SELECT id_group FROM ".BAB_GROUPS_SET_ASSOC_TBL." WHERE id_set='".$babDB->db_escape_string($idg)."'");
-					while ($arr = $babDB->db_fetch_assoc($res))
-						{
-						$ids[] = $arr['id_group'];
-						}
-					}
-				}
+            foreach($ids as $idg)
+                {
+                if (bab_Groups::isGroupSet($idg))
+                    {
+                    $res = $babDB->db_query("SELECT id_group FROM ".BAB_GROUPS_SET_ASSOC_TBL." WHERE id_set='".$babDB->db_escape_string($idg)."'");
+                    while ($arr = $babDB->db_fetch_assoc($res))
+                        {
+                        $ids[] = $arr['id_group'];
+                        }
+                    }
+                }
 
-			$req = "SELECT distinct u.id, u.email, u.firstname, u.lastname FROM ".BAB_USERS_GROUPS_TBL." g, ".BAB_USERS_TBL." u
-				WHERE
-					".bab_userInfos::queryAllowedUsers('u', $nonConfirmed, $disabled)."
-					and g.id_group IN (".$babDB->quote($ids).")
-					AND g.id_object=u.id
-				";
-			}
+            $req = "SELECT distinct u.id, u.email, u.firstname, u.lastname FROM ".BAB_USERS_GROUPS_TBL." g, ".BAB_USERS_TBL." u
+                WHERE
+                    ".bab_userInfos::queryAllowedUsers('u', $nonConfirmed, $disabled)."
+                    and g.id_group IN (".$babDB->quote($ids).")
+                    AND g.id_object=u.id
+                ";
+            }
 
 
-		$res = $babDB->db_query($req);
-		$users = array();
-		if( $res && $babDB->db_num_rows($res) > 0)
-			{
-			$i = 0;
-			while ($arr = $babDB->db_fetch_array($res))
-				{
-				$users[$i]['id'] = $arr['id'];
-				$users[$i]['name'] = bab_composeUserName($arr['firstname'],$arr['lastname']);
-				$users[$i]['firstname'] = $arr['firstname'];
-				$users[$i]['lastname'] = $arr['lastname'];
-				$users[$i]['email'] = $arr['email'];
-				$i++;
-				}
-			return $users;
-			}
-		}
+        $res = $babDB->db_query($req);
+        $users = array();
+        if( $res && $babDB->db_num_rows($res) > 0)
+            {
+            $i = 0;
+            while ($arr = $babDB->db_fetch_array($res))
+                {
+                $users[$i]['id'] = $arr['id'];
+                $users[$i]['name'] = bab_composeUserName($arr['firstname'],$arr['lastname']);
+                $users[$i]['firstname'] = $arr['firstname'];
+                $users[$i]['lastname'] = $arr['lastname'];
+                $users[$i]['email'] = $arr['email'];
+                $i++;
+                }
+            return $users;
+            }
+        }
 
-		return false;
-	}
+        return false;
+    }
 
 
 /**
@@ -1375,70 +1375,70 @@ function bab_getGroupsMembers($ids, $nonConfirmed = false, $disabled = false)
  */
 function bab_isMemberOfGroup($group, $userid="")
 {
-	global $babDB;
+    global $babDB;
 
-	if (is_numeric($group) && BAB_ALLUSERS_GROUP === (int) $group)
-	{
-		return true;
-	}
+    if (is_numeric($group) && BAB_ALLUSERS_GROUP === (int) $group)
+    {
+        return true;
+    }
 
-	if('' === $group) {
-		return false;
-	}
+    if('' === $group) {
+        return false;
+    }
 
-	if( $userid == "")
-	{
-		$userid = bab_getUserId();
-	}
+    if( $userid == "")
+    {
+        $userid = bab_getUserId();
+    }
 
-	if (is_numeric($group)) {
-		$id_group = $group;
-	} else {
-		$req = "select id from ".BAB_GROUPS_TBL." where name='".$babDB->db_escape_string($group)."'";
-		$res = $babDB->db_query($req);
-		if( $res && $babDB->db_num_rows($res) > 0)
-			{
-			$arr = $babDB->db_fetch_array($res);
-			$id_group = $arr['id'];
-		} else {
-			return false;
-		}
-	}
+    if (is_numeric($group)) {
+        $id_group = $group;
+    } else {
+        $req = "select id from ".BAB_GROUPS_TBL." where name='".$babDB->db_escape_string($group)."'";
+        $res = $babDB->db_query($req);
+        if( $res && $babDB->db_num_rows($res) > 0)
+            {
+            $arr = $babDB->db_fetch_array($res);
+            $id_group = $arr['id'];
+        } else {
+            return false;
+        }
+    }
 
-	if ($userid == bab_getUserId())
-	{
-		require_once dirname(__FILE__).'/groupsincl.php';
+    if ($userid == bab_getUserId())
+    {
+        require_once dirname(__FILE__).'/groupsincl.php';
 
-		// use session cache
-		if (bab_Groups::inUserGroups($id_group))
-		{
-			return $id_group;
-		} else {
-			return false;
-		}
-	}
+        // use session cache
+        if (bab_Groups::inUserGroups($id_group))
+        {
+            return $id_group;
+        } else {
+            return false;
+        }
+    }
 
-	switch($id_group) {
-		case BAB_ALLUSERS_GROUP:
-			return BAB_ALLUSERS_GROUP;
+    switch($id_group) {
+        case BAB_ALLUSERS_GROUP:
+            return BAB_ALLUSERS_GROUP;
 
-		case BAB_REGISTERED_GROUP:
-			return $userid ? BAB_REGISTERED_GROUP : false;
+        case BAB_REGISTERED_GROUP:
+            return $userid ? BAB_REGISTERED_GROUP : false;
 
-		case BAB_UNREGISTERED_GROUP:
-			return $userid ? false : BAB_UNREGISTERED_GROUP;
+        case BAB_UNREGISTERED_GROUP:
+            return $userid ? false : BAB_UNREGISTERED_GROUP;
 
-		default:
-			$req = "select id from ".BAB_USERS_GROUPS_TBL." where id_object='".$babDB->db_escape_string($userid)."' and id_group='".$babDB->db_escape_string($id_group)."'";
-			$res = $babDB->db_query($req);
-			if( $res && $babDB->db_num_rows($res) > 0)
-			{
-				return $id_group;
-			}
+        default:
+            $req = "select id from ".BAB_USERS_GROUPS_TBL." where id_object='".$babDB->db_escape_string($userid)."' and id_group='".$babDB->db_escape_string($id_group)."'";
+            $res = $babDB->db_query($req);
+            if( $res && $babDB->db_num_rows($res) > 0)
+            {
+                return $id_group;
+            }
 
-	}
+    }
 
-	return false;
+    return false;
 }
 
 /**
@@ -1447,20 +1447,20 @@ function bab_isMemberOfGroup($group, $userid="")
  * @return int
  */
 function bab_getUserIdByEmail($email)
-	{
-	global $babDB;
-	$query = "select id from ".BAB_USERS_TBL." where email LIKE '".$babDB->db_escape_string($email)."'";
-	$res = $babDB->db_query($query);
-	if( $res && $babDB->db_num_rows($res) > 0)
-		{
-		$arr = $babDB->db_fetch_array($res);
-		return (int) $arr['id'];
-		}
-	else
-		{
-		return 0;
-		}
-	}
+    {
+    global $babDB;
+    $query = "select id from ".BAB_USERS_TBL." where email LIKE '".$babDB->db_escape_string($email)."'";
+    $res = $babDB->db_query($query);
+    if( $res && $babDB->db_num_rows($res) > 0)
+        {
+        $arr = $babDB->db_fetch_array($res);
+        return (int) $arr['id'];
+        }
+    else
+        {
+        return 0;
+        }
+    }
 
 
 /**
@@ -1469,19 +1469,19 @@ function bab_getUserIdByEmail($email)
  * @return int
  */
 function bab_getUserIdByNickname($nickname)
-	{
-	global $babDB;
-	$res = $babDB->db_query("select id from ".BAB_USERS_TBL." where nickname='".$babDB->db_escape_string($nickname)."'");
-	if( $res && $babDB->db_num_rows($res) > 0)
-		{
-		$arr = $babDB->db_fetch_array($res);
-		return (int) $arr['id'];
-		}
-	else
-		{
-		return 0;
-		}
-	}
+    {
+    global $babDB;
+    $res = $babDB->db_query("select id from ".BAB_USERS_TBL." where nickname='".$babDB->db_escape_string($nickname)."'");
+    if( $res && $babDB->db_num_rows($res) > 0)
+        {
+        $arr = $babDB->db_fetch_array($res);
+        return (int) $arr['id'];
+        }
+    else
+        {
+        return 0;
+        }
+    }
 
 
 /**
@@ -1493,32 +1493,32 @@ function bab_getUserIdByNickname($nickname)
 function bab_getUserId($name = null)
 {
 
-	if (null === $name)
-	{
-		require_once dirname(__FILE__).'/session.class.php';
-		$session = bab_getInstance('bab_Session');
+    if (null === $name)
+    {
+        require_once dirname(__FILE__).'/session.class.php';
+        $session = bab_getInstance('bab_Session');
 
-		if (!isset($session->BAB_SESS_USERID))
-		{
-			return 0;
-		}
+        if (!isset($session->BAB_SESS_USERID))
+        {
+            return 0;
+        }
 
-		return ((int) $session->BAB_SESS_USERID);
-	}
+        return ((int) $session->BAB_SESS_USERID);
+    }
 
 
-	global $babDB;
-	$replace = array( " " => "", "-" => "");
-	$hash = md5(mb_strtolower(strtr($name, $replace)));
-	$query = "select id from ".BAB_USERS_TBL." where hashname='".$babDB->db_escape_string($hash)."'";
-	$res = $babDB->db_query($query);
-	if( $babDB->db_num_rows($res) > 0)
-	{
-		$arr = $babDB->db_fetch_array($res);
-		return (int) $arr['id'];
-	}
+    global $babDB;
+    $replace = array( " " => "", "-" => "");
+    $hash = md5(mb_strtolower(strtr($name, $replace)));
+    $query = "select id from ".BAB_USERS_TBL." where hashname='".$babDB->db_escape_string($hash)."'";
+    $res = $babDB->db_query($query);
+    if( $babDB->db_num_rows($res) > 0)
+    {
+        $arr = $babDB->db_fetch_array($res);
+        return (int) $arr['id'];
+    }
 
-	return 0;
+    return 0;
 }
 
 /**
@@ -1528,108 +1528,108 @@ function bab_getUserId($name = null)
  * @return array { int | id , string | lastname , string | firstname }
  */
 function bab_getUsersByName( $name, $nb = 5 )
-	{
-	global $babDB;
-	$name = "%".trim($name)."%" ;
-	$query = "select id, lastname, firstname from ".BAB_USERS_TBL." where lastname LIKE '".$babDB->db_escape_string($name)."' LIMIT 0,".$nb;
-	$res = $babDB->db_query($query);
-	if( $babDB->db_num_rows($res) > 0)
-		{
-		$i = 0;
-		while ($arr = $babDB->db_fetch_assoc($res)){
-			$resArr[$i]['id'] = $arr['id'];
-			$resArr[$i]['lastname'] = $arr['lastname'];
-			$resArr[$i]['firstname'] = $arr['firstname'];
-			$i++;
-		}
-		return $resArr;
-		}
-	else
-		return 0;
-	}
+    {
+    global $babDB;
+    $name = "%".trim($name)."%" ;
+    $query = "select id, lastname, firstname from ".BAB_USERS_TBL." where lastname LIKE '".$babDB->db_escape_string($name)."' LIMIT 0,".$nb;
+    $res = $babDB->db_query($query);
+    if( $babDB->db_num_rows($res) > 0)
+        {
+        $i = 0;
+        while ($arr = $babDB->db_fetch_assoc($res)){
+            $resArr[$i]['id'] = $arr['id'];
+            $resArr[$i]['lastname'] = $arr['lastname'];
+            $resArr[$i]['firstname'] = $arr['firstname'];
+            $i++;
+        }
+        return $resArr;
+        }
+    else
+        return 0;
+    }
 
 function bab_getUserGroups($id = "")
-	{
-	global $babBody, $babDB;
-	$arr = array('id' => array(), 'name' => array());
-	if( empty($id))
-		{
-		$usergroups = bab_Groups::getUserGroups();
-		for( $i = 0; $i < count($usergroups); $i++ )
-			{
-			if( $usergroups[$i] != BAB_REGISTERED_GROUP && $usergroups[$i] != BAB_UNREGISTERED_GROUP && $usergroups[$i] != BAB_ALLUSERS_GROUP)
-				{
-				$arr['id'][] = $usergroups[$i];
-				$nm = bab_Groups::getGroupPathName($usergroups[$i]);
-				if( empty($nm))
-					{
-					$nm =  bab_Groups::getSetOfGroupName($usergroups[$i]);
-					}
-				$arr['name'][] = $nm;
-				}
-			}
-		return $arr;
-		}
-	if( !empty($id))
-		{
-		$res = $babDB->db_query("select id_group from ".BAB_USERS_GROUPS_TBL." where id_object=".$babDB->db_escape_string($id)."");
-		if( $res && $babDB->db_num_rows($res) > 0 )
-			{
-			while( $r = $babDB->db_fetch_array($res))
-				{
-				$arr['id'][] = $r['id_group'];
-				$nm = bab_Groups::getGroupPathName($r['id_group']);
-				if( empty($nm))
-					{
-					$nm =  bab_Groups::getSetOfGroupName($r['id_group']);
-					}
-				$arr['name'][] = $nm;
-				}
-			}
-		}
-	return $arr;
-	}
+    {
+    global $babBody, $babDB;
+    $arr = array('id' => array(), 'name' => array());
+    if( empty($id))
+        {
+        $usergroups = bab_Groups::getUserGroups();
+        for( $i = 0; $i < count($usergroups); $i++ )
+            {
+            if( $usergroups[$i] != BAB_REGISTERED_GROUP && $usergroups[$i] != BAB_UNREGISTERED_GROUP && $usergroups[$i] != BAB_ALLUSERS_GROUP)
+                {
+                $arr['id'][] = $usergroups[$i];
+                $nm = bab_Groups::getGroupPathName($usergroups[$i]);
+                if( empty($nm))
+                    {
+                    $nm =  bab_Groups::getSetOfGroupName($usergroups[$i]);
+                    }
+                $arr['name'][] = $nm;
+                }
+            }
+        return $arr;
+        }
+    if( !empty($id))
+        {
+        $res = $babDB->db_query("select id_group from ".BAB_USERS_GROUPS_TBL." where id_object=".$babDB->db_escape_string($id)."");
+        if( $res && $babDB->db_num_rows($res) > 0 )
+            {
+            while( $r = $babDB->db_fetch_array($res))
+                {
+                $arr['id'][] = $r['id_group'];
+                $nm = bab_Groups::getGroupPathName($r['id_group']);
+                if( empty($nm))
+                    {
+                    $nm =  bab_Groups::getSetOfGroupName($r['id_group']);
+                    }
+                $arr['name'][] = $nm;
+                }
+            }
+        }
+    return $arr;
+    }
 
 
 function bab_composeUserName( $F, $L)
-	{
-	global $babBody;
-	if( isset($babBody->nameorder))
-		return trim(sprintf("%s %s", ${$babBody->nameorder[0]}, ${$babBody->nameorder[1]}));
-	else
-		return trim(sprintf("%s %s", $F, $L));
-	}
+    {
+    global $babBody;
+    if( isset($babBody->nameorder))
+        return trim(sprintf("%s %s", ${$babBody->nameorder[0]}, ${$babBody->nameorder[1]}));
+    else
+        return trim(sprintf("%s %s", $F, $L));
+    }
 
 /**
  * Connexion status for current user
  * @return boolean
  */
 function bab_userIsloggedin()
-	{
-	global $BAB_SESS_NICKNAME, $BAB_HASH_VAR, $BAB_SESS_HASHID,$BAB_SESS_LOGGED;
+    {
+    global $BAB_SESS_NICKNAME, $BAB_HASH_VAR, $BAB_SESS_HASHID,$BAB_SESS_LOGGED;
 
-	if (isset($BAB_SESS_LOGGED))
-		{
-		return $BAB_SESS_LOGGED;
-		}
-	if (!empty($BAB_SESS_NICKNAME) && !empty($BAB_SESS_HASHID))
-		{
-		$hash=md5($BAB_SESS_NICKNAME.$BAB_HASH_VAR);
-		if ($hash == $BAB_SESS_HASHID)
-			{
-			$BAB_SESS_LOGGED=true;
-			}
-		else
-			{
-			$BAB_SESS_LOGGED=false;
-			}
-		}
-	else
-		{
-		$BAB_SESS_LOGGED=false;
-		}
+    if (isset($BAB_SESS_LOGGED))
+        {
+        return $BAB_SESS_LOGGED;
+        }
+    if (!empty($BAB_SESS_NICKNAME) && !empty($BAB_SESS_HASHID))
+        {
+        $hash=md5($BAB_SESS_NICKNAME.$BAB_HASH_VAR);
+        if ($hash == $BAB_SESS_HASHID)
+            {
+            $BAB_SESS_LOGGED=true;
+            }
+        else
+            {
+            $BAB_SESS_LOGGED=false;
+            }
+        }
+    else
+        {
+        $BAB_SESS_LOGGED=false;
+        }
     return $BAB_SESS_LOGGED;
-	}
+    }
 
 
 
@@ -1645,8 +1645,8 @@ function bab_userIsloggedin()
  */
 function bab_isAccessValidByUser($table, $idobject, $iduser)
 {
-	$objects = bab_getAccessibleObjects($table, $iduser);
-	return array_key_exists($idobject, $objects);
+    $objects = bab_getAccessibleObjects($table, $iduser);
+    return array_key_exists($idobject, $objects);
 }
 
 
@@ -1664,25 +1664,25 @@ function bab_isAccessValidByUser($table, $idobject, $iduser)
  */
 function bab_isAccessValid($table, $idobject, $iduser='')
 {
-	require_once $GLOBALS['babInstallPath'].'utilit/session.class.php';
-	$session = bab_getInstance('bab_Session');
+    require_once $GLOBALS['babInstallPath'].'utilit/session.class.php';
+    $session = bab_getInstance('bab_Session');
 
-	if( $iduser != '' && ((int) $iduser) !== (int) $session->BAB_SESS_USERID)
-		{
-			include_once $GLOBALS['babInstallPath']."admin/acl.php";
+    if( $iduser != '' && ((int) $iduser) !== (int) $session->BAB_SESS_USERID)
+        {
+            include_once $GLOBALS['babInstallPath']."admin/acl.php";
 
-			$users = aclGetAccessUsers($table, $idobject);
+            $users = aclGetAccessUsers($table, $idobject);
 
-			if( isset($users[ $iduser]))
-			{
-				return true;
-			}
-			return false;
-		}
+            if( isset($users[ $iduser]))
+            {
+                return true;
+            }
+            return false;
+        }
 
-	$objects = bab_getUserIdObjects($table);
+    $objects = bab_getUserIdObjects($table);
 
-	return isset($objects[$idobject]);
+    return isset($objects[$idobject]);
 }
 
 
@@ -1699,47 +1699,47 @@ function bab_isAccessValid($table, $idobject, $iduser='')
  */
 function bab_getAccessibleObjects($table, $userId)
 {
-	require_once dirname(__FILE__).'/groupsincl.php';
-	global $babDB;
-	$objects = array();
+    require_once dirname(__FILE__).'/groupsincl.php';
+    global $babDB;
+    $objects = array();
 
-	if (empty($userId)) {
-		// For anonymous users, we just fetch objects accessible to all users or unregistered users.
-		$userGroupIds = array(BAB_ALLUSERS_GROUP, BAB_UNREGISTERED_GROUP);
-		$sql = 'SELECT id_object FROM '.$babDB->backTick($table).' WHERE id_group IN('.$babDB->quote($userGroupIds).')';
-		$res = $babDB->db_query($sql);
-		while ($object = $babDB->db_fetch_assoc($res)) {
-			$objects[$object['id_object']] = $object['id_object'];
-		}
-		return $objects;
-	}
+    if (empty($userId)) {
+        // For anonymous users, we just fetch objects accessible to all users or unregistered users.
+        $userGroupIds = array(BAB_ALLUSERS_GROUP, BAB_UNREGISTERED_GROUP);
+        $sql = 'SELECT id_object FROM '.$babDB->backTick($table).' WHERE id_group IN('.$babDB->quote($userGroupIds).')';
+        $res = $babDB->db_query($sql);
+        while ($object = $babDB->db_fetch_assoc($res)) {
+            $objects[$object['id_object']] = $object['id_object'];
+        }
+        return $objects;
+    }
 
-	$userGroups = bab_getUserGroups($userId);
-	$userGroupIds = $userGroups['id'];
-	$userGroupIds[] = BAB_REGISTERED_GROUP;
-	$userGroupIds[] = BAB_ALLUSERS_GROUP;
+    $userGroups = bab_getUserGroups($userId);
+    $userGroupIds = $userGroups['id'];
+    $userGroupIds[] = BAB_REGISTERED_GROUP;
+    $userGroupIds[] = BAB_ALLUSERS_GROUP;
 
-	$res = $babDB->db_query("SELECT t.id_object, t.id_group, g.nb_groups FROM ".$babDB->backTick($table)." t left join ".BAB_GROUPS_TBL." g on g.id=t.id_group");
+    $res = $babDB->db_query("SELECT t.id_object, t.id_group, g.nb_groups FROM ".$babDB->backTick($table)." t left join ".BAB_GROUPS_TBL." g on g.id=t.id_group");
 
-	while ($object = $babDB->db_fetch_assoc($res)) {
-		if( $object['nb_groups'] !== null )
-		{
-		$rs=$babDB->db_query("select id_group from ".BAB_GROUPS_SET_ASSOC_TBL." where id_set=".$babDB->quote($object['id_group']));
-		while( $rr = $babDB->db_fetch_array($rs))
-			{
-			if( in_array($rr['id_group'], $userGroupIds))
-				{
-					$objects[$object['id_object']] = $object['id_object'];
-				}
-			}
-		}
-		elseif ( ($object['id_group'] < BAB_ACL_GROUP_TREE && in_array($object['id_group'], $userGroupIds))
-		|| ($object['id_group'] > BAB_ACL_GROUP_TREE && bab_Groups::isMemberOfTree($object['id_group'] - BAB_ACL_GROUP_TREE, $userId))) {
-			$objects[$object['id_object']] = $object['id_object'];
-		}
-	}
+    while ($object = $babDB->db_fetch_assoc($res)) {
+        if( $object['nb_groups'] !== null )
+        {
+        $rs=$babDB->db_query("select id_group from ".BAB_GROUPS_SET_ASSOC_TBL." where id_set=".$babDB->quote($object['id_group']));
+        while( $rr = $babDB->db_fetch_array($rs))
+            {
+            if( in_array($rr['id_group'], $userGroupIds))
+                {
+                    $objects[$object['id_object']] = $object['id_object'];
+                }
+            }
+        }
+        elseif ( ($object['id_group'] < BAB_ACL_GROUP_TREE && in_array($object['id_group'], $userGroupIds))
+        || ($object['id_group'] > BAB_ACL_GROUP_TREE && bab_Groups::isMemberOfTree($object['id_group'] - BAB_ACL_GROUP_TREE, $userId))) {
+            $objects[$object['id_object']] = $object['id_object'];
+        }
+    }
 
-	return $objects;
+    return $objects;
 }
 
 
@@ -1750,48 +1750,48 @@ function bab_getAccessibleObjects($table, $userId)
  */
 function bab_getUserIdObjects($table)
 {
-	require_once dirname(__FILE__).'/defines.php';
-	require_once dirname(__FILE__).'/groupsincl.php';
-	require_once $GLOBALS['babInstallPath'].'utilit/session.class.php';
+    require_once dirname(__FILE__).'/defines.php';
+    require_once dirname(__FILE__).'/groupsincl.php';
+    require_once $GLOBALS['babInstallPath'].'utilit/session.class.php';
 
-	global $babDB;
-	$session = bab_getInstance('bab_Session');
+    global $babDB;
+    $session = bab_getInstance('bab_Session');
 
-	if (!isset($session->bab_groupAccess))
-	{
-		$groupAccess = array();
-	} else {
-		$groupAccess = $session->bab_groupAccess;
-	}
+    if (!isset($session->bab_groupAccess))
+    {
+        $groupAccess = array();
+    } else {
+        $groupAccess = $session->bab_groupAccess;
+    }
 
-	if(!isset($groupAccess['acltables'][$table]))
-	{
-		$groupAccess['acltables'][$table] = array();
+    if(!isset($groupAccess['acltables'][$table]))
+    {
+        $groupAccess['acltables'][$table] = array();
 
-		$res = $babDB->db_query("SELECT t.id_object, t.id_group, g.nb_groups FROM ".$babDB->backTick($table)." t left join ".BAB_GROUPS_TBL." g on g.id=t.id_group");
+        $res = $babDB->db_query("SELECT t.id_object, t.id_group, g.nb_groups FROM ".$babDB->backTick($table)." t left join ".BAB_GROUPS_TBL." g on g.id=t.id_group");
 
-		while ($row = $babDB->db_fetch_assoc($res)) {
-			if( $row['nb_groups'] !== null )
-			{
-			$rs=$babDB->db_query("select id_group from ".BAB_GROUPS_SET_ASSOC_TBL." where id_set=".$babDB->quote($row['id_group']));
-			while( $rr = $babDB->db_fetch_array($rs))
-				{
-				if( bab_isMemberOfGroup($rr['id_group']))
-					{
-						$groupAccess['acltables'][$table][$row['id_object']] = $row['id_object'];
-					}
-				}
-			}
-			elseif ( ($row['id_group'] < BAB_ACL_GROUP_TREE && bab_isMemberOfGroup($row['id_group']))
-				|| ($row['id_group'] > BAB_ACL_GROUP_TREE && bab_Groups::isMemberOfTree($row['id_group'] - BAB_ACL_GROUP_TREE))) {
-				$groupAccess['acltables'][$table][$row['id_object']] = $row['id_object'];
-			}
-		}
+        while ($row = $babDB->db_fetch_assoc($res)) {
+            if( $row['nb_groups'] !== null )
+            {
+            $rs=$babDB->db_query("select id_group from ".BAB_GROUPS_SET_ASSOC_TBL." where id_set=".$babDB->quote($row['id_group']));
+            while( $rr = $babDB->db_fetch_array($rs))
+                {
+                if( bab_isMemberOfGroup($rr['id_group']))
+                    {
+                        $groupAccess['acltables'][$table][$row['id_object']] = $row['id_object'];
+                    }
+                }
+            }
+            elseif ( ($row['id_group'] < BAB_ACL_GROUP_TREE && bab_isMemberOfGroup($row['id_group']))
+                || ($row['id_group'] > BAB_ACL_GROUP_TREE && bab_Groups::isMemberOfTree($row['id_group'] - BAB_ACL_GROUP_TREE))) {
+                $groupAccess['acltables'][$table][$row['id_object']] = $row['id_object'];
+            }
+        }
 
-		$session->bab_groupAccess = $groupAccess;
-	}
+        $session->bab_groupAccess = $groupAccess;
+    }
 
-	return $groupAccess['acltables'][$table];
+    return $groupAccess['acltables'][$table];
 }
 
 
@@ -1802,19 +1802,19 @@ function bab_getUserIdObjects($table)
  */
 function bab_getUsersAccess($table)
 {
-	global $babBody, $babDB;
+    global $babBody, $babDB;
 
-	trigger_error('deprecated function bab_getUsersAccess');
-	$babBody->addError('deprecated function bab_getUsersAccess');
+    trigger_error('deprecated function bab_getUsersAccess');
+    $babBody->addError('deprecated function bab_getUsersAccess');
 
-	$ids = array();
+    $ids = array();
 
-	$res = $babDB->db_query("select id_group from ".$babDB->db_escape_string($table));
-	while($row = $babDB->db_fetch_array($res))
-		{
-		$ids[] = $row['id_group'];
-		}
-	return bab_getGroupsMembers($ids);
+    $res = $babDB->db_query("select id_group from ".$babDB->db_escape_string($table));
+    while($row = $babDB->db_fetch_array($res))
+        {
+        $ids[] = $row['id_group'];
+        }
+    return bab_getGroupsMembers($ids);
 }
 
 
@@ -1826,11 +1826,11 @@ function bab_getUsersAccess($table)
  */
 function bab_getGroupsAccess($table, $idobject)
 {
-	global $babBody, $babDB;
+    global $babBody, $babDB;
 
-	include_once $GLOBALS['babInstallPath']."admin/acl.php";
-	$groups = aclGetAccessGroups($table, $idobject);
-	return array_keys($groups);
+    include_once $GLOBALS['babInstallPath']."admin/acl.php";
+    $groups = aclGetAccessGroups($table, $idobject);
+    return array_keys($groups);
 }
 
 
@@ -1841,24 +1841,24 @@ function bab_getGroupsAccess($table, $idobject)
  */
 function bab_calendarPopup($callback, $month='', $year='', $low='', $high='')
 {
-	$url = $GLOBALS['babUrlScript']."?tg=month&amp;callback=".$callback;
-	if( !empty($month))
-	{
-		$url .= "&amp;month=".$month;
-	}
-	if( !empty($year))
-	{
-		$url .= "&amp;year=".$year;
-	}
-	if( !empty($low))
-	{
-		$url .= "&amp;ymin=".$low;
-	}
-	if( !empty($high))
-	{
-		$url .= "&amp;ymax=".$high;
-	}
-	return "javascript:Start('".$url."','OVCalendarPopup','width=250,height=250,status=no,resizable=no,top=200,left=200')";
+    $url = $GLOBALS['babUrlScript']."?tg=month&amp;callback=".$callback;
+    if( !empty($month))
+    {
+        $url .= "&amp;month=".$month;
+    }
+    if( !empty($year))
+    {
+        $url .= "&amp;year=".$year;
+    }
+    if( !empty($low))
+    {
+        $url .= "&amp;ymin=".$low;
+    }
+    if( !empty($high))
+    {
+        $url .= "&amp;ymax=".$high;
+    }
+    return "javascript:Start('".$url."','OVCalendarPopup','width=250,height=250,status=no,resizable=no,top=200,left=200')";
 }
 
 
@@ -1896,9 +1896,9 @@ function bab_mkdir($path, $mode = '')
  * @deprecated
  */
 function bab_isMagicQuotesGpcOn()
-	{
-	return false;
-	}
+    {
+    return false;
+    }
 
 
 
@@ -1908,43 +1908,43 @@ function bab_isMagicQuotesGpcOn()
  * @return array	list of languages codes
  */
 function bab_getAvailableLanguages()
-	{
-	$langs = array();
-	if( is_dir($GLOBALS['babInstallPath'].'lang/'))
-	{
-	$h = opendir($GLOBALS['babInstallPath'].'lang/');
-	while ( $file = readdir($h))
-		{
-		if ($file != "." && $file != "..")
-			{
-			if( preg_match("/lang-([^.]*)/", $file, $regs))
-				{
-				if( $file == 'lang-'.$regs[1].'.xml')
-					$langs[] = $regs[1];
-				}
-			}
-		}
-	closedir($h);
-	}
+    {
+    $langs = array();
+    if( is_dir($GLOBALS['babInstallPath'].'lang/'))
+    {
+    $h = opendir($GLOBALS['babInstallPath'].'lang/');
+    while ( $file = readdir($h))
+        {
+        if ($file != "." && $file != "..")
+            {
+            if( preg_match("/lang-([^.]*)/", $file, $regs))
+                {
+                if( $file == 'lang-'.$regs[1].'.xml')
+                    $langs[] = $regs[1];
+                }
+            }
+        }
+    closedir($h);
+    }
 
-	if( is_dir('lang/'))
-	{
-	$h = opendir('lang/');
-	while ( $file = readdir($h))
-		{
-		if ($file != "." && $file != "..")
-			{
-			if( preg_match('/lang-([^.]*)/', $file, $regs))
-				{
-				if( $file == 'lang-'.$regs[1].'.xml' && !in_array($regs[1], $langs))
-					$langs[] = $regs[1];
-				}
-			}
-		}
-	closedir($h);
-	}
-	return $langs;
-	}
+    if( is_dir('lang/'))
+    {
+    $h = opendir('lang/');
+    while ( $file = readdir($h))
+        {
+        if ($file != "." && $file != "..")
+            {
+            if( preg_match('/lang-([^.]*)/', $file, $regs))
+                {
+                if( $file == 'lang-'.$regs[1].'.xml' && !in_array($regs[1], $langs))
+                    $langs[] = $regs[1];
+                }
+            }
+        }
+    closedir($h);
+    }
+    return $langs;
+    }
 
 
 
@@ -1963,19 +1963,19 @@ function bab_getAvailableLanguages()
  */
 function bab_printTemplate($class, $file, $section = '')
 {
-	//bab_debug('Template file : '.$file.'<br />'.'Section in template file : '.$section);
+    //bab_debug('Template file : '.$file.'<br />'.'Section in template file : '.$section);
 
-	global $babInstallPath, $babSkinPath, $babSkin;
+    global $babInstallPath, $babSkinPath, $babSkin;
 
 
-	$skin = new bab_Skin($babSkin);
+    $skin = new bab_Skin($babSkin);
 
-	$tpl = new bab_Template();
-	if ($html = $tpl->printTemplate($class, $skin->getThemePath().'templates/'. $file, $section)) {
-	    return $html;
-	}
+    $tpl = new bab_Template();
+    if ($html = $tpl->printTemplate($class, $skin->getThemePath().'templates/'. $file, $section)) {
+        return $html;
+    }
 
-	return $tpl->printTemplate($class, $babInstallPath.'skins/ovidentia/templates/'.$file, $section);
+    return $tpl->printTemplate($class, $babInstallPath.'skins/ovidentia/templates/'.$file, $section);
 }
 
 
@@ -2009,48 +2009,48 @@ function bab_printTemplate($class, $file, $section = '')
  */
 function bab_getActiveSessions($id_user = null)
 {
-	global $babDB;
-	$output = array();
+    global $babDB;
+    $output = array();
 
-	$query = "SELECT l.id_user,
-			l.sessid,
-			l.remote_addr,
-			l.forwarded_for,
-			UNIX_TIMESTAMP(l.dateact) dateact,
-			u.firstname,
-			u.lastname,
-			u.email,
-			UNIX_TIMESTAMP(u.lastlog) lastlog,
-			UNIX_TIMESTAMP(u.datelog) datelog,
-			UNIX_TIMESTAMP(u.date) registration,
-			l.tg
-			FROM ".BAB_USERS_LOG_TBL." l
-			LEFT JOIN ".BAB_USERS_TBL." u ON u.id=l.id_user";
+    $query = "SELECT l.id_user,
+            l.sessid,
+            l.remote_addr,
+            l.forwarded_for,
+            UNIX_TIMESTAMP(l.dateact) dateact,
+            u.firstname,
+            u.lastname,
+            u.email,
+            UNIX_TIMESTAMP(u.lastlog) lastlog,
+            UNIX_TIMESTAMP(u.datelog) datelog,
+            UNIX_TIMESTAMP(u.date) registration,
+            l.tg
+            FROM ".BAB_USERS_LOG_TBL." l
+            LEFT JOIN ".BAB_USERS_TBL." u ON u.id=l.id_user";
 
-	if (null !== $id_user) {
-		$query .= " WHERE l.id_user=".$babDB->quote($id_user);
-	}
+    if (null !== $id_user) {
+        $query .= " WHERE l.id_user=".$babDB->quote($id_user);
+    }
 
 
-	$res = $babDB->db_query($query);
+    $res = $babDB->db_query($query);
 
-	while($arr = $babDB->db_fetch_array($res))
-		{
-		$output[] = array(
-						'id_user' => $arr['id_user'],
-						'user_name' => bab_composeUserName($arr['firstname'], $arr['lastname']),
-						'user_email' => $arr['email'],
-						'session_id' => $arr['sessid'],
-						'remote_addr' => $arr['remote_addr'] != 'unknown' ? $arr['remote_addr']  : '',
-						'forwarded_for' => $arr['forwarded_for'] != 'unknown' ? $arr['forwarded_for']  : '',
-						'registration_date' => $arr['registration'],
-						'previous_login_date' => $arr['lastlog'],
-						'login_date' => $arr['datelog'],
-						'last_hit_date' => $arr['dateact'],
-						'tg' => $arr['tg']
-					);
-		}
-	return $output;
+    while($arr = $babDB->db_fetch_array($res))
+        {
+        $output[] = array(
+                        'id_user' => $arr['id_user'],
+                        'user_name' => bab_composeUserName($arr['firstname'], $arr['lastname']),
+                        'user_email' => $arr['email'],
+                        'session_id' => $arr['sessid'],
+                        'remote_addr' => $arr['remote_addr'] != 'unknown' ? $arr['remote_addr']  : '',
+                        'forwarded_for' => $arr['forwarded_for'] != 'unknown' ? $arr['forwarded_for']  : '',
+                        'registration_date' => $arr['registration'],
+                        'previous_login_date' => $arr['lastlog'],
+                        'login_date' => $arr['datelog'],
+                        'last_hit_date' => $arr['dateact'],
+                        'tg' => $arr['tg']
+                    );
+        }
+    return $output;
 }
 
 /**
@@ -2058,20 +2058,20 @@ function bab_getActiveSessions($id_user = null)
  */
 function bab_getFileMimeType($file)
 {
-	global $babDB;
-	$mime = "application/octet-stream";
-	$iPos = mb_strrpos($file, ".");
+    global $babDB;
+    $mime = "application/octet-stream";
+    $iPos = mb_strrpos($file, ".");
     if (false !== $iPos)
         {
         $ext = mb_substr($file,$iPos+1);
-		$res = $babDB->db_query("select * from ".BAB_MIME_TYPES_TBL." where ext='".$babDB->db_escape_string($ext)."'");
-		if( $res && $babDB->db_num_rows($res) > 0)
-			{
-			$arr = $babDB->db_fetch_array($res);
-			$mime = $arr['mimetype'];
-			}
-		}
-	return $mime;
+        $res = $babDB->db_query("select * from ".BAB_MIME_TYPES_TBL." where ext='".$babDB->db_escape_string($ext)."'");
+        if( $res && $babDB->db_num_rows($res) > 0)
+            {
+            $arr = $babDB->db_fetch_array($res);
+            $mime = $arr['mimetype'];
+            }
+        }
+    return $mime;
 }
 
 /* API Directories */
@@ -2085,14 +2085,14 @@ function bab_getFileMimeType($file)
  */
 function bab_getUserDirEntryId($userId)
 {
-	global $babDB;
+    global $babDB;
 
-	$query = "select id from ".BAB_DBDIR_ENTRIES_TBL." where id_user='".$babDB->db_escape_string($userId)."'";
-	$res = $babDB->db_query($query);
-	if( $res && $arr = $babDB->db_fetch_assoc($res)) {
-		return $arr['id'];
-	}
-	return false;
+    $query = "select id from ".BAB_DBDIR_ENTRIES_TBL." where id_user='".$babDB->db_escape_string($userId)."'";
+    $res = $babDB->db_query($query);
+    if( $res && $arr = $babDB->db_fetch_assoc($res)) {
+        return $arr['id'];
+    }
+    return false;
 }
 
 /**
@@ -2100,26 +2100,26 @@ function bab_getUserDirEntryId($userId)
  * @see bab_getDirEntry
  */
 function bab_getUserDirFields($id = false)
-	{
-	trigger_error('This function is deprecated, please use bab_getDirEntry()');
+    {
+    trigger_error('This function is deprecated, please use bab_getDirEntry()');
 
-	global $babDB;
-	if (false == $id) $id = &$GLOBALS['BAB_SESS_USERID'];
-	$query = "select * from ".BAB_DBDIR_ENTRIES_TBL." where id_user='".$babDB->db_escape_string($id)."'";
-	$res = $babDB->db_query($query);
-	if( $res && $babDB->db_num_rows($res) > 0) {
-		return $babDB->db_fetch_assoc($res);
-		}
-	else
-		return array();
-	}
+    global $babDB;
+    if (false == $id) $id = &$GLOBALS['BAB_SESS_USERID'];
+    $query = "select * from ".BAB_DBDIR_ENTRIES_TBL." where id_user='".$babDB->db_escape_string($id)."'";
+    $res = $babDB->db_query($query);
+    if( $res && $babDB->db_num_rows($res) > 0) {
+        return $babDB->db_fetch_assoc($res);
+        }
+    else
+        return array();
+    }
 
 
 function bab_getDirInfo($directory) {
-	global $babDB;
-	$query = "select * from bab_db_directories where id=".$babDB->quote($directory);
-	$res = $babDB->db_query($query);
-	return $babDB->db_fetch_assoc($res);
+    global $babDB;
+    $query = "select * from bab_db_directories where id=".$babDB->quote($directory);
+    $res = $babDB->db_query($query);
+    return $babDB->db_fetch_assoc($res);
 }
 
 /**
@@ -2137,9 +2137,9 @@ function bab_getDirInfo($directory) {
  */
 
 function bab_getDirEntry($id = false, $type = BAB_DIR_ENTRY_ID_USER, $id_directory = NULL ) {
-	include_once $GLOBALS['babInstallPath']."utilit/dirincl.php";
-	return getDirEntry($id, $type, $id_directory, true);
-	}
+    include_once $GLOBALS['babInstallPath']."utilit/dirincl.php";
+    return getDirEntry($id, $type, $id_directory, true);
+    }
 
 
 /**
@@ -2158,9 +2158,9 @@ function bab_getDirEntry($id = false, $type = BAB_DIR_ENTRY_ID_USER, $id_directo
  */
 
 function bab_admGetDirEntry($id = false, $type = BAB_DIR_ENTRY_ID_USER, $id_directory = NULL ) {
-	include_once $GLOBALS['babInstallPath']."utilit/dirincl.php";
-	return getDirEntry($id, $type, $id_directory, false);
-	}
+    include_once $GLOBALS['babInstallPath']."utilit/dirincl.php";
+    return getDirEntry($id, $type, $id_directory, false);
+    }
 
 
 
@@ -2174,9 +2174,9 @@ function bab_admGetDirEntry($id = false, $type = BAB_DIR_ENTRY_ID_USER, $id_dire
  * @return 	array
  */
 function bab_searchDirEntriesByField($id_directory, $likefields, $and = true) {
-	include_once $GLOBALS['babInstallPath']."utilit/dirincl.php";
-	return searchDirEntriesByField($id_directory, $likefields, $and);
-	}
+    include_once $GLOBALS['babInstallPath']."utilit/dirincl.php";
+    return searchDirEntriesByField($id_directory, $likefields, $and);
+    }
 
 
 
@@ -2197,8 +2197,8 @@ function bab_searchDirEntriesByField($id_directory, $likefields, $and = true) {
  */
 function bab_getUserDirectories($accessCtrl = true, $delegationId = false)
 {
-	include_once $GLOBALS['babInstallPath'].'utilit/dirincl.php';
-	return getUserDirectories($accessCtrl, $delegationId);
+    include_once $GLOBALS['babInstallPath'].'utilit/dirincl.php';
+    return getUserDirectories($accessCtrl, $delegationId);
 }
 
 /**
@@ -2210,8 +2210,8 @@ function bab_getUserDirectories($accessCtrl = true, $delegationId = false)
  */
 function bab_getUserDirEntryLink($id = false, $type = BAB_DIR_ENTRY_ID_USER, $id_directory = false)
 {
-	include_once $GLOBALS['babInstallPath']."utilit/dirincl.php";
-	return getUserDirEntryLink($id, $type, $id_directory);
+    include_once $GLOBALS['babInstallPath']."utilit/dirincl.php";
+    return getUserDirEntryLink($id, $type, $id_directory);
 }
 
 
@@ -2226,25 +2226,25 @@ function bab_getUserDirEntryLink($id = false, $type = BAB_DIR_ENTRY_ID_USER, $id
  */
 function bab_getGroupName($id, $fpn=true)
 {
-	require_once dirname(__FILE__).'/defines.php';
+    require_once dirname(__FILE__).'/defines.php';
 
-	$id = (int) $id;
+    $id = (int) $id;
 
-	if (BAB_ALLUSERS_GROUP === $id || BAB_REGISTERED_GROUP === $id || BAB_UNREGISTERED_GROUP === $id || BAB_ADMINISTRATOR_GROUP === $id) {
-		return bab_translate(bab_Groups::getName($id));
-	}
+    if (BAB_ALLUSERS_GROUP === $id || BAB_REGISTERED_GROUP === $id || BAB_UNREGISTERED_GROUP === $id || BAB_ADMINISTRATOR_GROUP === $id) {
+        return bab_translate(bab_Groups::getName($id));
+    }
 
-	if($fpn)
-	{
-		$name = bab_Groups::getGroupPathName($id);
-		if ('' !== $name)
-		{
-			// probably a set of groups
-			return $name;
-		}
-	}
+    if($fpn)
+    {
+        $name = bab_Groups::getGroupPathName($id);
+        if ('' !== $name)
+        {
+            // probably a set of groups
+            return $name;
+        }
+    }
 
-	return bab_Groups::getName($id);
+    return bab_Groups::getName($id);
 
 }
 
@@ -2265,36 +2265,36 @@ function bab_getGroups($parent=BAB_REGISTERED_GROUP, $all=true)
 {
 
 
-	if (null === $parent)
-	{
-		// list of groups sets
-		global $babDB;
-		$resset = $babDB->db_query("SELECT id, name, description FROM ".BAB_GROUPS_TBL." WHERE nb_groups>='0'");
-		$arr = array();
-		while ($row = $babDB->db_fetch_assoc($resset))
-		{
-			$arr['id'][] = $row['id'];
-			$arr['name'][] = $row['name'];
-			$arr['description'][] = $row['description'];
-		}
+    if (null === $parent)
+    {
+        // list of groups sets
+        global $babDB;
+        $resset = $babDB->db_query("SELECT id, name, description FROM ".BAB_GROUPS_TBL." WHERE nb_groups>='0'");
+        $arr = array();
+        while ($row = $babDB->db_fetch_assoc($resset))
+        {
+            $arr['id'][] = $row['id'];
+            $arr['name'][] = $row['name'];
+            $arr['description'][] = $row['description'];
+        }
 
-		return $arr;
-	}
+        return $arr;
+    }
 
-	include_once $GLOBALS['babInstallPath']."utilit/grptreeincl.php";
+    include_once $GLOBALS['babInstallPath']."utilit/grptreeincl.php";
 
-	$tree = new bab_grptree();
-	$groups = $tree->getGroups($parent, '%2$s > ', $all);
-	$arr = array();
-	foreach ($groups as $row)
-		{
-		$arr['id'][] = $row['id'];
-		$arr['name'][] = $row['name'];
-		$arr['description'][] = $row['description'];
-		$arr['position'][] = array('lf' => $row['lf'], 'lr' => $row['lr']);
-		}
+    $tree = new bab_grptree();
+    $groups = $tree->getGroups($parent, '%2$s > ', $all);
+    $arr = array();
+    foreach ($groups as $row)
+        {
+        $arr['id'][] = $row['id'];
+        $arr['name'][] = $row['name'];
+        $arr['description'][] = $row['description'];
+        $arr['position'][] = array('lf' => $row['lf'], 'lr' => $row['lr']);
+        }
 
-	return $arr;
+    return $arr;
 }
 
 
@@ -2309,8 +2309,8 @@ function bab_getGroups($parent=BAB_REGISTERED_GROUP, $all=true)
  */
 function bab_createGroup( $name, $description, $managerid, $parent = 1)
 {
-	include_once $GLOBALS['babInstallPath']."utilit/grpincl.php";
-	return bab_addGroup($name, $description, $managerid, 0, $parent);
+    include_once $GLOBALS['babInstallPath']."utilit/grpincl.php";
+    return bab_addGroup($name, $description, $managerid, 0, $parent);
 }
 
 
@@ -2323,8 +2323,8 @@ function bab_createGroup( $name, $description, $managerid, $parent = 1)
  */
 function bab_updateGroup( $id, $name, $description)
 {
-	include_once $GLOBALS['babInstallPath']."utilit/grpincl.php";
-	return bab_updateGroupInfo($id, $name, $description, 0);
+    include_once $GLOBALS['babInstallPath']."utilit/grpincl.php";
+    return bab_updateGroupInfo($id, $name, $description, 0);
 }
 
 /**
@@ -2334,8 +2334,8 @@ function bab_updateGroup( $id, $name, $description)
  */
 function bab_removeGroup($id)
 {
-	include_once $GLOBALS['babInstallPath']."utilit/delincl.php";
-	bab_deleteGroup($id);
+    include_once $GLOBALS['babInstallPath']."utilit/delincl.php";
+    bab_deleteGroup($id);
 }
 
 
@@ -2360,8 +2360,8 @@ function bab_removeGroup($id)
  */
 function bab_registerUser( $firstname, $lastname, $middlename, $email, $nickname, $password1, $password2, $confirmed, &$error, $bgroup = true)
 {
-	require_once($GLOBALS['babInstallPath']."utilit/usermodifyincl.php");
-	return bab_userModify::addUser( $firstname, $lastname, $middlename, $email, $nickname, $password1, $password2, $confirmed, $error, $bgroup);
+    require_once($GLOBALS['babInstallPath']."utilit/usermodifyincl.php");
+    return bab_userModify::addUser( $firstname, $lastname, $middlename, $email, $nickname, $password1, $password2, $confirmed, $error, $bgroup);
 }
 
 /**
@@ -2379,8 +2379,8 @@ function bab_registerUser( $firstname, $lastname, $middlename, $email, $nickname
  */
 function bab_registerUserNotify($name, $email, $nickname, $pwd = null)
 {
-	require_once($GLOBALS['babInstallPath']."admin/register.php");
-	return notifyAdminUserRegistration($name, $email, $nickname, $pwd);
+    require_once($GLOBALS['babInstallPath']."admin/register.php");
+    return notifyAdminUserRegistration($name, $email, $nickname, $pwd);
 }
 
 
@@ -2392,7 +2392,7 @@ function bab_registerUserNotify($name, $email, $nickname, $pwd = null)
  */
 function bab_attachUserToGroup($iduser, $idgroup)
 {
-	bab_addUserToGroup($iduser, $idgroup);
+    bab_addUserToGroup($iduser, $idgroup);
 }
 
 
@@ -2404,7 +2404,7 @@ function bab_attachUserToGroup($iduser, $idgroup)
  */
 function bab_detachUserFromGroup($iduser, $idgroup)
 {
-	bab_removeUserFromGroup($iduser, $idgroup);
+    bab_removeUserFromGroup($iduser, $idgroup);
 }
 
 
@@ -2418,26 +2418,26 @@ function bab_detachUserFromGroup($iduser, $idgroup)
  * @return 	false|array
  */
 function bab_getUserInfos($id_user) {
-	include_once $GLOBALS['babInstallPath'].'utilit/dirincl.php';
-	include_once $GLOBALS['babInstallPath'].'utilit/userinfosincl.php';
+    include_once $GLOBALS['babInstallPath'].'utilit/dirincl.php';
+    include_once $GLOBALS['babInstallPath'].'utilit/userinfosincl.php';
 
-	$directory = getDirEntry($id_user, BAB_DIR_ENTRY_ID_USER, NULL, false);
+    $directory = getDirEntry($id_user, BAB_DIR_ENTRY_ID_USER, NULL, false);
 
-	if (!$directory) {
-		return false;
-	}
+    if (!$directory) {
+        return false;
+    }
 
-	$infos = bab_userInfos::getForDirectoryEntry($id_user);
+    $infos = bab_userInfos::getForDirectoryEntry($id_user);
 
-	if (!$infos) {
-		return false;
-	}
+    if (!$infos) {
+        return false;
+    }
 
-	foreach($directory as $field => $arr) {
-		$infos[$field] = $arr['value'];
-	}
+    foreach($directory as $field => $arr) {
+        $infos[$field] = $arr['value'];
+    }
 
-	return $infos;
+    return $infos;
 }
 
 /**
@@ -2448,47 +2448,47 @@ function bab_getUserInfos($id_user) {
  * @return bool		true if the current user has rights to update the user
  */
 function bab_canCurrentUserUpdateUser($userId) {
-	global $babBody;
-	include_once $GLOBALS['babInstallPath'].'utilit/delegincl.php';
+    global $babBody;
+    include_once $GLOBALS['babInstallPath'].'utilit/delegincl.php';
 
-	/* The user must be authentified */
-	if (!bab_userIsloggedin()) {
-		return false;
-	}
+    /* The user must be authentified */
+    if (!bab_userIsloggedin()) {
+        return false;
+    }
 
-	/* The current user can change his datas */
-	$idCurrentUser = $GLOBALS['BAB_SESS_USERID'];
-	if ($idCurrentUser !== false && $idCurrentUser != 0) {
-		if ($idCurrentUser == $userId) {
-			return true;
-		}
-	}
+    /* The current user can change his datas */
+    $idCurrentUser = $GLOBALS['BAB_SESS_USERID'];
+    if ($idCurrentUser !== false && $idCurrentUser != 0) {
+        if ($idCurrentUser == $userId) {
+            return true;
+        }
+    }
 
-	/* Verify the right admin */
-	if (bab_getCurrentAdmGroup()) {
-		$dg = bab_getCurrentAdmGroup();
-	} elseif (bab_isUserAdministrator()) {
-		return true;
-	} else {
-		return false;
-	}
+    /* Verify the right admin */
+    if (bab_getCurrentAdmGroup()) {
+        $dg = bab_getCurrentAdmGroup();
+    } elseif (bab_isUserAdministrator()) {
+        return true;
+    } else {
+        return false;
+    }
 
-	if (!bab_isUserInDelegation($dg, $userId))
-	{
-		return false;
-	}
+    if (!bab_isUserInDelegation($dg, $userId))
+    {
+        return false;
+    }
 
-	// Mantis #1867
-	// this test was used from 7.5.91 to 7.7.3
+    // Mantis #1867
+    // this test was used from 7.5.91 to 7.7.3
 
-	/*
-	if (bab_isUserOutOfDelegation($dg, $userId))
-	{
-		return false;
-	}
-	*/
+    /*
+    if (bab_isUserOutOfDelegation($dg, $userId))
+    {
+        return false;
+    }
+    */
 
-	return true;
+    return true;
 }
 
 
@@ -2508,8 +2508,8 @@ function bab_canCurrentUserUpdateUser($userId) {
  */
 function bab_updateUserById($id, $info, &$error)
 {
-	require_once($GLOBALS['babInstallPath']."utilit/usermodifyincl.php");
-	return bab_userModify::updateUserById($id, $info, $error);
+    require_once($GLOBALS['babInstallPath']."utilit/usermodifyincl.php");
+    return bab_userModify::updateUserById($id, $info, $error);
 }
 
 /**
@@ -2518,7 +2518,7 @@ function bab_updateUserById($id, $info, &$error)
  */
 function bab_uppdateUserById($id, $info, &$error)
 {
-	return bab_updateUserById($id, $info, $error);
+    return bab_updateUserById($id, $info, $error);
 }
 
 /**
@@ -2534,54 +2534,54 @@ function bab_uppdateUserById($id, $info, &$error)
  */
 function bab_updateUserNicknameById($userId, $newNickname, $ignoreAccessRights=false, &$error)
 {
-	global $babDB, $BAB_HASH_VAR;
+    global $babDB, $BAB_HASH_VAR;
 
-	/* Test rights */
-	if (!$ignoreAccessRights) {
-		$res = bab_canCurrentUserUpdateUser($userId);
-		if (!$res) {
-			$error = bab_translate("You don't have access to update the user");
-			return false;
-		}
-	}
+    /* Test rights */
+    if (!$ignoreAccessRights) {
+        $res = bab_canCurrentUserUpdateUser($userId);
+        if (!$res) {
+            $error = bab_translate("You don't have access to update the user");
+            return false;
+        }
+    }
 
-	/* Test if the new nickname is empty */
-	if (empty($newNickname)) {
-		$error = bab_translate("You must provide a nickname");
-		return false;
-	}
+    /* Test if the new nickname is empty */
+    if (empty($newNickname)) {
+        $error = bab_translate("You must provide a nickname");
+        return false;
+    }
 
-	/* Test if the new nickname contain spaces */
-	/*
-	if (mb_strpos($newNickname, ' ') !== false) {
-		$error = bab_translate("Login ID should not contain spaces");
-		return false;
-	}
-	*/
+    /* Test if the new nickname contain spaces */
+    /*
+    if (mb_strpos($newNickname, ' ') !== false) {
+        $error = bab_translate("Login ID should not contain spaces");
+        return false;
+    }
+    */
 
-	/* Test if the new nickname already exists */
-	$db = $GLOBALS['babDB'];
-	$query = 'SELECT * FROM ' . BAB_USERS_TBL . '
-				WHERE nickname=' . $babDB->quote($newNickname) . '
-				AND id!=' . $babDB->quote($userId);
-	$res = $babDB->db_query($query);
-	if ($babDB->db_num_rows($res) > 0) {
-		$error = bab_translate("This login ID already exists !!");
-		return false;
-	}
+    /* Test if the new nickname already exists */
+    $db = $GLOBALS['babDB'];
+    $query = 'SELECT * FROM ' . BAB_USERS_TBL . '
+                WHERE nickname=' . $babDB->quote($newNickname) . '
+                AND id!=' . $babDB->quote($userId);
+    $res = $babDB->db_query($query);
+    if ($babDB->db_num_rows($res) > 0) {
+        $error = bab_translate("This login ID already exists !!");
+        return false;
+    }
 
-	/* Update datas's user */
-	$hash = md5($newNickname.$BAB_HASH_VAR);
-	$req = 'UPDATE ' . BAB_USERS_TBL . '
-			SET confirm_hash=' . $babDB->quote($hash) . ', nickname=' . $babDB->quote($newNickname) . '
-			WHERE id='. $babDB->quote($userId);
-	$res = $babDB->db_query($req);
+    /* Update datas's user */
+    $hash = md5($newNickname.$BAB_HASH_VAR);
+    $req = 'UPDATE ' . BAB_USERS_TBL . '
+            SET confirm_hash=' . $babDB->quote($hash) . ', nickname=' . $babDB->quote($newNickname) . '
+            WHERE id='. $babDB->quote($userId);
+    $res = $babDB->db_query($req);
 
-	require_once $GLOBALS['babInstallPath'] . 'utilit/eventdirectory.php';
-	$event = new bab_eventUserModified((int)$userId);
-	bab_fireEvent($event);
+    require_once $GLOBALS['babInstallPath'] . 'utilit/eventdirectory.php';
+    $event = new bab_eventUserModified((int)$userId);
+    bab_fireEvent($event);
 
-	return true;
+    return true;
 }
 
 /**
@@ -2599,119 +2599,119 @@ function bab_updateUserNicknameById($userId, $newNickname, $ignoreAccessRights=f
  */
 function bab_updateUserPasswordById($userId, $newPassword, $newPassword2, $ignoreAccessRights=false, $ignoreSixCharactersMinimum=false, &$error)
 {
-	global $babBody, $babDB, $BAB_HASH_VAR;
+    global $babBody, $babDB, $BAB_HASH_VAR;
 
-	/* Test rights */
-	if (!$ignoreAccessRights) {
-		$res = bab_canCurrentUserUpdateUser($userId);
-		if (!$res) {
-			$error = bab_translate("You don't have access to update the user");
-			return false;
-		}
-	}
+    /* Test rights */
+    if (!$ignoreAccessRights) {
+        $res = bab_canCurrentUserUpdateUser($userId);
+        if (!$res) {
+            $error = bab_translate("You don't have access to update the user");
+            return false;
+        }
+    }
 
-	/* Delete spaces in passwords */
-	$newPassword = trim($newPassword);
-	$newPassword2 = trim($newPassword2);
+    /* Delete spaces in passwords */
+    $newPassword = trim($newPassword);
+    $newPassword2 = trim($newPassword2);
 
-	/* Test if passwords are same */
-	if ($newPassword != $newPassword2) {
-		$error = bab_translate("Passwords not match !!");
-		return false;
-	}
+    /* Test if passwords are same */
+    if ($newPassword != $newPassword2) {
+        $error = bab_translate("Passwords not match !!");
+        return false;
+    }
 
-	$minPasswordLengh = 6;
-	if(ISSET($GLOBALS['babMinPasswordLength']) && is_numeric($GLOBALS['babMinPasswordLength'])){
-		$minPasswordLengh = $GLOBALS['babMinPasswordLength'];
-	}
+    $minPasswordLengh = 6;
+    if(ISSET($GLOBALS['babMinPasswordLength']) && is_numeric($GLOBALS['babMinPasswordLength'])){
+        $minPasswordLengh = $GLOBALS['babMinPasswordLength'];
+    }
 
-	/* Test if the password have at least $GLOBALS['babMinPasswordLength'] or 6 characters */
-	if (!$ignoreSixCharactersMinimum) {
-		if (mb_strlen($newPassword) < $minPasswordLengh) {
-			$error = sprintf(bab_translate("Password must be at least %s characters !!"),$minPasswordLengh);
-			return false;
-		}
-	}
+    /* Test if the password have at least $GLOBALS['babMinPasswordLength'] or 6 characters */
+    if (!$ignoreSixCharactersMinimum) {
+        if (mb_strlen($newPassword) < $minPasswordLengh) {
+            $error = sprintf(bab_translate("Password must be at least %s characters !!"),$minPasswordLengh);
+            return false;
+        }
+    }
 
-	/* Verify the authentification mode of the user */
-	$sql = 'SELECT nickname, db_authentification FROM ' . BAB_USERS_TBL . ' WHERE id=' . $babDB->quote($userId);
-	list($nickname, $dbauth) = $babDB->db_fetch_row($babDB->db_query($sql));
+    /* Verify the authentification mode of the user */
+    $sql = 'SELECT nickname, db_authentification FROM ' . BAB_USERS_TBL . ' WHERE id=' . $babDB->quote($userId);
+    list($nickname, $dbauth) = $babDB->db_fetch_row($babDB->db_query($sql));
 
-	$authentification = $babBody->babsite['authentification'];
-	if ($dbauth == 'Y') {
-		$authentification = ''; // force to default
-	}
+    $authentification = $babBody->babsite['authentification'];
+    if ($dbauth == 'Y') {
+        $authentification = ''; // force to default
+    }
 
-	switch ($authentification)
-	{
-		case BAB_AUTHENTIFICATION_AD: // Active Directory
-			$error = bab_translate("Nothing Changed !!");
-			return false;
-			break;
+    switch ($authentification)
+    {
+        case BAB_AUTHENTIFICATION_AD: // Active Directory
+            $error = bab_translate("Nothing Changed !!");
+            return false;
+            break;
 
-		case BAB_AUTHENTIFICATION_LDAP: // Active Directory
-			if (!empty($babBody->babsite['ldap_encryptiontype'])) {
-				include_once $GLOBALS['babInstallPath']."utilit/ldap.php";
-				$ldap = new babLDAP($babBody->babsite['ldap_host'], "", false);
-				$ret = $ldap->connect();
-				if ($ret === false) {
-					$error = bab_translate("LDAP connection failed");
-					return false;
-				}
+        case BAB_AUTHENTIFICATION_LDAP: // Active Directory
+            if (!empty($babBody->babsite['ldap_encryptiontype'])) {
+                include_once $GLOBALS['babInstallPath']."utilit/ldap.php";
+                $ldap = new babLDAP($babBody->babsite['ldap_host'], "", false);
+                $ret = $ldap->connect();
+                if ($ret === false) {
+                    $error = bab_translate("LDAP connection failed");
+                    return false;
+                }
 
-				$ret = $ldap->bind($babBody->babsite['ldap_admindn'], $babBody->babsite['ldap_adminpassword']);
-				if (!$ret) {
-					$ldap->close();
-					$error = bab_translate("LDAP bind failed");
-					return  false;
-				}
+                $ret = $ldap->bind($babBody->babsite['ldap_admindn'], $babBody->babsite['ldap_adminpassword']);
+                if (!$ret) {
+                    $ldap->close();
+                    $error = bab_translate("LDAP bind failed");
+                    return  false;
+                }
 
-				if (isset($babBody->babsite['ldap_filter']) && !empty($babBody->babsite['ldap_filter'])) {
-					$filter = str_replace('%UID', ldap_escapefilter($babBody->babsite['ldap_attribute']), $babBody->babsite['ldap_filter']);
-					$filter = str_replace('%NICKNAME', ldap_escapefilter($nickname), $filter);
-				} else {
-					$filter = "(|(".ldap_escapefilter($babBody->babsite['ldap_attribute'])."=".ldap_escapefilter($nickname)."))";
-				}
+                if (isset($babBody->babsite['ldap_filter']) && !empty($babBody->babsite['ldap_filter'])) {
+                    $filter = str_replace('%UID', ldap_escapefilter($babBody->babsite['ldap_attribute']), $babBody->babsite['ldap_filter']);
+                    $filter = str_replace('%NICKNAME', ldap_escapefilter($nickname), $filter);
+                } else {
+                    $filter = "(|(".ldap_escapefilter($babBody->babsite['ldap_attribute'])."=".ldap_escapefilter($nickname)."))";
+                }
 
-				$attributes = array("dn", $babBody->babsite['ldap_attribute'], "cn");
-				$entries = $ldap->search($babBody->babsite['ldap_searchdn'], $filter, $attributes);
+                $attributes = array("dn", $babBody->babsite['ldap_attribute'], "cn");
+                $entries = $ldap->search($babBody->babsite['ldap_searchdn'], $filter, $attributes);
 
-				if ($entries === false) {
-					$ldap->close();
-					$error = bab_translate("LDAP search failed");
-					return false;
-				}
+                if ($entries === false) {
+                    $ldap->close();
+                    $error = bab_translate("LDAP search failed");
+                    return false;
+                }
 
-				$ldappw = ldap_encrypt($newPassword, $babBody->babsite['ldap_encryptiontype']);
-				$ret = $ldap->modify($entries[0]['dn'], array('userPassword'=>$ldappw));
-				$ldap->close();
-				if (!$ret) {
-					$error = bab_translate("Nothing Changed");
-					return false;
-				}
-			}
-			break;
+                $ldappw = ldap_encrypt($newPassword, $babBody->babsite['ldap_encryptiontype']);
+                $ret = $ldap->modify($entries[0]['dn'], array('userPassword'=>$ldappw));
+                $ldap->close();
+                if (!$ret) {
+                    $error = bab_translate("Nothing Changed");
+                    return false;
+                }
+            }
+            break;
 
-		default:
-			break;
-	}
+        default:
+            break;
+    }
 
-	/* Update the user's password */
-	$sql = 'UPDATE ' . BAB_USERS_TBL . ' SET password=' . $babDB->quote(md5(mb_strtolower($newPassword))) . ' WHERE id=' . $babDB->quote($userId);
-	$babDB->db_query($sql);
+    /* Update the user's password */
+    $sql = 'UPDATE ' . BAB_USERS_TBL . ' SET password=' . $babDB->quote(md5(mb_strtolower($newPassword))) . ' WHERE id=' . $babDB->quote($userId);
+    $babDB->db_query($sql);
 
-	/* Call the functionnality event onUserChangePassword */
-	include_once $GLOBALS['babInstallPath'].'utilit/addonsincl.php';
-	bab_callAddonsFunctionArray('onUserChangePassword',
-		array(
-			'id' => $userId,
-			'nickname' => $nickname,
-			'password' => $newPassword,
-			'error' => &$error
-		)
-	);
+    /* Call the functionnality event onUserChangePassword */
+    include_once $GLOBALS['babInstallPath'].'utilit/addonsincl.php';
+    bab_callAddonsFunctionArray('onUserChangePassword',
+        array(
+            'id' => $userId,
+            'nickname' => $nickname,
+            'password' => $newPassword,
+            'error' => &$error
+        )
+    );
 
-	return true;
+    return true;
 }
 
 /**
@@ -2719,12 +2719,12 @@ function bab_updateUserPasswordById($userId, $newPassword, $newPassword2, $ignor
  */
 function bab_updateUserByNickname($nickname, $info, &$error)
 {
-	$id_user = bab_getUserIdByNickname($nickname);
-	if (0 === $id_user) {
-		$error = bab_translate("Unknown user");
-		return false;
-	}
-	return bab_updateUserById($id_user, $info, $error);
+    $id_user = bab_getUserIdByNickname($nickname);
+    if (0 === $id_user) {
+        $error = bab_translate("Unknown user");
+        return false;
+    }
+    return bab_updateUserById($id_user, $info, $error);
 }
 
 
@@ -2756,7 +2756,7 @@ define('DBG_FATAL',		32);
  */
 function bab_debug($data, $severity = DBG_TRACE, $category = '', $shiftdebug = 1)
 {
-	$file = $line = $function = '';
+    $file = $line = $function = '';
 
 
 
@@ -2764,74 +2764,74 @@ function bab_debug($data, $severity = DBG_TRACE, $category = '', $shiftdebug = 1
 
 
 
-	// Here we find information about the file and line where bab_debug was called.
-	$backtrace = debug_backtrace();
-	for($i = 0; $i < $shiftdebug; $i++)
-	{
-		$call = array_shift($backtrace);
-	}
-	if (is_array($call)  && isset($call['file']) && isset($call['line'])) {
-		$file = $call['file'];
-		$line = $call['line'];
-	}
+    // Here we find information about the file and line where bab_debug was called.
+    $backtrace = debug_backtrace();
+    for($i = 0; $i < $shiftdebug; $i++)
+    {
+        $call = array_shift($backtrace);
+    }
+    if (is_array($call)  && isset($call['file']) && isset($call['line'])) {
+        $file = $call['file'];
+        $line = $call['line'];
+    }
 
-	// Here we find information about the method or function from which bab_debug was called.
-	$call = array_shift($backtrace);
-	if (is_array($call)) {
-		$function = (isset($call['class'])) ? $call['class'] . '::' . $call['function'] : $call['function'];
-	}
+    // Here we find information about the method or function from which bab_debug was called.
+    $call = array_shift($backtrace);
+    if (is_array($call)) {
+        $function = (isset($call['class'])) ? $call['class'] . '::' . $call['function'] : $call['function'];
+    }
 
-	$message = array(
-		'category' => str_replace(' ', '_', $category),
-		'severity' => $severity,
-		'data' => $data,
-		'file' => $file,
-		'line' => $line,
-		'function' => $function
-	);
+    $message = array(
+        'category' => str_replace(' ', '_', $category),
+        'severity' => $severity,
+        'data' => $data,
+        'file' => $file,
+        'line' => $line,
+        'function' => $function
+    );
 
 
-	if (isset($_COOKIE['bab_debug']) && ((int)$_COOKIE['bab_debug'] & $severity)) {
+    if (isset($_COOKIE['bab_debug']) && ((int)$_COOKIE['bab_debug'] & $severity)) {
 
-		// We store the information in the global bab_debug_messages that will later be displayed by bab_getDebug
-		if (isset($GLOBALS['bab_debug_messages'])) {
-			$GLOBALS['bab_debug_messages'][] = $message;
-		} else {
-			$GLOBALS['bab_debug_messages'] = array($message);
-		}
-	}
+        // We store the information in the global bab_debug_messages that will later be displayed by bab_getDebug
+        if (isset($GLOBALS['bab_debug_messages'])) {
+            $GLOBALS['bab_debug_messages'][] = $message;
+        } else {
+            $GLOBALS['bab_debug_messages'] = array($message);
+        }
+    }
 
-	$debugFilename = 'bab_debug.txt';
-	// We immediately log in the bab_debug.txt file.
-	if ( (!isset($GLOBALS['babDebugLogMinSeverity']) || ($GLOBALS['babDebugLogMinSeverity'] <= $severity))
-		 && file_exists($debugFilename) && is_writable($debugFilename)) {
+    $debugFilename = 'bab_debug.txt';
+    // We immediately log in the bab_debug.txt file.
+    if ( (!isset($GLOBALS['babDebugLogMinSeverity']) || ($GLOBALS['babDebugLogMinSeverity'] <= $severity))
+         && file_exists($debugFilename) && is_writable($debugFilename)) {
 
-		$size = 0;
+        $size = 0;
 
-		if (is_array($data) || is_object($data)) {
-			$size = count($data);
-		}
+        if (is_array($data) || is_object($data)) {
+            $size = count($data);
+        }
 
-		if (is_string($data)) {
-			$size = mb_strlen($data);
-		}
+        if (is_string($data)) {
+            $size = mb_strlen($data);
+        }
 
-		$textinfos = sprintf("type=%s, size=%d\n", gettype($data), $size);
-		if (!is_string($data)) {
-			$textinfos .= print_r($data, true);
-		} else {
-			$textinfos .= $data;
-		}
+        $textinfos = sprintf("type=%s, size=%d\n", gettype($data), $size);
+        if (!is_string($data)) {
+            $textinfos .= print_r($data, true);
+        } else {
+            $textinfos .= $data;
+        }
 
-		$h = fopen($debugFilename, 'a');
-		$date = date('d/m/Y H:i:s');
-		$lines = explode("\n", $textinfos);
-		foreach ($lines as $text) {
-			fwrite($h, $date."\t".$severity."\t".$category."\t".basename($file).'('.$line.')'."\t".$function."\t".$text."\n");
-		}
-		fwrite($h, "\n");
-		fclose($h);
-	}
+        $h = fopen($debugFilename, 'a');
+        $date = date('d/m/Y H:i:s');
+        $lines = explode("\n", $textinfos);
+        foreach ($lines as $text) {
+            fwrite($h, $date."\t".$severity."\t".$category."\t".basename($file).'('.$line.')'."\t".$function."\t".$text."\n");
+        }
+        fwrite($h, "\n");
+        fclose($h);
+    }
 }
 
 
@@ -2841,11 +2841,11 @@ function bab_debug($data, $severity = DBG_TRACE, $category = '', $shiftdebug = 1
  * @return string
  */
 function bab_getDebug() {
-	if (bab_isUserAdministrator() && isset($GLOBALS['bab_debug_messages'])) {
-		include_once $GLOBALS['babInstallPath'].'utilit/devtools.php';
-		return bab_f_getDebug();
-	}
-	return false;
+    if (bab_isUserAdministrator() && isset($GLOBALS['bab_debug_messages'])) {
+        include_once $GLOBALS['babInstallPath'].'utilit/devtools.php';
+        return bab_f_getDebug();
+    }
+    return false;
 }
 
 /**
@@ -2866,8 +2866,8 @@ function bab_getDebug() {
  * @return string html
  */
 function bab_toHtml($str, $option = BAB_HTML_ENTITIES) {
-	include_once dirname(__FILE__).'/tohtmlincl.php';
-	return bab_f_toHtml($str, $option);
+    include_once dirname(__FILE__).'/tohtmlincl.php';
+    return bab_f_toHtml($str, $option);
 }
 
 
@@ -2880,7 +2880,7 @@ function bab_toHtml($str, $option = BAB_HTML_ENTITIES) {
  */
 function bab_unhtmlentities($string)
 {
-	return html_entity_decode($string, ENT_QUOTES, bab_charset::getIso());
+    return html_entity_decode($string, ENT_QUOTES, bab_charset::getIso());
 }
 
 
@@ -2890,20 +2890,20 @@ function bab_unhtmlentities($string)
  * @return false|array
  */
 function bab_searchEngineInfos() {
-	include_once $GLOBALS['babInstallPath'].'utilit/indexincl.php';
+    include_once $GLOBALS['babInstallPath'].'utilit/indexincl.php';
 
-	if (isset($GLOBALS['babSearchEngine'])) {
+    if (isset($GLOBALS['babSearchEngine'])) {
 
-		$obj = bab_searchEngineInfosObj($GLOBALS['babSearchEngine']);
+        $obj = bab_searchEngineInfosObj($GLOBALS['babSearchEngine']);
 
-		return array(
-			'name'			=> $GLOBALS['babSearchEngine'],
-			'description'	=> $obj->getDescription(),
-			'types'			=> $obj->getAvailableMimeTypes(),
-			'indexes'		=> bab_searchEngineIndexes()
-		);
-	}
-	return false;
+        return array(
+            'name'			=> $GLOBALS['babSearchEngine'],
+            'description'	=> $obj->getDescription(),
+            'types'			=> $obj->getAvailableMimeTypes(),
+            'indexes'		=> bab_searchEngineIndexes()
+        );
+    }
+    return false;
 }
 
 
@@ -2924,12 +2924,12 @@ function bab_searchEngineInfos() {
  * @return bab_Registry
  */
 function bab_getRegistryInstance() {
-	static $_inst = null;
-	if (null === $_inst) {
-		$_inst = bab_getRegistry();
-	}
+    static $_inst = null;
+    if (null === $_inst) {
+        $_inst = bab_getRegistry();
+    }
 
-	return $_inst;
+    return $_inst;
 }
 
 
@@ -2950,8 +2950,8 @@ function bab_getRegistryInstance() {
  * @return bab_Registry
  */
 function bab_getRegistry() {
-	require_once $GLOBALS['babInstallPath'].'utilit/registry.php';
-	return new bab_registry();
+    require_once $GLOBALS['babInstallPath'].'utilit/registry.php';
+    return new bab_registry();
 }
 
 /**
@@ -2962,13 +2962,13 @@ function bab_getRegistry() {
  * @return mixed
  */
 function bab_rp($name, $default = '') {
-	if (isset($_GET[$name])) {
-		return $_GET[$name];
-	}
-	if (isset($_POST[$name])) {
-		return $_POST[$name];
-	}
-	return $default;
+    if (isset($_GET[$name])) {
+        return $_GET[$name];
+    }
+    if (isset($_POST[$name])) {
+        return $_POST[$name];
+    }
+    return $default;
 }
 
 /**
@@ -2979,10 +2979,10 @@ function bab_rp($name, $default = '') {
  * @return mixed
  */
 function bab_pp($name, $default = '') {
-	if (isset($_POST[$name])) {
-		return $_POST[$name];
-	}
-	return $default;
+    if (isset($_POST[$name])) {
+        return $_POST[$name];
+    }
+    return $default;
 }
 
 /**
@@ -2993,10 +2993,10 @@ function bab_pp($name, $default = '') {
  * @return mixed
  */
 function bab_gp($name, $default = '') {
-	if (isset($_GET[$name])) {
-		return $_GET[$name];
-	}
-	return $default;
+    if (isset($_GET[$name])) {
+        return $_GET[$name];
+    }
+    return $default;
 }
 
 /**
@@ -3005,17 +3005,17 @@ function bab_gp($name, $default = '') {
  * @return mixed ('': undefined, 1: inline, 2: attachment )
  */
 function bab_getFileContentDisposition() {
-	if (!isset($GLOBALS['babFileContentDisposition']))
-		return '';
-	else
-	{
-		switch($GLOBALS['babFileContentDisposition'])
-		{
-			case 1: return 1;
-			case 2: return 2;
-			default: return '';
-		}
-	}
+    if (!isset($GLOBALS['babFileContentDisposition']))
+        return '';
+    else
+    {
+        switch($GLOBALS['babFileContentDisposition'])
+        {
+            case 1: return 1;
+            case 2: return 2;
+            default: return '';
+        }
+    }
 
 }
 
@@ -3063,22 +3063,22 @@ function bab_getFileContentDisposition() {
  */
 function bab_printCachedOvmlTemplate($file, $args = array())
 {
-	require_once dirname(__FILE__).'/ovmlcache.php';
+    require_once dirname(__FILE__).'/ovmlcache.php';
 
-	$cache = new bab_ovml_cache($file, $args);
+    $cache = new bab_ovml_cache($file, $args);
 
-	$cache_type = 'session';
-	if (isset($args['_ovml_cache_type']))
-	{
-		$cache_type = $args['_ovml_cache_type'];
-	}
+    $cache_type = 'session';
+    if (isset($args['_ovml_cache_type']))
+    {
+        $cache_type = $args['_ovml_cache_type'];
+    }
 
-	if (isset($args['_ovml_cache_duration']))
-	{
-		$cache->setCacheDuration((int) $args['_ovml_cache_duration']);
-	}
+    if (isset($args['_ovml_cache_duration']))
+    {
+        $cache->setCacheDuration((int) $args['_ovml_cache_duration']);
+    }
 
-	return $cache->$cache_type();
+    return $cache->$cache_type();
 }
 
 
@@ -3091,40 +3091,40 @@ function bab_printCachedOvmlTemplate($file, $args = array())
  */
 function bab_printOvmlTemplate($file, $args=array())
 {
-	$start = microtime();
-	global $babInstallPath, $babSkinPath, $babOvmlPath;
+    $start = microtime();
+    global $babInstallPath, $babSkinPath, $babOvmlPath;
 
-	/* Skin local path */
-	$filepath = $babOvmlPath.$file; /* Ex. : skins/ovidentia_sw/ovml/test.ovml */
+    /* Skin local path */
+    $filepath = $babOvmlPath.$file; /* Ex. : skins/ovidentia_sw/ovml/test.ovml */
 
-	if ($file == '') {
-		bab_debug(bab_translate("Error: The name of the OVML file is not specified"));
-		return '<!-- '.bab_translate("Error: The name of the OVML file is not specified").' : '.bab_toHtml($filepath).' -->';
-	}
+    if ($file == '') {
+        bab_debug(bab_translate("Error: The name of the OVML file is not specified"));
+        return '<!-- '.bab_translate("Error: The name of the OVML file is not specified").' : '.bab_toHtml($filepath).' -->';
+    }
 
-	if ((false !== mb_strpos($file, '..')) || mb_strtolower(mb_substr($file, 0, 4)) == 'http') {
+    if ((false !== mb_strpos($file, '..')) || mb_strtolower(mb_substr($file, 0, 4)) == 'http') {
 
-		return '<!-- ERROR filename: '.bab_toHtml($file).' -->';
-	}
+        return '<!-- ERROR filename: '.bab_toHtml($file).' -->';
+    }
 
 
-	if (!file_exists($filepath)) {
-		$filepath = $babSkinPath.'ovml/'.$file; /* Ex. : ovidentiainstall/skins/ovidentia/ovml/test.ovml */
+    if (!file_exists($filepath)) {
+        $filepath = $babSkinPath.'ovml/'.$file; /* Ex. : ovidentiainstall/skins/ovidentia/ovml/test.ovml */
 
-		if (!file_exists($filepath)) {
-			bab_debug(bab_translate("Error: OVML file does not exist").' : '.bab_toHtml($file));
-			return '<!-- '.bab_translate("Error: OVML file does not exist").' : '.bab_toHtml($file).' -->';
-		}
-	}
+        if (!file_exists($filepath)) {
+            bab_debug(bab_translate("Error: OVML file does not exist").' : '.bab_toHtml($file));
+            return '<!-- '.bab_translate("Error: OVML file does not exist").' : '.bab_toHtml($file).' -->';
+        }
+    }
 
-	$GLOBALS['babWebStat']->addOvmlFile($filepath);
+    $GLOBALS['babWebStat']->addOvmlFile($filepath);
 
-	include_once $babInstallPath.'utilit/omlincl.php';
-	$tpl = new babOvTemplate($args);
-	$template = $tpl->printout(file_get_contents($filepath), $filepath);
-	$end = microtime();
-	//bab_debug($filepath. '(start: '.$start.', end:'.$end.', total:'.($end-$start).')');
-	return $template;
+    include_once $babInstallPath.'utilit/omlincl.php';
+    $tpl = new babOvTemplate($args);
+    $template = $tpl->printout(file_get_contents($filepath), $filepath);
+    $end = microtime();
+    //bab_debug($filepath. '(start: '.$start.', end:'.$end.', total:'.($end-$start).')');
+    return $template;
 }
 
 
@@ -3144,34 +3144,34 @@ function bab_printOvmlTemplate($file, $args=array())
  * @return 	string
  */
 function bab_abbr($text, $type, $max_length) {
-	$len = mb_strlen($text);
-	if ($len < $max_length) {
-		return $text;
-	}
+    $len = mb_strlen($text);
+    if ($len < $max_length) {
+        return $text;
+    }
 
-	$mots = preg_split('/[\s,\.]+/', $text, -1, PREG_SPLIT_DELIM_CAPTURE | PREG_SPLIT_OFFSET_CAPTURE);
+    $mots = preg_split('/[\s,\.]+/', $text, -1, PREG_SPLIT_DELIM_CAPTURE | PREG_SPLIT_OFFSET_CAPTURE);
 
-	if (BAB_ABBR_FULL_WORDS === $type) {
-		if (1 === count($mots)) {
-			return mb_substr($text,0,$max_length).'...';
-		}
+    if (BAB_ABBR_FULL_WORDS === $type) {
+        if (1 === count($mots)) {
+            return mb_substr($text,0,$max_length).'...';
+        }
 
-		for ($i = count($mots)-1; $i >= 0; $i--) {
-			if ($mots[$i][1] < $max_length) {
-				return mb_substr($text,0,$mots[$i][1]).'...';
-			}
-		}
-	}
+        for ($i = count($mots)-1; $i >= 0; $i--) {
+            if ($mots[$i][1] < $max_length) {
+                return mb_substr($text,0,$mots[$i][1]).'...';
+            }
+        }
+    }
 
-	if (BAB_ABBR_INITIAL === $type) {
-		$n = ceil($max_length/count($mots));
-		if ($max_length < $n) {
-			return bab_abbr($text, BAB_ABBR_FULL_WORDS, $max_length);
-		} else {
-			array_walk($mots, create_function('&$v,$k','$v = mb_strtoupper(mb_substr($v[0],0,1)).".";'));
-			return implode('',$mots);
-		}
-	}
+    if (BAB_ABBR_INITIAL === $type) {
+        $n = ceil($max_length/count($mots));
+        if ($max_length < $n) {
+            return bab_abbr($text, BAB_ABBR_FULL_WORDS, $max_length);
+        } else {
+            array_walk($mots, create_function('&$v,$k','$v = mb_strtoupper(mb_substr($v[0],0,1)).".";'));
+            return implode('',$mots);
+        }
+    }
 }
 
 
@@ -3183,87 +3183,87 @@ function bab_abbr($text, $type, $max_length) {
  */
 function bab_locale() {
 
-	static $locale = NULL;
+    static $locale = NULL;
 
-	if (NULL !== $locale) {
-		return $locale;
+    if (NULL !== $locale) {
+        return $locale;
 
-	} else {
-		global $babLanguage;
-
-
-		if (function_exists('textdomain')) {
-			// clear gettext cache for mo files modifications
-			textdomain(textdomain(NULL));
-		}
+    } else {
+        global $babLanguage;
 
 
-		switch(mb_strtolower($babLanguage)) {
-			case 'fr':
-				$arrLoc = array('fr_FR', 'fr');
-				break;
-			case 'en':
-				$arrLoc = array('en_GB', 'en_US', 'en');
-				break;
-			default:
-				$arrLoc = array(mb_strtolower($babLanguage).'_'.mb_strtoupper($babLanguage), mb_strtolower($babLanguage));
-				break;
-		}
+        if (function_exists('textdomain')) {
+            // clear gettext cache for mo files modifications
+            textdomain(textdomain(NULL));
+        }
 
-		foreach($arrLoc as $languageCode) {
 
-			/*
-			 * Some systems only require LANG, others (like Mandrake) seem to require
-			 * LANGUAGE also.
-			 */
-			// putenv("LANG=${languageCode}");
-			// putenv("LANGUAGE=${languageCode}");
+        switch(mb_strtolower($babLanguage)) {
+            case 'fr':
+                $arrLoc = array('fr_FR', 'fr');
+                break;
+            case 'en':
+                $arrLoc = array('en_GB', 'en_US', 'en');
+                break;
+            default:
+                $arrLoc = array(mb_strtolower($babLanguage).'_'.mb_strtoupper($babLanguage), mb_strtolower($babLanguage));
+                break;
+        }
 
-			if ($locale = setLocale(LC_ALL, $languageCode)) {
-				return $locale;
-			}
+        foreach($arrLoc as $languageCode) {
 
-			/*
-			 * Try appending some character set names; some systems (like FreeBSD) need this.
-			 * Some require a format with hyphen (e.g. gentoo) and others without (e.g. FreeBSD).
-			 */
-			if (false === $locale) {
-				foreach (array('utf8', 'UTF-8', 'UTF8',
-						   'ISO8859-1', 'ISO8859-2', 'ISO8859-5', 'ISO8859-7', 'ISO8859-9',
-						   'ISO-8859-1', 'ISO-8859-2', 'ISO-8859-5', 'ISO-8859-7', 'ISO-8859-9',
-						   'EUC', 'Big5') as $charset) {
-					if (($locale = setlocale(LC_ALL, $languageCode . '.' . $charset)) !== false) {
-						return $locale;
-					}
-				}
-			}
-		}
+            /*
+             * Some systems only require LANG, others (like Mandrake) seem to require
+             * LANGUAGE also.
+             */
+            // putenv("LANG=${languageCode}");
+            // putenv("LANGUAGE=${languageCode}");
 
-		if (false === $locale) {
-			bab_debug("No locale found for : $languageCode");
-			return false;
-		}
+            if ($locale = setLocale(LC_ALL, $languageCode)) {
+                return $locale;
+            }
 
-		return $locale;
-	}
+            /*
+             * Try appending some character set names; some systems (like FreeBSD) need this.
+             * Some require a format with hyphen (e.g. gentoo) and others without (e.g. FreeBSD).
+             */
+            if (false === $locale) {
+                foreach (array('utf8', 'UTF-8', 'UTF8',
+                           'ISO8859-1', 'ISO8859-2', 'ISO8859-5', 'ISO8859-7', 'ISO8859-9',
+                           'ISO-8859-1', 'ISO-8859-2', 'ISO-8859-5', 'ISO-8859-7', 'ISO-8859-9',
+                           'EUC', 'Big5') as $charset) {
+                    if (($locale = setlocale(LC_ALL, $languageCode . '.' . $charset)) !== false) {
+                        return $locale;
+                    }
+                }
+            }
+        }
+
+        if (false === $locale) {
+            bab_debug("No locale found for : $languageCode");
+            return false;
+        }
+
+        return $locale;
+    }
 }
 
 
 
 function bab_getHashVar()
 {
-	if (defined('BAB_HASH_VAR'))
-	{
-		return BAB_HASH_VAR;
-	} else {
-		return 'aqhjlongsmp';
-	}
+    if (defined('BAB_HASH_VAR'))
+    {
+        return BAB_HASH_VAR;
+    } else {
+        return 'aqhjlongsmp';
+    }
 }
 
 
 function bab_initMbString() {
-	mb_internal_encoding(bab_charset::getIso());
-	mb_http_output(bab_charset::getIso());
+    mb_internal_encoding(bab_charset::getIso());
+    mb_http_output(bab_charset::getIso());
 }
 
 
@@ -3276,15 +3276,15 @@ function bab_initMbString() {
  * @return object
  */
 function bab_getInstance($classname) {
-	static $instances = NULL;
-	if (is_null($instances)) {
-		$instances = array();
-	}
-	if (!array_key_exists($classname, $instances)) {
-		$instances[$classname] = new $classname();
-	}
+    static $instances = NULL;
+    if (is_null($instances)) {
+        $instances = array();
+    }
+    if (!array_key_exists($classname, $instances)) {
+        $instances[$classname] = new $classname();
+    }
 
-	return $instances[$classname];
+    return $instances[$classname];
 }
 
 
@@ -3300,127 +3300,127 @@ function bab_getInstance($classname) {
 class bab_functionality {
 
 
-	/**
-	 * @deprecated Do not remove old constructor while there are functionalities in addons with direct call to bab_functionality::bab_functionality()
-	 */
-	public function bab_functionality() { }
+    /**
+     * @deprecated Do not remove old constructor while there are functionalities in addons with direct call to bab_functionality::bab_functionality()
+     */
+    public function bab_functionality() { }
 
 
-	public static function getRootPath() {
-		require_once dirname(__FILE__).'/defines.php';
-		return realpath('.').'/'.BAB_FUNCTIONALITY_ROOT_DIRNAME;
-	}
+    public static function getRootPath() {
+        require_once dirname(__FILE__).'/defines.php';
+        return realpath('.').'/'.BAB_FUNCTIONALITY_ROOT_DIRNAME;
+    }
 
 
-	/**
-	 * Include php file with the functionality class
-	 * @see bab_functionality::get()
-	 * @param	string	$path		path to functionality
-	 * @return string | false		the object class name or false if the file already included or false if the include failed
-	 */
-	public static function includefile($path) {
-		$include_result = include self::getRootPath().'/'.$path.'/'.BAB_FUNCTIONALITY_LINK_FILENAME;
+    /**
+     * Include php file with the functionality class
+     * @see bab_functionality::get()
+     * @param	string	$path		path to functionality
+     * @return string | false		the object class name or false if the file already included or false if the include failed
+     */
+    public static function includefile($path) {
+        $include_result = include self::getRootPath().'/'.$path.'/'.BAB_FUNCTIONALITY_LINK_FILENAME;
 
-		if (false === $include_result) {
-			bab_debug(sprintf('The functionality %s is not available', $path), DBG_ERROR, __CLASS__);
-		}
+        if (false === $include_result) {
+            bab_debug(sprintf('The functionality %s is not available', $path), DBG_ERROR, __CLASS__);
+        }
 
-		return $include_result;
-	}
+        return $include_result;
+    }
 
-	/**
-	 * Include original php file with the functionality class
-	 *
-	 * @since 7.8.90
-	 *
-	 * @param string $path 			path to functionality
-	 * @return string | false		the object class name or false if the file already included or false if the include failed
-	 */
-	public static function includeOriginal($path)
-	{
-		return include self::getRootPath().'/'.$path.'/'.BAB_FUNCTIONALITY_LINK_ORIGINAL_FILENAME;
-	}
-
-
-	/**
-	 * Returns the specified functionality object without the default inherithed object.
-	 *
-	 * If $singleton is set to true, the functionality object will be instanciated as
-	 * a singleton, i.e. there will be at most one instance of the functionality
-	 * at a given time.
-	 *
-	 * @since 7.8.90
-	 *
-	 * @param string 	$path
-	 * @param bool 		$singleton
-	 *
-	 * @return bab_functionality
-	 */
-	public static function getOriginal($path, $singleton = true)
-	{
-		$classname = bab_functionality::includeOriginal($path);
-		if (!$classname) {
-			return false;
-		}
-		if ($singleton) {
-			return bab_getInstance($classname);
-		}
-		return new $classname();
-	}
+    /**
+     * Include original php file with the functionality class
+     *
+     * @since 7.8.90
+     *
+     * @param string $path 			path to functionality
+     * @return string | false		the object class name or false if the file already included or false if the include failed
+     */
+    public static function includeOriginal($path)
+    {
+        return include self::getRootPath().'/'.$path.'/'.BAB_FUNCTIONALITY_LINK_ORIGINAL_FILENAME;
+    }
 
 
-
-	/**
-	 * Returns the specified functionality object.
-	 *
-	 * If $singleton is set to true, the functionality object will be instanciated as
-	 * a singleton, i.e. there will be at most one instance of the functionality
-	 * at a given time.
-	 *
-	 * @param	string	$path		The functionality path.
-	 * @param	bool	$singleton	Whether the functionality should be instanciated as singleton (default true).
-	 * @return	bab_functionality	The functionality object or false on error.
-	 */
-	public static function get($path, $singleton = true) {
-		$classname = bab_functionality::includefile($path);
-		if (!$classname) {
-			return false;
-		}
-		if ($singleton) {
-			return bab_getInstance($classname);
-		}
-		return new $classname();
-	}
-
-	/**
-	 * get functionalities compatible with the interface
-	 * @param	string	$path
-	 * @return array
-	 */
-	public static function getFunctionalities($path) {
-		require_once $GLOBALS['babInstallPath'].'utilit/functionalityincl.php';
-		$obj = new bab_functionalities();
-		return $obj->getChildren($path);
-	}
-
-	/**
-	 * Default method to create in inherited functionalities
-	 * @access protected
-	 * @return string
-	 */
-	public function getDescription() {
-		return '';
-	}
+    /**
+     * Returns the specified functionality object without the default inherithed object.
+     *
+     * If $singleton is set to true, the functionality object will be instanciated as
+     * a singleton, i.e. there will be at most one instance of the functionality
+     * at a given time.
+     *
+     * @since 7.8.90
+     *
+     * @param string 	$path
+     * @param bool 		$singleton
+     *
+     * @return bab_functionality
+     */
+    public static function getOriginal($path, $singleton = true)
+    {
+        $classname = bab_functionality::includeOriginal($path);
+        if (!$classname) {
+            return false;
+        }
+        if ($singleton) {
+            return bab_getInstance($classname);
+        }
+        return new $classname();
+    }
 
 
-	/**
-	 * Get path to functionality at this node which is the current path or a reference to a childnode
-	 * @return string
-	 */
-	public function getPath() {
-		require_once $GLOBALS['babInstallPath'].'utilit/functionalityincl.php';
-		return bab_Functionalities::getPath(get_class($this));
-	}
+
+    /**
+     * Returns the specified functionality object.
+     *
+     * If $singleton is set to true, the functionality object will be instanciated as
+     * a singleton, i.e. there will be at most one instance of the functionality
+     * at a given time.
+     *
+     * @param	string	$path		The functionality path.
+     * @param	bool	$singleton	Whether the functionality should be instanciated as singleton (default true).
+     * @return	bab_functionality	The functionality object or false on error.
+     */
+    public static function get($path, $singleton = true) {
+        $classname = bab_functionality::includefile($path);
+        if (!$classname) {
+            return false;
+        }
+        if ($singleton) {
+            return bab_getInstance($classname);
+        }
+        return new $classname();
+    }
+
+    /**
+     * get functionalities compatible with the interface
+     * @param	string	$path
+     * @return array
+     */
+    public static function getFunctionalities($path) {
+        require_once $GLOBALS['babInstallPath'].'utilit/functionalityincl.php';
+        $obj = new bab_functionalities();
+        return $obj->getChildren($path);
+    }
+
+    /**
+     * Default method to create in inherited functionalities
+     * @access protected
+     * @return string
+     */
+    public function getDescription() {
+        return '';
+    }
+
+
+    /**
+     * Get path to functionality at this node which is the current path or a reference to a childnode
+     * @return string
+     */
+    public function getPath() {
+        require_once $GLOBALS['babInstallPath'].'utilit/functionalityincl.php';
+        return bab_Functionalities::getPath(get_class($this));
+    }
 }
 
 
@@ -3434,18 +3434,18 @@ class bab_functionality {
  */
 function bab_getAddonInfosInstance($addonname) {
 
-	require_once $GLOBALS['babInstallPath'].'utilit/addonsincl.php';
-	static $instances = array();
+    require_once $GLOBALS['babInstallPath'].'utilit/addonsincl.php';
+    static $instances = array();
 
-	if (false === array_key_exists($addonname, $instances)) {
-		$obj = new bab_addonInfos();
-		if (false === $obj->setAddonName($addonname, false)) {
-			$instances[$addonname] = false;
-		} else {
-			$instances[$addonname] = $obj;
-		}
-	}
-	return $instances[$addonname];
+    if (false === array_key_exists($addonname, $instances)) {
+        $obj = new bab_addonInfos();
+        if (false === $obj->setAddonName($addonname, false)) {
+            $instances[$addonname] = false;
+        } else {
+            $instances[$addonname] = $obj;
+        }
+    }
+    return $instances[$addonname];
 }
 
 
@@ -3460,9 +3460,9 @@ function bab_getAddonInfosInstance($addonname) {
  */
 function bab_isAjaxRequest()
 {
-	$isAjaxRequest = (isset($_SERVER['HTTP_X_REQUESTED_WITH'])
-		&& strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) == 'xmlhttprequest');
-	return $isAjaxRequest;
+    $isAjaxRequest = (isset($_SERVER['HTTP_X_REQUESTED_WITH'])
+        && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) == 'xmlhttprequest');
+    return $isAjaxRequest;
 }
 
 
@@ -3485,17 +3485,17 @@ function bab_isAjaxRequest()
  */
 function bab_requireCredential($sLoginMessage = '', $sAuthType = '')
 {
-	require_once $GLOBALS['babInstallPath'].'utilit/loginIncl.php';
+    require_once $GLOBALS['babInstallPath'].'utilit/loginIncl.php';
 
-	if ($sAuthType === '') {
-		// If a requireCredential is triggerd during an ajax request
-		// we force AuthBasic to avoid silently failing requests.
-		if (bab_isAjaxRequest()) {
-			$sAuthType = 'Basic';
-		}
-	}
+    if ($sAuthType === '') {
+        // If a requireCredential is triggerd during an ajax request
+        // we force AuthBasic to avoid silently failing requests.
+        if (bab_isAjaxRequest()) {
+            $sAuthType = 'Basic';
+        }
+    }
 
-	return bab_doRequireCredential($sLoginMessage, $sAuthType);
+    return bab_doRequireCredential($sLoginMessage, $sAuthType);
 }
 
 
@@ -3519,24 +3519,24 @@ function bab_requireCredential($sLoginMessage = '', $sAuthType = '')
  */
 function bab_requireAccess($tables, $idObject, $loginMessage)
 {
-	if (is_string($tables)) {
-		$tables = array($tables);
-	}
-	foreach ($tables as $table) {
-		if (bab_isAccessValid($table, $idObject, '')) {
-			return true;
-		}
-	}
-	if (bab_userIsloggedin()) {
-		return false;
-	}
-	bab_requireCredential($loginMessage);
-	foreach ($tables as $table) {
-		if (bab_isAccessValid($table, $idObject, '')) {
-			return true;
-		}
-	}
-	return false;
+    if (is_string($tables)) {
+        $tables = array($tables);
+    }
+    foreach ($tables as $table) {
+        if (bab_isAccessValid($table, $idObject, '')) {
+            return true;
+        }
+    }
+    if (bab_userIsloggedin()) {
+        return false;
+    }
+    bab_requireCredential($loginMessage);
+    foreach ($tables as $table) {
+        if (bab_isAccessValid($table, $idObject, '')) {
+            return true;
+        }
+    }
+    return false;
 }
 
 
@@ -3547,9 +3547,9 @@ function bab_requireAccess($tables, $idObject, $loginMessage)
  */
 function bab_setTimeLimit($seconds)
 {
-	if (function_exists('set_time_limit')) {
-		@set_time_limit($seconds);
-	}
+    if (function_exists('set_time_limit')) {
+        @set_time_limit($seconds);
+    }
 }
 
 
@@ -3569,8 +3569,8 @@ function bab_setTimeLimit($seconds)
  */
 function bab_buildReference($module, $type, $identifier, $location = '')
 {
-	require_once dirname(__FILE__) . '/reference.class.php';
-	return bab_Reference::makeReference('ovidentia', $location, $module, $type, $identifier);
+    require_once dirname(__FILE__) . '/reference.class.php';
+    return bab_Reference::makeReference('ovidentia', $location, $module, $type, $identifier);
 }
 
 
@@ -3586,49 +3586,49 @@ function bab_buildReference($module, $type, $identifier, $location = '')
  */
 function bab_downloadFile(bab_Path $path, $filename = null, $inline = true, $exit = true)
 {
-	if (null === $filename)
-	{
-		$filename = $path->getBasename();
-	}
+    if (null === $filename)
+    {
+        $filename = $path->getBasename();
+    }
 
-	$fp = fopen($path->toString(), 'rb');
-	if ($fp)
-	{
-		bab_setTimeLimit(3600);
+    $fp = fopen($path->toString(), 'rb');
+    if ($fp)
+    {
+        bab_setTimeLimit(3600);
 
-		if (mb_strtolower(bab_browserAgent()) == 'msie') {
-			// header('Cache-Control: public');
+        if (mb_strtolower(bab_browserAgent()) == 'msie') {
+            // header('Cache-Control: public');
 
-			// IE8 + https bug : http://stackoverflow.com/questions/1242900/problems-with-header-when-displaying-a-pdf-file-in-ie8
-			header("Cache-Control: must-revalidate, post-check=0, pre-check=0");
-			header("Pragma: public");
-		}
+            // IE8 + https bug : http://stackoverflow.com/questions/1242900/problems-with-header-when-displaying-a-pdf-file-in-ie8
+            header("Cache-Control: must-revalidate, post-check=0, pre-check=0");
+            header("Pragma: public");
+        }
 
-		if ($inline) {
-			header('Content-Disposition: inline; filename="'.$filename.'"'."\n");
-		} else {
-			header('Content-Disposition: attachment; filename="'.$filename.'"'."\n");
-		}
+        if ($inline) {
+            header('Content-Disposition: inline; filename="'.$filename.'"'."\n");
+        } else {
+            header('Content-Disposition: attachment; filename="'.$filename.'"'."\n");
+        }
 
-		$mime = bab_getFileMimeType($path->toString());
-		$fsize = filesize($path->toString());
-		header('Content-Type: '.$mime."\n");
-		header('Content-Length: '.$fsize."\n");
-		header('Content-transfert-encoding: binary'."\n");
+        $mime = bab_getFileMimeType($path->toString());
+        $fsize = filesize($path->toString());
+        header('Content-Type: '.$mime."\n");
+        header('Content-Length: '.$fsize."\n");
+        header('Content-transfert-encoding: binary'."\n");
 
-		while (!feof($fp)) {
-			print fread($fp, 8192);
-		}
-		fclose($fp);
+        while (!feof($fp)) {
+            print fread($fp, 8192);
+        }
+        fclose($fp);
 
-		if ($exit) {
-			exit;
-		}
+        if ($exit) {
+            exit;
+        }
 
-		return true;
-	}
+        return true;
+    }
 
-	return false;
+    return false;
 }
 
 
@@ -3641,7 +3641,7 @@ function bab_downloadFile(bab_Path $path, $filename = null, $inline = true, $exi
  */
 function bab_Widgets()
 {
-	return bab_functionality::get('Widgets');
+    return bab_functionality::get('Widgets');
 }
 
 
@@ -3654,7 +3654,7 @@ function bab_Widgets()
  */
 function bab_jQuery()
 {
-	return bab_functionality::get('jquery');
+    return bab_functionality::get('jquery');
 }
 
 
@@ -3664,9 +3664,9 @@ function bab_jQuery()
  */
 function bab_strip_tags($str)
 {
-	$str = preg_replace('/\<[^<]+\>/', '${0} ', $str);
+    $str = preg_replace('/\<[^<]+\>/', '${0} ', $str);
 
-	return strip_tags($str);
+    return strip_tags($str);
 }
 
 
@@ -3678,14 +3678,14 @@ function bab_strip_tags($str)
  */
 function bab_nbsp()
 {
-	switch(bab_charset::getIso()) {
-		case 'UTF-8':
-			return chr(0xC2).chr(0xA0);
-		case 'ISO-8859-15':
-			return chr(160);
-		default:
-			return '-';
-	}
+    switch(bab_charset::getIso()) {
+        case 'UTF-8':
+            return chr(0xC2).chr(0xA0);
+        case 'ISO-8859-15':
+            return chr(160);
+        default:
+            return '-';
+    }
 }
 
 
@@ -3697,17 +3697,17 @@ function bab_nbsp()
  */
 function bab_getStaticUrl()
 {
-	require_once dirname(__FILE__).'/settings.class.php';
-	$settings = bab_getInstance('bab_Settings');
-	/*@var $settings bab_Settings */
-	$site = $settings->getSiteSettings();
+    require_once dirname(__FILE__).'/settings.class.php';
+    $settings = bab_getInstance('bab_Settings');
+    /*@var $settings bab_Settings */
+    $site = $settings->getSiteSettings();
 
-	if (!isset($site['staticurl']))
-	{
-		return '';
-	}
+    if (!isset($site['staticurl']))
+    {
+        return '';
+    }
 
-	return $site['staticurl'];
+    return $site['staticurl'];
 }
 
 
@@ -3721,29 +3721,29 @@ function bab_getStaticUrl()
  */
 function bab_getLanguage()
 {
-	require_once dirname(__FILE__).'/settings.class.php';
-	require_once dirname(__FILE__).'/userincl.php';
+    require_once dirname(__FILE__).'/settings.class.php';
+    require_once dirname(__FILE__).'/userincl.php';
 
-	$settings = bab_getInstance('bab_Settings');
-	/*@var $settings bab_Settings */
-	$site = $settings->getSiteSettings();
+    $settings = bab_getInstance('bab_Settings');
+    /*@var $settings bab_Settings */
+    $site = $settings->getSiteSettings();
 
-	if ('Y' !== $site['change_lang'] || !bab_isUserLogged())
-	{
-		return $site['lang'];
-	}
+    if ('Y' !== $site['change_lang'] || !bab_isUserLogged())
+    {
+        return $site['lang'];
+    }
 
-	require_once dirname(__FILE__).'/userinfosincl.php';
+    require_once dirname(__FILE__).'/userinfosincl.php';
 
-	if($arr = bab_userInfos::getUserSettings())
-	{
-		if (!empty($arr['lang']))
-		{
-			return $arr['lang'];
-		}
-	}
+    if($arr = bab_userInfos::getUserSettings())
+    {
+        if (!empty($arr['lang']))
+        {
+            return $arr['lang'];
+        }
+    }
 
-	return $site['lang'];
+    return $site['lang'];
 }
 
 /**
@@ -3753,8 +3753,8 @@ function bab_getLanguage()
  */
 function bab_getBody()
 {
-	require_once dirname(__FILE__).'/utilit.php';
-	return bab_getInstance('babBody');
+    require_once dirname(__FILE__).'/utilit.php';
+    return bab_getInstance('babBody');
 }
 
 
@@ -3765,12 +3765,12 @@ function bab_getBody()
 * @return string
 */
 function bab_getSelf() {
-	$pos = mb_strrpos($_SERVER['PHP_SELF'], '/');
+    $pos = mb_strrpos($_SERVER['PHP_SELF'], '/');
 
-	if (false === $pos) {
-		return $_SERVER['PHP_SELF'];
-	}
+    if (false === $pos) {
+        return $_SERVER['PHP_SELF'];
+    }
 
-	return mb_substr($_SERVER['PHP_SELF'], $pos +1);
+    return mb_substr($_SERVER['PHP_SELF'], $pos +1);
 }
 

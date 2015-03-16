@@ -2091,6 +2091,11 @@ class bab_siteMap {
 	public static function extractNodeUrlFromRewrite($rewrite, $setPosition = false)
 	{
 		$root = bab_siteMap::getFromSite();
+		
+		if (!isset($root)) {
+		    return false;
+		}
+		
 		$nodeId = $root->getNodeIdFromRewritePath($rewrite);
 
 		if (null === $nodeId)

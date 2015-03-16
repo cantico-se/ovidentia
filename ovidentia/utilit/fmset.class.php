@@ -399,7 +399,7 @@ class BAB_FmFolderSet extends BAB_BaseSet
 	 * @param unknown_type $sRelativePath
 	 * @return BAB_FmFolder
 	 */
-	function getFirstCollectiveFolder($sRelativePath, $delegation_id = null)
+	public static function getFirstCollectiveFolder($sRelativePath, $delegation_id = null)
 	{
 		global $babBody;
 
@@ -952,7 +952,7 @@ class BAB_FolderFileSet extends BAB_BaseSet
 	 * @param int $iFileId
 	 * @return BAB_FolderFile
 	 */
-	function getById($iFileId)
+	public static function getById($iFileId)
 	{
 		$oFolderFileSet = new BAB_FolderFileSet();
 		$oId = $oFolderFileSet->aField['iId'];
@@ -2517,16 +2517,13 @@ class BAB_FolderFileFieldValue extends BAB_DbRecord
 //pour les repertoire collectif
 class BAB_FmFolderHelper
 {
-	function BAB_FmFolderHelper()
-	{
 
-	}
 
 	/**
 	 * @param int $iId
 	 * @return BAB_FmFolder
 	 */
-	function getFmFolderById($iId)
+	public static function getFmFolderById($iId)
 	{
 		global $babBody;
 
@@ -2535,7 +2532,7 @@ class BAB_FmFolderHelper
 		return $oFmFolderSet->get($oId->in($iId));
 	}
 
-	function getFileInfoForCollectiveDir($iIdFolder, $sPath, &$iIdOwner, &$sRelativePath, &$oFmFolder)
+	public static function getFileInfoForCollectiveDir($iIdFolder, $sPath, &$iIdOwner, &$sRelativePath, &$oFmFolder)
 	{
 		$bSuccess = true;
 
@@ -2581,7 +2578,7 @@ class BAB_FmFolderHelper
 	 * @param int				$delegation_id		Optional
 	 * @return boolean
 	 */
-	function getInfoFromCollectivePath($sPath, &$iIdRootFolder, &$oFmFolder, $bParentPath = false, $delegation_id = null)
+	public static function getInfoFromCollectivePath($sPath, &$iIdRootFolder, &$oFmFolder, $bParentPath = false, $delegation_id = null)
 	{
 		$bSuccess = false;
 
@@ -2612,7 +2609,7 @@ class BAB_FmFolderHelper
 	}
 
 
-	function getUploadPath()
+	public static function getUploadPath()
 	{
 		$sUploadPath = $GLOBALS['babUploadPath'];
 		$iLength = mb_strlen(trim($sUploadPath));
@@ -2623,7 +2620,7 @@ class BAB_FmFolderHelper
 		return $sUploadPath;
 	}
 
-	function createDirectory($sFullPathName)
+	public static function createDirectory($sFullPathName)
 	{
 		global $babBody;
 		$bSuccess = true;
@@ -2651,7 +2648,7 @@ class BAB_FmFolderHelper
 		return $bSuccess;
 	}
 
-	function makeDirectory($sUploadPath, $sRelativePath)
+	public static function makeDirectory($sUploadPath, $sRelativePath)
 	{
 		$aPaths = explode('/', $sRelativePath);
 		if(is_array($aPaths) && count($aPaths) > 0)
@@ -2681,7 +2678,7 @@ class BAB_FmFolderHelper
 	/**
 	 * The $sPathName must be canonicalized before calling this function
 	 */
-	function sanitizePathname(&$sPathname)
+	public static function sanitizePathname(&$sPathname)
 	{
 		$sPathname	= removeEndSlashes($sPathname);
 		$aPaths		= explode('/', $sPathname);
@@ -2704,7 +2701,7 @@ class BAB_FmFolderHelper
 		return $sPathname;
 	}
 
-	function renameDirectory($sUploadPath, $sRelativePath, $sOldName, $sNewName)
+	public static function renameDirectory($sUploadPath, $sRelativePath, $sOldName, $sNewName)
 	{
 		global $babBody;
 		$bSuccess = true;

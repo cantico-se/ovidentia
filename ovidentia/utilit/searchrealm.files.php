@@ -497,7 +497,7 @@ class bab_SearchRealmFiles extends bab_SearchRealm {
 			INSERT INTO filresults 
 			SELECT 
 				f.id,
-				\'500\' relevance 
+				\'0\' relevance 
 			FROM 
 				'.BAB_FM_FIELDSVAL_TBL.' m,
 				'.BAB_FILES_TBL.' f 
@@ -522,6 +522,7 @@ class bab_SearchRealmFiles extends bab_SearchRealm {
 			$query .= ' AND '.$where;
 		}
 
+		bab_debug($query);
 		$babDB->db_query($query);
 	}
 	

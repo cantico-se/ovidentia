@@ -697,6 +697,14 @@ function modifyEvent($idcal, $collection, $evtid, $dtstart, $cci, $view, $date)
 			$data = $event->getData();
 
 			$cat = bab_getCalendarCategory($event->getProperty('CATEGORIES'));
+			
+			
+			$end_timestamp = $event->ts_end;
+			if ($event->isAllDay()) {
+			    $endDate = BAB_DateTime::fromICal($event->getProperty('DTEND'));
+			    $endDate->less(1, BAB_DATETIME_DAY);
+			    $end_timestamp = $endDate->getTimeStamp();
+			}
 
 			$this->evtarr = array(
 
@@ -705,7 +713,7 @@ function modifyEvent($idcal, $collection, $evtid, $dtstart, $cci, $view, $date)
 				'description_format' 	=> isset($data['description_format']) ? $data['description_format'] : 'text',
 				'location' 				=> $event->getProperty('LOCATION'),
 				'start_date' 			=> date('Y-m-d H:i:s', $event->ts_begin),
-				'end_date' 				=> date('Y-m-d H:i:s', $event->ts_end),
+				'end_date' 				=> date('Y-m-d H:i:s', $end_timestamp),
 				'id_cat' 				=> $cat['id'],
 				'color' 				=> $event->getColor(),
 				'bprivate' 				=> $event->isPublic() ? 'N' : 'Y',
@@ -715,6 +723,7 @@ function modifyEvent($idcal, $collection, $evtid, $dtstart, $cci, $view, $date)
 
 			
 			$this->bdelete = $calendar->canDeleteEvent($event);
+			$this->daytypechecked = $event->isAllDay() ? 'checked' : '';
 
 
 			$collection = $event->getCollection();
@@ -830,6 +839,7 @@ function modifyEvent($idcal, $collection, $evtid, $dtstart, $cci, $view, $date)
 			$this->datebegintxt = bab_translate("Begin date");
 			$this->dateend = bab_toHtml( $GLOBALS['babUrlScript']."?tg=month&callback=dateEnd&ymin=".$this->ymin."&ymax=".$this->ymax."&month=".$this->monthend."&year=".$this->yearend);
 			$this->dateendtxt = bab_translate("End date");
+			$this->daytype = bab_translate("All day");
 			$this->modify = bab_translate("Update Event");
 			$this->starttime = bab_translate("starttime");
 			$this->endtime = bab_translate("endtime");

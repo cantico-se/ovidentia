@@ -192,7 +192,8 @@ class bab_cal_OviEventUpdate
         }
 
         $req = "UPDATE ".BAB_CAL_EVENTS_TBL."
-        SET
+        SET 
+            fullday             =".$babDB->quote($period->isAllDay() ? '1' : '0').",
             title				=".$babDB->quote($period->getProperty('SUMMARY')).",
             description			=".$babDB->quote($description).",
             description_format	=".$babDB->quote($description_format).",
@@ -365,6 +366,7 @@ class bab_cal_OviEventUpdate
                     location,
                     start_date,
                     end_date,
+                    fullday,
                     id_cat,
                     id_creator,
                     color,
@@ -386,6 +388,7 @@ class bab_cal_OviEventUpdate
                 ".$babDB->quote($period->getProperty('LOCATION')).",
                 ".$babDB->quote(BAB_DateTime::fromICal($period->getProperty('DTSTART'))->getIsoDateTime()).",
                 ".$babDB->quote(BAB_DateTime::fromICal($period->getProperty('DTEND'))->getIsoDateTime()).",
+                ".$babDB->quote($period->isAllDay() ? '1' : '0').",
                 ".$babDB->quote($category).",
                 ".$babDB->quote($id_owner).",
                 ".$babDB->quote($period->getProperty('X-CTO-COLOR')).",
@@ -920,6 +923,11 @@ class bab_cal_OviEventSelect
 
         $begin = BAB_DateTime::fromIsoDateTime($arr['start_date']);
         $end = BAB_DateTime::fromIsoDateTime($arr['end_date']);
+        
+        if ($arr['fullday']) {
+            $begin->setTime(null, null, null);
+            $end->setTime(null, null, null);
+        }
 
         $event = new bab_calendarPeriod();
         $event->setDates($begin, $end);
