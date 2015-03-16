@@ -1253,7 +1253,23 @@ function bab_saveArticle(){
 
 
 
-        if(bab_pp('draft', '') != '' || ($draft->date_submission != '0000-00-00 00:00:00' && $draft->date_submission > date('Y-m-d H:i:s'))){
+        if(bab_pp('see', '') != ''){
+
+            $draft->save();
+            $draft->saveTempAttachments(bab_pp('files', array()));
+            $draft->saveTempPicture();
+            $draft->saveTags($taglist);
+
+            $_POST = array();//need to empty POST to get file attachement and associated image
+            $form = new bab_ArticleDraftEditor;
+            $form->fromDraft($draft->getId());
+            if($submitUrl){
+                $form->setBackUrl(new bab_url($submitUrl));
+            }
+            $form->preview();
+            $form->display();
+            return true;
+        }elseif(bab_pp('draft', '') != '' || ($draft->date_submission != '0000-00-00 00:00:00' && $draft->date_submission > date('Y-m-d H:i:s'))){
 
             $draft->save();
             $draft->saveTempAttachments(bab_pp('files', array()));
@@ -1272,22 +1288,6 @@ function bab_saveArticle(){
 
             $url = $submitUrl;
 
-        }elseif(bab_pp('see', '') != ''){
-
-            $draft->save();
-            $draft->saveTempAttachments(bab_pp('files', array()));
-            $draft->saveTempPicture();
-            $draft->saveTags($taglist);
-
-            $_POST = array();//need to empty POST to get file attachement and associated image
-            $form = new bab_ArticleDraftEditor;
-            $form->fromDraft($draft->getId());
-            if($submitUrl){
-                $form->setBackUrl(new bab_url($submitUrl));
-            }
-            $form->preview();
-            $form->display();
-            return true;
         }
     }
 
