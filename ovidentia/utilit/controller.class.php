@@ -47,7 +47,7 @@ class bab_MissingActionParameterException extends Exception
 
 class bab_InvalidActionException extends Exception
 {
-    
+
 }
 
 
@@ -146,33 +146,43 @@ abstract class bab_Controller
 		}
 		return self::$acceptHtml;
 	}
-	
-	
+
+
 	/**
-	 * PHP code
+	 * Generates php code of a 'proxy' class having the same method signatures as the class $classname.
+	 *
+	 * @param string               $proxyClassname   The classname of the proxy class.
+	 * @param string               $classname        The classname of the class to proxy.
+	 * @param ReflectionMethod[]   $methods          The methods of $classname.
 	 * @return string
 	 */
 	protected static function getClassCode($proxyClassname, $classname, Array $methods) {
-	    
+
 	    $classStr = 'class ' . $proxyClassname . ' extends ' . $classname . ' {' . "\n";
-	    
-	    
+
 	    foreach ($methods as $method) {
 	        if ($method->name === '__construct' || !$method->isPublic() || $method->isStatic() || $method->isFinal()) {
 	            continue;
 	        }
-	    
-	    
+
 	        $classStr .= '	public function ' . $method->name . '(';
 	        $parameters = $method->getParameters();
 	        $parametersStr = array();
 	        foreach ($parameters as $parameter) {
-	    
-	            if ($parameter->isDefaultValueAvailable()) {
-	                $parametersStr[] = '$' . $parameter->name . ' = ' . var_export($parameter->getDefaultValue(), true);
-	            } else {
-	                $parametersStr[] = '$' . $parameter->name;
+
+	            $parameterString = '$' . $parameter->name;
+
+	            // If the parameter is typed adds the classname.
+	            $parameterClass = $parameter->getClass();
+	            if (isset($parameterClass)) {
+	                $parameterString = $parameterClass->name . ' ' . $parameterString;
 	            }
+
+	            // Adds default value.
+	            if ($parameter->isDefaultValueAvailable()) {
+	                $parameterString .= ' = ' . var_export($parameter->getDefaultValue(), true);
+	            }
+	            $parametersStr[] = $parameterString;
 	        }
 	        $classStr .= implode(', ', $parametersStr);
 	        $classStr .= ') {' . "\n";
@@ -181,8 +191,7 @@ abstract class bab_Controller
 	        $classStr .= '	}' . "\n";
 	    }
 	    $classStr .= '}' . "\n";
-	    
-	    
+
 	    return $classStr;
 	}
 
@@ -200,18 +209,18 @@ abstract class bab_Controller
 		$class = new ReflectionClass($classname);
 		$proxyClassname = $classname . self::PROXY_CLASS_SUFFIX;
 		if (!class_exists($proxyClassname)) {
-		    
+
 		    $methods = $class->getMethods();
-			
+
 			// We define the proxy class
 			eval(self::getClassCode($proxyClassname, $classname, $methods));
 		}
 
 		return new $proxyClassname();
 	}
-	
-	
-	
+
+
+
 	/**
 	 * Dynamically creates a proxy class in the current namespace for this controller with all public, non-final and non-static functions
 	 * overriden so that they return an action (Widget_Action) corresponding to each of them.
@@ -227,18 +236,18 @@ abstract class bab_Controller
 	    if (!class_exists($namespace.'\\'.$proxyClassname)) {
 
 	        $methods = $class->getMethods();
-	        	
+
 	        // We define the proxy class
 	        eval('namespace '.$namespace.';'. "\n".self::getClassCode($proxyClassname, $classname, $methods));
 	    }
-	
+
 	    $proxyClassname = $namespace.'\\'.$proxyClassname;
-	    
+
 	    return new $proxyClassname();
 	}
-	
-    
-	
+
+
+
     /**
      * @return bab_Controller
      */
@@ -248,15 +257,15 @@ abstract class bab_Controller
 	    if (false === strpos($className, '\\')) {
 	        return self::getProxyInstance($className);
 	    }
-	    
+
 	    $namespace = join('\\', array_slice(explode('\\', $className), 0, -1));
 	    $className = join('', array_slice(explode('\\', $className), -1));
-	    
+
 		return self::getNsProxyInstance($namespace, $className);
 	}
-	
-	
-	
+
+
+
 	/**
 	 * Instanciates a controller class.
 	 *
@@ -267,12 +276,12 @@ abstract class bab_Controller
 		if ($proxy) {
 			return self::getProxyInstance($className);
 		}
-	
+
 		return new $className();
 	}
-	
-	
-	
+
+
+
 	/**
 	 * Instanciates a controller class.
 	 *
@@ -287,12 +296,12 @@ abstract class bab_Controller
 	    if ($proxy) {
 	        return self::getNsProxyInstance($namespace, $className);
 	    }
-	    
+
 	    $className = $namespace.'\\'.$className;
-	
+
 	    return new $className();
 	}
-	
+
 
 
 	/**
@@ -314,7 +323,7 @@ abstract class bab_Controller
 			echo "<pre>";
 			$actionMethod = $object->getMethod($method->getName());
 			echo "\t" . $actionMethod->getDocComment() . "\n";
-			
+
 			$methodName = $method->getName();
 			$actionParams = array();
 			$parameters = $actionMethod->getParameters();
@@ -350,12 +359,12 @@ abstract class bab_Controller
 		$methodStr = $action->getMethod();
 
 		list($objectName, $methodName) = explode('.', $methodStr);
-		
+
 		if (!method_exists($this, $methodName)) {
 			header('HTTP/1.0 400 Bad Request');
 			throw new bab_UnknownActionException($action);
 		}
-		
+
 		$method = new ReflectionMethod($this, $methodName);
 		$parameters = $method->getParameters();
 		$args = array();
@@ -372,15 +381,15 @@ abstract class bab_Controller
 
 		return $method->invokeArgs($this, $args);
 	}
-	
-	
+
+
 	/**
 	 * Get tg value to use in URL
 	 * @return string
 	 */
 	abstract protected function getControllerTg();
-	
-	
+
+
 	/**
 	 * Get object name to use in URL from the controller classname
 	 * @param string $classname        Does not include the namespace
@@ -390,7 +399,7 @@ abstract class bab_Controller
 	{
 	    return strtolower($classname);
 	}
-	
+
 
 
 	/**
@@ -465,7 +474,7 @@ abstract class bab_Controller
 
 
 
-	
+
 	/**
 	 * Adds an error message to display on the page.
 	 * @param string $text
@@ -526,16 +535,16 @@ abstract class bab_Controller
 	{
 		require_once dirname(__FILE__).'/urlincl.php';
 		require_once dirname(__FILE__).'/json.php';
-		
+
 		$method = $action->getMethod();
 
 		if (!isset($method) || '' === $method) {
 			return false;
 		}
 
-	
+
 		list($objectName, $methodName) = explode('.', $method);
-		
+
 		$objectController = $this->{$objectName}(false);
 
 		if ( ! ($objectController instanceof bab_Controller)) {
@@ -543,11 +552,11 @@ abstract class bab_Controller
 		}
 
 
-		
+
 		try {
 			$returnedValue = $objectController->execAction($action);
 		} catch (bab_AccessException $e) {
-			
+
 			if ($e->require_credential && !bab_isUserLogged())
 			{
 				bab_requireCredential($e->getMessage());
@@ -555,40 +564,40 @@ abstract class bab_Controller
 				$this->addError($e->getMessage());
 				$returnedValue = bab_Widgets()->babPage();
 			}
-			
+
 		} catch (bab_SaveException $e) {
-			
+
 		    $failedAction = self::getRedirectAction('failed', $method);
 		    if ($e instanceof bab_SaveErrorException) {
 		        $this->addError($e->getMessage());
 		    } else {
 		        $this->addMessage($e->getMessage());
 		    }
-		    
+
 		    if (!isset($failedAction)) {
 		        bab_debug(sprintf('Missing the failed action to redirect or execute action from %s', $method));
 		        return;
 		    }
-		    
+
 			if ($e->redirect) {
 			     return $this->redirect($failedAction);
 			}
-			
+
 
 		    if (0 == count($failedAction->getParameters())) {
 				throw new Exception('Error, incorrect action');
 			}
 			$returnedValue = $objectController->execAction($failedAction);
-			
+
 		}
 
-		
+
 		if ($returnedValue instanceof Widget_Displayable_Interface) {
 
 			$W = bab_Widgets();
 
 		    if ($returnedValue instanceof Widget_BabPage && !bab_isAjaxRequest()) {
-			         
+
 				// If the action returned a page, we display it.
 				$returnedValue->displayHtml();
 
@@ -606,12 +615,12 @@ abstract class bab_Controller
 					header('Cache-Control: no-cache, must-revalidate');
 					header('Expires: Mon, 26 Jul 1997 05:00:00 GMT');
 					header('Content-type: text/html');
-					
+
 					// widgets >= 1.0.65
 					if ($returnedValue instanceof Widget_BabPage && method_exists($returnedValue, 'getPageTitle')) {
 					   header('X-Cto-PageTitle: '.bab_convertStringFromDatabase($returnedValue->getPageTitle(), 'ISO-8859-1'));
 					}
-					
+
 					die($returnedValue->display($htmlCanvas));
 				}
 			}
@@ -637,7 +646,7 @@ abstract class bab_Controller
 			if (!isset($successAction)) {
 				throw new Exception(sprintf('Missing the success action to redirect from %s', $method));
 			}
-		
+
 			$this->redirect($successAction);
 		}
 
