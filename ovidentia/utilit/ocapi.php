@@ -3278,7 +3278,7 @@ class bab_OrgChartUtil
                     'LEFT JOIN ' .
                         BAB_OC_ENTITIES_TBL . ' oct on oct.id = ort.id_entity ' .
                     'WHERE ' .
-                        'orut.id_user = ' . $babDB->quote($sIsPrimary) . ' AND ' .
+                        'orut.id_user = ' . $babDB->quote($iIdUser) . ' AND ' .
                         'ort.id_entity = ' . $babDB->quote($iIdEntity);
 
                 //bab_debug($sQuery);
