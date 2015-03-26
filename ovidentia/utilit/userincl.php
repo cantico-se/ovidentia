@@ -803,8 +803,12 @@ function bab_addUserToGroup($iduser, $idgroup, $oc = true)
         if( $identity )
         {
             $role = $babDB->db_fetch_assoc($babDB->db_query("select id, id_oc from ".BAB_OC_ROLES_TBL." where id_entity='".$babDB->db_escape_string($identity)."' and type='3'"));
+            $restemp = $babDB->db_query("select id from ".BAB_OC_ROLES_TBL." where id_entity='".$babDB->db_escape_string($identity)."'");
+            while($temproles = $babDB->db_fetch_assoc($restemp)){
+                $roles[] = $temproles['id'];
+            };
             list($idduser) = $babDB->db_fetch_row($babDB->db_query("select id from ".BAB_DBDIR_ENTRIES_TBL." where id_directory='0' and id_user='".$babDB->db_escape_string($iduser)."'"));
-            list($total) = $babDB->db_fetch_row($babDB->db_query("select count(id) as total from ".BAB_OC_ROLES_USERS_TBL." where id_role='".$babDB->db_escape_string($role['id'])."' and id_user='".$babDB->db_escape_string($idduser)."'"));
+            list($total) = $babDB->db_fetch_row($babDB->db_query("select count(id) as total from ".BAB_OC_ROLES_USERS_TBL." where id_user='".$babDB->db_escape_string($idduser)."' and id_role IN (".$babDB->quote($roles).")"));
             if( !$total )
             {
                 $sPrimary = 'Y';
