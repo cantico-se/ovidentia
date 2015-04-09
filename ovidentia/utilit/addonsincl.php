@@ -585,6 +585,8 @@ function bab_getAddonsFilePath() {
  */
 function bab_getAddonFilePathFromTg($tg, $babWebStat = null)
 {
+    global $babBody;
+    
     $arr = explode("/", $tg);
     if( sizeof($arr) !== 3 || $arr[0] !== "addon")
     {
@@ -606,7 +608,8 @@ function bab_getAddonFilePathFromTg($tg, $babWebStat = null)
         {
             bab_requireAccess('bab_addons_groups', $addon->getId(), bab_translate('You must be logged in to access this page.'));
         }
-
+        
+        $babBody->addError(bab_translate('Access denied'));
         return false;
     }
 

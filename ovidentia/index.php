@@ -874,7 +874,7 @@ switch(bab_rp('tg'))
         $incl = "entry";
         $babWebStat->module($incl);
         
-        if (null !== $module = bab_getAddonFilePathFromTg(bab_rp('tg'), $babWebStat)) {
+        if ($module = bab_getAddonFilePathFromTg(bab_rp('tg'), $babWebStat)) {
             $incl = null;
             require_once $module;
         } else {
