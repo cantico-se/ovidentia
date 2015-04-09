@@ -37,8 +37,22 @@ class Func_SearchUi extends bab_functionality
      * @param string $keyword Optional search keyword(s) to initialize search results
      * @return string
      */
-    public function getUrl($realmName = null, $keyword = null) {
+    public function getUrl($realmName = null, $keyword = null)
+    {
         throw new Exception('Not implemented');
+    }
+    
+    
+    /**
+     * Get TG value for the search functionality (search form page)
+     * @return string
+     */
+    public function getTg()
+    {
+        require_once dirname(__FILE__).'/urlincl.php';
+        $url = new bab_url($this->getUrl());
+        
+        return $url->tg;
     }
     
     
@@ -48,7 +62,8 @@ class Func_SearchUi extends bab_functionality
      * @param string bab_SearchRealm
      * @return string
      */
-    public function getSearchFormHtml(bab_SearchRealm $realm = null) {
+    public function getSearchFormHtml(bab_SearchRealm $realm = null)
+    {
         throw new Exception('Not implemented');
     }
     
