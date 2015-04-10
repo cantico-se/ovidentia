@@ -1122,7 +1122,7 @@ function modifySubCategory($idcat, $idscat, $ids)
 
 function saveQuestion($item, $idscat, $question)
 {
-    global $babDB, $faqinfo;
+    global $babDB, $faqinfo, $babBody;
 
 
     include_once $GLOBALS['babInstallPath'].'utilit/editorincl.php';
