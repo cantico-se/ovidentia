@@ -1864,12 +1864,12 @@ CREATE TABLE bab_org_charts (
   ovml_detail tinytext NOT NULL,
   ovml_embedded tinytext NOT NULL,
   display_mode BOOLEAN NOT NULL,
-  PRIMARY KEY  (id),
+  PRIMARY KEY (id),
   KEY id_dgowner (id_dgowner),
   KEY id_directory (id_directory)
 );
 
-INSERT INTO bab_org_charts VALUES (1, 'Ovidentia', 'Ovidentia organizational chart', 'Y', 'N', 0, '0000-00-00 00:00:00', 0, 1, 0, 0, '', '', '');
+INSERT INTO bab_org_charts (id, name, description, isprimary, id_directory) VALUES (1, 'Ovidentia', 'Ovidentia organizational chart', 'Y', 1);
 
 #
 # Structure de la table `bab_ocupdate_groups`
