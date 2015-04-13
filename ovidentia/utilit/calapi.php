@@ -397,7 +397,7 @@ function bab_setPersonnalCalendarBackend($id_user, Func_CalendarBackend $new_bac
 	require_once dirname(__FILE__).'/install.class.php';
 	global $babDB;
 	
-	$old_calendar = bab_getICalendars()->getPersonalCalendar();
+	$old_calendar = bab_getICalendars($id_user)->getPersonalCalendar();
 	
 	if (!($old_calendar instanceof bab_PersonalCalendar))
 	{
