@@ -310,7 +310,7 @@ class bab_cal_OviEventUpdate
             throw new Exception('Missing calendar');
         }
 
-        $id_owner = $GLOBALS['BAB_SESS_USERID'];
+        $id_owner = bab_getUserId();
 
 
 
