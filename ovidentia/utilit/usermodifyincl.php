@@ -276,8 +276,9 @@ class bab_userModify {
 	
 	
 	/**
-	 * @static
 	 * Update a user
+	 * update only the registrer user directory
+	 * 
 	 * @param	int		$id
 	 * @param	array	$info
 	 * @param	string	&$error
@@ -287,7 +288,14 @@ class bab_userModify {
 
 	
 		global $babDB, $BAB_HASH_VAR;
-		$res = $babDB->db_query('select u.*, det.mn, det.id as id_entry from '.BAB_USERS_TBL.' u left join '.BAB_DBDIR_ENTRIES_TBL.' det on det.id_user=u.id where u.id=\''.$babDB->db_escape_string($id).'\'');
+		$res = $babDB->db_query('select u.*, det.mn, det.id as id_entry 
+		      from '.BAB_USERS_TBL.' u 
+		      left join '.BAB_DBDIR_ENTRIES_TBL.' det on det.id_user=u.id 
+		   WHERE  
+		      u.id=\''.$babDB->db_escape_string($id).'\' 
+		      AND det.id_directory='.$babDB->quote(0).'
+		');
+		
 		$arruq = array();
 		$arrdq = array();
 	
