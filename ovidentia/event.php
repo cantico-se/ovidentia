@@ -1195,8 +1195,7 @@ function bab_getUpdateEventFromIdCal($idcal, $evtid, $dtstart)
     $collection = $backend->CalendarEventCollection($calendar);
     $event = $backend->getPeriod($collection, $evtid, $dtstart);
     
-    $event->setCollection($collection);
-    
+
     if (!($event instanceof bab_CalendarPeriod))
     {
         bab_debug('Error, the event '.$evtid.' cannot be reached with the backend '.get_class($backend));
@@ -1205,8 +1204,8 @@ function bab_getUpdateEventFromIdCal($idcal, $evtid, $dtstart)
     
     if (!$calendar->canUpdateEvent($event))
 	{
-		$babBody->addError(bab_translate('Access denied to event modification'));
-		$babBody->babpopup('');
+		bab_debug($evtid.' Access denied to event modification');
+		return false;
 	}
 	
 	
