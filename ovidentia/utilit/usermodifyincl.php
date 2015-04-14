@@ -291,246 +291,237 @@ class bab_userModify {
 		$arruq = array();
 		$arrdq = array();
 	
-		if( $res && $babDB->db_num_rows($res) > 0 )
+		if (!$res || 0 === $babDB->db_num_rows($res) )
 		{
-			$arruinfo = $babDB->db_fetch_array($res);
-	
-			if( is_array($info) && count($info) /*&& isset($info['disabled'])*/)
-			{
-	
-				if( isset($info['nickname']) )
-				{
-					$info['nickname'] = trim($info['nickname']);
-					
-					if (empty($info['nickname'])) {
-						$error = bab_translate("You must provide a nickname");
-						return false;
-					}
-					
-					/*
-					
-					if (mb_strpos($info['nickname'], ' ') !== false) {
-						$error = bab_translate("Login ID should not contain spaces");
-						return false;
-					}
-					
-					*/
-					
-					$res = $babDB->db_query("select id from ".BAB_USERS_TBL." where nickname='".$babDB->db_escape_string($info['nickname'])."' and id !='".$arruinfo['id']."'");
-					if( $babDB->db_num_rows($res) > 0) {
-						$error = bab_translate("This login ID already exists !!");
-						return false;
-					}
-					
-					$hash = md5($info['nickname'].$BAB_HASH_VAR);
-					$arruq[] = 'confirm_hash=\''.$babDB->db_escape_string($hash).'\'';
-					$arruq[] = 'nickname=\''.$babDB->db_escape_string($info['nickname']).'\'';
-				}
-				
-				if( isset($info['password']) && empty($info['password']) )
-				{
-					$error = bab_translate("Empty password");
-					return false;
-				}
-	
-				if( isset($info['password']) )
-				{
-					if(!bab_updateUserPasswordById($arruinfo['id'], $info['password'], $info['password'], true, true, $error))
-					{
-						return false;
-					}
-				}
-				
-				if( isset($info['disabled']))
-				{
-					if($info['disabled'])
-					{
-						$arruq[] =  'disabled=1';
-					}
-					else
-					{
-						$arruq[] =  'disabled=0';
-					}
-				}
-				
-				
-				if( isset($info['is_confirmed']))
-				{
-					if($info['is_confirmed'])
-					{
-						$arruq[] =  'is_confirmed=1';
-					}
-					else
-					{
-						$arruq[] =  'is_confirmed=0';
-					}
-				}
-	
-				if( isset($info['email']))
-				{
-					$arruq[] =  'email=\''.$babDB->db_escape_string($info['email']).'\'';
-				}
-				
-				
-				
-				if (isset($info['jpegphoto'])) {
-				
-					if ($info['jpegphoto'] instanceOf bab_fileHandler) {
-						
-						// process photo import by file upload or file copy
-						
-						if (false !== $tmppath = $info['jpegphoto']->importTemporary()) {
-							include_once dirname(__FILE__).'/dirincl.php';
-							$photo = new bab_dirEntryPhoto($arruinfo['id_entry']);
-							if (!$photo->setDataByFile($tmppath)) {
-								$error = bab_translate("photo cannot be updated");
-								return false;
-							}
-						}
-					} else if ('' === $info['jpegphoto']) {
-						// empty string to remove photo from table
-						
-						$arrdq[] = "photo_data=''";
-						$arrdq[] = "photo_type=''";
-						
-					} else {
-						
-						// detect mime from given string
-						
-						$ims = getimagesizefromstring($info['jpegphoto']);
-						
-						if (isset($ims['mime']))
-						{
-							$arrdq[] = "photo_data=".$babDB->quote($info['jpegphoto']);
-							$arrdq[] = "photo_type=".$babDB->quote($ims['mime']);
-						}
-					}
-					
-					unset($info['jpegphoto']);
-				}
-				
+		    $error = bab_translate("Unknown user");
+		    return false;
+		}
 
-	
-				if( isset($info['sn']) || isset($info['givenname']) || isset($info['mn']))
-				{
-					if( isset($info['sn']))
-					{
-						if ('' === $info['sn'])
-						{
-							$error = bab_translate( "Lastname is required");
-							return false;
-						} else {
-							$lastname = $info['sn'];
-						}
-					}
-					else
-					{
-						$lastname = $arruinfo['lastname'];
-					}
-	
-					if( isset($info['givenname']))
-					{
-						if ('' === $info['givenname'])
-						{
-							$error = bab_translate( "Firstname is required");
-							return false;
-						} else {
-							$firstname = $info['givenname'];
-						}
-					} else {
-						$firstname = $arruinfo['firstname'];
-					}
-	
-					if( isset($info['mn']))
-					{
-						$mn = $info['mn'];
-					}
-					else
-					{
-						$mn = $arruinfo['mn'];
-					}
-	
-					$replace = array( " " => "", "-" => "");
-					$hashname = md5(mb_strtolower(strtr($firstname.$mn.$lastname, $replace)));
-					$arruq[] =  'firstname=\''.$babDB->db_escape_string($firstname).'\'';
-					$arruq[] =  'lastname=\''.$babDB->db_escape_string($lastname).'\'';
-					$arruq[] =  'hashname=\''.$babDB->db_escape_string($hashname).'\'';
-	
-					$arrdq[] =  'givenname=\''.$babDB->db_escape_string($firstname).'\'';
-					$arrdq[] =  'sn=\''.$babDB->db_escape_string($lastname).'\'';
-					$arrdq[] =  'mn=\''.$babDB->db_escape_string($mn).'\'';
-	
-				}
-	
-				if( count($arruq))
-				{
-					$babDB->db_query('update '.BAB_USERS_TBL.' set '.implode(',', $arruq).' where id=\''.$babDB->db_escape_string($id).'\'');
-				}
-	
-				$res = $babDB->db_query("select * from ".BAB_DBDIR_FIELDSEXTRA_TBL." where id_directory='0'");
-				while( $arr = $babDB->db_fetch_array($res))
-					{
-					if( $arr['id_field'] < BAB_DBDIR_MAX_COMMON_FIELDS )
-						{
-						$rr = $babDB->db_fetch_array($babDB->db_query("select description, name from ".BAB_DBDIR_FIELDS_TBL." where id='".$babDB->db_escape_string($arr['id_field'])."'"));
-						$fieldname = $rr['name'];
-							switch( $fieldname )
-							{
-								case 'sn':
-								case 'givenname':
-								case 'mn':
-									break;
-								default:
-									if( isset($info[$fieldname]))
-									{
-									$arrdq[] =  $fieldname.'=\''.$babDB->db_escape_string($info[$fieldname]).'\'';
-									}
-									break;
-							}
-	
-						}
-					else
-						{
-						$rr = $babDB->db_fetch_array($babDB->db_query("select * from ".BAB_DBDIR_FIELDS_DIRECTORY_TBL." where id='".$babDB->db_escape_string(($arr['id_field'] - BAB_DBDIR_MAX_COMMON_FIELDS))."'"));
-						$fieldname = "babdirf".$arr['id'];
-						if( isset($info[$fieldname]))
-							{
-							$res2 = $babDB->db_query("select * from ".BAB_DBDIR_ENTRIES_EXTRA_TBL." where id_fieldx='".$babDB->db_escape_string($arr['id'])."' and id_entry='".$babDB->db_escape_string($arruinfo['id_entry'])."'");
-							if( $res2 && $babDB->db_num_rows($res2) > 0 )
-								{
-								$arr2 = $babDB->db_fetch_array($res2);
-								$babDB->db_query("update ".BAB_DBDIR_ENTRIES_EXTRA_TBL." set field_value='".$babDB->db_escape_string($info[$fieldname])."' where id='".$babDB->db_escape_string($arr2['id'])."'");
-								}
-							else
-								{
-								$babDB->db_query("insert into ".BAB_DBDIR_ENTRIES_EXTRA_TBL." (id_fieldx, id_entry, field_value) values('".$babDB->db_escape_string($arr['id'])."','".$babDB->db_escape_string($arruinfo['id_entry'])."','".$babDB->db_escape_string($info[$fieldname])."')");
-								}
-							}
-						}
-					}
-	
-				if( count($arrdq))
-				{
-					$babDB->db_query('update '.BAB_DBDIR_ENTRIES_TBL.' set '.implode(',', $arrdq).' where id=\''.$babDB->db_escape_string($arruinfo['id_entry']).'\'');
-				}
-				
-				require_once($GLOBALS['babInstallPath']."utilit/eventdirectory.php");
-				$event = new bab_eventUserModified($id);
-				bab_fireEvent($event);
-				
-				return true;
+		
+	    $arruinfo = $babDB->db_fetch_array($res);
+
+		if (!is_array($info) || 0 === count($info))
+		{
+		    $error = bab_translate("Nothing Changed");
+		    return false;
+		}
+		
+
+		if (isset($info['nickname']) )
+		{
+			$info['nickname'] = trim($info['nickname']);
+			
+			if (empty($info['nickname'])) {
+				$error = bab_translate("You must provide a nickname");
+				return false;
 			}
-			else
+			
+			$res = $babDB->db_query("select id from ".BAB_USERS_TBL." where nickname='".$babDB->db_escape_string($info['nickname'])."' and id !='".$arruinfo['id']."'");
+			if( $babDB->db_num_rows($res) > 0) {
+				$error = bab_translate("This login ID already exists !!");
+				return false;
+			}
+			
+			$hash = md5($info['nickname'].$BAB_HASH_VAR);
+			$arruq[] = 'confirm_hash=\''.$babDB->db_escape_string($hash).'\'';
+			$arruq[] = 'nickname=\''.$babDB->db_escape_string($info['nickname']).'\'';
+		}
+		
+		if( isset($info['password']) && empty($info['password']) )
+		{
+			$error = bab_translate("Empty password");
+			return false;
+		}
+
+		if( isset($info['password']) )
+		{
+			if(!bab_updateUserPasswordById($arruinfo['id'], $info['password'], $info['password'], true, true, $error))
 			{
-				$error = bab_translate("Nothing Changed");
 				return false;
 			}
 		}
-		else
+		
+		if( isset($info['disabled']))
 		{
-			$error = bab_translate("Unknown user");
-			return false;
+			if($info['disabled'])
+			{
+				$arruq[] =  'disabled=1';
+			}
+			else
+			{
+				$arruq[] =  'disabled=0';
+			}
 		}
+		
+		
+		if( isset($info['is_confirmed']))
+		{
+			if($info['is_confirmed'])
+			{
+				$arruq[] =  'is_confirmed=1';
+			}
+			else
+			{
+				$arruq[] =  'is_confirmed=0';
+			}
+		}
+
+		if( isset($info['email']))
+		{
+			$arruq[] =  'email=\''.$babDB->db_escape_string($info['email']).'\'';
+		}
+		
+		
+		
+		if (isset($info['jpegphoto'])) {
+		
+			if ($info['jpegphoto'] instanceOf bab_fileHandler) {
+				
+				// process photo import by file upload or file copy
+				
+				if (false !== $tmppath = $info['jpegphoto']->importTemporary()) {
+					include_once dirname(__FILE__).'/dirincl.php';
+					$photo = new bab_dirEntryPhoto($arruinfo['id_entry']);
+					if (!$photo->setDataByFile($tmppath)) {
+						$error = bab_translate("photo cannot be updated");
+						return false;
+					}
+				}
+			} else if ('' === $info['jpegphoto']) {
+				// empty string to remove photo from table
+				
+				$arrdq[] = "photo_data=''";
+				$arrdq[] = "photo_type=''";
+				
+			} else {
+				
+				// detect mime from given string
+				
+				$ims = getimagesizefromstring($info['jpegphoto']);
+				
+				if (isset($ims['mime']))
+				{
+					$arrdq[] = "photo_data=".$babDB->quote($info['jpegphoto']);
+					$arrdq[] = "photo_type=".$babDB->quote($ims['mime']);
+				}
+			}
+			
+			unset($info['jpegphoto']);
+		}
+		
+
+
+		if( isset($info['sn']) || isset($info['givenname']) || isset($info['mn']))
+		{
+			if( isset($info['sn']))
+			{
+				if ('' === $info['sn'])
+				{
+					$error = bab_translate( "Lastname is required");
+					return false;
+				} else {
+					$lastname = $info['sn'];
+				}
+			}
+			else
+			{
+				$lastname = $arruinfo['lastname'];
+			}
+
+			if( isset($info['givenname']))
+			{
+				if ('' === $info['givenname'])
+				{
+					$error = bab_translate( "Firstname is required");
+					return false;
+				} else {
+					$firstname = $info['givenname'];
+				}
+			} else {
+				$firstname = $arruinfo['firstname'];
+			}
+
+			if( isset($info['mn']))
+			{
+				$mn = $info['mn'];
+			}
+			else
+			{
+				$mn = $arruinfo['mn'];
+			}
+
+			$replace = array( " " => "", "-" => "");
+			$hashname = md5(mb_strtolower(strtr($firstname.$mn.$lastname, $replace)));
+			$arruq[] =  'firstname=\''.$babDB->db_escape_string($firstname).'\'';
+			$arruq[] =  'lastname=\''.$babDB->db_escape_string($lastname).'\'';
+			$arruq[] =  'hashname=\''.$babDB->db_escape_string($hashname).'\'';
+
+			$arrdq[] =  'givenname=\''.$babDB->db_escape_string($firstname).'\'';
+			$arrdq[] =  'sn=\''.$babDB->db_escape_string($lastname).'\'';
+			$arrdq[] =  'mn=\''.$babDB->db_escape_string($mn).'\'';
+
+		}
+
+		if( count($arruq))
+		{
+			$babDB->db_query('update '.BAB_USERS_TBL.' set '.implode(',', $arruq).' where id=\''.$babDB->db_escape_string($id).'\'');
+		}
+
+		$res = $babDB->db_query("select * from ".BAB_DBDIR_FIELDSEXTRA_TBL." where id_directory='0'");
+		while( $arr = $babDB->db_fetch_array($res))
+			{
+			if( $arr['id_field'] < BAB_DBDIR_MAX_COMMON_FIELDS )
+				{
+				$rr = $babDB->db_fetch_array($babDB->db_query("select description, name from ".BAB_DBDIR_FIELDS_TBL." where id='".$babDB->db_escape_string($arr['id_field'])."'"));
+				$fieldname = $rr['name'];
+					switch( $fieldname )
+					{
+						case 'sn':
+						case 'givenname':
+						case 'mn':
+							break;
+						default:
+							if( isset($info[$fieldname]))
+							{
+							$arrdq[] =  $fieldname.'=\''.$babDB->db_escape_string($info[$fieldname]).'\'';
+							}
+							break;
+					}
+
+				}
+			else
+				{
+				$rr = $babDB->db_fetch_array($babDB->db_query("select * from ".BAB_DBDIR_FIELDS_DIRECTORY_TBL." where id='".$babDB->db_escape_string(($arr['id_field'] - BAB_DBDIR_MAX_COMMON_FIELDS))."'"));
+				$fieldname = "babdirf".$arr['id'];
+				if( isset($info[$fieldname]))
+					{
+					$res2 = $babDB->db_query("select * from ".BAB_DBDIR_ENTRIES_EXTRA_TBL." where id_fieldx='".$babDB->db_escape_string($arr['id'])."' and id_entry='".$babDB->db_escape_string($arruinfo['id_entry'])."'");
+					if( $res2 && $babDB->db_num_rows($res2) > 0 )
+						{
+						$arr2 = $babDB->db_fetch_array($res2);
+						$babDB->db_query("update ".BAB_DBDIR_ENTRIES_EXTRA_TBL." set field_value='".$babDB->db_escape_string($info[$fieldname])."' where id='".$babDB->db_escape_string($arr2['id'])."'");
+						}
+					else
+						{
+						$babDB->db_query("insert into ".BAB_DBDIR_ENTRIES_EXTRA_TBL." (id_fieldx, id_entry, field_value) values('".$babDB->db_escape_string($arr['id'])."','".$babDB->db_escape_string($arruinfo['id_entry'])."','".$babDB->db_escape_string($info[$fieldname])."')");
+						}
+					}
+				}
+			}
+
+		if( count($arrdq))
+		{
+		    $arrdq[] = 'date_modification=NOW()';
+		    $arrdq[] = 'id_modifiedby='.$babDB->quote(bab_getUserId());
+		    
+			$babDB->db_query('update '.BAB_DBDIR_ENTRIES_TBL.' set '.implode(',', $arrdq).' where id=\''.$babDB->db_escape_string($arruinfo['id_entry']).'\'');
+		}
+
+		require_once($GLOBALS['babInstallPath']."utilit/eventdirectory.php");
+		$event = new bab_eventUserModified($id);
+		bab_fireEvent($event);
+
+		return true;
 	}
 }
 
