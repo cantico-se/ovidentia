@@ -88,10 +88,7 @@ class Func_CalendarBackend_Ovi extends Func_CalendarBackend
 	public function savePeriod(bab_CalendarPeriod $period, $method = null)
 	{
 		
-		
-		
 		require_once dirname(__FILE__).'/cal.ovievent.class.php';
-		
 		$collection = $period->getCollection();
 		
 		if ($collection->hash)
@@ -99,37 +96,16 @@ class Func_CalendarBackend_Ovi extends Func_CalendarBackend
 			$status = true;
 			foreach($collection as $period)
 			{
-
-				// ovidentia backend does not support method CANCEL, so we delete if the event is canceled
-				if ('CANCEL' === $method)
+				if (!bab_cal_OviEventUpdate::save($period))
 				{
-					if (!$this->deletePeriod($period))
-					{
-						$status = false;
-						continue;
-					}
-					
-				} else {
-				
-					if (!bab_cal_OviEventUpdate::save($period))
-					{
-						$status = false;
-						continue;	
-					}
+					$status = false;
+					continue;	
 				}
 			}
 			return $status;
-		
-		} else {
-			
-			if ('CANCEL' === $method)
-			{
-				// ovidentia backend does not support method CANCEL, so we delete if the event is canceled
-				return $this->deletePeriod($period);
-			} else {
-				return bab_cal_OviEventUpdate::save($period);
-			}
 		}
+		
+		return bab_cal_OviEventUpdate::save($period);
 	}
 	
 	

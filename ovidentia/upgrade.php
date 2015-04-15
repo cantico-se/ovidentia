@@ -7134,11 +7134,19 @@ function ovidentia_upgrade($version_base,$version_ini) {
 	
 	
 	/**
-	 * Upgrade tu 8.2.91
+	 * Upgrade to 8.2.91
 	 */
 	if(!bab_isTableField('bab_cal_events', 'fullday'))
 	{
 	    $babDB->db_query("ALTER TABLE bab_cal_events ADD fullday tinyint(1) unsigned NOT NULL default '0'");
+	}
+	
+	/**
+	 * Upgrade to 8.2.96
+	 */
+	if(!bab_isTableField('bab_cal_events', 'status'))
+	{
+	    $babDB->db_query("ALTER TABLE bab_cal_events ADD status varchar(255) NOT NULL default ''");
 	}
 	
 	

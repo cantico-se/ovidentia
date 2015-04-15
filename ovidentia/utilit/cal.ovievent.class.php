@@ -205,7 +205,8 @@ class bab_cal_OviEventUpdate
             bfree				=".$babDB->quote($free).",
             parent_calendar		=".$babDB->quote($parent_calendar).",
             date_modification	=now(),
-            id_modifiedby		=".$babDB->quote($GLOBALS['BAB_SESS_USERID'])."
+            id_modifiedby		=".$babDB->quote($GLOBALS['BAB_SESS_USERID']).",
+            status              =".$babDB->quote($period->getProperty('STATUS'))."
         ";
 
 
@@ -378,7 +379,8 @@ class bab_cal_OviEventUpdate
                     date_modification,
                     id_modifiedby,
                     uuid,
-                    parent_calendar
+                    parent_calendar,
+                    status
                 )
 
             values (
@@ -400,7 +402,8 @@ class bab_cal_OviEventUpdate
                 now(),
                 ".$babDB->quote($id_owner).",
                 ".$babDB->quote($period->getProperty('UID')).",
-                ".$babDB->quote($calendar->getUrlIdentifier())."
+                ".$babDB->quote($calendar->getUrlIdentifier()).",
+                ".$babDB->quote($period->getProperty('STATUS'))."
             )
         ");
 
@@ -947,6 +950,7 @@ class bab_cal_OviEventSelect
         $event->setProperty('LOCATION'												, $arr['location']);
         $event->setProperty('CATEGORIES'											, $arr['category']);
         $event->setProperty('X-CTO-COLOR'											, $arr['color']);
+        $event->setProperty('STATUS'    											, $arr['status']);
 
         $resdom = $babDB->db_query('
             SELECT id_domain

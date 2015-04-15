@@ -829,6 +829,7 @@ CREATE TABLE bab_cal_events (
   id_modifiedby int(11) unsigned NOT NULL default '0',
   uuid varchar(255) NOT NULL,
   parent_calendar VARCHAR (255) not null default '',
+  status varchar(255) NOT NULL default '',
   PRIMARY KEY  (id),
   KEY start_date (start_date),
   KEY end_date (end_date),
