@@ -205,7 +205,7 @@ class bab_cal_OviEventUpdate
             bfree				=".$babDB->quote($free).",
             parent_calendar		=".$babDB->quote($parent_calendar).",
             date_modification	=now(),
-            id_modifiedby		=".$babDB->quote($GLOBALS['BAB_SESS_USERID']).",
+            id_modifiedby		=".$babDB->quote(bab_getUserId()).",
             status              =".$babDB->quote($period->getProperty('STATUS'))."
         ";
 
