@@ -23,7 +23,6 @@
 include_once "base.php";
 
 
-
 /*
  * Return the URL of the site
  *
@@ -857,62 +856,38 @@ switch(bab_rp('tg'))
     case "menu":
         include $babInstallPath."menu.php";
         break;
+    case 'search':
+        /** 
+         * forward to search addon for backward compatibility
+         * @deprecated User tg=addon/search/main instead
+         */
+
+        $searchTg = bab_functionality::get('SearchUi')->getTg();
+        if ($module = bab_getAddonFilePathFromTg($searchTg, $babWebStat)) {
+            require_once $module;
+        }
+        break;
+        
     default:
         $babLevelOne = "";
         $babLevelTwo = "";
         $incl = "entry";
         $babWebStat->module($incl);
-        $arr = explode("/", bab_rp('tg'));
-        if( sizeof($arr) == 3 && $arr[0] == "addon")
-        {
-            include_once $GLOBALS['babInstallPath'].'utilit/addonsincl.php';
-
-            if (!is_numeric($arr[1]))
-            {
-                $arr[1] = bab_addonsInfos::getAddonIdByName($arr[1], false);
-            }
-
-            $addon_row = bab_addonsInfos::getDbRow($arr[1]);
-            $addon = bab_getAddonInfosInstance($addon_row['title']);
-
-
-            if(false === $addon || !$addon->isAccessValid()) {
-                if ($addon && $addon->hasAccessControl() && $addon->isInstalled() && !$addon->isDisabled())
-                {
-                    bab_requireAccess('bab_addons_groups', $addon->getId(), bab_translate('You must be logged in to access this page.'));
-                }
-
-                $babBody->addError(bab_translate("Access denied"));
-
-            } else {
-
-                $module = preg_replace("/[^A-Za-z0-9_\-]/", "", $arr[2]);
-                bab_setAddonGlobals($addon->getId());
-                $babWebStat->addon($addon->getName());
-                $babWebStat->module("/".$module);
-
-                $incl = null;
-                require_once $addon->getPhpPath().$module.'.php';
-            }
-        }
-        else
-        {
+        
+        if ($module = bab_getAddonFilePathFromTg(bab_rp('tg'), $babWebStat)) {
+            $incl = null;
+            require_once $module;
+        } else {
             bab_siteMap::setPosition(bab_siteMap::getSitemapRootNode());
-            if( $BAB_SESS_LOGGED)
-            {
+            if(bab_isUserLogged()) {
                 $file = "private.html";
-            }
-            else
-            {
+            } else {
                 $file = "public.html";
             }
 
-            if( file_exists($GLOBALS['babOvmlPath'].$file))
-            {
+            if( file_exists($GLOBALS['babOvmlPath'].$file)) {
                 $incl = "oml";
-            }
-            else
-            {
+            } else {
                 $incl = "entry";
             }
         }

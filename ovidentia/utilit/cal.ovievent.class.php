@@ -310,7 +310,7 @@ class bab_cal_OviEventUpdate
             throw new Exception('Missing calendar');
         }
 
-        $id_owner = $GLOBALS['BAB_SESS_USERID'];
+        $id_owner = bab_getUserId();
 
 
 
@@ -1202,6 +1202,8 @@ class bab_cal_OviEventSelect
     private function getQuery($where)
     {
         global $babDB;
+        
+        $id_user = (int) bab_getUserId();
 
         $query = "
             SELECT
@@ -1214,8 +1216,8 @@ class bab_cal_OviEventSelect
                 ".BAB_CAL_EVENTS_OWNERS_TBL." ceo,
                 ".BAB_CAL_EVENTS_TBL." ce
                 LEFT JOIN ".BAB_CAL_CATEGORIES_TBL." ca ON ca.id = ce.id_cat
-                LEFT JOIN ".BAB_CAL_EVENTS_REMINDERS_TBL." er ON er.id_event=ce.id AND er.id_user=".$babDB->quote($GLOBALS['BAB_SESS_USERID'])."
-                LEFT JOIN ".BAB_CAL_EVENTS_NOTES_TBL." en ON en.id_event=ce.id AND en.id_user=".$babDB->quote($GLOBALS['BAB_SESS_USERID'])."
+                LEFT JOIN ".BAB_CAL_EVENTS_REMINDERS_TBL." er ON er.id_event=ce.id AND er.id_user=".$babDB->quote($id_user)."
+                LEFT JOIN ".BAB_CAL_EVENTS_NOTES_TBL." en ON en.id_event=ce.id AND en.id_user=".$babDB->quote($id_user)."
 
             WHERE
                 ceo.id_event=ce.id

@@ -39,13 +39,13 @@ CREATE TABLE bab_articles (
   KEY date_archiving (date_archiving),
   KEY index_status (index_status),
   KEY date (date),
-  UNIQUE KEY uuid (uuid) 
+  UNIQUE KEY uuid (uuid)
 );
 
 
-INSERT INTO bab_articles 
-	(id, uuid, id_topic, id_author, date, date_publication, date_modification, title, head, head_format, body, body_format, lang) 
-	
+INSERT INTO bab_articles
+    (id, uuid, id_topic, id_author, date, date_publication, date_modification, title, head, head_format, body, body_format, lang)
+
 VALUES (1, '3c1ca350-9254-4e8c-b221-57535d2bd8e4', 1, 1, NOW(), NOW(), NOW(), 'Ovidentia',  '<p> <strong>OVIDENTIA</strong> est un outil permettant
   de publier avec une grande aisance et tr&egrave;s rapidement
   un portail intranet, extranet ou internet. En
@@ -80,8 +80,8 @@ VALUES (1, '3c1ca350-9254-4e8c-b221-57535d2bd8e4', 1, 1, NOW(), NOW(), NOW(), 'O
 <p>Son architecture, compl&eacute;tement modulaire, permet d''y
   installer des modules d&eacute;velopp&eacute;s par la communaut&eacute; <strong>OVIDENTIA</strong></p>
 <p> Pour plus d''informations : <a href="http://www.ovidentia.org">http://www.ovidentia.org</a>
-</p>', 'html', '', 'html', 'fr'); 
-  
+</p>', 'html', '', 'html', 'fr');
+
 
 
 
@@ -289,10 +289,10 @@ CREATE TABLE bab_forumsview_groups (
 # Structure de la table 'bab_forums_notices'
 #
 
-CREATE TABLE bab_forums_notices (                       
-   `id` int(11) unsigned NOT NULL auto_increment,        
-   `id_field` int(11) unsigned NOT NULL,                  
-   `field_order` tinyint(2) unsigned default NULL,        
+CREATE TABLE bab_forums_notices (
+   `id` int(11) unsigned NOT NULL auto_increment,
+   `id_field` int(11) unsigned NOT NULL,
+   `field_order` tinyint(2) unsigned default NULL,
    PRIMARY KEY  (id),
    KEY id_field (id_field)
 );
@@ -778,11 +778,11 @@ CREATE TABLE `bab_users_log` (
 #
 
 CREATE TABLE bab_cal_categories (
-	id TINYINT (2) UNSIGNED not null AUTO_INCREMENT,
-	name VARCHAR (60) not null,
-	description VARCHAR (255) not null,
-	bgcolor VARCHAR (6) not null,
-	PRIMARY KEY (id)
+    id TINYINT (2) UNSIGNED not null AUTO_INCREMENT,
+    name VARCHAR (60) not null,
+    description VARCHAR (255) not null,
+    bgcolor VARCHAR (6) not null,
+    PRIMARY KEY (id)
 );
 
 
@@ -884,11 +884,11 @@ CREATE TABLE bab_cal_inbox (
 #
 
 CREATE TABLE bab_calendar (
-	id int(11) unsigned NOT NULL auto_increment,
-	owner int(11) unsigned DEFAULT '0' NOT NULL,
-	actif enum('Y','N') DEFAULT 'Y' NOT NULL,
-	type TINYINT (2) not null,
-	PRIMARY KEY (id),
+    id int(11) unsigned NOT NULL auto_increment,
+    owner int(11) unsigned DEFAULT '0' NOT NULL,
+    actif enum('Y','N') DEFAULT 'Y' NOT NULL,
+    type TINYINT (2) not null,
+    PRIMARY KEY (id),
     KEY owner (owner),
     KEY type (type)
 );
@@ -902,12 +902,12 @@ INSERT INTO bab_calendar VALUES ( '1', '1', 'Y', '1');
 #
 
 CREATE TABLE bab_calaccess_users (
-	id INT (11) UNSIGNED not null AUTO_INCREMENT,
-	caltype VARCHAR (100) not null default '',
-	id_cal INT (11) UNSIGNED not null default '0',
-	id_user INT (11) UNSIGNED not null default '0',
+    id INT (11) UNSIGNED not null AUTO_INCREMENT,
+    caltype VARCHAR (100) not null default '',
+    id_cal INT (11) UNSIGNED not null default '0',
+    id_user INT (11) UNSIGNED not null default '0',
     bwrite smallint(2) unsigned NOT NULL default '0',
-	PRIMARY KEY (id),
+    PRIMARY KEY (id),
     KEY id_cal (id_cal),
     KEY id_user (id_user)
 );
@@ -919,18 +919,18 @@ CREATE TABLE bab_calaccess_users (
 #
 
 CREATE TABLE bab_mail_domains (
-	id INT (11) UNSIGNED not null AUTO_INCREMENT,
-	name VARCHAR (254) not null,
-	description VARCHAR (224) not null,
-	outserver VARCHAR (224) not null,
-	inserver VARCHAR (224) not null,
-	outport VARCHAR (5) not null,
-	inport VARCHAR (5) not null,
-	access VARCHAR (10) not null,
-	bgroup enum('N','Y') DEFAULT 'N' NOT NULL,
-	owner INT (11) UNSIGNED not null,	
+    id INT (11) UNSIGNED not null AUTO_INCREMENT,
+    name VARCHAR (254) not null,
+    description VARCHAR (224) not null,
+    outserver VARCHAR (224) not null,
+    inserver VARCHAR (224) not null,
+    outport VARCHAR (5) not null,
+    inport VARCHAR (5) not null,
+    access VARCHAR (10) not null,
+    bgroup enum('N','Y') DEFAULT 'N' NOT NULL,
+    owner INT (11) UNSIGNED not null,
     id_dgowner int(11) unsigned NOT NULL default '0',
-	PRIMARY KEY (id),
+    PRIMARY KEY (id),
     KEY owner (owner)
 );
 
@@ -941,18 +941,18 @@ CREATE TABLE bab_mail_domains (
 #
 
 CREATE TABLE bab_mail_accounts (
-	id INT (11) UNSIGNED not null AUTO_INCREMENT,
-	account_name VARCHAR (255) not null,
-	name VARCHAR (255) not null,
-	email VARCHAR (255) not null,
-	login VARCHAR (255) not null,
-	password blob not null,
-	domain INT (11) UNSIGNED not null,
-	owner INT (11) UNSIGNED not null,
-	maxrows TINYINT (2) not null,
-	prefered enum('N','Y') DEFAULT 'N' NOT NULL,
-	format VARCHAR (5) DEFAULT 'plain' NOT NULL,
-	PRIMARY KEY (id),
+    id INT (11) UNSIGNED not null AUTO_INCREMENT,
+    account_name VARCHAR (255) not null,
+    name VARCHAR (255) not null,
+    email VARCHAR (255) not null,
+    login VARCHAR (255) not null,
+    password blob not null,
+    domain INT (11) UNSIGNED not null,
+    owner INT (11) UNSIGNED not null,
+    maxrows TINYINT (2) not null,
+    prefered enum('N','Y') DEFAULT 'N' NOT NULL,
+    format VARCHAR (5) DEFAULT 'plain' NOT NULL,
+    PRIMARY KEY (id),
     KEY owner (owner)
 );
 
@@ -962,14 +962,14 @@ CREATE TABLE bab_mail_accounts (
 #
 
 CREATE TABLE bab_mail_signatures (
-	id INT (11) UNSIGNED not null AUTO_INCREMENT,
-	name varchar(255) NOT NULL,
-	owner INT (11) UNSIGNED not null,
-	html enum('Y','N') DEFAULT 'N' NOT NULL,
-	text TEXT not null,
-	PRIMARY KEY (id),
+    id INT (11) UNSIGNED not null AUTO_INCREMENT,
+    name varchar(255) NOT NULL,
+    owner INT (11) UNSIGNED not null,
+    html enum('Y','N') DEFAULT 'N' NOT NULL,
+    text TEXT not null,
+    PRIMARY KEY (id),
     KEY owner (owner)
-); 
+);
 
 # --------------------------------------------------------
 #
@@ -1094,7 +1094,7 @@ CREATE TABLE `bab_sites` (
 );
 
 
-INSERT INTO bab_sites (id, name, description, lang, adminemail,  adminname, skin, style, dispdays, startday, smtppassword , ldap_host, ldap_userdn, ldap_admindn, ldap_adminpassword, ldap_searchdn, ldap_attribute, ldap_filter, imgsize ) 
+INSERT INTO bab_sites (id, name, description, lang, adminemail,  adminname, skin, style, dispdays, startday, smtppassword , ldap_host, ldap_userdn, ldap_admindn, ldap_adminpassword, ldap_searchdn, ldap_attribute, ldap_filter, imgsize )
 values ('1', 'Ovidentia', 'Ovidentia site', 'fr', 'admin@your-domain.com', 'Ovidentia Administrator', 'theme_ovidentia_sw', 'ovidentia.css', '1,2,3,4,5','1', '', '', '', '', '', '', '', '', 1000);
 
 
@@ -1120,13 +1120,13 @@ INSERT INTO bab_sites_hpman_groups (id_object, id_group) values ('1', '3');
 #
 
 CREATE TABLE bab_homepages (
-	id INT (11) UNSIGNED not null AUTO_INCREMENT,
-	id_article INT (11) UNSIGNED DEFAULT '0' not null,
-	id_site INT (11) UNSIGNED DEFAULT '0' not null,
-	id_group INT (11) UNSIGNED DEFAULT '0' not null,
-	status ENUM ('N', 'Y') DEFAULT 'N' not null,
-	ordering INT (11) UNSIGNED DEFAULT '0' not null,
-	PRIMARY KEY (id),
+    id INT (11) UNSIGNED not null AUTO_INCREMENT,
+    id_article INT (11) UNSIGNED DEFAULT '0' not null,
+    id_site INT (11) UNSIGNED DEFAULT '0' not null,
+    id_group INT (11) UNSIGNED DEFAULT '0' not null,
+    status ENUM ('N', 'Y') DEFAULT 'N' not null,
+    ordering INT (11) UNSIGNED DEFAULT '0' not null,
+    PRIMARY KEY (id),
     KEY id_site (id_site),
     KEY id_group (id_group),
     KEY ordering (ordering)
@@ -1183,10 +1183,10 @@ CREATE TABLE bab_files (
 #
 
 CREATE TABLE bab_mime_types (
-	ext VARCHAR(10) NOT NULL, 
-	mimetype TINYTEXT NOT NULL,
-	PRIMARY KEY (ext)
-); 
+    ext VARCHAR(10) NOT NULL,
+    mimetype TINYTEXT NOT NULL,
+    PRIMARY KEY (ext)
+);
 
 INSERT INTO bab_mime_types VALUES ('ai', 'application/postscript');
 INSERT INTO bab_mime_types VALUES ('asc', 'text/plain');
@@ -1266,7 +1266,7 @@ CREATE TABLE `bab_addons` (
   KEY `enabled` (`enabled`)
 );
 
-    
+
 # --------------------------------------------------------
 #
 # Structure de la table 'bab_addons_groups'
@@ -1282,9 +1282,9 @@ CREATE TABLE bab_addons_groups (
 );
 
 CREATE TABLE bab_ini (
-	foption char(255) NOT NULL default '',
-	fvalue char(255) NOT NULL default '',
-	UNIQUE KEY foption (foption)
+    foption char(255) NOT NULL default '',
+    fvalue char(255) NOT NULL default '',
+    UNIQUE KEY foption (foption)
 );
 
 
@@ -1495,7 +1495,7 @@ CREATE TABLE bab_db_directories (
   KEY id_dgowner (id_dgowner)
 );
 
-INSERT INTO bab_db_directories (id, name, description, id_group, id_dgowner, ovml_list, ovml_detail) 
+INSERT INTO bab_db_directories (id, name, description, id_group, id_dgowner, ovml_list, ovml_detail)
 values (1, 'Ovidentia', 'Ovidentia directory', '1', '0', '', '');
 
 #
@@ -1543,7 +1543,7 @@ CREATE TABLE bab_dbdir_entries (
   KEY id_directory (id_directory)
 );
 
-INSERT INTO bab_dbdir_entries (sn, givenname, email, id_directory, id_user, bstreetaddress, hstreetaddress, user1, user2, user3, photo_data) 
+INSERT INTO bab_dbdir_entries (sn, givenname, email, id_directory, id_user, bstreetaddress, hstreetaddress, user1, user2, user3, photo_data)
  VALUES ('Ovidentia', 'Administrateur', 'admin@admin.bab', '0', '1', '', '', '', '', '', '');
 
 
@@ -1679,7 +1679,7 @@ CREATE TABLE bab_dbdirview_groups (
 INSERT INTO `bab_dbdirview_groups` (`id`, `id_object`, `id_group`) VALUES (1, 1,  1);
 
 
-# 
+#
 # Structure de la table `bab_dbdir_options`
 #
 
@@ -1770,7 +1770,7 @@ CREATE TABLE bab_fm_filesver (
   index_status tinyint(1) unsigned NOT NULL default '0',
   PRIMARY KEY  (id),
   KEY id_file (id_file)
-); 
+);
 
 #
 # Structure de la table `bab_fm_fileslog`
@@ -1863,12 +1863,13 @@ CREATE TABLE bab_org_charts (
   id_closed_nodes text NOT NULL,
   ovml_detail tinytext NOT NULL,
   ovml_embedded tinytext NOT NULL,
-  PRIMARY KEY  (id),
+  display_mode BOOLEAN NOT NULL,
+  PRIMARY KEY (id),
   KEY id_dgowner (id_dgowner),
   KEY id_directory (id_directory)
 );
 
-INSERT INTO bab_org_charts VALUES (1, 'Ovidentia', 'Ovidentia organizational chart', 'Y', 'N', 0, '0000-00-00 00:00:00', 0, 1, 0, 0, '', '', '');
+INSERT INTO bab_org_charts (id, name, description, isprimary, id_directory) VALUES (1, 'Ovidentia', 'Ovidentia organizational chart', 'Y', 1);
 
 #
 # Structure de la table `bab_ocupdate_groups`
@@ -2079,9 +2080,9 @@ CREATE TABLE bab_art_drafts (
   date_archiving datetime NOT NULL default '0000-00-00 00:00:00',
   title tinytext NOT NULL,
   head mediumtext NOT NULL,
-  head_format varchar(32) NOT NULL default 'html', 
+  head_format varchar(32) NOT NULL default 'html',
   body longtext NOT NULL,
-  body_format varchar(32) NOT NULL default 'html', 
+  body_format varchar(32) NOT NULL default 'html',
   lang varchar(10) NOT NULL default '',
   trash enum('N','Y') NOT NULL default 'N',
   id_topic int(11) unsigned NOT NULL default '0',
@@ -2278,11 +2279,11 @@ INSERT INTO bab_sites_fields_registration (id_site, id_field, registration, requ
 #
 
 CREATE TABLE bab_sites_disclaimers (
-	id INT( 11 ) UNSIGNED NOT NULL AUTO_INCREMENT ,
-	id_site TINYINT( 2 ) UNSIGNED NOT NULL ,
-	disclaimer_text LONGTEXT NOT NULL ,
-	PRIMARY KEY ( id ) ,
-	KEY id_site (id_site)
+    id INT( 11 ) UNSIGNED NOT NULL AUTO_INCREMENT ,
+    id_site TINYINT( 2 ) UNSIGNED NOT NULL ,
+    disclaimer_text LONGTEXT NOT NULL ,
+    PRIMARY KEY ( id ) ,
+    KEY id_site (id_site)
 );
 
 INSERT INTO bab_sites_disclaimers (id_site, disclaimer_text ) VALUES (1, '');
@@ -3112,7 +3113,7 @@ CREATE TABLE bab_tskmgr_categories (
   idUserCreated int(10) unsigned NOT NULL default '0',
   modified datetime NOT NULL default '0000-00-00 00:00:00',
   idUserModified int(10) unsigned NOT NULL default '0',
-  bgColor varchar(20) NOT NULL, 
+  bgColor varchar(20) NOT NULL,
   idUser int(11) unsigned NOT NULL,
   PRIMARY KEY  (id),
   KEY idProjectSpace (idProjectSpace),
@@ -3136,9 +3137,9 @@ CREATE TABLE bab_tskmgr_default_projects_configuration (
 
 # --------------------------------------------------------
 
-# 
+#
 # Structure de la table `bab_tskmgr_default_projects_managers_groups`
-# 
+#
 
 CREATE TABLE bab_tskmgr_default_projects_managers_groups (
   id int(11) unsigned NOT NULL auto_increment,
@@ -3151,9 +3152,9 @@ CREATE TABLE bab_tskmgr_default_projects_managers_groups (
 
 # --------------------------------------------------------
 
-# 
+#
 # Structure de la table `bab_tskmgr_default_projects_supervisors_groups`
-# 
+#
 
 CREATE TABLE bab_tskmgr_default_projects_supervisors_groups (
   id int(11) unsigned NOT NULL auto_increment,
@@ -3166,9 +3167,9 @@ CREATE TABLE bab_tskmgr_default_projects_supervisors_groups (
 
 # --------------------------------------------------------
 
-# 
+#
 # Structure de la table `bab_tskmgr_default_projects_visualizers_groups`
-# 
+#
 
 CREATE TABLE bab_tskmgr_default_projects_visualizers_groups (
   id int(11) unsigned NOT NULL auto_increment,
@@ -3181,9 +3182,9 @@ CREATE TABLE bab_tskmgr_default_projects_visualizers_groups (
 
 # --------------------------------------------------------
 
-# 
+#
 # Structure de la table `bab_tskmgr_default_task_responsible_groups`
-# 
+#
 
 CREATE TABLE bab_tskmgr_default_task_responsible_groups (
   id int(11) unsigned NOT NULL auto_increment,
@@ -3196,9 +3197,9 @@ CREATE TABLE bab_tskmgr_default_task_responsible_groups (
 
 # --------------------------------------------------------
 
-# 
+#
 # Structure de la table `bab_tskmgr_linked_tasks`
-# 
+#
 
 CREATE TABLE bab_tskmgr_linked_tasks (
   id int(10) unsigned NOT NULL auto_increment,
@@ -3212,9 +3213,9 @@ CREATE TABLE bab_tskmgr_linked_tasks (
 
 # --------------------------------------------------------
 
-# 
+#
 # Structure de la table `bab_tskmgr_notice`
-# 
+#
 
 CREATE TABLE bab_tskmgr_notice (
   id int(10) unsigned NOT NULL auto_increment,
@@ -3231,9 +3232,9 @@ CREATE TABLE bab_tskmgr_notice (
 
 # --------------------------------------------------------
 
-# 
+#
 # Structure de la table `bab_tskmgr_personnal_task_creator_groups`
-# 
+#
 
 CREATE TABLE bab_tskmgr_personnal_task_creator_groups (
   id int(11) unsigned NOT NULL auto_increment,
@@ -3246,9 +3247,9 @@ CREATE TABLE bab_tskmgr_personnal_task_creator_groups (
 
 # --------------------------------------------------------
 
-# 
+#
 # Structure de la table `bab_tskmgr_project_creator_groups`
-# 
+#
 
 CREATE TABLE bab_tskmgr_project_creator_groups (
   id int(11) unsigned NOT NULL auto_increment,
@@ -3261,9 +3262,9 @@ CREATE TABLE bab_tskmgr_project_creator_groups (
 
 # --------------------------------------------------------
 
-# 
+#
 # Structure de la table `bab_tskmgr_projects`
-# 
+#
 
 CREATE TABLE bab_tskmgr_projects (
   id int(10) unsigned NOT NULL auto_increment,
@@ -3284,9 +3285,9 @@ CREATE TABLE bab_tskmgr_projects (
 
 # --------------------------------------------------------
 
-# 
+#
 # Structure de la table `bab_tskmgr_projects_comments`
-# 
+#
 
 CREATE TABLE bab_tskmgr_projects_comments (
   id int(10) unsigned NOT NULL auto_increment,
@@ -3302,9 +3303,9 @@ CREATE TABLE bab_tskmgr_projects_comments (
 
 # --------------------------------------------------------
 
-# 
+#
 # Structure de la table `bab_tskmgr_projects_configuration`
-# 
+#
 
 CREATE TABLE bab_tskmgr_projects_configuration (
   id int(10) unsigned NOT NULL auto_increment,
@@ -3320,9 +3321,9 @@ CREATE TABLE bab_tskmgr_projects_configuration (
 
 # --------------------------------------------------------
 
-# 
+#
 # Structure de la table `bab_tskmgr_projects_managers_groups`
-# 
+#
 
 CREATE TABLE bab_tskmgr_projects_managers_groups (
   id int(11) unsigned NOT NULL auto_increment,
@@ -3335,9 +3336,9 @@ CREATE TABLE bab_tskmgr_projects_managers_groups (
 
 # --------------------------------------------------------
 
-# 
+#
 # Structure de la table `bab_tskmgr_projects_revisions`
-# 
+#
 
 CREATE TABLE bab_tskmgr_projects_revisions (
   id int(10) unsigned NOT NULL auto_increment,
@@ -3354,9 +3355,9 @@ CREATE TABLE bab_tskmgr_projects_revisions (
 
 # --------------------------------------------------------
 
-# 
+#
 # Structure de la table `bab_tskmgr_projects_spaces`
-# 
+#
 
 CREATE TABLE bab_tskmgr_projects_spaces (
   id int(10) unsigned NOT NULL auto_increment,
@@ -3374,9 +3375,9 @@ CREATE TABLE bab_tskmgr_projects_spaces (
 
 # --------------------------------------------------------
 
-# 
+#
 # Structure de la table `bab_tskmgr_projects_supervisors_groups`
-# 
+#
 
 CREATE TABLE bab_tskmgr_projects_supervisors_groups (
   id int(11) unsigned NOT NULL auto_increment,
@@ -3389,9 +3390,9 @@ CREATE TABLE bab_tskmgr_projects_supervisors_groups (
 
 # --------------------------------------------------------
 
-# 
+#
 # Structure de la table `bab_tskmgr_projects_visualizers_groups`
-# 
+#
 
 CREATE TABLE bab_tskmgr_projects_visualizers_groups (
   id int(11) unsigned NOT NULL auto_increment,
@@ -3404,9 +3405,9 @@ CREATE TABLE bab_tskmgr_projects_visualizers_groups (
 
 # --------------------------------------------------------
 
-# 
+#
 # Structure de la table `bab_tskmgr_specific_fields_area_class`
-# 
+#
 
 CREATE TABLE bab_tskmgr_specific_fields_area_class (
   id int(10) unsigned NOT NULL,
@@ -3417,9 +3418,9 @@ CREATE TABLE bab_tskmgr_specific_fields_area_class (
 
 # --------------------------------------------------------
 
-# 
+#
 # Structure de la table `bab_tskmgr_specific_fields_base_class`
-# 
+#
 
 CREATE TABLE bab_tskmgr_specific_fields_base_class (
   id int(10) unsigned NOT NULL auto_increment,
@@ -3442,9 +3443,9 @@ CREATE TABLE bab_tskmgr_specific_fields_base_class (
 
 # --------------------------------------------------------
 
-# 
+#
 # Structure de la table `bab_tskmgr_specific_fields_instance_list`
-# 
+#
 
 CREATE TABLE bab_tskmgr_specific_fields_instance_list (
   id int(10) unsigned NOT NULL auto_increment,
@@ -3458,9 +3459,9 @@ CREATE TABLE bab_tskmgr_specific_fields_instance_list (
 
 # --------------------------------------------------------
 
-# 
+#
 # Structure de la table `bab_tskmgr_specific_fields_radio_class`
-# 
+#
 
 CREATE TABLE bab_tskmgr_specific_fields_radio_class (
   id int(10) unsigned NOT NULL auto_increment,
@@ -3473,9 +3474,9 @@ CREATE TABLE bab_tskmgr_specific_fields_radio_class (
 
 # --------------------------------------------------------
 
-# 
+#
 # Structure de la table `bab_tskmgr_specific_fields_text_class`
-# 
+#
 
 CREATE TABLE bab_tskmgr_specific_fields_text_class (
   id int(10) unsigned NOT NULL,
@@ -3486,9 +3487,9 @@ CREATE TABLE bab_tskmgr_specific_fields_text_class (
 
 # --------------------------------------------------------
 
-# 
+#
 # Structure de la table `bab_tskmgr_task_responsible_groups`
-# 
+#
 
 CREATE TABLE bab_tskmgr_task_responsible_groups (
   id int(11) unsigned NOT NULL auto_increment,
@@ -3501,9 +3502,9 @@ CREATE TABLE bab_tskmgr_task_responsible_groups (
 
 # --------------------------------------------------------
 
-# 
+#
 # Structure de la table `bab_tskmgr_tasks`
-# 
+#
 
 CREATE TABLE bab_tskmgr_tasks (
   id int(10) unsigned NOT NULL auto_increment,
@@ -3533,12 +3534,12 @@ CREATE TABLE bab_tskmgr_tasks (
   startDate datetime NOT NULL default '0000-00-00 00:00:00',
   endDate datetime NOT NULL default '0000-00-00 00:00:00',
   isNotified tinyint(3) unsigned NOT NULL default '0',
-  iPlannedTime double( 10, 2 ) unsigned NOT NULL default '0',			  
-  iPlannedTimeDurationUnit tinyint( 2 ) unsigned NOT NULL default '1',			  
-  iTime double( 10, 2 ) unsigned NOT NULL default '0',			  
-  iTimeDurationUnit tinyint( 2 ) unsigned NOT NULL default '1',			  
-  iPlannedCost double( 10, 2 ) unsigned NOT NULL default '0',			  
-  iCost double( 10, 2 ) unsigned NOT NULL default '0',	
+  iPlannedTime double( 10, 2 ) unsigned NOT NULL default '0',
+  iPlannedTimeDurationUnit tinyint( 2 ) unsigned NOT NULL default '1',
+  iTime double( 10, 2 ) unsigned NOT NULL default '0',
+  iTimeDurationUnit tinyint( 2 ) unsigned NOT NULL default '1',
+  iPlannedCost double( 10, 2 ) unsigned NOT NULL default '0',
+  iCost double( 10, 2 ) unsigned NOT NULL default '0',
   iPriority tinyint(2) unsigned NOT NULL default '5',
   PRIMARY KEY  (id,idProject),
   KEY idProject (idProject),
@@ -3548,41 +3549,41 @@ CREATE TABLE bab_tskmgr_tasks (
 
 # --------------------------------------------------------
 
-# 
+#
 # Structure de la table `bab_tskmgr_tasks_info`
-# 
+#
 
 CREATE TABLE bab_tskmgr_tasks_info (
-	`id` INTEGER UNSIGNED NOT NULL AUTO_INCREMENT,
-	`idTask` INTEGER UNSIGNED NOT NULL default '0',
-	`idOwner` INTEGER UNSIGNED NOT NULL default '0',
-	`isPersonnal` TINYINT UNSIGNED NOT NULL default '0',
-	PRIMARY KEY(`id`),
-	INDEX `idTask`(`idTask`),
-	INDEX `idOwner`(`idOwner`)
+    `id` INTEGER UNSIGNED NOT NULL AUTO_INCREMENT,
+    `idTask` INTEGER UNSIGNED NOT NULL default '0',
+    `idOwner` INTEGER UNSIGNED NOT NULL default '0',
+    `isPersonnal` TINYINT UNSIGNED NOT NULL default '0',
+    PRIMARY KEY(`id`),
+    INDEX `idTask`(`idTask`),
+    INDEX `idOwner`(`idOwner`)
 ) ;
 
 # --------------------------------------------------------
 
-# 
+#
 # Structure de la table `bab_tskmgr_tasks_comments`
-# 
+#
 
 CREATE TABLE bab_tskmgr_personnal_tasks_configuration (
-	id INTEGER UNSIGNED NOT NULL AUTO_INCREMENT,
-	idUser INTEGER UNSIGNED NOT NULL default '0',
-	endTaskReminder MEDIUMINT UNSIGNED NOT NULL default '5',
-	tasksNumerotation TINYINT UNSIGNED NOT NULL default '1',
-	emailNotice TINYINT UNSIGNED NOT NULL default '1',
-	PRIMARY KEY(`id`),
-	INDEX `idUser`(`idUser`)
+    id INTEGER UNSIGNED NOT NULL AUTO_INCREMENT,
+    idUser INTEGER UNSIGNED NOT NULL default '0',
+    endTaskReminder MEDIUMINT UNSIGNED NOT NULL default '5',
+    tasksNumerotation TINYINT UNSIGNED NOT NULL default '1',
+    emailNotice TINYINT UNSIGNED NOT NULL default '1',
+    PRIMARY KEY(`id`),
+    INDEX `idUser`(`idUser`)
 );
 
 # --------------------------------------------------------
 
-# 
+#
 # Structure de la table `bab_tskmgr_tasks_comments`
-# 
+#
 
 CREATE TABLE bab_tskmgr_tasks_comments (
   id int(10) unsigned NOT NULL auto_increment,
@@ -3600,9 +3601,9 @@ CREATE TABLE bab_tskmgr_tasks_comments (
 
 # --------------------------------------------------------
 
-# 
+#
 # Structure de la table `bab_tskmgr_tasks_responsibles`
-# 
+#
 
 CREATE TABLE bab_tskmgr_tasks_responsibles (
   id int(10) unsigned NOT NULL auto_increment,
@@ -3615,9 +3616,9 @@ CREATE TABLE bab_tskmgr_tasks_responsibles (
 
 # --------------------------------------------------------
 
-# 
+#
 # Structure de la table `bab_tskmgr_task_fields`
-# 
+#
 
 CREATE TABLE `bab_tskmgr_task_fields` (
   `iId` int(10) UNSIGNED NOT NULL auto_increment,
@@ -3627,7 +3628,7 @@ CREATE TABLE `bab_tskmgr_task_fields` (
   KEY `sName` (`sName`)
 );
 
-INSERT INTO `bab_tskmgr_task_fields` (`iId`, `sName`, `sLegend`) VALUES 
+INSERT INTO `bab_tskmgr_task_fields` (`iId`, `sName`, `sLegend`) VALUES
 (1,	 'sProjectSpaceName', 				'Project space name'),
 (2,	 'sProjectName', 					'Project name'),
 (3,	 'sTaskNumber', 					'Task number'),
@@ -3651,7 +3652,7 @@ INSERT INTO `bab_tskmgr_task_fields` (`iId`, `sName`, `sLegend`) VALUES
 
 # --------------------------------------------------------
 
-# 
+#
 # Structure de la table `bab_tskmgr_task_selected_fields`
 #
 
@@ -3667,7 +3668,7 @@ CREATE TABLE `bab_tskmgr_task_selected_fields` (
   KEY `iType` (`iType`)
 );
 
-INSERT INTO `bab_tskmgr_task_selected_fields` (`iId`, `iIdField`, `iIdProject`, `iPosition`, `iType`) VALUES 
+INSERT INTO `bab_tskmgr_task_selected_fields` (`iId`, `iIdField`, `iIdProject`, `iPosition`, `iType`) VALUES
 (1, 20, 0, 1, 0),
 (2, 6,  0, 2, 0),
 (3, 14, 0, 3, 0),
@@ -3676,9 +3677,9 @@ INSERT INTO `bab_tskmgr_task_selected_fields` (`iId`, `iIdField`, `iIdProject`, 
 
 # --------------------------------------------------------
 
-# 
+#
 # Structure de la table `bab_week_days`
-# 
+#
 
 CREATE TABLE `bab_week_days` (
   `id` int(10) unsigned NOT NULL auto_increment,
@@ -3690,7 +3691,7 @@ CREATE TABLE `bab_week_days` (
 ) ;
 
 
-INSERT INTO `bab_week_days` (`id`, `weekDay`, `position`) VALUES 
+INSERT INTO `bab_week_days` (`id`, `weekDay`, `position`) VALUES
 (1, 0, 6),
 (2, 1, 0),
 (3, 2, 1),
@@ -3701,9 +3702,9 @@ INSERT INTO `bab_week_days` (`id`, `weekDay`, `position`) VALUES
 
 # --------------------------------------------------------
 
-# 
+#
 # Structure de la table `bab_working_hours`
-# 
+#
 
 CREATE TABLE bab_working_hours (
   id int(10) unsigned NOT NULL auto_increment,
@@ -3717,7 +3718,7 @@ CREATE TABLE bab_working_hours (
 ) ;
 
 
-INSERT INTO `bab_working_hours` (`id`, `weekDay`, `idUser`, `startHour`, `endHour`) VALUES 
+INSERT INTO `bab_working_hours` (`id`, `weekDay`, `idUser`, `startHour`, `endHour`) VALUES
 (63, 5, 0, '00:00:00', '24:00:00'),
 (62, 4, 0, '00:00:00', '24:00:00'),
 (61, 3, 0, '00:00:00', '24:00:00'),
@@ -3726,9 +3727,9 @@ INSERT INTO `bab_working_hours` (`id`, `weekDay`, `idUser`, `startHour`, `endHou
 
 # --------------------------------------------------------
 
-# 
+#
 # Structure de la table `bab_tskmgr_task_list_filter`
-# 
+#
 
 CREATE TABLE bab_tskmgr_task_list_filter (
  `id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
@@ -3819,7 +3820,7 @@ CREATE TABLE bab_stats_connections (
   last_action_time DATETIME NOT NULL,
   KEY id_user (id_user),
   KEY id_session (id_session),
-  KEY login_time (login_time)	
+  KEY login_time (login_time)
 );
 
 
@@ -3833,8 +3834,8 @@ CREATE TABLE bab_stats_connections (
 
 CREATE TABLE bab_tags (
     id int(11) unsigned NOT NULL auto_increment,
-	tag_name VARCHAR (255) not null,
-	PRIMARY KEY (id),
+    tag_name VARCHAR (255) not null,
+    PRIMARY KEY (id),
     KEY tag_name (tag_name)
 );
 
@@ -3881,7 +3882,7 @@ CREATE TABLE `bab_event_listeners` (
 );
 
 
-INSERT INTO `bab_event_listeners` (`id`, `event_class_name`, `function_name`, `require_file`, `addon_name`, `priority`) VALUES 
+INSERT INTO `bab_event_listeners` (`id`, `event_class_name`, `function_name`, `require_file`, `addon_name`, `priority`) VALUES
 (1, 'bab_eventBeforePeriodsCreated'				, 'bab_NWD_onCreatePeriods'					, 'utilit/nwdaysincl.php'			, 'core', 0),
 (3, 'bab_eventEditors'							, 'bab_onEventEditors'						, 'utilit/editorincl.php'			, 'core', 0),
 (4, 'bab_eventEditorFunctions'					, 'bab_onEditorFunctions'					, 'utilit/editorincl.php'			, 'core', 0),
@@ -4094,11 +4095,11 @@ CREATE TABLE bab_sitemap_profile_versions (
 #
 
 CREATE TABLE bab_dg_categories (
-	`id` TINYINT (2) UNSIGNED not null AUTO_INCREMENT,
-	`name` VARCHAR (60) not null,
-	`description` VARCHAR (255) not null,
-	`bgcolor` VARCHAR (6) not null,
-	PRIMARY KEY (id)
+    `id` TINYINT (2) UNSIGNED not null AUTO_INCREMENT,
+    `name` VARCHAR (60) not null,
+    `description` VARCHAR (255) not null,
+    `bgcolor` VARCHAR (6) not null,
+    PRIMARY KEY (id)
 );
 
 #
@@ -4127,35 +4128,35 @@ CREATE TABLE bab_tags_references (
   KEY id_tag (id_tag)
 );
 
-CREATE TABLE bab_forums_fields (                       
-	`id` int(11) unsigned NOT NULL auto_increment,         
-    `id_forum` int(11) unsigned NOT NULL,                  
-    `id_field` int(11) unsigned NOT NULL,                  
-    `field_order` tinyint(2) unsigned default NULL,        
-	PRIMARY KEY  (id),
-	KEY id_forum (id_forum),
-	KEY id_field (id_field)
+CREATE TABLE bab_forums_fields (
+    `id` int(11) unsigned NOT NULL auto_increment,
+    `id_forum` int(11) unsigned NOT NULL,
+    `id_field` int(11) unsigned NOT NULL,
+    `field_order` tinyint(2) unsigned default NULL,
+    PRIMARY KEY  (id),
+    KEY id_forum (id_forum),
+    KEY id_field (id_field)
 );
 
-CREATE TABLE bab_forumsnotify_users (                       
-	`id` int(11) unsigned NOT NULL auto_increment,         
-    `id_forum` int(11) unsigned NOT NULL,                  
-    `id_user` int(11) unsigned NOT NULL,                  
-    `forum_notification` tinyint(2) unsigned default NULL,        
-	PRIMARY KEY  (id),
-	KEY id_forum (id_forum),
-	KEY id_user (id_user)
+CREATE TABLE bab_forumsnotify_users (
+    `id` int(11) unsigned NOT NULL auto_increment,
+    `id_forum` int(11) unsigned NOT NULL,
+    `id_user` int(11) unsigned NOT NULL,
+    `forum_notification` tinyint(2) unsigned default NULL,
+    PRIMARY KEY  (id),
+    KEY id_forum (id_forum),
+    KEY id_user (id_user)
 );
 
 CREATE TABLE bab_fm_headers (
-		  id int(11) unsigned NOT NULL auto_increment,
-		  fmh_name varchar(255) NOT NULL default '',
-		  fmh_description tinytext NOT NULL,
-		  fmh_order tinyint(3) unsigned NOT NULL default '0',
-		  PRIMARY KEY  (id)
-		);
+          id int(11) unsigned NOT NULL auto_increment,
+          fmh_name varchar(255) NOT NULL default '',
+          fmh_description tinytext NOT NULL,
+          fmh_order tinyint(3) unsigned NOT NULL default '0',
+          PRIMARY KEY  (id)
+        );
 
-INSERT INTO `bab_fm_headers` (`fmh_name`, `fmh_description`, fmh_order) VALUES 
+INSERT INTO `bab_fm_headers` (`fmh_name`, `fmh_description`, fmh_order) VALUES
 ('name', 			'Name', 			'1'),
 ('description', 	'Description', 		'0'),
 ('path', 			'Path', 			'0'),
@@ -4196,27 +4197,27 @@ CREATE TABLE bab_image_library_view_groups (
 INSERT INTO bab_image_library_view_groups (id_object, id_group) values ('1', '1');
 
 CREATE TABLE bab_ldap_loggin_notify_groups (
-	id int(11) unsigned NOT NULL auto_increment,
-	id_object int(11) unsigned NOT NULL default '0',
-	id_group int(11) unsigned NOT NULL default '0',
-	PRIMARY KEY  (id),
-	KEY id_object (id_object),
-	KEY id_group (id_group)
+    id int(11) unsigned NOT NULL auto_increment,
+    id_object int(11) unsigned NOT NULL default '0',
+    id_group int(11) unsigned NOT NULL default '0',
+    PRIMARY KEY  (id),
+    KEY id_object (id_object),
+    KEY id_group (id_group)
 );
 
 INSERT INTO bab_ldap_loggin_notify_groups (id_object, id_group) values ('1', '3');
 
 CREATE TABLE bab_cal_domains (
-	id int(11) unsigned NOT NULL auto_increment,
-	id_parent int(11) unsigned NOT NULL default '0',
-	name varchar(255) NOT NULL default '',
-	`order` int(11) unsigned NOT NULL default '0',
-	PRIMARY KEY (id)
+    id int(11) unsigned NOT NULL auto_increment,
+    id_parent int(11) unsigned NOT NULL default '0',
+    name varchar(255) NOT NULL default '',
+    `order` int(11) unsigned NOT NULL default '0',
+    PRIMARY KEY (id)
 );
 
 CREATE TABLE bab_cal_events_domains (
-	id int(11) unsigned NOT NULL auto_increment,
-	id_event int(11) unsigned NOT NULL default '0',
-	id_domain int(11) unsigned NOT NULL default '0',
-	PRIMARY KEY (id)
+    id int(11) unsigned NOT NULL auto_increment,
+    id_event int(11) unsigned NOT NULL default '0',
+    id_domain int(11) unsigned NOT NULL default '0',
+    PRIMARY KEY (id)
 );

@@ -572,3 +572,56 @@ function bab_getAddonsFilePath() {
 
 }
 
+
+
+/**
+ * Get Addon file path from a TG string
+ * return null if the parameter is not a valid tg
+ * return false if the addon is not accessible
+ * 
+ * @param string $tg
+ * 
+ * @return string
+ */
+function bab_getAddonFilePathFromTg($tg, $babWebStat = null)
+{
+    global $babBody;
+    
+    $arr = explode("/", $tg);
+    if( sizeof($arr) !== 3 || $arr[0] !== "addon")
+    {
+        // Not a addon TG
+        return null;
+    }
+
+    if (!is_numeric($arr[1]))
+    {
+        $arr[1] = bab_addonsInfos::getAddonIdByName($arr[1], false);
+    }
+
+    $addon_row = bab_addonsInfos::getDbRow($arr[1]);
+    $addon = bab_getAddonInfosInstance($addon_row['title']);
+
+
+    if(false === $addon || !$addon->isAccessValid()) {
+        if ($addon && $addon->hasAccessControl() && $addon->isInstalled() && !$addon->isDisabled())
+        {
+            bab_requireAccess('bab_addons_groups', $addon->getId(), bab_translate('You must be logged in to access this page.'));
+        }
+        
+        $babBody->addError(bab_translate('Access denied'));
+        return false;
+    }
+
+    $module = preg_replace("/[^A-Za-z0-9_\-]/", "", $arr[2]);
+    bab_setAddonGlobals($addon->getId());
+    
+    if (isset($babWebStat)) {
+        
+        $babWebStat->addon($addon->getName());
+        $babWebStat->module("/".$module);
+    }
+
+    return $addon->getPhpPath().$module.'.php';
+
+}
