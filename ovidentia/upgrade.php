@@ -7141,6 +7141,14 @@ function ovidentia_upgrade($version_base,$version_ini) {
         $babDB->db_query("ALTER TABLE bab_cal_events ADD fullday tinyint(1) unsigned NOT NULL default '0'");
     }
 
+    /**
+     * Upgrade to 8.2.96
+     */
+    if(!bab_isTableField('bab_cal_events', 'status'))
+    {
+        $babDB->db_query("ALTER TABLE bab_cal_events ADD status varchar(255) NOT NULL default ''");
+    }
+
 
     /**
      * Upgrade to 8.2.97
@@ -7164,6 +7172,7 @@ function ovidentia_upgrade($version_base,$version_ini) {
 
     $functionalities->register('PwdComplexity'					, $GLOBALS['babInstallPath'].'utilit/pwdcomplexity.class.php');
     $functionalities->register('PwdComplexity/DefaultPortal'	, $GLOBALS['babInstallPath'].'utilit/pwdcomplexity.class.php');
+
 
     return true;
 

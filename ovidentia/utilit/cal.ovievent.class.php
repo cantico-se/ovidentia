@@ -205,7 +205,8 @@ class bab_cal_OviEventUpdate
             bfree				=".$babDB->quote($free).",
             parent_calendar		=".$babDB->quote($parent_calendar).",
             date_modification	=now(),
-            id_modifiedby		=".$babDB->quote($GLOBALS['BAB_SESS_USERID'])."
+            id_modifiedby		=".$babDB->quote(bab_getUserId()).",
+            status              =".$babDB->quote($period->getProperty('STATUS'))."
         ";
 
 
@@ -310,7 +311,7 @@ class bab_cal_OviEventUpdate
             throw new Exception('Missing calendar');
         }
 
-        $id_owner = $GLOBALS['BAB_SESS_USERID'];
+        $id_owner = bab_getUserId();
 
 
 
@@ -378,7 +379,8 @@ class bab_cal_OviEventUpdate
                     date_modification,
                     id_modifiedby,
                     uuid,
-                    parent_calendar
+                    parent_calendar,
+                    status
                 )
 
             values (
@@ -400,7 +402,8 @@ class bab_cal_OviEventUpdate
                 now(),
                 ".$babDB->quote($id_owner).",
                 ".$babDB->quote($period->getProperty('UID')).",
-                ".$babDB->quote($calendar->getUrlIdentifier())."
+                ".$babDB->quote($calendar->getUrlIdentifier()).",
+                ".$babDB->quote($period->getProperty('STATUS'))."
             )
         ");
 
@@ -947,6 +950,7 @@ class bab_cal_OviEventSelect
         $event->setProperty('LOCATION'												, $arr['location']);
         $event->setProperty('CATEGORIES'											, $arr['category']);
         $event->setProperty('X-CTO-COLOR'											, $arr['color']);
+        $event->setProperty('STATUS'    											, $arr['status']);
 
         $resdom = $babDB->db_query('
             SELECT id_domain
@@ -1202,6 +1206,8 @@ class bab_cal_OviEventSelect
     private function getQuery($where)
     {
         global $babDB;
+        
+        $id_user = (int) bab_getUserId();
 
         $query = "
             SELECT
@@ -1214,8 +1220,8 @@ class bab_cal_OviEventSelect
                 ".BAB_CAL_EVENTS_OWNERS_TBL." ceo,
                 ".BAB_CAL_EVENTS_TBL." ce
                 LEFT JOIN ".BAB_CAL_CATEGORIES_TBL." ca ON ca.id = ce.id_cat
-                LEFT JOIN ".BAB_CAL_EVENTS_REMINDERS_TBL." er ON er.id_event=ce.id AND er.id_user=".$babDB->quote($GLOBALS['BAB_SESS_USERID'])."
-                LEFT JOIN ".BAB_CAL_EVENTS_NOTES_TBL." en ON en.id_event=ce.id AND en.id_user=".$babDB->quote($GLOBALS['BAB_SESS_USERID'])."
+                LEFT JOIN ".BAB_CAL_EVENTS_REMINDERS_TBL." er ON er.id_event=ce.id AND er.id_user=".$babDB->quote($id_user)."
+                LEFT JOIN ".BAB_CAL_EVENTS_NOTES_TBL." en ON en.id_event=ce.id AND en.id_user=".$babDB->quote($id_user)."
 
             WHERE
                 ceo.id_event=ce.id
@@ -1711,39 +1717,26 @@ class bab_cal_OviEventSelect
      */
     public function getFromUid($uid)
     {
+        global $babDB;
 
+        $query = $this->getQuery("
+            ce.uuid = ".$babDB->quote($uid)."
+        ");
 
-        // use a cache for mutiple calls on same UID
+        $res = $babDB->db_query($query);
+        $arr = $babDB->db_fetch_assoc($res);
 
-        static $cache = array();
-
-
-        if (!isset($cache[$uid]))
+        if (!$arr)
         {
-            global $babDB;
-
-            $query = $this->getQuery("
-                ce.uuid = ".$babDB->quote($uid)."
-            ");
-
-            $res = $babDB->db_query($query);
-            $arr = $babDB->db_fetch_assoc($res);
-
-            if (!$arr)
-            {
-                return null;
-            }
-
-            require_once dirname(__FILE__).'/cal.periodcollection.class.php';
-            $collection = new bab_CalendarEventCollection;
-
-            $period = $this->createCalendarPeriod($arr, $collection);
-            $period->resetEvent();
-
-            $cache[$uid] = $period;
+            return null;
         }
 
-        return $cache[$uid];
+        require_once dirname(__FILE__).'/cal.periodcollection.class.php';
+        $collection = new bab_CalendarEventCollection;
+
+        $period = $this->createCalendarPeriod($arr, $collection);
+        $period->resetEvent();
+        return $period;
     }
 
 

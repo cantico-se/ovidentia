@@ -832,6 +832,7 @@ CREATE TABLE bab_cal_events (
   id_modifiedby int(11) unsigned NOT NULL default '0',
   uuid varchar(255) NOT NULL,
   parent_calendar VARCHAR (255) not null default '',
+  status varchar(255) NOT NULL default '',
   PRIMARY KEY  (id),
   KEY start_date (start_date),
   KEY end_date (end_date),
@@ -1867,12 +1868,12 @@ CREATE TABLE bab_org_charts (
   ovml_detail tinytext NOT NULL,
   ovml_embedded tinytext NOT NULL,
   display_mode BOOLEAN NOT NULL,
-  PRIMARY KEY  (id),
+  PRIMARY KEY (id),
   KEY id_dgowner (id_dgowner),
   KEY id_directory (id_directory)
 );
 
-INSERT INTO bab_org_charts VALUES (1, 'Ovidentia', 'Ovidentia organizational chart', 'Y', 'N', 0, '0000-00-00 00:00:00', 0, 1, 0, 0, '', '', '');
+INSERT INTO bab_org_charts (id, name, description, isprimary, id_directory) VALUES (1, 'Ovidentia', 'Ovidentia organizational chart', 'Y', 1);
 
 #
 # Structure de la table `bab_ocupdate_groups`

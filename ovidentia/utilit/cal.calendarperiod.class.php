@@ -716,6 +716,7 @@ class bab_CalendarPeriod extends bab_ICalendarObject {
 	 */
 	public function cancelFromAllCalendars(bab_EventCalendar $userCalendar)
 	{
+	    $this->setProperty('STATUS', 'CANCELLED');
 		$failure = array();
 		
 		$currentCollection = $this->getCollection();
