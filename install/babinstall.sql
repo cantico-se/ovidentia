@@ -3902,7 +3902,8 @@ INSERT INTO `bab_event_listeners` (`id`, `event_class_name`, `function_name`, `r
 (14,'bab_eventForumPost'						, 'bab_onForumPost'							, 'utilit/eventforum.php'			, 'core', 0),
 (15,'bab_eventReference'						, 'bab_onReference'							, 'utilit/eventReference.php'		, 'core', 100),
 (16,'LibTimer_eventHourly'						, 'bab_onHourly'							, 'utilit/timerincl.php'			, 'core', 0),
-(17,'bab_eventBeforeWaitingItemsDisplayed'		, 'bab_onBeforeWaitingItemsDisplayed'		, 'utilit/approbincl.php'			, 'core', 0);
+(17,'bab_eventBeforeWaitingItemsDisplayed'		, 'bab_onBeforeWaitingItemsDisplayed'		, 'utilit/approbincl.php'			, 'core', 0),
+(18,'bab_eventAfterUserLoggedIn'				, 'bab_onUserLoggedInForcePwd'				, 'utilit/loginIncl.php'			, 'core', 0);
 
 
 CREATE TABLE `bab_upgrade_messages` (
