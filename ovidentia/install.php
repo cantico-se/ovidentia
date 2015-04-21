@@ -47,35 +47,37 @@ $functionalities->register('SitemapDynamicNode/Topic'	, $GLOBALS['babInstallPath
 $functionalities->register('WorkingHours'				, $GLOBALS['babInstallPath'].'utilit/workinghoursincl.php');
 $functionalities->register('WorkingHours/Ovidentia'		, $GLOBALS['babInstallPath'].'utilit/workinghoursincl.php');
 $functionalities->register('SearchUi'		            , $GLOBALS['babInstallPath'].'utilit/searchui.class.php');
+$functionalities->register('PwdComplexity'				, $GLOBALS['babInstallPath'].'utilit/pwdcomplexity.class.php');
+$functionalities->register('PwdComplexity/DefaultPortal', $GLOBALS['babInstallPath'].'utilit/pwdcomplexity.class.php');
 
 
 $func_to_register = $functionalities->parseFile(dirname(__FILE__).'/utilit/omlincl.php');
 foreach($func_to_register as $path) {
-	$functionalities->register($path	, $GLOBALS['babInstallPath'].'utilit/omlincl.php');
+    $functionalities->register($path	, $GLOBALS['babInstallPath'].'utilit/omlincl.php');
 }
 
 $func_to_register = $functionalities->parseFile(dirname(__FILE__).'/utilit/ovmlChart.php');
 foreach($func_to_register as $path) {
-	$functionalities->register($path	, $GLOBALS['babInstallPath'].'utilit/ovmlChart.php');
+    $functionalities->register($path	, $GLOBALS['babInstallPath'].'utilit/ovmlChart.php');
 }
 
 $func_to_register = $functionalities->parseFile(dirname(__FILE__).'/utilit/ovmldeleg.php');
 foreach($func_to_register as $path) {
-	$functionalities->register($path	, $GLOBALS['babInstallPath'].'utilit/ovmldeleg.php');
+    $functionalities->register($path	, $GLOBALS['babInstallPath'].'utilit/ovmldeleg.php');
 }
 
 $func_to_register = $functionalities->parseFile(dirname(__FILE__).'/utilit/ovmldir.php');
 foreach($func_to_register as $path) {
-	$functionalities->register($path	, $GLOBALS['babInstallPath'].'utilit/ovmldir.php');
+    $functionalities->register($path	, $GLOBALS['babInstallPath'].'utilit/ovmldir.php');
 }
 
 $func_to_register = $functionalities->parseFile(dirname(__FILE__).'/utilit/ovmltm.php');
 foreach($func_to_register as $path) {
-	$functionalities->register($path	, $GLOBALS['babInstallPath'].'utilit/ovmltm.php');
+    $functionalities->register($path	, $GLOBALS['babInstallPath'].'utilit/ovmltm.php');
 }
 
 
 $func_to_register = $functionalities->parseFile(dirname(__FILE__).'/utilit/ovmlsitemap.php');
 foreach($func_to_register as $path) {
-	$functionalities->register($path	, $GLOBALS['babInstallPath'].'utilit/ovmlsitemap.php');
+    $functionalities->register($path	, $GLOBALS['babInstallPath'].'utilit/ovmlsitemap.php');
 }

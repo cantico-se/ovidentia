@@ -3479,4 +3479,13 @@ L'administrateur</string>
 <string id="When notification is selected, also notify the author">Mettre en copie de la notification l'auteur de la création, mise à jour ou suppression d'un événement d'agenda</string>
 <string id="Search engine user interface">Interface utilisateur du moteur de recherche</string>
 <string id="Administration and user menu">Menu d'administration et utilisateur</string>
+<string id="Force password change in the next loggin ?">Forcer le changement de mot de passe de cet utilisateur lors de sa prochaine authentification ?</string>
+<string id="Old password">Mot de passe actuel</string>
+<string id="New password">Nouveau mot de passe</string>
+<string id="Retype new password">Confirmez votre nouveau mot de passe</string>
+<string id="New password are not identical.">Les nouveaux mot de passes saisie ne sont pas identiques.</string>
+<string id="The current password is wrong.">Le mot de passe actuel est erroné.</string>
+<string id="New password has to be different from the current one.">Le nouveau mot de passe doit être different de l'actuel.</string>
+<string id="For security reason you have to change your password.">Pour des raisons de sécurté vous devez changer votre mot de passe.</string>
+
 </fr>
