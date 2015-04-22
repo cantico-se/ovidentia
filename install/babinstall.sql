@@ -725,7 +725,6 @@ CREATE TABLE bab_users (
    id_sitemap_profile int(11) unsigned DEFAULT '0' NOT NULL,
    force_pwd_change tinyint(1) unsigned NOT NULL default '0',
    pwd_change_date DATE NOT NULL DEFAULT '0000-00-00',
-   pwd_change_log tinyint(1) unsigned NOT NULL default '0',
    PRIMARY KEY (id),
    KEY nickname (nickname),
    KEY firstname (firstname),

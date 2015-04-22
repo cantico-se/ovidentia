@@ -276,9 +276,9 @@ class bab_userModify {
 
 
     /**
-	 * Update a user
-	 * update only the registrer user directory
-	 * 
+     * Update a user
+     * update only the registrer user directory
+     *
      * @param	int		$id
      * @param	array	$info
      * @param	string	&$error
@@ -288,51 +288,51 @@ class bab_userModify {
 
 
         global $babDB, $BAB_HASH_VAR;
-        $res = $babDB->db_query('select u.*, det.mn, det.id as id_entry 
-		      from '.BAB_USERS_TBL.' u 
-		      left join '.BAB_DBDIR_ENTRIES_TBL.' det on det.id_user=u.id 
-		   WHERE  
-		      u.id=\''.$babDB->db_escape_string($id).'\' 
-		      AND det.id_directory='.$babDB->quote(0).'
-		');
-		
-		$arruq = array();
-		$arrdq = array();
-	
-		if (!$res || 0 === $babDB->db_num_rows($res) )
-		{
-		    $error = bab_translate("Unknown user");
-		    return false;
-		}
+        $res = $babDB->db_query('select u.*, det.mn, det.id as id_entry
+              from '.BAB_USERS_TBL.' u
+              left join '.BAB_DBDIR_ENTRIES_TBL.' det on det.id_user=u.id
+           WHERE
+              u.id=\''.$babDB->db_escape_string($id).'\'
+              AND det.id_directory='.$babDB->quote(0).'
+        ');
 
-		
-	    $arruinfo = $babDB->db_fetch_array($res);
+        $arruq = array();
+        $arrdq = array();
 
-		if (!is_array($info) || 0 === count($info))
-		{
-		    $error = bab_translate("Nothing Changed");
-		    return false;
-		}
+        if (!$res || 0 === $babDB->db_num_rows($res) )
+        {
+            $error = bab_translate("Unknown user");
+            return false;
+        }
 
-		if (isset($info['nickname']) )
-		{
-			$info['nickname'] = trim($info['nickname']);
-			
-			if (empty($info['nickname'])) {
-				$error = bab_translate("You must provide a nickname");
-				return false;
-			}
-			
-			$res = $babDB->db_query("select id from ".BAB_USERS_TBL." where nickname='".$babDB->db_escape_string($info['nickname'])."' and id !='".$arruinfo['id']."'");
-			if( $babDB->db_num_rows($res) > 0) {
-				$error = bab_translate("This login ID already exists !!");
-				return false;
-			}
-			
-			$hash = md5($info['nickname'].$BAB_HASH_VAR);
-			$arruq[] = 'confirm_hash=\''.$babDB->db_escape_string($hash).'\'';
-			$arruq[] = 'nickname=\''.$babDB->db_escape_string($info['nickname']).'\'';
-		}
+
+        $arruinfo = $babDB->db_fetch_array($res);
+
+        if (!is_array($info) || 0 === count($info))
+        {
+            $error = bab_translate("Nothing Changed");
+            return false;
+        }
+
+        if (isset($info['nickname']) )
+        {
+            $info['nickname'] = trim($info['nickname']);
+
+            if (empty($info['nickname'])) {
+                $error = bab_translate("You must provide a nickname");
+                return false;
+            }
+
+            $res = $babDB->db_query("select id from ".BAB_USERS_TBL." where nickname='".$babDB->db_escape_string($info['nickname'])."' and id !='".$arruinfo['id']."'");
+            if( $babDB->db_num_rows($res) > 0) {
+                $error = bab_translate("This login ID already exists !!");
+                return false;
+            }
+
+            $hash = md5($info['nickname'].$BAB_HASH_VAR);
+            $arruq[] = 'confirm_hash=\''.$babDB->db_escape_string($hash).'\'';
+            $arruq[] = 'nickname=\''.$babDB->db_escape_string($info['nickname']).'\'';
+        }
 
         if( isset($info['password']) && empty($info['password']) )
         {
@@ -471,12 +471,6 @@ class bab_userModify {
 
         if(isset($info['force_pwd_change'])){
             $arruq[] =  'force_pwd_change=\''.$babDB->db_escape_string($info['force_pwd_change']).'\'';
-            if(!isset($info['pwd_change_log'])){
-                $info['pwd_change_log'] = '0';
-            }
-        }
-        if(isset($info['pwd_change_log'])){
-            $arruq[] =  'pwd_change_log=\''.$babDB->db_escape_string($info['pwd_change_log']).'\'';
         }
 
         if( count($arruq))
@@ -528,9 +522,9 @@ class bab_userModify {
 
         if( count($arrdq))
         {
-		    $arrdq[] = 'date_modification=NOW()';
-		    $arrdq[] = 'id_modifiedby='.$babDB->quote(bab_getUserId());
-    
+            $arrdq[] = 'date_modification=NOW()';
+            $arrdq[] = 'id_modifiedby='.$babDB->quote(bab_getUserId());
+
             $babDB->db_query('update '.BAB_DBDIR_ENTRIES_TBL.' set '.implode(',', $arrdq).' where id=\''.$babDB->db_escape_string($arruinfo['id_entry']).'\'');
         }
 

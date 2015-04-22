@@ -54,8 +54,7 @@ class bab_userInfos {
                 validity_end,
                 confirm_hash,
                 force_pwd_change,
-                pwd_change_date,
-                pwd_change_log
+                pwd_change_date
             FROM
                 '.BAB_USERS_TBL.'
             WHERE id='.$babDB->quote($id_user)

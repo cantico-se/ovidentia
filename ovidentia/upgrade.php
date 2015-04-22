@@ -7163,11 +7163,6 @@ function ovidentia_upgrade($version_base,$version_ini) {
         $babDB->db_query("ALTER TABLE bab_users ADD pwd_change_date DATE NOT NULL DEFAULT '0000-00-00'");
     }
 
-    if(!bab_isTableField('bab_users', 'pwd_change_log'))
-    {
-        $babDB->db_query("ALTER TABLE bab_users ADD pwd_change_log tinyint(1) unsigned NOT NULL default '0'");
-    }
-
     bab_addEventListener('bab_eventAfterUserLoggedIn', 'bab_onUserLoggedInForcePwd', 'utilit/loginIncl.php');
 
     $functionalities->register('PwdComplexity'					, $GLOBALS['babInstallPath'].'utilit/pwdcomplexity.class.php');

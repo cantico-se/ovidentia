@@ -1715,7 +1715,7 @@ function bab_onUserLoggedInForcePwd(bab_eventAfterUserLoggedIn $event)
     {
         $arr = $babDB->db_fetch_array($res);
         if($arr['force_pwd_change']){
-            $babDB->db_query("update ".BAB_USERS_TBL." set pwd_change_log=1 where id='".$babDB->db_escape_string($event->id_user)."'");
+            $_SESSION['pwd_change_log'] = true;
         }
     }
 }

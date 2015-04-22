@@ -103,21 +103,11 @@ if (!isset($babUrl)) {
 require_once $babInstallPath.'utilit/addonapi.php';
 
 if(!bab_isAjaxRequest() && bab_getUserId()){
-    include_once $babInstallPath.'utilit/dbutil.php';
-
-    $babDB = new babDatabase();
-    $babDB->db_setCharset();
-
-    $res = $babDB->db_query("select pwd_change_log from bab_users where pwd_change_log = 1 and force_pwd_change = 1 and id='".$babDB->db_escape_string(bab_getUserId())."'");
-    if($res && $babDB->db_num_rows($res) > 0)
-    {
-        $arr = $babDB->db_fetch_array($res);
-        if($arr['pwd_change_log']){
-            if($_REQUEST['tg'] != 'login'){
-                header('Location: ?tg=login&cmd=changePwd&user='.$_SESSION['BAB_SESS_USERID']);
-            }else{
-                $_GET['babHttpContext'] = false;
-            }
+    if(isset($_SESSION['pwd_change_log']) && $_SESSION['pwd_change_log']){
+        if($_REQUEST['tg'] != 'login'){
+            header('Location: ?tg=login&cmd=changePwd&user='.$_SESSION['BAB_SESS_USERID']);
+        }else{
+            $_GET['babHttpContext'] = false;
         }
     }
 }

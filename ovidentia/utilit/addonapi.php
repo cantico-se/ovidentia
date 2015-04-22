@@ -2693,8 +2693,10 @@ function bab_updateUserPasswordById($userId, $newPassword, $newPassword2, $ignor
     }
 
     /* Update the user's password */
-    $sql = 'UPDATE ' . BAB_USERS_TBL . ' SET force_pwd_change = 0, pwd_change_log = 0, pwd_change_date = CURDATE(), password=' . $babDB->quote(md5(mb_strtolower($newPassword))) . ' WHERE id=' . $babDB->quote($userId);
+    $sql = 'UPDATE ' . BAB_USERS_TBL . ' SET force_pwd_change = 0, pwd_change_date = CURDATE(), password=' . $babDB->quote(md5(mb_strtolower($newPassword))) . ' WHERE id=' . $babDB->quote($userId);
     $babDB->db_query($sql);
+
+    $_SESSION['pwd_change_log'] = false;
 
     /* Call the functionnality event onUserChangePassword */
     include_once $GLOBALS['babInstallPath'].'utilit/addonsincl.php';
