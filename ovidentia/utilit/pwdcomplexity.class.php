@@ -44,7 +44,12 @@ class Func_PwdComplexity extends bab_functionality {
 
     public function isValid($pwd)
     {
-        die(bab_translate("Func_PortalAuthentication::logout must not be called directly"));
+        die(bab_translate("Func_PwdComplexity::isValid must not be called directly"));
+    }
+
+    public function getRules()
+    {
+        die(bab_translate("Func_PwdComplexity::getRules must not be called directly"));
     }
 
     public function getErrorDescription()
@@ -96,4 +101,18 @@ class Func_PwdComplexity_DefaultPortal extends Func_PwdComplexity {
         return true;
     }
 
+    public function getRules()
+    {
+        $minPasswordLengh = 6;
+        if(ISSET($GLOBALS['babMinPasswordLength']) && is_numeric($GLOBALS['babMinPasswordLength'])){
+            $minPasswordLengh = $GLOBALS['babMinPasswordLength'];
+        }
+
+        return array(
+            array(
+                'preg' => '[\~\!\@\#\$\%\^\&\*\(\)\-\_\=\+\[\]\{\}\;\:\,\.\<\>\/\?\|a-zA-Z0-9]{'.$minPasswordLengh.',}',
+                'text' => sprintf(bab_translate("Password must be at least %s characters !!"),$minPasswordLengh)
+            )
+        );
+    }
 }

@@ -1304,6 +1304,13 @@ function displayForceChangePwdForm($idUser)
 
     $user = bab_getUserById($idUser);
 
+    $oPwdComplexity = @bab_functionality::get('PwdComplexity');
+    $rules = $oPwdComplexity->getRules();
+    $rulesLabels = $W->VBoxLayout()->setVerticalSpacing(.5, 'em');
+    foreach($rules as $rule){
+        $rulesLabels->addItem($W->Label($rule['text']));
+    }
+
     $page->addItem(
         $W->Form()->colon()
         ->setHiddenValue('cmd', 'confirmNewPwd')
@@ -1314,6 +1321,10 @@ function displayForceChangePwdForm($idUser)
                 $W->Title(bab_translate('For security reason you have to change your password.'),2),
                 $W->LabelledWidget(bab_translate('User'), $W->LineEdit()->setDisplayMode()->setName('user')->setValue(bab_composeUserName($user['firstname'], $user['lastname']))),
                 $W->LabelledWidget(bab_translate('Old password'), $W->LineEdit()->setMandatory(true, bab_translate('The old password must be enter'))->obfuscate()->setName('old_pwd')),
+                $W->Section(
+                    bab_translate('Password has to respect those following rules'). ' :',
+                    $rulesLabels
+                ),
                 $W->LabelledWidget(bab_translate('New password'), $W->LineEdit()->setMandatory(true, bab_translate('The new password must be enter'))->obfuscate()->setName('new_pwd1')),
                 $W->LabelledWidget(bab_translate('Retype new password'), $W->LineEdit()->setMandatory(true, bab_translate('The new password must be re-enter'))->obfuscate()->setName('new_pwd2')),
                 $W->SubmitButton()->setLabel(bab_translate('Save'))->validate()
