@@ -3486,6 +3486,6 @@ L'administrateur</string>
 <string id="New password are not identical.">Les nouveaux mot de passes saisie ne sont pas identiques.</string>
 <string id="The current password is wrong.">Le mot de passe actuel est erroné.</string>
 <string id="New password has to be different from the current one.">Le nouveau mot de passe doit être different de l'actuel.</string>
-<string id="For security reason you have to change your password.">Pour des raisons de sécurté vous devez changer votre mot de passe.</string>
-
+<string id="For security reason you have to change your password.">Pour des raisons de sécurité, vous devez effectuer un changement de mot de passe.</string>
+<string id="Update password">Modification de mot de passe</string>
 </fr>

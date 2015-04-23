@@ -1300,17 +1300,9 @@ function displayForceChangePwdForm($idUser)
 
     $page = $W->BabPage();
 
-    $page->addItemMenu('changePwd', bab_translate("Login"), $GLOBALS['babUrlScript'].'?tg=login&cmd=signon');
-
-    /* Some title to SET @TODO */
-    $title = '';
-    $page->setTitle($title);
-
-    $page->addItemMenu('signon', bab_translate("Login"), $GLOBALS['babUrlScript'].'?tg=login&cmd=signon');
+    $page->addItemMenu('changePwd', bab_translate("Update password"), $GLOBALS['babUrlScript'].'?tg=login&cmd=signon');
 
     $user = bab_getUserById($idUser);
-
-    $page->setTitle(bab_translate('For security reason you have to change your password.'));
 
     $page->addItem(
         $W->Form()->colon()
@@ -1319,6 +1311,7 @@ function displayForceChangePwdForm($idUser)
         ->setHiddenValue('user', $idUser)
         ->addItem(
             $W->VBoxItems(
+                $W->Title(bab_translate('For security reason you have to change your password.'),2),
                 $W->LabelledWidget(bab_translate('User'), $W->LineEdit()->setDisplayMode()->setName('user')->setValue(bab_composeUserName($user['firstname'], $user['lastname']))),
                 $W->LabelledWidget(bab_translate('Old password'), $W->LineEdit()->setMandatory(true, bab_translate('The old password must be enter'))->obfuscate()->setName('old_pwd')),
                 $W->LabelledWidget(bab_translate('New password'), $W->LineEdit()->setMandatory(true, bab_translate('The new password must be enter'))->obfuscate()->setName('new_pwd1')),

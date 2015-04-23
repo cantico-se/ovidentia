@@ -81,6 +81,12 @@ class bab_userModify {
             return false;
             }
 
+        $oPwdComplexity = @bab_functionality::get('PwdComplexity');
+        if (!$oPwdComplexity->isValid($password1)) {
+            $error = $oPwdComplexity->getErrorDescription();
+            return false;
+        }
+
         $query = "select id from ".BAB_USERS_TBL." where nickname='".$babDB->db_escape_string($nickname)."'";
         $res = $babDB->db_query($query);
         if( $babDB->db_num_rows($res) > 0)

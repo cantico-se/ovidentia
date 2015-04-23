@@ -1254,7 +1254,6 @@ class Func_UserEditor extends bab_functionality {
             if (!$oPwdComplexity->isValid($user['password1'])) {
                 throw new Exception($oPwdComplexity->getErrorDescription());
             }
-            die;
 
 
             $isconfirmed = 1;

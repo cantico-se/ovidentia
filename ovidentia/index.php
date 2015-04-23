@@ -104,7 +104,7 @@ require_once $babInstallPath.'utilit/addonapi.php';
 
 if(!bab_isAjaxRequest() && bab_getUserId()){
     if(isset($_SESSION['pwd_change_log']) && $_SESSION['pwd_change_log']){
-        if($_REQUEST['tg'] != 'login'){
+        if(!isset($_REQUEST['tg']) || $_REQUEST['tg'] != 'login'){
             header('Location: ?tg=login&cmd=changePwd&user='.$_SESSION['BAB_SESS_USERID']);
         }else{
             $_GET['babHttpContext'] = false;
