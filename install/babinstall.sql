@@ -723,6 +723,8 @@ CREATE TABLE bab_users (
    cookie_validity datetime DEFAULT '0000-00-00 00:00:00',
    cookie_id varchar(255),
    id_sitemap_profile int(11) unsigned DEFAULT '0' NOT NULL,
+   force_pwd_change tinyint(1) unsigned NOT NULL default '0',
+   pwd_change_date DATE NOT NULL DEFAULT '0000-00-00',
    PRIMARY KEY (id),
    KEY nickname (nickname),
    KEY firstname (firstname),
@@ -3899,7 +3901,8 @@ INSERT INTO `bab_event_listeners` (`id`, `event_class_name`, `function_name`, `r
 (14,'bab_eventForumPost'						, 'bab_onForumPost'							, 'utilit/eventforum.php'			, 'core', 0),
 (15,'bab_eventReference'						, 'bab_onReference'							, 'utilit/eventReference.php'		, 'core', 100),
 (16,'LibTimer_eventHourly'						, 'bab_onHourly'							, 'utilit/timerincl.php'			, 'core', 0),
-(17,'bab_eventBeforeWaitingItemsDisplayed'		, 'bab_onBeforeWaitingItemsDisplayed'		, 'utilit/approbincl.php'			, 'core', 0);
+(17,'bab_eventBeforeWaitingItemsDisplayed'		, 'bab_onBeforeWaitingItemsDisplayed'		, 'utilit/approbincl.php'			, 'core', 0),
+(18,'bab_eventAfterUserLoggedIn'				, 'bab_onUserLoggedInForcePwd'				, 'utilit/loginIncl.php'			, 'core', 0);
 
 
 CREATE TABLE `bab_upgrade_messages` (

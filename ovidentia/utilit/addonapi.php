@@ -2595,12 +2595,12 @@ function bab_updateUserNicknameById($userId, $newNickname, $ignoreAccessRights=f
  * @param string	$newPassword				The new user password
  * @param string	$newPassword2				The new user password (copy : used when we created 2 input fields in a form to confirm the password)
  * @param bool		$ignoreAccessRights			false (value by default) if you want to verify if the current user can update the account (superadmin...)
- * @param bool		$ignoreSixCharactersMinimum	false (value by default) if you want to verify if the password have at least 6 characters
+ * @param bool		$ignorePasswordComplexity	false (value by default) if you want to verify if the password respect portal rules
  * @param string	&$error						Error message
  *
  * @return bool		true on success, false on error
  */
-function bab_updateUserPasswordById($userId, $newPassword, $newPassword2, $ignoreAccessRights=false, $ignoreSixCharactersMinimum=false, &$error)
+function bab_updateUserPasswordById($userId, $newPassword, $newPassword2, $ignoreAccessRights=false, $ignorePasswordComplexity=false, &$error)
 {
     global $babBody, $babDB, $BAB_HASH_VAR;
 
@@ -2623,15 +2623,11 @@ function bab_updateUserPasswordById($userId, $newPassword, $newPassword2, $ignor
         return false;
     }
 
-    $minPasswordLengh = 6;
-    if(ISSET($GLOBALS['babMinPasswordLength']) && is_numeric($GLOBALS['babMinPasswordLength'])){
-        $minPasswordLengh = $GLOBALS['babMinPasswordLength'];
-    }
-
-    /* Test if the password have at least $GLOBALS['babMinPasswordLength'] or 6 characters */
-    if (!$ignoreSixCharactersMinimum) {
-        if (mb_strlen($newPassword) < $minPasswordLengh) {
-            $error = sprintf(bab_translate("Password must be at least %s characters !!"),$minPasswordLengh);
+    /* Test if the password respect define rules */
+    if (!$ignorePasswordComplexity) {
+        $oPwdComplexity = @bab_functionality::get('PwdComplexity');
+        if (!$oPwdComplexity->isValid($newPassword)) {
+            $error = $oPwdComplexity->getErrorDescription();
             return false;
         }
     }
@@ -2700,8 +2696,10 @@ function bab_updateUserPasswordById($userId, $newPassword, $newPassword2, $ignor
     }
 
     /* Update the user's password */
-    $sql = 'UPDATE ' . BAB_USERS_TBL . ' SET password=' . $babDB->quote(md5(mb_strtolower($newPassword))) . ' WHERE id=' . $babDB->quote($userId);
+    $sql = 'UPDATE ' . BAB_USERS_TBL . ' SET force_pwd_change = 0, pwd_change_date = CURDATE(), password=' . $babDB->quote(md5(mb_strtolower($newPassword))) . ' WHERE id=' . $babDB->quote($userId);
     $babDB->db_query($sql);
+
+    $_SESSION['pwd_change_log'] = false;
 
     /* Call the functionnality event onUserChangePassword */
     include_once $GLOBALS['babInstallPath'].'utilit/addonsincl.php';

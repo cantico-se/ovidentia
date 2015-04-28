@@ -35,102 +35,102 @@ function bab_userListShowHideFilter()
 
 <!--#if bshowform -->
 <table border="0" width="95%" cellspacing="0" cellpadding="1" align="center" id="babUserListFilter">
-	<tr> 
-		<td class="BabLoginCadreBackground">
-			<table width="100%" border="0" cellspacing="0" cellpadding="4" class="BabLoginMenuBackground">
-				<tr> 
-					<td align="right"><label for="BAB_sSearchField">{ sSearchCaption }&nbsp;</label></td>
-					<td align="left">
-						<input type="text" class="bab_search" id="BAB_sSearchField" name="sSearchText" size="40" maxlength="255" value="{ sSearchText }" />
-					</td>
-				</tr>
-				
-				<tr> 
-					<td align="right"><label>{ t_last_login }</label></td>
-					<td align="left">{ selectoption }{ datewidget }</td>
-				</tr>
-				
-				<tr>
-					<td colspan="2" align="right"><input type="submit" class="bab_searchSubmit" name="sSearchButton" value="{ sSearchButtonCaption }"/></td>
-				</tr>
-			</table>
-		</td>
-	</tr>
+    <tr>
+        <td class="BabLoginCadreBackground">
+            <table width="100%" border="0" cellspacing="0" cellpadding="4" class="BabLoginMenuBackground">
+                <tr>
+                    <td align="right"><label for="BAB_sSearchField">{ sSearchCaption }&nbsp;</label></td>
+                    <td align="left">
+                        <input type="text" class="bab_search" id="BAB_sSearchField" name="sSearchText" size="40" maxlength="255" value="{ sSearchText }" />
+                    </td>
+                </tr>
+
+                <tr>
+                    <td align="right"><label>{ t_last_login }</label></td>
+                    <td align="left">{ selectoption }{ datewidget }</td>
+                </tr>
+
+                <tr>
+                    <td colspan="2" align="right"><input type="submit" class="bab_searchSubmit" name="sSearchButton" value="{ sSearchButtonCaption }"/></td>
+                </tr>
+            </table>
+        </td>
+    </tr>
 </table>
-<br />			
+<br />
 <!--#endif bshowform -->
 
 <table  width="95%" border="0" cellspacing="0" cellpadding="2" align="center">
-<tr> 
-	<td class="BabLoginCadreBackground" align="center" valign="middle"> 
-		<table width="100%" border="0" cellspacing="0" cellpadding="2" align="center">
-		<tfoot>
-			<tr class="BabSiteAdminTitleFontBackground">
-				<td colspan="5">&nbsp;</td>
-				<td align="center">
-				<!--#if bshowform -->
-					<a href="javascript:onCheckAll('users', true)"><img src="{ babSkinPath }images/Puces/Pucecheked.gif" alt="{ checkall }" width="10" height="10" border="0" /></a><a href="javascript:onCheckAll('users', false)"><img src="{ babSkinPath }images/Puces/PuceUncheked.gif" alt="{ uncheckall }" width="10" height="10" border="0" /></a>
-				<!--#endif bshowform -->
-				</td>
-			</tr>
-		</tfoot>
-	
-		<tr> 
-			<td colspan="6" nowrap="nowrap" class="BabLetterlists"><!--#if allselected "== 1" -->{ allname }<img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="5" height="1" border="0" /><!--#else allselected --><a class="BabAlphabetLink" href="{ allurl }">{ allname }</a><img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="5" height="1" border="0" /><!--#endif allselected --><!--#in getnextselect --><!--#if selected "== 1" -->{ selectname }<img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="5" height="1" border="0" /><!--#else selected --><a class="BabAlphabetLink" href="{ selecturl }">{ selectname }</a><img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="5" height="1" border="0" /><!--#endif selected --><!--#endin getnextselect --></td>
-		</tr>
+<tr>
+    <td class="BabLoginCadreBackground" align="center" valign="middle">
+        <table width="100%" border="0" cellspacing="0" cellpadding="2" align="center">
+        <tfoot>
+            <tr class="BabSiteAdminTitleFontBackground">
+                <td colspan="5">&nbsp;</td>
+                <td align="center">
+                <!--#if bshowform -->
+                    <a href="javascript:onCheckAll('users', true)"><img src="{ babSkinPath }images/Puces/Pucecheked.gif" alt="{ checkall }" width="10" height="10" border="0" /></a><a href="javascript:onCheckAll('users', false)"><img src="{ babSkinPath }images/Puces/PuceUncheked.gif" alt="{ uncheckall }" width="10" height="10" border="0" /></a>
+                <!--#endif bshowform -->
+                </td>
+            </tr>
+        </tfoot>
 
-		<tr class="BabSiteAdminTitleFontBackground"> 
-			<td width="1%" align="right" nowrap="nowrap" valign="middle">&nbsp;</td>
-			<td><a class="BabSiteAdminListLink" href="{ fullnameurl }">{ fullname }</a></td>
-			<td>{ nickname }</td>
-			<td>{ email }</td>
-			<td>{ t_lastlogin }</td>
-			<td align="center"><!--#if bshowform -->
-			<!--#if deleteAction  -->
-			{ t_deletedisable }
-			<!--#else deleteAction  -->
-			<a class="BabSiteAdminListLink" href="{ groupurl }">{ group }</a>
-			<!--#endif deleteAction  -->
-			<!--#endif bshowform --></td>
-		</tr>
-		<!--#in getnext -->
-		<!--#if altbg --><tr class="BabSiteAdminFontBackground"><!--#else altbg --><tr class="BabForumBackground1"><!--#endif altbg --> 
-			<td width="1%" align="right" nowrap="nowrap">
-				<!--#if status "== *" --><acronym title="{ t_online }"><img src="{ babSkinPath }images/Puces/PuceOnline.gif" alt="{ t_online }" style="valign:absmiddle;" /></acronym><!--#endif status -->
-				
-				<!--#if arr[is_confirmed] "== 0" --><acronym title="{ t_unconfirmed }"><img src="{ babSkinPath }images/Puces/unconfirmed.gif" alt="{ t_unconfirmed }" style="valign:absmiddle;" /></acronym><!--#endif arr[is_confirmed] -->
-				
-				<!--#if disabled --><acronym title="{ t_disabled }"><img src="{ babSkinPath }images/Puces/disabled.gif" alt="{ t_disabled }" style="valign:absmiddle;" /></acronym><!--#endif disabled -->&nbsp;
-				
-				<!--#if set_directory -->
-				<a href="{ dirdetailurl }" onclick="Start(this.href, '', 'width=550,height=500,status=no,resizable=yes,top=50,left=200,scrollbars=yes');return false;"><img src="{ babSkinPath }images/Puces/contact.png" alt="{ t_dirdetail }" style="valign:absmiddle;" border="0" /></a>&nbsp;
-				<!--#endif set_directory -->
-				
-				<a href="{ groupsurl }" onclick="bab_popup(this.href+'&amp;popup=1');return false;"><img src="{ babSkinPath }images/Puces/PuceUsers.gif" alt="{ t_groups }" style="valign:absmiddle;" border="0" /></a>&nbsp;
-			</td>
-			<td valign="middle">
-				<!--#if bmodname -->
-				<a class="BabNameEmailLink" href="{ url }">{ urlname }</a>
-				<!--#else bmodname -->
-				{ urlname }
-				<!--#endif bmodname -->
-			</td>
-			<td>{ usersInfo[nickname] }</td>
-			<td><a class="BabNameEmailLink" href="mailto:{ usersInfo[email] }">{ usersInfo[email] }</a></td>
-			<td>{ lastlogin }</td>
-			<td align="center"><!--#if bshowform --><input type="checkbox" name="users[]" value="{ userid }" { checked } /><!--#endif bshowform --></td>
-		</tr>
-		<!--#endin getnext -->
-		</table>
-	</td>
+        <tr>
+            <td colspan="6" nowrap="nowrap" class="BabLetterlists"><!--#if allselected "== 1" -->{ allname }<img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="5" height="1" border="0" /><!--#else allselected --><a class="BabAlphabetLink" href="{ allurl }">{ allname }</a><img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="5" height="1" border="0" /><!--#endif allselected --><!--#in getnextselect --><!--#if selected "== 1" -->{ selectname }<img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="5" height="1" border="0" /><!--#else selected --><a class="BabAlphabetLink" href="{ selecturl }">{ selectname }</a><img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="5" height="1" border="0" /><!--#endif selected --><!--#endin getnextselect --></td>
+        </tr>
+
+        <tr class="BabSiteAdminTitleFontBackground">
+            <td width="1%" align="right" nowrap="nowrap" valign="middle">&nbsp;</td>
+            <td><a class="BabSiteAdminListLink" href="{ fullnameurl }">{ fullname }</a></td>
+            <td>{ nickname }</td>
+            <td>{ email }</td>
+            <td>{ t_lastlogin }</td>
+            <td align="center"><!--#if bshowform -->
+            <!--#if deleteAction  -->
+            { t_deletedisable }
+            <!--#else deleteAction  -->
+            <a class="BabSiteAdminListLink" href="{ groupurl }">{ group }</a>
+            <!--#endif deleteAction  -->
+            <!--#endif bshowform --></td>
+        </tr>
+        <!--#in getnext -->
+        <!--#if altbg --><tr class="BabSiteAdminFontBackground"><!--#else altbg --><tr class="BabForumBackground1"><!--#endif altbg -->
+            <td width="1%" align="right" nowrap="nowrap">
+                <!--#if status "== *" --><acronym title="{ t_online }"><img src="{ babSkinPath }images/Puces/PuceOnline.gif" alt="{ t_online }" style="valign:absmiddle;" /></acronym><!--#endif status -->
+
+                <!--#if arr[is_confirmed] "== 0" --><acronym title="{ t_unconfirmed }"><img src="{ babSkinPath }images/Puces/unconfirmed.gif" alt="{ t_unconfirmed }" style="valign:absmiddle;" /></acronym><!--#endif arr[is_confirmed] -->
+
+                <!--#if disabled --><acronym title="{ t_disabled }"><img src="{ babSkinPath }images/Puces/disabled.gif" alt="{ t_disabled }" style="valign:absmiddle;" /></acronym><!--#endif disabled -->&nbsp;
+
+                <!--#if set_directory -->
+                <a href="{ dirdetailurl }" onclick="Start(this.href, '', 'width=550,height=500,status=no,resizable=yes,top=50,left=200,scrollbars=yes');return false;"><img src="{ babSkinPath }images/Puces/contact.png" alt="{ t_dirdetail }" style="valign:absmiddle;" border="0" /></a>&nbsp;
+                <!--#endif set_directory -->
+
+                <a href="{ groupsurl }" onclick="bab_popup(this.href+'&amp;popup=1');return false;"><img src="{ babSkinPath }images/Puces/PuceUsers.gif" alt="{ t_groups }" style="valign:absmiddle;" border="0" /></a>&nbsp;
+            </td>
+            <td valign="middle">
+                <!--#if bmodname -->
+                <a class="BabNameEmailLink" href="{ url }">{ urlname }</a>
+                <!--#else bmodname -->
+                { urlname }
+                <!--#endif bmodname -->
+            </td>
+            <td>{ usersInfo[nickname] }</td>
+            <td><a class="BabNameEmailLink" href="mailto:{ usersInfo[email] }">{ usersInfo[email] }</a></td>
+            <td>{ lastlogin }</td>
+            <td align="center"><!--#if bshowform --><input type="checkbox" name="users[]" value="{ userid }" { checked } /><!--#endif bshowform --></td>
+        </tr>
+        <!--#endin getnext -->
+        </table>
+    </td>
 </tr>
 </table>
 <!--#if bshowform --><input type="hidden" name="userst" value="{ userst }" />
 <div align="center"><br />
 <!--#if deleteAction  -->
 <select name="deleteaction">
-	<option value="disable">{ t_disable }</option>
-	<option value="delete">{ t_delete }</option>
+    <option value="disable">{ t_disable }</option>
+    <option value="delete">{ t_delete }</option>
 </select> { t_selected_users } <input type="submit" name="Deleteg" value="{ t_ok }" />
 <!--#else deleteAction  -->
 <input type="submit" name="Updateg" value="{ updategroup }" />
@@ -156,12 +156,12 @@ function bab_userListShowHideFilter()
 
 function setStartDateValue(date)
 {
-	document.getElementById('validity_start').value =  (date.day < 10 ? '0' : '') + date.day + '-' + (date.month < 10 ? '0' : '') + date.month + '-' + date.year;
+    document.getElementById('validity_start').value =  (date.day < 10 ? '0' : '') + date.day + '-' + (date.month < 10 ? '0' : '') + date.month + '-' + date.year;
 }
 
 function setEndDateValue(date)
 {
-	document.getElementById('validity_end').value =  (date.day < 10 ? '0' : '') + date.day + '-' + (date.month < 10 ? '0' : '') + date.month + '-' + date.year;
+    document.getElementById('validity_end').value =  (date.day < 10 ? '0' : '') + date.day + '-' + (date.month < 10 ? '0' : '') + date.month + '-' + date.year;
 }
 
 //-->
@@ -175,8 +175,8 @@ function setEndDateValue(date)
 <input type="hidden" name="pos" value="{ pos }">
 <input type="hidden" name="grp" value="{ grp }">
 <table  width="70%" border="0" cellspacing="0" cellpadding="2" align="center">
-<tr> 
-<td class="BabLoginCadreBackground" align="center" valign="middle"> 
+<tr>
+<td class="BabLoginCadreBackground" align="center" valign="middle">
 
 <table class="BabLoginMenuBackground" width="100%" border="0" cellspacing="0" cellpadding="6" align="center">
 <col width="40%">
@@ -209,7 +209,17 @@ function setEndDateValue(date)
     </select>
   </td>
 </tr>
-
+<!--#if displayforcepwdchange "== 1" -->
+<tr>
+  <td align="right">{ forcepasswordchange }</td>
+  <td>
+    <select name="force_pwd_change">
+      <option value="0" <!--#if arr[force_pwd_change] "== 0" -->selected="selected"<!--#endif arr[force_pwd_change] --> >{ no }</option>
+      <option value="1" <!--#if arr[force_pwd_change] "== 1" -->selected="selected"<!--#endif arr[force_pwd_change] --> >{ yes }</option>
+    </select>
+  </td>
+</tr>
+<!--#endif displayforcepwdchange -->
 <tr>
   <td align="right">{ validity_period }</td>
   <td>
@@ -219,9 +229,9 @@ function setEndDateValue(date)
 </tr>
 
 <!--#if bshowauthtype -->
-<tr> 
+<tr>
   <td align="right">{ authentificationtxt } ?</td>
-  <td> 
+  <td>
     <select name="authtype">
       <option value="Y" { yselected }>{ ovidentiaauthtxt }</option>
       <option value="N" { nselected }>{ siteauthtxt }</option>
@@ -231,9 +241,9 @@ function setEndDateValue(date)
 <!--#endif bshowauthtype -->
 
 <!--#if showprimary -->
-<tr> 
+<tr>
   <td align="right">{ primarygroup }</td>
-  <td> 
+  <td>
     <select name="group">
       <option value="" >{ none }</option>
       <!--#in getNextGroup -->
@@ -244,8 +254,8 @@ function setEndDateValue(date)
 </tr>
 <!--#endif showprimary -->
 
-<tr> 
-  <td colspan="2" align="center"> 
+<tr>
+  <td colspan="2" align="center">
     <input type="submit" name="bupdate" value="{ modify }">
     <!--#if bdelete -->
     <input type="submit" name="bdelete" value="{ delete }">
@@ -275,7 +285,7 @@ function setEndDateValue(date)
 <input type="hidden" name="update" value="nickname">
 <table  width="70%" border="0" cellspacing="0" cellpadding="2" align="center">
 <tr>
-<td class="BabLoginCadreBackground" align="center" valign="middle"> 
+<td class="BabLoginCadreBackground" align="center" valign="middle">
 <table class="BabLoginMenuBackground"  width="100%" border="0" cellspacing="0" cellpadding="6" align="center" class="BabLoginMenuBackground">
 <col width="40%">
 <tr valign="middle">
@@ -312,19 +322,19 @@ function setEndDateValue(date)
 <input type="hidden" name="grp" value="{ grp }">
 <input type="hidden" name="update" value="password">
 <table  width="70%" border="0" cellspacing="0" cellpadding="2" align="center">
-<tr> 
-<td class="BabLoginCadreBackground" align="center" valign="middle"> 
+<tr>
+<td class="BabLoginCadreBackground" align="center" valign="middle">
 <table class="BabLoginMenuBackground"  width="100%" border="0" cellspacing="0" cellpadding="6" align="center" class="BabLoginMenuBackground">
 <col width="40%">
-<tr> 
+<tr>
   <td align="right">{ newpwd }:</td>
-  <td> 
+  <td>
     <input type="password" name="newpwd1" size="20" maxlength="255">
   </td>
 </tr>
-<tr > 
+<tr >
   <td align="right">{ renewpwd }:</td>
-  <td> 
+  <td>
     <input type="password" name="newpwd2" size="20" maxlength="255">
   </td>
 </tr>
@@ -337,7 +347,7 @@ function setEndDateValue(date)
     </select>
   </td>
 </tr>
-<tr> 
+<tr>
   <td align="center" colspan="2">
     <input type="submit" name="submit" value="{ update }">
   </td>
@@ -360,14 +370,14 @@ function setEndDateValue(date)
 <script type="text/javascript">
 <!--
 function submitCtrl() {
-	var f = document.forms.utilit;
-	if (isNaN(f.nb_days.value) || f.nb_days.value < 1)
-		{
-		//{}
-		alert('{ js_alert }');
-		return false;
-		}
-	return true;
+    var f = document.forms.utilit;
+    if (isNaN(f.nb_days.value) || f.nb_days.value < 1)
+        {
+        //{}
+        alert('{ js_alert }');
+        return false;
+        }
+    return true;
 }
 //-->
 </script>
@@ -376,44 +386,44 @@ function submitCtrl() {
 <table width="50%" border="0" cellspacing="0" cellpadding="2" align="center">
 <tr>
 <td class="BabLoginCadreBackground" align="center" valign="middle">
-	<table class="BabLoginMenuBackground" width="100%" border="0" cellspacing="0" cellpadding="5" align="center">
-	<tr>
-		<td colspan="2">&nbsp;</td>
-	</tr>
-	<tr>
-		<td align="right" width="50%">{ t_nb_total_users }&nbsp;:</td>
-		<td>{ arr[nb_total_users] }</td>
-	</tr>
-	<tr>
-		<td align="right">{ t_nb_unconfirmed_users }&nbsp;:</td>
-		<td>{ arr[nb_unconfirmed_users] }</td>
-	</tr>
-	<tr>
-		<td colspan="2" align="center">
-		
-			<form name="utilit" method="post" action="{ babPhpSelf }" onSubmit="return(submitCtrl())">
-			<input type="hidden" name="tg" value="users" />
-			<input type="hidden" name="idx" value="utilit" />
-			<input type="hidden" name="action" value="delete_unconfirmed" />
-			{ t_delete_unconfirmed }&nbsp;<input type="text" name="nb_days" value="30" size="4" maxlength="4" />&nbsp;{ t_days }&nbsp;<input type="submit" value="{ t_ok }" />
-			</form>
-			
-			<br />
-			<br />
-			
-			<form name="utilit" method="post" action="{ babPhpSelf }">
-			<input type="hidden" name="tg" value="users" />
-			<input type="hidden" name="idx" value="utilit" />
-			<input type="hidden" name="action" value="delete_since" />
-			{ t_delete_since }&nbsp;<input type="text" name="creation_date" value="{ today }" size="10" maxlength="10" />&nbsp;&nbsp;<input type="submit" value="{ t_ok }" />
-			</form>
-			
-		</td>
-	</tr>
-	<tr>
-		<td colspan="2">&nbsp;</td>
-	</tr>
-	</table>
+    <table class="BabLoginMenuBackground" width="100%" border="0" cellspacing="0" cellpadding="5" align="center">
+    <tr>
+        <td colspan="2">&nbsp;</td>
+    </tr>
+    <tr>
+        <td align="right" width="50%">{ t_nb_total_users }&nbsp;:</td>
+        <td>{ arr[nb_total_users] }</td>
+    </tr>
+    <tr>
+        <td align="right">{ t_nb_unconfirmed_users }&nbsp;:</td>
+        <td>{ arr[nb_unconfirmed_users] }</td>
+    </tr>
+    <tr>
+        <td colspan="2" align="center">
+
+            <form name="utilit" method="post" action="{ babPhpSelf }" onSubmit="return(submitCtrl())">
+            <input type="hidden" name="tg" value="users" />
+            <input type="hidden" name="idx" value="utilit" />
+            <input type="hidden" name="action" value="delete_unconfirmed" />
+            { t_delete_unconfirmed }&nbsp;<input type="text" name="nb_days" value="30" size="4" maxlength="4" />&nbsp;{ t_days }&nbsp;<input type="submit" value="{ t_ok }" />
+            </form>
+
+            <br />
+            <br />
+
+            <form name="utilit" method="post" action="{ babPhpSelf }">
+            <input type="hidden" name="tg" value="users" />
+            <input type="hidden" name="idx" value="utilit" />
+            <input type="hidden" name="action" value="delete_since" />
+            { t_delete_since }&nbsp;<input type="text" name="creation_date" value="{ today }" size="10" maxlength="10" />&nbsp;&nbsp;<input type="submit" value="{ t_ok }" />
+            </form>
+
+        </td>
+    </tr>
+    <tr>
+        <td colspan="2">&nbsp;</td>
+    </tr>
+    </table>
 </td>
 </tr>
 </table>
@@ -426,21 +436,21 @@ function submitCtrl() {
 <!--#begin viewgroups -->
 
 <table  width="95%" border="0" cellspacing="0" cellpadding="2" align="center">
-<tr> 
-	<td class="BabLoginCadreBackground" align="center" valign="middle"> 
-		<table width="100%" border="0" cellspacing="0" cellpadding="2" align="center">
-		<tr class="BabSiteAdminTitleFontBackground"> 
-			<td>{ t_name }</td>
-			<td>{ t_description }</td>
-		</tr>
-		<!--#in getnextgroup -->
-		<!--#if altbg --><tr class="BabSiteAdminFontBackground"><!--#else altbg --><tr class="BabForumBackground1"><!--#endif altbg --> 
-			<td>{ name }</td>
-			<td>{ description }</td>
-		</tr>
-		<!--#endin getnextgroup -->
-		</table>
-	</td>
+<tr>
+    <td class="BabLoginCadreBackground" align="center" valign="middle">
+        <table width="100%" border="0" cellspacing="0" cellpadding="2" align="center">
+        <tr class="BabSiteAdminTitleFontBackground">
+            <td>{ t_name }</td>
+            <td>{ t_description }</td>
+        </tr>
+        <!--#in getnextgroup -->
+        <!--#if altbg --><tr class="BabSiteAdminFontBackground"><!--#else altbg --><tr class="BabForumBackground1"><!--#endif altbg -->
+            <td>{ name }</td>
+            <td>{ description }</td>
+        </tr>
+        <!--#endin getnextgroup -->
+        </table>
+    </td>
 </tr>
 </table>
 
