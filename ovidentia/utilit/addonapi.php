@@ -2053,26 +2053,29 @@ function bab_getActiveSessions($id_user = null)
     return $output;
 }
 
+
 /**
- * Get mime type by filename extention
+ * Get mime type by filename extension.
+ * @param string $file
+ * @return string
  */
 function bab_getFileMimeType($file)
 {
     global $babDB;
     $mime = "application/octet-stream";
     $iPos = mb_strrpos($file, ".");
-    if (false !== $iPos)
-        {
-        $ext = mb_substr($file,$iPos+1);
-        $res = $babDB->db_query("select * from ".BAB_MIME_TYPES_TBL." where ext='".$babDB->db_escape_string($ext)."'");
-        if( $res && $babDB->db_num_rows($res) > 0)
-            {
+    if (false !== $iPos) {
+        $ext = mb_strtolower(mb_substr($file, $iPos + 1));
+        $res = $babDB->db_query('select * from '.BAB_MIME_TYPES_TBL.' where ext=' . $babDB->quote($ext));
+        if ($res && $babDB->db_num_rows($res) > 0) {
             $arr = $babDB->db_fetch_array($res);
             $mime = $arr['mimetype'];
-            }
         }
+    }
     return $mime;
 }
+
+
 
 /* API Directories */
 /**
