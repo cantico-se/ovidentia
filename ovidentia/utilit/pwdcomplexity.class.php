@@ -52,6 +52,11 @@ class Func_PwdComplexity extends bab_functionality {
         die(bab_translate("Func_PwdComplexity::getRules must not be called directly"));
     }
 
+    public function getRandomPwd($length = 0)
+    {
+        die(bab_translate("Func_PwdComplexity::getRandomPwd must not be called directly"));
+    }
+
     public function getErrorDescription()
     {
         return $this->error;
@@ -114,5 +119,28 @@ class Func_PwdComplexity_DefaultPortal extends Func_PwdComplexity {
                 'text' => sprintf(bab_translate("Password must be at least %s characters !!"),$minPasswordLengh)
             )
         );
+    }
+
+    public function getRandomPwd($length = 0)
+    {
+        $pwd_length = 6;
+
+        if($length < $pwd_length){
+            $length = $pwd_length;
+        }
+
+        $pwd = '';
+
+        $lowChar = 'abcdefghijkmnpqrstwxyz';
+        $upChar = 'ABCDEFGHJKLMNPQRSTWXYZ';
+        $numChar = '23456789';
+        //$specialChar = '~!@#$%^&*()-_=+[]{};:,.<>/?|';
+        $allChars = $lowChar.$upChar.$numChar;
+
+        for($i = 0; $i < $length; $i++) {
+            $pwd .= $allChars[(rand() % strlen($allChars))];
+        }
+
+        return $pwd;
     }
 }
