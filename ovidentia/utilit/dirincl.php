@@ -488,7 +488,7 @@ function summaryDbContact($id, $idu, $update=true)
 					{
 					$this->modify = true;
 					}
-				
+				/*
 				if( $this->modify == false )
 					{
 					while( $arr = $babDB->db_fetch_array($this->res))
@@ -501,7 +501,7 @@ function summaryDbContact($id, $idu, $update=true)
 						}
 					$babDB->db_data_seek($this->res, 0);
 					}
-
+                */
 				if( $this->modify )
 					{
 					$this->modifytxt = bab_translate("Modify");
