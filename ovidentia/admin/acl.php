@@ -158,6 +158,14 @@ class macl
 		$page->setEmbedded();
 		$page->addItem($this->getForm());
 		
+		// need jquery and jquery UI
+		
+		/* @var $J Func_jquery */
+		if ($J = bab_functionality::get('jquery')) {
+            $J->includeCore();
+            $J->includeUi();
+		}
+		
 		$page->displayHtml();
 	}
 	
