@@ -344,7 +344,7 @@
 <!--#if ballowuserupdate -->
 <tr> 
 <td align="left" colspan="2">{ allowuserupdate }&nbsp;
-<select name="allowuu">
+<select name="allowuu" onchange="allowuserupdateChange();">
 <option value="N" { noselected }>{ no }</option>
 <option value="Y" { yesselected }>{ yes }</option>
 </select>
@@ -366,6 +366,9 @@
 		<td width="50%">{ defaultvalue }</td>
 		<td width="10%">{ disabledtxt }</td>
 		<td width="10%">{ rw }</td>
+		<!--#if ballowuserupdate -->
+		<td width="10%" class="allowuserupdate">{ t_usermodifiable }</td>
+		<!--#endif ballowuserupdate -->
 		<td width="10%">{ required }</td>
 		<td width="10%">{ multilignes }</td>
 	</tr>
@@ -401,6 +404,10 @@
 			</a>
 		
 		</td>
+		<!--#if ballowuserupdate -->
+		<td  class="allowuserupdate"><input type="checkbox" name="usermodifiable[]" { usermodifiablechecked } value="{ fieldid }" style="vertical-align:middle" /></td>
+        <!--#endif ballowuserupdate -->
+        
 		<!--#if disabled -->
 		<td><input type="checkbox" checked disabled><input type="hidden" name="req[]" value="{ fieldid }" style="vertical-align:middle" /></td>
 		<!--#else disabled -->
@@ -441,6 +448,11 @@
 				<!--#endif fncount -->
 			</a>
 		</td>
+		
+		<!--#if ballowuserupdate -->
+        <td  class="allowuserupdate"><input type="checkbox" name="usermodifiable[]" { usermodifiablechecked } value="{ fieldid }" style="vertical-align:middle" /></td>
+        <!--#endif ballowuserupdate -->
+        
 		<!--#if disabled -->
 		<td><input type="checkbox" checked disabled><input type="hidden" name="req[]" value="{ fieldid }" style="vertical-align:middle" /></td>
 		<!--#else disabled -->
@@ -450,6 +462,9 @@
 	</tr>
 	<!--#endin getnextfieldx -->
 	<tr class="BabSiteAdminTitleFontBackground">
+	<!--#if ballowuserupdate -->
+	       <td class="allowuserupdate"></td>
+	<!--#endif ballowuserupdate -->
 		<td colspan="6" align="right"><a class="BabSiteAdminListLink" href="javascript: bab_popup('{ addfurl }',2);">{ addftxt }</a></td>
 	</tr>
 	</table>
@@ -474,6 +489,28 @@ function setDirFieldModifiable(checkbox)
 }
 
 
+function allowuserupdateChange()
+{
+	function setDisplay(display) {
+		var elements = document.getElementsByClassName('allowuserupdate');
+		for(var i = 0; i < elements.length; i++) {
+			elements[i].style.display = display;
+		}
+	}
+	
+	var selects = document.getElementsByTagName("select");
+	for(var i = 0; i < selects.length; i++) {
+	    if(selects[i].name === 'allowuu') {
+	        if ('Y' === selects[i].value) {
+	        	setDisplay('');
+	        } else {
+	        	setDisplay('none');
+	        }
+	    }
+	}
+}
+
+
 bab_initFunctions.push(function() {
 	var inputs = document.getElementById('bab_directory_fields_list').getElementsByTagName('input');
 	for (var i=0; i < inputs.length; i++)
@@ -483,6 +520,8 @@ bab_initFunctions.push(function() {
 			setDirFieldModifiable(inputs[i]);
 		}
 	}
+	
+	allowuserupdateChange();
 });
 
 </script>

@@ -7167,6 +7167,14 @@ function ovidentia_upgrade($version_base,$version_ini) {
 
     $functionalities->register('PwdComplexity'					, $GLOBALS['babInstallPath'].'utilit/pwdcomplexity.class.php');
     $functionalities->register('PwdComplexity/DefaultPortal'	, $GLOBALS['babInstallPath'].'utilit/pwdcomplexity.class.php');
+    
+    
+    if(!bab_isTableField('bab_dbdir_fieldsextra', 'usermodifiable'))
+    {
+        $babDB->db_query("ALTER TABLE bab_dbdir_fieldsextra ADD usermodifiable enum('N','Y') NOT NULL default 'N'");
+        $babDB->db_query('UPDATE bab_dbdir_fieldsextra SET usermodifiable=modifiable');
+    }
+    
 
 
     return true;

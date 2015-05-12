@@ -759,6 +759,7 @@ function modifyDb($id)
 			$this->field = bab_translate("Fields");
 			$this->defaultvalue = bab_translate("Default Value");
 			$this->rw = bab_translate("Modifiable");
+			$this->t_usermodifiable = bab_translate("Modifiable by the user");
 			$this->required = bab_translate("Required");
 			$this->multilignes = bab_translate("Multilignes");
 			$this->add = bab_translate("Modify");
@@ -850,10 +851,18 @@ function modifyDb($id)
 				$this->altbg = !$this->altbg;
 				$arr = $this->db->db_fetch_array($this->res);
 				$this->fieldid = $arr['id_field'];
+				
 				if( $arr['modifiable'] == 'Y')
 					$this->rwchecked = 'checked';
 				else
 					$this->rwchecked = '';
+				
+
+				if( $arr['usermodifiable'] == 'Y') {
+				    $this->usermodifiablechecked = 'checked';
+				} else {
+				    $this->usermodifiablechecked = '';
+				}
 
 				if( $arr['required'] == 'Y')
 					$this->reqchecked = 'checked';
@@ -913,10 +922,17 @@ function modifyDb($id)
 				$this->altbg = !$this->altbg;
 				$arr = $this->db->db_fetch_array($this->resfx);
 				$this->fieldid = $arr['id_field'];
-				if( $arr['modifiable'] == 'Y')
+				if( $arr['modifiable'] == 'Y') {
 					$this->rwchecked = 'checked';
-				else
+				} else {
 					$this->rwchecked = '';
+				}
+				
+				if( $arr['usermodifiable'] == 'Y') {
+					$this->usermodifiablechecked = 'checked';
+				} else {
+					$this->usermodifiablechecked = '';
+				}
 
 				if( $arr['required'] == 'Y')
 					$this->reqchecked = 'checked';
@@ -1528,9 +1544,9 @@ function modifyAdLdap($id, $name, $description, $servertype, $decodetype, $host,
 	return true;
 	}
 
-function modifyAdDb($id, $name, $description, $displayiu, $rw, $rq, $ml, $dz, $allowuu)
+function modifyAdDb($id, $name, $description, $displayiu, $rw, $userm, $rq, $ml, $dz, $allowuu)
 	{
-	global $babBody;
+	global $babBody, $babDB;
 
 	if( empty($name))
 		{
@@ -1571,25 +1587,43 @@ function modifyAdDb($id, $name, $description, $displayiu, $rw, $rq, $ml, $dz, $a
 		if( $arr['id_group'] == 0 || $arr['id_group'] == BAB_REGISTERED_GROUP)
 			{
 			$res = $db->db_query("select * from ".BAB_DBDIR_FIELDSEXTRA_TBL." where id_directory='".$db->db_escape_string($iddir)."'");
-			while( $arr = $db->db_fetch_array($res))
-				{
-				if( count($rw) > 0 && in_array($arr['id_field'], $rw))
+			while( $arr = $db->db_fetch_array($res)) {
+			    
+				if( count($rw) > 0 && in_array($arr['id_field'], $rw)) {
 					$modifiable = 'Y';
-				else
+				} else {
 					$modifiable = 'N';
+				}
+				
+				if( count($userm) > 0 && in_array($arr['id_field'], $userm)) {
+				    $usermodifiable = 'Y';
+				} else {
+				    $usermodifiable = 'N';
+				}
+				
 				if( count($rq) > 0 && in_array($arr['id_field'], $rq))
 					$required = 'Y';
 				else
 					$required = 'N';
+				
 				if( count($ml) > 0 && in_array($arr['id_field'], $ml))
 					$multilignes = 'Y';
 				else
 					$multilignes = 'N';
+				
 				if( count($dz) > 0 && in_array($arr['id_field'], $dz))
 					$disabled = 'Y';
 				else
 					$disabled = 'N';
-				$req = "update ".BAB_DBDIR_FIELDSEXTRA_TBL." set modifiable='".$modifiable."', required='".$required."', multilignes='".$multilignes."', disabled='".$disabled."' where id='".$db->db_escape_string($arr['id'])."'";
+				
+				$req = "update ".BAB_DBDIR_FIELDSEXTRA_TBL." set 
+				        modifiable=".$babDB->quote($modifiable).", 
+				        usermodifiable=".$babDB->quote($usermodifiable).", 
+				        required=".$babDB->quote($required).", 
+				        multilignes=".$babDB->quote($multilignes).", 
+				        disabled=".$babDB->quote($disabled)." 
+				            
+				    where id='".$db->db_escape_string($arr['id'])."'";
 				$db->db_query($req);
 				}
 			}
@@ -1978,12 +2012,20 @@ if( isset($modify))
 				break;
 
 			case 'db':
-				if (!isset($ml)) { $ml = array(); }
-				if (!isset($rw)) { $rw = array(); }
-				if (!isset($dz)) { $dz = array(); }
-				if (!isset($req)) { $req = array(); }
-				if (!isset($allowuu)) { $allowuu= ''; }
-				if( !modifyAdDb($id, $adname, $description, $displayiu, $rw, $req, $ml, $dz, $allowuu))
+			    
+			    $id = bab_pp('id');
+			    $adname = bab_pp('adname');
+			    $description = bab_pp('description');
+			    $displayiu = bab_pp('displayiu');
+			    $allowuu = bab_pp('allowuu');
+			    
+			    $ml = bab_pp('ml', array());
+			    $rw = bab_pp('rw', array());
+			    $usermodifiable = bab_pp('usermodifiable', array());
+			    $dz = bab_pp('dz', array());
+			    $req = bab_pp('req', array());
+
+				if( !modifyAdDb($id, $adname, $description, $displayiu, $rw, $usermodifiable, $req, $ml, $dz, $allowuu))
 				{
 				$idx = 'mdb';
 				}

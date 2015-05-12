@@ -3489,4 +3489,7 @@ L'administrateur</string>
 <string id="For security reason you have to change your password.">Pour des raisons de sécurité, vous devez effectuer un changement de mot de passe.</string>
 <string id="Update password">Modification de mot de passe</string>
 <string id="Password has to respect those following rules">Le mot de passe doit respecter les exigences de complexité suivantes</string>
+
+<string id="Modifiable by the user">Modifiable par l'utilisateur</string>
+
 </fr>
