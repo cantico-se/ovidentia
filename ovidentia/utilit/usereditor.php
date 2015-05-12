@@ -22,6 +22,8 @@
  */
 
 
+require_once dirname(__FILE__).'/dirincl.php';
+
 
 /**
  * Default user editor (create/modify form for the user account)
@@ -76,6 +78,11 @@ class Func_UserEditor extends bab_functionality {
      */
     private $registration_fields = null;
 
+    /**
+     * @see Func_UserEditor::getOwnDirectoryFields()
+     * @var array
+     */
+    private $ownfields = null;
 
     /**
      *
@@ -326,6 +333,32 @@ class Func_UserEditor extends bab_functionality {
 
         return false;
     }
+    
+    
+    /**
+     * Test if the only access is the modification of my own entry
+     */
+    protected function isUserEditHisEntry($id_user)
+    {
+        if (null === $id_user)
+        {
+            return false;
+        }
+
+        if (0 === (int) $id_user)
+        {
+            throw new Exception('Incorrect user parameter');
+            return false;
+        }
+        
+        
+        if (((int) $id_user) === bab_getUserId() && $this->canUserEditHisOwnEntry())
+        {
+            return true;
+        }
+
+        return false;
+    }
 
 
 
@@ -469,44 +502,102 @@ class Func_UserEditor extends bab_functionality {
     }
 
 
-
+    /**
+     * Get the list of directory fields to modify
+     * @return array
+     */
     protected function getFormDirectoryFields()
     {
         if ($this->register)
         {
             return $this->getRegistrationFields();
-        } else {
-            return $this->getDirectoryFields();
         }
+        
+        return $this->getDirectoryFields();
+    }
+    
+    
+    /**
+     * Get the list of directory fields to modify if i am on my own entry via user options
+     */
+    protected function getOwnDirectoryFields()
+    {
+        if (!isset($this->ownfields))
+        {
+        
+            global $babDB;
+            $site = $this->getSiteSettings();
+            $this->ownfields = array();
+        
+            $res = $babDB->db_query("select 
+            			e.*, 
+                        e.id as idfx,
+                        e.usermodifiable modifiable,
+            			v.field_value default_value_text 
+            		
+            	from ".BAB_DBDIR_FIELDSEXTRA_TBL." e 
+            		LEFT JOIN bab_dbdir_fieldsvalues v ON v.id=e.default_value 
+            			
+            	where 
+            	   id_directory='0' 
+            	   AND disabled='N' 
+                   AND usermodifiable='Y' 
+                   
+            	order by list_ordering asc, v.field_value asc
+            ");
+        
+        
+            while($arr = $babDB->db_fetch_array($res)){
+                list($fieldName, $f) = $this->getFieldFromDb($arr);
+                $this->ownfields[$fieldName] = $f;
+            }
+        }
+        
+        return $this->ownfields;
     }
 
 
-
-
-    protected function getPhotoFrame()
+    /**
+     * @return Widget_ImagePicker
+     */
+    protected function getPhotoImagePicker()
     {
-        $fields = $this->getFormDirectoryFields();
+        $W = bab_Widgets();
+        
+        $this->imagePicker = $W->ImagePicker()
+        ->setDimensions(300, 300)
+        ->setName('jpegphoto')
+        ->oneFileMode()
+        ->setEncodingMethod(null)
+        ->setTitle(bab_translate(bab_translate('Set the photo')))
+        ;
+        
+        // empty temporary image path
+        $this->imagePicker->cleanup();
+        
+        return $this->imagePicker;
+    }
+
+
+    /**
+     * Get photo frame or null if not available in form fields
+     * @param array $fields
+     * @return Widget_ImagePicker
+     */
+    protected function getPhotoFrame(Array $fields)
+    {
+
 
         if (!isset($fields['jpegphoto']) || !isset($fields['jpegphoto']['modifiable']) || false === $fields['jpegphoto']['modifiable'])
         {
             return null;
         }
 
-        $W = bab_Widgets();
-
-        $this->imagePicker = $W->ImagePicker()
-            ->setDimensions(300, 300)
-            ->setName('jpegphoto')
-            ->oneFileMode()
-            ->setEncodingMethod(null)
-            ->setTitle(bab_translate(bab_translate('Set the photo')))
-        ;
-
-        // empty temporary image path
-        $this->imagePicker->cleanup();
-
-        return $this->imagePicker;
+        return $this->getPhotoImagePicker();
     }
+
+    
+    
 
     /**
      *
@@ -611,6 +702,57 @@ class Func_UserEditor extends bab_functionality {
 
         return $this->labeledField($widget->setName($fieldname), $f['name']);
     }
+    
+    
+    /**
+     * create a field array similar to the fields from the bab_admGetDirEntry
+     * @param array $arr field from database
+     * @return array
+     */
+    private function getFieldFromDb(Array $arr)
+    {
+        global $babDB;
+        
+        
+        if( $arr['id_field'] < BAB_DBDIR_MAX_COMMON_FIELDS )
+        {
+            $rr = $babDB->db_fetch_array($babDB->db_query("select description, name from ".BAB_DBDIR_FIELDS_TBL." where id='".$babDB->db_escape_string($arr['id_field'])."'"));
+            $fieldName = $rr['name'];
+            $fieldLabel = translateDirectoryField($rr['description']);
+        }
+        else
+        {
+            $rr = $babDB->db_fetch_array($babDB->db_query("select name from ".BAB_DBDIR_FIELDS_DIRECTORY_TBL." where id='".$babDB->db_escape_string(($arr['id_field'] - BAB_DBDIR_MAX_COMMON_FIELDS))."'"));
+            $fieldName = "babdirf".$arr['idfx'];
+            $fieldLabel = translateDirectoryField($rr['name']);
+        }
+        
+        
+        $f = array(
+        
+            'name' => $fieldLabel,
+            'value' => '',
+            'modifiable' => true,
+            'required' => ($arr['required'] == 'Y'),
+            'multilignes' => ($arr['multilignes'] == 'Y')
+        );
+        
+        
+        if ('Y' === $arr['multi_values'])
+        {
+            require_once dirname(__FILE__).'/iterator/iterator.php';
+            $options = new bab_QueryIterator;
+            $options->setQuery('SELECT * FROM bab_dbdir_fieldsvalues WHERE id_fieldextra='.$babDB->quote($arr['idfx']).' ORDER BY field_value ASC');
+        
+            $f['multi_values'] = array(
+                'default_value' => (int) $arr['default_value'],
+                'options' => $options
+            );
+        }
+        
+        return array($fieldName, $f);
+        
+    }
 
 
     /**
@@ -629,7 +771,9 @@ class Func_UserEditor extends bab_functionality {
 
             $res = $babDB->db_query("
                 SELECT
-                    sfrt.*,
+                    sfrt.id_field,
+                    sfrt.required,      # Y or N
+                    sfrt.multilignes,   # Y or N
                     sfxt.id as idfx,
                     sfxt.default_value as default_value,
                     sfxt.multilignes, 	# Y or N
@@ -643,44 +787,8 @@ class Func_UserEditor extends bab_functionality {
             ");
 
 
-            while($arr = $babDB->db_fetch_array($res)){
-                if( $arr['id_field'] < BAB_DBDIR_MAX_COMMON_FIELDS )
-                {
-                    $rr = $babDB->db_fetch_array($babDB->db_query("select description, name from ".BAB_DBDIR_FIELDS_TBL." where id='".$babDB->db_escape_string($arr['id_field'])."'"));
-                    $fieldName = $rr['name'];
-                    $fieldLabel = translateDirectoryField($rr['description']);
-                }
-                else
-                {
-                    $rr = $babDB->db_fetch_array($babDB->db_query("select name from ".BAB_DBDIR_FIELDS_DIRECTORY_TBL." where id='".$babDB->db_escape_string(($arr['id_field'] - BAB_DBDIR_MAX_COMMON_FIELDS))."'"));
-                    $fieldName = "babdirf".$arr['idfx'];
-                    $fieldLabel = translateDirectoryField($rr['name']);
-                }
-
-
-                $f = array(
-
-                    'name' => $fieldLabel,
-                    'value' => '',
-                    'modifiable' => true,
-                    'required' => ($arr['required'] == 'Y'),
-                    'multilignes' => ($arr['multilignes'] == 'Y')
-                );
-
-
-                if ('Y' === $arr['multi_values'])
-                {
-                    require_once dirname(__FILE__).'/iterator/iterator.php';
-                    $options = new bab_QueryIterator;
-                    $options->setQuery('SELECT * FROM bab_dbdir_fieldsvalues WHERE id_fieldextra='.$babDB->quote($arr['idfx']).' ORDER BY field_value ASC');
-
-                    $f['multi_values'] = array(
-                            'default_value' => (int) $arr['default_value'],
-                            'options' => $options
-                    );
-                }
-
-
+            while($arr = $babDB->db_fetch_assoc($res)){
+                list($fieldName, $f) = $this->getFieldFromDb($arr);
                 $this->registration_fields[$fieldName] = $f;
             }
         }
@@ -763,6 +871,18 @@ class Func_UserEditor extends bab_functionality {
 
         );
 
+        return $this->getDirectoryFrame($fields);
+    }
+    
+    
+    /**
+     * Get fields frame loaded with field for own entry modification
+     * @return Widget_Frame
+     */
+    protected function getOwnDirectoryEntryFrame()
+    {
+        $fields = $this->getOwnDirectoryFields();
+        
         return $this->getDirectoryFrame($fields);
     }
 
@@ -964,10 +1084,12 @@ class Func_UserEditor extends bab_functionality {
         $form->colon();
         $form->setName('user');
         $form->addClass('bab-user-editor');
+        
+        $fields = $this->getFormDirectoryFields();
 
         if ((null === $id_user && $this->canAddDirectoryEntry()) || $this->canEditDirectoryEntry($id_user))
         {
-            if ($photo = $this->getPhotoFrame())
+            if ($photo = $this->getPhotoFrame($fields))
             {
                 $form->addItem($photo);
             }
@@ -984,7 +1106,7 @@ class Func_UserEditor extends bab_functionality {
 
         $form->addItem($this->getUserFrame($id_user));
 
-        if($this->register){
+        if($this->register) {
             $form->addItem($this->getRegistrationFrame());
         }
 
@@ -1000,6 +1122,58 @@ class Func_UserEditor extends bab_functionality {
 
         return $form;
     }
+    
+    
+    /**
+     * Get the form for the user to edit his own entry
+     * @param	int	$id_user	the user to modify
+     * @return Widget_Form
+     */
+    public function getOwnEntryForm($id_user)
+    {
+        if (null !== $id_user && !$this->canEditUser($id_user))
+        {
+            throw new Exception(bab_translate('Access denied'));
+        }
+        
+        $W = bab_Widgets();
+        
+        $Icons = bab_functionality::get('Icons');
+        /*@var $Icons Func_Icons */
+        $Icons->includeCss();
+        
+        $form = $W->Form(null, $W->VBoxLayout()->setVerticalSpacing(1,'em'));
+        $form->colon();
+        $form->setName('user');
+        $form->addClass('bab-user-editor');
+        
+        $fields = $this->getOwnDirectoryFields();
+        
+        if ($this->canEditDirectoryEntry($id_user)) {
+            if ($photo = $this->getPhotoFrame($fields)) {
+                $form->addItem($photo);
+            }
+            
+            $form->addItem($this->getOwnDirectoryEntryFrame());
+            
+            // TODO: on peut ajouter cette ligne mais seulement si l'utilisateur a le droit
+            //       de modifier son mot de passe et son nickname
+            //       actuellement getUserFrame l'affiche de toute facon pour les admin
+            //       if faudrait tenir compte uniquement de l'option utilisateur pour ce formulaire 
+            //       cela va faire doublon avec les interfaces qui existe deja sur la page des options utilisateur
+            
+            // $form->addItem($this->getUserFrame($id_user));
+        }
+
+        $form->addItem($this->getButtons());
+        $form->setHiddenValue('user[id]', $id_user);
+        $form->setValues(array('user' => $this->getValues($id_user)));
+        
+        return $form;
+        
+    }
+    
+    
 
 
     /**
@@ -1129,7 +1303,6 @@ class Func_UserEditor extends bab_functionality {
      */
     protected function getValues($id_user)
     {
-        include_once $GLOBALS['babInstallPath'].'utilit/dirincl.php';
         include_once $GLOBALS['babInstallPath'].'utilit/userinfosincl.php';
 
         $directory = getDirEntry($id_user, BAB_DIR_ENTRY_ID_USER, NULL, false);
@@ -1180,6 +1353,126 @@ class Func_UserEditor extends bab_functionality {
     }
 
 
+    
+    
+    /**
+     * Verify the posted fields
+     * @throws Exception
+     */
+    protected function assertMandatoryFields($user, $id_user, Array $fields)
+    {
+        if ((null === $id_user && $this->canAddDirectoryEntry()) || $this->canEditDirectoryEntry($id_user))
+        {
+            
+            foreach($fields as $fieldname => $f) {
+                if (!$this->register && (isset($f['modifiable']) && isset($f['required']) && true === $f['modifiable'] && true === $f['required']))
+                {
+                    if (!isset($user[$fieldname]) || '' === $user[$fieldname])
+                    {
+                        throw new Exception(sprintf(bab_translate('The fields %s is mandatory'), $f['name']));
+                    }
+                }
+            }
+        }
+        
+    }
+    
+    
+
+    
+    /**
+     * Create the user
+     * @return int
+     */
+    protected function createUser(Array $user)
+    {
+        // User creation
+        
+        $oPwdComplexity = @bab_functionality::get('PwdComplexity');
+        if (!$oPwdComplexity->isValid($user['password1'])) {
+            throw new Exception($oPwdComplexity->getErrorDescription());
+        }
+        
+        
+        $isconfirmed = 1;
+        
+        if($this->register)
+        {
+        
+            $isconfirmed = 0;
+        
+            $site = $this->getSiteSettings();
+            switch( $site['email_confirm'] )
+            {
+                case 1: // Don't validate adresse email
+                    $isconfirmed = 0;
+                    break;
+                case 2: // Confirm account without address email validation
+                    $isconfirmed = 1;
+                    break;
+                default: //Confirm account by validationg address email
+                    $isconfirmed = 0;
+                    break;
+            }
+        }
+        
+        
+        require_once $GLOBALS['babInstallPath'].'admin/register.php';
+        
+        
+        if (false === $id_user = bab_registerUser($user['sn'], $user['givenname'], '', $user['email'], $user['nickname'], $user['password1'], $user['password2'], $isconfirmed, $error))
+        {
+            throw new Exception($error);
+        }
+        
+        
+        
+        
+        // if in group directory, attach user to group
+        
+        $directory = $this->getDirectory();
+        if ($directory['id_group'] > BAB_REGISTERED_GROUP)
+        {
+            bab_attachUserToGroup($id_user, $directory['id_group']);
+        }
+        
+        $currentDGGroup = bab_getCurrentDGGroup();
+        
+        // delegated administrator, add the created user in the main delegation group
+        if(bab_getCurrentAdmGroup() != 0 &&
+            $currentDGGroup['id_group'] != BAB_ALLUSERS_GROUP &&
+            $currentDGGroup['id_group'] != BAB_REGISTERED_GROUP &&
+            $currentDGGroup['id_group'] != BAB_UNREGISTERED_GROUP &&
+            bab_isDelegated('users'))
+        {
+            bab_attachUserToGroup($id_user, $currentDGGroup['id_group']);
+        }
+        
+        return $id_user;
+    }
+    
+    
+    
+    protected function getJpegphotoField()
+    {
+        // update photo
+        
+        $W = bab_Widgets();
+        $imagePicker = $W->ImagePicker();
+        $files = $imagePicker->getTemporaryFiles('jpegphoto');
+        if (isset($files))
+        {
+            foreach($files as $filePickerItem)
+            {
+                /*@var $filePickerItem Widget_FilePickerItem */
+                return bab_fileHandler::move($filePickerItem->getFilePath()->tostring());
+            }
+        }
+        
+        return '';  // delete photo
+    }
+    
+    
 
 
 
@@ -1229,87 +1522,12 @@ class Func_UserEditor extends bab_functionality {
         }
 
         // verify directory mandatory fields
-
-        if ((null === $id_user && $this->canAddDirectoryEntry()) || $this->canEditDirectoryEntry($id_user))
-        {
-            $fields = $this->getFormDirectoryFields();
-            foreach($fields as $fieldname => $f) {
-                if (!$this->register && (isset($f['modifiable']) && isset($f['required']) && true === $f['modifiable'] && true === $f['required']))
-                {
-                    if (!isset($user[$fieldname]) || '' === $user[$fieldname])
-                    {
-                        throw new Exception(sprintf(bab_translate('The fields %s is mandatory'), $f['name']));
-                    }
-                }
-            }
-        }
+        $fields = $this->getFormDirectoryFields();
+        $this->assertMandatoryFields($user, $id_user, $fields);
 
 
-
-        if (!isset($id_user))
-        {
-            // User creation
-
-            $oPwdComplexity = @bab_functionality::get('PwdComplexity');
-            if (!$oPwdComplexity->isValid($user['password1'])) {
-                throw new Exception($oPwdComplexity->getErrorDescription());
-            }
-
-
-            $isconfirmed = 1;
-
-            if($this->register)
-            {
-
-                $isconfirmed = 0;
-
-                $site = $this->getSiteSettings();
-                switch( $site['email_confirm'] )
-                {
-                    case 1: // Don't validate adresse email
-                        $isconfirmed = 0;
-                        break;
-                    case 2: // Confirm account without address email validation
-                        $isconfirmed = 1;
-                        break;
-                    default: //Confirm account by validationg address email
-                        $isconfirmed = 0;
-                    break;
-                }
-            }
-
-
-            require_once $GLOBALS['babInstallPath'].'admin/register.php';
-
-
-            if (false === $id_user = bab_registerUser($user['sn'], $user['givenname'], '', $user['email'], $user['nickname'], $user['password1'], $user['password2'], $isconfirmed, $error))
-            {
-                throw new Exception($error);
-            }
-
-
-
-
-            // if in group directory, attach user to group
-
-            $directory = $this->getDirectory();
-            if ($directory['id_group'] > BAB_REGISTERED_GROUP)
-            {
-                bab_attachUserToGroup($id_user, $directory['id_group']);
-            }
-
-            $currentDGGroup = bab_getCurrentDGGroup();
-
-            // delegated administrator, add the created user in the main delegation group
-            if(bab_getCurrentAdmGroup() != 0 &&
-                    $currentDGGroup['id_group'] != BAB_ALLUSERS_GROUP &&
-                    $currentDGGroup['id_group'] != BAB_REGISTERED_GROUP &&
-                    $currentDGGroup['id_group'] != BAB_UNREGISTERED_GROUP &&
-                    bab_isDelegated('users'))
-            {
-                bab_attachUserToGroup($id_user, $currentDGGroup['id_group']);
-            }
-
+        if (!isset($id_user)) {
+            $id_user = $this->createUser($user);
         }
 
 
@@ -1343,23 +1561,7 @@ class Func_UserEditor extends bab_functionality {
 
             if (isset($fields['jpegphoto']['modifiable']) && true === $fields['jpegphoto']['modifiable'])
             {
-
-                $user['jpegphoto'] = ''; // delete photo
-
-                // update photo
-
-                $W = bab_Widgets();
-                $imagePicker = $W->ImagePicker();
-                $files = $imagePicker->getTemporaryFiles('jpegphoto');
-                if (isset($files))
-                {
-                    foreach($files as $filePickerItem)
-                    {
-                        /*@var $filePickerItem Widget_FilePickerItem */
-                        $user['jpegphoto'] = bab_fileHandler::move($filePickerItem->getFilePath()->tostring());
-                        break;
-                    }
-                }
+                $user['jpegphoto'] = $this->getJpegphotoField();
             }
 
         } else {
@@ -1469,6 +1671,50 @@ class Func_UserEditor extends bab_functionality {
 
             /*@var $babBody babBody */
             $babBody->addNextPageMessage($message);
+        }
+
+        return $id_user;
+    }
+    
+    
+    /**
+     * Save user account using the list of fields given by the getOwnDirectoryFields method
+     * @return int
+     */
+    public function saveOwnEntry(Array $user)
+    {
+        $site = $this->getSiteSettings();
+        
+        $id_user = isset($user['id']) ? ((int) $user['id']) : null;
+        $id_user_original = $id_user;
+
+        
+        if (!isset($id_user) || !$this->canEditDirectoryEntry($id_user))
+        {
+            throw new Exception(bab_translate('Access denied'));
+        }
+        
+        // verify directory mandatory fields
+        $fields = $this->getOwnDirectoryFields();
+        $this->assertMandatoryFields($user, $id_user, $fields);
+        
+        //TODO: introduire la modification du mot de passe et du nickname si supporte par le formulaire
+        
+
+        if (isset($fields['jpegphoto']['modifiable']) && true === $fields['jpegphoto']['modifiable']) {
+            $user['jpegphoto'] = $this->getJpegphotoField();
+        }
+        
+        if (!bab_updateUserById($id_user, $user, $error))
+        {
+            throw new Exception($error);
+            return false;
+        }
+        
+        
+        if (isset($user['profile']) && count($user['profile']) > 0)
+        {
+            $this->saveProfiles($id_user, $user['profile']);
         }
 
         return $id_user;

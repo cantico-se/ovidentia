@@ -26,6 +26,7 @@
 */
 include_once 'base.php';
 require_once dirname(__FILE__).'/utilit/registerglobals.php';
+require_once dirname(__FILE__).'/utilit/urlincl.php';
 include_once $babInstallPath.'admin/register.php';
 
 function changePassword()
@@ -153,6 +154,7 @@ function changeNickname($nickname)
 		function temp($nickname)
 			{
 			global $babBody, $babDB;
+			/*@var $babBody babBody */
 
 			$this->bupdateuserinfo = false;
 			list($id, $allowuu) = $babDB->db_fetch_array($babDB->db_query("select id, user_update from ".BAB_DB_DIRECTORIES_TBL." where id_group='1'"));
@@ -165,10 +167,29 @@ function changeNickname($nickname)
 
 			if( $allowuu == "Y")
 				{
-				list($idu) = $babDB->db_fetch_array($babDB->db_query("select id from ".BAB_DBDIR_ENTRIES_TBL." where id_directory='0' and id_user='".$babDB->db_escape_string($GLOBALS['BAB_SESS_USERID'])."'"));
 				$this->bupdateuserinfo = true;
-				$this->urldbmod = $GLOBALS['babUrlScript']."?tg=directory&idx=dbmod&id=".$id."&refresh=1";
-				$this->updateuserinfo = bab_translate("Update personal informations");
+
+				$W = bab_Widgets();
+				$userEditor = bab_functionality::get('UserEditor');
+				/*@var $userEditor Func_UserEditor */
+				
+				if (isset($_POST['user'])) {
+				    try {
+    				
+    				    if ($userEditor->saveOwnEntry($_POST['user'])) {
+        				    $babBody->addNextPageMessage(bab_translate('Your changes are saved'));
+        				    bab_url::get_request('tg')->location();
+    				    }
+    				    
+    				} catch(Exception $e) {
+    				    
+    				    $babBody->addError($e->getMessage());
+    				}
+				}
+				
+				$form = $userEditor->getOwnEntryForm(bab_getUserId());
+				$form->setSelfPageHiddenFields();
+				$this->userform = $form->display($W->HtmlCanvas());
 				}
 
 			$res=$babDB->db_query("select changepwd, db_authentification from ".BAB_USERS_TBL." where id='".$babDB->db_escape_string($GLOBALS['BAB_SESS_USERID'])."'");
@@ -198,6 +219,10 @@ function changeNickname($nickname)
 		}
 
 	$temp = new temp($nickname);
+	
+	/*@var $babBody babBody */
+	
+	$babBody->addStyleSheet('usereditor.css');
 	$babBody->babecho(	bab_printTemplate($temp,"options.html", "changenickname"));
 	}
 

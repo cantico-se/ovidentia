@@ -136,16 +136,12 @@ valign="middle">{ password }:</td>
 
 <!--#begin changenickname -->
 <!--#if bupdateuserinfo -->
-<table  width="50%" border="0" cellspacing="0" cellpadding="2" align="center">
-<tr> 
-<td class="BabLoginCadreBackground" align="center" valign="middle"> 
-	<table  width="100%" border="0" cellspacing="0" cellpadding="5" align="center" class="BabLoginMenuBackground">
-	<tr><td align="center" valign="middle">
-	<input type="button" value="{ updateuserinfo }" onclick="Start('{ urldbmod }', 'OviDir', 'width=550,height=500,status=no,resizable=yes,top=50,left=200,scrollbars=yes');" />
-	</td></tr></table>
-</td></tr></table>
-<br>
+
+	{ userform }
+	<br />
+	<br />
 <!--#endif bupdateuserinfo -->
+
 <!--#if changepassword -->
 <table  width="50%" border="0" cellspacing="0" cellpadding="2" align="center">
 <tr> 
