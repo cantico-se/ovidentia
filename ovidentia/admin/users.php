@@ -432,6 +432,7 @@ function listUsers($pos, $grp, $deleteAction)
 
                 $url = clone $this->baseurl;
                 $url->pos = $this->ord.$this->selectname;
+                $url->sSearchText = '';
 
                 $this->selecturl = bab_toHtml($url->toString());
                 $this->selected = 0;
