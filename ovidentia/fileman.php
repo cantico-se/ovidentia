@@ -2523,6 +2523,14 @@ function bab_moveUnzipFolder(bab_Path $source, $destination, $absolutePath){
                 $bgroup = true;
                 $id = bab_rp('id');
             }
+            if(bab_charset::getDatabase() == 'utf8'){
+                if(!mb_check_encoding($babPath->getBasename(), 'UTF-8')){
+                    global $babBody;
+                    $babBody->addError(sprintf(bab_translate('Can not unzip file: %s'), mb_convert_encoding($babPath->getBasename(), 'UTF-8')));
+                    $return = false;
+                    continue;
+                }
+            }
             $fmFile = bab_FmFile::move($babPath->tostring());
             $currentBabPath = new bab_Path($destination,$babPath->getBasename());
             $returntmp = bab_importFmFile($fmFile, $id, $destination, $bgroup, false);
