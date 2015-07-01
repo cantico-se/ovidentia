@@ -92,7 +92,7 @@ class bab_addonInfos {
      * Get addon location paths
      * @return bab_AddonLocation
      */
-    protected function getLocation() {
+    public function getLocation() {
         if (!isset($this->location)) {
             
             if (!isset($this->addonname)) {
@@ -847,7 +847,7 @@ class bab_addonInfos {
         include_once $GLOBALS['babInstallPath'].'utilit/upgradeincl.php';
 
         if (!is_file($this->getPhpPath().'init.php')) {
-            trigger_error('ini file not found for addon in '.$this->getPhpPath().'init.php');
+            trigger_error('init.php file not found for addon in '.$this->getPhpPath());
             return false;
         }
 

@@ -462,7 +462,28 @@ function bab_deleteOldCore($version, &$msgerror)
 }
 
 
-
+function bab_upgradeAddonsFromComposer() {
+    
+    bab_addonsInfos::insertMissingAddonsInTable();
+    
+    $composerFile = realpath('.').'/composer.json';
+    $json = file_get_contents($composerFile);
+    $composer = json_decode($json);
+    
+    foreach($composer->require as $name => $version) {
+        if (0 === mb_strpos($name, 'ovidentia/')) {
+            $addonName = mb_substr($name, 10);
+            
+            if ($addon = bab_getAddonInfosInstance($addonName)) {
+                if ($addon->getLocation() instanceof bab_AddonStandardLocation) {
+                    $addon->upgrade();
+                }
+            }
+        }
+    };
+    
+    return true;
+}
 
 /**
  * Install or upgrade addons from the install/addons folder
@@ -625,7 +646,7 @@ function bab_newInstall() {
 	include_once $GLOBALS['babInstallPath'].'install.php';
 
 
-	if (bab_upgradeAddonsFromInstall(true, null))
+	if (bab_upgradeAddonsFromInstall(true, null) && bab_upgradeAddonsFromComposer())
 	{
 		$iniVersion = $ini->getVersion();
 		$arr = explode('.', $iniVersion);
