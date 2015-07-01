@@ -732,8 +732,8 @@ CREATE TABLE bab_users (
    KEY hashname (hashname)
 );
 
-INSERT INTO bab_users (id, nickname, firstname, lastname, hashname, email, `date`, password, changepwd, is_confirmed) 
-VALUES ( '1', 'admin@admin.bab', 'Administrateur', 'Ovidentia', '200ceb26807d6bf99fd6f4f0d1ca54d4', 'admin@admin.bab', NOW(), '22975d8a5ed1b91445f6c55ac121505b', '1', '1');
+INSERT INTO bab_users (id, nickname, firstname, lastname, hashname, email, `date`, password, changepwd, confirm_hash, is_confirmed) 
+VALUES ( '1', 'admin@admin.bab', 'Administrateur', 'Ovidentia', '200ceb26807d6bf99fd6f4f0d1ca54d4', 'admin@admin.bab', NOW(), '22975d8a5ed1b91445f6c55ac121505b', '1', '0da8f2a37b9e7926e08196a6bd1baa29', '1');
 
 # --------------------------------------------------------
 #
