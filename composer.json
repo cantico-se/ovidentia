@@ -6,9 +6,7 @@
     "minimum-stability": "dev",
     "require": {
         "php": ">=5.1.0",
-        "ovidentia/widgets": ">=1.0.67"
-    },
-    "suggest": {
+        "ovidentia/widgets": ">=1.0.67",
         "ovidentia/jquery": ">=1.11.1.2",
         "ovidentia/libtranslate": ">=1.12.0.03",
         "ovidentia/libfilemanagement": ">=0.2.40",
