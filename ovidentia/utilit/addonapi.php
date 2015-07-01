@@ -3319,8 +3319,13 @@ class bab_functionality {
      * @param	string	$path		path to functionality
      * @return string | false		the object class name or false if the file already included or false if the include failed
      */
-    public static function includefile($path) {
-        $include_result = include self::getRootPath().'/'.$path.'/'.BAB_FUNCTIONALITY_LINK_FILENAME;
+    public static function includefile($path)
+    {
+        $include_result = false;
+        $pathname = self::getRootPath().'/'.$path.'/'.BAB_FUNCTIONALITY_LINK_FILENAME;
+        if (file_exists($pathname))  {
+            $include_result = include $pathname;
+        }
 
         if (false === $include_result) {
             bab_debug(sprintf('The functionality %s is not available', $path), DBG_ERROR, __CLASS__);
@@ -3328,6 +3333,7 @@ class bab_functionality {
 
         return $include_result;
     }
+
 
     /**
      * Include original php file with the functionality class
