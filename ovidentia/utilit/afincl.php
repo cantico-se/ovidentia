@@ -880,9 +880,9 @@ function getWaitingApprobations($iduser, $update=false)
 		}
 		
 /**/
-	if( $iduser == $GLOBALS['BAB_SESS_USERID'] )
+	if( $iduser == bab_getUserId() )
 	{
-		$substitutes = bab_UserUnavailability::get($GLOBALS['BAB_SESS_USERID']);
+		$substitutes = bab_UserUnavailability::get(bab_getUserId());
 		
 		$arrsub = array_unique(array_merge($substitutes[0], $substitutes[1]));
 
