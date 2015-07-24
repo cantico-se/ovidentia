@@ -272,7 +272,7 @@ class babDatabase
 			    
 				foreach($param as &$value) {
 				    if (null === $value) {
-				        throw new Exception('NULL is not allowed in the quote() method, use quoteOrNull()');
+				        trigger_error('NULL is not allowed in the quote() method, use quoteOrNull()');
 				    }
 				    
 				    if (false === $value) {
