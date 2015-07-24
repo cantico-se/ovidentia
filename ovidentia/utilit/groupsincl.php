@@ -295,7 +295,7 @@ class bab_Groups
 				return true;
 			}
 			
-			$id_user = $GLOBALS['BAB_SESS_USERID'];
+			$id_user = bab_getUserId();
 		}
 		
 

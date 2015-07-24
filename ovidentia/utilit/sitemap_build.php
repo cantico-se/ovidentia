@@ -677,7 +677,7 @@ class bab_siteMap_insertFunctionObj {
 
             $values = array();
             foreach($arr as $node) {
-                $values[] = '('.$babDB->quote($node->uid).','.$babDB->quote($node->lang).','.$babDB->quote($node->label).','.$babDB->quote($node->description).')';
+                $values[] = '('.$babDB->quote((string) $node->uid).','.$babDB->quote((string) $node->lang).','.$babDB->quote((string) $node->label).','.$babDB->quote((string) $node->description).')';
             }
 
             $babDB->db_query('

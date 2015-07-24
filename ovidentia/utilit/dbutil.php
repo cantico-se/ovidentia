@@ -261,17 +261,39 @@ class babDatabase
 	 * @param	array|string	$param
 	 * @return	string
 	 */
+	/**
+	 * Encode array or string for query and add quotes
+	 * @param	array|string	$param
+	 * @return	string
+	 */
 	public function quote($param) 
 		{
 			if (is_array($param)) {
-
+			    
 				foreach($param as &$value) {
+				    if (null === $value) {
+				        throw new Exception('NULL is not allowed in the quote() method, use quoteOrNull()');
+				    }
+				    
+				    if (false === $value) {
+				        $value = '0';
+				    }
+				    
 					$value = $this->db_escape_string($value);
 				}
 				unset($value);
 
 				return "'".implode("','",$param)."'";
 			} else {
+			    
+			    if (null === $param) {
+			        throw new Exception('NULL is not allowed in the quote() method, use quoteOrNull()');
+			    }
+			    
+			    if (false === $param) {
+			        $param = '0';
+			    }
+			    
 				return "'".$this->db_escape_string($param)."'";
 			}
 		}
