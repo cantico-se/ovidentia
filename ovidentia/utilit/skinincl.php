@@ -112,7 +112,7 @@ class bab_skin {
 
 
 		if (!is_dir(self::SKINS_PATH)) {
-			self::$skins[] = 'ovidentia';
+			self::$skins[] = new bab_skin('ovidentia');
 			return self::$skins;
 		}
 
