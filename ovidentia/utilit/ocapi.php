@@ -341,7 +341,8 @@ function bab_OCGetTemporaryEmployees($idoc='')
 
 
 /**
- * entity collaborators
+ * entity collaborators with main role only
+ * 
  *
  * @see bab_OCSelectEntityCollaborators()
  * @param int $identity
