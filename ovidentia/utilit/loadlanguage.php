@@ -84,9 +84,11 @@ function babLoadLanguage($lang, $folder, &$arr)
 		}
 	else
 		{
+		$addon = bab_getAddonInfosInstance($folder);
+		
 		$filename_c = 'lang/addons-'.$folder.'-lang-'.$lang.'.dat';
 		$filename_m = 'lang/addons/'.$folder.'/lang-'.$lang.'.xml';
-		$filename = $GLOBALS['babInstallPath'].'lang/addons/'.$folder.'/lang-'.$lang.'.xml';
+		$filename = $addon->getLangPath().'lang-'.$lang.'.xml';
 		}
 
 	if (!file_exists($filename))
