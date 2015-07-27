@@ -9173,3 +9173,17 @@ class Func_Ovml_Function_GetPath extends Func_Ovml_Function {
     }
 }
 
+
+
+/**
+ * Get selected skin path
+ * <OFGetSkinPath>
+ */
+class Func_Ovml_Function_GetSkinPath extends Func_Ovml_Function {
+
+
+    public function toString()
+    {
+        return bab_skin::getUserSkin()->getThemePath();
+    }
+}

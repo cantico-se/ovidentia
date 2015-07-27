@@ -79,7 +79,8 @@ function getGlobalVariable($var)
 		case 'babScriptPath': return bab_toHtml($GLOBALS['babScriptPath']);
 		case 'babOvidentiaJs': return $GLOBALS['babOvidentiaJs'];
 		case 'babOvmlPath': return bab_toHtml($GLOBALS['babOvmlPath']);
-		case 'babSkinPath': return bab_toHtml($GLOBALS['babSkinPath']);
+		case 'babSkinPath': return bab_toHtml($GLOBALS['babSkinPath']); // skin in core
+		case 'selectedSkinPath': return bab_skin::getUserSkin()->getThemePath(); // path to the selected skin folder
 		case 'babLanguage': return bab_toHtml($GLOBALS['babLanguage']);
 		case 'babStyle': return bab_toHtml($GLOBALS['babStyle']);
 		case 'babSkin': return bab_toHtml($GLOBALS['babSkin']);

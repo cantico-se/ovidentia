@@ -109,6 +109,21 @@ class bab_skin {
 		if (self::$skins) {
 			return self::$skins;
 		}
+		
+		
+		// add addons in vendor
+		
+		require_once dirname(__FILE__).'/addonlocation.class.php';
+		$list = bab_AddonStandardLocation::getList();
+		foreach($list as $name) {
+		    $addon = bab_getAddonInfosInstance($name);
+		    if ($addon && 'THEME' === $addon->getAddonType()) {
+		        self::$skins[] = new bab_skin($name);
+		    }
+		}
+		
+		
+		// the skins folder (will be deprecated?)
 
 
 		if (!is_dir(self::SKINS_PATH)) {
@@ -129,17 +144,6 @@ class bab_skin {
 				} 
 			}
 		closedir($h);
-		
-		// add addons in vendor
-		
-		require_once dirname(__FILE__).'/addonlocation.class.php';
-		$list = bab_AddonStandardLocation::getList();
-		foreach($list as $name) {
-		    $addon = bab_getAddonInfosInstance($name);
-		    if ($addon && 'THEME' === $addon->getAddonType()) {
-		        self::$skins[] = new bab_skin($name);
-		    }
-		}
 
 
 		if (empty(self::$skins)) {
