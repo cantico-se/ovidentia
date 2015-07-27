@@ -773,13 +773,27 @@ class bab_TreeView extends bab_Template
 			if (!$this->isUpToDate()) {
 				$this->_updateTree();
 			}
-			$this->t_subtree = bab_printTemplate($this, $this->_templateFile, 'subtree');
-			$this->_templateCache = bab_printTemplate($this, $this->_templateFile, $this->_templateCss);
-			$this->_templateCache .= bab_printTemplate($this, $this->_templateFile, $this->_templateSection);
-			$this->_templateCache .= bab_printTemplate($this, $this->_templateFile, $this->_templateScripts);
+			$this->t_subtree = $this->printOneTemplate($this->_templateFile, 'subtree');
+			$this->_templateCache = $this->printOneTemplate($this->_templateFile, $this->_templateCss);
+			$this->_templateCache .= $this->printOneTemplate($this->_templateFile, $this->_templateSection);
+			$this->_templateCache .= $this->printOneTemplate($this->_templateFile, $this->_templateScripts);
 		}
 		return $this->_templateCache;
 	}
+	
+	
+    protected function printOneTemplate($file, $template)
+    {
+        $arr = explode('/', $file);
+        if (3 <= count($arr) && $arr[0] === 'addons') {
+            $addon = bab_getAddonInfosInstance($arr[1]);
+            unset($arr[0]);
+            unset($arr[1]);
+            return $addon->printTemplate($this, implode('/', $arr), $template);
+        }
+        
+        return bab_printTemplate($this, $file, $template);
+    }
 
 	/**
 	 * 
