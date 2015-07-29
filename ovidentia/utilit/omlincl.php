@@ -9177,9 +9177,9 @@ class Func_Ovml_Function_GetPath extends Func_Ovml_Function {
 
 /**
  * Get selected skin path
- * <OFGetSkinPath>
+ * <OFGetSelectedSkinPath>
  */
-class Func_Ovml_Function_GetSkinPath extends Func_Ovml_Function {
+class Func_Ovml_Function_GetSelectedSkinPath extends Func_Ovml_Function {
 
 
     public function toString()
