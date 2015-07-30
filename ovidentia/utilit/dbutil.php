@@ -287,7 +287,7 @@ class babDatabase
 			} else {
 			    
 			    if (null === $param) {
-			        throw new Exception('NULL is not allowed in the quote() method, use quoteOrNull()');
+			        trigger_error('NULL is not allowed in the quote() method, use quoteOrNull()');
 			    }
 			    
 			    if (false === $param) {
