@@ -38,7 +38,7 @@ class Func_PwdComplexity extends bab_functionality {
     {
         require_once $GLOBALS['babInstallPath'].'utilit/functionalityincl.php';
         $functionalities = new bab_functionalities();
-        return $functionalities->registerClass('Func_PwdComplexity', __FILE__);
+        return $functionalities->registerClass('Func_PwdComplexity', $GLOBALS['babInstallPath'].'utilit/pwdcomplexity.class.php');
     }
 
 
@@ -79,7 +79,7 @@ class Func_PwdComplexity_DefaultPortal extends Func_PwdComplexity {
     {
         require_once $GLOBALS['babInstallPath'].'utilit/functionalityincl.php';
         $functionalities = new bab_functionalities();
-        return $functionalities->registerClass('Func_PwdComplexity_DefaultPortal', __FILE__);
+        return $functionalities->registerClass('Func_PwdComplexity_DefaultPortal', $GLOBALS['babInstallPath'].'utilit/pwdcomplexity.class.php');
     }
 
     public function registerPwdComplexity()

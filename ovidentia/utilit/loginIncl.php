@@ -300,7 +300,7 @@ class Func_PortalAuthentication extends bab_functionality
     {
         require_once $GLOBALS['babInstallPath'].'utilit/functionalityincl.php';
         $functionalities = new bab_functionalities();
-        return $functionalities->registerClass('Func_PortalAuthentication', __FILE__);
+        return $functionalities->registerClass('Func_PortalAuthentication', $GLOBALS['babInstallPath'].'utilit/loginIncl.php');
     }
 
     public function login()
@@ -336,7 +336,7 @@ class Func_PortalAuthentication_AuthOvidentia extends Func_PortalAuthentication
     {
         require_once $GLOBALS['babInstallPath'].'utilit/functionalityincl.php';
         $functionalities = new bab_functionalities();
-        return $functionalities->registerClass('Func_PortalAuthentication_AuthOvidentia', __FILE__);
+        return $functionalities->registerClass('Func_PortalAuthentication_AuthOvidentia', $GLOBALS['babInstallPath'].'utilit/loginIncl.php');
     }
 
     public function registerAuthType()
