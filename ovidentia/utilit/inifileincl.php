@@ -1592,13 +1592,16 @@ class bab_inifile {
 
 
 		if ($this->addons) {
+		    
 
 			$db = &$GLOBALS['babDB'];
-			$res = $db->db_query("SELECT title, version FROM ".BAB_ADDONS_TBL." WHERE title IN('".implode("','",array_keys($this->addons))."') AND installed='Y' AND enabled='Y'");
+			$res = $db->db_query("SELECT title, version FROM ".BAB_ADDONS_TBL." WHERE installed='Y' AND enabled='Y'");
 			$installed = array();
 			while ($arr = $db->db_fetch_assoc($res)) {
 				$installed[mb_strtolower($arr['title'])] = $arr['version'];
 			}
+			
+			
 
 			foreach($this->addons as $name => $required) {
 
