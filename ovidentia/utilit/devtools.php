@@ -279,8 +279,7 @@ class bab_synchronizeSql
 
 	function getCreateQueries()
 	{
-		if (preg_match_all("/CREATE\s+TABLE\s+`(.*?)`\s+\((.*?)\;/s", $this->fileContent, $m))
-			{
+		if (preg_match_all("/CREATE\s+TABLE\s+`(.*?)`\s+\((.*?)\;/s", $this->fileContent, $m)) {
 			for ($k = 0; $k < count($m[1]); $k++ )
 				{
 				$l = (mb_strlen(strrchr($m[2][$k], ')'))*-1);
@@ -319,11 +318,15 @@ class bab_synchronizeSql
 
 				}
 			}
-		else
-			{
-			trigger_error('can\'t fetch file content, no CREATE TABLE found in file : '.$this->file);
-			return false;
+		else {
+			if (isset($this->file)) {
+			    trigger_error('can\'t fetch file content, no CREATE TABLE found in file : '.$this->file);
+			} else {
+			    
+			    trigger_error('No CREATE TABLE found SQL data');
 			}
+			return false;
+		}
 
 		return true;
 	}
