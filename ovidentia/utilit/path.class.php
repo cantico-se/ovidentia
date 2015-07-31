@@ -501,20 +501,24 @@ class bab_Path implements SeekableIterator, Countable {
 	 * @return	bool
 	 */
 	public function isFolderWriteable() {
-
+        
 		$dir = $this->tostring();
+		
 
 		if (!@file_exists($dir)) {
-			throw new Exception(sprintf(bab_translate('The folder %s does not exists'), $dir));
+		    $message = sprintf(bab_translate('The folder %s does not exists'), $dir);
+			throw new Exception($message);
 			return false;
 		}
 
 		if (!@is_dir($dir)) {
-			throw new Exception(bab_translate('test can only be done on a directory'));
+		    $message = bab_translate('test can only be done on a directory');
+			throw new Exception($message);
 			return false;
 		}
 
 		if (DIRECTORY_SEPARATOR === '/') {
+		    
 			if (!is_writable($dir)) {
 				$message = bab_translate('The folder %s is not writable, please check the access rights');
 				throw new bab_FolderAccessRightsException(sprintf($message, $dir));
@@ -523,7 +527,6 @@ class bab_Path implements SeekableIterator, Countable {
 
 			return true;
 		}
-
 
 		// Windows specifics tests
 
@@ -693,10 +696,13 @@ class bab_Path implements SeekableIterator, Countable {
 		}
 
 		$removed = array();
+		
+		
 
 		do {
 
 			$pop = $this->pop();
+			
 
 			if (!$pop) {
 				break;
@@ -705,14 +711,16 @@ class bab_Path implements SeekableIterator, Countable {
 			$removed[] = $pop;
 
 			try {
-				$accessible = true;
-				$this->isFolderWriteable();
+ 
+				$accessible = $this->isFolderWriteable();
+				
 			} catch(Exception $e) {
 				$accessible = false;
 			}
 
 		} while(!$accessible);
 
+		
 
 		while ($folder = array_pop($removed)) {
 			$this->push($folder);
