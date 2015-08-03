@@ -204,7 +204,8 @@ class bab_ArtDraft
 
 		if (empty($arr))
 		{
-			throw new ErrorException(bab_translate('This draft does not exists'));
+		    $message = bab_translate('This draft does not exists');
+			throw new ErrorException($message);
 			return;
 		}
 

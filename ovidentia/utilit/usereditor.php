@@ -1063,14 +1063,16 @@ class Func_UserEditor extends bab_functionality {
      */
     public function getForm($id_user = null)
     {
+        $message = bab_translate('Access denied');
+        
         if (null === $id_user && !$this->canCreateUser())
         {
-            throw new Exception(bab_translate('Access denied'));
+            throw new Exception($message);
         }
 
         if (null !== $id_user && !$this->canEditUser($id_user))
         {
-            throw new Exception(bab_translate('Access denied'));
+            throw new Exception($message);
         }
 
 
@@ -1133,7 +1135,8 @@ class Func_UserEditor extends bab_functionality {
     {
         if (null !== $id_user && !$this->canEditUser($id_user))
         {
-            throw new Exception(bab_translate('Access denied'));
+            $message = bab_translate('Access denied');
+            throw new Exception($message);
         }
         
         $W = bab_Widgets();
@@ -1501,7 +1504,8 @@ class Func_UserEditor extends bab_functionality {
                 /*@var $captcha Func_Captcha */
                 if (!$captcha->securityCodeValid($user['captcha']))
                 {
-                    throw new Exception(sprintf(bab_translate('The security code is not correct')));
+                    $message = sprintf(bab_translate('The security code is not correct'));
+                    throw new Exception($message);
                 }
             }
         }
@@ -1510,15 +1514,16 @@ class Func_UserEditor extends bab_functionality {
         $id_user_original = $id_user;
         $send_pwd = isset($user['sendpwd']) ? $user['sendpwd'] : null;
 
+        $message = bab_translate('Access denied');
 
         if (!$this->register && null === $id_user && !$this->canCreateUser())
         {
-            throw new Exception(bab_translate('Access denied'));
+            throw new Exception($message);
         }
 
         if (null !== $id_user && !$this->canEditUser($id_user))
         {
-            throw new Exception(bab_translate('Access denied'));
+            throw new Exception($message);
         }
 
         // verify directory mandatory fields
@@ -1538,7 +1543,8 @@ class Func_UserEditor extends bab_functionality {
 
             if ($user['password1'] !== $user['password2'])
             {
-                throw new Exception(bab_translate('ERROR: Passwords not match !!'));
+                $message = bab_translate('ERROR: Passwords not match !!');
+                throw new Exception($message);
             }
 
             $oPwdComplexity = @bab_functionality::get('PwdComplexity');
@@ -1657,7 +1663,9 @@ class Func_UserEditor extends bab_functionality {
                 if (!notifyUserRegistration($link, $fullname, $user['email']))
                 {
                     $warning = "( ". bab_translate("The user has not received his confirmation email")." )";
-                    $registration_exception = new Exception(bab_translate("ERROR: Email message can't be sent !!"));
+                    
+                    $message = bab_translate("ERROR: Email message can't be sent !!");
+                    $registration_exception = new Exception($message);
                 }
             }
 

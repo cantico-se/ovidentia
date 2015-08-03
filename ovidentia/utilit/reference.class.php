@@ -351,7 +351,8 @@ class bab_Reference implements IGuid
         }
         else
         {
-            throw new Exception(bab_translate('The reference is not valid'));
+            $message = bab_translate('The reference is not valid');
+            throw new Exception($message);
         }
     }
 }

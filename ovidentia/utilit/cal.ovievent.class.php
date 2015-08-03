@@ -150,7 +150,8 @@ class bab_cal_OviEventUpdate
 
         if( $period->ts_begin >= $period->ts_end )
             {
-            throw new ErrorException(bab_translate("End date must be older"));
+            $message = bab_translate("End date must be older");
+            throw new ErrorException($message);
             return false;
             }
 

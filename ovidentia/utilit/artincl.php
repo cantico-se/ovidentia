@@ -2150,7 +2150,8 @@ function bab_newArticleDraft($idtopic, $idarticle) {
 				}
 			}
 
-			throw new ErrorException(bab_translate('A draft for this article already exists'));
+			$message = bab_translate('A draft for this article already exists');
+			throw new ErrorException($message);
 			return 0;
 		}
 
@@ -2158,7 +2159,8 @@ function bab_newArticleDraft($idtopic, $idarticle) {
 		if ($res && $babDB->db_num_rows($res) == 1 ) {
 			$arr = $babDB->db_fetch_array($res);
 		} else {
-			throw new ErrorException(bab_translate('The article does not exists'));
+		    $message = bab_translate('The article does not exists');
+			throw new ErrorException($message);
 			return 0;
 		}
 
@@ -2172,7 +2174,8 @@ function bab_newArticleDraft($idtopic, $idarticle) {
 			// if i am the author or if i am a topic manager
 			if ($arr['id_author'] != $GLOBALS['BAB_SESS_USERID'] && !bab_isAccessValid(BAB_TOPICSMAN_GROUPS_TBL, $idtopic))
 			{
-				throw new ErrorException(bab_translate('This article is not modifiable'));
+			    $message = bab_translate('This article is not modifiable');
+				throw new ErrorException($message);
 				return false;
 			}
 
@@ -2185,7 +2188,8 @@ function bab_newArticleDraft($idtopic, $idarticle) {
 
 			if (!$author_access && !$manager_access)
 			{
-				throw new ErrorException(bab_translate('This article is not modifiable'));
+			    $message = bab_translate('This article is not modifiable');
+				throw new ErrorException($message);
 				return false;
 			}
 		}
@@ -2196,7 +2200,8 @@ function bab_newArticleDraft($idtopic, $idarticle) {
 
 		if (!bab_isAccessValid(BAB_TOPICSSUB_GROUPS_TBL, $idtopic))
 		{
-			throw new ErrorException(bab_translate('New article submission denied in this topic'));
+		    $message = bab_translate('New article submission denied in this topic');
+			throw new ErrorException($message);
 			return false;
 		}
 
@@ -2207,7 +2212,8 @@ function bab_newArticleDraft($idtopic, $idarticle) {
 
 		if (count(bab_getUserIdObjects(BAB_TOPICSSUB_GROUPS_TBL)) == 0)
 		{
-			throw new ErrorException(bab_translate('Access denied to draft creation, no accessible topic'));
+		    $message = bab_translate('Access denied to draft creation, no accessible topic');
+			throw new ErrorException($message);
 			return false;
 		}
 	}

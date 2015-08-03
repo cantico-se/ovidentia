@@ -649,8 +649,8 @@ class bab_InstallSource {
 			}
 		}
 
-		throw new Exception(bab_translate('The package is not reconized as an Ovidentia package'));
-		return false;
+		$message = bab_translate('The package is not reconized as an Ovidentia package');
+		throw new Exception($message);
 	}
 
 

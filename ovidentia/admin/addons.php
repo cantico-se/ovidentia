@@ -1001,7 +1001,8 @@ class bab_import_package {
 		$ini = $install->getIni();
 
 		if (!$ini) {
-			throw new Exception(bab_translate("This file is not a well formated Ovidentia package"));
+		    $message = bab_translate("This file is not a well formated Ovidentia package");
+			throw new Exception($message);
 		}
 
 		return $ini;

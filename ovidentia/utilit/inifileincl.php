@@ -1135,8 +1135,8 @@ class bab_inifile {
 	public function getfromzip($zipfile, $inifile) {
 
 		if (empty($zipfile)) {
-			throw new Exception(bab_translate('The archive does not exists'));
-			return false;
+		    $message = bab_translate('The archive does not exists');
+			throw new Exception($message);
 		}
 
 		include_once dirname(__FILE__)."/addonsincl.php";

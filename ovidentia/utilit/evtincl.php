@@ -503,7 +503,8 @@ function bab_createCalendarPeriod(Func_CalendarBackend $backend, $args, bab_Peri
 		case BAB_CAL_RECUR_WEEKLY:
 			if( $duration > 24 * 3600 * 7 * $args['nweeks'])
 			{
-				throw new ErrorException(bab_translate("The duration of the event must be shorter than how frequently it occurs"));
+			    $message = bab_translate("The duration of the event must be shorter than how frequently it occurs");
+				throw new ErrorException($message);
 				return false;
 			}
 
@@ -527,7 +528,8 @@ function bab_createCalendarPeriod(Func_CalendarBackend $backend, $args, bab_Peri
 		case BAB_CAL_RECUR_MONTHLY:
 			if( $duration > 24*3600*28*$args['nmonths'])
 				{
-				throw new ErrorException(bab_translate("The duration of the event must be shorter than how frequently it occurs"));
+				$message = bab_translate("The duration of the event must be shorter than how frequently it occurs");
+				throw new ErrorException($message);
 				return false;
 				}
 
@@ -539,7 +541,8 @@ function bab_createCalendarPeriod(Func_CalendarBackend $backend, $args, bab_Peri
 
 			if( $duration > 24*3600*365*$args['nyears'])
 				{
-				throw new ErrorException(bab_translate("The duration of the event must be shorter than how frequently it occurs"));
+				$message = bab_translate("The duration of the event must be shorter than how frequently it occurs");
+				throw new ErrorException($message);
 				return false;
 				}
 			$rrule[]= 'INTERVAL='.$args['nyears'];
@@ -549,7 +552,8 @@ function bab_createCalendarPeriod(Func_CalendarBackend $backend, $args, bab_Peri
 		case BAB_CAL_RECUR_DAILY: /* daily */
 			if( $duration > 24*3600*$args['ndays'] )
 				{
-				throw new ErrorException(bab_translate("The duration of the event must be shorter than how frequently it occurs"));
+				$message = bab_translate("The duration of the event must be shorter than how frequently it occurs");
+				throw new ErrorException($message);
 				return false;
 				}
 			$rrule[]= 'INTERVAL='.$args['ndays'];
@@ -566,7 +570,8 @@ function bab_createCalendarPeriod(Func_CalendarBackend $backend, $args, bab_Peri
 		$until->add(1, BAB_DATETIME_DAY);
 
 		if( $until->getTimeStamp() < $end->getTimeStamp()) {
-			throw new ErrorException(bab_translate("Repeat date must be older than end date"));
+		    $message = bab_translate("Repeat date must be older than end date");
+			throw new ErrorException($message);
 			return false;
 		}
 

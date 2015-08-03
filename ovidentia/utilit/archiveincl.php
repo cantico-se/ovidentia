@@ -242,7 +242,8 @@ class Func_Archive_Zip_ZipArchive extends Func_Archive_Zip {
 	public function open($filename, $mode = null)
 	{
 		if (!isset($this->zip)) {
-			throw new Exception(bab_translate('Trying to open an uninitialized ZipArchive.'));
+		    $message = bab_translate('Trying to open an uninitialized ZipArchive.');
+			throw new Exception($message);
 		}
 		$this->opened_filename = $filename;
 		
@@ -298,7 +299,8 @@ class Func_Archive_Zip_ZipArchive extends Func_Archive_Zip {
 	public function close()
 	{
 		if (!isset($this->zip)) {
-			throw new Exception(bab_translate('Trying to close an uninitialized ZipArchive.'));
+		    $message = bab_translate('Trying to close an uninitialized ZipArchive.');
+			throw new Exception($message);
 		}
 		$this->opened_filename = null;
 		$this->add_file_limit = 128;
@@ -314,7 +316,8 @@ class Func_Archive_Zip_ZipArchive extends Func_Archive_Zip {
 	public function addFile($filename, $localname)
 	{
 		if (!isset($this->zip)) {
-			throw new Exception(bab_translate('Trying to add a file to an uninitialized ZipArchive.'));
+		    $message = bab_translate('Trying to add a file to an uninitialized ZipArchive.');
+			throw new Exception($message);
 		}
 
 		if ($this->add_file_limit <= 0) {
@@ -335,7 +338,8 @@ class Func_Archive_Zip_ZipArchive extends Func_Archive_Zip {
 	public function extractTo($destination)
 	{
 		if (!isset($this->zip)) {
-			throw new Exception(bab_translate('Trying to extract from an uninitialized ZipArchive.'));
+		    $message = bab_translate('Trying to extract from an uninitialized ZipArchive.');
+			throw new Exception($message);
 		}
 		$result = $this->zip->extractTo($destination);
 		return $result;
