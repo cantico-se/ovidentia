@@ -141,8 +141,8 @@ class bab_userInfos {
         }
 
         return array(
-            'firstname' => bab_toHtml($row['firstname']),
-            'lastname' => bab_toHtml($row['lastname'])
+            'firstname' => $row['firstname'],
+            'lastname' => $row['lastname']
         );
 
     }
@@ -161,7 +161,7 @@ class bab_userInfos {
             return false;
         }
 
-        return bab_composeUserName(bab_toHtml($row['firstname']), bab_toHtml($row['lastname']));
+        return bab_composeUserName($row['firstname'], $row['lastname']);
     }
 
     /**
