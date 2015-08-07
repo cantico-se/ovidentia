@@ -618,6 +618,8 @@ class Func_Ovml_Function_SitemapMenu extends Func_Ovml_Function {
 		
 
 		$additional_classes = array();
+		$additional_classes[] = 'niv'.$depth;
+		
 		if (isset($this->activeNodes[$siteMapItem->id_function])) {
 			// the nodes in the current path have the "active" class.
 			$additional_classes[] = $this->activeClass;
@@ -789,7 +791,7 @@ class Func_Ovml_Function_SitemapMenu extends Func_Ovml_Function {
 		if ($node) {
 
 			if ($outerUl) {
-				$return .= '<ul class="sitemap-menu-root">'."\n";
+				$return .= '<ul class="sitemap-menu-root" role="navigation">'."\n";
 			}
 
 			do {
