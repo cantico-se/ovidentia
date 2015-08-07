@@ -633,7 +633,7 @@ class Func_Ovml_Function_SitemapMenu extends Func_Ovml_Function {
 		$ul = null;
 
 		if ($node->hasChildNodes() && $depth < $this->maxDepth) { 
-			$ul = "<ul>\n";
+			$ul = "<ul class=\"niv".($depth + 1)."\">\n";
 
 			$node = $node->firstChild();
 			do {
