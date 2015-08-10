@@ -384,7 +384,7 @@ class bab_ArtDraft
 			$query = 'UPDATE bab_art_drafts SET ';
 			foreach($values as $field => $value)
 			{
-				$tmp[] = $field.'='.$babDB->quote($value);
+				$tmp[] = $field.'='.$babDB->quote((string) $value);
 			}
 
 			$query .= implode(', ', $tmp);
