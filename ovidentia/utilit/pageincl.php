@@ -513,7 +513,7 @@ function printBody()
 	bab_sitemap::getFromSite();
 
 	$temp = new tpl();
-	echo bab_printTemplateAndOvml($temp, 'page', '');
+	echo bab_printTemplate($temp, 'page.html', '');
 }
 
 
