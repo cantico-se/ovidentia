@@ -1996,7 +1996,7 @@ function bab_printTemplateAndOvml($class, $templateName, $section = '')
     $parseOvml = false;
     
     if ($ovml = bab_printTemplate($class, $templateName.'.ovml', $section)) {
-        return bab_printOvml($ovml, (array) $class);
+        return bab_printOvml($ovml, get_object_vars($class));
     }
     
     return bab_printTemplate($class, $templateName.'.html', $section);
