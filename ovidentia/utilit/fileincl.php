@@ -2022,8 +2022,10 @@ class BAB_FileManagerEnv
             $this->sFmUploadPath	= self::getFmRealUploadPath();
             $this->sRelativePath	= $this->sPath . $this->sEndSlash;
 
-
-            $this->oFmRootFolder = BAB_FmFolderHelper::getFmFolderById($this->iIdObject);
+            if (isset($this->iIdObject)) {
+                $this->oFmRootFolder = BAB_FmFolderHelper::getFmFolderById($this->iIdObject);
+            }
+            
             //'' === $this->sGr si on a clique depuis la section utilisateur
 
             if(!is_null($this->oFmRootFolder) && '' !== $this->sGr)
