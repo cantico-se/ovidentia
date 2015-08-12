@@ -1971,11 +1971,35 @@ function bab_printTemplate($class, $file, $section = '')
     $skin = new bab_Skin($babSkin);
 
     $tpl = new bab_Template();
-    if ($html = $tpl->printTemplate($class, $skin->getThemePath().'templates/'. $file, $section)) {
-        return $html;
+    $html = $tpl->printTemplate($class, $skin->getThemePath().'templates/'. $file, $section);
+    
+    if (!$html) {
+        $html = $tpl->printTemplate($class, $babInstallPath.'skins/ovidentia/templates/'.$file, $section);
     }
+    
+    return $html;
+}
 
-    return $tpl->printTemplate($class, $babInstallPath.'skins/ovidentia/templates/'.$file, $section);
+/**
+ * merge a template with a class object instance
+ * if the file extension is html, process template only, if the file extension is ovml, parse the result as ovml
+ * 
+ *
+ * @param	object	$class
+ * @param	string	$templateName	file path in a template directory (in the core or in the skin) without extension
+ * @param	string	[$section]	    name of the section in file (begin and end tag)
+ *
+ * @return string
+ */
+function bab_printTemplateAndOvml($class, $templateName, $section = '')
+{
+    $parseOvml = false;
+    
+    if ($ovml = bab_printTemplate($class, $templateName.'.ovml', $section)) {
+        return bab_printOvml($ovml, (array) $class);
+    }
+    
+    return bab_printTemplate($class, $templateName.'.html', $section);
 }
 
 
