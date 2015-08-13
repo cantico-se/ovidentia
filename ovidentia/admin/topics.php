@@ -431,7 +431,7 @@ function addTopic($cat, $ncat, $category, $description, $saart, $sacom, $saupd, 
 			$this->usersbrowurl = $GLOBALS['babUrlScript']."?tg=users&idx=brow&cb=";
 
 			$file = "articlestemplate.html";
-			$filepath = "skins/".$GLOBALS['babSkin']."/templates/". $file;
+			$filepath = bab_skin::getUserSkin()->getThemePath()."templates/". $file;
 			if( !file_exists( $filepath ) )
 				{
 				$filepath = $GLOBALS['babSkinPath']."templates/". $file;
@@ -454,7 +454,7 @@ function addTopic($cat, $ncat, $category, $description, $saart, $sacom, $saupd, 
 			$this->countarttmpl = count($this->arrarttmpl);
 
 			$file = "topicsdisplay.html";
-			$filepath = "skins/".$GLOBALS['babSkin']."/templates/". $file;
+			$filepath = bab_skin::getUserSkin()->getThemePath()."templates/". $file;
 			if( !file_exists( $filepath ) )
 				{
 				$filepath = $GLOBALS['babSkinPath']."templates/". $file;

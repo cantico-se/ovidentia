@@ -101,7 +101,7 @@ abstract class bab_listArticles extends categoriesHierarchy
 			{
 			$this->template = $arrtop['display_tmpl'];
 			$file = "topicsdisplay.html";
-			$filepath = "skins/".$GLOBALS['babSkin']."/templates/". $file;
+			$filepath = bab_skin::getUserSkin()->getThemePath()."templates/". $file;
 			if( !file_exists( $filepath ) )
 				{
 				$filepath = $GLOBALS['babSkinPath']."templates/". $file;
@@ -1027,7 +1027,7 @@ function readMore($topics, $article)
 		{
 		$template = $arrtop['display_tmpl'];
 		$file = "topicsdisplay.html";
-		$filepath = "skins/".$GLOBALS['babSkin']."/templates/". $file;
+		$filepath = bab_skin::getUserSkin()->getThemePath()."templates/". $file;
 		if( !file_exists( $filepath ) )
 			{
 			$filepath = $GLOBALS['babSkinPath']."templates/". $file;

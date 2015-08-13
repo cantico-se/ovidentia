@@ -139,7 +139,7 @@ function sectionModify($id)
 				$this->editor = false;
 
 			$file = "sectiontemplate.html";
-			$filepath = "skins/".$GLOBALS['babSkin']."/templates/". $file;
+			$filepath = bab_skin::getUserSkin()->getThemePath()."templates/". $file;
 			if( !file_exists( $filepath ) )
 				{
 				$filepath = $GLOBALS['babSkinPath']."templates/". $file;

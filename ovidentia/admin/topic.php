@@ -682,7 +682,8 @@ function modifyCategory($id, $cat, $category, $description, $saart, $sacom, $sau
 			$this->editor = $editor->getEditor();
 
 			$file = "articlestemplate.html";
-			$filepath = "skins/".$GLOBALS['babSkin']."/templates/". $file;
+			
+			$filepath = bab_skin::getUserSkin()->getThemePath()."templates/". $file;
 			if( !file_exists( $filepath ) )
 				{
 				$filepath = $GLOBALS['babSkinPath']."templates/". $file;
@@ -705,7 +706,7 @@ function modifyCategory($id, $cat, $category, $description, $saart, $sacom, $sau
 			$this->countarttmpl = count($this->arrarttmpl);
 
 			$file = "topicsdisplay.html";
-			$filepath = "skins/".$GLOBALS['babSkin']."/templates/". $file;
+			$filepath = bab_skin::getUserSkin()->getThemePath()."templates/". $file;
 			if( !file_exists( $filepath ) )
 				{
 				$filepath = $GLOBALS['babSkinPath']."templates/". $file;
