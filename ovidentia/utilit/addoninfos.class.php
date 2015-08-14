@@ -102,11 +102,21 @@ class bab_addonInfos {
             $standard = new bab_AddonStandardLocation($this->addonname);
 
             if (file_exists($standard->getIniFilePath())) {
+                // addon in vendor/ in same case as in addon name
                 $this->location = $standard;
-            } else {
-            
-                $this->location = new bab_AddonInCoreLocation($this->addonname);
+                return $this->location;
             }
+            
+            $standard = new bab_AddonStandardLocation(mb_strtolower($this->addonname));
+            if (file_exists($standard->getIniFilePath())) {
+                // addon in vendor/ lowercased as in git or composer package
+                $this->location = $standard;
+                return $this->location;
+            }
+            
+            
+            $this->location = new bab_AddonInCoreLocation($this->addonname);
+            
         }
         
         return $this->location;
@@ -847,7 +857,8 @@ class bab_addonInfos {
         include_once $GLOBALS['babInstallPath'].'utilit/upgradeincl.php';
 
         if (!is_file($this->getPhpPath().'init.php')) {
-            trigger_error('init.php file not found for addon in '.$this->getPhpPath());
+            
+            trigger_error(sprintf('init.php file not found for addon %s in %s', $this->getName(), $this->getPhpPath()));
             return false;
         }
 
