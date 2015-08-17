@@ -9137,6 +9137,8 @@ class Func_Ovml_Function_PreviousArticle extends Func_Ovml_Function_PreviousOrNe
  * <OFGetPath path="" file_relative="1" saveas="">
  *
  * file_relative: convert a path relative to the ovml file to a path relative to ovidentia root
+ *
+ * @since 8.2.0
  */
 class Func_Ovml_Function_GetPath extends Func_Ovml_Function {
 
@@ -9178,6 +9180,8 @@ class Func_Ovml_Function_GetPath extends Func_Ovml_Function {
 /**
  * Get selected skin path
  * <OFGetSelectedSkinPath>
+ *
+ * @since 8.3.0
  */
 class Func_Ovml_Function_GetSelectedSkinPath extends Func_Ovml_Function {
 
