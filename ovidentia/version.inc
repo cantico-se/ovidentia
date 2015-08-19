@@ -35,7 +35,7 @@ mod_xml="Available"
 ; available since 5.8.1
 
 ov_version="5.5.3"
-php_version="5.1.0"
+php_version="5.3.0"
 
 ; available since 5.8.7
 
