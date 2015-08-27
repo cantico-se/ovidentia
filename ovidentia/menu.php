@@ -99,14 +99,16 @@ function bab_menuDisplay()
 
     foreach($nodes as $nodeName) {
         $node = $sitemap->getNodeById($nodeName);
-        $item = $node->getData();
-        $layout = $W->VBoxLayout();
-        $Link = false;
-        $layout->addItem($W->Title($item->name));
+        if($node) {
+            $item = $node->getData();
+            $layout = $W->VBoxLayout();
+            $Link = false;
+            $layout->addItem($W->Title($item->name));
 
-        $layout->addItem(bab_menuSubNode($node));
+            $layout->addItem(bab_menuSubNode($node));
 
-        $completeLayout->addItem($layout);
+            $completeLayout->addItem($layout);
+        }
     }
 
     $page->addItem($completeLayout);
