@@ -344,7 +344,7 @@ class bab_ArtDraft
 				".$babDB->quote($GLOBALS['BAB_SESS_USERID']).",
 				now(),
 				".$babDB->quote($action).",
-				".$babDB->quote($comment).",
+				".$babDB->quote((string) $comment).",
 				".$babDB->quote($ordering)."
 			)
 		");
