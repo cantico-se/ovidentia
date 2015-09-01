@@ -537,7 +537,14 @@ function bab_listWaitingEvents(bab_eventBeforeWaitingItemsDisplayed $event)
 
 		if ($calendar)
 		{
-			$start = BAB_DateTime::fromIsoDateTime($arr['start_date']);
+		    if (1 === (int) $arr['fullday']) {
+		        list($isoDate) = explode(' ', $arr['start_date']);
+		        list($year, $month, $day) = explode('-', $isoDate);
+		        $start = new BAB_DateTime((int) $year, (int) $month, (int) $day, null, null, null);
+		    } else {
+			    $start = BAB_DateTime::fromIsoDateTime($arr['start_date']);
+		    }
+		    
 			$startdate = bab_shortDate(bab_mktime($arr['start_date']), true);
 			
 			$layout = $W->HBoxItems(
