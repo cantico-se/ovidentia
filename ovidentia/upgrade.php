@@ -7176,6 +7176,17 @@ function ovidentia_upgrade($version_base,$version_ini) {
     }
     
 
+    
+    /**
+     * Upgrade to 8.3.90
+     * from her, we use php 5.3.0
+     */
+    
+    $zip = bab_functionality::get('Archive/Zip');
+    if ($zip instanceof Func_Archive_Zip_Zlib) {
+        $functionalities->copyToParent('Archive/Zip/ZipArchive');
+    }
+    
 
     return true;
 

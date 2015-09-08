@@ -141,6 +141,8 @@ class Func_Archive_Zip extends Func_Archive {
 /**
  * zip toolkit based on zlib
  * Slow but compliant
+ * 
+ * @depreated Since ovidentia 8.3.90, php 5.3.0 is required so we use Func_Archive_Zip_ZipArchive instead
  */
 class Func_Archive_Zip_Zlib extends Func_Archive_Zip {
 
