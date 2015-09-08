@@ -472,7 +472,7 @@ class BAB_FmFolderSet extends BAB_BaseSet
      *
      * @return BAB_FmFolder|NULL
      */
-    function getRootCollectiveFolder($sRelativePath, $delegation_id = null)
+    public static function getRootCollectiveFolder($sRelativePath, $delegation_id = null)
     {
         global $babBody;
 
