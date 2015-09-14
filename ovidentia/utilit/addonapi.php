@@ -3116,7 +3116,6 @@ function bab_printCachedOvmlTemplate($file, $args = array())
  */
 function bab_printOvmlTemplate($file, $args=array())
 {
-    $start = microtime();
     global $babInstallPath, $babSkinPath, $babOvmlPath;
 
     /* Skin local path */
@@ -3131,7 +3130,16 @@ function bab_printOvmlTemplate($file, $args=array())
 
         return '<!-- ERROR filename: '.bab_toHtml($file).' -->';
     }
-
+    
+    
+    if ('addons/' === mb_substr($file, 0, 7)) {
+        list(, $addonName) = explode('/', $file);
+        $addonRealivePath = mb_substr($file, 8+mb_strlen($addonName));
+        if (file_exists("vendor/ovidentia/$addonName/skins/ovidentia/ovml/$addonRealivePath")) {
+            $filepath = "vendor/ovidentia/$addonName/skins/ovidentia/ovml/$addonRealivePath";
+        }
+    }
+    
 
     if (!file_exists($filepath)) {
         $filepath = $babSkinPath.'ovml/'.$file; /* Ex. : ovidentiainstall/skins/ovidentia/ovml/test.ovml */
@@ -3147,8 +3155,6 @@ function bab_printOvmlTemplate($file, $args=array())
     include_once $babInstallPath.'utilit/omlincl.php';
     $tpl = new babOvTemplate($args);
     $template = $tpl->printout(file_get_contents($filepath), $filepath);
-    $end = microtime();
-    //bab_debug($filepath. '(start: '.$start.', end:'.$end.', total:'.($end-$start).')');
     return $template;
 }
 
