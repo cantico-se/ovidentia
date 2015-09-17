@@ -86,6 +86,8 @@ function site_menu1()
 			$this->name = bab_translate("Site name");
 			$this->description = bab_translate("Description");
 			$this->lang = bab_translate("Lang");
+			$this->t_lang_default = bab_translate("Determine automatically");
+			
 			$this->skin = bab_translate("Skin");
 			$this->sitemap = bab_translate("Site map");
 			$this->confirmation = bab_translate("Send email confirmation")."?";
@@ -148,11 +150,11 @@ function site_menu1()
 				case 'To': $this->toselected = 'selected'; break;
 				}
 			
-			$this->arrfiles	= bab_getAvailableLanguages();
-			$this->count	= count($this->arrfiles);
+			$this->arrlang	= bab_getAvailableLanguages();
+			$this->count	= count($this->arrlang);
 			if($this->count > 0)
 			{
-				bab_sort::sort($this->arrfiles);
+				bab_sort::sort($this->arrlang);
 			}
 
 			include_once $GLOBALS['babInstallPath'].'utilit/skinincl.php';
@@ -181,7 +183,7 @@ function site_menu1()
 			static $i = 0;
 			if( $i < $this->count)
 				{
-                $this->langval = $this->arrfiles[$i];
+                $this->langval = $this->arrlang[$i];
                 if( $this->row['lang'] == $this->langval )
                     $this->langselected = "selected";
                 else

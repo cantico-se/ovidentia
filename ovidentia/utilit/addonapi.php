@@ -3748,40 +3748,7 @@ function bab_getStaticUrl()
 }
 
 
-/**
- * Get the current user language code,
- * if not set for user or not logged in, get the site language code
- *
- * @since 8.0.94
- *
- * @return string
- */
-function bab_getLanguage()
-{
-    require_once dirname(__FILE__).'/settings.class.php';
-    require_once dirname(__FILE__).'/userincl.php';
 
-    $settings = bab_getInstance('bab_Settings');
-    /*@var $settings bab_Settings */
-    $site = $settings->getSiteSettings();
-
-    if ('Y' !== $site['change_lang'] || !bab_isUserLogged())
-    {
-        return $site['lang'];
-    }
-
-    require_once dirname(__FILE__).'/userinfosincl.php';
-
-    if($arr = bab_userInfos::getUserSettings())
-    {
-        if (!empty($arr['lang']))
-        {
-            return $arr['lang'];
-        }
-    }
-
-    return $site['lang'];
-}
 
 /**
  * @since 8.0.95
@@ -3811,3 +3778,62 @@ function bab_getSelf() {
     return mb_substr($_SERVER['PHP_SELF'], $pos +1);
 }
 
+
+
+/**
+ * Get the current user language code,
+ * if not set for user or not logged in, get the site language code
+ *
+ * @since 8.0.94
+ *
+ * @return string
+ */
+function bab_getLanguage()
+{
+    require_once dirname(__FILE__).'/session.class.php';
+    $session = bab_getInstance('bab_Session');
+    
+    if (isset($session->babLanguage)) {
+        return $session->babLanguage;
+    }
+    
+    require_once dirname(__FILE__).'/settings.class.php';
+
+
+    $settings = bab_getInstance('bab_Settings');
+    /*@var $settings bab_Settings */
+    $site = $settings->getSiteSettings();
+
+    if ('Y' !== $site['change_lang'] || !bab_isUserLogged())
+    {
+        return $settings->getSiteLanguage();
+    }
+
+    require_once dirname(__FILE__).'/userinfosincl.php';
+
+    if($arr = $settings->getUserSettings())
+    {
+        if (!empty($arr['lang']))
+        {
+            return $arr['lang'];
+        }
+    }
+
+    return $settings->getSiteLanguage();
+}
+
+
+
+/**
+ * set persistant language for the current session
+ */
+function bab_setLanguage($code) 
+{
+    require_once dirname(__FILE__).'/session.class.php';
+    
+    // deprecated: bab_getLanguage() should be used instead of the global variable
+    $GLOBALS['babLanguage'] = $code;
+    
+    $session = bab_getInstance('bab_Session');
+    $session->babLanguage = $code;
+}

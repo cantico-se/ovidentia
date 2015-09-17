@@ -982,15 +982,16 @@ function bab_updateSiteSettings()
 		$GLOBALS['babStyle'] = 'ovidentia.css';
 		}
 
-	if( $arr['lang'] != '')
-		{
-		$GLOBALS['babLanguage'] = $arr['lang'];
-		}
-	else {
-		$GLOBALS['babLanguage'] = 'fr'; }
-
-
-
+    // set langage in session if not allready set
+    // will not be necessary if all code use bab_getLanguage() instead of $GLOBALS['babLanguage']
+	require_once dirname(__FILE__).'/session.class.php';
+	$session = bab_getInstance('bab_Session');
+	if (!isset($session->babLanguage)) {
+	    bab_setLanguage(bab_getLanguage());
+	} else {   
+	    $GLOBALS['babLanguage'] = bab_getLanguage();
+	}
+	
 
 	if( $arr['adminemail'] != '')
 		{
