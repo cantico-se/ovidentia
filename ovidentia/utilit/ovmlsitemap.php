@@ -78,7 +78,7 @@ abstract class Ovml_Container_Sitemap extends Func_Ovml_Container
 
 		if (false === $sitemap) {
 			global $babBody;
-			
+
 			$this->sitemap_name = $babBody->babsite['sitemap'];
 			$this->sitemap = bab_siteMap::getByUid($this->sitemap_name);
 			if (!isset($this->sitemap)) {
@@ -96,8 +96,8 @@ abstract class Ovml_Container_Sitemap extends Func_Ovml_Container
 		}
 
 	}
-	
-	
+
+
 	/**
 	 * Get base node ID from attribute or from visible root node
 	 * @return string
@@ -110,12 +110,12 @@ abstract class Ovml_Container_Sitemap extends Func_Ovml_Container
 		{
 			$baseNodeId = bab_Sitemap::getVisibleRootNodeByUid($this->sitemap_name);
 		}
-		
-		
+
+
 		return $baseNodeId;
 	}
-	
-	
+
+
 
 	/**
 	 * (non-PHPdoc)
@@ -323,7 +323,7 @@ class Func_Ovml_Container_SitemapPath extends Ovml_Container_Sitemap
 						{
 							$nodeId = $customNode->getId();
 						}
-						
+
 					}
 				}
 			}
@@ -347,7 +347,7 @@ class Func_Ovml_Container_SitemapPath extends Ovml_Container_Sitemap
 				$node = $this->sitemap->getNodeById($nodeId);
 
 
-				
+
 
 				$baseNodeFound = false;
 
@@ -373,7 +373,7 @@ class Func_Ovml_Container_SitemapPath extends Ovml_Container_Sitemap
 					$tmp['menuIgnore'] = $item->menuIgnore;
 					$tmp['breadCrumbIgnore'] = $item->breadCrumbIgnore;
 					$tmp['target'] = $item->getTarget()->id_function;
-													
+
 					array_unshift($this->IdEntries, $tmp);
 					if ($item->id_function === $baseNodeId) {
 						break;
@@ -413,7 +413,7 @@ class Func_Ovml_Container_SitemapPath extends Ovml_Container_Sitemap
 
 /**
  * Return the sitemap position in a html LI
- * <OFSitemapPosition [sitemap="sitemapName"] [keeplastknown="0|1"] [basenode="node"] >
+ * <OFSitemapPosition [sitemap="sitemapName"] [keeplastknown="0|1"] [basenode="node"] [node=""] >
  *
  * - The sitemap attribute is optional.
  * 		The default value is the sitemap selected in Administration > Sites > Site configuration.
@@ -421,6 +421,7 @@ class Func_Ovml_Container_SitemapPath extends Ovml_Container_Sitemap
  * 		By default it is the node corresponding to the current page (or the last known page displayed if keeplastknown is active).
  * - The basenode attribute is optional, it will be the starting node used for the <ul> tree.
  * 		The default value is 'babDgAll'.
+ * - The node attribute is optional. Specify the node for wich we want the path. If not specified the current node is used.
  * - The keeplastknown attribute is optional, if set to "1", the last accessed sitemap node is kept selected if accessing a page not in the sitemap.
  * 		The default value is '1'.
  */
@@ -592,7 +593,7 @@ class Func_Ovml_Function_SitemapMenu extends Func_Ovml_Function {
 	protected	$delegAdmin = array();
 
 	protected	$admindelegation = false;
-	
+
 	protected	$maxDepth = 100;
 
 	private function getHtml(bab_Node $node, $mainmenuclass = null, $depth = 1) {
@@ -604,7 +605,7 @@ class Func_Ovml_Function_SitemapMenu extends Func_Ovml_Function {
 		$id = $node->getId();
 		$siteMapItem = $node->getData();
 		/* @var $siteMapItem bab_siteMapItem */
-		
+
 		if($siteMapItem->target){
 			$truncateId = $siteMapItem->target->id_function;
 			if($this->admindelegation
@@ -615,11 +616,11 @@ class Func_Ovml_Function_SitemapMenu extends Func_Ovml_Function {
 				return $return;
 			}
 		}
-		
+
 
 		$additional_classes = array();
 		$additional_classes[] = 'niv'.$depth;
-		
+
 		if (isset($this->activeNodes[$siteMapItem->id_function])) {
 			// the nodes in the current path have the "active" class.
 			$additional_classes[] = $this->activeClass;
@@ -632,7 +633,7 @@ class Func_Ovml_Function_SitemapMenu extends Func_Ovml_Function {
 
 		$ul = null;
 
-		if ($node->hasChildNodes() && $depth < $this->maxDepth) { 
+		if ($node->hasChildNodes() && $depth < $this->maxDepth) {
 			$ul = "<ul class=\"niv".($depth + 1)."\">\n";
 
 			$node = $node->firstChild();
@@ -691,7 +692,7 @@ class Func_Ovml_Function_SitemapMenu extends Func_Ovml_Function {
 				{
 					continue;
 				}
-			
+
 				if ($delegation[$link[0]] === 'Y')
 				{
 					$this->delegAdmin[bab_getCurrentAdmGroup()]['bab'.$link[2]] = true;
@@ -721,7 +722,7 @@ class Func_Ovml_Function_SitemapMenu extends Func_Ovml_Function {
 		$args['basenode'] = str_replace(' ', '', $args['basenode']);
 		$home = $sitemap->getNodeById($args['basenode']);
 		$baseNodeId = $args['basenode'];
-		
+
 
 		if (!($home instanceOf bab_Node)) {
 			return '';
@@ -738,7 +739,7 @@ class Func_Ovml_Function_SitemapMenu extends Func_Ovml_Function {
 		if (!isset($selectedNodeId)) {
 			$selectedNodeId = bab_Sitemap::getPosition();
 
-			
+
 			// if base node (parameter 'basenode') has been specified,
 			// we try to find if a descendant of this node has
 			// a target to the current position.
@@ -746,7 +747,7 @@ class Func_Ovml_Function_SitemapMenu extends Func_Ovml_Function {
 			{
 				$selectedNodeId = $customNode->getId();
 			}
-			
+
 		}
 
 		if (!isset($args['keeplastknown'])) {
@@ -824,7 +825,7 @@ class Func_Ovml_Function_SitemapMenu extends Func_Ovml_Function {
  *
  * - The sitemap attribute is optional.
  * 		The default value is the sitemap selected in Administration > Sites > Site configuration.
- * 
+ *
  */
 class Func_Ovml_Function_SitemapUrl extends Func_Ovml_Function
 {
@@ -841,7 +842,7 @@ class Func_Ovml_Function_SitemapUrl extends Func_Ovml_Function
 
 		$sitemap_uid = empty($args['sitemap']) ? null : $args['sitemap'];
 		$url = empty($args['url']) ? null : $args['url'];
-		
+
 		if (null === $sitemap_uid)
 		{
 			global $babBody;
@@ -849,20 +850,20 @@ class Func_Ovml_Function_SitemapUrl extends Func_Ovml_Function
 		}
 
 		$rootNode = bab_sitemap::getByUid($sitemap_uid);
-		
+
 		if (isset($args['sitemap']))
 		{
 			unset($args['sitemap']);
 		}
-		
+
 		unset($args['url']);
-		
+
 		if (!isset($rootNode)) {
 			bab_debug(sprintf('incorrect sitemap used in OVML %s sitemap="%s"', get_class($this), $sitemap_uid));
 			return $this->format_output($url, $args);
 		}
-		
-		
+
+
 		if ($nodes = $rootNode->getNodesByIndex('url', $url))
 		{
 			$node = reset($nodes);
@@ -882,7 +883,7 @@ class Func_Ovml_Function_SitemapUrl extends Func_Ovml_Function
 /**
  * Return the sitemap node ID found in the current custom sitemap with a target to the node given in parameter from the core sitemap
  * or the nodeid if the custom node does not exists
- * 
+ *
  * <OFSitemapCustomNodeId node="" [basenode=""] [saveas=""]>
  *
  *
@@ -898,51 +899,51 @@ class Func_Ovml_Function_SitemapCustomNodeId extends Func_Ovml_Function
 		$args = $this->args;
 		$nodeid = empty($args['node']) ? null : $args['node'];
 		$basenode = empty($args['basenode']) ? null : $args['basenode'];
-		
+
 		if (null === $nodeid)
 		{
 			trigger_error(sprintf('Missing attribute nodeid in %s#%s', (string) $this->template->debug_location, get_class($this)));
 			return $this->output('');
 		}
-		
-		
+
+
 		$coreRootNode = bab_sitemap::get(); // core sitemap
 		$node = $coreRootNode->getNodeById($nodeid);
-		
+
 		if (null === $node)
 		{
 			trigger_error(sprintf('Node not found in core sitemap in %s#%s nodeid="%s"', (string) $this->template->debug_location, get_class($this), $nodeid));
 			return $this->output('');
 		}
-		
-		
+
+
 		if (null === $basenode)
 		{
 			$basenode = bab_sitemap::getSitemapRootNode();
 		}
-		
+
 		require_once dirname(__FILE__).'/settings.class.php';
 		$settings = bab_getInstance('bab_Settings');
 		/*@var $settings bab_Settings */
 		$site = $settings->getSiteSettings();
-		
+
 		if ('core' === $site['sitemap'])
 		{
 			// custom sitemap is the core sitemap
 			return $this->output($nodeid);
 		}
-		
+
 		$customRootNode = bab_sitemap::getByUid($site['sitemap']);
 		$customNode = $customRootNode->getNodeByTargetId($basenode, $nodeid);
-		
+
 		if (null === $customNode)
 		{
 			return $this->output($nodeid);
 		}
-		
+
 		return $this->output($customNode->getId());
 	}
-	
+
 	/**
 	 * Process function output
 	 * @param string $str
@@ -951,13 +952,13 @@ class Func_Ovml_Function_SitemapCustomNodeId extends Func_Ovml_Function
 	{
 		$args = $this->args;
 		$saveas = empty($args['saveas']) ? null : $args['saveas'];
-		
+
 		if (isset($saveas))
 		{
 			$this->gctx->push($saveas, $str);
 			return ''; // do not display value if saved
 		}
-		
+
 		return $str;
 	}
 }
