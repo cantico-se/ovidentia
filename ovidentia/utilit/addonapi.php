@@ -3473,6 +3473,8 @@ function bab_getAddonInfosInstance($addonname) {
 
     require_once $GLOBALS['babInstallPath'].'utilit/addonsincl.php';
     static $instances = array();
+    
+    $addonname = mb_strtolower($addonname);
 
     if (false === array_key_exists($addonname, $instances)) {
         $obj = new bab_addonInfos();
