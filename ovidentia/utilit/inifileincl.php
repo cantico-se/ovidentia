@@ -1609,7 +1609,7 @@ class bab_inifile {
 			    
 			    if (defined('BAB_ADDONS_AUTO_UPGRADE') && BAB_ADDONS_AUTO_UPGRADE) {
 			         $addon = bab_getAddonInfosInstance($name);
-			         if ($addon->isUpgradable()) {
+			         if ($addon && $addon->isUpgradable()) {
 			             $addon->upgrade();
 			         }
 			    }

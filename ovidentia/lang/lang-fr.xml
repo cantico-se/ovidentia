@@ -3493,4 +3493,7 @@ L'administrateur</string>
 <string id="Modifiable by the user">Modifiable par l'utilisateur</string>
 <string id="Your changes are saved">Vos modifications ont été enregistrées</string>
 <string id="Can not unzip file: %s">Dézippage du fichier suivant impossible: %s</string>
+
+<string id="Determine automatically">Déterminer automatiquement</string>
+
 </fr>

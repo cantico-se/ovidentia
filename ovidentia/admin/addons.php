@@ -468,6 +468,16 @@ class bab_addonPackage
 
 	private $tmpfile;
 	private $zip;
+	
+	/**
+	 * @var int
+	 */
+	private $ignoreBasePathlength;
+	
+	/**
+	 * @var array
+	 */
+	private $ignore;
 
 	public function __construct($multiple, bab_addonInfos $addon)
 	{
@@ -503,7 +513,19 @@ class bab_addonPackage
 		if ($this->multiple) {
 			$this->addAllAddons($addon);
 		} else {
-			$this->addAddon($addon);
+		    
+		    if (callSingleAddonFunction($addon->getId(), $addon->getName(), 'onPackageAddon'))
+		    {
+    		    $location = $addon->getLocation();
+    		    
+    		    if ($location instanceof bab_AddonInCoreLocation) {
+    			     $this->addAddonInCore($addon);
+    		    }
+    		    
+    		    if ($location instanceof bab_AddonStandardLocation) {
+    		        $this->addAddon($addon);
+    		    }
+		    }
 		}
 	}
 
@@ -544,45 +566,97 @@ class bab_addonPackage
 
 		$this->zip->addFile($tmpini, 'install/addons/addons.ini');
 	}
+	
+	
+	/**
+	 * Get files to ignore
+	 * @return array
+	 */
+	private function getIgnore($path)
+	{
+	    $ignore = array();
+	    if (file_exists($path.'/.git')) {
+	        $ignore[] = '.git';
+	    }
+	    
+	    if (file_exists($path.'/.gitignore')) {
+	        foreach(file($path.'/.gitignore') as $file) {
+	           $ignore[] = trim($file, " /\n\r");
+	        }
+	        
+	        $ignore[] = '.gitignore';
+	    }
+	    
+	    return $ignore;
+	}
+	
+	
+	/**
+	 * Add path to zip
+	 * @param bab_addonInfos $addon
+	 * @param array $res           List of files to zip
+	 * @param string $targetPath   Path in zip archive
+	 */
+	private function addPath(bab_addonInfos $addon, $path, $res, $targetPath)
+	{
 
+	    if (false === $res) {
+	        die(sprintf(bab_translate('Error reading directory %s'), $path));
+	        return;
+	    }
+	    
+	    $len = mb_strlen($path);
+	    
+	    foreach ($res as $file)
+	    {
+	        if (is_file($file))
+	        {
+	            $rec_into = $targetPath.mb_substr($file, $len);
+	            if ($this->multiple) {
+	                $rec_into = 'install/addons/'.$addon->getName().'/'.$rec_into;
+	            }
+	            $this->zip->addFile($file, $rec_into);
+	        }
+	    }
+	}
 
-
-
+	
+	private function testFilter($value)
+	{
+	    list($file) = explode('/', mb_substr($value, $this->ignoreBasePathlength));
+	    return !isset($this->ignore[$file]);
+	}
+	
+	
 	private function addAddon(bab_addonInfos $addon)
 	{
+	    $path = realpath('.').'/vendor/ovidentia/'.$addon->getName();
+	    $this->ignoreBasePathlength = 1+mb_strlen($path);
+	    $this->ignore = array_flip($this->getIgnore($path));
+	    
+	    $res = bab_addon_export_rd($path);
+	    $res = array_filter($res, array($this, 'testFilter'));
+
+	    $this->addPath($addon, $path, $res, '');
+	}
+
+
+
+	private function addAddonInCore(bab_addonInfos $addon)
+	{
+	    
+	    
 		$addons_files_location = bab_getAddonsFilePath();
 		$loc_in = $addons_files_location['loc_in'];
 		$loc_out = $addons_files_location['loc_out'];
 
-		if (!callSingleAddonFunction($addon->getId(), $addon->getName(), 'onPackageAddon'))
-		{
-			return;
-		}
-
 		$res = array();
 		foreach ($loc_in as $k => $path)
 		{
-			$path = realpath('.').'/'.$path.'/'.$addon->getName();
-			$res = bab_addon_export_rd($path);
-
-			if (false === $res) {
-				die(sprintf(bab_translate('Error reading directory %s'), $path));
-				return;
-			}
-
-			$len = mb_strlen($path);
-
-			foreach ($res as $file)
-			{
-				if (is_file($file))
-				{
-					$rec_into = $loc_out[$k].mb_substr($file, $len);
-					if ($this->multiple) {
-						$rec_into = 'install/addons/'.$addon->getName().'/'.$rec_into;
-					}
-					$this->zip->addFile($file, $rec_into);
-				}
-			}
+		    $path = realpath('.').'/'.$path.'/'.$addon->getName();
+		    $res = bab_addon_export_rd($path);
+		    
+			$this->addPath($addon, $path, $res, $loc_out[$k]);
 		}
 
 	}

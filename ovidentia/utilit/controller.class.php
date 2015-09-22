@@ -87,7 +87,7 @@ class bab_SaveException extends Exception
 }
 
 /**
- * Dsiplay error in page instead of message
+ * Display error in page instead of message
  *
  */
 class bab_SaveErrorException extends bab_SaveException {}

@@ -22,8 +22,30 @@
  * USA.																	*
 ************************************************************************/
 
+/**
+ * Highlight a string
+ * @return string
+ */
+function bab_highlightStr($text, $str)
+{
+    $replace = preg_replace_callback(
+        '#(\>(((?>([^><]+|(?R)))*)\<))#s',
+        function ($matches) use ($text, $str) {
+            $replace = preg_replace('/' . preg_quote($str, '/') . '/i', '<span class="Babhighlight">'.$str.'</span>', $matches[0]);
+            return $replace;
+        },
+        '>' . $text . '<'
+    );
+
+    return mb_substr($replace,1, -1);
+    
+}
 
 
+/**
+ * Highlight a string, html or not
+ * @return string
+ */
 function bab_highlightWord( $w, $text)
 {
 
@@ -33,18 +55,16 @@ function bab_highlightWord( $w, $text)
 	}
 	$arr = explode(' ',$w);
 
-	foreach($arr as $mot)
-		{
+	foreach($arr as $mot) {
 
-		$text = str_replace('\"', '"', mb_substr(preg_replace('#(\>(((?>([^><]+|(?R)))*)\<))#se', "preg_replace('#(" . preg_quote($mot,'#') . ")#i', '<span class=\"Babhighlight\">\\\\1</span>', '\\0')", '>' . $text . '<'), 1, -1));
-
+		$text = bab_highlightStr($text, $mot);
+		
 		$he = bab_toHtml($mot);
 
 		if ($he != $mot) {
-			$text = str_replace('\"', '"', mb_substr(preg_replace('#(\>(((?>([^><]+|(?R)))*)\<))#se', "preg_replace('#(" . preg_quote($he,'#') . ")#i', '<span class=\"Babhighlight\">\\\\1</span>', '\\0')", '>' . $text . '<'), 1, -1));
-			}
-
+		    $text = bab_highlightStr($text, $he);
 		}
+	}
 
 	return trim($text);
 }

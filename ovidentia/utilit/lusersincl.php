@@ -78,20 +78,12 @@ function bab_browseUsers($pos, $cb)
 			
 			list($filterColumn) = explode(' ',bab_composeUserName('firstname', 'lastname'));
 			
+			$this->fullname = bab_translate("Lastname").' '.bab_translate("Firstname");
+			
+			$this->pos = $pos;
+			$this->ord = "";
+			$reqa .= " and ".$babDB->backTick($filterColumn)." like '".$babDB->db_escape_like($this->pos)."%' order by lastname asc, firstname asc";
 
-			if (mb_strlen($pos) > 0 && $pos[0] == "-" ) {
-				$this->pos = isset($pos[1]) ? $pos[1] : '';
-				$this->ord = $pos[0];
-				$reqa .= " and ".$babDB->backTick($filterColumn)." like '".$babDB->db_escape_like($this->pos)."%' order by lastname, firstname asc";
-				$this->fullname = bab_composeUserName(bab_translate("Lastname"), bab_translate("Firstname"));
-				$this->fullnameurl = bab_toHtml($GLOBALS['babUrlScript']."?tg=lusers&idx=brow&pos=".$this->pos."&cb=".$cb);
-			} else {
-				$this->pos = $pos;
-				$this->ord = "";
-				$reqa .= " and ".$babDB->backTick($filterColumn)." like '".$babDB->db_escape_like($this->pos)."%' order by firstname, lastname asc";
-				$this->fullname = bab_composeUserName(bab_translate("Firstname"),bab_translate("Lastname"));
-				$this->fullnameurl = bab_toHtml($GLOBALS['babUrlScript']."?tg=lusers&idx=brow&pos=-".$this->pos."&cb=".$cb);
-			}
 			$this->res = $babDB->db_query($reqa);
 			$this->count = $babDB->db_num_rows($this->res);
 
@@ -111,13 +103,11 @@ function bab_browseUsers($pos, $cb)
     		if ($i < $this->count) {
     			$this->arr = $babDB->db_fetch_array($this->res);
     			$this->url = bab_toHtml($GLOBALS['babUrlScript']."?tg=user&idx=Modify&item=".$this->arr['id']."&pos=".$this->ord.$this->pos."&cb=").$this->cb;
-    			$this->firstlast = bab_composeUserName($this->arr['firstname'],$this->arr['lastname']);
+    			$this->firstlast = $this->arr['lastname'].' '.$this->arr['firstname'];
     			$this->firstlast = bab_toHtml($this->firstlast, BAB_HTML_JS);
-    			if ($this->ord == "-") {
-    				$this->urlname = bab_composeUserName($this->arr['lastname'],$this->arr['firstname']);
-    			} else {
-    				$this->urlname = bab_composeUserName($this->arr['firstname'],$this->arr['lastname']);
-    			}
+    			
+    			$this->urlname = $this->arr['lastname'].' '.$this->arr['firstname'];
+
     			$this->urlname = bab_toHtml($this->urlname);
     			$this->userid = bab_toHtml($this->arr['id']);
     			$this->nicknameval = bab_toHtml($this->arr['nickname']);

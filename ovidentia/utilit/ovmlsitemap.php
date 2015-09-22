@@ -792,7 +792,7 @@ class Func_Ovml_Function_SitemapMenu extends Func_Ovml_Function {
 		if ($node) {
 
 			if ($outerUl) {
-				$return .= '<ul class="sitemap-menu-root" role="navigation">'."\n";
+				$return .= '<ul class="sitemap-menu-root">'."\n";
 			}
 
 			do {

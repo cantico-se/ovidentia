@@ -28,16 +28,66 @@ include_once 'base.php';
 require_once dirname(__FILE__).'/utilit/registerglobals.php';
 include_once $babInstallPath.'admin/register.php';
 
+function bab_menuSubNode($node)
+{
+    $W = bab_Widgets();
+
+    $layout = $W->ListLayout();
+    $node = $node->firstChild();
+    $tempLink = array();
+    $link = false;
+    while($node){
+        $link = true;
+        $item = $node->getData();
+        $tempLink[] = array('name' => $item->name, 'url' => $item->url, 'class' => $item->iconClassnames, 'node' => $node);
+        $node = $node->nextSibling();
+    }
+
+    if (!$link) {
+        return null;
+    }
+
+    bab_Sort::asort($tempLink, 'name');
+
+    foreach($tempLink as $link){
+        if ($link['url']) {
+            $layout->addItem($W->Link($link['name'], $link['url'])->addClass('icon '.$link['class']));
+        } else {
+            $layout->addItem($W->Label($link['name'])->addClass(' widget-strong icon '.$link['class']));
+        }
+        $layout->addItem(bab_menuSubNode($link['node']));
+    }
+
+    //$layout->addItem($W->Html('<hr>'));
+    return $layout;
+}
+
 function bab_menuDisplay()
 {
+    $sitemap = bab_siteMap::getByUid('core');
+
+    $nodes = bab_gp('nodes', false);
+    if (!$nodes) {
+        $nodes = array('babAdmin', 'babUser');
+    } elseif($nodes == '*') {
+        $rootnode = $sitemap->getNodeById('DGAll');
+        $subnode = $rootnode->firstChild();
+        $nodes = array();
+        while($subnode){
+            $item = $subnode->getData();
+            $nodes[] = $item->id_function;
+            $subnode = $subnode->nextSibling();
+        }
+    } else {
+        $nodes = explode(',', $nodes);
+    }
+
     /* @var Func_Icons $I */
     $I = bab_functionality::get('Icons');
     $I->includeCss();
 
     $W = bab_Widgets();
     /* @var $W Func_Widgets */
-
-    $sitemap = bab_siteMap::getByUid('core');
 
     $page = $W->babPage('bab-menu');
 
@@ -47,104 +97,17 @@ function bab_menuDisplay()
     $completeLayout->addClass('widget-bordered');
     $completeLayout->addClass('icon-16x16 icon-left-16');
 
-    $adminLayout = $W->VBoxLayout();
-    $adminLink = false;
-    $adminLayout->addItem($W->Title(bab_translate('Administration')));
-
-    /*ADMIN OVI*/
-    $layout = $W->ListLayout();
-    $adminLayout->addItem($layout);
-    $node = $sitemap->getNodeById('babAdminSection');
-    if($node){
-        $node = $node->firstChild();
-        $tempLink = array();
-        while($node){
-            $adminLink = true;
+    foreach($nodes as $nodeName) {
+        $node = $sitemap->getNodeById($nodeName);
+        if($node) {
             $item = $node->getData();
-            $tempLink[] = array('name' => $item->name, 'url' => $item->url, 'class' => $item->iconClassnames);
-            $node = $node->nextSibling();
-        }
+            $layout = $W->VBoxLayout();
+            $Link = false;
+            $layout->addItem($W->Title($item->name));
 
-        bab_Sort::asort($tempLink, 'name');
+            $layout->addItem(bab_menuSubNode($node));
 
-        foreach($tempLink as $link){
-            $layout->addItem($W->Link($link['name'], $link['url'])->addClass('icon '.$link['class']));
-        }
-
-        $adminLayout->addItem($W->Html('<hr>'));
-    }
-
-    /*ADMIN ADDON*/
-    $layout = $W->ListLayout();
-    $adminLayout->addItem($layout);
-    $node = $sitemap->getNodeById('babAdminSectionAddons');
-    if($node){
-        $node = $node->firstChild();
-        $tempLink = array();
-        while($node){
-            $adminLink = true;
-            $item = $node->getData();
-            $tempLink[] = array('name' => $item->name, 'url' => $item->url, 'class' => $item->iconClassnames);
-            $node = $node->nextSibling();
-        }
-
-        bab_Sort::asort($tempLink, 'name');
-
-        foreach($tempLink as $link){
-            $layout->addItem($W->Link($link['name'], $link['url'])->addClass('icon '.$link['class']));
-        }
-    }
-
-    if($adminLink){
-        $completeLayout->addItem($adminLayout);
-    }
-
-    ///////////////////////////////////
-
-    $userLayout = $W->VBoxLayout();
-    $completeLayout->addItem($userLayout);
-
-    $userLayout->addItem($W->Title(bab_translate('User')));
-
-    /*USER OVI*/
-    $layout = $W->ListLayout();
-    $userLayout->addItem($layout);
-    $node = $sitemap->getNodeById('babUserSection');
-    if($node){
-        $node = $node->firstChild();
-        $tempLink = array();
-        while($node){
-            $item = $node->getData();
-            $tempLink[] = array('name' => $item->name, 'url' => $item->url, 'class' => $item->iconClassnames);
-            $node = $node->nextSibling();
-        }
-
-        bab_Sort::asort($tempLink, 'name');
-
-        foreach($tempLink as $link){
-            $layout->addItem($W->Link($link['name'], $link['url'])->addClass('icon '.$link['class']));
-        }
-
-        $userLayout->addItem($W->Html('<hr>'));
-    }
-
-    /*USER ADDON*/
-    $layout = $W->ListLayout();
-    $userLayout->addItem($layout);
-    $node = $sitemap->getNodeById('babUserSectionAddons');
-    if($node){
-        $node = $node->firstChild();
-        $tempLink = array();
-        while($node){
-            $item = $node->getData();
-            $tempLink[] = array('name' => $item->name, 'url' => $item->url, 'class' => $item->iconClassnames);
-            $node = $node->nextSibling();
-        }
-
-        bab_Sort::asort($tempLink, 'name');
-
-        foreach($tempLink as $link){
-            $layout->addItem($W->Link($link['name'], $link['url'])->addClass('icon '.$link['class']));
+            $completeLayout->addItem($layout);
         }
     }
 

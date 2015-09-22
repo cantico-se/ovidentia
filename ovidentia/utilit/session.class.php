@@ -173,7 +173,8 @@ class bab_Session
      */
 	public function start()
 	{
-	    return $this->storage->start();
+	    $this->getStorage(); // getStorage autostart session
+	    return; 
 	}
 	
 	

@@ -3116,7 +3116,6 @@ function bab_printCachedOvmlTemplate($file, $args = array())
  */
 function bab_printOvmlTemplate($file, $args=array())
 {
-    $start = microtime();
     global $babInstallPath, $babSkinPath, $babOvmlPath;
 
     /* Skin local path */
@@ -3131,7 +3130,16 @@ function bab_printOvmlTemplate($file, $args=array())
 
         return '<!-- ERROR filename: '.bab_toHtml($file).' -->';
     }
-
+    
+    
+    if ('addons/' === mb_substr($file, 0, 7)) {
+        list(, $addonName) = explode('/', $file);
+        $addonRealivePath = mb_substr($file, 8+mb_strlen($addonName));
+        if (file_exists("vendor/ovidentia/$addonName/skins/ovidentia/ovml/$addonRealivePath")) {
+            $filepath = "vendor/ovidentia/$addonName/skins/ovidentia/ovml/$addonRealivePath";
+        }
+    }
+    
 
     if (!file_exists($filepath)) {
         $filepath = $babSkinPath.'ovml/'.$file; /* Ex. : ovidentiainstall/skins/ovidentia/ovml/test.ovml */
@@ -3147,8 +3155,6 @@ function bab_printOvmlTemplate($file, $args=array())
     include_once $babInstallPath.'utilit/omlincl.php';
     $tpl = new babOvTemplate($args);
     $template = $tpl->printout(file_get_contents($filepath), $filepath);
-    $end = microtime();
-    //bab_debug($filepath. '(start: '.$start.', end:'.$end.', total:'.($end-$start).')');
     return $template;
 }
 
@@ -3742,40 +3748,7 @@ function bab_getStaticUrl()
 }
 
 
-/**
- * Get the current user language code,
- * if not set for user or not logged in, get the site language code
- *
- * @since 8.0.94
- *
- * @return string
- */
-function bab_getLanguage()
-{
-    require_once dirname(__FILE__).'/settings.class.php';
-    require_once dirname(__FILE__).'/userincl.php';
 
-    $settings = bab_getInstance('bab_Settings');
-    /*@var $settings bab_Settings */
-    $site = $settings->getSiteSettings();
-
-    if ('Y' !== $site['change_lang'] || !bab_isUserLogged())
-    {
-        return $site['lang'];
-    }
-
-    require_once dirname(__FILE__).'/userinfosincl.php';
-
-    if($arr = bab_userInfos::getUserSettings())
-    {
-        if (!empty($arr['lang']))
-        {
-            return $arr['lang'];
-        }
-    }
-
-    return $site['lang'];
-}
 
 /**
  * @since 8.0.95
@@ -3805,3 +3778,62 @@ function bab_getSelf() {
     return mb_substr($_SERVER['PHP_SELF'], $pos +1);
 }
 
+
+
+/**
+ * Get the current user language code,
+ * if not set for user or not logged in, get the site language code
+ *
+ * @since 8.0.94
+ *
+ * @return string
+ */
+function bab_getLanguage()
+{
+    require_once dirname(__FILE__).'/session.class.php';
+    $session = bab_getInstance('bab_Session');
+    
+    if (isset($session->babLanguage)) {
+        return $session->babLanguage;
+    }
+    
+    require_once dirname(__FILE__).'/settings.class.php';
+
+
+    $settings = bab_getInstance('bab_Settings');
+    /*@var $settings bab_Settings */
+    $site = $settings->getSiteSettings();
+
+    if ('Y' !== $site['change_lang'] || !bab_isUserLogged())
+    {
+        return $settings->getSiteLanguage();
+    }
+
+    require_once dirname(__FILE__).'/userinfosincl.php';
+
+    if($arr = $settings->getUserSettings())
+    {
+        if (!empty($arr['lang']))
+        {
+            return $arr['lang'];
+        }
+    }
+
+    return $settings->getSiteLanguage();
+}
+
+
+
+/**
+ * set persistant language for the current session
+ */
+function bab_setLanguage($code) 
+{
+    require_once dirname(__FILE__).'/session.class.php';
+    
+    // deprecated: bab_getLanguage() should be used instead of the global variable
+    $GLOBALS['babLanguage'] = $code;
+    
+    $session = bab_getInstance('bab_Session');
+    $session->babLanguage = $code;
+}

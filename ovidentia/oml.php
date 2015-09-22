@@ -24,7 +24,12 @@
 include_once 'base.php';
 require_once dirname(__FILE__).'/utilit/registerglobals.php';
 
+$babBody = bab_getBody();
 $args = array_merge($_GET, $_POST);
+
+if (!isset($file)) {
+    $file = bab_rp('file');
+}
 
 if(isset($args['echo']))
 	{
@@ -54,17 +59,17 @@ else
 
 // try to set position in sitemap if not allready done by rewriting
 
-if (null === bab_sitemap::getPosition() && isset($_SERVER['QUERY_STRING']))
+if (null === bab_siteMap::getPosition() && isset($_SERVER['QUERY_STRING']))
 {
 	
-	$rootNode = bab_sitemap::getByUid($babBody->babsite['sitemap']);
+	$rootNode = bab_siteMap::getByUid($babBody->babsite['sitemap']);
 	if (isset($rootNode))
 	{
 		if (($nodes = $rootNode->getNodesByIndex('url', '?'.$_SERVER['QUERY_STRING'])) || ($nodes = $rootNode->getNodesByIndex('url', bab_getSelf().'?'.$_SERVER['QUERY_STRING'])))
 		{
 			$node = reset($nodes);
 			$sitemapItem = $node->getData();
-			bab_sitemap::setPosition($sitemapItem->id_function);
+			bab_siteMap::setPosition($sitemapItem->id_function);
 		}
 	}
 }
