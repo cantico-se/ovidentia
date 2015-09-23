@@ -36,6 +36,10 @@ class bab_userInfos {
      * @return array | false
      */
     public static function getRow($id_user) {
+        
+        if (!isset($id_user) || 0 == $id_user) {
+            throw new Exception('Missing parameter id_user');
+        }
 
         global $babDB;
         $res = $babDB->db_query('
