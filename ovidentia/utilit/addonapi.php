@@ -3377,6 +3377,36 @@ class bab_functionality {
     {
         return include self::getRootPath().'/'.$path.'/'.BAB_FUNCTIONALITY_LINK_ORIGINAL_FILENAME;
     }
+    
+    
+    /**
+     * Include original file for all functionality of the dir name (without the basename)
+     * from top to bottom
+     * 
+     * @since 8.3.91
+     * 
+     * @param string $path
+     * @return bool
+     */
+    protected static function includeOriginalDirname($path)
+    {
+        $path = dirname($path);
+        if (empty($path) || '.' === $path) {
+            return false;
+        }
+        
+        $items = explode('/', $path);
+        $includePath = '';
+        foreach($items as $item) {
+            $includePath .= $item;
+            if (!self::includeOriginal($includePath)) {
+                return false;
+            }
+            $includePath .= '/';
+        }
+        
+        return true;
+    }
 
 
     /**
@@ -3395,7 +3425,8 @@ class bab_functionality {
      */
     public static function getOriginal($path, $singleton = true)
     {
-        $classname = bab_functionality::includeOriginal($path);
+        self::includeOriginalDirname($path);
+        $classname = self::includeOriginal($path);
         if (!$classname) {
             return false;
         }
@@ -3418,14 +3449,19 @@ class bab_functionality {
      * @param	bool	$singleton	Whether the functionality should be instanciated as singleton (default true).
      * @return	bab_functionality	The functionality object or false on error.
      */
-    public static function get($path, $singleton = true) {
-        $classname = bab_functionality::includefile($path);
+    public static function get($path, $singleton = true)
+    {
+        self::includeOriginalDirname($path);
+        $classname = self::includefile($path);
+        
         if (!$classname) {
             return false;
         }
+        
         if ($singleton) {
             return bab_getInstance($classname);
         }
+        
         return new $classname();
     }
 
