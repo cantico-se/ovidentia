@@ -1400,12 +1400,12 @@ function bab_getArticleNbComment($article)
  *
  * @return int		The comment id.
  */
-function bab_saveArticleComment($topicId, $articleId, $subject, $message, $parentId = 0, $articleRating = 0, $commentId = null, $messageFormat= 'html')
+function bab_saveArticleComment($topicId, $articleId, $subject, $message, $parentId = 0, $articleRating = 0, $commentId = null, $messageFormat= 'text', $userName = '')
 {
     global $babDB, $BAB_SESS_USER, $BAB_SESS_EMAIL, $BAB_SESS_USERID;
 
     if (empty($BAB_SESS_USER)) {
-        $authorName = bab_translate('Anonymous');
+        $authorName = $userName ? $userName : bab_translate('Anonymous');
         $authorEmail = '';
         $authorId = 0;
     } else {
