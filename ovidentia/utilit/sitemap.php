@@ -35,9 +35,12 @@ class bab_siteMapOrphanRootNode extends bab_OrphanRootNode {
 
     /**
      * for each id_function the id parent is stored with the rewrite name
-     * key 0 = ID function of parent
-     * key 1 = rewritename
-     * key 2 = functionality name inherited from Func_SitemapDynamicNode, can be null
+     * in this index, the childNode is in the key
+     * all possibles parent nodes are in values, each parent node will be an array like:
+     *   0 => The parent node ID
+     *   1 => The parent renwrite name
+     *   2 => functionality name inherited from Func_SitemapDynamicNode, can be null 
+     *        the functionality can be used to get dynamic childnodes
      *
      * @var array
      */
@@ -64,31 +67,32 @@ class bab_siteMapOrphanRootNode extends bab_OrphanRootNode {
      */
     public $enableRewriting = false;
 
-
+    
+    
+    
     /**
-     * Tries to append the node $newNode as child of the node having the id $id.
-     * If the node $id was not already created in the tree, $newNode is stored
-     * as an orphan node and will be appended to its parent node when the later
-     * will be created.
-     *
-     * @param bab_Node $newNode
-     * @param string $id
-     * @return boolean
+     * Populate an index with all the nodes under the rewrite root nodes
+     * the nodes in this index will be prioritary when decoding the rewrite path.
+     * 
+     * the index should contain the nodes from sitemap_editor and not the referenced nodes from the core sitemap
+     * 
+     * 
      */
-    public function appendChild(bab_Node $newNode, $id = null) {
+    protected function addNodeToRewritePriorityIndex(bab_Node $newNode, $id = null)
+    {
         $sitemapItem = $newNode->getData();
         /* @var $sitemapItem bab_sitemapItem */
         $rewriteName = $sitemapItem->getRewriteName();
-
+        
         if (isset($this->rewriteIndex_underRoot[$id]) || $rewriteName === bab_siteMap::REWRITING_ROOT_NODE)
         {
             $this->rewriteIndex_underRoot[$newNode->getId()] = '';
-
+        
             if ($newNode->hasChildNodes())
             {
                 // if the node already have childnodes, the childnodes are also under base
                 // in this case, this subtree has been added before the rewriting root node
-
+        
                 $I = new bab_nodeIterator($newNode);
                 foreach($I as $childNode)
                 {
@@ -102,8 +106,21 @@ class bab_siteMapOrphanRootNode extends bab_OrphanRootNode {
                 }
             }
         }
-
-
+    }
+    
+    
+    
+    /**
+     * Populate rewriteIndex
+     * @param bab_Node $newNode
+     * @param string $id        parent node ID
+     */
+    protected function addNodeToRewriteIndex(bab_Node $newNode, $id = null)
+    {
+        $sitemapItem = $newNode->getData();
+        /* @var $sitemapItem bab_sitemapItem */
+        $rewriteName = $sitemapItem->getRewriteName();
+        
         if (!isset($this->rewriteIndex_id[$newNode->getId()]))
         {
             $this->rewriteIndex_id[$newNode->getId()] = array(
@@ -112,7 +129,7 @@ class bab_siteMapOrphanRootNode extends bab_OrphanRootNode {
                 $sitemapItem->funcname
             );
         }
-
+        
         if (isset($this->rewriteIndex_rn[$rewriteName])) {
             if (isset($this->rewriteIndex_underRoot[$newNode->getId()]))
             {
@@ -124,7 +141,23 @@ class bab_siteMapOrphanRootNode extends bab_OrphanRootNode {
         } else {
             $this->rewriteIndex_rn[$rewriteName] = array($newNode->getId());
         }
+    }
+    
 
+    /**
+     * Tries to append the node $newNode as child of the node having the id $id.
+     * If the node $id was not already created in the tree, $newNode is stored
+     * as an orphan node and will be appended to its parent node when the later
+     * will be created.
+     *
+     * @param bab_Node $newNode
+     * @param string $id        parent node ID
+     * @return boolean
+     */
+    public function appendChild(bab_Node $newNode, $id = null) {
+        
+        $this->addNodeToRewritePriorityIndex($newNode, $id);
+        $this->addNodeToRewriteIndex($newNode, $id);
 
         return parent::appendChild($newNode, $id);
     }
@@ -171,6 +204,9 @@ class bab_siteMapOrphanRootNode extends bab_OrphanRootNode {
         }
 
         $dynamic_solutions = array();
+        
+        bab_debug($first);
+        bab_debug($this->rewriteIndex_rn[$first]);
 
         foreach($this->rewriteIndex_rn[$first] as $nodeId) {
             if (isset($this->rewriteIndex_id[$nodeId])) {
@@ -331,7 +367,9 @@ class bab_siteMapOrphanRootNode extends bab_OrphanRootNode {
             return null;
         }
 
-
+        bab_debug($searched_path);
+        bab_debug($first);
+        bab_debug($this->rewriteIndex_rn[$first]);
 
 
         foreach($this->rewriteIndex_rn[$first] as $nodeId) {
