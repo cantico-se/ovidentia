@@ -146,11 +146,17 @@ class bab_Settings
 	    if (isset($_SERVER["HTTP_ACCEPT_LANGUAGE"])) {
 	        
 	        $arrLanguages = bab_getAvailableLanguages();
+	        $previousPos = 1000;
+	        $bLang = null;
+	        $accepted = mb_strtolower($_SERVER["HTTP_ACCEPT_LANGUAGE"]);
 	        
 	        foreach ($arrLanguages as $bLangTmp) {
-	            $pos = mb_strpos($_SERVER["HTTP_ACCEPT_LANGUAGE"], $bLangTmp);
-	            if (!isset($tmpPos) || $tmpPos > $pos) {
-	                $tmpPos = $pos;
+	            $pos = mb_strpos($accepted, $bLangTmp);
+	            if (false === $pos) {
+	                continue;
+	            }
+	            if ($previousPos > $pos) {
+	                $previousPos = $pos;
 	                $bLang = $bLangTmp;
 	            }
 	        }
