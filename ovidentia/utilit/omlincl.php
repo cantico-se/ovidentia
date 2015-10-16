@@ -7397,6 +7397,16 @@ class bab_OvmlAttributes
 
 
 
+/**
+ * Get language
+ */
+class Func_Ovml_Function_GetLanguage extends Func_Ovml_Function {
+
+    public function toString()
+    {
+        return $this->format_output(bab_getLanguage(), $this->args);
+    }
+}
 
 
 
