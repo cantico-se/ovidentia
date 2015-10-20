@@ -1972,18 +1972,18 @@ function bab_printTemplate($class, $file, $section = '')
 
     $tpl = new bab_Template();
     $html = $tpl->printTemplate($class, $skin->getThemePath().'templates/'. $file, $section);
-    
+
     if (!$html) {
         $html = $tpl->printTemplate($class, $babInstallPath.'skins/ovidentia/templates/'.$file, $section);
     }
-    
+
     return $html;
 }
 
 /**
  * merge a template with a class object instance
  * if the file extension is html, process template only, if the file extension is ovml, parse the result as ovml
- * 
+ *
  *
  * @param	object	$class
  * @param	string	$templateName	file path in a template directory (in the core or in the skin) without extension
@@ -1994,11 +1994,11 @@ function bab_printTemplate($class, $file, $section = '')
 function bab_printTemplateAndOvml($class, $templateName, $section = '')
 {
     $parseOvml = false;
-    
+
     if ($ovml = bab_printTemplate($class, $templateName.'.ovml', $section)) {
         return bab_printOvml($ovml, get_object_vars($class));
     }
-    
+
     return bab_printTemplate($class, $templateName.'.html', $section);
 }
 
@@ -2141,7 +2141,13 @@ function bab_getUserDirFields($id = false)
         return array();
     }
 
-
+/**
+ * Get all information of one specified directory
+ *
+ * @param	int		$directory
+ * @return	array
+ *
+ */
 function bab_getDirInfo($directory) {
     global $babDB;
     $query = "select * from bab_db_directories where id=".$babDB->quote($directory);
@@ -3130,8 +3136,8 @@ function bab_printOvmlTemplate($file, $args=array())
 
         return '<!-- ERROR filename: '.bab_toHtml($file).' -->';
     }
-    
-    
+
+
     if ('addons/' === mb_substr($file, 0, 7)) {
         list(, $addonName) = explode('/', $file);
         $addonRealivePath = mb_substr($file, 8+mb_strlen($addonName));
@@ -3139,7 +3145,7 @@ function bab_printOvmlTemplate($file, $args=array())
             $filepath = "vendor/ovidentia/$addonName/skins/ovidentia/ovml/$addonRealivePath";
         }
     }
-    
+
 
     if (!file_exists($filepath)) {
         $filepath = $babSkinPath.'ovml/'.$file; /* Ex. : ovidentiainstall/skins/ovidentia/ovml/test.ovml */
@@ -3377,14 +3383,14 @@ class bab_functionality {
     {
         return include self::getRootPath().'/'.$path.'/'.BAB_FUNCTIONALITY_LINK_ORIGINAL_FILENAME;
     }
-    
-    
+
+
     /**
      * Include original file for all functionality of the dir name (without the basename)
      * from top to bottom
-     * 
+     *
      * @since 8.3.91
-     * 
+     *
      * @param string $path
      * @return bool
      */
@@ -3394,7 +3400,7 @@ class bab_functionality {
         if (empty($path) || '.' === $path) {
             return false;
         }
-        
+
         $items = explode('/', $path);
         $includePath = '';
         foreach($items as $item) {
@@ -3404,7 +3410,7 @@ class bab_functionality {
             }
             $includePath .= '/';
         }
-        
+
         return true;
     }
 
@@ -3453,15 +3459,15 @@ class bab_functionality {
     {
         self::includeOriginalDirname($path);
         $classname = self::includefile($path);
-        
+
         if (!$classname) {
             return false;
         }
-        
+
         if ($singleton) {
             return bab_getInstance($classname);
         }
-        
+
         return new $classname();
     }
 
@@ -3509,7 +3515,7 @@ function bab_getAddonInfosInstance($addonname) {
 
     require_once $GLOBALS['babInstallPath'].'utilit/addonsincl.php';
     static $instances = array();
-    
+
     $addonname = mb_strtolower($addonname);
 
     if (false === array_key_exists($addonname, $instances)) {
@@ -3830,11 +3836,11 @@ function bab_getLanguage()
 {
     require_once dirname(__FILE__).'/session.class.php';
     $session = bab_getInstance('bab_Session');
-    
+
     if (isset($session->babLanguage)) {
         return $session->babLanguage;
     }
-    
+
     require_once dirname(__FILE__).'/settings.class.php';
 
 
@@ -3865,13 +3871,13 @@ function bab_getLanguage()
 /**
  * set persistant language for the current session
  */
-function bab_setLanguage($code) 
+function bab_setLanguage($code)
 {
     require_once dirname(__FILE__).'/session.class.php';
-    
+
     // deprecated: bab_getLanguage() should be used instead of the global variable
     $GLOBALS['babLanguage'] = $code;
-    
+
     $session = bab_getInstance('bab_Session');
     $session->babLanguage = $code;
 }
