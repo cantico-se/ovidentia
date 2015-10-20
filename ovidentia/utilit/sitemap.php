@@ -225,6 +225,8 @@ class bab_siteMapOrphanRootNode extends bab_OrphanRootNode {
     {
         return (null !== $this->getRewriteIndex($nodeId));
     }
+    
+    
 
 
     /**
@@ -256,8 +258,9 @@ class bab_siteMapOrphanRootNode extends bab_OrphanRootNode {
         
 
         foreach($this->rewriteIndex_rn[$first] as $nodeId) {
+            
             if ($this->isRewriteIndexSet($nodeId)) {
-
+                
                 if (0 === count($arr)) {
                     return $nodeId;
                 }
@@ -388,7 +391,7 @@ class bab_siteMapOrphanRootNode extends bab_OrphanRootNode {
     {
         $searched_path = $path;
         $first = array_shift($path);
-
+        
         if (!isset($this->rewriteIndex_rn[$first]))
         {
             $parentIndex = $this->getRewriteIndex($id_parent);
@@ -735,6 +738,15 @@ class bab_siteMapItem {
      * @var bool
      */
     public $haschildnodes = null;
+    
+    
+    /**
+     * If this property contain a language code
+     * the site language is set using bab_setLanguage
+     * when the rewrite path contain the language in path
+     * @var string
+     */
+    public $setlanguage = null;
 
 
     /**
@@ -2152,6 +2164,28 @@ class bab_siteMap {
         return $breadCrumbs;
     }
 
+    
+    /**
+     * Set site language if one of the node in path
+     * 
+     */
+    private static function processSetLanguage(bab_Node $positionNode)
+    {
+        do {
+            $sitemapItem = $positionNode->getData();
+            /*@var $sitemapItem bab_siteMapItem */
+            
+            if (bab_siteMap::REWRITING_ROOT_NODE === $positionNode->getId()) {
+                return;
+            }
+            
+            if (isset($sitemapItem->setlanguage) && '' !== $sitemapItem->setlanguage) {
+                bab_setLanguage($sitemapItem->setlanguage);
+            }
+            
+        } while (isset($positionNode) && $positionNode = $positionNode->parentNode());
+    }
+    
 
 
     /**
@@ -2170,6 +2204,7 @@ class bab_siteMap {
 
         $nodeId = $root->getNodeIdFromRewritePath($rewrite);
 
+
         if (null === $nodeId)
         {
             return false;
@@ -2179,6 +2214,8 @@ class bab_siteMap {
         {
             bab_siteMap::setPosition($nodeId);
         }
+        
+        
 
 
         $node = $root->getNodeById($nodeId);
@@ -2186,6 +2223,8 @@ class bab_siteMap {
         {
             return false;
         }
+        
+        self::processSetLanguage($node);
 
         $sitemapItem = $node->getData();
         $tmp = explode('?', $sitemapItem->url);
