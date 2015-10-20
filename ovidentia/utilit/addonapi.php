@@ -3837,7 +3837,7 @@ function bab_getLanguage()
     require_once dirname(__FILE__).'/session.class.php';
     $session = bab_getInstance('bab_Session');
 
-    if (isset($session->babLanguage)) {
+    if (isset($session->babLanguage) && '' !== $session->babLanguage) {
         return $session->babLanguage;
     }
 
