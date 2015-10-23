@@ -23,6 +23,7 @@
 ************************************************************************/
 
 require_once dirname(__FILE__).'/eventincl.php';
+require_once dirname(__FILE__).'/settings.class.php';
 
 function bab_getMimeType($type, $subtype)
 	{ 
@@ -425,14 +426,16 @@ class babMail
 
 	public function __construct()
 	{
-
+        $settings = bab_getInstance('bab_Settings');
+    	/* @var $settings bab_Settings */
+    	$site = $settings->getSiteSettings();
 		
 		$this->mail = new bab_PHPMailer();
 		$this->mail->Timeout = 60; // Timout modification for slower SMTP servers
 		$this->mail->CharSet = bab_charset::getIso();
 		$this->mail->PluginDir = $GLOBALS['babInstallPath'].'utilit/';
-		$this->mailFrom($GLOBALS['babAdminEmail'], $GLOBALS['babAdminName']);
-		$this->mailSender($GLOBALS['babAdminEmail']);
+		$this->mailFrom($site['adminemail'], $site['adminname']);
+		$this->mailSender($site['adminemail']);
 		$this->mail->SetLanguage('en', $GLOBALS['babInstallPath'].'utilit/');
 
 	}
@@ -949,7 +952,7 @@ class babMailSmtp extends babMail
  */
 function bab_mail()
 {
-	require_once $GLOBALS['babInstallPath'].'utilit/settings.class.php';
+	
 	$settings = bab_getInstance('bab_Settings');
 	/* @var $settings bab_Settings */
 	$site = $settings->getSiteSettings();
