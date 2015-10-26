@@ -1219,11 +1219,26 @@ function bab_isUserGroupManager($grpid="")
 */
 function bab_getUserName($iIdUser, $bComposeUserName = true)
 {
+    
+    
     include_once dirname(__FILE__).'/userinfosincl.php';
 
     if (true === $bComposeUserName) {
+        
+        if (!$iIdUser) {
+            return '';
+        }
+        
         return bab_userInfos::composeName($iIdUser);
     } else {
+        
+        if (!$iIdUser) {
+            return array(
+                'firstname' => '',
+                'lastname' => ''
+            );
+        }
+        
         return bab_userInfos::arrName($iIdUser);
     }
 }
