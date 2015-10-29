@@ -800,6 +800,10 @@ function bab_confirmPost($forum, $thread, $post)
 	bab_fireEvent($event);
 }
 
+
+
+
+
 /**
  * Deletes the specified post.
  *
@@ -815,20 +819,24 @@ function bab_deletePost($forum, $post)
 	$res = $babDB->db_query($req);
 	$arr = $babDB->db_fetch_array($res);
 	
+	list($countPost) = $babDB->db_fetch_array($babDB->db_query('SELECT COUNT(*) FROM '.BAB_POSTS_TBL.' WHERE id_thread='.$babDB->quote($arr['id_thread'])));
+	
 
-	if( $arr['id_parent'] == 0)
+	if($countPost === 1)
 		{
 		/* if it's the only post in the thread, delete the thread also */
 		bab_deleteThread($forum, $arr['id_thread']);
 		Header("Location: ". $GLOBALS['babUrlScript']."?tg=threads&forum=".$forum);
+		exit;
 		}
 	else
 		{
 		bab_deletePostFiles($forum, $post);
+		$babDB->db_query('UPDATE '.BAB_POSTS_TBL." SET id_parent='0' WHERE id_parent=".$babDB->quote($post));
 		$req = "delete from ".BAB_POSTS_TBL." where id = '".$babDB->db_escape_string($post)."'";
 		$res = $babDB->db_query($req);
 
-		$req = "select lastpost from ".BAB_THREADS_TBL." where id='".$babDB->db_escape_string($arr['id_thread'])."'";
+		$req = "select post, lastpost from ".BAB_THREADS_TBL." where id='".$babDB->db_escape_string($arr['id_thread'])."'";
 		$res = $babDB->db_query($req);
 		$arr2 = $babDB->db_fetch_array($res);
 		if( $arr2['lastpost'] == $post ) // it's the lastpost
@@ -839,6 +847,17 @@ function bab_deletePost($forum, $post)
 			$req = "update ".BAB_THREADS_TBL." set lastpost='".$babDB->db_escape_string($arr2['id'])."' where id='".$babDB->db_escape_string($arr['id_thread'])."'";
 			$res = $babDB->db_query($req);
 			}
+			
+	    if ( $arr2['post'] == $post)
+	       {
+	       $req = "select id from ".BAB_POSTS_TBL." where id_thread='".$babDB->db_escape_string($arr['id_thread'])."' order by date asc";
+	       $res = $babDB->db_query($req);
+	       $arr2 = $babDB->db_fetch_array($res);
+	       $req = "update ".BAB_THREADS_TBL." set post='".$babDB->db_escape_string($arr2['id'])."' where id='".$babDB->db_escape_string($arr['id_thread'])."'";
+	       $res = $babDB->db_query($req);
+	       
+	       
+	       }
 
 		}
 
