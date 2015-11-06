@@ -100,6 +100,7 @@ if (!isset($babUrl)) {
 }
 
 
+require_once $babInstallPath.'utilit/functionality.class.php';
 require_once $babInstallPath.'utilit/addonapi.php';
 
 if(!bab_isAjaxRequest() && bab_getUserId()){
@@ -152,6 +153,7 @@ if (isset($_REQUEST['addon']))
 
 /* Management of WSSESSIONID for Web Services */
 if (isset($_REQUEST['WSSESSIONID'])) {
+    require_once $GLOBALS['babInstallPath'].'utilit/functionality.class.php';
     require_once $GLOBALS['babInstallPath'].'utilit/addonapi.php';
     session_name(sprintf("OV%u", crc32($babUrl)));
     session_id($_REQUEST['WSSESSIONID']);
