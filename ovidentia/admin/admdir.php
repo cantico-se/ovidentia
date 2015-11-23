@@ -753,7 +753,7 @@ function modifyDb($id)
 
 		function temp($id)
 			{
-			$this->id = $id;
+			$this->id = bab_toHtml($id);
 			$this->name = bab_translate("Name");
 			$this->description = bab_translate("Description");
 			$this->field = bab_translate("Fields");
