@@ -233,8 +233,8 @@ class babBody
 
     /**
      * Add error to display in next page
-     *
-     * @param unknown_type $message
+     * 
+     * @param string $message
      */
     public function addNextPageError($message)
     {

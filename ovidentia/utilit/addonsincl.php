@@ -21,7 +21,7 @@
  * @copyright Copyright (c) 2008 by CANTICO ({@link http://www.cantico.fr})
  */
 
-require_once dirname(__FILE__).'/addonapi.php';
+
 require_once dirname(__FILE__).'/eventaddon.php';
 require_once dirname(__FILE__).'/addoninfos.class.php';
 
@@ -269,8 +269,6 @@ class bab_addonsInfos {
 	 * @return int|false
 	 */
 	public static function getAddonIdByName($name, $access_rights = true) {
-		
-		require_once dirname(__FILE__).'/addonapi.php';
 		
 		$obj = bab_getInstance('bab_addonsInfos');
 		$obj->createFullIndex();

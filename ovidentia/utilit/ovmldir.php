@@ -754,7 +754,7 @@ class Func_Ovml_Container_DbDirectoryAcl extends Func_Ovml_Container
 				$table = BAB_DBDIRVIEW_GROUPS_TBL;
 			}
 
-			include_once $GLOBALS['babInstallPath'].'utilit/addonapi.php';
+			
 			$groups = bab_getGroupsAccess($table, $directoryid);
 			$this->IdEntries = bab_getGroupsMembers($groups);	
 			$this->count = count($this->IdEntries);

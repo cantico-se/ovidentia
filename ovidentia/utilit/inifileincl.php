@@ -54,7 +54,14 @@ class bab_inifile_requirements {
      * there is no version in database for new install
      */
     function require_ov_version($value) {
-        require_once dirname(__FILE__).'/utilit.php';
+        
+        global $babDB;
+        
+        if (!function_exists('bab_getDbVersion') && ($babDB instanceof babDatabase)) {
+            // see isInstallValid
+            require_once dirname(__FILE__).'/utilit.php';
+        }
+        
         if (NULL !== $dbVersion = bab_getDbVersion()) {
             $ovidentia = $dbVersion;
         } else {
