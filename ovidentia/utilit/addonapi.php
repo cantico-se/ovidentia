@@ -1976,6 +1976,10 @@ function bab_printTemplate($class, $file, $section = '')
     if (!$html) {
         $html = $tpl->printTemplate($class, $babInstallPath.'skins/ovidentia/templates/'.$file, $section);
     }
+    //VENDOR
+    //if (!$html) {
+    //    $html = $tpl->printTemplate($class, $file, $section);
+    //}
 
     return $html;
 }

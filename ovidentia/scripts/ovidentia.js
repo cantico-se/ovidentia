@@ -1,17 +1,17 @@
 function onCheckAll(ctrlPrefix, state)
 {
-	var i;
-	var objCtrl;
+    var i;
+    var objCtrl;
 
-	for (i = 0; i < document.forms.listform.elements.length; i++)
-		{
-		objCtrl = document.forms.listform.elements[i];
-		if (objCtrl.name.substring(0,ctrlPrefix.length) == ctrlPrefix)
-			objCtrl.checked = state;
-		}
+    for (i = 0; i < document.forms.listform.elements.length; i++)
+        {
+        objCtrl = document.forms.listform.elements[i];
+        if (objCtrl.name.substring(0,ctrlPrefix.length) == ctrlPrefix)
+            objCtrl.checked = state;
+        }
 }
-function submitForm(cmd, fmname) 
-{ 
+function submitForm(cmd, fmname)
+{
 if( typeof document.forms[fmname] != "object" ) return;
 document.forms[fmname].idx.value = cmd;
 document.forms[fmname].submit();
@@ -24,50 +24,50 @@ r = this.open(page, title, param);
 }
 
 function bab_selectFirstInputField(filterclass)
-	{
-	if (!document.getElementsByTagName)
-		{
-		return;
-		}
-	function in_array(val,arr)
-		{
-		for (var i in arr )
-			{
-			if ( arr[i] == val)
-				return true;
-			}
-		return false;
-		}
+    {
+    if (!document.getElementsByTagName)
+        {
+        return;
+        }
+    function in_array(val,arr)
+        {
+        for (var i in arr )
+            {
+            if ( arr[i] == val)
+                return true;
+            }
+        return false;
+        }
 
-	var filter = false;
-	if (typeof filterclass != 'undefined')
-		filter = filterclass.split(',');
-		
+    var filter = false;
+    if (typeof filterclass != 'undefined')
+        filter = filterclass.split(',');
 
-	var el = document.getElementsByTagName('input');
-	for (var i =0 ; i < el.length ; i++)
-		{
-		
-		if ((el[i].type == 'text' || el[i].type == 'password') && el[i].value == '' && !el[i].disabled )
-			{
-			if (filter && typeof el[i].className != 'undefined' && el[i].className != '')
-				{
-				if (!in_array(el[i].className,filter))
-					{
-					el[i].focus();
-					el[i].select();
-					return;
-					}
-				}
-			else
-				{
-				el[i].focus();
-				el[i].select();
-				return;
-				}
-			}
-		}
-	}
+
+    var el = document.getElementsByTagName('input');
+    for (var i =0 ; i < el.length ; i++)
+        {
+
+        if ((el[i].type == 'text' || el[i].type == 'password') && el[i].value == '' && !el[i].disabled )
+            {
+            if (filter && typeof el[i].className != 'undefined' && el[i].className != '')
+                {
+                if (!in_array(el[i].className,filter))
+                    {
+                    el[i].focus();
+                    el[i].select();
+                    return;
+                    }
+                }
+            else
+                {
+                el[i].focus();
+                el[i].select();
+                return;
+                }
+            }
+        }
+    }
 
 
 
@@ -75,46 +75,46 @@ var bab_popup_obj = null;
 
 function bab_popup(url,divisor,menubar, toolbar, personalbar)
 {
-	if (!menubar) {
-		menubar = 'no';
-	} else {
-		menubar = 'yes';
-	}
-	
-	if (!toolbar) {
-		toolbar = 'no';
-	} else {
-		toolbar = 'yes';
-	}
-	
-	if (!personalbar) {
-		personalbar = 'no';
-	} else {
-		personalbar = 'yes';
-	}
-	
-	if (bab_popup_obj == null || bab_popup_obj.closed || (typeof(bab_popup_obj) != 'object' && bab_popup_obj == 0)) {
-		if (typeof divisor == 'undefined') {
-				divisor = 3;
-		}
-		var wd = Math.round(screen.width/divisor);
-		var hd = Math.round(screen.height/divisor);
-		var w = screen.width-wd;
-		var h = menubar == 'yes' ? Math.round((screen.height - hd) / 1.5) : screen.height-hd;
-		var l = Math.round(wd/2);
-		var t = Math.round(hd/2);
-		var name = 'bab_popup'+Math.floor(Math.random() * 99999999);
-		
-		if (typeof(bab_popup_obj) != 'object' && bab_popup_obj == 0) {
-			window.open(url,name,'status=yes,menubar='+menubar+',toolbar='+toolbar+',personalbar='+personalbar+',width='+w+',height='+h+',top='+t+',left='+l+',scrollbars=yes,resizable=yes');
-			bab_popup_obj = null;
-		} else {
-			bab_popup_obj = window.open(url,name,'status=yes,menubar='+menubar+',toolbar='+toolbar+',personalbar='+personalbar+',width='+w+',height='+h+',top='+t+',left='+l+',scrollbars=yes,resizable=yes');
-		}
-	} else {
-		bab_popup_obj.focus();
-		bab_popup_obj.location.href = url;
-	}
+    if (!menubar) {
+        menubar = 'no';
+    } else {
+        menubar = 'yes';
+    }
+
+    if (!toolbar) {
+        toolbar = 'no';
+    } else {
+        toolbar = 'yes';
+    }
+
+    if (!personalbar) {
+        personalbar = 'no';
+    } else {
+        personalbar = 'yes';
+    }
+
+    if (bab_popup_obj == null || bab_popup_obj.closed || (typeof(bab_popup_obj) != 'object' && bab_popup_obj == 0)) {
+        if (typeof divisor == 'undefined') {
+                divisor = 3;
+        }
+        var wd = Math.round(screen.width/divisor);
+        var hd = Math.round(screen.height/divisor);
+        var w = screen.width-wd;
+        var h = menubar == 'yes' ? Math.round((screen.height - hd) / 1.5) : screen.height-hd;
+        var l = Math.round(wd/2);
+        var t = Math.round(hd/2);
+        var name = 'bab_popup'+Math.floor(Math.random() * 99999999);
+
+        if (typeof(bab_popup_obj) != 'object' && bab_popup_obj == 0) {
+            window.open(url,name,'status=yes,menubar='+menubar+',toolbar='+toolbar+',personalbar='+personalbar+',width='+w+',height='+h+',top='+t+',left='+l+',scrollbars=yes,resizable=yes');
+            bab_popup_obj = null;
+        } else {
+            bab_popup_obj = window.open(url,name,'status=yes,menubar='+menubar+',toolbar='+toolbar+',personalbar='+personalbar+',width='+w+',height='+h+',top='+t+',left='+l+',scrollbars=yes,resizable=yes');
+        }
+    } else {
+        bab_popup_obj.focus();
+        bab_popup_obj.location.href = url;
+    }
 }
 
 
@@ -129,13 +129,13 @@ var bab_initFunctions = new Array();
 
 
 window.onload = function() {
-	window.isLoaded = true;
-	for (var i = 0; i < bab_initFunctions.length; i++) {
-		var initFunction = bab_initFunctions[i];
-		if (typeof(initFunction) == 'function') {
-			initFunction();
-		}
-	}
+    window.isLoaded = true;
+    for (var i = 0; i < bab_initFunctions.length; i++) {
+        var initFunction = bab_initFunctions[i];
+        if (typeof(initFunction) == 'function') {
+            initFunction();
+        }
+    }
 };
 
 
@@ -146,7 +146,7 @@ var bab_currentTooltip = null;
  * This function can be called in this situation :
  * 									<div id="myTooltip" class="allTooltip">Text displayed in tooltip</div>
  * 									<div id="myElement" onmouseover="bab_showOnMouse("myTooltip", true);" onmouseout="bab_showOnMouse("myTooltip", false);">My datas</div>
- * 
+ *
  * CSS styles for tooltip :
  * 		.allTooltip {
  * 			position: absolute;
@@ -163,136 +163,136 @@ var bab_currentTooltip = null;
  * 			top:-1000px;
  * 			left:-1000px;
  * 		}
- * 
+ *
  * Don't forget to call bab_tooltipPosition() before the call of bab_showOnMouse() :
  * 				document.onmousemove = bab_tooltipPosition;
- * 
+ *
  * Don't forget to import the javascript file :
  * 				$GLOBALS['babBody']->addJavascriptFile($GLOBALS['babInstallPath'].'scripts/bab_dialog.js');
- * 
+ *
  * Example with jQuery framework :
  * 		jQuery(document).ready(function() {
  * 			jQuery(document).mousemove(function(e){
  * 		    	bab_tooltipPosition(e);
  * 		    });
- * 					    
+ *
  * 		    jQuery("#myElement").hover(function(e){
  * 		    	bab_showOnMouse("myTooltip", true);
  * 		    });
- * 			    
+ *
  * 		    jQuery("#myElement").mouseout(function(e){
  * 		    	bab_showOnMouse("myTooltip", false);
  * 		    });
  * 		});
- * 
+ *
  * @param string tooltipId Identifiant of the html element (Example : myId <div id="myId"></div>)
  * @param boolean on If true the html element will be displayed
  */
 function bab_showOnMouse(tooltipId, on)
 {
-	var tooltip = document.getElementById(tooltipId);
-	if (!tooltip) {
-		return;
-	}
+    var tooltip = document.getElementById(tooltipId);
+    if (!tooltip) {
+        return;
+    }
 
-	if (window.isLoaded && !tooltip.bab_initialized) {
-		// Here we move the tooltip element at the end of the DOM tree to
-		// avoid an IE6 bug messing-up the z-index for positioned elements
-		// This way we are sure that the tooltip will appear above all other elements.
-		// On IE (again!) we must wait for the page to be completely loaded before we
-		// can touch the DOM.
-		document.getElementsByTagName('BODY')[0].appendChild(tooltip);
-		tooltip.bab_initialized = true;
-	}
+    if (window.isLoaded && !tooltip.bab_initialized) {
+        // Here we move the tooltip element at the end of the DOM tree to
+        // avoid an IE6 bug messing-up the z-index for positioned elements
+        // This way we are sure that the tooltip will appear above all other elements.
+        // On IE (again!) we must wait for the page to be completely loaded before we
+        // can touch the DOM.
+        document.getElementsByTagName('BODY')[0].appendChild(tooltip);
+        tooltip.bab_initialized = true;
+    }
 
-	if (on) {
-		window.bab_currentTooltip = tooltip;
-		document.onmousemove = bab_tooltipPosition;
-		tooltip.style.zIndex = 127;
-	} else {
-		document.onmousemove = null;
-		tooltip.style.visibility = 'hidden';
-		window.bab_currentTooltip = null;
-	}
+    if (on) {
+        window.bab_currentTooltip = tooltip;
+        document.onmousemove = bab_tooltipPosition;
+        tooltip.style.zIndex = 127;
+    } else {
+        document.onmousemove = null;
+        tooltip.style.visibility = 'hidden';
+        window.bab_currentTooltip = null;
+    }
 }
 
 /**
  * Set the position of the mouse cursor (with bab_showOnMouse(), an html element will be displayed in a tooltip : it follows the mouse).
  * This function can be called before the call of bab_showOnMouse() :
  * 								document.onmousemove = bab_tooltipPosition;
- * 
+ *
  * Example with jQuery framework :
  * 		jQuery(document).ready(function() {
  * 			jQuery(document).mousemove(function(e){
  * 		    	bab_tooltipPosition(e);
  * 		    });
  * 		});
- * 
+ *
  * Don't forget to import the javascript file :
  * 				$GLOBALS['babBody']->addJavascriptFile($GLOBALS['babInstallPath'].'scripts/bab_dialog.js');
- * 
+ *
  * See bab_showOnMouse() for more information
- * 
+ *
  * @param string tooltipId Identifiant of the html element (Example : myId <div id="myId"></div>)
  * @param boolean on If true the html element will be displayed
  */
 function bab_tooltipPosition(e)
 {
-	e = e || window.event;
+    e = e || window.event;
 
-	var tooltip = window.bab_currentTooltip;
-	
-	if (!tooltip) {
-		return true;
-	}
+    var tooltip = window.bab_currentTooltip;
 
-	var offsetX = -tooltip.offsetWidth / 2, offsetY = 20;
-	for (var offsetParent = tooltip.offsetParent; offsetParent; offsetParent = offsetParent.offsetParent) {
-		offsetX -= offsetParent.offsetLeft || 0;
-		offsetY -= offsetParent.offsetTop || 0;
-	}
+    if (!tooltip) {
+        return true;
+    }
 
-	var ie = document.all;
-	var ns6 = document.getElementById && !document.all;
+    var offsetX = -tooltip.offsetWidth / 2, offsetY = 20;
+    for (var offsetParent = tooltip.offsetParent; offsetParent; offsetParent = offsetParent.offsetParent) {
+        offsetX -= offsetParent.offsetLeft || 0;
+        offsetY -= offsetParent.offsetTop || 0;
+    }
 
-	var ieBody = (document.compatMode && document.compatMode != 'BackCompat') ? document.documentElement : document.body;
-	var cursorX = ns6 ? e.pageX : e.clientX + ieBody.scrollLeft;
-	var cursorY = ns6 ? e.pageY : e.clientY + ieBody.scrollTop;
-	var rightedge = ie && !window.opera ? ieBody.clientWidth - e.clientX - offsetX : window.innerWidth - e.clientX - offsetX - 20;
-	var bottomedge = ie && !window.opera ? ieBody.clientHeight - e.clientY - offsetY : window.innerHeight - e.clientY - offsetY - 20;
-	var leftedge = (offsetX < 0) ? offsetX * (-1) : -1000;
+    var ie = document.all;
+    var ns6 = document.getElementById && !document.all;
 
-	if (rightedge < tooltip.offsetWidth) {
-		tooltip.style.left = ie ? ieBody.scrollLeft + e.clientX - tooltip.offsetWidth + 'px' : window.pageXOffset + e.clientX - tooltip.offsetWidth + 'px';
-	} else if (cursorX < leftedge) {
-		tooltip.style.left = '5px';
-	} else {
-		tooltip.style.left = cursorX + offsetX + 'px';
-	}
+    var ieBody = (document.compatMode && document.compatMode != 'BackCompat') ? document.documentElement : document.body;
+    var cursorX = ns6 ? e.pageX : e.clientX + ieBody.scrollLeft;
+    var cursorY = ns6 ? e.pageY : e.clientY + ieBody.scrollTop;
+    var rightedge = ie && !window.opera ? ieBody.clientWidth - e.clientX - offsetX : window.innerWidth - e.clientX - offsetX - 20;
+    var bottomedge = ie && !window.opera ? ieBody.clientHeight - e.clientY - offsetY : window.innerHeight - e.clientY - offsetY - 20;
+    var leftedge = (offsetX < 0) ? offsetX * (-1) : -1000;
 
-	if (bottomedge < tooltip.offsetHeight) {
-		tooltip.style.top = ie ? ieBody.scrollTop + e.clientY - tooltip.offsetHeight - offsetY + 'px' : window.pageYOffset + e.clientY - tooltip.offsetHeight - offsetY + 'px';
-	} else {
-		tooltip.style.top = cursorY + offsetY + 'px';
-	}
-	tooltip.style.visibility = 'visible';
-	return true;
+    if (rightedge < tooltip.offsetWidth) {
+        tooltip.style.left = ie ? ieBody.scrollLeft + e.clientX - tooltip.offsetWidth + 'px' : window.pageXOffset + e.clientX - tooltip.offsetWidth + 'px';
+    } else if (cursorX < leftedge) {
+        tooltip.style.left = '5px';
+    } else {
+        tooltip.style.left = cursorX + offsetX + 'px';
+    }
+
+    if (bottomedge < tooltip.offsetHeight) {
+        tooltip.style.top = ie ? ieBody.scrollTop + e.clientY - tooltip.offsetHeight - offsetY + 'px' : window.pageYOffset + e.clientY - tooltip.offsetHeight - offsetY + 'px';
+    } else {
+        tooltip.style.top = cursorY + offsetY + 'px';
+    }
+    tooltip.style.visibility = 'visible';
+    return true;
 }
 
 
 
 function bab_getInstallPath()
 {
-	var scripts = document.getElementsByTagName('script');
-	for (var i = 0; i < scripts.length; i++) {
-		if (-1 != scripts[i].src.indexOf('ovidentia.js')) {
-			arr = scripts[i].src.split('/');
-			for (var j in arr) {
-				if ('scripts' == arr[j]) {
-					return arr[j-1] + '/';
-				}
-			}
-		}
-	}
-	return '';
+    var scripts = document.getElementsByTagName('script');
+    for (var i = 0; i < scripts.length; i++) {
+        if (-1 != scripts[i].src.indexOf('ovidentia.js')) {
+            arr = scripts[i].src.split('/');
+            for (var j in arr) {
+                if ('scripts' == arr[j]) {
+                    return arr[j-1] + '/';
+                }
+            }
+        }
+    }
+    return '';
 }

@@ -703,6 +703,7 @@ function bab_addTopic($name, $description, $idCategory, &$error, $topicArr = arr
 {
     global $babBody, $babDB;
     require_once dirname(__FILE__).'/uuid.php';
+    require_once dirname(__FILE__).'/../admin/acl.php';
 
     $arrdefaults = array(	'idsaart'=> 0,
                             'idsacom'=> 0,
