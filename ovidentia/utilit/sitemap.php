@@ -1105,7 +1105,7 @@ class bab_siteMapItem {
             }
         }
 
-        $return .= '<li class="no-icon '.implode(' ', $classnames).'">'.$htmlData;
+        $return .= '<li class="no-icon '.bab_toHtml(implode(' ', $classnames)).'">'.$htmlData;
 
         if (isset($ul)) {
             $return .= $ul;
