@@ -7360,8 +7360,25 @@ class bab_OvmlAttributes
         return sprintf($v, $val);
     }
 
+
+    /**
+     * Formats the value as a date.
+     *
+     * @param int|string $val   An integer timestamp or an iso-formatted date or datetime string.
+     * @param string $v         The format
+     * @return string           The formatted string
+     */
     public function date($val, $v)
     {
+        if (!is_int($val)) {
+            if (strpos($val, '-') !== false) {
+                if (strpos($val, ':') !== false) {
+                    $val = bab_mktime($val);
+                } else {
+                    $val = bab_mktime($val . ' 00:00:00');
+                }
+            }
+        }
         return bab_formatDate($v, $val);
     }
 
