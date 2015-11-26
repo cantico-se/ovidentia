@@ -23,6 +23,7 @@
 ************************************************************************/
 
 require_once dirname(__FILE__).'/eventincl.php';
+require_once dirname(__FILE__).'/settings.class.php';
 
 function bab_getMimeType($type, $subtype)
 	{ 
@@ -425,14 +426,16 @@ class babMail
 
 	public function __construct()
 	{
-
+        $settings = bab_getInstance('bab_Settings');
+    	/* @var $settings bab_Settings */
+    	$site = $settings->getSiteSettings();
 		
 		$this->mail = new bab_PHPMailer();
 		$this->mail->Timeout = 60; // Timout modification for slower SMTP servers
 		$this->mail->CharSet = bab_charset::getIso();
 		$this->mail->PluginDir = $GLOBALS['babInstallPath'].'utilit/';
-		$this->mailFrom($GLOBALS['babAdminEmail'], $GLOBALS['babAdminName']);
-		$this->mailSender($GLOBALS['babAdminEmail']);
+		$this->mailFrom($site['adminemail'], $site['adminname']);
+		$this->mailSender($site['adminemail']);
 		$this->mail->SetLanguage('en', $GLOBALS['babInstallPath'].'utilit/');
 
 	}
@@ -949,13 +952,17 @@ class babMailSmtp extends babMail
  */
 function bab_mail()
 {
-	global $babBody;
+	
+	$settings = bab_getInstance('bab_Settings');
+	/* @var $settings bab_Settings */
+	$site = $settings->getSiteSettings();
+	
 
-	if( empty($babBody->babsite['mailfunc']))
+	if( empty($site['mailfunc']))
 		return false;
 
 	$mail = false;
-	switch($babBody->babsite['mailfunc'])
+	switch($site['mailfunc'])
 	{
 		case 'mail':
 			$mail = new babMail();
@@ -964,18 +971,18 @@ function bab_mail()
 		case 'sendmail':
 			$mail = new babMail();
 			$mail->mail->IsSendmail();
-			$mail->mail->Sendmail = $babBody->babsite['smtpserver'];
+			$mail->mail->Sendmail = $site['smtpserver'];
 			break;
 		case 'smtp':
 			$mail = new babMailSmtp();
 			
-			$mail->mail->Host = $babBody->babsite['smtpserver'];
-			$mail->mail->Port = $babBody->babsite['smtpport'];
-			$mail->mail->SMTPSecure = $babBody->babsite['smtpsecurity'];
+			$mail->mail->Host = $site['smtpserver'];
+			$mail->mail->Port = $site['smtpport'];
+			$mail->mail->SMTPSecure = $site['smtpsecurity'];
 
-			if( $babBody->babsite['smtpuser'] != '' ||  $babBody->babsite['smtppass'] != '')
+			if( $site['smtpuser'] != '' ||  $site['smtppass'] != '')
 				{
-				$mail->setAuthenticated($babBody->babsite['smtpuser'], $babBody->babsite['smtppass']);
+				$mail->setAuthenticated($site['smtpuser'], $site['smtppass']);
 				}
 			break;
 	}

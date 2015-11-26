@@ -33,118 +33,118 @@ include_once $GLOBALS['babInstallPath'].'utilit/omlincl.php';
  */
 abstract class Ovml_Container_Sitemap extends Func_Ovml_Container
 {
-	public $IdEntries = array();
-	public $index;
-	public $count;
-	public $data;
+    public $IdEntries = array();
+    public $index;
+    public $count;
+    public $data;
 
-	/**
-	 * @var bab_siteMapOrphanRootNode $sitemap	The sitemap the container is working on.
-	 */
-	protected $sitemap;
+    /**
+     * @var bab_siteMapOrphanRootNode $sitemap	The sitemap the container is working on.
+     */
+    protected $sitemap;
 
-	/**
-	 *
-	 * @var string
-	 */
-	protected $sitemap_name;
-
-
-	/**
-	 * @var int $limit				The max number of elements to return.
-	 */
-	protected $limitOffset = 0;
-	protected $limitRows = null;
+    /**
+     *
+     * @var string
+     */
+    protected $sitemap_name;
 
 
-	public function setOvmlContext(babOvTemplate $ctx)
-	{
-		$this->count = 0;
-		parent::setOvmlContext($ctx);
-		$limit = $ctx->get_value('limit');
-		if (is_string($limit)) {
-			$limits = explode(',', $limit);
-			if (count($limits) === 1) {
-				$this->limitRows = $limit;
-			} else {
-				$this->limitOffset = $limits[0];
-				$this->limitRows = $limits[1];
-			}
-		}
-
-		$this->idx += $this->limitOffset;
-
-		$sitemap = $ctx->get_value('sitemap');
-
-		if (false === $sitemap) {
-			global $babBody;
-
-			$this->sitemap_name = $babBody->babsite['sitemap'];
-			$this->sitemap = bab_siteMap::getByUid($this->sitemap_name);
-			if (!isset($this->sitemap)) {
-				$this->sitemap = bab_siteMap::get();
-			}
-		} else {
-			$this->sitemap = bab_siteMap::getByUid($sitemap);
-
-			if (null === $this->sitemap) {
-				trigger_error(sprintf('incorrect attribute in %s#%s sitemap="%s"', (string) $ctx->debug_location, get_class($this), $sitemap));
-				return;
-			}
-
-			$this->sitemap_name = $sitemap;
-		}
-
-	}
+    /**
+     * @var int $limit				The max number of elements to return.
+     */
+    protected $limitOffset = 0;
+    protected $limitRows = null;
 
 
-	/**
-	 * Get base node ID from attribute or from visible root node
-	 * @return string
-	 */
-	public function getBaseNode()
-	{
-		$baseNodeId = $this->ctx->get_value('basenode');
-		$baseNodeId = str_replace(' ', '', $baseNodeId);
-		if (empty($baseNodeId))
-		{
-			$baseNodeId = bab_Sitemap::getVisibleRootNodeByUid($this->sitemap_name);
-		}
+    public function setOvmlContext(babOvTemplate $ctx)
+    {
+        $this->count = 0;
+        parent::setOvmlContext($ctx);
+        $limit = $ctx->get_value('limit');
+        if (is_string($limit)) {
+            $limits = explode(',', $limit);
+            if (count($limits) === 1) {
+                $this->limitRows = $limit;
+            } else {
+                $this->limitOffset = $limits[0];
+                $this->limitRows = $limits[1];
+            }
+        }
+
+        $this->idx += $this->limitOffset;
+
+        $sitemap = $ctx->get_value('sitemap');
+
+        if (false === $sitemap) {
+            global $babBody;
+
+            $this->sitemap_name = $babBody->babsite['sitemap'];
+            $this->sitemap = bab_siteMap::getByUid($this->sitemap_name);
+            if (!isset($this->sitemap)) {
+                $this->sitemap = bab_siteMap::get();
+            }
+        } else {
+            $this->sitemap = bab_siteMap::getByUid($sitemap);
+
+            if (null === $this->sitemap) {
+                trigger_error(sprintf('incorrect attribute in %s#%s sitemap="%s"', (string) $ctx->debug_location, get_class($this), $sitemap));
+                return;
+            }
+
+            $this->sitemap_name = $sitemap;
+        }
+
+    }
 
 
-		return $baseNodeId;
-	}
+    /**
+     * Get base node ID from attribute or from visible root node
+     * @return string
+     */
+    public function getBaseNode()
+    {
+        $baseNodeId = $this->ctx->get_value('basenode');
+        $baseNodeId = str_replace(' ', '', $baseNodeId);
+        if (empty($baseNodeId))
+        {
+            $baseNodeId = bab_Sitemap::getVisibleRootNodeByUid($this->sitemap_name);
+        }
+
+
+        return $baseNodeId;
+    }
 
 
 
-	/**
-	 * (non-PHPdoc)
-	 * @see utilit/Func_Ovml_Container#getnext()
-	 */
-	public function getnext()
-	{
-		if ($this->idx >= $this->count || (isset($this->limitRows) && ($this->idx >= $this->limitRows + $this->limitOffset))) {
-			$this->idx = $this->limitOffset;
-			return false;
-		}
-		$this->ctx->curctx->push('CIndex', $this->idx);
-		$this->ctx->curctx->push('SitemapEntryUrl', $this->IdEntries[$this->idx]['url']);
-		$this->ctx->curctx->push('SitemapEntryText', $this->IdEntries[$this->idx]['text']);
-		$this->ctx->curctx->push('SitemapEntryDescription', $this->IdEntries[$this->idx]['description']);
-		$this->ctx->curctx->push('SitemapEntryId', $this->IdEntries[$this->idx]['id']);
-		$this->ctx->curctx->push('SitemapEntryOnclick', $this->IdEntries[$this->idx]['onclick']);
-		$this->ctx->curctx->push('SitemapEntryFolder', $this->IdEntries[$this->idx]['folder'] ? '1' : '0');
-		$this->ctx->curctx->push('SitemapEntryPageTitle', $this->IdEntries[$this->idx]['pageTitle']);
-		$this->ctx->curctx->push('SitemapEntryPageDescription', $this->IdEntries[$this->idx]['pageDescription']);
-		$this->ctx->curctx->push('SitemapEntryPageKeywords', $this->IdEntries[$this->idx]['pageKeywords']);
-		$this->ctx->curctx->push('SitemapEntryClassnames', $this->IdEntries[$this->idx]['classnames']);
-		$this->ctx->curctx->push('SitemapEntryMenuIgnore', $this->IdEntries[$this->idx]['menuIgnore']);
-		$this->ctx->curctx->push('SitemapEntryBreadCrumbIgnore', $this->IdEntries[$this->idx]['breadCrumbIgnore']);
-		$this->ctx->curctx->push('SitemapEntryTarget', $this->IdEntries[$this->idx]['target']);
-		$this->idx++;
-		$this->index = $this->idx;
-		return true;
-	}
+    /**
+     * (non-PHPdoc)
+     * @see utilit/Func_Ovml_Container#getnext()
+     */
+    public function getnext()
+    {
+        if ($this->idx >= $this->count || (isset($this->limitRows) && ($this->idx >= $this->limitRows + $this->limitOffset))) {
+            $this->idx = $this->limitOffset;
+            return false;
+        }
+        $this->ctx->curctx->push('CIndex', $this->idx);
+        $this->ctx->curctx->push('SitemapEntryUrl', $this->IdEntries[$this->idx]['url']);
+        $this->ctx->curctx->push('SitemapEntryText', $this->IdEntries[$this->idx]['text']);
+        $this->ctx->curctx->push('SitemapEntryDescription', $this->IdEntries[$this->idx]['description']);
+        $this->ctx->curctx->push('SitemapEntryId', $this->IdEntries[$this->idx]['id']);
+        $this->ctx->curctx->push('SitemapEntryOnclick', $this->IdEntries[$this->idx]['onclick']);
+        $this->ctx->curctx->push('SitemapEntryFolder', $this->IdEntries[$this->idx]['folder'] ? '1' : '0');
+        $this->ctx->curctx->push('SitemapEntryPageTitle', $this->IdEntries[$this->idx]['pageTitle']);
+        $this->ctx->curctx->push('SitemapEntryPageDescription', $this->IdEntries[$this->idx]['pageDescription']);
+        $this->ctx->curctx->push('SitemapEntryPageKeywords', $this->IdEntries[$this->idx]['pageKeywords']);
+        $this->ctx->curctx->push('SitemapEntryClassnames', $this->IdEntries[$this->idx]['classnames']);
+        $this->ctx->curctx->push('SitemapEntryMenuIgnore', $this->IdEntries[$this->idx]['menuIgnore']);
+        $this->ctx->curctx->push('SitemapEntryBreadCrumbIgnore', $this->IdEntries[$this->idx]['breadCrumbIgnore']);
+        $this->ctx->curctx->push('SitemapEntryTarget', $this->IdEntries[$this->idx]['target']);
+        $this->idx++;
+        $this->index = $this->idx;
+        return true;
+    }
 }
 
 
@@ -165,46 +165,46 @@ class Func_Ovml_Container_SitemapEntries extends Ovml_Container_Sitemap
 {
 
 
-	public function setOvmlContext(babOvTemplate $ctx)
-	{
+    public function setOvmlContext(babOvTemplate $ctx)
+    {
 
-		parent::setOvmlContext($ctx);
+        parent::setOvmlContext($ctx);
 
-		$node = $ctx->get_value('node');
+        $node = $ctx->get_value('node');
 
-		if (isset($this->sitemap)) {
-			$node = $this->sitemap->getNodeById($node);
+        if (isset($this->sitemap)) {
+            $node = $this->sitemap->getNodeById($node);
 
-			if ($node) {
-				$node = $node->firstChild();
-				while($node) {
-					/* @var $item bab_SitemapItem */
-					$item = $node->getData();
-					$tmp = array();
+            if ($node) {
+                $node = $node->firstChild();
+                while($node) {
+                    /* @var $item bab_SitemapItem */
+                    $item = $node->getData();
+                    $tmp = array();
 
-					$tmp['url'] = $item->getRwUrl();
-					$tmp['text'] = $item->name;
-					$tmp['description'] = $item->description;
-					$tmp['id'] = $item->id_function;
-					$tmp['onclick'] = $item->onclick;
-					$tmp['folder'] = $item->folder; 					// set as folder by developper
-					$tmp['hasChildNodes'] = $node->hasChildNodes(); 	// has childnodes in sitemap
-					$tmp['pageTitle'] = $item->getPageTitle();
-					$tmp['pageDescription'] = $item->getPageDescription();
-					$tmp['pageKeywords'] = $item->getPageKeywords();
-					$tmp['classnames'] = $item->getIconClassnames();
-					$tmp['menuIgnore'] = $item->menuIgnore;
-					$tmp['breadCrumbIgnore'] = $item->breadCrumbIgnore;
-					$tmp['target'] = $item->getTarget()->id_function;
-					$this->IdEntries[] = $tmp;
-					$node = $node->nextSibling();
-				}
-			}
+                    $tmp['url'] = $item->getRwUrl();
+                    $tmp['text'] = $item->name;
+                    $tmp['description'] = $item->description;
+                    $tmp['id'] = $item->id_function;
+                    $tmp['onclick'] = $item->onclick;
+                    $tmp['folder'] = $item->folder; 					// set as folder by developper
+                    $tmp['hasChildNodes'] = $node->hasChildNodes(); 	// has childnodes in sitemap
+                    $tmp['pageTitle'] = $item->getPageTitle();
+                    $tmp['pageDescription'] = $item->getPageDescription();
+                    $tmp['pageKeywords'] = $item->getPageKeywords();
+                    $tmp['classnames'] = $item->getIconClassnames();
+                    $tmp['menuIgnore'] = $item->menuIgnore;
+                    $tmp['breadCrumbIgnore'] = $item->breadCrumbIgnore;
+                    $tmp['target'] = $item->getTarget()->id_function;
+                    $this->IdEntries[] = $tmp;
+                    $node = $node->nextSibling();
+                }
+            }
 
-			$this->count = count($this->IdEntries);
-			$this->ctx->curctx->push('CCount', $this->count);
-		}
-	}
+            $this->count = count($this->IdEntries);
+            $this->ctx->curctx->push('CCount', $this->count);
+        }
+    }
 
 }
 
@@ -228,42 +228,42 @@ class Func_Ovml_Container_SitemapEntry extends Ovml_Container_Sitemap
 {
 
 
-	public function setOvmlContext(babOvTemplate $ctx)
-	{
+    public function setOvmlContext(babOvTemplate $ctx)
+    {
 
-		parent::setOvmlContext($ctx);
+        parent::setOvmlContext($ctx);
 
-		$node = $ctx->get_value('node');
+        $node = $ctx->get_value('node');
 
-		if (isset($this->sitemap)) {
-			$node = $this->sitemap->getNodeById($node);
+        if (isset($this->sitemap)) {
+            $node = $this->sitemap->getNodeById($node);
 
-			if ($node) {
+            if ($node) {
 
-				/* @var $item bab_SitemapItem */
-				$item = $node->getData();
-				$tmp = array();
+                /* @var $item bab_SitemapItem */
+                $item = $node->getData();
+                $tmp = array();
 
-				$tmp['url'] = $item->getRwUrl();
-				$tmp['text'] = $item->name;
-				$tmp['description'] = $item->description;
-				$tmp['id'] = $item->id_function;
-				$tmp['onclick'] = $item->onclick;
-				$tmp['folder'] = $item->folder;
-				$tmp['pageTitle'] = $item->getPageTitle();
-				$tmp['pageDescription'] = $item->getPageDescription();
-				$tmp['pageKeywords'] = $item->getPageKeywords();
-				$tmp['classnames'] = $item->getIconClassnames();
-				$tmp['menuIgnore'] = $item->menuIgnore;
-				$tmp['breadCrumbIgnore'] = $item->breadCrumbIgnore;
-				$tmp['target'] = $item->getTarget()->id_function;
-				$this->IdEntries[] = $tmp;
-			}
+                $tmp['url'] = $item->getRwUrl();
+                $tmp['text'] = $item->name;
+                $tmp['description'] = $item->description;
+                $tmp['id'] = $item->id_function;
+                $tmp['onclick'] = $item->onclick;
+                $tmp['folder'] = $item->folder;
+                $tmp['pageTitle'] = $item->getPageTitle();
+                $tmp['pageDescription'] = $item->getPageDescription();
+                $tmp['pageKeywords'] = $item->getPageKeywords();
+                $tmp['classnames'] = $item->getIconClassnames();
+                $tmp['menuIgnore'] = $item->menuIgnore;
+                $tmp['breadCrumbIgnore'] = $item->breadCrumbIgnore;
+                $tmp['target'] = $item->getTarget()->id_function;
+                $this->IdEntries[] = $tmp;
+            }
 
-			$this->count = count($this->IdEntries);
-			$this->ctx->curctx->push('CCount', $this->count);
-		}
-	}
+            $this->count = count($this->IdEntries);
+            $this->ctx->curctx->push('CCount', $this->count);
+        }
+    }
 
 }
 
@@ -291,115 +291,115 @@ class Func_Ovml_Container_SitemapEntry extends Ovml_Container_Sitemap
  */
 class Func_Ovml_Container_SitemapPath extends Ovml_Container_Sitemap
 {
-	var $IdEntries = array();
-	var $index;
-	var $count;
-	var $data;
+    var $IdEntries = array();
+    var $index;
+    var $count;
+    var $data;
 
-	public function setOvmlContext(babOvTemplate $ctx)
-	{
-		parent::setOvmlContext($ctx);
+    public function setOvmlContext(babOvTemplate $ctx)
+    {
+        parent::setOvmlContext($ctx);
 
-		$baseNodeId = $this->getBaseNode();
-		$nodeId = $ctx->get_value('node');
+        $baseNodeId = $this->getBaseNode();
+        $nodeId = $ctx->get_value('node');
 
-		if (isset($this->sitemap)) {
+        if (isset($this->sitemap)) {
 
-			if ($nodeId === false || empty($nodeId)) {
-				$nodeId = bab_Sitemap::getPosition();
+            if ($nodeId === false || empty($nodeId)) {
+                $nodeId = bab_Sitemap::getPosition();
 
-				if ($baseNodeId && $nodeId) {
-					// if base node (parameter 'basenode') has been specified,
-					// we try to find if a descendant of this node has
-					// a target to the current position.
-					$baseNode = $this->sitemap->getNodeById($baseNodeId);
+                if ($baseNodeId && $nodeId) {
+                    // if base node (parameter 'basenode') has been specified,
+                    // we try to find if a descendant of this node has
+                    // a target to the current position.
+                    $baseNode = $this->sitemap->getNodeById($baseNodeId);
 
-					if (null === $baseNode)
-					{
-						trigger_error(sprintf('the basenode "%s" has not been found in the sitemap "%s", file %s',$baseNodeId, $this->sitemap_name, (string) $ctx->debug_location));
-					} else {
+                    if (null === $baseNode)
+                    {
+                        trigger_error(sprintf('the basenode "%s" has not been found in the sitemap "%s", file %s',$baseNodeId, $this->sitemap_name, (string) $ctx->debug_location));
+                    } else {
 
-						if ($customNode = $this->sitemap->getNodeByTargetId($baseNodeId, $nodeId))
-						{
-							$nodeId = $customNode->getId();
-						}
+                        if ($customNode = $this->sitemap->getNodeByTargetId($baseNodeId, $nodeId))
+                        {
+                            $nodeId = $customNode->getId();
+                        }
 
-					}
-				}
-			}
-
-
-			if (empty($nodeId)) {
-				$keepLastKnown = $ctx->get_value('keeplastknown');
-				if ($keepLastKnown === false) {
-					// If keeplastknown is not specified, active by default
-					$keepLastKnown = 1;
-				}
-				if ($keepLastKnown && isset($_SESSION['bab_sitemap_lastknownnode'])) {
-					$nodeId = $_SESSION['bab_sitemap_lastknownnode'];
-				}
-			} else {
-				$_SESSION['bab_sitemap_lastknownnode'] = $nodeId;
-			}
+                    }
+                }
+            }
 
 
-			if ($nodeId) {
-				$node = $this->sitemap->getNodeById($nodeId);
+            if (empty($nodeId)) {
+                $keepLastKnown = $ctx->get_value('keeplastknown');
+                if ($keepLastKnown === false) {
+                    // If keeplastknown is not specified, active by default
+                    $keepLastKnown = 1;
+                }
+                if ($keepLastKnown && isset($_SESSION['bab_sitemap_lastknownnode'])) {
+                    $nodeId = $_SESSION['bab_sitemap_lastknownnode'];
+                }
+            } else {
+                $_SESSION['bab_sitemap_lastknownnode'] = $nodeId;
+            }
+
+
+            if ($nodeId) {
+                $node = $this->sitemap->getNodeById($nodeId);
 
 
 
 
-				$baseNodeFound = false;
+                $baseNodeFound = false;
 
 
-				while ($node && ($item = $node->getData())) {
-					/* @var $item bab_SitemapItem */
-					$tmp = array();
+                while ($node && ($item = $node->getData())) {
+                    /* @var $item bab_SitemapItem */
+                    $tmp = array();
 
-					$tmp['url'] = $item->getRwUrl();
-					$tmp['text'] = $item->name;
-					$tmp['description'] = $item->description;
-					$tmp['id'] = $item->id_function;
-					if ($baseNodeId === $item->id_function)
-					{
-						$baseNodeFound = true;
-					}
-					$tmp['onclick'] = $item->onclick;
-					$tmp['folder'] = $item->folder;
-					$tmp['pageTitle'] = $item->getPageTitle();
-					$tmp['pageDescription'] = $item->getPageDescription();
-					$tmp['pageKeywords'] = $item->getPageKeywords();
-					$tmp['classnames'] = $item->getIconClassnames();
-					$tmp['menuIgnore'] = $item->menuIgnore;
-					$tmp['breadCrumbIgnore'] = $item->breadCrumbIgnore;
-					$tmp['target'] = $item->getTarget()->id_function;
+                    $tmp['url'] = $item->getRwUrl();
+                    $tmp['text'] = $item->name;
+                    $tmp['description'] = $item->description;
+                    $tmp['id'] = $item->id_function;
+                    if ($baseNodeId === $item->id_function)
+                    {
+                        $baseNodeFound = true;
+                    }
+                    $tmp['onclick'] = $item->onclick;
+                    $tmp['folder'] = $item->folder;
+                    $tmp['pageTitle'] = $item->getPageTitle();
+                    $tmp['pageDescription'] = $item->getPageDescription();
+                    $tmp['pageKeywords'] = $item->getPageKeywords();
+                    $tmp['classnames'] = $item->getIconClassnames();
+                    $tmp['menuIgnore'] = $item->menuIgnore;
+                    $tmp['breadCrumbIgnore'] = $item->breadCrumbIgnore;
+                    $tmp['target'] = $item->getTarget()->id_function;
 
-					array_unshift($this->IdEntries, $tmp);
-					if ($item->id_function === $baseNodeId) {
-						break;
-					}
-					$node = $node->parentNode();
-				}
+                    array_unshift($this->IdEntries, $tmp);
+                    if ($item->id_function === $baseNodeId) {
+                        break;
+                    }
+                    $node = $node->parentNode();
+                }
 
 
-				if (!$baseNodeFound)
-				{
-					$this->IdEntries = array();
-					$this->count = 0;
-					$this->ctx->curctx->push('CCount', $this->count);
-					return;
-				}
+                if (!$baseNodeFound)
+                {
+                    $this->IdEntries = array();
+                    $this->count = 0;
+                    $this->ctx->curctx->push('CCount', $this->count);
+                    return;
+                }
 
-				$this->count = count($this->IdEntries);
-				$this->ctx->curctx->push('CCount', $this->count);
+                $this->count = count($this->IdEntries);
+                $this->ctx->curctx->push('CCount', $this->count);
 
-			} else {
-				$this->IdEntries = array();
-				$this->count = 0;
-				$this->ctx->curctx->push('CCount', $this->count);
-			}
-		}
-	}
+            } else {
+                $this->IdEntries = array();
+                $this->count = 0;
+                $this->ctx->curctx->push('CCount', $this->count);
+            }
+        }
+    }
 
 }
 
@@ -430,110 +430,126 @@ class Func_Ovml_Function_SitemapPosition extends Func_Ovml_Function
 
 
 
-	/**
-	 *
-	 * @return string
-	 */
-	public function toString()
-	{
-		$args = $this->args;
+    /**
+     *
+     * @return string
+     */
+    public function toString()
+    {
+        $args = $this->args;
 
-		$sitemap = empty($args['sitemap']) ? null : $args['sitemap'];
-		$baseNode = empty($args['basenode']) ? null : $args['basenode'];
-		$node = empty($args['node']) ? null : $args['node'];
+        $sitemap = empty($args['sitemap']) ? null : $args['sitemap'];
+        $baseNode = empty($args['basenode']) ? null : $args['basenode'];
+        $node = empty($args['node']) ? null : $args['node'];
 
-		$breadcrumb = bab_siteMap::getBreadCrumb($sitemap, $baseNode, $node);
+        $breadcrumb = bab_siteMap::getBreadCrumb($sitemap, $baseNode, $node);
 
-		if (!isset($args['keeplastknown'])) {
-			// If keeplastknown is not specified, active by default
-			$keepLastKnown = 1;
-		} else {
-			$keepLastKnown = $args['keeplastknown'];
-		}
-
-
+        if (!isset($args['keeplastknown'])) {
+            // If keeplastknown is not specified, active by default
+            $keepLastKnown = 1;
+        } else {
+            $keepLastKnown = $args['keeplastknown'];
+        }
 
 
-		if (null === $breadcrumb) {
 
 
-			if ((!$keepLastKnown) || (!isset($_SESSION['bab_sitemap_lastknownposition'])) ) {
-				return '';
-			}
-			if (isset($_SESSION['bab_sitemap_lastknownposition'])) {
-				return $_SESSION['bab_sitemap_lastknownposition'];
-			} else {
-				return '';
-			}
-		}
+        if (null === $breadcrumb) {
 
-		if (empty($breadcrumb))
-		{
-			return '';
-		}
+
+            if ((!$keepLastKnown) || (!isset($_SESSION['bab_sitemap_lastknownposition'])) ) {
+                return '';
+            }
+            if (isset($_SESSION['bab_sitemap_lastknownposition'])) {
+                return $_SESSION['bab_sitemap_lastknownposition'];
+            } else {
+                return '';
+            }
+        }
+
+        if (empty($breadcrumb))
+        {
+            return '';
+        }
 
 
 //		$html = '<ul class="sitemap-position">'."\n";
-		$html = '';
+        $html = '';
 
-		foreach($breadcrumb as $node) {
+        foreach($breadcrumb as $node) {
 
-			if (!($node instanceOf bab_Node)) {
-				$html .= sprintf('<li>Broken sitemap node : %s</li>'."\n", bab_toHtml((string) $node));
-				continue;
-			}
-
-
-			$sitemapItem = $node->getData();
-
-			if (!$sitemapItem) {
-				$html .= sprintf('<li>Broken sitemap node : %s</li>'."\n", bab_toHtml($node->getId()));
-				continue;
-			}
+            if (!($node instanceOf bab_Node)) {
+                $html .= sprintf('<li>Broken sitemap node : %s</li>'."\n", bab_toHtml((string) $node));
+                continue;
+            }
 
 
+            $sitemapItem = $node->getData();
+
+            if (!$sitemapItem) {
+                $html .= sprintf('<li>Broken sitemap node : %s</li>'."\n", bab_toHtml($node->getId()));
+                continue;
+            }
 
 
-			if ($sitemapItem->url) {
-
-				if ($sitemapItem->onclick) {
-					$onclick = ' onclick="'.bab_toHtml($sitemapItem->onclick).'"';
-				} else {
-					$onclick = '';
-				}
- 				$html .= '<li class="sitemap-' . bab_toHtml($node->getId()) .'"><a href="' . bab_toHtml($sitemapItem->getRwUrl()) . '" ' . $onclick . '>'
- 					. bab_toHtml($sitemapItem->name) . '</a></li>'."\n";
-
-			} else {
 
 
-				$html .= sprintf('<li class="sitemap-%s"><span>%s</span></li>'."\n",
+            if ($sitemapItem->url) {
 
-					bab_toHtml($node->getId()),
-					bab_toHtml($sitemapItem->name)
+                if ($sitemapItem->onclick) {
+                    $onclick = ' onclick="'.bab_toHtml($sitemapItem->onclick).'"';
+                } else {
+                    $onclick = '';
+                }
+                 $html .= '<li class="sitemap-' . bab_toHtml($node->getId()) .'"><a href="' . bab_toHtml($sitemapItem->getRwUrl()) . '" ' . $onclick . '>'
+                     . bab_toHtml($sitemapItem->name) . '</a></li>'."\n";
 
-				);
+            } else {
 
-			}
-		}
+
+                $html .= sprintf('<li class="sitemap-%s"><span>%s</span></li>'."\n",
+
+                    bab_toHtml($node->getId()),
+                    bab_toHtml($sitemapItem->name)
+
+                );
+
+            }
+        }
 
 //		$html .= '</ul>';
 
-		if ($keepLastKnown) {
-			$_SESSION['bab_sitemap_lastknownposition'] = $html;
-		}
+        if ($keepLastKnown) {
+            $_SESSION['bab_sitemap_lastknownposition'] = $html;
+        }
 
 
 
-		return $html;
-	}
+        return $html;
+    }
 }
 
 
 
 
+/**
+ * Return the node id of the current page
+ *
+ * <OFSitemapMenu>
+ */
+class Func_Ovml_Function_CurrentNode extends Func_Ovml_Function
+{
+    /**
+     *
+     * @return string
+     */
+    public function toString()
+    {
+        require_once dirname(__FILE__).'/sitemap.php';
 
-
+        return bab_Sitemap::getPosition();
+    }
+}
 
 
 
@@ -580,234 +596,234 @@ class Func_Ovml_Function_SitemapPosition extends Func_Ovml_Function
  */
 class Func_Ovml_Function_SitemapMenu extends Func_Ovml_Function {
 
-	protected	$sitemap;
+    protected	$sitemap;
 
-	/* The current sitemap node id */
-	protected	$selectedNodeId = null;
+    /* The current sitemap node id */
+    protected	$selectedNodeId = null;
 
-	/* the node ids of the current sitemap path */
-	protected	$activeNodes = array();
+    /* the node ids of the current sitemap path */
+    protected	$activeNodes = array();
 
-	protected	$selectedClass = 'selected';
-	protected	$activeClass = 'active';
-	protected	$delegAdmin = array();
+    protected	$selectedClass = 'selected';
+    protected	$activeClass = 'active';
+    protected	$delegAdmin = array();
 
-	protected	$admindelegation = false;
+    protected	$admindelegation = false;
 
-	protected	$maxDepth = 100;
+    protected	$maxDepth = 100;
 
-	private function getHtml(bab_Node $node, $mainmenuclass = null, $depth = 1) {
+    private function getHtml(bab_Node $node, $mainmenuclass = null, $depth = 1) {
 
-		global $babBody;
-		$return = '';
-		$classnames = array();
+        global $babBody;
+        $return = '';
+        $classnames = array();
 
-		$id = $node->getId();
-		$siteMapItem = $node->getData();
-		/* @var $siteMapItem bab_siteMapItem */
+        $id = $node->getId();
+        $siteMapItem = $node->getData();
+        /* @var $siteMapItem bab_siteMapItem */
 
-		if($siteMapItem->target){
-			$truncateId = $siteMapItem->target->id_function;
-			if($this->admindelegation
-				&& !isset($this->delegAdmin[bab_getCurrentAdmGroup()][$truncateId])
-				&& (substr($truncateId, 0, 8) == 'babAdmin' || $truncateId == 'babSearchIndex') && $truncateId != 'babAdmin')
-			{
-				//bab_debug($siteMapItem->target->id_function. ' == '.$siteMapItem->id_function);
-				return $return;
-			}
-		}
-
-
-		$additional_classes = array();
-		$additional_classes[] = 'niv'.$depth;
-
-		if (isset($this->activeNodes[$siteMapItem->id_function])) {
-			// the nodes in the current path have the "active" class.
-			$additional_classes[] = $this->activeClass;
-		}
-		if ($this->selectedNodeId === $siteMapItem->id_function) {
-			// the current node has the "selected" class.
-			$additional_classes[] = $this->selectedClass;
-		}
+        if($siteMapItem->target){
+            $truncateId = $siteMapItem->target->id_function;
+            if($this->admindelegation
+                && !isset($this->delegAdmin[bab_getCurrentAdmGroup()][$truncateId])
+                && (substr($truncateId, 0, 8) == 'babAdmin' || $truncateId == 'babSearchIndex') && $truncateId != 'babAdmin')
+            {
+                //bab_debug($siteMapItem->target->id_function. ' == '.$siteMapItem->id_function);
+                return $return;
+            }
+        }
 
 
-		$ul = null;
+        $additional_classes = array();
+        $additional_classes[] = 'niv'.$depth;
 
-		if ($node->hasChildNodes() && $depth < $this->maxDepth) {
-			$ul = "<ul class=\"niv".($depth + 1)."\">\n";
-
-			$node = $node->firstChild();
-			do {
-				if (!$node->getData()->menuIgnore)
-				{
-					$ul .= $this->getHtml($node, null, $depth + 1);
-				}
-			} while ($node = $node->nextSibling());
-
-			$ul .= "</ul>\n";
-		}
+        if (isset($this->activeNodes[$siteMapItem->id_function])) {
+            // the nodes in the current path have the "active" class.
+            $additional_classes[] = $this->activeClass;
+        }
+        if ($this->selectedNodeId === $siteMapItem->id_function) {
+            // the current node has the "selected" class.
+            $additional_classes[] = $this->selectedClass;
+        }
 
 
-		return $siteMapItem->getHtmlListItem($ul, $additional_classes);
-	}
+        $ul = null;
+
+        if ($node->hasChildNodes() && $depth < $this->maxDepth) {
+            $ul = "<ul class=\"niv".($depth + 1)."\">\n";
+
+            $node = $node->firstChild();
+            do {
+                if (!$node->getData()->menuIgnore)
+                {
+                    $ul .= $this->getHtml($node, null, $depth + 1);
+                }
+            } while ($node = $node->nextSibling());
+
+            $ul .= "</ul>\n";
+        }
+
+
+        return $siteMapItem->getHtmlListItem($ul, $additional_classes);
+    }
 
 
 
 
-	/**
-	 *
-	 * @return string
-	 */
-	public function toString()
-	{
-		require_once dirname(__FILE__).'/delegincl.php';
-		global $babBody;
-		$args = $this->args;
+    /**
+     *
+     * @return string
+     */
+    public function toString()
+    {
+        require_once dirname(__FILE__).'/delegincl.php';
+        global $babBody;
+        $args = $this->args;
 
-		if (isset($args['sitemap'])) {
-			$sitemap = bab_siteMap::getByUid($args['sitemap']);
-			$sitemap_name = $args['sitemap'];
-		} else {
-			global $babBody;
-			$sitemap = bab_siteMap::getByUid($babBody->babsite['sitemap']);
-			$sitemap_name = $babBody->babsite['sitemap'];
-			if (!isset($sitemap)) {
-				$sitemap_name = 'core';
-				$sitemap = bab_siteMap::get();
-			}
-		}
+        if (isset($args['sitemap'])) {
+            $sitemap = bab_siteMap::getByUid($args['sitemap']);
+            $sitemap_name = $args['sitemap'];
+        } else {
+            global $babBody;
+            $sitemap = bab_siteMap::getByUid($babBody->babsite['sitemap']);
+            $sitemap_name = $babBody->babsite['sitemap'];
+            if (!isset($sitemap)) {
+                $sitemap_name = 'core';
+                $sitemap = bab_siteMap::get();
+            }
+        }
 
-		if (!isset($sitemap)) {
-			trigger_error(sprintf('incorrect attribute in %s#%s sitemap="%s"', (string) $this->template->debug_location, get_class($this), $args['sitemap']));
-			return '';
-		}
-		if( (isset($args['admindelegation']) && $args['admindelegation'] == '1' ) && bab_getCurrentAdmGroup() != 0 && !isset($this->delegAdmin[bab_getCurrentAdmGroup()]))
-		{
-			$this->admindelegation = $args['admindelegation'];
-			$delegation = bab_getDelegationById(bab_getCurrentAdmGroup());
-			$delegation = $delegation[0];
-			foreach(bab_getDelegationsObjects() as $link)
-			{
-				if (!isset($link[3]))
-				{
-					continue;
-				}
+        if (!isset($sitemap)) {
+            trigger_error(sprintf('incorrect attribute in %s#%s sitemap="%s"', (string) $this->template->debug_location, get_class($this), $args['sitemap']));
+            return '';
+        }
+        if( (isset($args['admindelegation']) && $args['admindelegation'] == '1' ) && bab_getCurrentAdmGroup() != 0 && !isset($this->delegAdmin[bab_getCurrentAdmGroup()]))
+        {
+            $this->admindelegation = $args['admindelegation'];
+            $delegation = bab_getDelegationById(bab_getCurrentAdmGroup());
+            $delegation = $delegation[0];
+            foreach(bab_getDelegationsObjects() as $link)
+            {
+                if (!isset($link[3]))
+                {
+                    continue;
+                }
 
-				if ($delegation[$link[0]] === 'Y')
-				{
-					$this->delegAdmin[bab_getCurrentAdmGroup()]['bab'.$link[2]] = true;
-				}
-			}
-			$dgAdmGroups = bab_getDgAdmGroups();
-			if( count($dgAdmGroups) > 0) {
-				$this->delegAdmin[bab_getCurrentAdmGroup()]['babAdminDelegChange'] = true;
-			}
-			$this->delegAdmin[bab_getCurrentAdmGroup()]['babAdminGroups'] = true;
-			$this->delegAdmin[bab_getCurrentAdmGroup()]['babAdminUsers'] = true;
-			$this->delegAdmin[bab_getCurrentAdmGroup()]['babAdminSection'] = true;
-		}
+                if ($delegation[$link[0]] === 'Y')
+                {
+                    $this->delegAdmin[bab_getCurrentAdmGroup()]['bab'.$link[2]] = true;
+                }
+            }
+            $dgAdmGroups = bab_getDgAdmGroups();
+            if( count($dgAdmGroups) > 0) {
+                $this->delegAdmin[bab_getCurrentAdmGroup()]['babAdminDelegChange'] = true;
+            }
+            $this->delegAdmin[bab_getCurrentAdmGroup()]['babAdminGroups'] = true;
+            $this->delegAdmin[bab_getCurrentAdmGroup()]['babAdminUsers'] = true;
+            $this->delegAdmin[bab_getCurrentAdmGroup()]['babAdminSection'] = true;
+        }
 
-		$this->sitemap = $sitemap;
+        $this->sitemap = $sitemap;
 
-		$dg_node = $sitemap->firstChild();
+        $dg_node = $sitemap->firstChild();
 
-		if (!($dg_node instanceOf bab_Node)) {
-			return '';
-		}
+        if (!($dg_node instanceOf bab_Node)) {
+            return '';
+        }
 
-		if (empty($args['basenode']))
-		{
-			$args['basenode'] = bab_siteMap::getVisibleRootNodeByUid($sitemap_name);
-		}
-		$args['basenode'] = str_replace(' ', '', $args['basenode']);
-		$home = $sitemap->getNodeById($args['basenode']);
-		$baseNodeId = $args['basenode'];
-
-
-		if (!($home instanceOf bab_Node)) {
-			return '';
-		}
-
-		if (isset($args['maxdepth']) && (!empty($args['maxdepth']))) {
-			$this->maxDepth = $args['maxdepth'];
-		}
+        if (empty($args['basenode']))
+        {
+            $args['basenode'] = bab_siteMap::getVisibleRootNodeByUid($sitemap_name);
+        }
+        $args['basenode'] = str_replace(' ', '', $args['basenode']);
+        $home = $sitemap->getNodeById($args['basenode']);
+        $baseNodeId = $args['basenode'];
 
 
-		if (isset($args['selectednode']) && (!empty($args['selectednode']))) {
-			$selectedNodeId = $args['selectednode'];
-		}
-		if (!isset($selectedNodeId)) {
-			$selectedNodeId = bab_Sitemap::getPosition();
+        if (!($home instanceOf bab_Node)) {
+            return '';
+        }
+
+        if (isset($args['maxdepth']) && (!empty($args['maxdepth']))) {
+            $this->maxDepth = $args['maxdepth'];
+        }
 
 
-			// if base node (parameter 'basenode') has been specified,
-			// we try to find if a descendant of this node has
-			// a target to the current position.
-			if ($customNode = $this->sitemap->getNodeByTargetId($baseNodeId, $selectedNodeId))
-			{
-				$selectedNodeId = $customNode->getId();
-			}
-
-		}
-
-		if (!isset($args['keeplastknown'])) {
-			// If keeplastknown is not specified, active by default
-			$keepLastKnown = 1;
-		} else {
-			$keepLastKnown = $args['keeplastknown'];
-		}
-
-		if (empty($selectedNodeId)) {
-			if ($keepLastKnown && isset($_SESSION['bab_sitemap_lastknownnode'])) {
-				$selectedNodeId = $_SESSION['bab_sitemap_lastknownnode'];
-			}
-		} else {
-			$_SESSION['bab_sitemap_lastknownnode'] = $selectedNodeId;
-		}
+        if (isset($args['selectednode']) && (!empty($args['selectednode']))) {
+            $selectedNodeId = $args['selectednode'];
+        }
+        if (!isset($selectedNodeId)) {
+            $selectedNodeId = bab_Sitemap::getPosition();
 
 
-		$this->selectedNodeId = $selectedNodeId;
+            // if base node (parameter 'basenode') has been specified,
+            // we try to find if a descendant of this node has
+            // a target to the current position.
+            if ($customNode = $this->sitemap->getNodeByTargetId($baseNodeId, $selectedNodeId))
+            {
+                $selectedNodeId = $customNode->getId();
+            }
 
-		$selectedNode = $this->sitemap->getNodeById($selectedNodeId);
+        }
 
-		while ($selectedNode && ($item = $selectedNode->getData())) {
-			/* @var $item bab_SitemapItem */
-			$this->activeNodes[$item->id_function] = $item->id_function;
-			if ($home->getData()->id_function === $item->id_function) {
-				break;
-			}
-			$selectedNode = $selectedNode->parentNode();
-		}
+        if (!isset($args['keeplastknown'])) {
+            // If keeplastknown is not specified, active by default
+            $keepLastKnown = 1;
+        } else {
+            $keepLastKnown = $args['keeplastknown'];
+        }
 
-		$node = $home->firstChild();
-		$return = '';
+        if (empty($selectedNodeId)) {
+            if ($keepLastKnown && isset($_SESSION['bab_sitemap_lastknownnode'])) {
+                $selectedNodeId = $_SESSION['bab_sitemap_lastknownnode'];
+            }
+        } else {
+            $_SESSION['bab_sitemap_lastknownnode'] = $selectedNodeId;
+        }
 
-		if (!isset($args['outerul'])) {
-			// If outerul is not specified, active by default
-			$outerUl = 1;
-		} else {
-			$outerUl = $args['outerul'];
-		}
 
-		if ($node) {
+        $this->selectedNodeId = $selectedNodeId;
 
-			if ($outerUl) {
-				$return .= '<ul class="sitemap-menu-root">'."\n";
-			}
+        $selectedNode = $this->sitemap->getNodeById($selectedNodeId);
 
-			do {
-				if (!$node->getData()->menuIgnore)
-				{
-					$return .= $this->getHtml($node, 'sitemap-main-menu');
-				}
-			} while ($node = $node->nextSibling());
+        while ($selectedNode && ($item = $selectedNode->getData())) {
+            /* @var $item bab_SitemapItem */
+            $this->activeNodes[$item->id_function] = $item->id_function;
+            if ($home->getData()->id_function === $item->id_function) {
+                break;
+            }
+            $selectedNode = $selectedNode->parentNode();
+        }
 
-			if ($outerUl) {
-				$return .= '</ul>'."\n";
-			}
-		}
-		return $return;
-	}
+        $node = $home->firstChild();
+        $return = '';
+
+        if (!isset($args['outerul'])) {
+            // If outerul is not specified, active by default
+            $outerUl = 1;
+        } else {
+            $outerUl = $args['outerul'];
+        }
+
+        if ($node) {
+
+            if ($outerUl) {
+                $return .= '<ul class="sitemap-menu-root">'."\n";
+            }
+
+            do {
+                if (!$node->getData()->menuIgnore)
+                {
+                    $return .= $this->getHtml($node, 'sitemap-main-menu');
+                }
+            } while ($node = $node->nextSibling());
+
+            if ($outerUl) {
+                $return .= '</ul>'."\n";
+            }
+        }
+        return $return;
+    }
 }
 
 
@@ -832,48 +848,48 @@ class Func_Ovml_Function_SitemapUrl extends Func_Ovml_Function
 
 
 
-	/**
-	 *
-	 * @return string
-	 */
-	public function toString()
-	{
-		$args = $this->args;
+    /**
+     *
+     * @return string
+     */
+    public function toString()
+    {
+        $args = $this->args;
 
-		$sitemap_uid = empty($args['sitemap']) ? null : $args['sitemap'];
-		$url = empty($args['url']) ? null : $args['url'];
+        $sitemap_uid = empty($args['sitemap']) ? null : $args['sitemap'];
+        $url = empty($args['url']) ? null : $args['url'];
 
-		if (null === $sitemap_uid)
-		{
-			global $babBody;
-			$sitemap_uid = $babBody->babsite['sitemap'];
-		}
+        if (null === $sitemap_uid)
+        {
+            global $babBody;
+            $sitemap_uid = $babBody->babsite['sitemap'];
+        }
 
-		$rootNode = bab_sitemap::getByUid($sitemap_uid);
+        $rootNode = bab_sitemap::getByUid($sitemap_uid);
 
-		if (isset($args['sitemap']))
-		{
-			unset($args['sitemap']);
-		}
+        if (isset($args['sitemap']))
+        {
+            unset($args['sitemap']);
+        }
 
-		unset($args['url']);
+        unset($args['url']);
 
-		if (!isset($rootNode)) {
-			bab_debug(sprintf('incorrect sitemap used in OVML %s sitemap="%s"', get_class($this), $sitemap_uid));
-			return $this->format_output($url, $args);
-		}
+        if (!isset($rootNode)) {
+            bab_debug(sprintf('incorrect sitemap used in OVML %s sitemap="%s"', get_class($this), $sitemap_uid));
+            return $this->format_output($url, $args);
+        }
 
 
-		if ($nodes = $rootNode->getNodesByIndex('url', $url))
-		{
-			$node = reset($nodes);
-			$sitemapItem = $node->getData();
-			/*@var $sitemapItem bab_SitemapItem */
-			$url = $sitemapItem->getRwUrl();
-		}
+        if ($nodes = $rootNode->getNodesByIndex('url', $url))
+        {
+            $node = reset($nodes);
+            $sitemapItem = $node->getData();
+            /*@var $sitemapItem bab_SitemapItem */
+            $url = $sitemapItem->getRwUrl();
+        }
 
-		return $this->format_output($url, $args);
-	}
+        return $this->format_output($url, $args);
+    }
 }
 
 
@@ -890,75 +906,75 @@ class Func_Ovml_Function_SitemapUrl extends Func_Ovml_Function
  */
 class Func_Ovml_Function_SitemapCustomNodeId extends Func_Ovml_Function
 {
-	/**
-	 *
-	 * @return string
-	 */
-	public function toString()
-	{
-		$args = $this->args;
-		$nodeid = empty($args['node']) ? null : $args['node'];
-		$basenode = empty($args['basenode']) ? null : $args['basenode'];
+    /**
+     *
+     * @return string
+     */
+    public function toString()
+    {
+        $args = $this->args;
+        $nodeid = empty($args['node']) ? null : $args['node'];
+        $basenode = empty($args['basenode']) ? null : $args['basenode'];
 
-		if (null === $nodeid)
-		{
-			trigger_error(sprintf('Missing attribute nodeid in %s#%s', (string) $this->template->debug_location, get_class($this)));
-			return $this->output('');
-		}
-
-
-		$coreRootNode = bab_sitemap::get(); // core sitemap
-		$node = $coreRootNode->getNodeById($nodeid);
-
-		if (null === $node)
-		{
-			trigger_error(sprintf('Node not found in core sitemap in %s#%s nodeid="%s"', (string) $this->template->debug_location, get_class($this), $nodeid));
-			return $this->output('');
-		}
+        if (null === $nodeid)
+        {
+            trigger_error(sprintf('Missing attribute nodeid in %s#%s', (string) $this->template->debug_location, get_class($this)));
+            return $this->output('');
+        }
 
 
-		if (null === $basenode)
-		{
-			$basenode = bab_sitemap::getSitemapRootNode();
-		}
+        $coreRootNode = bab_sitemap::get(); // core sitemap
+        $node = $coreRootNode->getNodeById($nodeid);
 
-		require_once dirname(__FILE__).'/settings.class.php';
-		$settings = bab_getInstance('bab_Settings');
-		/*@var $settings bab_Settings */
-		$site = $settings->getSiteSettings();
+        if (null === $node)
+        {
+            trigger_error(sprintf('Node not found in core sitemap in %s#%s nodeid="%s"', (string) $this->template->debug_location, get_class($this), $nodeid));
+            return $this->output('');
+        }
 
-		if ('core' === $site['sitemap'])
-		{
-			// custom sitemap is the core sitemap
-			return $this->output($nodeid);
-		}
 
-		$customRootNode = bab_sitemap::getByUid($site['sitemap']);
-		$customNode = $customRootNode->getNodeByTargetId($basenode, $nodeid);
+        if (null === $basenode)
+        {
+            $basenode = bab_sitemap::getSitemapRootNode();
+        }
 
-		if (null === $customNode)
-		{
-			return $this->output($nodeid);
-		}
+        require_once dirname(__FILE__).'/settings.class.php';
+        $settings = bab_getInstance('bab_Settings');
+        /*@var $settings bab_Settings */
+        $site = $settings->getSiteSettings();
 
-		return $this->output($customNode->getId());
-	}
+        if ('core' === $site['sitemap'])
+        {
+            // custom sitemap is the core sitemap
+            return $this->output($nodeid);
+        }
 
-	/**
-	 * Process function output
-	 * @param string $str
-	 */
-	private function output($str)
-	{
-		$args = $this->args;
-		$saveas = empty($args['saveas']) ? null : $args['saveas'];
+        $customRootNode = bab_sitemap::getByUid($site['sitemap']);
+        $customNode = $customRootNode->getNodeByTargetId($basenode, $nodeid);
 
-		if (isset($saveas))
-		{
-			$this->gctx->push($saveas, $str);
-			return ''; // do not display value if saved
-		}
+        if (null === $customNode)
+        {
+            return $this->output($nodeid);
+        }
 
-		return $str;
-	}
+        return $this->output($customNode->getId());
+    }
+
+    /**
+     * Process function output
+     * @param string $str
+     */
+    private function output($str)
+    {
+        $args = $this->args;
+        $saveas = empty($args['saveas']) ? null : $args['saveas'];
+
+        if (isset($saveas))
+        {
+            $this->gctx->push($saveas, $str);
+            return ''; // do not display value if saved
+        }
+
+        return $str;
+    }
 }

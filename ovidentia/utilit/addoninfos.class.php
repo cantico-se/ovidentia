@@ -69,6 +69,8 @@ class bab_addonInfos {
      */
     public function setAddonName($addonname, $access_rights = true) {
 
+        $addonname = mb_strtolower($addonname);
+        
         $id_addon = bab_addonsInfos::getAddonIdByName($addonname, $access_rights);
 
         if (false === $id_addon) {
@@ -80,9 +82,11 @@ class bab_addonInfos {
                 return false;
             }
         }
+        
+        $addonsCache = bab_addonsInfos::getDbRowsByName();
 
         $this->id_addon = $id_addon;
-        $this->addonname = $addonname;
+        $this->addonname = $addonsCache[$addonname]['title'];
         	
         return true;
     }

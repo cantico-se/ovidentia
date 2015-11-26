@@ -19,7 +19,7 @@
 /**
  * @license http://opensource.org/licenses/gpl-license.php GNU General Public License (GPL)
  * @copyright Copyright (c) 2009 by CANTICO ({@link http://www.cantico.fr})
- * @internal SEC1 NA 08/12/2006 FULL
+ * 
  */
 include_once 'base.php';
 require_once dirname(__FILE__).'/utilit/registerglobals.php';
@@ -27,7 +27,7 @@ include_once $babInstallPath.'utilit/uiutil.php';
 include_once $babInstallPath.'utilit/mailincl.php';
 include_once $babInstallPath.'utilit/topincl.php';
 include_once $babInstallPath.'utilit/artincl.php';
-
+require_once dirname(__FILE__).'/utilit/commentincl.php';
 
 
 function listComments($topics, $article)
@@ -108,50 +108,7 @@ function listComments($topics, $article)
 
 function editComment($topics, $article, $commentId)
 {
-	class EditCommentTemplate
-	{
-		public	$subject;
-		public	$subjectval;
-		public	$name;
-		public	$email;
-		public	$message;
-		public	$add;
-		public	$article;
-		public	$username;
-		public	$anonyme;
-		public	$title;
-		public	$titleval;
-		public	$com;
-		
-		public	$rate_articles = true;
-		public	$useCaptcha;
-
-		public function __construct($topics, $article, $commentId)
-		{
-			global $BAB_SESS_USER, $babDB;
-			$this->comment_id = bab_toHtml($commentId);
-
-			$req = 'SELECT * FROM ' . BAB_COMMENTS_TBL.' WHERE id=' . $babDB->quote($commentId);
-			$res = $babDB->db_query($req);
-			$comment = $babDB->db_fetch_assoc($res);
-
-			$this->t_subject = bab_translate('comments-Title');
-			$this->t_message = bab_translate('comments-Comment');
-			$this->t_save = bab_translate('Save comment');
-			$this->t_title = bab_translate('Article');
-			$this->article = bab_toHtml($article);
-			$this->topics = bab_toHtml($topics);
-			$this->subject = bab_toHtml($comment['subject']);
-			
-			include_once $GLOBALS['babInstallPath'].'utilit/editorincl.php';
-
-			$editor = new bab_contentEditor('bab_article_comment');
-			$editor->setContent($comment['message']);
-			$editor->setFormat($comment['message_format']);
-			$editor->setParameters(array('height' => 200));
-			$this->editor = $editor->getEditor();
-		}
-	}
+	
 
 	if (!bab_isAccessValid(BAB_TOPICSCOM_GROUPS_TBL, $topics)) {
 		return;
@@ -159,97 +116,19 @@ function editComment($topics, $article, $commentId)
 	
 	global $babBodyPopup;
 	
-	$editCommentTemplate = new EditCommentTemplate($topics, $article, $commentId);
+	$editCommentTemplate = new bab_EditCommentTemplate($topics, $article, $commentId);
 	$babBodyPopup->babecho(bab_printTemplate($editCommentTemplate, 'comments.html', 'commentedit'));
 }
 
 
+
+
+
+
+
 function addComment($topics, $article, $subject, $message, $com = '', $messageFormat = null)
 {
-	class AddCommentTemplate
-	{
-		public	$subject;
-		public	$subjectval;
-		public	$name;
-		public	$email;
-		public	$message;
-		public	$add;
-		public	$article;
-		public	$username;
-		public	$anonyme;
-		public	$title;
-		public	$titleval;
-		public	$com;
-		
-		public	$rate_articles = true;
-		public	$useCaptcha;
-
-		public function __construct($topics, $article, $subject, $message, $com, $messageFormat)
-		{
-			global $BAB_SESS_USER, $babDB;
-			$this->subject = bab_translate('comments-Title');
-			$this->name = bab_translate('Name');
-			$this->email = bab_translate('Email');
-			$this->message = bab_translate('comments-Comment');
-			$this->add = bab_translate('Add comment');
-			$this->title = bab_translate('Article');
-			$this->article = bab_toHtml($article);
-			$this->topics = bab_toHtml($topics);
-			$this->subjectval = bab_toHtml($subject);
-
-			$this->t_rate_this_article = bab_translate('Rate this article:');
-
-			$this->t_bad = bab_translate('Bad');
-			$this->t_rather_bad = bab_translate('Rather bad');
-			$this->t_average = bab_translate('Average');
-			$this->t_rather_good = bab_translate('Rather good');
-			$this->t_good = bab_translate('Good');
-			
-			$this->com = bab_toHtml($com);
-
-			$req = 'SELECT allow_article_rating FROM ' . BAB_TOPICS_TBL.' WHERE id=' . $babDB->quote($topics);
-			$res = $babDB->db_query($req);
-			$topic = $babDB->db_fetch_assoc($res);
-			$this->rate_articles = ($topic['allow_article_rating'] === 'Y');
-			
-			$req = 'SELECT title FROM ' . BAB_ARTICLES_TBL.' WHERE id=' . $babDB->quote($article);
-			$res = $babDB->db_query($req);
-			$arr = $babDB->db_fetch_assoc($res);
-			$this->titleval = bab_toHtml($arr['title']);
-			
-			include_once $GLOBALS['babInstallPath'].'utilit/editorincl.php';
-			
-			$editor = new bab_contentEditor('bab_article_comment');
-			$editor->setContent($message);
-			if (isset($messageFormat)) {
-				$editor->setFormat($messageFormat);
-			}
-			$editor->setParameters(array('height' => 200));
-			$this->editor = $editor->getEditor();
-
-			$arr = $babDB->db_fetch_array($babDB->db_query('SELECT idsacom FROM '.BAB_TOPICS_TBL.' WHERE id='.$babDB->quote($topics)));
-			if ($arr['idsacom'] != 0) {
-				$this->notcom = bab_translate('Note: for this topic, comments are moderated');
-			} else {
-				$this->notcom = '';
-			}
-
-			$this->useCaptcha = false;
-
-			// We use the captcha if it is available as a functionality.
-			if (!$GLOBALS['BAB_SESS_LOGGED']) {
-//				$this->rate_articles = false;
-				$captcha = bab_functionality::get('Captcha');
-				if (false !== $captcha) {
-					$this->useCaptcha = true;
-					$this->captchaCaption1 = bab_translate('Word Verification');
-					$this->captchaSecurityData = $captcha->getGetSecurityHtmlData();
-					$this->captchaCaption2 = bab_translate('Enter the letters in the image above');
-				}
-			}
-				
-		}
-	}
+	
 
 	if (!bab_isAccessValid(BAB_TOPICSCOM_GROUPS_TBL, $topics)) {
 		return;
@@ -257,7 +136,7 @@ function addComment($topics, $article, $subject, $message, $com = '', $messageFo
 	
 	global $babBodyPopup;
 	
-	$addCommentTemplate = new AddCommentTemplate($topics, $article, $subject, $message, $com, $messageFormat);
+	$addCommentTemplate = new bab_AddCommentTemplate($topics, $article, $subject, $message, $com, $messageFormat);
 	$babBodyPopup->babecho(bab_printTemplate($addCommentTemplate, 'comments.html', 'commentcreate'));
 }
 
@@ -273,7 +152,7 @@ function addComment($topics, $article, $subject, $message, $com = '', $messageFo
  * 
  * @return	bool	True on success, false otherwise.
  */
-function saveComment($topics, $article, $subject, $message, $com, $articleRating, $commentId, &$msgerror)
+function saveComment($topics, $article, $subject, $message, $com, $articleRating, $commentId, $userName, &$msgerror)
 {
 	global $babDB, $BAB_SESS_USER, $BAB_SESS_EMAIL, $BAB_SESS_USERID;
 
@@ -290,11 +169,6 @@ function saveComment($topics, $article, $subject, $message, $com, $articleRating
 		}
 	}
 
-	if (empty($subject)) {
-		$msgerror = bab_translate('comments - ERROR: You must provide a title');
-		return false;
-	}
-	
 	if (empty($message)) {
 		$msgerror = bab_translate('comments - ERROR: You must provide a comment');
 		return false;
@@ -304,7 +178,7 @@ function saveComment($topics, $article, $subject, $message, $com, $articleRating
 		$com = 0;
 	}
 
-	bab_saveArticleComment($topics, $article, $subject, $message, $com, $articleRating, $commentId);
+	bab_saveArticleComment($topics, $article, $subject, $message, $com, $articleRating, $commentId, 'text', $userName);
 
 	return true;
 }
@@ -317,47 +191,33 @@ $article = bab_rp('article', 0);
 
 
 $msgerror = '';
-$popupmessage = '';
 
 $action = bab_rp('action', null);
 
 if (!bab_requireAccess(BAB_TOPICSVIEW_GROUPS_TBL, $topics, '')) {
 	$idx = 'denied';
 } elseif (($action == 'save' || isset($_POST['addcomment'])) && bab_isAccessValid(BAB_TOPICSCOM_GROUPS_TBL, $topics)) {
-	include_once $GLOBALS['babInstallPath'] . 'utilit/editorincl.php';
-	$editor = new bab_contentEditor('bab_article_comment');
-	$message = $editor->getContent();
+	
+	$message = bab_pp('message');
 	$subject = bab_pp('subject');
 	$com = bab_pp('com');
 	$articleRating = bab_pp('article_rating', '0');
 	$commentId = bab_pp('comment_id', null);
 	
-	if (!saveComment($topics, $article, $subject, $message, $com, $articleRating, $commentId, $msgerror)) {
-		$idx = 'List';
-	} else {
-		$popupmessage = bab_translate('Update done');
-		$idx = 'unload';
+	if (!saveComment($topics, $article, $subject, $message, $com, $articleRating, $commentId, bab_pp('name'), $msgerror)) {
+		$babBody->addNextPageError($msgerror);
 	}
+	
+
+	$articleUrl = bab_sitemap::url('babArticle_'.$article, $GLOBALS['babUrlScript']."?tg=articles&idx=More&topics=".$topics."&article=".$article);
+	
+	$articlesUrl = new bab_url($articleUrl);
+	$articlesUrl->location();
 }
 
 switch ($idx)
 {
-	case 'denied':
-		$babBodyPopup = new babBodyPopup();
-		$babBodyPopup->msgerror = bab_translate('Access denied');
-		printBabBodyPopup();
-		exit;
-		break;
 
-	case 'unload':
-		include_once $GLOBALS['babInstallPath'] . 'utilit/uiutil.php';
-		$refreshurl = bab_rp('refreshurl');
-		popupUnload($popupmessage, $refreshurl, true);
-		exit;
-		break;
-
-	case 'delete':
-		break;
 
 	case 'edit':
 		$babBodyPopup = new babBodyPopup();

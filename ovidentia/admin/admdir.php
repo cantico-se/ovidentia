@@ -753,7 +753,7 @@ function modifyDb($id)
 
 		function temp($id)
 			{
-			$this->id = $id;
+			$this->id = bab_toHtml($id);
 			$this->name = bab_translate("Name");
 			$this->description = bab_translate("Description");
 			$this->field = bab_translate("Fields");
@@ -779,8 +779,8 @@ function modifyDb($id)
 			$this->ballowuserupdate = false;
 			$this->db = $GLOBALS['babDB'];
 			$arr = $this->db->db_fetch_array($this->db->db_query("select * from ".BAB_DB_DIRECTORIES_TBL." where id='".$this->db->db_escape_string($id)."'"));
-			$this->vname = $arr['name'];
-			$this->vdescription = $arr['description'];
+			$this->vname = bab_toHtml($arr['name']);
+			$this->vdescription = bab_toHtml($arr['description']);
 			if( $arr['id_group'] != 0 )
 				{
 				$iddir = 0;
@@ -891,12 +891,12 @@ function modifyDb($id)
 					}
 
 				$rr = $this->db->db_fetch_array($this->db->db_query("select * from ".BAB_DBDIR_FIELDS_TBL." where id='".$this->db->db_escape_string($arr['id_field'])."'"));
-				$this->fieldn = translateDirectoryField($rr['description']);
-				$this->fieldv = $rr['name'];
+				$this->fieldn = bab_toHtml(translateDirectoryField($rr['description']));
+				$this->fieldv = bab_toHtml($rr['name']);
 				if( $arr['default_value'] != 0 )
 					{
 					$rr = $this->db->db_fetch_array($this->db->db_query("select field_value from ".BAB_DBDIR_FIELDSVALUES_TBL." where id='".$this->db->db_escape_string($arr['default_value'])."'"));
-					$this->defvalue = $rr['field_value'];
+					$this->defvalue = bab_toHtml($rr['field_value']);
 					}
 				else
 					{
@@ -953,11 +953,11 @@ function modifyDb($id)
 				$this->addvalurl = $GLOBALS['babUrlScript'].'?tg=admdir&idx=addval&id='.$this->id.'&fxid='.$arr['id'];
 
 				$rr = $this->db->db_fetch_array($this->db->db_query("select * from ".BAB_DBDIR_FIELDS_DIRECTORY_TBL." where id='".$this->db->db_escape_string(($arr['id_field'] - BAB_DBDIR_MAX_COMMON_FIELDS))."'"));
-				$this->fieldn = translateDirectoryField($rr['name']);
+				$this->fieldn = bab_toHtml(translateDirectoryField($rr['name']));
 				if( $arr['default_value'] != 0 )
 					{
 					$rr = $this->db->db_fetch_array($this->db->db_query("select field_value from ".BAB_DBDIR_FIELDSVALUES_TBL." where id='".$this->db->db_escape_string($arr['default_value'])."'"));
-					$this->defvalue = $rr['field_value'];
+					$this->defvalue = bab_toHtml($rr['field_value']);
 					}
 				else
 					{

@@ -1219,11 +1219,26 @@ function bab_isUserGroupManager($grpid="")
 */
 function bab_getUserName($iIdUser, $bComposeUserName = true)
 {
+    
+    
     include_once dirname(__FILE__).'/userinfosincl.php';
 
     if (true === $bComposeUserName) {
+        
+        if (!$iIdUser) {
+            return '';
+        }
+        
         return bab_userInfos::composeName($iIdUser);
     } else {
+        
+        if (!$iIdUser) {
+            return array(
+                'firstname' => '',
+                'lastname' => ''
+            );
+        }
+        
         return bab_userInfos::arrName($iIdUser);
     }
 }
@@ -1972,18 +1987,22 @@ function bab_printTemplate($class, $file, $section = '')
 
     $tpl = new bab_Template();
     $html = $tpl->printTemplate($class, $skin->getThemePath().'templates/'. $file, $section);
-    
+
     if (!$html) {
         $html = $tpl->printTemplate($class, $babInstallPath.'skins/ovidentia/templates/'.$file, $section);
     }
-    
+    //VENDOR
+    //if (!$html) {
+    //    $html = $tpl->printTemplate($class, $file, $section);
+    //}
+
     return $html;
 }
 
 /**
  * merge a template with a class object instance
  * if the file extension is html, process template only, if the file extension is ovml, parse the result as ovml
- * 
+ *
  *
  * @param	object	$class
  * @param	string	$templateName	file path in a template directory (in the core or in the skin) without extension
@@ -1994,11 +2013,11 @@ function bab_printTemplate($class, $file, $section = '')
 function bab_printTemplateAndOvml($class, $templateName, $section = '')
 {
     $parseOvml = false;
-    
+
     if ($ovml = bab_printTemplate($class, $templateName.'.ovml', $section)) {
         return bab_printOvml($ovml, get_object_vars($class));
     }
-    
+
     return bab_printTemplate($class, $templateName.'.html', $section);
 }
 
@@ -2141,7 +2160,13 @@ function bab_getUserDirFields($id = false)
         return array();
     }
 
-
+/**
+ * Get all information of one specified directory
+ *
+ * @param	int		$directory
+ * @return	array
+ *
+ */
 function bab_getDirInfo($directory) {
     global $babDB;
     $query = "select * from bab_db_directories where id=".$babDB->quote($directory);
@@ -3130,8 +3155,8 @@ function bab_printOvmlTemplate($file, $args=array())
 
         return '<!-- ERROR filename: '.bab_toHtml($file).' -->';
     }
-    
-    
+
+
     if ('addons/' === mb_substr($file, 0, 7)) {
         list(, $addonName) = explode('/', $file);
         $addonRealivePath = mb_substr($file, 8+mb_strlen($addonName));
@@ -3139,7 +3164,7 @@ function bab_printOvmlTemplate($file, $args=array())
             $filepath = "vendor/ovidentia/$addonName/skins/ovidentia/ovml/$addonRealivePath";
         }
     }
-    
+
 
     if (!file_exists($filepath)) {
         $filepath = $babSkinPath.'ovml/'.$file; /* Ex. : ovidentiainstall/skins/ovidentia/ovml/test.ovml */
@@ -3323,145 +3348,6 @@ function bab_getInstance($classname) {
 
 
 /**
- * Functionality interface
- * Functionalities are inherited from this object, to instanciate a functionality use the static method
- * @see bab_functionality::get($path)
- * @since 6.6.90
- */
-class bab_functionality {
-
-
-    /**
-     * @deprecated Do not remove old constructor while there are functionalities in addons with direct call to bab_functionality::bab_functionality()
-     */
-    public function bab_functionality() { }
-
-
-    public static function getRootPath() {
-        require_once dirname(__FILE__).'/defines.php';
-        return realpath('.').'/'.BAB_FUNCTIONALITY_ROOT_DIRNAME;
-    }
-
-
-    /**
-     * Include php file with the functionality class
-     * @see bab_functionality::get()
-     * @param	string	$path		path to functionality
-     * @return string | false		the object class name or false if the file already included or false if the include failed
-     */
-    public static function includefile($path)
-    {
-        $include_result = false;
-        $pathname = self::getRootPath().'/'.$path.'/'.BAB_FUNCTIONALITY_LINK_FILENAME;
-        if (file_exists($pathname))  {
-            $include_result = include $pathname;
-        }
-
-        if (false === $include_result) {
-            //bab_debug(sprintf('The functionality %s is not available', $path), DBG_ERROR, __CLASS__);
-        }
-
-        return $include_result;
-    }
-
-
-    /**
-     * Include original php file with the functionality class
-     *
-     * @since 7.8.90
-     *
-     * @param string $path 			path to functionality
-     * @return string | false		the object class name or false if the file already included or false if the include failed
-     */
-    public static function includeOriginal($path)
-    {
-        return include self::getRootPath().'/'.$path.'/'.BAB_FUNCTIONALITY_LINK_ORIGINAL_FILENAME;
-    }
-
-
-    /**
-     * Returns the specified functionality object without the default inherithed object.
-     *
-     * If $singleton is set to true, the functionality object will be instanciated as
-     * a singleton, i.e. there will be at most one instance of the functionality
-     * at a given time.
-     *
-     * @since 7.8.90
-     *
-     * @param string 	$path
-     * @param bool 		$singleton
-     *
-     * @return bab_functionality
-     */
-    public static function getOriginal($path, $singleton = true)
-    {
-        $classname = bab_functionality::includeOriginal($path);
-        if (!$classname) {
-            return false;
-        }
-        if ($singleton) {
-            return bab_getInstance($classname);
-        }
-        return new $classname();
-    }
-
-
-
-    /**
-     * Returns the specified functionality object.
-     *
-     * If $singleton is set to true, the functionality object will be instanciated as
-     * a singleton, i.e. there will be at most one instance of the functionality
-     * at a given time.
-     *
-     * @param	string	$path		The functionality path.
-     * @param	bool	$singleton	Whether the functionality should be instanciated as singleton (default true).
-     * @return	bab_functionality	The functionality object or false on error.
-     */
-    public static function get($path, $singleton = true) {
-        $classname = bab_functionality::includefile($path);
-        if (!$classname) {
-            return false;
-        }
-        if ($singleton) {
-            return bab_getInstance($classname);
-        }
-        return new $classname();
-    }
-
-    /**
-     * get functionalities compatible with the interface
-     * @param	string	$path
-     * @return array
-     */
-    public static function getFunctionalities($path) {
-        require_once $GLOBALS['babInstallPath'].'utilit/functionalityincl.php';
-        $obj = new bab_functionalities();
-        return $obj->getChildren($path);
-    }
-
-    /**
-     * Default method to create in inherited functionalities
-     * @access protected
-     * @return string
-     */
-    public function getDescription() {
-        return '';
-    }
-
-
-    /**
-     * Get path to functionality at this node which is the current path or a reference to a childnode
-     * @return string
-     */
-    public function getPath() {
-        require_once $GLOBALS['babInstallPath'].'utilit/functionalityincl.php';
-        return bab_Functionalities::getPath(get_class($this));
-    }
-}
-
-
-/**
  * Get an object with informations for one addon
  * if the addon does not exist, the function return false
  *
@@ -3473,6 +3359,8 @@ function bab_getAddonInfosInstance($addonname) {
 
     require_once $GLOBALS['babInstallPath'].'utilit/addonsincl.php';
     static $instances = array();
+
+    $addonname = mb_strtolower($addonname);
 
     if (false === array_key_exists($addonname, $instances)) {
         $obj = new bab_addonInfos();
@@ -3792,11 +3680,11 @@ function bab_getLanguage()
 {
     require_once dirname(__FILE__).'/session.class.php';
     $session = bab_getInstance('bab_Session');
-    
-    if (isset($session->babLanguage)) {
+
+    if (isset($session->babLanguage) && '' !== $session->babLanguage) {
         return $session->babLanguage;
     }
-    
+
     require_once dirname(__FILE__).'/settings.class.php';
 
 
@@ -3827,13 +3715,13 @@ function bab_getLanguage()
 /**
  * set persistant language for the current session
  */
-function bab_setLanguage($code) 
+function bab_setLanguage($code)
 {
     require_once dirname(__FILE__).'/session.class.php';
-    
+
     // deprecated: bab_getLanguage() should be used instead of the global variable
     $GLOBALS['babLanguage'] = $code;
-    
+
     $session = bab_getInstance('bab_Session');
     $session->babLanguage = $code;
 }

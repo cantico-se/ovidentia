@@ -426,8 +426,8 @@ function listArticles($topics)
 
 				if( $totalc > 0 || $this->bcomment)
 					{
-					$this->commentsurl = bab_toHtml($GLOBALS['babUrlScript']."?tg=comments&idx=List&topics=".$this->topics."&article=".$this->arr['id']);
-					$this->editcommentsurl = bab_toHtml($GLOBALS['babUrlScript']."?tg=comments&idx=List&topics=".$this->topics."&article=".$this->arr['id'] . '#bab_edit_comment');
+					$this->commentsurl = bab_toHtml(bab_sitemap::url('babArticle_'.$this->arr['id'], $GLOBALS['babUrlScript']."?tg=articles&idx=More&topics=".$this->topics."&article=".$this->arr['id']).'#bab_comments');
+					$this->editcommentsurl = bab_toHtml(bab_sitemap::url('babArticle_'.$this->arr['id'], $GLOBALS['babUrlScript']."?tg=articles&idx=More&topics=".$this->topics."&article=".$this->arr['id']) . '#bab_edit_comment');
 					if( $totalc > 0 )
 						{
 						$this->commentstxt = bab_translate("Comments")."&nbsp;(".$totalc.")";
@@ -618,10 +618,14 @@ function listArchiveArticles($topics, $pos)
 				$res = $babDB->db_query($req);
 				$ar = $babDB->db_fetch_array($res);
 				$total = $ar['total'];
+				
+				$this->moreurl = bab_toHtml(bab_sitemap::url('babArticle_'.$this->arr['id'], $GLOBALS['babUrlScript']."?tg=articles&idx=More&topics=".$this->topics."&article=".$this->arr['id']));
+				
+				
 				if( $total > 0)
 					{
-					$this->commentsurl = bab_toHtml($GLOBALS['babUrlScript']."?tg=comments&idx=List&topics=".$this->topics."&article=".$this->arr['id']);
-					$this->editcommentsurl = bab_toHtml($GLOBALS['babUrlScript']."?tg=comments&idx=List&topics=".$this->topics."&article=".$this->arr['id'] . '#bab_edit_comment');
+					$this->commentsurl = $this->moreurl.'#bab_comments';
+					$this->editcommentsurl = $this->moreurl. '#bab_edit_comment';
 					$this->commentstxt = bab_translate("Comments")."&nbsp;(".$total.")";
 					}
 				else
@@ -631,8 +635,7 @@ function listArchiveArticles($topics, $pos)
 					$this->commentstxt = '';
 					}
 
-				$this->moreurl = bab_toHtml(bab_sitemap::url('babArticle_'.$this->arr['id'], $GLOBALS['babUrlScript']."?tg=articles&idx=More&topics=".$this->topics."&article=".$this->arr['id']));
-
+				
 				$this->resf = $babDB->db_query("select * from ".BAB_ART_FILES_TBL." where id_article='".$babDB->db_escape_string($this->arr['id'])."' order by ordering asc");
 				$this->countf = $babDB->db_num_rows($this->resf);
 
@@ -748,7 +751,8 @@ function readMore($topics, $article)
 
 			$this->rescom = $babDB->db_query("select * from ".BAB_COMMENTS_TBL." where id_article='".$babDB->db_escape_string($article)."' and confirmed='Y' order by date desc");
 			$this->countcom = $babDB->db_num_rows($this->rescom);
-
+			$this->cancomment_or_countcom = ($this->countcom > 0 || bab_isAccessValid(BAB_TOPICSCOM_GROUPS_TBL, $this->arr['id_topic']));
+			
 			if( $this->count > 0 && $this->arr['archive'] == 'N' && (bab_isAccessValid(BAB_TOPICSMOD_GROUPS_TBL, $this->topics) || ( $arrtop['allow_update'] != '0' && $this->arr['id_author'] == $GLOBALS['BAB_SESS_USERID']) || ($arrtop['allow_manupdate'] != '0' && bab_isAccessValid(BAB_TOPICSMAN_GROUPS_TBL, $this->topics))))
 				{
 				$this->bmodify = true;
@@ -777,8 +781,10 @@ function readMore($topics, $article)
 
 			if( $this->arr['archive'] == 'N' && bab_isAccessValid(BAB_TOPICSCOM_GROUPS_TBL, $this->topics))
 				{
-				$this->commentsurl = bab_toHtml($GLOBALS['babUrlScript']."?tg=comments&idx=List&topics=".$this->topics."&article=".$this->arr['id']);
-				$this->editcommentsurl = bab_toHtml($GLOBALS['babUrlScript']."?tg=comments&idx=List&topics=".$this->topics."&article=".$this->arr['id'] . '#bab_edit_comment');
+				$moreurl = bab_sitemap::url('babArticle_'.$this->arr['id'], $GLOBALS['babUrlScript']."?tg=articles&idx=More&topics=".$this->topics."&article=".$this->arr['id']);
+				    
+				$this->commentsurl = bab_toHtml($moreurl . '#bab_comment');
+				$this->editcommentsurl = bab_toHtml($moreurl . '#bab_edit_comment');
 				$this->commentstxt = bab_translate("Add Comment");
 				}
 			else
@@ -912,6 +918,8 @@ function readMore($topics, $article)
 				}
 				
 				$this->setMeta();
+				
+				$this->loadCommentEditor();
 
 				$i++;
 				return true;
@@ -951,7 +959,27 @@ function readMore($topics, $article)
 				return false;
 				}
 			}
-		function getnextcom()
+			
+		protected function loadCommentEditor()
+		{
+		    $this->addcommenteditor = '';
+		    
+		    if (!bab_isAccessValid(BAB_TOPICSCOM_GROUPS_TBL, $this->topics)) {
+		        return;
+		    }
+		    
+		    require_once dirname(__FILE__).'/utilit/commentincl.php';
+		    
+		    $addCommentTemplate = new bab_AddCommentTemplate(
+		            $this->topics, 
+		            $this->babtpl_articleid, bab_pp('subject'), bab_pp('message'), null, 'text');
+		    $this->addcommenteditor = bab_printTemplate($addCommentTemplate, 'comments.html', 'commentcreate');
+            
+		}
+		
+		
+		
+		public function getnextcom()
 			{
 			global $babDB;
 			static $i = 0;
@@ -1184,6 +1212,7 @@ function viewArticle($article)
 
 				$this->rescom = $babDB->db_query("select * from ".BAB_COMMENTS_TBL." where id_article='".$babDB->db_escape_string($article)."' and confirmed='Y' order by date desc");
 				$this->countcom = $babDB->db_num_rows($this->rescom);
+				$this->cancomment_or_countcom = ($this->countcom > 0 || bab_isAccessValid(BAB_TOPICSCOM_GROUPS_TBL, $this->arr['id_topic']));
 				$GLOBALS['babWebStat']->addArticle($article);
 				}
 			else
@@ -1212,7 +1241,7 @@ function viewArticle($article)
 				}
 			}
 
-		function getnextcom()
+		public function getnextcom()
 			{
 			global $babDB;
 			static $i = 0;

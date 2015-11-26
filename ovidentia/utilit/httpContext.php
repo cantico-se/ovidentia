@@ -21,7 +21,6 @@
  * @copyright Copyright (c) 2008 by CANTICO ({@link http://www.cantico.fr})
  */
 
-include_once dirname(__FILE__).'/addonapi.php';
 include_once dirname(__FILE__).'/session.class.php';
 
 

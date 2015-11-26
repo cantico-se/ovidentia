@@ -83,8 +83,8 @@ function listOrgCharts()
 					$displayMode = 'disp1';
 				}
 				$this->viewurl = $GLOBALS['babUrlScript']."?tg=chart&ocid=".$arr['id']."&disp=".$displayMode;
-				$this->urlname = $arr['name'];
-				$this->descval = $arr['description'];
+				$this->urlname = bab_toHtml($arr['name']);
+				$this->descval = bab_toHtml($arr['description']);
 				$this->lock = $arr['edit'];
 				if( bab_isAccessValid(BAB_OCUPDATE_GROUPS_TBL, $arr['id']))
 					{
