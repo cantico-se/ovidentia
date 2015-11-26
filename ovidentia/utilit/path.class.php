@@ -443,6 +443,18 @@ class bab_Path implements SeekableIterator, Countable {
 		return $path;
 	}
 
+
+    /**
+     * Return the path as a string.
+     *
+     * @return string
+     */
+    public function __toString()
+    {
+        return $this->toString();
+    }
+
+
 	/**
 	 * Test if file is a directory
 	 *
