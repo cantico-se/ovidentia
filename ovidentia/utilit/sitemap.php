@@ -39,7 +39,7 @@ class bab_siteMapOrphanRootNode extends bab_OrphanRootNode {
      * all possibles parent nodes are in values, each parent node will be an array like:
      *   0 => The parent node ID
      *   1 => The rewrite name of the node index key
-     *   2 => functionality name inherited from Func_SitemapDynamicNode, can be null 
+     *   2 => functionality name inherited from Func_SitemapDynamicNode, can be null
      *        the functionality can be used to get dynamic childnodes
      *   3 => boolean, if the node in index key is ignored in rewrite path or not
      *
@@ -68,32 +68,32 @@ class bab_siteMapOrphanRootNode extends bab_OrphanRootNode {
      */
     public $enableRewriting = false;
 
-    
-    
-    
+
+
+
     /**
      * Populate an index with all the nodes under the rewrite root nodes
      * the nodes in this index will be prioritary when decoding the rewrite path.
-     * 
+     *
      * the index should contain the nodes from sitemap_editor and not the referenced nodes from the core sitemap
-     * 
-     * 
+     *
+     *
      */
     protected function addNodeToRewritePriorityIndex(bab_Node $newNode, $id = null)
     {
         $sitemapItem = $newNode->getData();
         /* @var $sitemapItem bab_sitemapItem */
         $rewriteName = $sitemapItem->getRewriteName();
-        
+
         if (isset($this->rewriteIndex_underRoot[$id]) || $rewriteName === bab_siteMap::REWRITING_ROOT_NODE)
         {
             $this->rewriteIndex_underRoot[$newNode->getId()] = '';
-        
+
             if ($newNode->hasChildNodes())
             {
                 // if the node already have childnodes, the childnodes are also under base
                 // in this case, this subtree has been added before the rewriting root node
-        
+
                 $I = new bab_NodeIterator($newNode);
                 foreach($I as $childNode)
                 {
@@ -108,9 +108,9 @@ class bab_siteMapOrphanRootNode extends bab_OrphanRootNode {
             }
         }
     }
-    
-    
-    
+
+
+
     /**
      * Populate rewriteIndex
      * @param bab_Node $newNode
@@ -118,12 +118,12 @@ class bab_siteMapOrphanRootNode extends bab_OrphanRootNode {
      */
     protected function addNodeToRewriteIndex(bab_Node $newNode, $id = null)
     {
-        
-        
+
+
         $sitemapItem = $newNode->getData();
         /* @var $sitemapItem bab_sitemapItem */
         $rewriteName = $sitemapItem->getRewriteName();
-        
+
         if (!isset($this->rewriteIndex_id[$newNode->getId()]))
         {
             $this->rewriteIndex_id[$newNode->getId()] = array(
@@ -133,7 +133,7 @@ class bab_siteMapOrphanRootNode extends bab_OrphanRootNode {
                 (bool) $sitemapItem->breadCrumbIgnore
             );
         }
-        
+
         if (isset($this->rewriteIndex_rn[$rewriteName])) {
             if (isset($this->rewriteIndex_underRoot[$newNode->getId()]))
             {
@@ -146,7 +146,7 @@ class bab_siteMapOrphanRootNode extends bab_OrphanRootNode {
             $this->rewriteIndex_rn[$rewriteName] = array($newNode->getId());
         }
     }
-    
+
 
     /**
      * Tries to append the node $newNode as child of the node having the id $id.
@@ -159,7 +159,7 @@ class bab_siteMapOrphanRootNode extends bab_OrphanRootNode {
      * @return boolean
      */
     public function appendChild(bab_Node $newNode, $id = null) {
-        
+
         $this->addNodeToRewritePriorityIndex($newNode, $id);
         $this->addNodeToRewriteIndex($newNode, $id);
 
@@ -180,8 +180,8 @@ class bab_siteMapOrphanRootNode extends bab_OrphanRootNode {
         $sitemapItem->node = $newNode;
         return $newNode;
     }
-    
-    
+
+
     /**
      * @param string $id_parent
      * @return string
@@ -189,20 +189,20 @@ class bab_siteMapOrphanRootNode extends bab_OrphanRootNode {
     private function getNonIgnoredParent($id_parent)
     {
         $parentIndex = $this->rewriteIndex_id[$id_parent];
-        if ($parentIndex[3]) { // ignore
+        if (isset($parentIndex[3]) && $parentIndex[3]) { // ignore
             return $this->getNonIgnoredParent($parentIndex[0]);
         }
-        
+
         return $id_parent;
     }
-    
-    
-    
+
+
+
     /**
      * Get rewrite index with non ignored parent
-     * 
+     *
      * @param string $nodeId
-     * 
+     *
      * @return array
      */
     private function getRewriteIndex($nodeId)
@@ -210,14 +210,14 @@ class bab_siteMapOrphanRootNode extends bab_OrphanRootNode {
         if (!isset($this->rewriteIndex_id[$nodeId])) {
             return null;
         }
-        
+
         $nodeIndex = $this->rewriteIndex_id[$nodeId];
         $nodeIndex[0] = $this->getNonIgnoredParent($nodeIndex[0]);
-        
-        
+
+
         return $nodeIndex;
     }
-    
+
     /**
      * @return bool
      */
@@ -225,8 +225,8 @@ class bab_siteMapOrphanRootNode extends bab_OrphanRootNode {
     {
         return (null !== $this->getRewriteIndex($nodeId));
     }
-    
-    
+
+
 
 
     /**
@@ -255,12 +255,12 @@ class bab_siteMapOrphanRootNode extends bab_OrphanRootNode {
         }
 
         $dynamic_solutions = array();
-        
+
 
         foreach($this->rewriteIndex_rn[$first] as $nodeId) {
-            
+
             if ($this->isRewriteIndexSet($nodeId)) {
-                
+
                 if (0 === count($arr)) {
                     return $nodeId;
                 }
@@ -378,9 +378,9 @@ class bab_siteMapOrphanRootNode extends bab_OrphanRootNode {
 
 
 
-    
-    
-    
+
+
+
     /**
      *
      * @param array $path
@@ -391,7 +391,7 @@ class bab_siteMapOrphanRootNode extends bab_OrphanRootNode {
     {
         $searched_path = $path;
         $first = array_shift($path);
-        
+
         if (!isset($this->rewriteIndex_rn[$first]))
         {
             $parentIndex = $this->getRewriteIndex($id_parent);
@@ -416,7 +416,7 @@ class bab_siteMapOrphanRootNode extends bab_OrphanRootNode {
         foreach($this->rewriteIndex_rn[$first] as $nodeId) {
 
             $nodeIndex = $this->getRewriteIndex($nodeId);
-            
+
             if (!isset($nodeIndex))
             {
                 bab_debug("Process node for $first, found $nodeId node ignored because there is no parent in index");
@@ -439,7 +439,7 @@ class bab_siteMapOrphanRootNode extends bab_OrphanRootNode {
             {
                 return $next;
             }
-            
+
         }
 
         bab_debug("The rewrite name $first has no id_function in index, path : ".implode('/', $path)." , id_parent : $id_parent, will try with dynamic nodes", DBG_WARNING);
@@ -738,8 +738,8 @@ class bab_siteMapItem {
      * @var bool
      */
     public $haschildnodes = null;
-    
-    
+
+
     /**
      * If this property contain a language code
      * the site language is set using bab_setLanguage
@@ -989,7 +989,7 @@ class bab_siteMapItem {
             if (!$sitemapItem || $sitemapItem->getRewriteName() === bab_siteMap::REWRITING_ROOT_NODE || $sitemapItem->id_function == 'DGAll') {
                 break;
             }
-            
+
             if (!$sitemapItem->breadCrumbIgnore) {
                 array_unshift($arr, $sitemapItem->getRewriteName());
             }
@@ -2164,28 +2164,28 @@ class bab_siteMap {
         return $breadCrumbs;
     }
 
-    
+
     /**
      * Set site language if one of the node in path
-     * 
+     *
      */
     private static function processSetLanguage(bab_Node $positionNode)
     {
         do {
             $sitemapItem = $positionNode->getData();
             /*@var $sitemapItem bab_siteMapItem */
-            
+
             if (bab_siteMap::REWRITING_ROOT_NODE === $positionNode->getId()) {
                 return;
             }
-            
+
             if (isset($sitemapItem->setlanguage) && '' !== $sitemapItem->setlanguage) {
                 bab_setLanguage($sitemapItem->setlanguage);
             }
-            
+
         } while (isset($positionNode) && $positionNode = $positionNode->parentNode());
     }
-    
+
 
 
     /**
@@ -2214,8 +2214,8 @@ class bab_siteMap {
         {
             bab_siteMap::setPosition($nodeId);
         }
-        
-        
+
+
 
 
         $node = $root->getNodeById($nodeId);
@@ -2223,7 +2223,7 @@ class bab_siteMap {
         {
             return false;
         }
-        
+
         self::processSetLanguage($node);
 
         $sitemapItem = $node->getData();
