@@ -535,7 +535,7 @@ class Func_Ovml_Function_SitemapPosition extends Func_Ovml_Function
 /**
  * Return the node id of the current page
  *
- * <OFSitemapMenu>
+ * <OFCurrentNode>
  */
 class Func_Ovml_Function_CurrentNode extends Func_Ovml_Function
 {
