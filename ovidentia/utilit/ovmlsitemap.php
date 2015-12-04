@@ -108,7 +108,7 @@ abstract class Ovml_Container_Sitemap extends Func_Ovml_Container
         $baseNodeId = str_replace(' ', '', $baseNodeId);
         if (empty($baseNodeId))
         {
-            $baseNodeId = bab_Sitemap::getVisibleRootNodeByUid($this->sitemap_name);
+            $baseNodeId = bab_SiteMap::getVisibleRootNodeByUid($this->sitemap_name);
         }
 
 
@@ -306,7 +306,7 @@ class Func_Ovml_Container_SitemapPath extends Ovml_Container_Sitemap
         if (isset($this->sitemap)) {
 
             if ($nodeId === false || empty($nodeId)) {
-                $nodeId = bab_Sitemap::getPosition();
+                $nodeId = bab_SiteMap::getPosition();
 
                 if ($baseNodeId && $nodeId) {
                     // if base node (parameter 'basenode') has been specified,
@@ -547,7 +547,7 @@ class Func_Ovml_Function_CurrentNode extends Func_Ovml_Function
     {
         require_once dirname(__FILE__).'/sitemap.php';
 
-        return bab_Sitemap::getPosition();
+        return bab_SiteMap::getPosition();
     }
 }
 
@@ -614,11 +614,8 @@ class Func_Ovml_Function_SitemapMenu extends Func_Ovml_Function {
 
     private function getHtml(bab_Node $node, $mainmenuclass = null, $depth = 1) {
 
-        global $babBody;
         $return = '';
-        $classnames = array();
 
-        $id = $node->getId();
         $siteMapItem = $node->getData();
         /* @var $siteMapItem bab_siteMapItem */
 
@@ -865,7 +862,7 @@ class Func_Ovml_Function_SitemapUrl extends Func_Ovml_Function
             $sitemap_uid = $babBody->babsite['sitemap'];
         }
 
-        $rootNode = bab_sitemap::getByUid($sitemap_uid);
+        $rootNode = bab_siteMap::getByUid($sitemap_uid);
 
         if (isset($args['sitemap']))
         {
@@ -923,7 +920,7 @@ class Func_Ovml_Function_SitemapCustomNodeId extends Func_Ovml_Function
         }
 
 
-        $coreRootNode = bab_sitemap::get(); // core sitemap
+        $coreRootNode = bab_siteMap::get(); // core sitemap
         $node = $coreRootNode->getNodeById($nodeid);
 
         if (null === $node)
@@ -935,7 +932,7 @@ class Func_Ovml_Function_SitemapCustomNodeId extends Func_Ovml_Function
 
         if (null === $basenode)
         {
-            $basenode = bab_sitemap::getSitemapRootNode();
+            $basenode = bab_siteMap::getSitemapRootNode();
         }
 
         require_once dirname(__FILE__).'/settings.class.php';
@@ -949,7 +946,7 @@ class Func_Ovml_Function_SitemapCustomNodeId extends Func_Ovml_Function
             return $this->output($nodeid);
         }
 
-        $customRootNode = bab_sitemap::getByUid($site['sitemap']);
+        $customRootNode = bab_siteMap::getByUid($site['sitemap']);
         $customNode = $customRootNode->getNodeByTargetId($basenode, $nodeid);
 
         if (null === $customNode)
