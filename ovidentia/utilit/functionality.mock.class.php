@@ -33,7 +33,7 @@ abstract class bab_functionalityMock
             case 'PwdComplexity':
             case 'PwdComplexity/DefaultPortal':
                 require_once $GLOBALS['babInstallPath'].'utilit/pwdcomplexity.class.php';
-                return 'PwdComplexity_DefaultPortal';
+                return 'Func_PwdComplexity_DefaultPortal';
                 
         }
         
