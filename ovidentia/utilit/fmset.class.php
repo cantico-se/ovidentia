@@ -297,7 +297,7 @@ class BAB_FmFolderSet extends BAB_BaseSet
         );
     }
 
-    function remove($oCriteria, $bDbRecordOnly)
+    function remove($oCriteria, $bDbRecordOnly = true)
     {
         $this->select($oCriteria);
 
@@ -1170,7 +1170,7 @@ class BAB_FolderFileVersionSet extends BAB_BaseSet
         );
     }
 
-    function remove($oCriteria, $sPathName, $sFileName)
+    function remove($oCriteria, $sPathName = '', $sFileName = '')
     {
         $this->select($oCriteria);
         while(null !== ($oFolderFileVersion = $this->next()))
