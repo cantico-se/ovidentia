@@ -576,7 +576,7 @@ abstract class bab_Controller
 		        header('Content-type: application/json');
 		        die(bab_json_encode(array(
 		            'exception' => get_class($e),
-		            'message' => $e->getMessage()
+		            'message' => bab_convertStringFromDatabase($e->getMessage(), 'UTF-8')
 		        )));
 		    }
 
