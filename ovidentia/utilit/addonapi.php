@@ -648,7 +648,7 @@ class bab_charset
     public static function setDbCharset($charset)
     {
         self::$sCharset = $charset;
-        self::$sIsoCharset = getIsoCharsetFromDataBaseCharset($charset);
+        self::$sIsoCharset = self::getIsoCharsetFromDataBaseCharset($charset);
     }
 }
 
