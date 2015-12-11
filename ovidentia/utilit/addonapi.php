@@ -641,6 +641,15 @@ class bab_charset
                 return '';
         }
     }
+    
+    /**
+     * @param string $charset
+     */
+    public static function setDbCharset($charset)
+    {
+        self::$sCharset = $charset
+        self::$sIsoCharset = getIsoCharsetFromDataBaseCharset($charset);
+    }
 }
 
 
