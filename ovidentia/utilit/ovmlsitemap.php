@@ -565,22 +565,26 @@ class Func_Ovml_Function_CurrentNode extends Func_Ovml_Function
 /**
  * Return the sitemap menu tree in a html UL LI
  *
- * <OFSitemapMenu [sitemap="sitemapName"] [basenode="parentNode"] [selectednode=""] [keeplastknown="0|1"] [maxdepth="depth"] [outerul="1"] [admindelegation="0"]>
+ * <OFSitemapMenu [sitemap="sitemapName"] [basenode="parentNode"] [selectednode=""] [keeplastknown="0|1"] [maxdepth="depth"] [ignorelastlevel="0|1"] [mindepth="depth"] [outerul="1"] [admindelegation="0"]>
  *
- * - The sitemap attribute is optional.
- * 		The default value is the sitemap selected in Administration > Sites > Site configuration.
- * - The keeplastknown attribute is optional, if set to "1", the last accessed sitemap node is kept selected if accessing a page not in the sitemap.
- * 		The default value is '1'.
- * - The basenode attribute is optional, it will be the starting node used for the <ul> tree.
- * 		The default value is set by API (ex: Custom for sitemap from the sitemap_editor).
- * - The selectednode attribute is optional, will add class 'selected' to the corresponding li, and 'active' to itself and all its <li> ancestors.
- * 		By default it is the node corresponding to the current page (or the last known page displayed if keeplastknown is active).
- * - The maxdepth attribute is optional, limits the number of levels of nested <ul>.
- * 		No maximum depth by default.
- * - The outerul attribute is optional, if set to "1" add a UL htmltag
- * 		The default value is '1'.
- * - The admindelegation attribute is optional, if set to "1" the display of ovidentia administration node will only display if the user can manage this property
- * 		The default value is '0'.
+ * - The "sitemap" attribute is optional.
+ *      The default value is the sitemap selected in Administration > Sites > Site configuration.
+ * - The "keeplastknown" attribute is optional, if set to "1", the last accessed sitemap node is kept selected if accessing a page not in the sitemap.
+ *      The default value is '1'.
+ * - The "basenode" attribute is optional, it will be the starting node used for the <ul> tree.
+ *      The default value is set by API (ex: Custom for sitemap from the sitemap_editor).
+ * - The "selectednode" attribute is optional, will add class 'selected' to the corresponding li, and 'active' to itself and all its <li> ancestors.
+ *      By default it is the node corresponding to the current page (or the last known page displayed if keeplastknown is active).
+ * - The "maxdepth" attribute is optional, limits the number of levels of nested <ul>.
+ *      No maximum depth by default.
+ * - The "ignorelastlevel" attribute is optional, if set to "1", nodes without children will not appear in the menu.
+ *      The default value is '0'.
+ * - The "mindepth" attribute is optional, overrides the ignorelastlevel for node below or at this level.
+ *      The default value is '0' (i.e. no min depth).
+ * - The "outerul" attribute is optional, if set to "1" add a UL htmltag
+ *      The default value is '1'.
+ * - The "admindelegation" attribute is optional, if set to "1" the display of ovidentia administration node will only display if the user can manage this property
+ *      The default value is '0'.
  *
  *
  * Example:
@@ -616,19 +620,31 @@ class Func_Ovml_Function_SitemapMenu extends Func_Ovml_Function {
 
     protected	$maxDepth = 100;
 
-    private function getHtml(bab_Node $node, $mainmenuclass = null, $depth = 1) {
+    protected	$minDepth = 0;
+
+    protected	$ignoreLastLevel = false;
+
+
+    private function getHtml(bab_Node $node, $mainmenuclass = null, $depth = 1)
+    {
+        $siteMapItem = $node->getData();
+
+        $ignoreNode = $siteMapItem->menuIgnore
+            || ($this->ignoreLastLevel && $depth > $this->minDepth && !$node->hasChildNodes());
+
+        if ($ignoreNode) {
+            return '';
+        }
 
         $return = '';
 
-        $siteMapItem = $node->getData();
         /* @var $siteMapItem bab_siteMapItem */
 
         if($siteMapItem->target){
             $truncateId = $siteMapItem->target->id_function;
-            if($this->admindelegation
+            if ($this->admindelegation
                 && !isset($this->delegAdmin[bab_getCurrentAdmGroup()][$truncateId])
-                && (substr($truncateId, 0, 8) == 'babAdmin' || $truncateId == 'babSearchIndex') && $truncateId != 'babAdmin')
-            {
+                && (substr($truncateId, 0, 8) == 'babAdmin' || $truncateId == 'babSearchIndex') && $truncateId != 'babAdmin') {
                 //bab_debug($siteMapItem->target->id_function. ' == '.$siteMapItem->id_function);
                 return $return;
             }
@@ -651,19 +667,18 @@ class Func_Ovml_Function_SitemapMenu extends Func_Ovml_Function {
         $ul = null;
 
         if ($node->hasChildNodes() && $depth < $this->maxDepth) {
-            $ul = "<ul class=\"niv".($depth + 1)."\">\n";
-
+            $childrenHtml = '';
             $node = $node->firstChild();
             do {
-                if (!$node->getData()->menuIgnore)
-                {
-                    $ul .= $this->getHtml($node, null, $depth + 1);
-                }
+                $childrenHtml .= $this->getHtml($node, null, $depth + 1);
             } while ($node = $node->nextSibling());
 
-            $ul .= "</ul>\n";
+            if (trim($childrenHtml) !== '') {
+                $ul = "<ul class=\"niv".($depth + 1)."\">\n"
+                    . $childrenHtml
+                    . "</ul>\n";
+            }
         }
-
 
         return $siteMapItem->getHtmlListItem($ul, $additional_classes);
     }
@@ -747,6 +762,12 @@ class Func_Ovml_Function_SitemapMenu extends Func_Ovml_Function {
 
         if (isset($args['maxdepth']) && (!empty($args['maxdepth']))) {
             $this->maxDepth = $args['maxdepth'];
+        }
+        if (isset($args['mindepth']) && (!empty($args['mindepth']))) {
+            $this->minDepth = $args['mindepth'];
+        }
+        if (isset($args['ignorelastlevel']) && (!empty($args['ignorelastlevel']))) {
+            $this->ignoreLastLevel = ($args['ignorelastlevel'] == true);
         }
 
 
