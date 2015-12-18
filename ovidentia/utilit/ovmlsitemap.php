@@ -577,9 +577,9 @@ class Func_Ovml_Function_CurrentNode extends Func_Ovml_Function
  *      By default it is the node corresponding to the current page (or the last known page displayed if keeplastknown is active).
  * - The "maxdepth" attribute is optional, limits the number of levels of nested <ul>.
  *      No maximum depth by default.
- * - The "ignorelastlevel" attribute is optional, if set to "1", nodes without children will not appear in the menu.
+ * - The "ignorelastlevel" attribute is optional, if set to "1", nodes without children will not appear in the menu. (8.3.92)
  *      The default value is '0'.
- * - The "mindepth" attribute is optional, overrides the ignorelastlevel for node below or at this level.
+ * - The "mindepth" attribute is optional, overrides the ignorelastlevel for node below or at this level. (8.3.92)
  *      The default value is '0' (i.e. no min depth).
  * - The "outerul" attribute is optional, if set to "1" add a UL htmltag
  *      The default value is '1'.
