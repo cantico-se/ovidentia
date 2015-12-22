@@ -37,455 +37,455 @@ class BAB_DateTime
      * year
      * @var int
      */
-	private $_iYear		= 0;
-	
-	/**
-	 * Month [1..12]
-	 * @var int
-	 */
-	private $_iMonth 	= 0;
-	
-	/**
-	 * @var day
-	 */
-	private $_iDay		= 0;
-	
-	/**
-	 * Hours, can be set to null
-	 * @var int
-	 */
-	private $_iHours	= 0;
-	
-	/**
-	 * Minutes, can be set to null
-	 * @var int
-	 */
-	private $_iMinutes	= 0;
-	
-	/**
-	 * Seconds, can be set to null
-	 * @var int
-	 */
-	private $_iSeconds	= 0;
-	
-	
-	/**
-	 * @var array
-	 */
-	private $_aDate		= null;
-	
-	
-	/**
-	 * @param int $iYear
-	 * @param int $iMonth
-	 * @param int $iDay
-	 * @param int | null $iHours
-	 * @param int | null $iMinutes
-	 * @param int | null $iSeconds
-	 * 
-     * 
-	 */
-	public function __construct($iYear, $iMonth, $iDay, $iHours = 0, $iMinutes = 0, $iSeconds = 0)
-	{
-		$this->init($iYear, $iMonth, $iDay, $iHours, $iMinutes, $iSeconds);
-	}
-	
-	
-	/**
-	 * @param int $iYear
-	 * @param int $iMonth
-	 * @param int $iDay
-	 * @param int | null $iHours
-	 * @param int | null $iMinutes
-	 * @param int | null $iSeconds
-	 *
-	 *
-	 */
-	public function init($iYear, $iMonth, $iDay, $iHours = 0, $iMinutes = 0, $iSeconds = 0)
-	{
-	    if (isset($iHours) || isset($iMinutes) || isset($iSeconds)) {
-	    
-    		$this->_aDate = getdate(mktime($iHours, $iMinutes, $iSeconds, $iMonth, $iDay, $iYear));
-    
-    		$this->_iYear		= $this->_aDate['year'];
-    		$this->_iMonth		= $this->_aDate['mon'];
-    		$this->_iDay		= $this->_aDate['mday'];
-    		$this->_iHours		= $this->_aDate['hours'];
-    		$this->_iMinutes	= $this->_aDate['minutes'];
-    		$this->_iSeconds	= $this->_aDate['seconds'];
-	    } else {
-	        
-	        $this->_aDate = getdate(mktime($iHours, $iMinutes, $iSeconds, $iMonth, $iDay, $iYear));
-	        
-	        $this->_iYear		= $this->_aDate['year'];
-	        $this->_iMonth		= $this->_aDate['mon'];
-	        $this->_iDay		= $this->_aDate['mday'];
-	        $this->_iHours		= null;
-	        $this->_iMinutes	= null;
-	        $this->_iSeconds	= null;
-	    }
-	}
-	
-	/**
-	 * Creates a new BAB_DateTime from a unix timespamp.
-	 *
-	 * @param int $iTimeStamp	A unix timestamp
-	 * @return BAB_DateTime
-     *
-	 */
-	public static function fromTimeStamp($iTimeStamp)
-	{
-		$aDate = getdate($iTimeStamp);
-		
-		return new BAB_DateTime($aDate['year'], $aDate['mon'], $aDate['mday'],
-			$aDate['hours'], $aDate['minutes'], $aDate['seconds']);
-	}
-	
-	/**
-	 * Creates a new BAB_DateTime from an iso-formatted datetime string.
-	 *
-	 * @param string $sIsoDateTime	Iso-formatted datetime string (eg. '2006-12-25 17:35:17')
-	 * @return BAB_DateTime
-     *
-	 */
-	public static function fromIsoDateTime($sIsoDateTime)
-	{
-		$aDate = getdate(strtotime($sIsoDateTime));
-		
-		return new BAB_DateTime($aDate['year'], $aDate['mon'], $aDate['mday'],
-			$aDate['hours'], $aDate['minutes'], $aDate['seconds']);
-	}
-	
-	/**
-	 * Create a new BAB_DateTime from a date or datetime string in iCalendar format
-	 * date:
-	 * 	The format for the value type is expressed as the [ISO 8601] complete representation, basic format for a calendar date. The
-	 *  textual format specifies a four-digit year, two-digit month, and two-digit day of the month. There are no separator characters between
-	 *	the year, month and day component text.
-	 *
-	 * datetime:
-	 *  The format is based on the [ISO 8601] complete representation, basic format for a calendar date
-	 *  and time of day. The text format is a concatenation of the "date",
-	 *  followed by the LATIN CAPITAL LETTER T character (US-ASCII decimal 84) time designator, followed by the "time" format.
-	 *
-	 * FORM #1: DATE WITH LOCAL TIME
-	 * 		exemple : 19980118T230000
-	 *
-	 * FORM #2: DATE WITH UTC TIME
-	 * 		exemple : 19980119T070000Z
-	 *
-	 * FORM #3: DATE WITH LOCAL TIME AND TIME ZONE REFERENCE
-	 * 		exemple : 19980119T020000 with timezone id ex : US-Eastern or US/Eastern
-	 *
-	 * @link http://www.kanzaki.com/docs/ical/dateTime.html
-	 *
-	 * @param 	string 	$icaldatetime	Datetime or date string
-	 * @param	string	$tzid			Timezone ID	(only for form #3)
-	 *
-	 * @return BAB_DateTime
-	 */
-	public static function fromICal($icaldatetime, $tzid = null)
-	{
-		if (preg_match('/^(?P<year>\d{4})(?P<month>\d{2})(?P<day>\d{2})T(?P<hours>\d{2})(?P<minutes>\d{2})(?P<seconds>\d{2})(?P<utc>Z)?$/', $icaldatetime, $m)) {
-			
-		    $datetime = new BAB_DateTime($m['year'], $m['month'], $m['day'], $m['hours'], $m['minutes'], $m['seconds']);
-			
-			if (isset($tzid)) {
-				$tzid = str_replace('-', '/', $tzid);
-			}
-			
-			if (isset($m['utc'])) {
-				$tzid = 'UTC';
-			}
-			
-			$offset = $datetime->getTimeZoneOffset($tzid);
-			$datetime->add($offset, BAB_DATETIME_SECOND);
-			
-		} elseif (preg_match('/^(?P<year>\d{4})(?P<month>\d{2})(?P<day>\d{2})$/', $icaldatetime, $m)) {
-			$datetime = new BAB_DateTime($m['year'], $m['month'], $m['day'], null, null, null);
-		} else {
-			return null;
-		}
-		
-		return $datetime;
-	}
-	
-	
-	/**
-	 * Returns a new BAB_DateTime corresponding to the present date and time.
-	 *
-	 * @return BAB_DateTime
-     *
-	 */
-	public static function now()
-	{
-		return BAB_DateTime::fromIsoDateTime(date('Y-m-d H:i:s'));
-	}
-	
-	/**
-	 * Returns an iso-formatted datetime string (YYYY-MM-DD HH:MM:SS) corresponding to the BAB_DateTime.
-	 *
-	 * @return string
-     *
-	 */
-	public function getIsoDateTime()
-	{
-		return date('Y-m-d H:i:s', mktime($this->_iHours, $this->_iMinutes,
-			$this->_iSeconds, $this->_iMonth, $this->_iDay, $this->_iYear));
-	}
-	
-	/**
-	 * Returns an iso-formatted date string (YYYY-MM-DD) corresponding to the BAB_DateTime.
-	 *
-	 * @return string
-     *
-	 */
-	public function getIsoDate()
-	{
-		return date("Y-m-d", mktime($this->_iHours, $this->_iMinutes,
-			$this->_iSeconds, $this->_iMonth, $this->_iDay, $this->_iYear));
-	}
-	
-	/**
-	 * Returns an french formatted date string (DD-MM-YYYY) corresponding to the BAB_DateTime.
-	 *
-	 * @return string
-     *
-	 */
-	public function getFrenchDate()
-	{
-		return date("d-m-Y", mktime($this->_iHours, $this->_iMinutes,
-			$this->_iSeconds, $this->_iMonth, $this->_iDay, $this->_iYear));
-	}
+    private $_iYear		= 0;
 
-	
-	/**
-	 * Returns an iso-formatted time string (HH:MM:SS) corresponding to the BAB_DateTime.
-	 *
-	 * @return string
+    /**
+     * Month [1..12]
+     * @var int
+     */
+    private $_iMonth 	= 0;
+
+    /**
+     * @var day
+     */
+    private $_iDay		= 0;
+
+    /**
+     * Hours, can be set to null
+     * @var int
+     */
+    private $_iHours	= 0;
+
+    /**
+     * Minutes, can be set to null
+     * @var int
+     */
+    private $_iMinutes	= 0;
+
+    /**
+     * Seconds, can be set to null
+     * @var int
+     */
+    private $_iSeconds	= 0;
+
+
+    /**
+     * @var array
+     */
+    private $_aDate		= null;
+
+
+    /**
+     * @param int $iYear
+     * @param int $iMonth
+     * @param int $iDay
+     * @param int | null $iHours
+     * @param int | null $iMinutes
+     * @param int | null $iSeconds
      *
-	 */
-	public function getIsoTime()
-	{
-		return date('H:i:s', mktime($this->_iHours, $this->_iMinutes,
-			$this->_iSeconds, $this->_iMonth, $this->_iDay, $this->_iYear));
-		
-	}
-	
-	
-	/**
-	 * Return a datetime or date string for iCal format
-	 *
-	 * @param	bool	$utc	default false the time is in local time and event will not take place at the same moment in different timezones,
-	 * 							set this parameter to true to get the result in UTC time and have the event take place at the same moment
-	 * @return string
-	 */
-	public function getICal($utc = false)
-	{
-	    if (!isset($this->_iHours) && !isset($this->_iMinutes) && !isset($this->_iSeconds)) {
-	        return date("Ymd", $this->getTimeStamp());
-	    }
-	    
-		if ($utc) {
-			
-			$offset = $this->getTimeZoneOffset('UTC');
-			if (0 !== $offset)
-			{
-				$datetime = $this->cloneDate();
-				$datetime->add(-$offset, BAB_DATETIME_SECOND);
-				return date("Ymd\THis\Z", $datetime->getTimeStamp());
-			}
-			
-			return date("Ymd\THis\Z", $this->getTimeStamp());
-		} else {
-			return date("Ymd\THis", $this->getTimeStamp());
-		}
-	}
-	
-	
-	/**
-	 * @see http://www.w3.org/Protocols/rfc2616/rfc2616-sec3.html#sec3.3.1
-	 *
-	 * @todo DO not accept other formats than the allowed
-	 *
-	 * Sun, 06 Nov 1994 08:49:37 GMT  ; RFC 822, updated by RFC 1123
+     *
+     */
+    public function __construct($iYear, $iMonth, $iDay, $iHours = 0, $iMinutes = 0, $iSeconds = 0)
+    {
+        $this->init($iYear, $iMonth, $iDay, $iHours, $iMinutes, $iSeconds);
+    }
+
+
+    /**
+     * @param int $iYear
+     * @param int $iMonth
+     * @param int $iDay
+     * @param int | null $iHours
+     * @param int | null $iMinutes
+     * @param int | null $iSeconds
+     *
+     *
+     */
+    public function init($iYear, $iMonth, $iDay, $iHours = 0, $iMinutes = 0, $iSeconds = 0)
+    {
+        if (isset($iHours) || isset($iMinutes) || isset($iSeconds)) {
+
+            $this->_aDate = getdate(mktime($iHours, $iMinutes, $iSeconds, $iMonth, $iDay, $iYear));
+
+            $this->_iYear		= $this->_aDate['year'];
+            $this->_iMonth		= $this->_aDate['mon'];
+            $this->_iDay		= $this->_aDate['mday'];
+            $this->_iHours		= $this->_aDate['hours'];
+            $this->_iMinutes	= $this->_aDate['minutes'];
+            $this->_iSeconds	= $this->_aDate['seconds'];
+        } else {
+
+            $this->_aDate = getdate(mktime($iHours, $iMinutes, $iSeconds, $iMonth, $iDay, $iYear));
+
+            $this->_iYear		= $this->_aDate['year'];
+            $this->_iMonth		= $this->_aDate['mon'];
+            $this->_iDay		= $this->_aDate['mday'];
+            $this->_iHours		= null;
+            $this->_iMinutes	= null;
+            $this->_iSeconds	= null;
+        }
+    }
+
+    /**
+     * Creates a new BAB_DateTime from a unix timespamp.
+     *
+     * @param int $iTimeStamp	A unix timestamp
+     * @return BAB_DateTime
+     *
+     */
+    public static function fromTimeStamp($iTimeStamp)
+    {
+        $aDate = getdate($iTimeStamp);
+
+        return new BAB_DateTime($aDate['year'], $aDate['mon'], $aDate['mday'],
+            $aDate['hours'], $aDate['minutes'], $aDate['seconds']);
+    }
+
+    /**
+     * Creates a new BAB_DateTime from an iso-formatted datetime string.
+     *
+     * @param string $sIsoDateTime	Iso-formatted datetime string (eg. '2006-12-25 17:35:17')
+     * @return BAB_DateTime
+     *
+     */
+    public static function fromIsoDateTime($sIsoDateTime)
+    {
+        $aDate = getdate(strtotime($sIsoDateTime));
+
+        return new BAB_DateTime($aDate['year'], $aDate['mon'], $aDate['mday'],
+            $aDate['hours'], $aDate['minutes'], $aDate['seconds']);
+    }
+
+    /**
+     * Create a new BAB_DateTime from a date or datetime string in iCalendar format
+     * date:
+     * 	The format for the value type is expressed as the [ISO 8601] complete representation, basic format for a calendar date. The
+     *  textual format specifies a four-digit year, two-digit month, and two-digit day of the month. There are no separator characters between
+     *	the year, month and day component text.
+     *
+     * datetime:
+     *  The format is based on the [ISO 8601] complete representation, basic format for a calendar date
+     *  and time of day. The text format is a concatenation of the "date",
+     *  followed by the LATIN CAPITAL LETTER T character (US-ASCII decimal 84) time designator, followed by the "time" format.
+     *
+     * FORM #1: DATE WITH LOCAL TIME
+     * 		exemple : 19980118T230000
+     *
+     * FORM #2: DATE WITH UTC TIME
+     * 		exemple : 19980119T070000Z
+     *
+     * FORM #3: DATE WITH LOCAL TIME AND TIME ZONE REFERENCE
+     * 		exemple : 19980119T020000 with timezone id ex : US-Eastern or US/Eastern
+     *
+     * @link http://www.kanzaki.com/docs/ical/dateTime.html
+     *
+     * @param 	string 	$icaldatetime	Datetime or date string
+     * @param	string	$tzid			Timezone ID	(only for form #3)
+     *
+     * @return BAB_DateTime
+     */
+    public static function fromICal($icaldatetime, $tzid = null)
+    {
+        if (preg_match('/^(?P<year>\d{4})(?P<month>\d{2})(?P<day>\d{2})T(?P<hours>\d{2})(?P<minutes>\d{2})(?P<seconds>\d{2})(?P<utc>Z)?$/', $icaldatetime, $m)) {
+
+            $datetime = new BAB_DateTime($m['year'], $m['month'], $m['day'], $m['hours'], $m['minutes'], $m['seconds']);
+
+            if (isset($tzid)) {
+                $tzid = str_replace('-', '/', $tzid);
+            }
+
+            if (isset($m['utc'])) {
+                $tzid = 'UTC';
+            }
+
+            $offset = $datetime->getTimeZoneOffset($tzid);
+            $datetime->add($offset, BAB_DATETIME_SECOND);
+
+        } elseif (preg_match('/^(?P<year>\d{4})(?P<month>\d{2})(?P<day>\d{2})$/', $icaldatetime, $m)) {
+            $datetime = new BAB_DateTime($m['year'], $m['month'], $m['day'], null, null, null);
+        } else {
+            return null;
+        }
+
+        return $datetime;
+    }
+
+
+    /**
+     * Returns a new BAB_DateTime corresponding to the present date and time.
+     *
+     * @return BAB_DateTime
+     *
+     */
+    public static function now()
+    {
+        return BAB_DateTime::fromIsoDateTime(date('Y-m-d H:i:s'));
+    }
+
+    /**
+     * Returns an iso-formatted datetime string (YYYY-MM-DD HH:MM:SS) corresponding to the BAB_DateTime.
+     *
+     * @return string
+     *
+     */
+    public function getIsoDateTime()
+    {
+        return date('Y-m-d H:i:s', mktime($this->_iHours, $this->_iMinutes,
+            $this->_iSeconds, $this->_iMonth, $this->_iDay, $this->_iYear));
+    }
+
+    /**
+     * Returns an iso-formatted date string (YYYY-MM-DD) corresponding to the BAB_DateTime.
+     *
+     * @return string
+     *
+     */
+    public function getIsoDate()
+    {
+        return date("Y-m-d", mktime($this->_iHours, $this->_iMinutes,
+            $this->_iSeconds, $this->_iMonth, $this->_iDay, $this->_iYear));
+    }
+
+    /**
+     * Returns an french formatted date string (DD-MM-YYYY) corresponding to the BAB_DateTime.
+     *
+     * @return string
+     *
+     */
+    public function getFrenchDate()
+    {
+        return date("d-m-Y", mktime($this->_iHours, $this->_iMinutes,
+            $this->_iSeconds, $this->_iMonth, $this->_iDay, $this->_iYear));
+    }
+
+
+    /**
+     * Returns an iso-formatted time string (HH:MM:SS) corresponding to the BAB_DateTime.
+     *
+     * @return string
+     *
+     */
+    public function getIsoTime()
+    {
+        return date('H:i:s', mktime($this->_iHours, $this->_iMinutes,
+            $this->_iSeconds, $this->_iMonth, $this->_iDay, $this->_iYear));
+
+    }
+
+
+    /**
+     * Return a datetime or date string for iCal format
+     *
+     * @param	bool	$utc	default false the time is in local time and event will not take place at the same moment in different timezones,
+     * 							set this parameter to true to get the result in UTC time and have the event take place at the same moment
+     * @return string
+     */
+    public function getICal($utc = false)
+    {
+        if (!isset($this->_iHours) && !isset($this->_iMinutes) && !isset($this->_iSeconds)) {
+            return date("Ymd", $this->getTimeStamp());
+        }
+
+        if ($utc) {
+
+            $offset = $this->getTimeZoneOffset('UTC');
+            if (0 !== $offset)
+            {
+                $datetime = $this->cloneDate();
+                $datetime->add(-$offset, BAB_DATETIME_SECOND);
+                return date("Ymd\THis\Z", $datetime->getTimeStamp());
+            }
+
+            return date("Ymd\THis\Z", $this->getTimeStamp());
+        } else {
+            return date("Ymd\THis", $this->getTimeStamp());
+        }
+    }
+
+
+    /**
+     * @see http://www.w3.org/Protocols/rfc2616/rfc2616-sec3.html#sec3.3.1
+     *
+     * @todo DO not accept other formats than the allowed
+     *
+     * Sun, 06 Nov 1994 08:49:37 GMT  ; RFC 822, updated by RFC 1123
      * Sunday, 06-Nov-94 08:49:37 GMT ; RFC 850, obsoleted by RFC 1036
      * Sun Nov  6 08:49:37 1994       ; ANSI C's asctime() format
-	 */
-	public static function fromHttp($httpdate)
-	{
-		return self::fromTimeStamp(strtotime($httpdate));
-	}
-	
-	
-	
-	/**
-	 * Return a datetime string as an HTTP-date
-	 * @see http://www.w3.org/Protocols/rfc2616/rfc2616-sec3.html#sec3.3.1
-	 *
-	 * RFC 822, updated by RFC 1123
-	 *
-	 * @return string
-	 */
-	public function getHttp()
-	{
-		$offset = $this->getTimeZoneOffset('UTC');
-		if (0 !== $offset)
-		{
-			$datetime = $this->cloneDate();
-			$datetime->add($offset, BAB_DATETIME_SECOND);
-			return gmdate("D, d M Y H:i:s", $datetime->getTimeStamp()) . " GMT";
-		}
+     */
+    public static function fromHttp($httpdate)
+    {
+        return self::fromTimeStamp(strtotime($httpdate));
+    }
 
-		return gmdate("D, d M Y H:i:s", $this->getTimeStamp()) . " GMT";
-	}
-	
-	
-	
-	
-	/**
-	 * @return int
-     *
-	 */
-	public function getYear()
-	{
-		return $this->_iYear;
-	}
-	
-	/**
-	 * @return int
-     *
-	 */
-	public function getMonth()
-	{
-		return $this->_iMonth;
-	}
-	
-	/**
-	 * @return int
-     *
-	 */
-	public function getDayOfMonth()
-	{
-		return $this->_aDate['mday'];
-	}
-	
-	/**
-	 * @return int
-     *
-	 */
-	public function getDayOfYear()
-	{
-		return $this->_aDate['yday'];
-	}
 
-	/**
-	 * @return int
-     *
-	 */
-	public function getDayOfWeek()
-	{
-		return $this->_aDate['wday'];
-	}
 
-	/**
-	 * @return int | null
+    /**
+     * Return a datetime string as an HTTP-date
+     * @see http://www.w3.org/Protocols/rfc2616/rfc2616-sec3.html#sec3.3.1
      *
-	 */
-	public function getHour()
-	{
-		return $this->_iHours;
-	}
+     * RFC 822, updated by RFC 1123
+     *
+     * @return string
+     */
+    public function getHttp()
+    {
+        $offset = $this->getTimeZoneOffset('UTC');
+        if (0 !== $offset)
+        {
+            $datetime = $this->cloneDate();
+            $datetime->add($offset, BAB_DATETIME_SECOND);
+            return gmdate("D, d M Y H:i:s", $datetime->getTimeStamp()) . " GMT";
+        }
 
-	/**
-	 * @return int | null
-     *
-	 */
-	public function getMinute()
-	{
-		return $this->_iMinutes;
-	}
+        return gmdate("D, d M Y H:i:s", $this->getTimeStamp()) . " GMT";
+    }
 
-	/**
-	 * @return int | null
-     *
-	 */
-	public function getSecond()
-	{
-		return $this->_iSeconds;
-	}
-	
-	/**
-	 * Set time
-	 *
-	 * @param int | null $hours
-	 * @param int | null $minutes
-	 * @param int | null $seconds
-	 *
-	 * @since 7.3.90
-	 *
-	 * @return BAB_DateTime
-	 */
-	public function setTime($hours, $minutes, $seconds)
-	{
-		$this->init($this->_iYear, $this->_iMonth, $this->_iDay, $hours, $minutes, $seconds);
-		return $this;
-	}
-	
-	/**
-	 * Set time with an ISO string
-	 *
-	 * @param string $hours
-	 * @since 7.5.92
-	 *
-	 * @return BAB_DateTime
-	 */
-	public function setIsoTime($str)
-	{
-		list($hours, $minutes, $seconds) = explode(':', $str);
-		return $this->setTime($hours, $minutes, $seconds);
-	}
-	
-	
 
-	/**
-	 * Elapsed time in the current day
-	 * @return int (seconds)
+
+
+    /**
+     * @return int
      *
-	 */
-	public function getDayTime()
-	{
-	    $total = 0;
-	    
-	    if (isset($this->_iSeconds)) {
-	        $total += $this->_iSeconds;
-	    }
-	    
-	    if (isset($this->_iMinutes)) {
-	        $total += (60*$this->_iMinutes);
-	    }
-	    
-	    if (isset($this->_iHours)) {
-	        $total += (3600*$this->_iHours);
-	    }
-	    
-		return $total;
-	}
-    
-	/**
-	 * Returns a unix timestamp corresponding to the BAB_DateTime.
-	 *
-	 * @return int
+     */
+    public function getYear()
+    {
+        return $this->_iYear;
+    }
+
+    /**
+     * @return int
      *
-	 */
-	public function getTimeStamp()
-	{
-		if (!is_null($this->_aDate) && isset($this->_aDate[0])) {
-			return $this->_aDate[0];
-		}
-		return 0;
-	}
-	 
+     */
+    public function getMonth()
+    {
+        return $this->_iMonth;
+    }
+
+    /**
+     * @return int
+     *
+     */
+    public function getDayOfMonth()
+    {
+        return $this->_aDate['mday'];
+    }
+
+    /**
+     * @return int
+     *
+     */
+    public function getDayOfYear()
+    {
+        return $this->_aDate['yday'];
+    }
+
+    /**
+     * @return int
+     *
+     */
+    public function getDayOfWeek()
+    {
+        return $this->_aDate['wday'];
+    }
+
+    /**
+     * @return int | null
+     *
+     */
+    public function getHour()
+    {
+        return $this->_iHours;
+    }
+
+    /**
+     * @return int | null
+     *
+     */
+    public function getMinute()
+    {
+        return $this->_iMinutes;
+    }
+
+    /**
+     * @return int | null
+     *
+     */
+    public function getSecond()
+    {
+        return $this->_iSeconds;
+    }
+
+    /**
+     * Set time
+     *
+     * @param int | null $hours
+     * @param int | null $minutes
+     * @param int | null $seconds
+     *
+     * @since 7.3.90
+     *
+     * @return BAB_DateTime
+     */
+    public function setTime($hours, $minutes, $seconds)
+    {
+        $this->init($this->_iYear, $this->_iMonth, $this->_iDay, $hours, $minutes, $seconds);
+        return $this;
+    }
+
+    /**
+     * Set time with an ISO string
+     *
+     * @param string $hours
+     * @since 7.5.92
+     *
+     * @return BAB_DateTime
+     */
+    public function setIsoTime($str)
+    {
+        list($hours, $minutes, $seconds) = explode(':', $str);
+        return $this->setTime($hours, $minutes, $seconds);
+    }
+
+
+
+    /**
+     * Elapsed time in the current day
+     * @return int (seconds)
+     *
+     */
+    public function getDayTime()
+    {
+        $total = 0;
+
+        if (isset($this->_iSeconds)) {
+            $total += $this->_iSeconds;
+        }
+
+        if (isset($this->_iMinutes)) {
+            $total += (60*$this->_iMinutes);
+        }
+
+        if (isset($this->_iHours)) {
+            $total += (3600*$this->_iHours);
+        }
+
+        return $total;
+    }
+
+    /**
+     * Returns a unix timestamp corresponding to the BAB_DateTime.
+     *
+     * @return int
+     *
+     */
+    public function getTimeStamp()
+    {
+        if (!is_null($this->_aDate) && isset($this->_aDate[0])) {
+            return $this->_aDate[0];
+        }
+        return 0;
+    }
+
     /**
      * Returns week of the year, first Sunday is first day of first week
      *
@@ -528,81 +528,81 @@ class BAB_DateTime
      * @access public
      */
     public function add($iNbUnits, $iUnitType = BAB_DATETIME_DAY)
-	{
-		switch($iUnitType)
-		{
-			case BAB_DATETIME_YEAR:
-				$this->init(($this->_iYear + $iNbUnits), $this->_iMonth, $this->_iDay, $this->_iHours, $this->_iMinutes, $this->_iSeconds);
-				break;
-			case BAB_DATETIME_MONTH:
-				$this->init($this->_iYear, ($this->_iMonth + $iNbUnits), $this->_iDay, $this->_iHours, $this->_iMinutes, $this->_iSeconds);
-				break;
-			case BAB_DATETIME_DAY:
-				$this->init($this->_iYear, $this->_iMonth, ($this->_iDay + $iNbUnits), $this->_iHours, $this->_iMinutes, $this->_iSeconds);
-				break;
-			case BAB_DATETIME_HOUR:
-				$this->init($this->_iYear, $this->_iMonth, $this->_iDay, ($iNbUnits + (int) $this->_iHours), $this->_iMinutes, $this->_iSeconds);
-				break;
-			case BAB_DATETIME_MINUTE:
-				$this->init($this->_iYear, $this->_iMonth, $this->_iDay, $this->_iHours, ($iNbUnits + (int) $this->_iMinutes), $this->_iSeconds);
-				break;
-			case BAB_DATETIME_SECOND:
-				$this->init($this->_iYear, $this->_iMonth, $this->_iDay, $this->_iHours, $this->_iMinutes, ($iNbUnits + (int) $this->_iSeconds));
-				break;
-			
-			case BAB_DATETIME_ICAL:
-				if (preg_match_all('/(?P<value>\d+)(?P<type>[DHMS]{1})/', $iNbUnits, $m, PREG_SET_ORDER)) {
+    {
+        switch($iUnitType)
+        {
+            case BAB_DATETIME_YEAR:
+                $this->init(($this->_iYear + $iNbUnits), $this->_iMonth, $this->_iDay, $this->_iHours, $this->_iMinutes, $this->_iSeconds);
+                break;
+            case BAB_DATETIME_MONTH:
+                $this->init($this->_iYear, ($this->_iMonth + $iNbUnits), $this->_iDay, $this->_iHours, $this->_iMinutes, $this->_iSeconds);
+                break;
+            case BAB_DATETIME_DAY:
+                $this->init($this->_iYear, $this->_iMonth, ($this->_iDay + $iNbUnits), $this->_iHours, $this->_iMinutes, $this->_iSeconds);
+                break;
+            case BAB_DATETIME_HOUR:
+                $this->init($this->_iYear, $this->_iMonth, $this->_iDay, ($iNbUnits + (int) $this->_iHours), $this->_iMinutes, $this->_iSeconds);
+                break;
+            case BAB_DATETIME_MINUTE:
+                $this->init($this->_iYear, $this->_iMonth, $this->_iDay, $this->_iHours, ($iNbUnits + (int) $this->_iMinutes), $this->_iSeconds);
+                break;
+            case BAB_DATETIME_SECOND:
+                $this->init($this->_iYear, $this->_iMonth, $this->_iDay, $this->_iHours, $this->_iMinutes, ($iNbUnits + (int) $this->_iSeconds));
+                break;
 
-					$days = 0;
-					$hours = 0;
-					$minutes = 0;
-					$seconds = 0;
-					foreach($m as $trigger)
-					{
-						$val = $trigger['value'];
-						switch($trigger['type'])
-						{
-							case 'W': $days = (int) $val * 7; 	break;
-							case 'D': $days = (int) $val; 	break;
-							case 'H': $hours = (int) $val;	break;
-							case 'M': $minutes = (int) $val;	break;
-							case 'S': $seconds = (int) $val;	break;
-						}
-					}
-					$this->init($this->_iYear, $this->_iMonth, $this->_iDay + $days, $this->_iHours + $hours, $this->_iMinutes + $minutes, $this->_iSeconds + $seconds);
-				}
-				break;
-		}
-	}
+            case BAB_DATETIME_ICAL:
+                if (preg_match_all('/(?P<value>\d+)(?P<type>[DHMS]{1})/', $iNbUnits, $m, PREG_SET_ORDER)) {
 
-
-	public function less($iNbUnits, $iUnitType = BAB_DATETIME_DAY)
-	{
-		switch($iUnitType)
-		{
-			case BAB_DATETIME_YEAR:
-				$this->init(($this->_iYear - $iNbUnits), $this->_iMonth, $this->_iDay, $this->_iHours, $this->_iMinutes, $this->_iSeconds);
-				break;
-			case BAB_DATETIME_MONTH:
-				$this->init($this->_iYear, ($this->_iMonth - $iNbUnits), $this->_iDay, $this->_iHours, $this->_iMinutes, $this->_iSeconds);
-				break;
-			case BAB_DATETIME_DAY:
-				$this->init($this->_iYear, $this->_iMonth, ($this->_iDay - $iNbUnits), $this->_iHours, $this->_iMinutes, $this->_iSeconds);
-				break;
-			case BAB_DATETIME_HOUR:
-				$this->init($this->_iYear, $this->_iMonth, $this->_iDay, ((int) $this->_iHours - $iNbUnits), $this->_iMinutes, $this->_iSeconds);
-				break;
-			case BAB_DATETIME_MINUTE:
-				$this->init($this->_iYear, $this->_iMonth, $this->_iDay, $this->_iHours, ((int) $this->_iMinutes - $iNbUnits), $this->_iSeconds);
-				break;
-			case BAB_DATETIME_SECOND:
-				$this->init($this->_iYear, $this->_iMonth, $this->_iDay, $this->_iHours, $this->_iMinutes, ((int) $this->_iSeconds - $iNbUnits));
-				break;
-		}
-	}
+                    $days = 0;
+                    $hours = 0;
+                    $minutes = 0;
+                    $seconds = 0;
+                    foreach($m as $trigger)
+                    {
+                        $val = $trigger['value'];
+                        switch($trigger['type'])
+                        {
+                            case 'W': $days = (int) $val * 7; 	break;
+                            case 'D': $days = (int) $val; 	break;
+                            case 'H': $hours = (int) $val;	break;
+                            case 'M': $minutes = (int) $val;	break;
+                            case 'S': $seconds = (int) $val;	break;
+                        }
+                    }
+                    $this->init($this->_iYear, $this->_iMonth, $this->_iDay + $days, $this->_iHours + $hours, $this->_iMinutes + $minutes, $this->_iSeconds + $seconds);
+                }
+                break;
+        }
+    }
 
 
-	/**
+    public function less($iNbUnits, $iUnitType = BAB_DATETIME_DAY)
+    {
+        switch($iUnitType)
+        {
+            case BAB_DATETIME_YEAR:
+                $this->init(($this->_iYear - $iNbUnits), $this->_iMonth, $this->_iDay, $this->_iHours, $this->_iMinutes, $this->_iSeconds);
+                break;
+            case BAB_DATETIME_MONTH:
+                $this->init($this->_iYear, ($this->_iMonth - $iNbUnits), $this->_iDay, $this->_iHours, $this->_iMinutes, $this->_iSeconds);
+                break;
+            case BAB_DATETIME_DAY:
+                $this->init($this->_iYear, $this->_iMonth, ($this->_iDay - $iNbUnits), $this->_iHours, $this->_iMinutes, $this->_iSeconds);
+                break;
+            case BAB_DATETIME_HOUR:
+                $this->init($this->_iYear, $this->_iMonth, $this->_iDay, ((int) $this->_iHours - $iNbUnits), $this->_iMinutes, $this->_iSeconds);
+                break;
+            case BAB_DATETIME_MINUTE:
+                $this->init($this->_iYear, $this->_iMonth, $this->_iDay, $this->_iHours, ((int) $this->_iMinutes - $iNbUnits), $this->_iSeconds);
+                break;
+            case BAB_DATETIME_SECOND:
+                $this->init($this->_iYear, $this->_iMonth, $this->_iDay, $this->_iHours, $this->_iMinutes, ((int) $this->_iSeconds - $iNbUnits));
+                break;
+        }
+    }
+
+
+    /**
      * Compares two dates
      *
      * Compares two dates.  Suitable for use in sorting functions.
@@ -628,7 +628,7 @@ class BAB_DateTime
         return 0;
     }
 
-    
+
     /**
      * Returns the number of days between two given dates
      *
@@ -659,21 +659,21 @@ class BAB_DateTime
                    - BAB_DateTime::dateToDays($day2, $month2, $year2)));
     }
 
-	/**
-	 * Returns number of days between two given dates
-	 * @param	string	ISO date
-	 * @param	string	ISO date
-	 * @return int  the absolute number of days between the two dates.
+    /**
+     * Returns number of days between two given dates
+     * @param	string	ISO date
+     * @param	string	ISO date
+     * @return int  the absolute number of days between the two dates.
      *               If an error occurs, -1 is returned.
-	 */
-	public static function dateDiffIso($date1, $date2) {
+     */
+    public static function dateDiffIso($date1, $date2) {
 
-		list($year1, $month1, $day1) = explode('-',$date1);
-		list($year2, $month2, $day2) = explode('-',$date2);
+        list($year1, $month1, $day1) = explode('-',$date1);
+        list($year2, $month2, $day2) = explode('-',$date2);
 
-		return abs((BAB_DateTime::dateToDays($day1, $month1, $year1)
+        return abs((BAB_DateTime::dateToDays($day1, $month1, $year1)
                    - BAB_DateTime::dateToDays($day2, $month2, $year2)));
-	}
+    }
 
 
     /**
@@ -786,7 +786,7 @@ class BAB_DateTime
         }
         return $yearnumber . '-' . $weeknumber . '-' . $weekday;
     }
-    
+
     /**
      * Returns true for a leap year, else false
      *
@@ -816,7 +816,7 @@ class BAB_DateTime
             return (($year % 4 == 0) && ($year % 100 != 0)) || ($year % 400 == 0);
         }
     }
-    
+
     /**
      * Returns true for valid date, false for invalid date
      *
@@ -840,203 +840,203 @@ class BAB_DateTime
         return true;
     }
 
-    
-	/**
-	 * Extract the year, the month and the day from a string representing a date.
-	 *
-	 * The extraction tries to guess the position of the day, month and year value in the
-	 * string according to the short date output format of the function bab_shortDate.
-	 * @param string $value
-	 * @return BAB_DateTime
-	 */
-	public static function fromDateStr($value)
-	{
-		$tsDate = mktime(0, 0, 0, 11, 30, 2000);
-		$strDate = bab_shortDate($tsDate, false);
-		$strPattern = $strDate;
-		$strPattern = str_replace('30', '([0-9]{1,2})', $strPattern);
-		$strPattern = str_replace('11', '([0-9]{1,2})', $strPattern);
-		$strPattern = str_replace('Nov', '([0-9]{1,2})', $strPattern);
-		$strPattern = str_replace('2000', '([0-9]{4})', $strPattern);
-		$strPattern = str_replace('00', '([0-9]{2})', $strPattern);
-		$indexDay = mb_strpos($strDate, '30');
-		$indexMonth = mb_strpos($strDate, '11');
-		if($indexMonth === false)
-		{
-			$indexMonth = mb_strpos($strDate, 'D');
-		}
-		$indexYear = mb_strpos($strDate, '2000');
-		if($indexYear === false)
-		{
-			$indexYear = mb_strpos($strDate, '00');
-		}
-		$d = array($indexDay => 1, $indexMonth => 2, $indexYear => 3);
-		bab_sort::ksort($d);
 
-		if (preg_match('`' . $strPattern . '`', $value, $matches) < 1)
-		{
-			return null;
-		}
+    /**
+     * Extract the year, the month and the day from a string representing a date.
+     *
+     * The extraction tries to guess the position of the day, month and year value in the
+     * string according to the short date output format of the function bab_shortDate.
+     * @param string $value
+     * @return BAB_DateTime
+     */
+    public static function fromDateStr($value)
+    {
+        $tsDate = mktime(0, 0, 0, 11, 30, 2000);
+        $strDate = bab_shortDate($tsDate, false);
+        $strPattern = $strDate;
+        $strPattern = str_replace('30', '([0-9]{1,2})', $strPattern);
+        $strPattern = str_replace('11', '([0-9]{1,2})', $strPattern);
+        $strPattern = str_replace('Nov', '([0-9]{1,2})', $strPattern);
+        $strPattern = str_replace('2000', '([0-9]{4})', $strPattern);
+        $strPattern = str_replace('00', '([0-9]{2})', $strPattern);
+        $indexDay = mb_strpos($strDate, '30');
+        $indexMonth = mb_strpos($strDate, '11');
+        if($indexMonth === false)
+        {
+            $indexMonth = mb_strpos($strDate, 'D');
+        }
+        $indexYear = mb_strpos($strDate, '2000');
+        if($indexYear === false)
+        {
+            $indexYear = mb_strpos($strDate, '00');
+        }
+        $d = array($indexDay => 1, $indexMonth => 2, $indexYear => 3);
+        bab_sort::ksort($d);
 
-		$day	= $matches[current($d)];
-		$month	= $matches[next($d)];
-		$year	= $matches[next($d)];
-		
-		if($year < 30)
-		{
-			$year += 2000;
-		}
-		elseif ($year < 100)
-		{
-			$year += 1900;
-		}
-		return new BAB_DateTime($year, $month, $day);
-	}
-    
-	/**
-	 *
-	 * @param string $sDate
-	 * @return BAB_DateTime
-	 */
-	public static function fromUserInput($sDate)
-	{
-		$aMatch = array();
-		if (0 !== preg_match("#([0-9]{1,2})[-/]([0-9]{1,2})[-/]([0-9]{4})#", $sDate, $aMatch))
-		{
-			$iYear	= (int) $aMatch[3];
-			$iMonth	= (int) $aMatch[2];
-			$iDay	= (int) $aMatch[1];
-			
-			return new BAB_DateTime($iYear, $iMonth, $iDay);
-		}
-		return null;
-	}
-	
+        if (preg_match('`' . $strPattern . '`', $value, $matches) < 1)
+        {
+            return null;
+        }
 
-	/**
-	 * Intersection of two periods
-	 *
-	 * All attributes must be ISO date OR ISO datetime
-	 *
-	 * @param	string		$p1_begin
-	 * @param	string		$p1_end
-	 * @param	string		$p2_begin
-	 * @param	string		$p2_end
-	 * @return	array|false
-	 *
-	 */
-	public static function periodIntersect($p1_begin, $p1_end, $p2_begin, $p2_end) {
-		if ($p1_begin >= $p2_end || $p1_end <= $p2_begin) {
-			return false;
-		}
+        $day	= $matches[current($d)];
+        $month	= $matches[next($d)];
+        $year	= $matches[next($d)];
 
-		$begin = $p1_begin;
+        if($year < 30)
+        {
+            $year += 2000;
+        }
+        elseif ($year < 100)
+        {
+            $year += 1900;
+        }
+        return new BAB_DateTime($year, $month, $day);
+    }
 
-		if ($p1_begin < $p2_begin) {
-			$begin = $p2_begin;
-		}
+    /**
+     *
+     * @param string $sDate
+     * @return BAB_DateTime
+     */
+    public static function fromUserInput($sDate)
+    {
+        $aMatch = array();
+        if (0 !== preg_match("#([0-9]{1,2})[-/]([0-9]{1,2})[-/]([0-9]{4})#", $sDate, $aMatch))
+        {
+            $iYear	= (int) $aMatch[3];
+            $iMonth	= (int) $aMatch[2];
+            $iDay	= (int) $aMatch[1];
 
-		$end = $p2_end;
-
-		if ($p1_end < $p2_end) {
-			$end = $p1_end;
-		}
-
-		return array(
-			'begin' => $begin,
-			'end'	=> $end
-		);
-	}
+            return new BAB_DateTime($iYear, $iMonth, $iDay);
+        }
+        return null;
+    }
 
 
-	/**
-	 * Creates a copy
-	 *
-	 * @return BAB_DateTime
-	 *
-	 */
-	public function cloneDate() {
+    /**
+     * Intersection of two periods
+     *
+     * All attributes must be ISO date OR ISO datetime
+     *
+     * @param	string		$p1_begin
+     * @param	string		$p1_end
+     * @param	string		$p2_begin
+     * @param	string		$p2_end
+     * @return	array|false
+     *
+     */
+    public static function periodIntersect($p1_begin, $p1_end, $p2_begin, $p2_end) {
+        if ($p1_begin >= $p2_end || $p1_end <= $p2_begin) {
+            return false;
+        }
 
-		return new BAB_DateTime(
-			$this->_iYear,
-			$this->_iMonth,
-			$this->_iDay,
-			$this->_iHours,
-			$this->_iMinutes,
-			$this->_iSeconds
-			);
-	}
-	
-	
-	
-	
-	
-	
-	/**
-	 * Get offset for timezone
-	 * timezone for current date is the default timezone defined by the date_default_timezone_set() function
-	 *
-	 * @param	string	$tzid		timezone string exemple : Europe/Berlin
-	 *
-	 * @return int
-	 */
-	public function getTimeZoneOffset($tzid)
-	{
-		if (null === $tzid)
-		{
-			return 0;
-		}
-		
-		if (class_exists('DateTimeZone') && class_exists('DateTime')) {
+        $begin = $p1_begin;
 
-			$origin_tz = date_default_timezone_get();
-			
-			if (is_string($origin_tz) && is_string($tzid)) {
-				$origin_dtz = new DateTimeZone($origin_tz);
-	   	 		$remote_dtz = new DateTimeZone($tzid);
-	   	 		
-	   	 		$origin_dt = new DateTime("now", $origin_dtz);
-    			$remote_dt = new DateTime("now", $remote_dtz);
-	   	 		
-	   	 		$offset = $origin_dtz->getOffset($origin_dt) - $remote_dtz->getOffset($remote_dt);
+        if ($p1_begin < $p2_begin) {
+            $begin = $p2_begin;
+        }
 
-	   	 		return $offset;
-			}
-			
-		} elseif ('UTC' === $tzid && ('Europe/Berlin' === date_default_timezone_get() || 'Europe/Paris' === date_default_timezone_get())) {
+        $end = $p2_end;
 
-			// ce cas specifique est gere en dur pour conserver la compatibilite php 5.1 si le serveur est en france
-			// il est utilises dans des evenements d'agenda meme sans caldav sur la propriete LAST-MODIFIED qui est toujours en UTC
-			
-			return 3600;
-			
-		} else {
-			
-			bab_debug('Error while searching for timezone offset, the classes DateTimeZone and DateTime are required to get the correct offset');
-		}
-		
-		return 0;
-	}
-	
-	/**
-	 * Get date in the Ovidentia short date format
-	 * @param bool $showHours
-	 * @return string
-	 */
-	public function shortFormat($showHours = true)
-	{
-		return bab_shortDate($this->getTimeStamp(), $showHours);
-	}
-	
-	/**
-	 * Get date in the Ovidentia long date format
-	 * @param bool $showHours
-	 * @return string
-	 */
-	public function longFormat($showHours = true)
-	{
-		return bab_longDate($this->getTimeStamp(), $showHours);
-	}
+        if ($p1_end < $p2_end) {
+            $end = $p1_end;
+        }
+
+        return array(
+            'begin' => $begin,
+            'end'	=> $end
+        );
+    }
+
+
+    /**
+     * Creates a copy
+     *
+     * @return BAB_DateTime
+     *
+     */
+    public function cloneDate() {
+
+        return new BAB_DateTime(
+            $this->_iYear,
+            $this->_iMonth,
+            $this->_iDay,
+            $this->_iHours,
+            $this->_iMinutes,
+            $this->_iSeconds
+            );
+    }
+
+
+
+
+
+
+    /**
+     * Get offset for timezone
+     * timezone for current date is the default timezone defined by the date_default_timezone_set() function
+     *
+     * @param	string	$tzid		timezone string exemple : Europe/Berlin
+     *
+     * @return int
+     */
+    public function getTimeZoneOffset($tzid)
+    {
+        if (null === $tzid)
+        {
+            return 0;
+        }
+
+        if (class_exists('DateTimeZone') && class_exists('DateTime')) {
+
+            $origin_tz = date_default_timezone_get();
+
+            if (is_string($origin_tz) && is_string($tzid)) {
+                $origin_dtz = new DateTimeZone($origin_tz);
+                    $remote_dtz = new DateTimeZone($tzid);
+
+                    $origin_dt = new DateTime("now", $origin_dtz);
+                $remote_dt = new DateTime("now", $remote_dtz);
+
+                    $offset = $origin_dtz->getOffset($origin_dt) - $remote_dtz->getOffset($remote_dt);
+
+                    return $offset;
+            }
+
+        } elseif ('UTC' === $tzid && ('Europe/Berlin' === date_default_timezone_get() || 'Europe/Paris' === date_default_timezone_get())) {
+
+            // ce cas specifique est gere en dur pour conserver la compatibilite php 5.1 si le serveur est en france
+            // il est utilises dans des evenements d'agenda meme sans caldav sur la propriete LAST-MODIFIED qui est toujours en UTC
+
+            return 3600;
+
+        } else {
+
+            bab_debug('Error while searching for timezone offset, the classes DateTimeZone and DateTime are required to get the correct offset');
+        }
+
+        return 0;
+    }
+
+    /**
+     * Get date in the Ovidentia short date format
+     * @param bool $showHours
+     * @return string
+     */
+    public function shortFormat($showHours = true)
+    {
+        return bab_shortDate($this->getTimeStamp(), $showHours);
+    }
+
+    /**
+     * Get date in the Ovidentia long date format
+     * @param bool $showHours
+     * @return string
+     */
+    public function longFormat($showHours = true)
+    {
+        return bab_longDate($this->getTimeStamp(), $showHours);
+    }
 }
 
 
@@ -1045,226 +1045,226 @@ class BAB_DateTime
 class BAB_DateTimeUtil
 {
 
-	/**
-	 *
-	 * @param string $sStartIsoDate
-	 * @param string $sEndIsoDate
-	 * @return int
-	 */
-	public static function getNumberOfWorkingDays($sStartIsoDate, $sEndIsoDate)
-	{
-		$iNWorkingDays = 0;
+    /**
+     *
+     * @param string $sStartIsoDate
+     * @param string $sEndIsoDate
+     * @return int
+     */
+    public static function getNumberOfWorkingDays($sStartIsoDate, $sEndIsoDate)
+    {
+        $iNWorkingDays = 0;
 
-		$oStartDate = BAB_DateTime::fromIsoDateTime($sStartIsoDate);
-		$oEndDate = BAB_DateTime::fromIsoDateTime($sEndIsoDate);
+        $oStartDate = BAB_DateTime::fromIsoDateTime($sStartIsoDate);
+        $oEndDate = BAB_DateTime::fromIsoDateTime($sEndIsoDate);
 
-		{
-			$iNWorkingDays = BAB_DateTimeUtil::getNoWorkingDaysBetween($sStartIsoDate, $sEndIsoDate);
+        {
+            $iNWorkingDays = BAB_DateTimeUtil::getNoWorkingDaysBetween($sStartIsoDate, $sEndIsoDate);
 
-			$iNbDays = BAB_DateTime::dateDiff($oStartDate->_iDay, $oStartDate->_iMonth, $oStartDate->_iYear,
-				$oEndDate->_iDay, $oEndDate->_iMonth, $oEndDate->_iYear);
+            $iNbDays = BAB_DateTime::dateDiff($oStartDate->_iDay, $oStartDate->_iMonth, $oStartDate->_iYear,
+                $oEndDate->_iDay, $oEndDate->_iMonth, $oEndDate->_iYear);
 
-			$iNbNoWDaysInWeekend = 2;
-			$iNbDaysInWeek = 7;
+            $iNbNoWDaysInWeekend = 2;
+            $iNbDaysInWeek = 7;
 
-			$iNbOfWeek = (int) ($iNbDays / $iNbDaysInWeek);
-			$iRemainDays = $iNbDays % $iNbDaysInWeek;
+            $iNbOfWeek = (int) ($iNbDays / $iNbDaysInWeek);
+            $iRemainDays = $iNbDays % $iNbDaysInWeek;
 
-			$iNWorkingDays += $iNbOfWeek * $iNbNoWDaysInWeekend;
+            $iNWorkingDays += $iNbOfWeek * $iNbNoWDaysInWeekend;
 
-			if($iRemainDays > 0)
-			{
-				$oEndDate->less($iRemainDays);
-				$iWDay = $oEndDate->_aDate['wday'];
+            if($iRemainDays > 0)
+            {
+                $oEndDate->less($iRemainDays);
+                $iWDay = $oEndDate->_aDate['wday'];
 
-				$iSunday = 0;
-				$iSaturday = 6;
-				$iNbWeekendDays = 0;
-				$iIdx = 0;
+                $iSunday = 0;
+                $iSaturday = 6;
+                $iNbWeekendDays = 0;
+                $iIdx = 0;
 
-				while($iIdx < $iRemainDays)
-				{
-					if((int) $iWDay == $iSunday || (int) $iWDay == $iSaturday)
-					{
-						$iNWorkingDays++;
-					}
+                while($iIdx < $iRemainDays)
+                {
+                    if((int) $iWDay == $iSunday || (int) $iWDay == $iSaturday)
+                    {
+                        $iNWorkingDays++;
+                    }
 
-					//$iSaturday is the last week day
-					if($iWDay == $iSaturday)
-					{
-						$iWDay = $iSunday;
-					}
-					else
-					{
-						$iWDay++;
-					}
-					$iIdx++;
-				}
-			}
-			return ($iNbDays - $iNWorkingDays);
-		}
-		return $iNWorkingDays;
-	}
+                    //$iSaturday is the last week day
+                    if($iWDay == $iSaturday)
+                    {
+                        $iWDay = $iSunday;
+                    }
+                    else
+                    {
+                        $iWDay++;
+                    }
+                    $iIdx++;
+                }
+            }
+            return ($iNbDays - $iNWorkingDays);
+        }
+        return $iNWorkingDays;
+    }
 
-	/**
-	 *
-	 * @param string $sStartIsoDate
-	 * @param string $sEndIsoDate
-	 * @return int
-	 */
-	public static function getNoWorkingDaysBetween($sStartIsoDate, $sEndIsoDate)
-	{
-		require_once $GLOBALS['babInstallPath'] . 'utilit/nwdaysincl.php';
-		
-		$aNoWorkingDays = bab_getNonWorkingDaysBetween($sStartIsoDate, $sEndIsoDate);
-		if(is_array($aNoWorkingDays))
-		{
-			$iSize = count($aNoWorkingDays);
+    /**
+     *
+     * @param string $sStartIsoDate
+     * @param string $sEndIsoDate
+     * @return int
+     */
+    public static function getNoWorkingDaysBetween($sStartIsoDate, $sEndIsoDate)
+    {
+        require_once $GLOBALS['babInstallPath'] . 'utilit/nwdaysincl.php';
 
-			$iSunday = 0;
-			$iSaturday = 6;
-			$iNbWeekendDays = 0;
+        $aNoWorkingDays = bab_getNonWorkingDaysBetween($sStartIsoDate, $sEndIsoDate);
+        if(is_array($aNoWorkingDays))
+        {
+            $iSize = count($aNoWorkingDays);
 
-			foreach($aNoWorkingDays as $sIsoDateTime => $Label)
-			{
-				//bab_debug($sIsoDateTime);
-				$aDate = getdate(strtotime($sIsoDateTime));
-				if((int) $aDate['wday'] == $iSunday || (int) $aDate['wday'] == $iSaturday)
-				{
-					$iNbWeekendDays++;
-				}
-			}
+            $iSunday = 0;
+            $iSaturday = 6;
+            $iNbWeekendDays = 0;
 
-			assert('$iSize >= $iNbWeekendDays');
-			return ($iSize - $iNbWeekendDays);
-		}
-		return 0;
-	}
+            foreach($aNoWorkingDays as $sIsoDateTime => $Label)
+            {
+                //bab_debug($sIsoDateTime);
+                $aDate = getdate(strtotime($sIsoDateTime));
+                if((int) $aDate['wday'] == $iSunday || (int) $aDate['wday'] == $iSaturday)
+                {
+                    $iNbWeekendDays++;
+                }
+            }
 
-
-	/**
-	 * Date display in relatives forms
-	 * @since 7.5.91
-	 *
-	 * @param	string	$datetime	ISO datetime
-	 * @param	bool	$long		Display a long date format or not
-	 * @param	bool	$hours		always display hours or not
-	 * @return string
-	 */
-	public static function relativeDate($datetime, $long = false, $hours = false)
-	{
-		if ($datetime > date('Y-m-d H:i:s'))
-		{
-			return self::relativeFutureDate($datetime, $long, $hours);
-		} else {
-			return self::relativePastDate($datetime, $long, $hours);
-		}
-	}
+            assert('$iSize >= $iNbWeekendDays');
+            return ($iSize - $iNbWeekendDays);
+        }
+        return 0;
+    }
 
 
-	/**
-	 * Date display in relatives forms, for dates older than now
-	 * @param	string	$datetime	ISO datetime
-	 * @param	bool	$long		Display a long date format or not
-	 * @param	bool	$hours		always display hours or not
-	 * @return string
-	 */
-	public static function relativePastDate($datetime, $long = false, $hours = false) {
-		$ts = bab_mktime($datetime);
-		$sec = (time() - $ts);
-		
-		if ($sec > 0 && $sec < 3600) {
-			if ($sec < 60) {
-				return bab_sprintf(bab_translate('%d seconds ago'), $sec);
-			} else {
-				$minutes = (int) round($sec/60);
-				if (1 === $minutes) {
-					$str = bab_translate('%d minute ago');
-				} else {
-					$str = bab_translate('%d minutes ago');
-				}
-				return bab_sprintf($str, $minutes);
-			}
-		}
-		
-		
-		if (date('Ymd', $ts) == date('Ymd')) {
-			if ($hours) {
-				return bab_sprintf(bab_translate('Today at %s'), date('H:i',$ts));
-			} else {
-				return bab_translate('Today');
-			}
-		}
-		
-		$yesterday = mktime(0, 0, 0, date('n'), (date('j') - 1), date('Y'));
-		if (date('Ymd', $ts) == date('Ymd', $yesterday)) {
-			if ($hours) {
-				return bab_sprintf(bab_translate('Yesterday at %s'), date('H:i',$ts));
-			} else {
-				return bab_translate('Yesterday');
-			}
-		}
-		
-		if ($long) {
-			return bab_longDate($ts, $hours);
-		} else {
-			return bab_shortDate($ts, $hours);
-		}
-	}
-	
-	
-	
+    /**
+     * Date display in relatives forms
+     * @since 7.5.91
+     *
+     * @param	string	$datetime	ISO datetime
+     * @param	bool	$long		Display a long date format or not
+     * @param	bool	$hours		always display hours or not
+     * @return string
+     */
+    public static function relativeDate($datetime, $long = false, $hours = false)
+    {
+        if ($datetime > date('Y-m-d H:i:s'))
+        {
+            return self::relativeFutureDate($datetime, $long, $hours);
+        } else {
+            return self::relativePastDate($datetime, $long, $hours);
+        }
+    }
 
 
-	/**
-	 * Date display in relatives forms, for dates newer than now
-	 * @param	string	$datetime	ISO datetime
-	 * @param	bool	$long		Display a long date format or not
-	 * @param	bool	$hours		always display hours or not
-	 * @return string
-	 */
-	public static function relativeFutureDate($datetime, $long = false, $hours = false) {
-		$ts = bab_mktime($datetime);
-		$sec = ($ts - time());
-		
-		if ($sec > 0 && $sec < 3600) {
-			if ($sec < 60) {
-				return bab_sprintf(bab_translate('in %d seconds'), $sec);
-			} else {
-				$minutes = (int) round($sec/60);
-				if (1 === $minutes) {
-					$str = bab_translate('in %d minute');
-				} else {
-					$str = bab_translate('in %d minutes');
-				}
-				return bab_sprintf($str, $minutes);
-			}
-		}
-		
-		
-		if (date('Ymd', $ts) == date('Ymd')) {
-			if ($hours) {
-				return bab_sprintf(bab_translate('Today at %s'), date('H:i',$ts));
-			} else {
-				return bab_translate('Today');
-			}
-		}
-		
-		$towmorrow = mktime(0, 0, 0, date('n'), (date('j') + 1), date('Y'));
-		if (date('Ymd', $ts) == date('Ymd', $towmorrow)) {
-			if ($hours) {
-				return bab_sprintf(bab_translate('Tomorrow at %s'), date('H:i',$ts));
-			} else {
-				return bab_translate('Tomorrow');
-			}
-		}
-		
-		if ($long) {
-			return bab_longDate($ts, $hours);
-		} else {
-			return bab_shortDate($ts, $hours);
-		}
-	}
+    /**
+     * Date display in relatives forms, for dates older than now
+     * @param	string	$datetime	ISO datetime
+     * @param	bool	$long		Display a long date format or not
+     * @param	bool	$hours		always display hours or not
+     * @return string
+     */
+    public static function relativePastDate($datetime, $long = false, $hours = false) {
+        $ts = bab_mktime($datetime);
+        $sec = (time() - $ts);
+
+        if ($sec > 0 && $sec < 3600) {
+            if ($sec < 60) {
+                return bab_sprintf(bab_translate('%d seconds ago'), $sec);
+            } else {
+                $minutes = (int) round($sec/60);
+                if (1 === $minutes) {
+                    $str = bab_translate('%d minute ago');
+                } else {
+                    $str = bab_translate('%d minutes ago');
+                }
+                return bab_sprintf($str, $minutes);
+            }
+        }
+
+
+        if (date('Ymd', $ts) == date('Ymd')) {
+            if ($hours) {
+                return bab_sprintf(bab_translate('Today at %s'), date('H:i',$ts));
+            } else {
+                return bab_translate('Today');
+            }
+        }
+
+        $yesterday = mktime(0, 0, 0, date('n'), (date('j') - 1), date('Y'));
+        if (date('Ymd', $ts) == date('Ymd', $yesterday)) {
+            if ($hours) {
+                return bab_sprintf(bab_translate('Yesterday at %s'), date('H:i',$ts));
+            } else {
+                return bab_translate('Yesterday');
+            }
+        }
+
+        if ($long) {
+            return bab_longDate($ts, $hours);
+        } else {
+            return bab_shortDate($ts, $hours);
+        }
+    }
+
+
+
+
+
+    /**
+     * Date display in relatives forms, for dates newer than now
+     * @param	string	$datetime	ISO datetime
+     * @param	bool	$long		Display a long date format or not
+     * @param	bool	$hours		always display hours or not
+     * @return string
+     */
+    public static function relativeFutureDate($datetime, $long = false, $hours = false) {
+        $ts = bab_mktime($datetime);
+        $sec = ($ts - time());
+
+        if ($sec > 0 && $sec < 3600) {
+            if ($sec < 60) {
+                return bab_sprintf(bab_translate('in %d seconds'), $sec);
+            } else {
+                $minutes = (int) round($sec/60);
+                if (1 === $minutes) {
+                    $str = bab_translate('in %d minute');
+                } else {
+                    $str = bab_translate('in %d minutes');
+                }
+                return bab_sprintf($str, $minutes);
+            }
+        }
+
+
+        if (date('Ymd', $ts) == date('Ymd')) {
+            if ($hours) {
+                return bab_sprintf(bab_translate('Today at %s'), date('H:i',$ts));
+            } else {
+                return bab_translate('Today');
+            }
+        }
+
+        $towmorrow = mktime(0, 0, 0, date('n'), (date('j') + 1), date('Y'));
+        if (date('Ymd', $ts) == date('Ymd', $towmorrow)) {
+            if ($hours) {
+                return bab_sprintf(bab_translate('Tomorrow at %s'), date('H:i',$ts));
+            } else {
+                return bab_translate('Tomorrow');
+            }
+        }
+
+        if ($long) {
+            return bab_longDate($ts, $hours);
+        } else {
+            return bab_shortDate($ts, $hours);
+        }
+    }
 
 }
 
