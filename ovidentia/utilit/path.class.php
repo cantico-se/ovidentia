@@ -251,14 +251,14 @@ class bab_Path implements SeekableIterator, Countable {
 			if ($this->isDir())
 			{
 				$d = dir($this->toString());
-				
+
 				if (false === $d)
 				{
 					if (!is_readable($this->toString()))
 					{
 						throw new ErrorException(sprintf('Error, the folder %s is not readable', $this->toString()));
 					}
-					
+
 					return array();
 				}
 
@@ -443,6 +443,18 @@ class bab_Path implements SeekableIterator, Countable {
 		return $path;
 	}
 
+
+    /**
+     * Return the path as a string.
+     *
+     * @return string
+     */
+    public function __toString()
+    {
+        return $this->toString();
+    }
+
+
 	/**
 	 * Test if file is a directory
 	 *
@@ -452,7 +464,7 @@ class bab_Path implements SeekableIterator, Countable {
 	{
 		return is_dir($this->toString());
 	}
-	
+
 	/**
 	 * Test if file is a real file
 	 * @since 7.8.92
@@ -462,8 +474,8 @@ class bab_Path implements SeekableIterator, Countable {
 	{
 		return is_file($this->toString());
 	}
-	
-	
+
+
 	/**
 	 * Test if the file exists
 	 * @since 7.8.92
@@ -501,9 +513,9 @@ class bab_Path implements SeekableIterator, Countable {
 	 * @return	bool
 	 */
 	public function isFolderWriteable() {
-        
+
 		$dir = $this->tostring();
-		
+
 
 		if (!@file_exists($dir)) {
 		    $message = sprintf(bab_translate('The folder %s does not exists'), $dir);
@@ -518,7 +530,7 @@ class bab_Path implements SeekableIterator, Countable {
 		}
 
 		if (DIRECTORY_SEPARATOR === '/') {
-		    
+
 			if (!is_writable($dir)) {
 				$message = bab_translate('The folder %s is not writable, please check the access rights');
 				throw new bab_FolderAccessRightsException(sprintf($message, $dir));
@@ -603,7 +615,7 @@ class bab_Path implements SeekableIterator, Countable {
 
 	/**
 	 *
-	 * @return string
+	 * @return string|false
 	 */
 	public function getRealPath()
 	{
@@ -696,13 +708,13 @@ class bab_Path implements SeekableIterator, Countable {
 		}
 
 		$removed = array();
-		
-		
+
+
 
 		do {
 
 			$pop = $this->pop();
-			
+
 
 			if (!$pop) {
 				break;
@@ -711,20 +723,20 @@ class bab_Path implements SeekableIterator, Countable {
 			$removed[] = $pop;
 
 			try {
- 
+
 				$accessible = $this->isFolderWriteable();
-				
+
 			} catch(Exception $e) {
 				$accessible = false;
 			}
 
 		} while(!$accessible);
 
-		
+
 
 		while ($folder = array_pop($removed)) {
 			$this->push($folder);
-			
+
 			if ($this->isDir())
 			{
 				continue;
@@ -759,13 +771,13 @@ class bab_Path implements SeekableIterator, Countable {
 
 		return $result;
 	}
-	
-	
+
+
 	/**
 	 * Delete directory of file
 	 * @since 7.8.92
 	 * @throws bab_FileAccessRightsException, ErrorException
-	 * 
+	 *
 	 * @return bool
 	 */
 	public function delete() {
@@ -773,22 +785,22 @@ class bab_Path implements SeekableIterator, Countable {
 		{
 			return $this->deleteDir();
 		}
-		
+
 		if ($this->isFile())
 		{
 			if (!is_writable($this->toString()))
 			{
 				throw new bab_FileAccessRightsException(sprintf(bab_translate('The file %s is not writable'), $this->getBasename()));
 			}
-			
+
 			if (!unlink($this->toString()))
 			{
 				throw new ErrorException(sprintf('failed to delete %s', $this->getBasename()));
 			}
-			
+
 			return true;
 		}
-		
+
 		throw new ErrorException(sprintf(bab_translate('The file %s does not exists'), $this->getBasename()));
 		return false;
 	}
@@ -798,7 +810,7 @@ class bab_Path implements SeekableIterator, Countable {
  * @since 7.8.92
  */
 class bab_FileAccessRightsException extends Exception {
-	
+
 }
 
 

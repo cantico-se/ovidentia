@@ -2025,7 +2025,7 @@ class BAB_FileManagerEnv
             if (isset($this->iIdObject)) {
                 $this->oFmRootFolder = BAB_FmFolderHelper::getFmFolderById($this->iIdObject);
             }
-            
+
             //'' === $this->sGr si on a clique depuis la section utilisateur
 
             if(!is_null($this->oFmRootFolder) && '' !== $this->sGr)
@@ -3129,6 +3129,10 @@ function isUserFolder($sPath, $oFileManagerEnv = null)
 }
 
 
+/**
+ *
+ * @since 8.2.95
+ */
 function bab_userHavePersonnalStorage()
 {
     static $bHavePersonnalStorage = null;

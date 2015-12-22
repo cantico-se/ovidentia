@@ -568,6 +568,19 @@ abstract class bab_Controller
 		} catch (bab_SaveException $e) {
 
 		    $failedAction = self::getRedirectAction('failed', $method);
+		    
+		    if (bab_isAjaxRequest()) {
+		        header($_SERVER['SERVER_PROTOCOL'] . ' 403 Forbidden', true, 403);
+		        header('Cache-Control: no-cache, must-revalidate');
+		        header('Expires: Mon, 26 Jul 1997 05:00:00 GMT');
+		        header('Content-type: application/json');
+		        die(bab_json_encode(array(
+		            'exception' => get_class($e),
+		            'message' => bab_convertStringFromDatabase($e->getMessage(), 'UTF-8')
+		        )));
+		    }
+
+		    
 		    if ($e instanceof bab_SaveErrorException) {
 		        $this->addError($e->getMessage());
 		    } else {

@@ -42,7 +42,7 @@ class babBody
 
     /**
      * Messages to display on page
-     * 
+     *
      * @see babBody::addMessage();
      * @var unknown_type
      */
@@ -50,14 +50,14 @@ class babBody
 
     /**
      * Error message as html
-     * 
+     *
      * @access public
      */
     public $msgerror;
 
     /**
      * List of errors as text
-     * 
+     *
      * @see babBody::addError()
      * @access public
      */
@@ -71,7 +71,7 @@ class babBody
 
     /**
      * Page title text
-     * 
+     *
      * @var string
      */
     public $raw_title;
@@ -121,7 +121,7 @@ class babBody
         $this->content = '';
         $this->saarray = array();
         $this->babaddons = array();
-        
+
         require_once dirname(__FILE__) . '/session.class.php';
         $session = bab_getInstance('bab_Session');
         if (isset($session->bab_page_messages)) {
@@ -130,7 +130,7 @@ class babBody
             }
             unset($session->bab_page_messages);
         }
-        
+
         if (isset($session->bab_page_errors)) {
             foreach ($session->bab_page_errors as $error) {
                 $this->addError($error);
@@ -149,7 +149,7 @@ class babBody
             case 'currentAdmGroup':
             case 'currentDGGroup':
                 return true;
-            
+
             default:
                 return false;
         }
@@ -161,7 +161,7 @@ class babBody
             case 'isSuperAdmin':
                 trigger_error('babBody->isSuperAdmin is deprecated, please use bab_isUserAdministrator() instead');
                 return bab_isUserAdministrator();
-            
+
             case 'lastlog':
                 trigger_error('babBody->lastlog is deprecated, please use bab_userInfos::getUserSettings() instead');
                 if (bab_isUserLogged()) {
@@ -170,11 +170,11 @@ class babBody
                     return $usersettings['lastlog'];
                 }
                 return '';
-            
+
             case 'currentAdmGroup':
                 trigger_error('babBody->currentAdmGroup is deprecated, please use bab_getCurrentAdmGroup() instead');
                 return bab_getCurrentAdmGroup();
-            
+
             case 'currentDGGroup':
                 trigger_error('babBody->currentDGGroup is deprecated, please use bab_getCurrentDGGroup() instead');
                 return bab_getCurrentDGGroup();
@@ -193,8 +193,8 @@ class babBody
 
     /**
      * Set page title with a text string (no html)
-     * 
-     * @param string $title            
+     *
+     * @param string $title
      */
     public function setTitle($title)
     {
@@ -204,8 +204,8 @@ class babBody
 
     /**
      * Add text message to page
-     * 
-     * @param string $message            
+     *
+     * @param string $message
      */
     public function addMessage($message)
     {
@@ -215,8 +215,8 @@ class babBody
 
     /**
      * Add message to display in next page
-     * 
-     * @param unknown_type $message            
+     *
+     * @param unknown_type $message
      */
     public function addNextPageMessage($message)
     {
@@ -227,14 +227,14 @@ class babBody
         $messages = $session->bab_page_messages;
         $messages[] = $message;
         $session->bab_page_messages = $messages;
-        
+
         return $this;
     }
 
     /**
      * Add error to display in next page
      * 
-     * @param unknown_type $message            
+     * @param string $message
      */
     public function addNextPageError($message)
     {
@@ -245,14 +245,14 @@ class babBody
         $messages = $session->bab_page_errors;
         $messages[] = $message;
         $session->bab_page_errors = $messages;
-        
+
         return $this;
     }
 
     /**
      * Add error message
-     * 
-     * @param string $title            
+     *
+     * @param string $title
      */
     public function addError($error)
     {
@@ -266,8 +266,8 @@ class babBody
 
     /**
      * View as popup
-     * 
-     * @param string $txt            
+     *
+     * @param string $txt
      */
     public function babpopup($txt)
     {
@@ -286,7 +286,7 @@ class babBody
     public function loadSections()
     {
         include_once $GLOBALS['babInstallPath'] . 'utilit/utilitsections.php';
-        
+
         global $babDB, $babBody, $BAB_SESS_LOGGED, $BAB_SESS_USERID;
         $babSectionsType = isset($_SESSION['babSectionsType']) ? $_SESSION['babSectionsType'] : BAB_SECTIONS_ALL;
         $req = "SELECT " . BAB_SECTIONS_ORDER_TBL . ".*, " . BAB_SECTIONS_STATES_TBL . ".closed, " . BAB_SECTIONS_STATES_TBL . ".hidden, " . BAB_SECTIONS_STATES_TBL . ".id_section AS states_id_section FROM " . BAB_SECTIONS_ORDER_TBL . " LEFT JOIN " . BAB_SECTIONS_STATES_TBL . " ON " . BAB_SECTIONS_STATES_TBL . ".id_section=" . BAB_SECTIONS_ORDER_TBL . ".id_section AND " . BAB_SECTIONS_STATES_TBL . ".type=" . BAB_SECTIONS_ORDER_TBL . ".type AND " . BAB_SECTIONS_STATES_TBL . ".id_user='" . $babDB->db_escape_string($BAB_SESS_USERID) . "' ORDER BY " . BAB_SECTIONS_ORDER_TBL . ".ordering ASC";
@@ -295,17 +295,17 @@ class babBody
         $arrsectionsinfo = array();
         $arrsectionsbytype = array();
         $arrsectionsorder = array();
-        
+
         while ($arr = $babDB->db_fetch_array($res)) {
             $objectid = $arr['id'];
-            
+
             $arrsectioninfo = array(
                 'close' => 0,
                 'bshow' => false
             );
             $typeid = $arr['type'];
             $sectionid = $arr['id_section'];
-            
+
             if (isset($arr['states_id_section']) && ! empty($arr['states_id_section'])) {
                 if ($arr['closed'] == 'Y') {
                     $arrsectioninfo['close'] = 1;
@@ -314,7 +314,7 @@ class babBody
                     $arrsectioninfo['bshow'] = true;
                 }
             }
-            
+
             if ($typeid == 1 || $typeid == 3 || $typeid == 4) {
                 $arrsectionsbytype[$typeid][$sectionid] = $objectid;
                 $arrsectioninfo['type'] = $typeid;
@@ -322,16 +322,16 @@ class babBody
                 $arrsectionsbytype['users'][$sectionid] = $objectid;
                 $arrsectioninfo['type'] = $typeid;
             }
-            
+
             $arrsectioninfo['position'] = $arr['position'];
             $arrsectioninfo['sectionid'] = $sectionid;
             $arrsectionsinfo[$objectid] = $arrsectioninfo;
-            
+
             $arrsectionsorder[] = $objectid;
         }
-        
+
         // BAB_PRIVATE_SECTIONS_TBL
-        
+
         $type = 1;
         if (! empty($arrsectionsbytype[$type]) && ($babSectionsType & BAB_SECTIONS_CORE)) {
             $res2 = $babDB->db_query("select * from " . BAB_PRIVATE_SECTIONS_TBL . " where id IN(" . $babDB->quote(array_keys($arrsectionsbytype[$type])) . ")");
@@ -341,7 +341,7 @@ class babBody
             foreach ($arrsectionsbytype[$type] as $sectionid => $objectid) {
                 $arr2 = $arrdbinfo[$sectionid];
                 $arrsectioninfo = $arrsectionsinfo[$objectid];
-                
+
                 switch ($sectionid) {
                     case 1: // admin
                         if (isset($BAB_SESS_LOGGED) && $BAB_SESS_LOGGED && (bab_isUserAdministrator() || bab_getCurrentAdmGroup() != 0)) {
@@ -380,7 +380,7 @@ class babBody
                 }
             }
         }
-        
+
         // BAB_TOPICS_CATEGORIES_TBL sections
         $type = '3';
         if (! empty($arrsectionsbytype[$type]) && ($babSectionsType & BAB_SECTIONS_ARTICLES)) {
@@ -401,7 +401,7 @@ class babBody
                 }
             }
         }
-        
+
         // BAB_ADDONS_TBL sections
         $type = '4';
         if (! empty($arrsectionsbytype[$type]) && ($babSectionsType & BAB_SECTIONS_ADDONS)) {
@@ -410,10 +410,10 @@ class babBody
                 if ($arr2 = bab_addonsInfos::getRow($at[$i])) {
                     $sectionid = $arr2['id'];
                     $objectid = $arrsectionsbytype[$type][$sectionid];
-                    
+
                     if ($arr2['access'] && is_file($GLOBALS['babInstallPath'] . 'addons/' . $arr2['title'] . '/init.php')) {
                         bab_setAddonGlobals($arr2['id']);
-                        
+
                         require_once ($GLOBALS['babInstallPath'] . 'addons/' . $arr2['title'] . '/init.php');
                         $func = $arr2['title'] . '_onSectionCreate';
                         if (function_exists($func)) {
@@ -437,7 +437,7 @@ class babBody
                 }
             }
         }
-        
+
         // personnalized sections
         $type = 'users';
         if (! empty($arrsectionsbytype[$type]) && ($babSectionsType & BAB_SECTIONS_SITE)) {
@@ -476,7 +476,7 @@ class babBody
                 }
             }
         }
-        
+
         foreach ($arrsectionsorder as $objectid) {
             $sectionid = $arrsectionsinfo[$objectid]['sectionid'];
             $type = $arrsectionsinfo[$objectid]['type'];
@@ -538,10 +538,10 @@ class babBody
 
     /**
      * Add a stylesheet to the page
-     * 
+     *
      * @param string $filepath
      *            relative to the site root
-     *            
+     *
      */
     public function addCssStyleSheet($filepath)
     {
@@ -552,7 +552,7 @@ class babBody
 
     /**
      * Add a stylesheet to the page
-     * 
+     *
      * @param string $filename
      *            relative to the site root only in allowed paths or relative to the styles/ folder
      * @return void
@@ -563,14 +563,14 @@ class babBody
             $GLOBALS['babInstallPath'] . 'styles/',
             'vendor/ovidentia'
         );
-        
+
         foreach ($allowedprefix as $test) {
             $length = mb_strlen($test);
             if ($test === mb_substr($filename, 0, $length)) {
                 return $this->addCssStyleSheet($filename);
             }
         }
-        
+
         return $this->addCssStyleSheet($GLOBALS['babInstallPath'] . 'styles/' . $filename);
     }
 
@@ -586,15 +586,15 @@ class babBody
     {
         global $babOvidentiaJs;
         static $jfiles = array();
-        
+
         if (! array_key_exists($file, $jfiles)) {
             $jfiles[$file] = 1;
-            
+
             $defer_attribute = '';
             if ($defer) {
                 $defer_attribute = ' defer="defer" ';
             }
-            
+
             if ($GLOBALS['babInstallPath'] === mb_substr($file, 0, mb_strlen($GLOBALS['babInstallPath']))) {
                 $file = bab_getStaticUrl() . $file;
             }
@@ -605,7 +605,7 @@ class babBody
     /**
      * Adds some javascript code to the current page.
      *
-     * @param string $code            
+     * @param string $code
      */
     public function addJavascript($code)
     {
@@ -621,7 +621,7 @@ class babBody
             $this->file = bab_toHtml(bab_getStaticUrl() . $csspath);
             return true;
         }
-        
+
         return false;
     }
 
@@ -630,11 +630,11 @@ class babBody
         if (count($this->styleSheet) > 0 && false !== current($this->styleSheet)) {
             $this->content = bab_printTemplate($this, 'uiutil.html', 'styleSheet') . $this->content;
         }
-        
+
         if (! empty($this->msgerror)) {
             $this->message = bab_printTemplate($this, 'warning.html', 'texterror');
             // return '';
-        } else 
+        } else
             if (! empty($this->title)) {
                 $this->message = bab_printTemplate($this, 'warning.html', 'texttitle');
             }

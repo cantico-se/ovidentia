@@ -128,6 +128,53 @@ class bab_Settings
 	    return $this->userSettings;
 	}
 	
+	
+	/**
+	 * Get site language
+	 * @return string
+	 */
+	public function getSiteLanguage()
+	{
+	    $site = $this->getSiteSettings();
+	    
+	    if (!empty($site['lang'])) {
+	        return $site['lang'];
+	    }
+	    
+	    // detect from browser setting
+	    
+	    if (isset($_SERVER["HTTP_ACCEPT_LANGUAGE"])) {
+	        
+	        $arrLanguages = bab_getAvailableLanguages();
+	        $previousPos = 1000;
+	        $bLang = null;
+	        $accepted = mb_strtolower($_SERVER["HTTP_ACCEPT_LANGUAGE"]);
+	        
+	        foreach ($arrLanguages as $bLangTmp) {
+	            $pos = mb_strpos($accepted, $bLangTmp);
+	            if (false === $pos) {
+	                continue;
+	            }
+	            if ($previousPos > $pos) {
+	                $previousPos = $pos;
+	                $bLang = $bLangTmp;
+	            }
+	        }
+	        
+	        if (isset($bLang)) {
+	            return $bLang;
+	        }
+	         
+	    }
+	     
+	    
+	    
+	    // default to FR
+	    
+	    return 'fr';
+	}
+	
+	
 	/**
 	 * @return bab_Settings
 	 */

@@ -630,7 +630,7 @@ switch($idx)
         break;
 
     case "ocrights":
-        $babBody->title = bab_getOrgChartName($item) . ": ".bab_translate("List of groups");
+        $babBody->title = bab_toHtml(bab_getOrgChartName($item)) . ": ".bab_translate("List of groups");
 
         $macl = new macl("admoc", "modify", $item, "aclview");
         $macl->addtable( BAB_OCVIEW_GROUPS_TBL,bab_translate("View"));
@@ -645,7 +645,7 @@ switch($idx)
         break;
 
     case "ocupdate":
-        $babBody->title = bab_getOrgChartName($item) . ": ".bab_translate("List of groups");
+        $babBody->title = bab_toHtml(bab_getOrgChartName($item)) . ": ".bab_translate("List of groups");
         aclGroups("admoc", "modify", BAB_OCUPDATE_GROUPS_TBL, $item, "aclview");
         $babBody->addItemMenu("list", bab_translate("Charts"), $GLOBALS['babUrlScript']."?tg=admocs&idx=list");
         $babBody->addItemMenu("modify", bab_translate("Modify"), $GLOBALS['babUrlScript']."?tg=admoc&idx=addoc&item=".$item);
@@ -663,7 +663,7 @@ switch($idx)
         break;
 
     case 'octypes':
-        $babBody->title = bab_getOrgChartName($item) . ": ".bab_translate("Entity types");
+        $babBody->title = bab_toHtml(bab_getOrgChartName($item)) . ": ".bab_translate("Entity types");
         editOrgChartEntityTypes($item);
         $babBody->addItemMenu("list", bab_translate("Charts"), $GLOBALS['babUrlScript']."?tg=admocs&idx=list");
         $babBody->addItemMenu("modify", bab_translate("Modify"), $GLOBALS['babUrlScript']."?tg=admoc&idx=addoc&item=".$item);

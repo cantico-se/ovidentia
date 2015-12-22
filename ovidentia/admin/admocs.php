@@ -126,9 +126,9 @@ function listOrgCharts()
 				$this->arr = $this->db->db_fetch_array($this->res);
 				$this->url = $GLOBALS['babUrlScript']."?tg=admoc&idx=modify&item=".$this->arr['id'];
 				$this->grightsurl = $GLOBALS['babUrlScript']."?tg=admoc&idx=ocrights&item=".$this->arr['id'];
-				$this->dirval = $this->arr['dirname'];
-				$this->urlname = $this->arr['name'];
-				$this->descval = $this->arr['description'];
+				$this->dirval = bab_toHtml($this->arr['dirname']);
+				$this->urlname = bab_toHtml($this->arr['name']);
+				$this->descval = bab_toHtml($this->arr['description']);
 				$i++;
 				return true;
 			} else {
