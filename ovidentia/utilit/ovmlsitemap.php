@@ -805,7 +805,7 @@ class Func_Ovml_Function_SitemapMenu extends Func_Ovml_Function {
                 $return .= '</ul>'."\n";
             }
         }
-        return bab_toHtml($return);
+        return $return;
     }
 }
 
