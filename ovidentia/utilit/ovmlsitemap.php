@@ -531,6 +531,27 @@ class Func_Ovml_Function_SitemapPosition extends Func_Ovml_Function
 
 
 
+/**
+ * Return the node id of the current page
+ *
+ * <OFCurrentNode>
+ */
+class Func_Ovml_Function_CurrentNode extends Func_Ovml_Function
+{
+    /**
+     *
+     * @return string
+     */
+    public function toString()
+    {
+        require_once dirname(__FILE__).'/sitemap.php';
+
+        return bab_SiteMap::getPosition();
+    }
+}
+
+
+
 
 
 
