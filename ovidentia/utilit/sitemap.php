@@ -357,22 +357,23 @@ class bab_siteMapOrphanRootNode extends bab_OrphanRootNode {
      */
     public function addNodeIndexes(bab_Node $node, bab_siteMapItem $sitemapItem)
     {
-        if ($sitemapItem->url)
-        {
+        if ($sitemapItem->url) {
             // add url in index
             $node->addIndex('url', $sitemapItem->url);
         }
 
 
-        if ($sitemapItem->target)
-        {
+        if ($sitemapItem->target) {
             // add target in index
             $node->addIndex('target', $sitemapItem->target->id_function);
         }
 
-        if ($sitemapItem->funcname)
-        {
+        if ($sitemapItem->funcname) {
             $node->addIndex('funcname', $sitemapItem->funcname);
+        }
+        
+        if ($sitemapItem->langId) {
+            $node->addIndex('lang-'.$sitemapItem->langId[0], $sitemapItem->langId[1]);
         }
     }
 
@@ -476,6 +477,52 @@ class bab_siteMapOrphanRootNode extends bab_OrphanRootNode {
         return $this->getDynamicNodeById($id);
     }
 
+    
+    /**
+     * Get the node in sitemap from the lang id
+     * 
+     * @see bab_SitemapItem::$langId
+     * 
+     * @param string $language
+     * @param string $id
+     * 
+     * @return bab_Node
+     */
+    public function getNodeByLangId($language, $id)
+    {
+        $nodes = $this->getNodesByIndex('lang-'.$language, $id);
+        if (0 === count($nodes)) {
+            // node not found
+            return null;
+        }
+        
+        if (1 < count($nodes)) {
+            $errors = array();
+            foreach ($nodes as $n) {
+                $errors[] = $n->getId();
+            }
+            throw new Exception(sprintf('Error, found mutiple nodes with id %s for language %s (%s)', $id, $language, implode(', ', $errors)));
+        }
+        
+        return reset($nodes);
+    }
+    
+    
+    /**
+     * Get list of nodes indexed by language or null if not exists for a language
+     * @return array
+     */
+    public function getLanguageNodes($id)
+    {
+        $languages = bab_getAvailableLanguages();
+        
+        $list = array();
+        foreach ($language as $langCode) {
+            $list[$langCode] = $this->getNodeByLangId($langCode, $id);
+        }
+        
+        return $list;
+    }
 
 
 
@@ -747,6 +794,18 @@ class bab_siteMapItem {
      * @var string
      */
     public $setlanguage = null;
+    
+    
+    /**
+     * Unique node identifier for one language
+     * array(languageCode, nodeId)
+     * The nodeId must be unique for the same language and a list of 
+     * translated items should have the same langId with a different language code
+     * 
+     * @var array
+     */
+    public $langId = null;
+    
 
 
     /**
