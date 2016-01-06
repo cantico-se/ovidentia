@@ -108,12 +108,64 @@ abstract class Ovml_Container_Sitemap extends Func_Ovml_Container
         $baseNodeId = str_replace(' ', '', $baseNodeId);
         if (empty($baseNodeId))
         {
-            $baseNodeId = bab_SiteMap::getVisibleRootNodeByUid($this->sitemap_name);
+            $baseNodeId = bab_siteMap::getVisibleRootNodeByUid($this->sitemap_name);
         }
 
 
         return $baseNodeId;
     }
+    
+    
+    /**
+     * Get a node using the node id or the language node id
+     * @param string $nodeIdAttributeName
+     * @param string $langIdAttributeName
+     * @return bab_Node
+     */
+    protected function getNodeByIdOrLangId($nodeIdAttributeName, $langIdAttributeName)
+    {
+        $nodeId = $this->ctx->get_value($nodeIdAttributeName);
+        $langId = $this->ctx->get_value($langIdAttributeName);
+        
+        if ($langId) {
+            $node = $this->sitemap->getNodeByLangId(bab_getLanguage(), $langId);
+            if (isset($node)) {
+                return $node;
+            }
+        
+            // if node not found by language, we continue with a test by id if the attribute is available
+        }
+        
+        if ($nodeId) {
+            return $this->sitemap->getNodeById($nodeId);
+        }
+        
+
+        return null;
+    }
+    
+    /**
+     * Get a node using the node id or the language node id
+     * @param string $nodeIdAttributeName
+     * @param string $langIdAttributeName
+     * @return bab_Node
+     */
+    protected function getNode($nodeIdAttributeName, $langIdAttributeName)
+    {
+        if ($node = $this->getNodeByIdOrLangId($nodeIdAttributeName, $langIdAttributeName)) {
+            return $node;
+        }
+        
+        trigger_error(sprintf('incorrect attribute in %s#%s, either %s or %s must be used to get a sitemap node', 
+            (string) $ctx->debug_location, 
+            get_class($this),
+            $nodeIdAttributeName,
+            $langIdAttributeName
+        ));
+        
+        return null;
+    }
+
 
 
 
@@ -141,7 +193,6 @@ abstract class Ovml_Container_Sitemap extends Func_Ovml_Container
         $this->ctx->curctx->push('SitemapEntryMenuIgnore', $this->IdEntries[$this->idx]['menuIgnore']);
         $this->ctx->curctx->push('SitemapEntryBreadCrumbIgnore', $this->IdEntries[$this->idx]['breadCrumbIgnore']);
         $this->ctx->curctx->push('SitemapEntryTarget', $this->IdEntries[$this->idx]['target']);
-        $this->ctx->curctx->push('SitemapEntryParentId', $this->IdEntries[$this->idx]['parentNode']);
         $this->idx++;
         $this->index = $this->idx;
         return true;
@@ -153,7 +204,7 @@ abstract class Ovml_Container_Sitemap extends Func_Ovml_Container
 /**
  * Get child nodes (one level) of the specified node.
  *
- * <OCSitemapEntries sitemap="sitemapName" node="parentNode">
+ * <OCSitemapEntries sitemap="sitemapName" (node="parentNode" | langid="parentNode")>
  *
  * </OCSitemapEntries>
  *
@@ -171,10 +222,11 @@ class Func_Ovml_Container_SitemapEntries extends Ovml_Container_Sitemap
 
         parent::setOvmlContext($ctx);
 
-        $node = $ctx->get_value('node');
+
+        
 
         if (isset($this->sitemap)) {
-            $node = $this->sitemap->getNodeById($node);
+            $node = $this->getNode('node', 'langid');
 
             if ($node) {
                 $node = $node->firstChild();
@@ -197,7 +249,6 @@ class Func_Ovml_Container_SitemapEntries extends Ovml_Container_Sitemap
                     $tmp['menuIgnore'] = $item->menuIgnore;
                     $tmp['breadCrumbIgnore'] = $item->breadCrumbIgnore;
                     $tmp['target'] = $item->getTarget()->id_function;
-                    $tmp['parentNode'] = $item->node->parentNode()->getId();
                     $this->IdEntries[] = $tmp;
                     $node = $node->nextSibling();
                 }
@@ -217,7 +268,7 @@ class Func_Ovml_Container_SitemapEntries extends Ovml_Container_Sitemap
 /**
  * Get node.
  *
- * <OCSitemapEntry sitemap="sitemapName" node="nodeId">
+ * <OCSitemapEntry sitemap="sitemapName" ( node="nodeId" | langid="langId" )>
  *
  * </OCSitemapEntry>
  *
@@ -235,10 +286,9 @@ class Func_Ovml_Container_SitemapEntry extends Ovml_Container_Sitemap
 
         parent::setOvmlContext($ctx);
 
-        $node = $ctx->get_value('node');
 
         if (isset($this->sitemap)) {
-            $node = $this->sitemap->getNodeById($node);
+            $node = $this->getNode('node', 'langid');
 
             if ($node) {
 
@@ -259,7 +309,6 @@ class Func_Ovml_Container_SitemapEntry extends Ovml_Container_Sitemap
                 $tmp['menuIgnore'] = $item->menuIgnore;
                 $tmp['breadCrumbIgnore'] = $item->breadCrumbIgnore;
                 $tmp['target'] = $item->getTarget()->id_function;
-                $tmp['parentNode'] = $item->node->parentNode()->getId();
                 $this->IdEntries[] = $tmp;
             }
 
@@ -304,32 +353,35 @@ class Func_Ovml_Container_SitemapPath extends Ovml_Container_Sitemap
         parent::setOvmlContext($ctx);
 
         $baseNodeId = $this->getBaseNode();
-        $nodeId = $ctx->get_value('node');
+        
 
         if (isset($this->sitemap)) {
+            
+            $node = $this->getNodeByIdOrLangId('node', 'langid');
+            if (isset($node)) {
+                $nodeId = $node->getId();
+            } else {
+                $nodeId = bab_siteMap::getPosition();
+            }
 
-            if ($nodeId === false || empty($nodeId)) {
-                $nodeId = bab_SiteMap::getPosition();
+        
+            if ($baseNodeId && $nodeId) {
+                // if base node (parameter 'basenode') has been specified,
+                // we try to find if a descendant of this node has
+                // a target to the current position.
+                $baseNode = $this->sitemap->getNodeById($baseNodeId);
 
-                if ($baseNodeId && $nodeId) {
-                    // if base node (parameter 'basenode') has been specified,
-                    // we try to find if a descendant of this node has
-                    // a target to the current position.
-                    $baseNode = $this->sitemap->getNodeById($baseNodeId);
+                if (null === $baseNode) {
+                    trigger_error(sprintf('the basenode "%s" has not been found in the sitemap "%s", file %s',$baseNodeId, $this->sitemap_name, (string) $ctx->debug_location));
+                } else {
 
-                    if (null === $baseNode)
-                    {
-                        trigger_error(sprintf('the basenode "%s" has not been found in the sitemap "%s", file %s',$baseNodeId, $this->sitemap_name, (string) $ctx->debug_location));
-                    } else {
-
-                        if ($customNode = $this->sitemap->getNodeByTargetId($baseNodeId, $nodeId))
-                        {
-                            $nodeId = $customNode->getId();
-                        }
-
+                    if ($customNode = $this->sitemap->getNodeByTargetId($baseNodeId, $nodeId)) {
+                        $nodeId = $customNode->getId();
                     }
+
                 }
             }
+        
 
 
             if (empty($nodeId)) {
@@ -376,7 +428,6 @@ class Func_Ovml_Container_SitemapPath extends Ovml_Container_Sitemap
                     $tmp['menuIgnore'] = $item->menuIgnore;
                     $tmp['breadCrumbIgnore'] = $item->breadCrumbIgnore;
                     $tmp['target'] = $item->getTarget()->id_function;
-                    $tmp['parentNode'] = $item->node->parentNode()->getId();
 
                     array_unshift($this->IdEntries, $tmp);
                     if ($item->id_function === $baseNodeId) {
@@ -417,7 +468,7 @@ class Func_Ovml_Container_SitemapPath extends Ovml_Container_Sitemap
 
 /**
  * Return the sitemap position in a html LI
- * <OFSitemapPosition [sitemap="sitemapName"] [keeplastknown="0|1"] [basenode="node"] [node=""] >
+ * <OFSitemapPosition [sitemap="sitemapName"] [keeplastknown="0|1"] [basenode="nodeid"] [node="nodeid"] >
  *
  * - The sitemap attribute is optional.
  * 		The default value is the sitemap selected in Administration > Sites > Site configuration.
@@ -425,7 +476,6 @@ class Func_Ovml_Container_SitemapPath extends Ovml_Container_Sitemap
  * 		By default it is the node corresponding to the current page (or the last known page displayed if keeplastknown is active).
  * - The basenode attribute is optional, it will be the starting node used for the <ul> tree.
  * 		The default value is 'babDgAll'.
- * - The node attribute is optional. Specify the node for wich we want the path. If not specified the current node is used.
  * - The keeplastknown attribute is optional, if set to "1", the last accessed sitemap node is kept selected if accessing a page not in the sitemap.
  * 		The default value is '1'.
  */
@@ -447,7 +497,7 @@ class Func_Ovml_Function_SitemapPosition extends Func_Ovml_Function
         $node = empty($args['node']) ? null : $args['node'];
 
         $breadcrumb = bab_siteMap::getBreadCrumb($sitemap, $baseNode, $node);
-
+        
         if (!isset($args['keeplastknown'])) {
             // If keeplastknown is not specified, active by default
             $keepLastKnown = 1;
@@ -562,29 +612,30 @@ class Func_Ovml_Function_CurrentNode extends Func_Ovml_Function
 
 
 
+
+
+
+
+
 /**
  * Return the sitemap menu tree in a html UL LI
  *
- * <OFSitemapMenu [sitemap="sitemapName"] [basenode="parentNode"] [selectednode=""] [keeplastknown="0|1"] [maxdepth="depth"] [ignorelastlevel="0|1"] [mindepth="depth"] [outerul="1"] [admindelegation="0"]>
+ * <OFSitemapMenu [sitemap="sitemapName"] [baselangid="parentnode"] [basenode="parentNode"] [selectednode=""] [keeplastknown="0|1"] [maxdepth="depth"] [outerul="1"] [admindelegation="0"]>
  *
- * - The "sitemap" attribute is optional.
- *      The default value is the sitemap selected in Administration > Sites > Site configuration.
- * - The "keeplastknown" attribute is optional, if set to "1", the last accessed sitemap node is kept selected if accessing a page not in the sitemap.
- *      The default value is '1'.
- * - The "basenode" attribute is optional, it will be the starting node used for the <ul> tree.
- *      The default value is set by API (ex: Custom for sitemap from the sitemap_editor).
- * - The "selectednode" attribute is optional, will add class 'selected' to the corresponding li, and 'active' to itself and all its <li> ancestors.
- *      By default it is the node corresponding to the current page (or the last known page displayed if keeplastknown is active).
- * - The "maxdepth" attribute is optional, limits the number of levels of nested <ul>.
- *      No maximum depth by default.
- * - The "ignorelastlevel" attribute is optional, if set to "1", nodes without children will not appear in the menu. (8.3.92)
- *      The default value is '0'.
- * - The "mindepth" attribute is optional, overrides the ignorelastlevel for node below or at this level. (8.3.92)
- *      The default value is '0' (i.e. no min depth).
- * - The "outerul" attribute is optional, if set to "1" add a UL htmltag
- *      The default value is '1'.
- * - The "admindelegation" attribute is optional, if set to "1" the display of ovidentia administration node will only display if the user can manage this property
- *      The default value is '0'.
+ * - The sitemap attribute is optional.
+ * 		The default value is the sitemap selected in Administration > Sites > Site configuration.
+ * - The keeplastknown attribute is optional, if set to "1", the last accessed sitemap node is kept selected if accessing a page not in the sitemap.
+ * 		The default value is '1'.
+ * - The basenode attribute is optional, it will be the starting node used for the <ul> tree.
+ * 		The default value is set by API (ex: Custom for sitemap from the sitemap_editor).
+ * - The selectednode attribute is optional, will add class 'selected' to the corresponding li, and 'active' to itself and all its <li> ancestors.
+ * 		By default it is the node corresponding to the current page (or the last known page displayed if keeplastknown is active).
+ * - The maxdepth attribute is optional, limits the number of levels of nested <ul>.
+ * 		No maximum depth by default.
+ * - The outerul attribute is optional, if set to "1" add a UL htmltag
+ * 		The default value is '1'.
+ * - The admindelegation attribute is optional, if set to "1" the display of ovidentia administration node will only display if the user can manage this property
+ * 		The default value is '0'.
  *
  *
  * Example:
@@ -620,31 +671,22 @@ class Func_Ovml_Function_SitemapMenu extends Func_Ovml_Function {
 
     protected	$maxDepth = 100;
 
-    protected	$minDepth = 0;
+    private function getHtml(bab_Node $node, $mainmenuclass = null, $depth = 1) {
 
-    protected	$ignoreLastLevel = false;
-
-
-    private function getHtml(bab_Node $node, $mainmenuclass = null, $depth = 1)
-    {
-        $siteMapItem = $node->getData();
-
-        $ignoreNode = $siteMapItem->menuIgnore
-            || ($this->ignoreLastLevel && $depth > $this->minDepth && !$node->hasChildNodes());
-
-        if ($ignoreNode) {
-            return '';
-        }
-
+        global $babBody;
         $return = '';
+        $classnames = array();
 
+        $id = $node->getId();
+        $siteMapItem = $node->getData();
         /* @var $siteMapItem bab_siteMapItem */
 
         if($siteMapItem->target){
             $truncateId = $siteMapItem->target->id_function;
-            if ($this->admindelegation
+            if($this->admindelegation
                 && !isset($this->delegAdmin[bab_getCurrentAdmGroup()][$truncateId])
-                && (substr($truncateId, 0, 8) == 'babAdmin' || $truncateId == 'babSearchIndex') && $truncateId != 'babAdmin') {
+                && (substr($truncateId, 0, 8) == 'babAdmin' || $truncateId == 'babSearchIndex') && $truncateId != 'babAdmin')
+            {
                 //bab_debug($siteMapItem->target->id_function. ' == '.$siteMapItem->id_function);
                 return $return;
             }
@@ -667,18 +709,19 @@ class Func_Ovml_Function_SitemapMenu extends Func_Ovml_Function {
         $ul = null;
 
         if ($node->hasChildNodes() && $depth < $this->maxDepth) {
-            $childrenHtml = '';
+            $ul = "<ul class=\"niv".($depth + 1)."\">\n";
+
             $node = $node->firstChild();
             do {
-                $childrenHtml .= $this->getHtml($node, null, $depth + 1);
+                if (!$node->getData()->menuIgnore)
+                {
+                    $ul .= $this->getHtml($node, null, $depth + 1);
+                }
             } while ($node = $node->nextSibling());
 
-            if (trim($childrenHtml) !== '') {
-                $ul = "<ul class=\"niv".($depth + 1)."\">\n"
-                    . $childrenHtml
-                    . "</ul>\n";
-            }
+            $ul .= "</ul>\n";
         }
+
 
         return $siteMapItem->getHtmlListItem($ul, $additional_classes);
     }
@@ -746,7 +789,17 @@ class Func_Ovml_Function_SitemapMenu extends Func_Ovml_Function {
         if (!($dg_node instanceOf bab_Node)) {
             return '';
         }
-
+        
+        
+        
+        if (!empty($args['baselangid'])) {
+            $baselangNode = $sitemap->getNodeByLangId(bab_getLanguage(), $args['baselangid']);
+            if (isset($baselangNode)) {
+                $args['basenode'] = $baselangNode->getId();
+            }
+        }
+        
+        
         if (empty($args['basenode']))
         {
             $args['basenode'] = bab_siteMap::getVisibleRootNodeByUid($sitemap_name);
@@ -763,19 +816,13 @@ class Func_Ovml_Function_SitemapMenu extends Func_Ovml_Function {
         if (isset($args['maxdepth']) && (!empty($args['maxdepth']))) {
             $this->maxDepth = $args['maxdepth'];
         }
-        if (isset($args['mindepth']) && (!empty($args['mindepth']))) {
-            $this->minDepth = $args['mindepth'];
-        }
-        if (isset($args['ignorelastlevel']) && (!empty($args['ignorelastlevel']))) {
-            $this->ignoreLastLevel = ($args['ignorelastlevel'] == true);
-        }
 
 
         if (isset($args['selectednode']) && (!empty($args['selectednode']))) {
             $selectedNodeId = $args['selectednode'];
         }
         if (!isset($selectedNodeId)) {
-            $selectedNodeId = bab_Sitemap::getPosition();
+            $selectedNodeId = bab_siteMap::getPosition();
 
 
             // if base node (parameter 'basenode') has been specified,
@@ -887,7 +934,7 @@ class Func_Ovml_Function_SitemapUrl extends Func_Ovml_Function
             $sitemap_uid = $babBody->babsite['sitemap'];
         }
 
-        $rootNode = bab_siteMap::getByUid($sitemap_uid);
+        $rootNode = bab_sitemap::getByUid($sitemap_uid);
 
         if (isset($args['sitemap']))
         {
@@ -945,7 +992,7 @@ class Func_Ovml_Function_SitemapCustomNodeId extends Func_Ovml_Function
         }
 
 
-        $coreRootNode = bab_siteMap::get(); // core sitemap
+        $coreRootNode = bab_sitemap::get(); // core sitemap
         $node = $coreRootNode->getNodeById($nodeid);
 
         if (null === $node)
