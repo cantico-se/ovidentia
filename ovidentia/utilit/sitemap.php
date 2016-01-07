@@ -536,7 +536,7 @@ class bab_siteMapOrphanRootNode extends bab_OrphanRootNode {
     public function getNodeByTargetId($baseNodeId, $targetId)
     {
         $customNodes = $this->getNodesByIndex('target', $targetId);
-        foreach($customNodes as $customNode)
+        foreach ($customNodes as $customNode)
         {
             /*@var $customNode bab_Node */
 
@@ -550,10 +550,100 @@ class bab_siteMapOrphanRootNode extends bab_OrphanRootNode {
                     return $customNode;
                 }
 
-            } while($testNode = $testNode->parentNode());
+            } while ($testNode = $testNode->parentNode());
         }
 
         return null;
+    }
+    
+    
+    
+    
+    /**
+     * Get filtered node list
+     * @param string $baseNodeId
+     * @param Array $customNodes
+     * @return array
+     */
+    private function filterByBaseNodeId($baseNodeId, Array $customNodes)
+    {
+        $return = array();
+        foreach ($customNodes as $customNode)
+        {
+            /*@var $customNode bab_Node */
+        
+            // get the first custom node under baseNode
+            $testNode = $customNode->parentNode();
+            /*@var $testNode bab_Node */
+            do {
+        
+                if ($baseNodeId === $testNode->getId()) {
+                    $return[] = $customNode;
+                }
+        
+            } while ($testNode = $testNode->parentNode());
+        }
+        
+        return $return;
+    }
+    
+    
+    
+    /**
+     * Get a list of nodes under $baseNodeId witch match target pattern
+     * Usefull method to get list of accessibles nodes
+     * 
+     * @example to get list of accessible applications id 
+     *          $r = $this->getNodesByTargetPattern('Custom', '/appApplication_(\d+)/');
+     *          the list of id will be in
+     *          $r->matchs[1]
+     *          
+     * 
+     * return value will contain 2 properties
+     * matches: the combined preg_match results
+     * nodes: the matching custom nodes
+     * 
+     * @param string $baseNodeId        ex: Custom
+     * @param string $pattern           Pattern for preg_match
+     * 
+     * @return stdClass[]
+     */
+    public function getNodesByTargetPattern($baseNodeId, $pattern)
+    {
+        
+        $targetIndex = $this->getIndex('target');
+        
+        $return = new stdClass();
+        $return->matches = array();
+        $return->nodes = array();
+        
+        foreach ($targetIndex as $targetId => $customNodes) {
+
+
+            if (preg_match($pattern, $targetId, $m)) {
+                
+                $customNodes = $this->filterByBaseNodeId($baseNodeId, $customNodes);
+                
+                if (empty($customNodes)) {
+                    // no match under baseNodeId, continue to next target
+                    continue;
+                }
+                
+                $return->nodes = array_merge($return->nodes, $customNodes);
+                
+                unset($m[0]);
+                
+                foreach ($m as $position => $value) {
+                    if (!isset($return->matches[$position])) {
+                        $return->matches[$position] = array();
+                    }
+                    
+                    $return->matches[$position][] = $value;
+                }
+            }
+        }
+        
+        return $return;
     }
 
 
