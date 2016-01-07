@@ -117,7 +117,7 @@ function getGroupsMembers($id_grp)
  * @param int 		$grpdg
  * @return bool
  */
-function bab_updateGroupInfo($id, $name, $description, $managerid, $grpdg = 0)
+function bab_updateGroupInfo($id, $name, $description, $managerid = 0, $grpdg = 0)
     {
 
     global $babDB;
