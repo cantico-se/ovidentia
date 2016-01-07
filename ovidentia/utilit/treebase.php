@@ -625,6 +625,16 @@ class bab_RootNode extends bab_Node
 	 * @param string $name
 	 * @return array
 	 */
+	public function getIndex($name)
+	{
+	    return $this->_index[$name];
+	}
+	
+	/**
+	 * Return all values in index $name
+	 * @param string $name
+	 * @return array
+	 */
 	public function getIndexValues($name)
 	{
 		if (array_key_exists($name, $this->_index)) {
