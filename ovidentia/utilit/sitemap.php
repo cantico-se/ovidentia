@@ -977,7 +977,6 @@ class bab_siteMapItem {
      */
     public function canUpdate()
     {
-        var_dump($this->getRights());
         return $this->canDo('update');
     }
     
