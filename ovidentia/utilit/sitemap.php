@@ -896,6 +896,15 @@ class bab_siteMapItem {
      */
     public $langId = null;
     
+    
+    /**
+     * Array of rights
+     * keys can be 'create', 'read', 'update', 'delete'
+     * the default value is array('read' => true) because the node is not in sitemap when not readable
+     * @see self::getRights()
+     * @var array
+     */
+    public $rights = null;
 
 
     /**
@@ -920,7 +929,68 @@ class bab_siteMapItem {
         return $this;
     }
 
-
+    /**
+     * get array of rights
+     * keys can be 'create', 'read', 'update', 'delete'
+     * the default value is array('read' => true) because the node is not in sitemap when not readable
+     * @see self::getRights()
+     * @var array
+     */
+    public function getRights()
+    {
+        if (!isset($this->rights)) {
+            return array(
+                'read' => true
+            );
+        }
+        
+        return $this->rights;
+    }
+    
+    /**
+     * Generic method to test custom right
+     * @return bool
+     */
+    public function canDo($right)
+    {
+        $rights = $this->getRights();
+        if (!isset($rights[$right])) {
+            return false;
+        }
+        
+        return $rights[$right];
+    }
+    
+    
+    
+    /**
+     * @return bool
+     */
+    public function canCreate()
+    {
+        return $this->canDo('create');
+    }
+    
+    
+    /**
+     * @return bool
+     */
+    public function canUpdate()
+    {
+        var_dump($this->getRights());
+        return $this->canDo('update');
+    }
+    
+    
+    /**
+     * @return bool
+     */
+    public function canDelete()
+    {
+        return $this->canDo('delete');
+    }
+    
+    
 
     /**
      * return rewrite name of node
