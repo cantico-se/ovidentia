@@ -188,6 +188,10 @@ class bab_siteMapOrphanRootNode extends bab_OrphanRootNode {
      */
     private function getNonIgnoredParent($id_parent)
     {
+        if (!isset($this->rewriteIndex_id[$id_parent])) {
+            return $id_parent;
+        }
+        
         $parentIndex = $this->rewriteIndex_id[$id_parent];
         if (isset($parentIndex[3]) && $parentIndex[3]) { // ignore
             return $this->getNonIgnoredParent($parentIndex[0]);
