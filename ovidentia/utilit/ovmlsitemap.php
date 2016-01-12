@@ -156,13 +156,16 @@ abstract class Ovml_Container_Sitemap extends Func_Ovml_Container
             return $node;
         }
         
+        // do not display error because this can be un inaccessible node
+        
+        /*
         trigger_error(sprintf('incorrect attribute in %s#%s, either %s or %s must be used to get a sitemap node', 
-            (string) $ctx->debug_location, 
+            (string) $this->ctx->debug_location, 
             get_class($this),
             $nodeIdAttributeName,
             $langIdAttributeName
         ));
-        
+        */
         return null;
     }
 
