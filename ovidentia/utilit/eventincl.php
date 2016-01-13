@@ -35,6 +35,8 @@ class bab_event {
 
 }
 
+class bab_eventPageNotFound extends bab_event { }
+
 /**
  * Add event listener
  * Once the listener is added, the function $function_name will be fired if bab_fireEvent is called with an event

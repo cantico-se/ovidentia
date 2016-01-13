@@ -1363,3 +1363,19 @@ class babLanguageFilter
 } //class LanguageFilter
 
 
+
+
+/**
+ * Display page not found
+ */
+function bab_pageNotFound()
+{
+    $event = new bab_eventPageNotFound;
+    bab_fireEvent($event);
+    
+    $babBody = bab_getBody();
+    
+    header('HTTP/1.0 404 Not Found');
+    $babBody->addError(bab_translate('This page does not exists'));
+    $babBody->babpopup(bab_printOvmlTemplate('404.html'));
+}

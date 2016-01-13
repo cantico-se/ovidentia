@@ -600,8 +600,11 @@ function bab_getAddonFilePathFromTg($tg, $babWebStat = null)
     $addon_row = bab_addonsInfos::getDbRow($arr[1]);
     $addon = bab_getAddonInfosInstance($addon_row['title']);
 
+    if (false === $addon) {
+        bab_pageNotFound();
+    }
 
-    if(false === $addon || !$addon->isAccessValid()) {
+    if(!$addon->isAccessValid()) {
         if ($addon && $addon->hasAccessControl() && $addon->isInstalled() && !$addon->isDisabled())
         {
             bab_requireAccess('bab_addons_groups', $addon->getId(), bab_translate('You must be logged in to access this page.'));
