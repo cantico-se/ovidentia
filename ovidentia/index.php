@@ -890,7 +890,7 @@ switch(bab_rp('tg'))
             require_once $module;
         } else {
             
-            if (!empty(bab_rp('tg'))) {
+            if ('' !== bab_rp('tg', '')) {
                 bab_pageNotFound();
             }
             
