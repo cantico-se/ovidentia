@@ -212,7 +212,9 @@ class Func_Ovml_Container_DbDirectoryFields extends Func_Ovml_Container
 }
 
 
-
+/** 
+ * <OCDbDirectoryMembers></OCDbDirectoryMembers>
+ */
 class Func_Ovml_Container_DbDirectoryMembers extends Func_Ovml_Container
 {
 	var $index;
@@ -228,40 +230,30 @@ class Func_Ovml_Container_DbDirectoryMembers extends Func_Ovml_Container
 		global $babDB;
 		parent::setOvmlContext($ctx);
 		$this->directoryid = $ctx->get_value('directoryid');
-		if( $this->directoryid !== false && !empty($this->directoryid) && bab_isAccessValid(BAB_DBDIRVIEW_GROUPS_TBL, $this->directoryid) )
-			{
+		if( $this->directoryid !== false && !empty($this->directoryid) && bab_isAccessValid(BAB_DBDIRVIEW_GROUPS_TBL, $this->directoryid) ) {
 			$res = $babDB->db_query("select id_group from ".BAB_DB_DIRECTORIES_TBL." where id='".$babDB->db_escape_string($this->directoryid)."'");
-			if( $res && $babDB->db_num_rows($res ) > 0 )
-				{
+			if( $res && $babDB->db_num_rows($res ) > 0 ) {
 				$arr = $babDB->db_fetch_array($res);
 				$idgroup = $arr['id_group'];
 				$idfields = $ctx->get_value('fields');
-				if( $idfields === false || empty($idfields) )
-					{
+				if( $idfields === false || empty($idfields) ) {
 					$ball = $ctx->get_value('all');
-					if( !$ball )
-						{
+					if( !$ball ) {
 						$res = $babDB->db_query("select * from ".BAB_DBDIR_FIELDSEXTRA_TBL." where id_directory='".($idgroup != 0? 0: $babDB->db_escape_string($this->directoryid))."' and ordering!='0' order by ordering asc");
 						$idfields = array();
-						while( $arr = $babDB->db_fetch_array($res))
-							{
-							if( $arr['id_field'] < BAB_DBDIR_MAX_COMMON_FIELDS )
-								{
+						while( $arr = $babDB->db_fetch_array($res)) {
+							if( $arr['id_field'] < BAB_DBDIR_MAX_COMMON_FIELDS ) {
 								$rr = $babDB->db_fetch_array($babDB->db_query("select name from ".BAB_DBDIR_FIELDS_TBL." where id='".$arr['id_field']."'"));
 								$idfields[] = $rr['name'];
-								}
-							else
-								{
+							} else {
 								$idfields[] = "babdirf".$arr['id'];
-								}
 							}
 						}
 					}
-				else
-					{
+				} else {
 					$ball = false;
 					$idfields = explode(',', $idfields );
-					}
+				}
 
 				$res = $babDB->db_query("select * from ".BAB_DBDIR_FIELDSEXTRA_TBL." where id_directory='".($idgroup != 0? 0: $babDB->db_escape_string($this->directoryid))."' order by list_ordering asc");
 
@@ -270,82 +262,68 @@ class Func_Ovml_Container_DbDirectoryMembers extends Func_Ovml_Container
 				$leftjoin = array();
 				$select = array();
 
-				while( $arr = $babDB->db_fetch_array($res))
-					{
-					if( $arr['id_field'] < BAB_DBDIR_MAX_COMMON_FIELDS )
-						{
+				while( $arr = $babDB->db_fetch_array($res)) {
+					if( $arr['id_field'] < BAB_DBDIR_MAX_COMMON_FIELDS ) {
 						$rr = $babDB->db_fetch_array($babDB->db_query("select description, name from ".BAB_DBDIR_FIELDS_TBL." where id='".$arr['id_field']."'"));
-						if( $ball || in_array($rr['name'], $idfields))
-							{
+						if( $ball || in_array($rr['name'], $idfields)) {
 							$nfields[] = $rr['name'];
 							$this->IdEntries[] = array('name' => translateDirectoryField($rr['description']) , 'xname' => $rr['name']);
 							$select[] = 'e.'.$rr['name'];
-							}
 						}
-					else
-						{
+					} else {
 						$rr = $babDB->db_fetch_array($babDB->db_query("select name from ".BAB_DBDIR_FIELDS_DIRECTORY_TBL." where id='".($arr['id_field'] - BAB_DBDIR_MAX_COMMON_FIELDS)."'"));
-						if( $ball || in_array( "babdirf".$arr['id'], $idfields))
-							{
+						if( $ball || in_array( "babdirf".$arr['id'], $idfields)) {
 							$xfields[] = "babdirf".$arr['id'];
 							$this->IdEntries[] = array('name' => translateDirectoryField($rr['name']) , 'xname' => "babdirf".$arr['id']);
 
 							$leftjoin[] = 'LEFT JOIN '.BAB_DBDIR_ENTRIES_EXTRA_TBL.' lj'.$arr['id']." ON lj".$arr['id'].".id_fieldx='".$arr['id']."' AND e.id=lj".$arr['id'].".id_entry";
 							$select[] = "lj".$arr['id'].'.field_value '."babdirf".$arr['id']."";
-							}
 						}
 					}
+				}
 				
 				$this->count = 0;
 
-				if( count($nfields) > 0 || count($xfields) > 0)
-					{
+				if( count($nfields) > 0 || count($xfields) > 0) {
 					$nfields[] = "id";
 					$select[] = 'e.id';
 					$nfields[] = "id_user";
 					$select[] = 'e.id_user';
 					$select[] = 'e.date_modification';
 					$select[] = 'e.id_modifiedby';
-					if( !in_array('email', $select))
+					if( !in_array('email', $select)) {
 						$select[] = 'e.email';
+					}
 
 					$orderby = $ctx->get_value('orderby');
 
-					if( $orderby === false || empty($orderby) )
-						{
+					if( $orderby === false || empty($orderby) ) {
 						$orderby = $nfields[0];
-						}
+					}
 
 					$order = $ctx->get_value('order');
 
-					if( $order === false || empty($order) )
-						{
+					if( $order === false || empty($order) ) {
 						$order = 'asc';
-						}
+					}
 
 					$like = $ctx->get_value('like');
 
-					if( $like === false || empty($like) )
-						{
+					if( $like === false || empty($like) ) {
 						$like = '';
-						}
-					else
-						{
-						if ( false === mb_strpos($orderby, 'babdirf'))
+					} else {
+						if ( false === mb_strpos($orderby, 'babdirf')) {
 							$like = " AND `".$babDB->db_escape_string($orderby)."` LIKE '".$babDB->db_escape_string($like)."%'";
-						elseif (0 === mb_strpos($orderby, 'babdirf'))
-							{
+						} elseif (0 === mb_strpos($orderby, 'babdirf')) {
 							$idfield = mb_substr($orderby,7);
 							$like = " AND lj".$idfield.".field_value LIKE '".$babDB->db_escape_string($like)."%'";
-							}
-						else
+						} else {
 							$like = '';
-			
 						}
+					}
 
 
-					if( $idgroup > 1 )
-						{
+					if( $idgroup > 1 ) {
 						$req = " ".BAB_USERS_TBL." u2,
 								".BAB_USERS_GROUPS_TBL." u,
 								".BAB_DBDIR_ENTRIES_TBL." e 
@@ -355,8 +333,7 @@ class Func_Ovml_Container_DbDirectoryMembers extends Func_Ovml_Container
 									AND ".bab_userInfos::queryAllowedUsers('u2')." 
 									AND u.id_object=e.id_user 
 									AND e.id_directory='0'";
-						}
-					elseif (1 == $idgroup) {
+					} elseif (1 == $idgroup) {
 						$req = " ".BAB_USERS_TBL." u,
 						".BAB_DBDIR_ENTRIES_TBL." e 
 						".implode(' ',$leftjoin)." 
@@ -364,11 +341,9 @@ class Func_Ovml_Container_DbDirectoryMembers extends Func_Ovml_Container
 							u.id=e.id_user 
 							AND ".bab_userInfos::queryAllowedUsers('u')." 
 							AND e.id_directory='0'";
-						}
-					else
-						{
+					} else {
 						$req = " ".BAB_DBDIR_ENTRIES_TBL." e ".implode(' ',$leftjoin)." WHERE e.id_directory='".$babDB->db_escape_string($this->directoryid) ."'";
-						}
+					}
 
 
 					$req = "select ".implode(',', $select)." from ".$req." ".$like." order by `".$babDB->db_escape_string($orderby)."` ".$babDB->db_escape_string($order);
@@ -379,18 +354,15 @@ class Func_Ovml_Container_DbDirectoryMembers extends Func_Ovml_Container
 					/* find prefered mail account */
 					$this->accountid = 0;
 					$res = $babDB->db_query("select id from ".BAB_MAIL_ACCOUNTS_TBL." where owner='".$babDB->db_escape_string($GLOBALS['BAB_SESS_USERID'])."' order by prefered desc limit 0,1");
-					if( $res && $babDB->db_num_rows($res) > 0 )
-						{
+					if( $res && $babDB->db_num_rows($res) > 0 ) {
 						$arr = $babDB->db_fetch_array($res);
 						$this->accountid = $arr['id'];
-						}
 					}
 				}
 			}
-		else
-			{
+		} else {
 			$this->count = 0;
-			}
+		}
 
 		$this->ctx->curctx->push('CCount', $this->count);
 	}
@@ -399,49 +371,39 @@ class Func_Ovml_Container_DbDirectoryMembers extends Func_Ovml_Container
 	{
 		global $babDB;
 
-		if( $this->idx < $this->count)
-		{
+		if( $this->idx < $this->count) {
 			$this->memberfields = $babDB->db_fetch_array($this->res);
 			$this->ctx->curctx->push('CIndex', $this->idx);
 			$this->ctx->curctx->push('DirectoryMemberId', $this->memberfields['id']);
-			if( $this->memberfields['date_modification'] == '0000-00-00 00:00:00')
+			if( $this->memberfields['date_modification'] == '0000-00-00 00:00:00') {
 				$this->ctx->curctx->push('DirectoryMemberUpdateDate', '');
-			else
+			} else {
 				$this->ctx->curctx->push('DirectoryMemberUpdateDate', bab_mktime($this->memberfields['date_modification']));
+			}
 			$this->ctx->curctx->push('DirectoryMemberUpdateAuthor', $this->memberfields['id_modifiedby']);
 			$this->ctx->curctx->push('DirectoryMemberUrl', $GLOBALS['babUrlScript']."?tg=directory&idx=ddbovml&directoryid=".$this->directoryid."&userid=".$this->memberfields['id']);
-			if( isset($this->memberfields['email']) && $this->accountid )
-				{
+			if( isset($this->memberfields['email']) && $this->accountid ) {
 				$this->ctx->curctx->push('DirectoryMemberEmailUrl', $GLOBALS['babUrlScript']."?tg=mail&idx=compose&accid=".$this->accountid."&to=".$this->memberfields['email']);
-				}
-			else
-				{
+			} else {
 				$this->ctx->curctx->push('DirectoryMemberEmailUrl', '');
-				}
+			}
 
-			for( $k = 0; $k < count($this->IdEntries); $k++ )
-				{
+			for( $k = 0; $k < count($this->IdEntries); $k++ ) {
 				$this->ctx->curctx->push($this->IdEntries[$k]['xname']."Name", $this->IdEntries[$k]['name']);
-				if( $this->IdEntries[$k]['xname'] == 'jpegphoto')
-					{
+				if( $this->IdEntries[$k]['xname'] == 'jpegphoto') {
 					$photo = new bab_dirEntryPhoto($this->memberfields['id']);
 					$this->ctx->curctx->push($this->IdEntries[$k]['xname'].'Value', $photo->getUrl());
-					}
-				else
-					{
+				} else {
 					$this->ctx->curctx->push($this->IdEntries[$k]['xname'].'Value', $this->memberfields[$this->IdEntries[$k]['xname']]);
-					}
 				}
-			if( $this->memberfields['id_user'] != 0 )
-				{
+			}
+			if( $this->memberfields['id_user'] != 0 ) {
 				$this->ctx->curctx->push('DirectoryMemberUserId', $this->memberfields['id_user']);
-				}
+			}
 			$this->idx++;
 			$this->index = $this->idx;
 			return true;
-		}
-		else
-		{
+		} else {
 			$this->idx=0;
 			$this->IdEntries = array();
 			return false;

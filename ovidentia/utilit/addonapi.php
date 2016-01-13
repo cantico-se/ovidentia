@@ -2368,7 +2368,7 @@ function bab_getGroups($parent=BAB_REGISTERED_GROUP, $all=true)
  * @param int		$parent
  * @return int
  */
-function bab_createGroup( $name, $description, $managerid, $parent = 1)
+function bab_createGroup( $name, $description, $managerid = 0, $parent = 1)
 {
     include_once $GLOBALS['babInstallPath']."utilit/grpincl.php";
     return bab_addGroup($name, $description, $managerid, 0, $parent);

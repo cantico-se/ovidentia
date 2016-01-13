@@ -146,7 +146,7 @@ function bab_updateGroupInfo($id, $name, $description, $managerid = 0, $grpdg = 
  * @return boolean
  */
 function bab_moveGroup($id, $id_parent, $moveoption, $groupname)
-    {
+{
     include_once $GLOBALS['babInstallPath']."utilit/grptreeincl.php";
 
     $tree = new bab_grptree();
@@ -244,7 +244,7 @@ function bab_SwapGroupPosition($id_group1, $id_group2)
  * @param int 		$parent					parent group id
  * @return int
  */
-function bab_addGroup($name, $description, $managerid, $grpdg, $parent = 1)
+function bab_addGroup($name, $description, $managerid = 0, $grpdg, $parent = 1)
     {
     global $babBody, $babDB;
 

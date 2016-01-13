@@ -243,9 +243,6 @@ if ('version' !== bab_rp('tg') || 'upgrade' !== bab_rp('idx')) {
         include $babInstallPath."utilit/cookieident.php";
     }
 
-    bab_isUserLogged();
-    bab_updateUserSettings();
-
     if (isset($_GET['clear'])) {
         bab_siteMap::clearAll();
         if (isset($_SESSION['ovml_cache']))
@@ -253,6 +250,9 @@ if ('version' !== bab_rp('tg') || 'upgrade' !== bab_rp('idx')) {
             unset($_SESSION['ovml_cache']);
         }
     }
+
+    bab_isUserLogged();
+    bab_updateUserSettings();
 } else {
     if (!isset($babLanguage)) {
         $babLanguage = 'fr';
