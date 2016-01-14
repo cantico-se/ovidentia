@@ -419,13 +419,11 @@ class bab_Registry
 		}
 		if (!isset($this->r[$this->dir])) {
 			$l = mb_strlen($this->dir);
-			$this->r[$this->dir] = $babDB->db_query("
-			
-			SELECT DISTINCT 
-				LEFT(RIGHT(dirkey,LENGTH(dirkey)-'$l'), LOCATE('/',RIGHT(dirkey,LENGTH(dirkey)-'$l')) ) dirkey  
-			FROM bab_registry 
-				WHERE dirkey REGEXP ".$babDB->quote('^'.preg_quote($this->dir).'[^/]+/.+$')." 
-				");
+			$sql = "SELECT DISTINCT 
+						LEFT(RIGHT(dirkey,LENGTH(dirkey)-'$l'), LOCATE('/',RIGHT(dirkey,LENGTH(dirkey)-'$l')) ) dirkey  
+					FROM bab_registry 
+					WHERE dirkey REGEXP ".$babDB->quote('^'.preg_quote($this->dir).'[^/]+/.+$');
+			$this->r[$this->dir] = $babDB->db_query($sql);
 		}
 		
 		if ($arr = $babDB->db_fetch_assoc($this->r[$this->dir])) {
