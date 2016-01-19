@@ -95,10 +95,8 @@ class bab_siteMapOrphanRootNode extends bab_OrphanRootNode {
                 // in this case, this subtree has been added before the rewriting root node
 
                 $I = new bab_NodeIterator($newNode);
-                foreach($I as $childNode)
-                {
-                    if (!($childNode instanceof bab_Node))
-                    {
+                while ($childNode = $I->nextNode()) {
+                    if (!($childNode instanceof bab_Node)) {
                         //TODO Ne devrais pas se produire!
                         //bab_debug($newNode->__toString());
                         continue;
@@ -588,6 +586,64 @@ class bab_siteMapOrphanRootNode extends bab_OrphanRootNode {
             } while ($testNode = $testNode->parentNode());
         }
         
+        return $return;
+    }
+    
+    
+    
+    
+
+
+
+
+    /**
+     * Get a list of nodes under $baseNodeId witch match id with a pattern
+     * Usefull method to get list of accessibles nodes
+     *
+     * @example to get list of accessible applications id
+     *          $r = $this->getNodesByTargetPattern('appApplications', '/appApplication_(\d+)/');
+     *          the list of id will be in
+     *          $r->matchs[1]
+     *
+     *
+     * return value will contain 2 properties
+     * matches: the combined preg_match results
+     * nodes: the matching nodes
+     *
+     * @param string $baseNodeId        ex: Custom
+     * @param string $pattern           Pattern for preg_match
+     *
+     * @return stdClass[]
+     */
+    public function getNodesByIdPattern($baseNodeId, $pattern)
+    {
+    
+        $return = new stdClass();
+        $return->matches = array();
+        $return->nodes = array();
+        
+        $baseNode = $this->getNodeById($baseNodeId);
+    
+        $I = new bab_NodeIterator($baseNode);
+        while($childNode = $I->nextNode()) {
+            /*@var $childNode \bab_Node */
+    
+            if (preg_match($pattern, $childNode->getId(), $m)) {
+    
+                $return->nodes[] = $childNode;
+    
+                unset($m[0]);
+    
+                foreach ($m as $position => $value) {
+                    if (!isset($return->matches[$position])) {
+                        $return->matches[$position] = array();
+                    }
+    
+                    $return->matches[$position][] = $value;
+                }
+            }
+        }
+    
         return $return;
     }
     
