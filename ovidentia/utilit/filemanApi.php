@@ -1400,7 +1400,7 @@ class bab_Directory
 
 			bab_fireEvent($eventfiles);
 		}
-		return true;
+		return $iIdFile;
 	}
 
 	/**
