@@ -329,6 +329,81 @@ class Func_Ovml_Container_SitemapEntry extends Ovml_Container_Sitemap
 
 
 /**
+ * Get nodes under basenode with a target
+ *
+ * <OCSitemapCustomNode [sitemap="sitemapName"] [basenode="node"] target="node">
+ *
+ * </OCSitemapCustomNode>
+ *
+ * - The sitemap attribute is optional.
+ * 		The default value is the sitemap selected in Administration > Sites > Site configuration.
+ * 
+ */
+class Func_Ovml_Container_SitemapCustomNode extends Ovml_Container_Sitemap
+{
+    var $IdEntries = array();
+    var $index;
+    var $count;
+    var $data;
+
+    public function setOvmlContext(babOvTemplate $ctx)
+    {
+        parent::setOvmlContext($ctx);
+
+        $baseNodeId = $this->getBaseNode();
+
+        $this->IdEntries = array();
+        $this->count = 0;
+
+        if (isset($this->sitemap)) {
+
+            $targetId = $ctx->get_value('target');
+            
+
+            if (!$targetId) {
+                trigger_error(sprintf('the target attribute is mandatory in OCSitemapCustomNode, file %s', (string) $ctx->debug_location));
+                $this->ctx->curctx->push('CCount', $this->count);
+                return;
+            }
+
+            $nodes = $this->sitemap->getNodesByTargetId($baseNodeId, $targetId);
+            $this->count = count($nodes);
+            $this->ctx->curctx->push('CCount', $this->count);
+
+            foreach ($nodes as $node) {
+                $item = $node->getData();
+                /* @var $item bab_SitemapItem */
+                $tmp = array();
+
+                $tmp['url'] = $item->getRwUrl();
+                $tmp['text'] = $item->name;
+                $tmp['description'] = $item->description;
+                $tmp['id'] = $item->id_function;
+                $tmp['onclick'] = $item->onclick;
+                $tmp['folder'] = $item->folder;
+                $tmp['pageTitle'] = $item->getPageTitle();
+                $tmp['pageDescription'] = $item->getPageDescription();
+                $tmp['pageKeywords'] = $item->getPageKeywords();
+                $tmp['classnames'] = $item->getIconClassnames();
+                $tmp['menuIgnore'] = $item->menuIgnore;
+                $tmp['breadCrumbIgnore'] = $item->breadCrumbIgnore;
+                $tmp['target'] = $item->getTarget()->id_function;
+
+                $this->IdEntries[] = $tmp;
+            }
+        }
+    }
+}
+
+
+
+
+
+
+
+
+
+/**
  * Get path starting from root (or a specified base node) to a specific sitemap node.
  *
  * <OCSitemapPath [sitemap="sitemapName"] [node="node"] [basenode="node"] [keeplastknown="0|1"] [limit=max_nodes|start_node,max_nodes]>

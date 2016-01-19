@@ -525,6 +525,37 @@ class bab_siteMapOrphanRootNode extends bab_OrphanRootNode {
         
         return $list;
     }
+    
+    
+    /**
+     * Get all nodes found under $baseNodeId with a target to $targetId
+     * @param	string	$baseNodeId
+     * @param	string	$targetId
+     *
+     * @return bab_Node
+     */
+    public function getNodesByTargetId($baseNodeId, $targetId)
+    {
+        $nodes = array();
+        $customNodes = $this->getNodesByIndex('target', $targetId);
+        foreach ($customNodes as $customNode)
+        {
+            /*@var $customNode bab_Node */
+    
+            // get the first custom node under baseNode
+            $testNode = $customNode->parentNode();
+            /*@var $testNode bab_Node */
+            do {
+    
+                if ($baseNodeId === $testNode->getId()) {
+                    $nodes[] = $customNode;
+                }
+    
+            } while ($testNode = $testNode->parentNode());
+        }
+    
+        return $nodes;
+    }
 
 
 
