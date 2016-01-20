@@ -65,14 +65,16 @@ abstract class Ovml_Container_Sitemap extends Func_Ovml_Container
         if (is_string($limit)) {
             $limits = explode(',', $limit);
             if (count($limits) === 1) {
-                $this->limitRows = $limit;
+                $this->limitRows = (int) $limit;
             } else {
-                $this->limitOffset = $limits[0];
-                $this->limitRows = $limits[1];
+                $this->limitOffset = (int) $limits[0];
+                $this->limitRows = (int) $limits[1];
             }
         }
 
-        $this->idx += $this->limitOffset;
+        if ($this->limitOffset > 0) {
+            $this->idx += $this->limitOffset;
+        }
 
         $sitemap = $ctx->get_value('sitemap');
 
@@ -178,24 +180,33 @@ abstract class Ovml_Container_Sitemap extends Func_Ovml_Container
      */
     public function getnext()
     {
+        if (0 === $this->idx && $this->limitOffset < 0) {
+            // initialize real offset if offset < 0
+            $this->limitOffset = $this->count + $this->limitOffset;
+            $this->idx += $this->limitOffset;
+        }
+        
         if ($this->idx >= $this->count || (isset($this->limitRows) && ($this->idx >= $this->limitRows + $this->limitOffset))) {
             $this->idx = $this->limitOffset;
             return false;
         }
-        $this->ctx->curctx->push('CIndex', $this->idx);
-        $this->ctx->curctx->push('SitemapEntryUrl', $this->IdEntries[$this->idx]['url']);
-        $this->ctx->curctx->push('SitemapEntryText', $this->IdEntries[$this->idx]['text']);
-        $this->ctx->curctx->push('SitemapEntryDescription', $this->IdEntries[$this->idx]['description']);
-        $this->ctx->curctx->push('SitemapEntryId', $this->IdEntries[$this->idx]['id']);
-        $this->ctx->curctx->push('SitemapEntryOnclick', $this->IdEntries[$this->idx]['onclick']);
-        $this->ctx->curctx->push('SitemapEntryFolder', $this->IdEntries[$this->idx]['folder'] ? '1' : '0');
-        $this->ctx->curctx->push('SitemapEntryPageTitle', $this->IdEntries[$this->idx]['pageTitle']);
-        $this->ctx->curctx->push('SitemapEntryPageDescription', $this->IdEntries[$this->idx]['pageDescription']);
-        $this->ctx->curctx->push('SitemapEntryPageKeywords', $this->IdEntries[$this->idx]['pageKeywords']);
-        $this->ctx->curctx->push('SitemapEntryClassnames', $this->IdEntries[$this->idx]['classnames']);
-        $this->ctx->curctx->push('SitemapEntryMenuIgnore', $this->IdEntries[$this->idx]['menuIgnore']);
-        $this->ctx->curctx->push('SitemapEntryBreadCrumbIgnore', $this->IdEntries[$this->idx]['breadCrumbIgnore']);
-        $this->ctx->curctx->push('SitemapEntryTarget', $this->IdEntries[$this->idx]['target']);
+        
+        $entry = $this->IdEntries[$this->idx];
+        
+        $this->ctx->curctx->push('CIndex'                          , $this->idx);
+        $this->ctx->curctx->push('SitemapEntryUrl'                 , $entry['url']);
+        $this->ctx->curctx->push('SitemapEntryText'                , $entry['text']);
+        $this->ctx->curctx->push('SitemapEntryDescription'         , $entry['description']);
+        $this->ctx->curctx->push('SitemapEntryId'                  , $entry['id']);
+        $this->ctx->curctx->push('SitemapEntryOnclick'             , $entry['onclick']);
+        $this->ctx->curctx->push('SitemapEntryFolder'              , $entry['folder'] ? '1' : '0');
+        $this->ctx->curctx->push('SitemapEntryPageTitle'           , $entry['pageTitle']);
+        $this->ctx->curctx->push('SitemapEntryPageDescription'     , $entry['pageDescription']);
+        $this->ctx->curctx->push('SitemapEntryPageKeywords'        , $entry['pageKeywords']);
+        $this->ctx->curctx->push('SitemapEntryClassnames'          , $entry['classnames']);
+        $this->ctx->curctx->push('SitemapEntryMenuIgnore'          , $entry['menuIgnore']);
+        $this->ctx->curctx->push('SitemapEntryBreadCrumbIgnore'    , $entry['breadCrumbIgnore']);
+        $this->ctx->curctx->push('SitemapEntryTarget'              , $entry['target']);
         $this->idx++;
         $this->index = $this->idx;
         return true;
@@ -331,12 +342,14 @@ class Func_Ovml_Container_SitemapEntry extends Ovml_Container_Sitemap
 /**
  * Get nodes under basenode with a target
  *
- * <OCSitemapCustomNode [sitemap="sitemapName"] [basenode="node"] target="node">
+ * <OCSitemapCustomNode [sitemap="sitemapName"] [basenode="node"] target="node" [limit=""]>
  *
  * </OCSitemapCustomNode>
  *
  * - The sitemap attribute is optional.
  * 		The default value is the sitemap selected in Administration > Sites > Site configuration.
+ * 
+ * - The limit attribute can be used to limit number of items
  * 
  */
 class Func_Ovml_Container_SitemapCustomNode extends Ovml_Container_Sitemap
@@ -412,12 +425,17 @@ class Func_Ovml_Container_SitemapCustomNode extends Ovml_Container_Sitemap
  *
  * - The sitemap attribute is optional.
  * 		The default value is the sitemap selected in Administration > Sites > Site configuration.
+ * 
  * - The node attribute is optional, it specifies the sitemap id of the node for which the path will be returned.
  * 		The default is the node corresponding to the current page (or the last known page displayed if keeplastknown is active).
+ * 
  * - The basenode attribute is optional, it will be the starting node used for the <ul> tree.
  * 		The default value is set by api (ex: sitemap_editor).
+ * 
  * - The keeplastknown attribute is optional, if set to "1", the last accessed sitemap node is kept selected if accessing a page not in the sitemap.
  * 		The default value is '1'.
+ * 
+ * - The limit attribute is optional, if start_node<0 the start node will be computed from the last element. max_nodes must be greater than 0.
  */
 class Func_Ovml_Container_SitemapPath extends Ovml_Container_Sitemap
 {
