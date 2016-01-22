@@ -390,15 +390,17 @@ class bab_functionalities {
 	 */
 	public function register($func_path, $include_file) {
 	    
-	    
+	   
 
 		// verify parent functionality
 		$parent_original = $this->treeRootPath.'/'.dirname($func_path).'/'.$this->original;
-		
+
 		if ('.' !== dirname($func_path) && !file_exists($parent_original)) {
 			trigger_error(sprintf('The functionality "%s" cannot be registered because parent functionality does not exists', $func_path));
 			return false;
 		}
+		
+		bab_functionality::includeOriginal(dirname($func_path));
 		
 		// force the registred include path to be relative to the site root path
 		$rootPath = realpath('.');
