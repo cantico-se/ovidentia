@@ -685,7 +685,7 @@ class Func_Ovml_Function_SitemapPosition extends Func_Ovml_Function
 /**
  * Return the node id of the current page
  *
- * <OFCurrentNode>
+ * <OFCurrentNode  [saveas=""]>
  */
 class Func_Ovml_Function_CurrentNode extends Func_Ovml_Function
 {
@@ -697,7 +697,9 @@ class Func_Ovml_Function_CurrentNode extends Func_Ovml_Function
     {
         require_once dirname(__FILE__).'/sitemap.php';
 
-        return bab_SiteMap::getPosition();
+        $nodeId = bab_SiteMap::getPosition();
+
+        return $this->format_output($nodeId, $this->args);
     }
 }
 
