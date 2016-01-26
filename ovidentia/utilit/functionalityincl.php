@@ -395,12 +395,15 @@ class bab_functionalities {
 		// verify parent functionality
 		$parent_original = $this->treeRootPath.'/'.dirname($func_path).'/'.$this->original;
 
-		if ('.' !== dirname($func_path) && !file_exists($parent_original)) {
-			trigger_error(sprintf('The functionality "%s" cannot be registered because parent functionality does not exists', $func_path));
-			return false;
+		if ('.' !== dirname($func_path)) {
+		    
+		    bab_functionality::includeOriginal(dirname($func_path));
+		    
+		    if (!file_exists($parent_original)) {
+    			trigger_error(sprintf('The functionality "%s" cannot be registered because parent functionality does not exists', $func_path));
+    			return false;
+    		}
 		}
-		
-		bab_functionality::includeOriginal(dirname($func_path));
 		
 		// force the registred include path to be relative to the site root path
 		$rootPath = realpath('.');
