@@ -1029,13 +1029,15 @@ class bab_siteMapItem {
      */
     public function getRights()
     {
-        if (!isset($this->rights)) {
+        $item = $this->getTarget();
+        
+        if (!isset($item->rights)) {
             return array(
                 'read' => true
             );
         }
         
-        return $this->rights;
+        return $item->rights;
     }
     
     /**

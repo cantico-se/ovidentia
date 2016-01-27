@@ -703,12 +703,12 @@ class bab_ArticleDraftEditor {
 			->setValues($_POST)
 			->setHiddenValue('tg', 'artedit')
 			->setHiddenValue('idx', 'save')
-			->setHiddenValue('iddraft', $this->draft->getId())
+			->setHiddenValue('iddraft', (int) $this->draft->getId())
 			->setHiddenValue('ajaxpath', $GLOBALS['babUrlScript'])
-			->setHiddenValue('submitUrl', bab_pp('submitUrl', $this->submitUrl))
-			->setHiddenValue('cancelUrl', bab_pp('cancelUrl', $this->cancelUrl))
-			->setHiddenValue('babpopup', false)
-			->setHiddenValue('id_topic_db', $values['id_topic']);
+			->setHiddenValue('submitUrl', (string) bab_pp('submitUrl', $this->submitUrl))
+			->setHiddenValue('cancelUrl', (string) bab_pp('cancelUrl', $this->cancelUrl))
+			->setHiddenValue('babpopup', 0)
+			->setHiddenValue('id_topic_db', (int) $values['id_topic']);
 
 
 		$page->addItem($FormArticle);
