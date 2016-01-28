@@ -412,7 +412,7 @@ function updateConfirmationWaitingArticle($idart, $bconfirm, $comment)
 					$draft->log('refused', $comment);
 				}
 				deleteFlowInstance($draft->idfai);
-				notifyArticleDraftAuthor($idart, 0);
+				notifyArticleDraftAuthor($idart, 0, $comment);
 				break;
 			case 1:
 				$articleid = acceptWaitingArticle($idart);
@@ -420,7 +420,7 @@ function updateConfirmationWaitingArticle($idart, $bconfirm, $comment)
 					return false;
 				}
 				deleteFlowInstance($draft->idfai);
-				notifyArticleDraftAuthor($idart, 1);
+				notifyArticleDraftAuthor($idart, 1, $comment);
 				bab_deleteArticleDraft($idart);
 				if ($draft->id_article != 0) {
 					$draft->log('accepted');
