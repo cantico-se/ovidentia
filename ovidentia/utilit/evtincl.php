@@ -754,6 +754,7 @@ function confirmApprobEvent($uid, $idcal, $relationcal, $status, $comment, $dtst
 		return false;
 	}
 	
+	require_once dirname(__FILE__).'/wfincl.php';
 	$approvers = bab_WFGetWaitingApproversInstance($relation['X-CTO-WFINSTANCE']);
 	
 	if (!in_array(bab_getUserId(), $approvers))
@@ -774,7 +775,12 @@ function confirmApprobEvent($uid, $idcal, $relationcal, $status, $comment, $dtst
 			
 		case BAB_CAL_EVT_CURRENT:
 			$period_list = array($period);
-			$replace_list = $allperiods;
+			$replace_list = array();
+			foreach($allperiods as $p) {
+			    if ($p->getProperty('UID') !== $period->getProperty('UID')) {
+			        $replace_list[] = $p;
+			    }
+			}
 			break;
 			
 		default:
