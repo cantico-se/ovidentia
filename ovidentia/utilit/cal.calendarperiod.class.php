@@ -676,6 +676,11 @@ class bab_CalendarPeriod extends bab_ICalendarObject {
 		{
 			$id_user = $GLOBALS['BAB_SESS_USERID'];
 		}
+		
+		if (!$id_user)
+		{
+		    return false;
+		}
 
 		$relations = $this->getRelations();
 		foreach($relations as $relation)
@@ -684,13 +689,10 @@ class bab_CalendarPeriod extends bab_ICalendarObject {
 			{
 				$user_instances = array();
 
-				if ($id_user)
-				{
-					require_once dirname(__FILE__).'/wfincl.php';
-					$user_instances = bab_WFGetWaitingInstances($id_user);
-				}
-
-				if (in_array($relation['X-CTO-WFINSTANCE'], $user_instances))
+				require_once dirname(__FILE__).'/wfincl.php';
+				$approvers = bab_WFGetWaitingApproversInstance($relation['X-CTO-WFINSTANCE']);
+				
+				if (in_array($id_user, $approvers))
 				{
 					// the user is an approbator, he can view event details
 					return true;
