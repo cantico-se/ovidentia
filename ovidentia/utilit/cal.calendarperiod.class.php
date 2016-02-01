@@ -658,6 +658,7 @@ class bab_CalendarPeriod extends bab_ICalendarObject {
 			'email' => $email
 		);
 	}
+	
 
 
 	/**
@@ -674,7 +675,7 @@ class bab_CalendarPeriod extends bab_ICalendarObject {
 	{
 		if (null === $id_user)
 		{
-			$id_user = $GLOBALS['BAB_SESS_USERID'];
+			$id_user = bab_getUserId();
 		}
 		
 		if (!$id_user)
