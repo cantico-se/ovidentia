@@ -403,7 +403,6 @@ function bab_createCalendarPeriod(Func_CalendarBackend $backend, $args, bab_Peri
 	// add additional calendars as attendee property
 	$calendars = bab_getICalendars()->getCalendars();
 
-
 	foreach($args['selected_calendars'] as $idcal)
 	{
 		if (isset($calendars[$idcal]))
@@ -462,7 +461,8 @@ function bab_createCalendarPeriod(Func_CalendarBackend $backend, $args, bab_Peri
 						$status = 'NEEDS-ACTION';
 					}
 				}
-
+				
+				
 				if ($calendar->getUrlIdentifier() === $attendee->getUrlIdentifier()) {
 
 					$period->addRelation('PARENT', $attendee, $status, $idfai);
@@ -754,12 +754,11 @@ function confirmApprobEvent($uid, $idcal, $relationcal, $status, $comment, $dtst
 		return false;
 	}
 	
+	$approvers = bab_WFGetWaitingApproversInstance($relation['X-CTO-WFINSTANCE']);
 	
-	$arrschi = bab_getWaitingIdSAInstance($GLOBALS['BAB_SESS_USERID']);
-	
-	if (!in_array($relation['X-CTO-WFINSTANCE'], $arrschi))
+	if (!in_array(bab_getUserId(), $approvers))
 	{
-		throw new Exception(sprintf('Access denied to this approbation, X-CTO-WFINSTANCE = %s not found in list of instance', $relation['X-CTO-WFINSTANCE']));
+		throw new Exception('Access denied to this approbation, user not found in approvers list');
 		return false;
 	}
 	
