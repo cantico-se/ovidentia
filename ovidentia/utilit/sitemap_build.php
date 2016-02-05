@@ -1743,6 +1743,9 @@ function bab_getUserDelegationUrls($id_delegation, $deleg, $dg_prefix) {
             }
         }
 
+    /*
+     * replaced by the orgchart addon
+     * 
     if( bab_orgchartAccess() )
         {
         $array_urls[] = array(
@@ -1752,7 +1755,8 @@ function bab_getUserDelegationUrls($id_delegation, $deleg, $dg_prefix) {
             'icon'	=> 'apps-orgcharts'
             );
         }
-
+    */
+        
     if ( bab_statisticsAccess() != -1 )
         {
         $array_urls[] = array(

@@ -128,7 +128,7 @@ class bab_siteMapOrphanRootNode extends bab_OrphanRootNode {
                 $id,
                 $rewriteName,
                 $sitemapItem->funcname,
-                (bool) $sitemapItem->breadCrumbIgnore
+                (bool) $sitemapItem->rewriteIgnore
             );
         }
 
@@ -881,6 +881,12 @@ class bab_siteMapItem {
      * @var bool
      */
     public $breadCrumbIgnore = false;
+    
+    /**
+     * Specify if a node should be ignored in a rewrite path
+     * @var bool
+     */
+    public $rewriteIgnore = false;
 
 
     /**
@@ -1301,7 +1307,7 @@ class bab_siteMapItem {
                 break;
             }
 
-            if (!$sitemapItem->breadCrumbIgnore) {
+            if (!$sitemapItem->rewriteIgnore) {
                 array_unshift($arr, $sitemapItem->getRewriteName());
             }
         } while ($node = $node->parentNode());
