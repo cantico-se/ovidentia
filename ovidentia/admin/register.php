@@ -349,12 +349,13 @@ class bab_notifyAdminUserRegistrationCls
  * @return unknown_type
  */
 function notifyAdminUserRegistration($name, $email, $nickname, $pwd)
-    {
+{
     global $babBody, $babAdminEmail, $babInstallPath;
 
     $mail = bab_mail();
-    if( $mail == false )
+    if( $mail == false ) {
         return;
+    }
     $mail->mailTo($email, $name);
     $mail->mailFrom($babAdminEmail, $GLOBALS['babAdminName']);
     $mail->mailSubject(bab_translate("Registration Confirmation"));
@@ -362,9 +363,9 @@ function notifyAdminUserRegistration($name, $email, $nickname, $pwd)
     $message = bab_translate("You have been registered on our site") ."<br>";
     $message .= bab_translate("Login ID") .": ". $nickname;
     if( !empty($pwd))
-        {
-        $message .= " / ". bab_translate("Password") .": ". $pwd;
-        }
+    {
+        $message .= " / ". bab_translate("Password") .": ". bab_toHtml($pwd);
+    }
 
     $tempa = new bab_notifyAdminUserRegistrationCls($name, $message);
     $message = $mail->mailTemplate(bab_printTemplate($tempa,"mailinfo.html", "userregistration2"));
@@ -374,16 +375,16 @@ function notifyAdminUserRegistration($name, $email, $nickname, $pwd)
     $message = bab_translate("You have been registered on our site")."\n";
     $message .= bab_translate("Nickname") .": ". $nickname;
     if( !empty($pwd))
-        {
+    {
         $message .= " / ". bab_translate("Password") .": ". $pwd;
-        }
+    }
 
     $tempa = new bab_notifyAdminUserRegistrationCls($name, $message);
     $message = bab_printTemplate($tempa,"mailinfo.html", "userregistrationtxt2");
 
     $mail->mailAltBody($message);
     return $mail->send();
-    }
+}
 
 
 
