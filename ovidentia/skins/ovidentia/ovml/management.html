@@ -1,13 +1,22 @@
 <link rel="stylesheet" href="" />
 <style>
-.sitemap-menu-root{
-	width: 40%;
+/*.sitemap-menu-root{
+	width: 100%;
 	float:left;
 }
 .niv2{
-display: block;
+	display: block;
+    width: 100px;
+    height: 100px;
+    margin: 20px;
+    float: left;
+    border: 10px solid black;
 }
-
+ul.niv2{
+width: 100%;
+height: auto;
+float:left;*/
+}
 </style>
 <form name="search" onsubmit="return findInPage(this.string.value);">
 	<div align="left">
@@ -27,7 +36,35 @@ display: block;
 </div>
 
 <script type="text/javascript">
+	//$("li.niv4").hide();
+	/*$("li.niv4").css("display" , "none");
+	jQuery("ul.niv3").hover(function() {
+		this.$("li.niv4").show();
+		console.log("hover done");
+	});*/
+	jQuery(".playground ul li ul li").each(function(){
+		if (jQuery(this).find('li').get(0)) {
+			jQuery(this).children('*:not(ul)').after('<a href="#" class="toggle-open">(Ouvrir / Fermer)</a>');
+		}
+	});
+	jQuery(".playground ul li ul li ul").hide();
+	jQuery('.toggle-open').click( function() {
+		jQuery(this).parent().children('ul').toggle();
+		return false;
+	});
+	/*$('li').hover(function(e){
+	    if( $(this).find('ul.niv3').hasClass('active') ){
+	        $(this).children('ul').removeClass('active').children('li').slideUp();
+	        e.stopPropagation();
+	    }
+	    else{
+	        $(this).children('ul').addClass('active').children('li').slideDown();
+	        $("li.niv4").css("display" ,"none" );
+	        e.stopPropagation();
+	    }
+	});*/ 
 
+//RECHERCHE
 var n = 0;
 function findInPage(str) {
     var txt, i, found;
@@ -82,6 +119,6 @@ function findInPage(str) {
     }
     return false;
 }
-
+// FIN DE LA RECHERCHE
 
 </script>
