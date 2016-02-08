@@ -1071,7 +1071,7 @@ function notifyArticleDraftApprovers($id, $users)
 	$mail->send();
 	}
 
-function notifyArticleDraftAuthor($idart, $what)
+function notifyArticleDraftAuthor($idart, $what, $comment)
 	{
 	global $babBody, $babDB, $babAdminEmail;
 
@@ -1092,11 +1092,11 @@ function notifyArticleDraftAuthor($idart, $what)
 			var $dateval;
 
 
-			function clsNotifyArticleDraftAuthor($id, $what, $title, $topic, $authorname)
+			function clsNotifyArticleDraftAuthor($id, $what, $title, $topic, $authorname, $comment)
 				{
 				global $BAB_SESS_USER, $BAB_SESS_EMAIL, $babSiteName;
 				$this->titlename = $title;
-				$this->articleurl = $GLOBALS['babUrlScript']."?tg=login&cmd=detect&referer=".urlencode("?tg=approb&idx=all");
+				$this->articleurl = '?tg=approb';
 				if( $what == 0 )
 					{
 					$this->about = bab_translate("Your article has been refused");
@@ -1105,17 +1105,17 @@ function notifyArticleDraftAuthor($idart, $what)
 					{
 					$this->about = bab_translate("Your article has been accepted");
 					}
-				$this->message = "";
+				$this->message = bab_toHtml($comment);
 				$this->from = bab_translate("Author");
 				$this->category = bab_translate("Topic");
 				$this->title = bab_translate("Title");
 				$this->categoryname = viewCategoriesHierarchy_txt($topic);
 				$this->site = bab_translate("Web site");
-				$this->sitename = $babSiteName;
+				$this->sitename = bab_toHtml($babSiteName);
 				$this->date = bab_translate("Date");
 				$timestamp = mktime();
 				$this->dateval = bab_strftime($timestamp);
-				$this->author = $authorname;
+				$this->author =  bab_toHtml($authorname);
 
 				/* template variables used in customized file mailinfo.html */
 				$this->babtpl_topicname = $this->categoryname;
@@ -1142,7 +1142,7 @@ function notifyArticleDraftAuthor($idart, $what)
 		$mail->mailTo($authoremail, $authorname);
 		$mail->mailFrom($GLOBALS['babAdminEmail'], $GLOBALS['babAdminName']);
 
-		$tempc = new clsNotifyArticleDraftAuthor($idart, $what, $arr['title'], $arr['id_topic'], $authorname);
+		$tempc = new clsNotifyArticleDraftAuthor($idart, $what, $arr['title'], $arr['id_topic'], $authorname, $comment);
 		$message = $mail->mailTemplate(bab_printTemplate($tempc,"mailinfo.html", "confirmarticle"));
 		if( $what == 0 )
 		{

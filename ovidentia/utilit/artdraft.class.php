@@ -467,32 +467,20 @@ class bab_ArtDraft
 		// les fichiers actuel sont enregistres dans le repertoire draft avec id,fichier
 
 
-		$targetPath = $filePicker->getFolder();
-		if ($targetPath->isDir())
-		{
-			$targetPath->deleteDir();
-		}
-		$targetPath->createDir();
-
 		$res = $babDB->db_query("SELECT name, description, ordering FROM bab_art_drafts_files WHERE id_draft=".$babDB->quote($this->id));
+
 		while ($arr = $babDB->db_fetch_assoc($res))
 		{
-
 			$filePath = clone $draftPath;
 			$filePath->push($this->id.','.$arr['name']);
 
-
-			$target = clone $targetPath;
-			$target->push(Widget_FilePicker::NONE.$arr['name']);
-
-			copy($filePath->toString(), $target->toString());
+			$filePicker->importFile($filePath, bab_charset::getIso(), $arr['name']);
 
 			$_SESSION['bab_articleTempAttachments'][$arr['name']] = array(
 				'description' 	=> $arr['description'],
 				'ordering'		=> $arr['ordering']
 			);
 		}
-
 
 		return $this;
 	}

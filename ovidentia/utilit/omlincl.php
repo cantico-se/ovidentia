@@ -5465,6 +5465,9 @@ class Func_Ovml_Container_CalendarEvents extends Func_Ovml_Container
             $this->ctx->curctx->push('CIndex'					, $this->idx);
             $this->ctx->curctx->push('EventId'					, $id_event);
             $this->ctx->curctx->push('EventCalendarId'			, $arr['id_cal']);
+            $this->ctx->curctx->push('EventCalendarUrlId'		, $calendar->getUrlIdentifier());
+            $this->ctx->curctx->push('EventCalendarName'		, $calendar->getName());
+            $this->ctx->curctx->push('EventCalendarType'		, $calendar->getType());
             $this->ctx->curctx->push('EventTitle'				, $summary);
 
             if (isset($arr['description']) && isset($arr['description_format'])) {

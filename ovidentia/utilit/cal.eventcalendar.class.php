@@ -609,23 +609,22 @@ abstract class bab_EventCalendar
 		if ($calendar instanceof bab_PersonalCalendar)
 		{
 			$attendees = $event->getAttendees();
-			foreach($attendees as $attendee)
-			{
-				if ($attendee['AttendeeBackend']->getRealPartstat() !== 'DECLINED' && $attendee['calendar']->getUrlIdentifier() === $placeholderCalendar)
+			
+			if (!isset($attendees[$mainCalendar]) && $mainCalendar === $placeholderCalendar) {
+			    // the main calendar of event is not in attendees
+			    return true;
+			}
+			
+			
+			foreach($attendees as $attendee) {
+				if ($attendee['calendar']->getUrlIdentifier() === $placeholderCalendar && $attendee['AttendeeBackend']->getRealPartstat() !== 'DECLINED')
 				{
 					return true;
 				}
 			}
-
-			if (!isset($attendees[$mainCalendar]) && $mainCalendar === $placeholderCalendar)
-			{
-				// the main calendar of event is not in attendees
-				return true;
-			}
-
-		}
-		else
-		{
+			
+		} else {
+		    
 			$relations = $event->getRelations();
 			foreach($relations as $relation)
 			{

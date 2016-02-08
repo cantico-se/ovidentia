@@ -3264,7 +3264,7 @@ function userHaveRightOnCollectiveFolder($ignore_hidden_folders = false)
 
 function bab_getUserFmVisibleDelegations()
 {
-    static $aVisibleDelegation = null;
+    $aVisibleDelegation = null;
 
     if(is_null($aVisibleDelegation))
     {

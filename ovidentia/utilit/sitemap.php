@@ -95,10 +95,8 @@ class bab_siteMapOrphanRootNode extends bab_OrphanRootNode {
                 // in this case, this subtree has been added before the rewriting root node
 
                 $I = new bab_NodeIterator($newNode);
-                foreach($I as $childNode)
-                {
-                    if (!($childNode instanceof bab_Node))
-                    {
+                while ($childNode = $I->nextNode()) {
+                    if (!($childNode instanceof bab_Node)) {
                         //TODO Ne devrais pas se produire!
                         //bab_debug($newNode->__toString());
                         continue;
@@ -130,7 +128,7 @@ class bab_siteMapOrphanRootNode extends bab_OrphanRootNode {
                 $id,
                 $rewriteName,
                 $sitemapItem->funcname,
-                (bool) $sitemapItem->breadCrumbIgnore
+                (bool) $sitemapItem->rewriteIgnore
             );
         }
 
@@ -188,6 +186,10 @@ class bab_siteMapOrphanRootNode extends bab_OrphanRootNode {
      */
     private function getNonIgnoredParent($id_parent)
     {
+        if (!isset($this->rewriteIndex_id[$id_parent])) {
+            return $id_parent;
+        }
+        
         $parentIndex = $this->rewriteIndex_id[$id_parent];
         if (isset($parentIndex[3]) && $parentIndex[3]) { // ignore
             return $this->getNonIgnoredParent($parentIndex[0]);
@@ -357,22 +359,23 @@ class bab_siteMapOrphanRootNode extends bab_OrphanRootNode {
      */
     public function addNodeIndexes(bab_Node $node, bab_siteMapItem $sitemapItem)
     {
-        if ($sitemapItem->url)
-        {
+        if ($sitemapItem->url) {
             // add url in index
             $node->addIndex('url', $sitemapItem->url);
         }
 
 
-        if ($sitemapItem->target)
-        {
+        if ($sitemapItem->target) {
             // add target in index
             $node->addIndex('target', $sitemapItem->target->id_function);
         }
 
-        if ($sitemapItem->funcname)
-        {
+        if ($sitemapItem->funcname) {
             $node->addIndex('funcname', $sitemapItem->funcname);
+        }
+        
+        if ($sitemapItem->langId) {
+            $node->addIndex('lang-'.$sitemapItem->langId[0], $sitemapItem->langId[1]);
         }
     }
 
@@ -476,6 +479,83 @@ class bab_siteMapOrphanRootNode extends bab_OrphanRootNode {
         return $this->getDynamicNodeById($id);
     }
 
+    
+    /**
+     * Get the node in sitemap from the lang id
+     * 
+     * @see bab_SitemapItem::$langId
+     * 
+     * @param string $language
+     * @param string $id
+     * 
+     * @return bab_Node
+     */
+    public function getNodeByLangId($language, $id)
+    {
+        $nodes = $this->getNodesByIndex('lang-'.$language, $id);
+        if (0 === count($nodes)) {
+            // node not found
+            return null;
+        }
+        
+        if (1 < count($nodes)) {
+            $errors = array();
+            foreach ($nodes as $n) {
+                $errors[] = $n->getId();
+            }
+            throw new Exception(sprintf('Error, found mutiple nodes with id %s for language %s (%s)', $id, $language, implode(', ', $errors)));
+        }
+        
+        return reset($nodes);
+    }
+    
+    
+    /**
+     * Get list of nodes indexed by language or null if not exists for a language
+     * @return array
+     */
+    public function getLanguageNodes($id)
+    {
+        $languages = bab_getAvailableLanguages();
+        
+        $list = array();
+        foreach ($language as $langCode) {
+            $list[$langCode] = $this->getNodeByLangId($langCode, $id);
+        }
+        
+        return $list;
+    }
+    
+    
+    /**
+     * Get all nodes found under $baseNodeId with a target to $targetId
+     * @param	string	$baseNodeId
+     * @param	string	$targetId
+     *
+     * @return bab_Node
+     */
+    public function getNodesByTargetId($baseNodeId, $targetId)
+    {
+        $nodes = array();
+        $customNodes = $this->getNodesByIndex('target', $targetId);
+        foreach ($customNodes as $customNode)
+        {
+            /*@var $customNode bab_Node */
+    
+            // get the first custom node under baseNode
+            $testNode = $customNode->parentNode();
+            /*@var $testNode bab_Node */
+            do {
+    
+                if ($baseNodeId === $testNode->getId()) {
+                    $nodes[] = $customNode;
+                }
+    
+            } while ($testNode = $testNode->parentNode());
+        }
+    
+        return $nodes;
+    }
 
 
 
@@ -489,7 +569,7 @@ class bab_siteMapOrphanRootNode extends bab_OrphanRootNode {
     public function getNodeByTargetId($baseNodeId, $targetId)
     {
         $customNodes = $this->getNodesByIndex('target', $targetId);
-        foreach($customNodes as $customNode)
+        foreach ($customNodes as $customNode)
         {
             /*@var $customNode bab_Node */
 
@@ -503,10 +583,158 @@ class bab_siteMapOrphanRootNode extends bab_OrphanRootNode {
                     return $customNode;
                 }
 
-            } while($testNode = $testNode->parentNode());
+            } while ($testNode = $testNode->parentNode());
         }
 
         return null;
+    }
+    
+    
+    
+    
+    /**
+     * Get filtered node list
+     * @param string $baseNodeId
+     * @param Array $customNodes
+     * @return array
+     */
+    private function filterByBaseNodeId($baseNodeId, Array $customNodes)
+    {
+        $return = array();
+        foreach ($customNodes as $customNode)
+        {
+            /*@var $customNode bab_Node */
+        
+            // get the first custom node under baseNode
+            $testNode = $customNode->parentNode();
+            /*@var $testNode bab_Node */
+            do {
+        
+                if ($baseNodeId === $testNode->getId()) {
+                    $return[] = $customNode;
+                }
+        
+            } while ($testNode = $testNode->parentNode());
+        }
+        
+        return $return;
+    }
+    
+    
+    
+    
+
+
+
+
+    /**
+     * Get a list of nodes under $baseNodeId witch match id with a pattern
+     * Usefull method to get list of accessibles nodes
+     *
+     * @example to get list of accessible applications id
+     *          $r = $this->getNodesByTargetPattern('appApplications', '/appApplication_(\d+)/');
+     *          the list of id will be in
+     *          $r->matchs[1]
+     *
+     *
+     * return value will contain 2 properties
+     * matches: the combined preg_match results
+     * nodes: the matching nodes
+     *
+     * @param string $baseNodeId        ex: Custom
+     * @param string $pattern           Pattern for preg_match
+     *
+     * @return stdClass[]
+     */
+    public function getNodesByIdPattern($baseNodeId, $pattern)
+    {
+    
+        $return = new stdClass();
+        $return->matches = array();
+        $return->nodes = array();
+        
+        $baseNode = $this->getNodeById($baseNodeId);
+    
+        $I = new bab_NodeIterator($baseNode);
+        while($childNode = $I->nextNode()) {
+            /*@var $childNode \bab_Node */
+    
+            if (preg_match($pattern, $childNode->getId(), $m)) {
+    
+                $return->nodes[] = $childNode;
+    
+                unset($m[0]);
+    
+                foreach ($m as $position => $value) {
+                    if (!isset($return->matches[$position])) {
+                        $return->matches[$position] = array();
+                    }
+    
+                    $return->matches[$position][] = $value;
+                }
+            }
+        }
+    
+        return $return;
+    }
+    
+    
+    
+    /**
+     * Get a list of nodes under $baseNodeId witch match target pattern
+     * Usefull method to get list of accessibles nodes
+     * 
+     * @example to get list of accessible applications id 
+     *          $r = $this->getNodesByTargetPattern('Custom', '/appApplication_(\d+)/');
+     *          the list of id will be in
+     *          $r->matchs[1]
+     *          
+     * 
+     * return value will contain 2 properties
+     * matches: the combined preg_match results
+     * nodes: the matching custom nodes
+     * 
+     * @param string $baseNodeId        ex: Custom
+     * @param string $pattern           Pattern for preg_match
+     * 
+     * @return stdClass[]
+     */
+    public function getNodesByTargetPattern($baseNodeId, $pattern)
+    {
+        
+        $targetIndex = $this->getIndex('target');
+        
+        $return = new stdClass();
+        $return->matches = array();
+        $return->nodes = array();
+        
+        foreach ($targetIndex as $targetId => $customNodes) {
+
+
+            if (preg_match($pattern, $targetId, $m)) {
+                
+                $customNodes = $this->filterByBaseNodeId($baseNodeId, $customNodes);
+                
+                if (empty($customNodes)) {
+                    // no match under baseNodeId, continue to next target
+                    continue;
+                }
+                
+                $return->nodes = array_merge($return->nodes, $customNodes);
+                
+                unset($m[0]);
+                
+                foreach ($m as $position => $value) {
+                    if (!isset($return->matches[$position])) {
+                        $return->matches[$position] = array();
+                    }
+                    
+                    $return->matches[$position][] = $value;
+                }
+            }
+        }
+        
+        return $return;
     }
 
 
@@ -653,6 +881,12 @@ class bab_siteMapItem {
      * @var bool
      */
     public $breadCrumbIgnore = false;
+    
+    /**
+     * Specify if a node should be ignored in a rewrite path
+     * @var bool
+     */
+    public $rewriteIgnore = false;
 
 
     /**
@@ -747,6 +981,27 @@ class bab_siteMapItem {
      * @var string
      */
     public $setlanguage = null;
+    
+    
+    /**
+     * Unique node identifier for one language
+     * array(languageCode, nodeId)
+     * The nodeId must be unique for the same language and a list of 
+     * translated items should have the same langId with a different language code
+     * 
+     * @var array
+     */
+    public $langId = null;
+    
+    
+    /**
+     * Array of rights
+     * keys can be 'create', 'read', 'update', 'delete'
+     * the default value is array('read' => true) because the node is not in sitemap when not readable
+     * @see self::getRights()
+     * @var array
+     */
+    public $rights = null;
 
 
     /**
@@ -771,7 +1026,69 @@ class bab_siteMapItem {
         return $this;
     }
 
-
+    /**
+     * get array of rights
+     * keys can be 'create', 'read', 'update', 'delete'
+     * the default value is array('read' => true) because the node is not in sitemap when not readable
+     * @see self::getRights()
+     * @var array
+     */
+    public function getRights()
+    {
+        $item = $this->getTarget();
+        
+        if (!isset($item->rights)) {
+            return array(
+                'read' => true
+            );
+        }
+        
+        return $item->rights;
+    }
+    
+    /**
+     * Generic method to test custom right
+     * @return bool
+     */
+    public function canDo($right)
+    {
+        $rights = $this->getRights();
+        if (!isset($rights[$right])) {
+            return false;
+        }
+        
+        return $rights[$right];
+    }
+    
+    
+    
+    /**
+     * @return bool
+     */
+    public function canCreate()
+    {
+        return $this->canDo('create');
+    }
+    
+    
+    /**
+     * @return bool
+     */
+    public function canUpdate()
+    {
+        return $this->canDo('update');
+    }
+    
+    
+    /**
+     * @return bool
+     */
+    public function canDelete()
+    {
+        return $this->canDo('delete');
+    }
+    
+    
 
     /**
      * return rewrite name of node
@@ -990,7 +1307,7 @@ class bab_siteMapItem {
                 break;
             }
 
-            if (!$sitemapItem->breadCrumbIgnore) {
+            if (!$sitemapItem->rewriteIgnore) {
                 array_unshift($arr, $sitemapItem->getRewriteName());
             }
         } while ($node = $node->parentNode());

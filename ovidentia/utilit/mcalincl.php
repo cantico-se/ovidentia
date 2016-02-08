@@ -849,15 +849,16 @@ class cal_wmdbaseCls
 				$backend = $calendar->getBackend();
 
 				require_once dirname(__FILE__).'/wfincl.php';
-				$user_instances = bab_WFGetWaitingInstances($GLOBALS['BAB_SESS_USERID']);
-
+				
+				
 				$relations = $calPeriod->getRelations();
 				foreach($relations as $relation)
 				{
 					
 					if (null !== $relation['X-CTO-WFINSTANCE'])
 					{
-						if (in_array($relation['X-CTO-WFINSTANCE'], $user_instances))
+					    $approvers = bab_WFGetWaitingApproversInstance($relation['X-CTO-WFINSTANCE']);
+						if (in_array(bab_getUserId(), $approvers))
 						{
 							$this->bstatus = true;
 							break;

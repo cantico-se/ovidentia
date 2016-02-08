@@ -247,11 +247,12 @@ class displayAttendeesCls extends displayEventCls
 		{
 			return false;
 		}
+		
+		require_once dirname(__FILE__).'/utilit/wfincl.php';
+		$approvers = bab_WFGetWaitingApproversInstance($idfai);
+		$id_user = bab_getUserId();
 
-		$arrschi = bab_getWaitingIdSAInstance($GLOBALS['BAB_SESS_USERID']);
-		bab_debug($arrschi);
-
-		if (in_array($idfai, $arrschi))
+		if (in_array($id_user, $approvers))
 		{
 			return true;
 		}

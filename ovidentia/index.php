@@ -243,9 +243,6 @@ if ('version' !== bab_rp('tg') || 'upgrade' !== bab_rp('idx')) {
         include $babInstallPath."utilit/cookieident.php";
     }
 
-    bab_isUserLogged();
-    bab_updateUserSettings();
-
     if (isset($_GET['clear'])) {
         bab_siteMap::clearAll();
         if (isset($_SESSION['ovml_cache']))
@@ -253,6 +250,9 @@ if ('version' !== bab_rp('tg') || 'upgrade' !== bab_rp('idx')) {
             unset($_SESSION['ovml_cache']);
         }
     }
+
+    bab_isUserLogged();
+    bab_updateUserSettings();
 } else {
     if (!isset($babLanguage)) {
         $babLanguage = 'fr';
@@ -283,12 +283,7 @@ if (isset($_GET['babrw']))
         $_REQUEST += $arr;
         extract($arr, EXTR_SKIP);
     } else {
-        class bab_eventPageNotFound extends bab_event { }
-        $event = new bab_eventPageNotFound;
-        bab_fireEvent($event);
-
-        header("HTTP/1.0 404 Not Found");
-        $babBody->addError(bab_translate('This page does not exists'));
+        bab_pageNotFound();
     }
 }
 
@@ -888,8 +883,16 @@ switch(bab_rp('tg'))
 
         if ($module = bab_getAddonFilePathFromTg(bab_rp('tg'), $babWebStat)) {
             $incl = null;
+            if (!file_exists($module)) {
+                bab_pageNotFound();
+            }
             require_once $module;
         } else {
+            
+            if ('' !== bab_rp('tg', '')) {
+                bab_pageNotFound();
+            }
+            
             bab_siteMap::setPosition(bab_siteMap::getSitemapRootNode());
             if(bab_isUserLogged()) {
                 $file = "private.html";
