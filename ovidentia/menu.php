@@ -31,6 +31,10 @@ include_once $babInstallPath.'admin/register.php';
 function bab_menuSubNode($node)
 {
     $W = bab_Widgets();
+	$canvas = null;
+	if($canvas === null) {
+		$canvas = $W->HtmlCanvas();
+	}
 
     $layout = $W->ListLayout();
     $node = $node->firstChild();
@@ -48,14 +52,20 @@ function bab_menuSubNode($node)
     }
 
     bab_Sort::asort($tempLink, 'name');
+	
 
     foreach($tempLink as $link){
+    	$content = '';
         if ($link['url']) {
-            $layout->addItem($W->Link($link['name'], $link['url'])->addClass('icon '.$link['class']));
+            $content.= $W->Link($link['name'], $link['url'])->addClass('bab-menu-item icon '.$link['class'])->display($canvas);
         } else {
-            $layout->addItem($W->Label($link['name'])->addClass(' widget-strong icon '.$link['class']));
+            $content.= $W->Label($link['name'])->addClass('bab-menu-item widget-strong icon '.$link['class'])->display($canvas);
         }
-        $layout->addItem(bab_menuSubNode($link['node']));
+		$subNode = bab_menuSubNode($link['node']);
+		if ($subNode) {
+        	$content.= bab_menuSubNode($link['node'])->display($canvas);
+		}
+		$layout->addItem($W->Html($content));
     }
 
     //$layout->addItem($W->Html('<hr>'));
@@ -90,12 +100,21 @@ function bab_menuDisplay()
     /* @var $W Func_Widgets */
 
     $page = $W->babPage('bab-menu');
+	
+	$page->addJavascriptFile($GLOBALS['babScriptPath'].'menu.js');
 
-    $completeLayout = $W->FLowLayout()->setVerticalAlign('top');
-    $completeLayout->setHorizontalSpacing(2.5,'em');
+	$completeLayout = $W->VboxLayout('bab-menu-page');
+    $completeLayout->setVerticalSpacing(1,'em');
     $completeLayout->addClass('BabLoginMenuBackground');
     $completeLayout->addClass('widget-bordered');
     $completeLayout->addClass('icon-16x16 icon-left-16');
+
+    $container = $W->FLowLayout()->setVerticalAlign('top');
+	$container->setHorizontalSpacing(2.5,'em');
+	
+	/*$completeLayout->addItem(
+		$W->Form()->addItem($W->LineEdit('bab-menu-search')->setPlaceHolder(bab_translate('Search'))->setName('search'))
+	);*/
 
     foreach($nodes as $nodeName) {
         $node = $sitemap->getNodeById($nodeName);
@@ -107,11 +126,12 @@ function bab_menuDisplay()
 
             $layout->addItem(bab_menuSubNode($node));
 
-            $completeLayout->addItem($layout);
+            $container->addItem($layout);
         }
     }
 
-    $page->addItem($completeLayout);
+    $completeLayout->addItem($container);
+	$page->addItem($completeLayout);
     $page->displayHtml();
 }
 
