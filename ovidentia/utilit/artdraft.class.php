@@ -653,7 +653,11 @@ class bab_ArtDraft
 
 			$tmpPath = $filepicker->getFolder();
 			/*@var $tmpPath bab_Path */
-			$tmpPath->deleteDir();
+			try {
+			    $tmpPath->deleteDir();
+			} catch (Exception $e) {
+			    bab_debug($e->getMessage());
+			}
 
 			unset($_SESSION['bab_articleTempAttachments']);
 
