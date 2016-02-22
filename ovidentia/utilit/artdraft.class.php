@@ -560,7 +560,12 @@ class bab_ArtDraft
 
 			$tmpPath = $filepicker->getFolder();
 			/*@var $tmpPath bab_Path */
-			$tmpPath->deleteDir();
+			
+			try {
+			    $tmpPath->deleteDir();
+			} catch (Exception $e) {
+			    bab_debug($e->getMessage());
+			}
 		}
 
 		return $this;
@@ -570,13 +575,13 @@ class bab_ArtDraft
 
 
 	/**
-	 * Save temporary attachmements to draft
+	 * Save temporary attachments to draft
 	 * @param	Array		$files		posted files description and ordering
 	 * @return bab_ArtDraft
 	 */
 	public function saveTempAttachments(Array $files)
 	{
-		$targetPath = new bab_path($GLOBALS['babUploadPath'], 'drafts');
+		$targetPath = new bab_Path($GLOBALS['babUploadPath'], 'drafts');
 
 		global $babDB;
 
