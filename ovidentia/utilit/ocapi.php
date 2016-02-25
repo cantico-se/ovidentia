@@ -1958,36 +1958,35 @@ class bab_OrgChartUtil
         $iIdTempEmpRole 	= $this->createRole($iIdEntity, bab_translate("Temporary employee"), '', BAB_OC_ROLE_TEMPORARY_EMPLOYEE, 'N');
         $iIdMemberRole 		= $this->createRole($iIdEntity, bab_translate("Members"), '', BAB_OC_ROLE_MEMBER, 'Y');
 
-        if('none' !== (string) $mixedGroup && 'new' !== (string) $mixedGroup)
+        if($iIdGroup)
         {
-            if('Y' === (string) $this->aCachedOrgChart['isprimary'] && 1 === (int) $this->aCachedOrgChart['id_group'])
-            {
-                $sQuery =
-                    'SELECT ' .
-                        'det.id ' .
-                    'FROM ' .
-                        BAB_DBDIR_ENTRIES_TBL . ' det ' .
-                    'LEFT JOIN ' .
-                        BAB_USERS_GROUPS_TBL . ' ugt on det.id_user = ugt.id_object ' .
-                    'WHERE ' .
-                        'ugt.id_group = ' . $babDB->quote($iIdGroup) . ' AND ' .
-                        'det.id_directory = \'0\'';
 
-                //bab_debug($sQuery);
-                $oResult = $babDB->db_query($sQuery);
-                if(false !== $oResult)
+            $sQuery =
+                'SELECT ' .
+                    'det.id ' .
+                'FROM ' .
+                    BAB_DBDIR_ENTRIES_TBL . ' det ' .
+                'LEFT JOIN ' .
+                    BAB_USERS_GROUPS_TBL . ' ugt on det.id_user = ugt.id_object ' .
+                'WHERE ' .
+                    'ugt.id_group = ' . $babDB->quote($iIdGroup) . ' AND ' .
+                    'det.id_directory = \'0\'';
+
+            //bab_debug($sQuery);
+            $oResult = $babDB->db_query($sQuery);
+            if(false !== $oResult)
+            {
+                $iNumRows = $babDB->db_num_rows($oResult);
+                if(0 < $iNumRows)
                 {
-                    $iNumRows = $babDB->db_num_rows($oResult);
-                    if(0 < $iNumRows)
+                    while(false !== ($aData = $babDB->db_fetch_assoc($oResult)))
                     {
-                        while(false !== ($aData = $babDB->db_fetch_assoc($oResult)))
-                        {
-                            $iIdUser = (int) $aData['id'];
-                            $this->createRoleUser($iIdMemberRole, $iIdUser);
-                        }
+                        $iIdUser = (int) $aData['id'];
+                        $this->createRoleUser($iIdMemberRole, $iIdUser);
                     }
                 }
             }
+            
         }
         return $iIdEntity;
     }
