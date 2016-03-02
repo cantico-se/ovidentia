@@ -1853,11 +1853,6 @@ class bab_OrgChartUtil
             return false;
         }
 
-        if(!$this->isLockedBy($this->iIdSessUser))
-        {
-            $babBody->addError(bab_translate("Access denied"));
-            return false;
-        }
 
         require_once dirname(__FILE__) . '/grpincl.php';
         if(false === bab_isGroup($iIdParentGroup))
