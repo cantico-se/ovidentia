@@ -762,6 +762,8 @@ function bab_OCSelectEntityCollaborators($entityId, $useNameOrder = true, $nonCo
  * 		'id_user' 			=> The member user ID (can be empty if the member is a directory entry without associated user)
  * 		'sn' 				=>	The member's surname (last name)
  * 		'givenname' 		=> The member's given name (first name)
+ *      'user_disabled' 	=> 1 = disabled, 0 = not disabled
+ * 		'user_confirmed' 	=> 1 = confirmed, 0 = not confirmed
  * )
  * The result set is ordered by role ordering (which is by default type
  * in order 1,2,3,0 but can be manually reordered) and by user name
@@ -773,7 +775,7 @@ function bab_OCSelectEntityCollaborators($entityId, $useNameOrder = true, $nonCo
  *
  * @return resource		The mysql resource or FALSE on error
  */
-function bab_OCGetUsersByRole($idRole)
+function bab_OCGetUsersByRole($idRole, $nonConfirmed = false, $disabled = false)
 {
     global $babDB;
     $sql = "SELECT";
@@ -781,14 +783,16 @@ function bab_OCGetUsersByRole($idRole)
     $sql.= "	ort.id_user as id_dir,";
     $sql.= "	dir.id_user,";
     $sql.= "	dir.sn,";
-    $sql.= "	dir.givenname";
+    $sql.= "	dir.givenname,";
+    $sql .= '   babusers.disabled AS user_disabled,';
+    $sql .= '   babusers.is_confirmed AS user_confirmed ';
     $sql.= " FROM bab_oc_roles_users ort";
 
     $sql.= " LEFT JOIN bab_dbdir_entries AS dir ON ort.id_user = dir.id";
 
     $sql.= ' LEFT JOIN bab_users AS babusers ON dir.id_user = babusers.id';
     $sql.= " WHERE ort.id_role='".$idRole."'";
-    $sql.= ' AND '.bab_userInfos::queryAllowedUsers('babusers');
+    $sql.= ' AND '.bab_userInfos::queryAllowedUsers('babusers', $nonConfirmed, $disabled);
 
     $sql.= " ORDER BY dir.sn, dir.givenname asc";
 
