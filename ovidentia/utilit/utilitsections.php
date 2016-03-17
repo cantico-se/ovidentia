@@ -224,16 +224,18 @@ function babAdminSection($close)
 			if ($babAdminSection) {
 				$babAdminSection->sortChildNodes();
 				$babAdminSection = $babAdminSection->firstChild();
-				do {
-					$item = $babAdminSection->getData();
-					
-					$this->links[] = array(
-						'url' 			=> $item->url,
-						'name' 			=> $item->name,
-						'description' 	=> $item->description
-					);
+				if (isset($babAdminSection)) {
+    				do {
+    					$item = $babAdminSection->getData();
+    					
+    					$this->links[] = array(
+    						'url' 			=> $item->url,
+    						'name' 			=> $item->name,
+    						'description' 	=> $item->description
+    					);
+    				}
+    				while($babAdminSection = $babAdminSection->nextSibling());
 				}
-				while($babAdminSection = $babAdminSection->nextSibling());
 			}
 			
 			$babAdminSectionAddons = $rootNode->getNodeById('babAdminSectionAddons');
@@ -241,16 +243,19 @@ function babAdminSection($close)
 			if ($babAdminSectionAddons) {
 				$babAdminSectionAddons->sortChildNodes();
 				$babAdminSectionAddons = $babAdminSectionAddons->firstChild();
-				do {
-					$item = $babAdminSectionAddons->getData();
 				
-					$this->addonlinks[] = array(
-							'url' 			=> $item->url,
-							'name' 			=> $item->name,
-							'description' 	=> $item->description
-					);
+				if (isset($babAdminSectionAddons)) {
+    				do {
+    					$item = $babAdminSectionAddons->getData();
+    				
+    					$this->addonlinks[] = array(
+    							'url' 			=> $item->url,
+    							'name' 			=> $item->name,
+    							'description' 	=> $item->description
+    					);
+    				}
+    				while($babAdminSectionAddons = $babAdminSectionAddons->nextSibling());
 				}
-				while($babAdminSectionAddons = $babAdminSectionAddons->nextSibling());
 			}
 		} else {
 			
