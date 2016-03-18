@@ -1304,7 +1304,7 @@ function functionalities() {
 
 	$tree = new bab_TreeView('bab_functionalities');
 
-	$root = & $tree->createElement( 'R', 'directory', bab_translate('All functionalities'), '', '');
+	$root = $tree->createElement( 'R', 'directory', bab_translate('All functionalities'), '', '');
 	$root->setIcon($GLOBALS['babSkinPath'] . 'images/nodetypes/category.png');
 	$tree->appendElement($root, NULL);
 
@@ -1340,7 +1340,7 @@ function functionalities() {
 
 				$description = $labelpath.' : '.$original->getDescription();
 
-				$element = & $tree->createElement( $id.'.'.$i, 'directory', $description, '', '');
+				$element = $tree->createElement( $id.'.'.$i, 'directory', $description, '', '');
 			} else {
 				if ($failsafe)
 				{
@@ -1349,7 +1349,7 @@ function functionalities() {
 					$description = $dir . ' : '.bab_translate('Missing target');
 				}
 				
-				$element = & $tree->createElement( $id.'.'.$i, 'directory', $description, '', '');
+				$element = $tree->createElement( $id.'.'.$i, 'directory', $description, '', '');
 
 				$url = bab_url::get_request('tg', 'idx', 'failsafe');
 				$url->remove = $funcpath;
