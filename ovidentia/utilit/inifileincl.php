@@ -1614,11 +1614,9 @@ class bab_inifile {
 
                 $key = mb_strtolower($name);
 
-                if (defined('BAB_ADDONS_AUTO_UPGRADE') && BAB_ADDONS_AUTO_UPGRADE) {
-                     $addon = bab_getAddonInfosInstance($name);
-                     if ($addon && $addon->isUpgradable()) {
-                         $addon->upgrade();
-                     }
+                $addon = bab_getAddonInfosInstance($name);
+                if ($addon && $addon->isUpgradable()) {
+                    $addon->upgrade();
                 }
 
                 if (isset($installed[$key])) {
