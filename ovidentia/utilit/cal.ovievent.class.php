@@ -92,6 +92,7 @@ class bab_cal_OviEventUpdate
 
     /**
      * Get event by UID property
+     * Some bugs may result in multiple id per UID, this method will fix the problem
      *
      * @throws Exception
      *
@@ -101,6 +102,7 @@ class bab_cal_OviEventUpdate
     private function getEventByUid($uid)
     {
         global $babDB;
+        require_once dirname(__FILE__).'/delincl.php';
 
         $res = $babDB->db_query('SELECT id FROM '.BAB_CAL_EVENTS_TBL.' WHERE uuid='.$babDB->quote($uid));
 
@@ -109,14 +111,14 @@ class bab_cal_OviEventUpdate
             throw new Exception('The event does not exists in ovidentia database');
         }
 
-        if (1 !== $babDB->db_num_rows($res))
-        {
-            throw new Exception('there are more than one event for this UID');
+        $arr = $babDB->db_fetch_assoc($res);
+        $id_event = (int) $arr['id'];
+
+        while ($arr = $babDB->db_fetch_assoc($res)) {
+            bab_deleteEvent($arr['id']);
         }
 
-        $arr = $babDB->db_fetch_assoc($res);
-
-        return (int) $arr['id'];
+        return $id_event;
     }
 
 
