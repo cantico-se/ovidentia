@@ -1208,8 +1208,10 @@ function bab_getUpdateEventFromIdCal($idcal, $evtid, $dtstart)
 		return false;
 	}
 	
+	// copy hash to the new collection
+	$collection->hash = $event->getCollection()->hash;
 	
-	// force collection to overwrite de parent calendar
+	// force collection to overwrite the parent calendar
 	$event->setCollection($collection);
 	
 	return $event;
