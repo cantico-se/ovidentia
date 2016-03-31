@@ -278,7 +278,8 @@ class bab_eventBeforeSiteMapCreated extends bab_event {
     public function addFunction(bab_siteMap_buildItem $obj) {
 
         if (isset($this->nodes[$obj->uid])) {
-            trigger_error(sprintf('The node %s is already in the sitemap',$obj->uid));
+            // do nothing because of a possible double installation of an addon (core/vendor)
+            // trigger_error(sprintf('The node %s is already in the sitemap',$obj->uid));
             $this->propagation_status = false;
             return false;
         }
