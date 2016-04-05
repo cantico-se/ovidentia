@@ -419,7 +419,15 @@ abstract class bab_icalendarEventsSource
 	public function getNextEvent($startdate, $enddate, &$calPeriod)
 	{
 		while ($p = $this->whObj->getNextEvent()) {
+		    
+		    /*@var $p bab_CalendarPeriod */
+		    
 			if (bab_mktime($startdate) < $p->ts_end && bab_mktime($enddate) > $p->ts_begin) {
+			    
+			    if ('CANCELLED' === $p->getProperty('STATUS')) {
+			        continue;
+			    }
+			    
 				$calPeriod = $p;
 				return true;
 			}
