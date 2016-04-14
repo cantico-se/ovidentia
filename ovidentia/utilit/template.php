@@ -66,8 +66,8 @@ class bab_configTemplate_sectionBabmeta {
  */
 function getGlobalVariable($var)
 {
-	
-	
+
+
 	switch($var)
 	{
 		case 'babCss': return bab_printTemplate(new stdClass, "config.html", "babCss");
@@ -264,11 +264,11 @@ class bab_Template
 		if (!empty($section)) {
 			return $this->_loadSection($pathname, $section);
 		}
-		
+
 		if (!file_exists($pathname)) {
 		    return false;
 		}
-		
+
 		return file_get_contents($pathname);
 	}
 
@@ -342,7 +342,7 @@ class bab_Template
 	 * 								processed.
 	 * @return	string				The processed template or null.
 	 */
-	public function printTemplate(&$template, $filename, $section = '')
+	public function printTemplate(&$template = null, $filename = '', $section = '')
 	{
 		bab_Template::resetErrors($template);
 		$this->_parsedTemplate = bab_TemplateCache::get($filename, $section);
