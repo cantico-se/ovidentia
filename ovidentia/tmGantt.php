@@ -399,8 +399,6 @@ class BAB_TM_GanttBase
 
 	function initDates($sStartDate, $iStartWeekDay)
 	{
-		global $GLOBALS['babInstallPath'];
-
 		$this->m_sPrevMonth = bab_translate("Previous month");
 		$this->m_sPrevWeek	= bab_translate("Previous week");
 		$this->m_sGotoDate	= bab_translate("Go to date");

@@ -977,7 +977,7 @@ function userChangePassword($oldpwd, $newpwd)
 
 function updatePassword($oldpwd, $newpwd1, $newpwd2)
 	{
-	global $babBody, $GLOBALS['babInstallPath'];
+	global $babBody;
 
 	if( empty($GLOBALS['BAB_SESS_USERID']))
 		return false;

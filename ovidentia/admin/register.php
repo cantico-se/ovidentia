@@ -47,7 +47,7 @@ function updateUserPasswordById($userId, $newPassword, $newPassword2, $ignoreAcc
 
 function notifyUserRegistration($link, $name, $email)
     {
-    global $babBody, $babAdminEmail, $GLOBALS['babInstallPath'];
+    global $babBody, $babAdminEmail;
 
     class tempa
         {
@@ -112,7 +112,7 @@ function notifyUserRegistration($link, $name, $email)
 
 function notifyAdminRegistration($name, $useremail, $warning)
     {
-    global $babBody, $babDB, $babAdminEmail, $GLOBALS['babInstallPath'];
+    global $babBody, $babDB, $babAdminEmail;
 
     class tempb
         {
@@ -281,7 +281,7 @@ function registerUser( $firstname, $lastname, $middlename, $email, $nickname, $p
 
 function notifyUserPassword($passw, $email, $nickname='')
     {
-    global $babBody, $babAdminEmail, $GLOBALS['babInstallPath'];
+    global $babBody, $babAdminEmail;
 
     class tempa
         {
@@ -350,7 +350,7 @@ class bab_notifyAdminUserRegistrationCls
  */
 function notifyAdminUserRegistration($name, $email, $nickname, $pwd)
 {
-    global $babBody, $babAdminEmail, $GLOBALS['babInstallPath'];
+    global $babBody, $babAdminEmail;
 
     $mail = bab_mail();
     if( $mail == false ) {

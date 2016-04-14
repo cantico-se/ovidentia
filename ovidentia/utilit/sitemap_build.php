@@ -1769,7 +1769,6 @@ function bab_getUserDelegationUrls($id_delegation, $deleg, $dg_prefix) {
         }
 
 
-    global $GLOBALS['babInstallPath'];
     require_once($GLOBALS['babInstallPath'] . 'tmContext.php');
 
     $context =& getTskMgrContext();

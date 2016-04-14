@@ -136,7 +136,7 @@ function bab_isEmailValid($email)
  */
 function bab_getCssUrl()
 	{
-	global $GLOBALS['babInstallPath'], $babSkinPath, $babSkin;
+	global $babSkinPath, $babSkin;
 	
 	$skin = new bab_Skin($babSkin);
 	
@@ -886,7 +886,6 @@ function bab_getIniVersion() {
  * @return string
  */
 function bab_getSkinPath() {
-	global $GLOBALS['babInstallPath'];
 	return bab_getStaticUrl().$GLOBALS['babInstallPath']."skins/ovidentia/";
 }
 
@@ -1299,7 +1298,6 @@ class babLanguageFilter
 
 	function readLangFiles()
 		{
-			global $GLOBALS['babInstallPath'];
 			$tmpLangFiles = array();
 			$i = 0;
 			if (file_exists($GLOBALS['babInstallPath'].'lang'))

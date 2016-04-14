@@ -383,7 +383,7 @@ function viewgroups()
 
 function notifyUserconfirmation($name, $email)
 {
-    global $babBody, $babAdminEmail, $GLOBALS['babInstallPath'];
+    global $babBody, $babAdminEmail;
 
     class NotifyUserconfirmation_Temp
     {
@@ -688,12 +688,11 @@ if (isset($update) && $update == 'password') {
         /* Send an e-mail to the user with its new password */
         $vSendConfirmationEmail = bab_rp('sendconfirmationemail', 'no');
         if ($vSendConfirmationEmail == 'yes') {
-            global $GLOBALS['babInstallPath'];
             include_once $GLOBALS['babInstallPath'].'utilit/mailincl.php';
 
             $mail = bab_mail();
             if ($mail !== false) {
-                global $babBody, $babAdminEmail, $babAdminName, $GLOBALS['babInstallPath'], $babSiteName;
+                global $babBody, $babAdminEmail, $babAdminName, $babSiteName;
 
                 $userName = bab_getUserName($item);
                 $userEmail = bab_getUserEmail($item);

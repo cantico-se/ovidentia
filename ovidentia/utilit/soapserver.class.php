@@ -172,7 +172,7 @@ class bab_soapServer extends soap_server
  */
 function login($nickname, $password)
 	{
-	global $babBody, $babDB, $GLOBALS['babInstallPath'];
+	global $babBody, $babDB;
 	include_once $GLOBALS['babInstallPath']."admin/register.php";
 	include_once $GLOBALS['babInstallPath'].'utilit/loginIncl.php';
 	

@@ -183,7 +183,6 @@ class BAB_TM_Context
 	{
 		if(is_null($this->m_oWorkingHours))
 		{
-			global $GLOBALS['babInstallPath'];
 			require_once($GLOBALS['babInstallPath'] . 'tmWorkingHoursFunc.php');
 			$this->m_oWorkingHours = new BAB_WorkingHours();
 		}
@@ -212,7 +211,6 @@ class BAB_TM_Context
 	// Private
 	function loadConfiguration()
 	{
-		global $GLOBALS['babInstallPath'];
 		require_once($GLOBALS['babInstallPath'] . 'utilit/tmIncl.php');
 		
 		$success = false;

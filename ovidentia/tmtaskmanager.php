@@ -1534,7 +1534,6 @@ function displayTaskList($sIdx)
 		$aFilters['iCompletion'] = $iTaskCompletion;
 	}
 	
-	global $GLOBALS['babInstallPath'];
 	require_once($GLOBALS['babInstallPath'] . 'tmTaskClasses.php');
 	
 	$sStartDate			= (string) $oTaskFilterForm->m_oFilterSessionContext->get('sStartDate');
@@ -2194,7 +2193,6 @@ function displayTaskForm()
 
 		add_item_menu($aItemMenu);
 		
-		global $GLOBALS['babInstallPath'];
 		require_once($GLOBALS['babInstallPath'] . 'tmTaskClasses.php');
 		
 		$oTaskForm = new BAB_TaskForm();
@@ -2280,7 +2278,6 @@ function displayDeleteTaskForm()
 	}
 	$oForm->addHiddenField('idx', $sFromIdx);
 	
-	global $GLOBALS['babInstallPath'];
 	require_once($GLOBALS['babInstallPath'] . 'tmTaskClasses.php');
 	
 	$oTask = new BAB_TM_Task();
@@ -2413,7 +2410,6 @@ function displayPersonnalTaskConfigurationForm()
 
 function displayGanttChart()
 {
-	global $GLOBALS['babInstallPath'];
 	require_once($GLOBALS['babInstallPath'] . 'tmGantt.php');
 	
 	$iIdProjectSpace	= (int) bab_rp('iIdProjectSpace', 0);
@@ -3015,7 +3011,6 @@ function deleteTaskCommentary()
 
 function addModifyTask()
 {
-	global $GLOBALS['babInstallPath'];
 	require_once($GLOBALS['babInstallPath'] . 'tmTaskClasses.php');
 	
 	$oTmCtx =& getTskMgrContext();
@@ -3249,7 +3244,6 @@ function processExport()
 			$aFilters['iCompletion'] = $iTaskCompletion;
 		}
 		
-		global $GLOBALS['babInstallPath'];
 		require_once($GLOBALS['babInstallPath'] . 'utilit/dateTime.php');
 	
 		if(mb_strlen(trim($sStartDate)) > 0)

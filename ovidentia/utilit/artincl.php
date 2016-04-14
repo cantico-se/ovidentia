@@ -984,7 +984,7 @@ function bab_getUploadArticlesPath()
 
 function notifyArticleDraftApprovers($id, $users)
 	{
-	global $babDB, $babBody, $BAB_SESS_USER, $BAB_SESS_EMAIL, $babAdminEmail, $GLOBALS['babInstallPath'];
+	global $babDB, $babBody, $BAB_SESS_USER, $BAB_SESS_EMAIL, $babAdminEmail;
 
 	if(!class_exists("tempa"))
 		{
@@ -1167,7 +1167,7 @@ function notifyArticleDraftAuthor($idart, $what, $comment)
 
 function notifyArticleHomePage($top, $title, $homepage0, $homepage1)
 	{
-	global $babBody, $babDB, $BAB_SESS_USER, $BAB_SESS_EMAIL, $babAdminEmail, $GLOBALS['babInstallPath'];
+	global $babBody, $babDB, $BAB_SESS_USER, $BAB_SESS_EMAIL, $babAdminEmail;
 
 	if(!class_exists("notifyArticleHomePageCls"))
 		{
@@ -1268,7 +1268,7 @@ function notifyArticleHomePage($top, $title, $homepage0, $homepage1)
 
 function notifyArticleGroupMembers(bab_eventArticle $event, $msg)
 	{
-	global $babBody, $babDB, $BAB_SESS_USER, $BAB_SESS_EMAIL, $babAdminEmail, $GLOBALS['babInstallPath'];
+	global $babBody, $babDB, $BAB_SESS_USER, $BAB_SESS_EMAIL, $babAdminEmail;
 
 	if(!class_exists("tempcc"))
 		{
@@ -1395,7 +1395,7 @@ function notifyArticleGroupMembers(bab_eventArticle $event, $msg)
 
 function notifyCommentApprovers($idcom, $nfusers)
 	{
-	global $babDB, $babBody, $BAB_SESS_USER, $BAB_SESS_EMAIL, $babAdminEmail, $GLOBALS['babInstallPath'];
+	global $babDB, $babBody, $BAB_SESS_USER, $BAB_SESS_EMAIL, $babAdminEmail;
 
 	if(!class_exists("tempa"))
 		{
@@ -1492,7 +1492,7 @@ function notifyCommentApprovers($idcom, $nfusers)
 
 function notifyCommentAuthor($subject, $msg, $idfrom, $to)
 	{
-	global $babBody, $BAB_SESS_USER, $BAB_SESS_EMAIL, $babAdminEmail, $GLOBALS['babInstallPath'];
+	global $babBody, $BAB_SESS_USER, $BAB_SESS_EMAIL, $babAdminEmail;
 
 	class tempa
 		{

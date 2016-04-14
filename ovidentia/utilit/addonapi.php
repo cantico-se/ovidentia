@@ -1989,7 +1989,7 @@ function bab_printTemplate($class, $file, $section = '')
 {
     //bab_debug('Template file : '.$file.'<br />'.'Section in template file : '.$section);
 
-    global $GLOBALS['babInstallPath'], $babSkinPath, $babSkin;
+    global $babSkinPath, $babSkin;
 
 
     $skin = new bab_Skin($babSkin);
@@ -3150,7 +3150,7 @@ function bab_printCachedOvmlTemplate($file, $args = array())
  */
 function bab_printOvmlTemplate($file, $args=array())
 {
-    global $GLOBALS['babInstallPath'], $babSkinPath, $babOvmlPath;
+    global $babSkinPath, $babOvmlPath;
 
     /* Skin local path */
     $filepath = $babOvmlPath.$file; /* Ex. : skins/ovidentia_sw/ovml/test.ovml */
