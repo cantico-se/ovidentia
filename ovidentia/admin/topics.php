@@ -26,8 +26,8 @@
 */
 include_once 'base.php';
 require_once dirname(__FILE__).'/../utilit/registerglobals.php';
-include_once $babInstallPath.'admin/acl.php';
-include_once $babInstallPath.'utilit/topincl.php';
+include_once $GLOBALS['babInstallPath'].'admin/acl.php';
+include_once $GLOBALS['babInstallPath'].'utilit/topincl.php';
 
 function addTopic($cat, $ncat, $category, $description, $saart, $sacom, $saupd, $bnotif, $atid, $disptid, $restrict, $bhpages, $bpubdates, $battachment, $bartupdate, $bmanmod, $maxarts, $bautoapp, $busetags, $allow_empty_head)
 	{

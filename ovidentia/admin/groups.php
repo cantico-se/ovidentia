@@ -23,7 +23,7 @@
 ************************************************************************/
 include_once "base.php";
 require_once dirname(__FILE__).'/../utilit/registerglobals.php';
-include_once $babInstallPath."utilit/grptreeincl.php";
+include_once $GLOBALS['babInstallPath']."utilit/grptreeincl.php";
 
 function groupCreateMod()
 	{
@@ -606,7 +606,7 @@ switch($idx)
 	case "brow": 
 		// Used by add-ons and deprecated after 6.1.0 for security reasons
 		// user must be admin
-		include_once $babInstallPath."utilit/grpincl.php";
+		include_once $GLOBALS['babInstallPath']."utilit/grpincl.php";
 		browseGroups(bab_gp('cb'));
 		exit;
 		break;

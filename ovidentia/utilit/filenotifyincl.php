@@ -32,8 +32,8 @@
  */
 function notifyFileApprovers($id, $users, $msg)
 {
-	global $babDB, $babBody, $BAB_SESS_USER, $BAB_SESS_EMAIL, $babAdminEmail, $babInstallPath;
-	include_once $babInstallPath."utilit/mailincl.php";
+	global $babDB, $babBody, $BAB_SESS_USER, $BAB_SESS_EMAIL, $babAdminEmail, $GLOBALS['babInstallPath'];
+	include_once $GLOBALS['babInstallPath']."utilit/mailincl.php";
 
 	if(!class_exists("notifyFileApproversCls"))
 	{
@@ -215,9 +215,9 @@ function notifyApprovers($id, $fid)
  */
 function fileNotifyMembers(BAB_FolderFile $file, $users, $msg, $bnew = true)
 {
-	global $babBody, $BAB_SESS_USER, $BAB_SESS_EMAIL, $babAdminEmail, $babInstallPath;
-	include_once $babInstallPath."utilit/mailincl.php";
-	include_once $babInstallPath."admin/acl.php";
+	global $babBody, $BAB_SESS_USER, $BAB_SESS_EMAIL, $babAdminEmail, $GLOBALS['babInstallPath'];
+	include_once $GLOBALS['babInstallPath']."utilit/mailincl.php";
+	include_once $GLOBALS['babInstallPath']."admin/acl.php";
 
 	if(!class_exists("fileNotifyMembersCls"))
 	{
@@ -349,8 +349,8 @@ function fileNotifyMembers(BAB_FolderFile $file, $users, $msg, $bnew = true)
 
 function notifyFileAuthor($subject, $version, $author, $filename)
 {
-	global $babBody, $babAdminEmail, $babInstallPath;
-	include_once $babInstallPath."utilit/mailincl.php";
+	global $babBody, $babAdminEmail, $GLOBALS['babInstallPath'];
+	include_once $GLOBALS['babInstallPath']."utilit/mailincl.php";
 
 	class tempc
 	{

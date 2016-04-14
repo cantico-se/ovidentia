@@ -1989,7 +1989,7 @@ function bab_printTemplate($class, $file, $section = '')
 {
     //bab_debug('Template file : '.$file.'<br />'.'Section in template file : '.$section);
 
-    global $babInstallPath, $babSkinPath, $babSkin;
+    global $GLOBALS['babInstallPath'], $babSkinPath, $babSkin;
 
 
     $skin = new bab_Skin($babSkin);
@@ -1998,7 +1998,7 @@ function bab_printTemplate($class, $file, $section = '')
     $html = $tpl->printTemplate($class, $skin->getThemePath().'templates/'. $file, $section);
 
     if (!$html) {
-        $html = $tpl->printTemplate($class, $babInstallPath.'skins/ovidentia/templates/'.$file, $section);
+        $html = $tpl->printTemplate($class, $GLOBALS['babInstallPath'].'skins/ovidentia/templates/'.$file, $section);
     }
     //VENDOR
     //if (!$html) {
@@ -3150,7 +3150,7 @@ function bab_printCachedOvmlTemplate($file, $args = array())
  */
 function bab_printOvmlTemplate($file, $args=array())
 {
-    global $babInstallPath, $babSkinPath, $babOvmlPath;
+    global $GLOBALS['babInstallPath'], $babSkinPath, $babOvmlPath;
 
     /* Skin local path */
     $filepath = $babOvmlPath.$file; /* Ex. : skins/ovidentia_sw/ovml/test.ovml */
@@ -3186,7 +3186,7 @@ function bab_printOvmlTemplate($file, $args=array())
 
     $GLOBALS['babWebStat']->addOvmlFile($filepath);
 
-    include_once $babInstallPath.'utilit/omlincl.php';
+    include_once $GLOBALS['babInstallPath'].'utilit/omlincl.php';
     $tpl = new babOvTemplate($args);
     $template = $tpl->printout(file_get_contents($filepath), $filepath);
     return $template;

@@ -1,8 +1,8 @@
 <?php 
 
 
-$babInstallPath = 'ovidentia/';
-$GLOBALS['babInstallPath'] = $babInstallPath;
+$GLOBALS['babInstallPath'] = 'ovidentia/';
+$GLOBALS['babInstallPath'] = $GLOBALS['babInstallPath'];
 
 require_once $GLOBALS['babInstallPath'].'utilit/addonapi.php';
 require_once $GLOBALS['babInstallPath'].'utilit/session.class.php';

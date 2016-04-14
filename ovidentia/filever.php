@@ -23,8 +23,8 @@
 ************************************************************************/
 include_once 'base.php';
 require_once dirname(__FILE__).'/utilit/registerglobals.php';
-include_once $babInstallPath.'utilit/fileincl.php';
-include_once $babInstallPath."utilit/uploadincl.php";
+include_once $GLOBALS['babInstallPath'].'utilit/fileincl.php';
+include_once $GLOBALS['babInstallPath']."utilit/uploadincl.php";
 
 define('BAB_FM_MAXLOGS'	, 10);
 

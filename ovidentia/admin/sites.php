@@ -22,7 +22,7 @@
  */
 include_once 'base.php';
 require_once dirname(__FILE__).'/../utilit/registerglobals.php';
-include_once $babInstallPath.'utilit/sitesincl.php';
+include_once $GLOBALS['babInstallPath'].'utilit/sitesincl.php';
 
 
 function sitesList()

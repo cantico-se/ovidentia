@@ -1132,9 +1132,9 @@ function bab_getArticleAuthor($article)
  * @return 	array
  */
 function bab_getChildrenArticlesInformation($topicid, $fullpath = false, $articlestype = 2, $rightaccesstable = BAB_TOPICSVIEW_GROUPS_TBL) {
-    global $babDB, $babInstallPath;
+    global $babDB, $GLOBALS['babInstallPath'];
 
-    include_once $babInstallPath.'utilit/topincl.php';
+    include_once $GLOBALS['babInstallPath'].'utilit/topincl.php';
 
     $articles = array();
 

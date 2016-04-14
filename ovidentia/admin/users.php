@@ -27,9 +27,9 @@
 */
 include_once "base.php";
 require_once dirname(__FILE__).'/../utilit/registerglobals.php';
-require_once $babInstallPath . 'utilit/toolbar.class.php';
-include_once $babInstallPath . 'admin/register.php';
-include_once $babInstallPath . 'utilit/lusersincl.php';
+require_once $GLOBALS['babInstallPath'] . 'utilit/toolbar.class.php';
+include_once $GLOBALS['babInstallPath'] . 'admin/register.php';
+include_once $GLOBALS['babInstallPath'] . 'utilit/lusersincl.php';
 
 function listUsers($pos, $grp, $deleteAction)
     {
@@ -771,7 +771,7 @@ if( $idx == "Create" && !bab_isUserAdministrator() && !bab_isDelegated('users'))
 
 if( isset($aclnotif))
 {
-    require_once $babInstallPath."admin/acl.php";
+    require_once $GLOBALS['babInstallPath']."admin/acl.php";
     maclGroups();
 }
 
@@ -868,7 +868,7 @@ switch($idx)
         case "notif":
             if (bab_isUserAdministrator() && bab_getCurrentAdmGroup() == 0)
             {
-                require_once $babInstallPath."admin/acl.php";
+                require_once $GLOBALS['babInstallPath']."admin/acl.php";
 
                 $babBody->title = bab_translate("Notices");
                 $macl = new macl("users", "notif", 1, "aclnotif");

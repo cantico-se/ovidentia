@@ -23,8 +23,8 @@
 ************************************************************************/
 include_once 'base.php';
 require_once dirname(__FILE__).'/utilit/registerglobals.php';
-include_once $babInstallPath.'utilit/mailincl.php';
-include_once $babInstallPath.'utilit/inboxincl.php';
+include_once $GLOBALS['babInstallPath'].'utilit/mailincl.php';
+include_once $GLOBALS['babInstallPath'].'utilit/inboxincl.php';
 
 define('MAX_MSGROWS', 10);
 

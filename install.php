@@ -241,6 +241,7 @@ class bab_dumpToDb
 	function workOnQuery()
 		{
 		$reg = "/(?:INSERT|CREATE)(?:[^';]*'(?:[^']|\\\\'|'')*')*[^';]*;/";
+		$m = null;
 		if (preg_match_all($reg, $this->fileContent, $m))
 			{
 			$this->succes->add(count($m[0]).' '.$this->trans->str('queries found in dump file'));
@@ -317,6 +318,7 @@ function writeConfig()
 
 	function replace($txt, $var, $value)
 		{
+		$match = null;
 		preg_match('/'.preg_quote($var, '/')."\s*=\s*\"([^\"]*)\"/", $txt, $match);
 		if ($match[1] != $value)
 			{
@@ -713,6 +715,7 @@ if ($install->getFromUser())
 			$dump = new bab_dumpToDb();
 			if ($dump->db_connect())
 				{
+				$strerror = null;
 				if ($ini->isInstallValid($dump, $strerror))
 					{
 					$succes->add($trans->str('Configuration requirements tests successful'));

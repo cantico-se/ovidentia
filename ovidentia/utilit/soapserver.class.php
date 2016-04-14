@@ -172,9 +172,9 @@ class bab_soapServer extends soap_server
  */
 function login($nickname, $password)
 	{
-	global $babBody, $babDB, $babInstallPath;
+	global $babBody, $babDB, $GLOBALS['babInstallPath'];
 	include_once $GLOBALS['babInstallPath']."admin/register.php";
-	include_once $babInstallPath.'utilit/loginIncl.php';
+	include_once $GLOBALS['babInstallPath'].'utilit/loginIncl.php';
 	
 	$res = $babDB->db_query("select id from ".BAB_USERS_TBL." where nickname='".$babDB->db_escape_string($nickname)."' and password='". $babDB->db_escape_string(md5(mb_strtolower($password))) ."'");
 	if( $res && $babDB->db_num_rows($res) > 0 )

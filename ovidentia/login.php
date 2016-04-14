@@ -23,8 +23,8 @@
 ************************************************************************/
 include_once 'base.php';
 require_once dirname(__FILE__).'/utilit/registerglobals.php';
-include_once $babInstallPath.'admin/register.php';
-include_once $babInstallPath.'utilit/loginIncl.php';
+include_once $GLOBALS['babInstallPath'].'admin/register.php';
+include_once $GLOBALS['babInstallPath'].'utilit/loginIncl.php';
 
 
 
@@ -249,7 +249,7 @@ switch($cmd)
         if( $babBody->babsite['registration'] == 'Y') {
             $babBody->addItemMenu("register", bab_translate("Register"), $GLOBALS['babUrlScript']."?tg=login&cmd=register");
 
-            include_once $babInstallPath."utilit/dirincl.php";
+            include_once $GLOBALS['babInstallPath']."utilit/dirincl.php";
             displayRegistration();
         }
         if ($GLOBALS['babEmailPassword'] ) {

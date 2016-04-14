@@ -28,8 +28,8 @@
 
 include_once 'base.php';
 require_once dirname(__FILE__).'/utilit/registerglobals.php';
-include_once $babInstallPath.'utilit/calincl.php';
-include_once $babInstallPath.'utilit/mcalincl.php';
+include_once $GLOBALS['babInstallPath'].'utilit/calincl.php';
+include_once $GLOBALS['babInstallPath'].'utilit/mcalincl.php';
 
 
 
@@ -380,7 +380,7 @@ $date = bab_rp('date', date("Y,n,j"));
 switch($idx)
 {
 	case 'unload':
-		include_once $babInstallPath."utilit/uiutil.php";
+		include_once $GLOBALS['babInstallPath']."utilit/uiutil.php";
 		$popupmessage = bab_translate("Done");
 		popupUnload($popupmessage, $GLOBALS['babUrlScript']."?tg=calmonth&idx=free&calid=".$calid."&date=".$date);
 		exit;

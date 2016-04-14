@@ -29,10 +29,10 @@
 
 include_once 'base.php';
 require_once dirname(__FILE__).'/utilit/registerglobals.php';
-include_once $babInstallPath.'utilit/calincl.php';
-include_once $babInstallPath.'utilit/mcalincl.php';
-include_once $babInstallPath.'utilit/uiutil.php';
-include_once $babInstallPath.'utilit/evtincl.php';
+include_once $GLOBALS['babInstallPath'].'utilit/calincl.php';
+include_once $GLOBALS['babInstallPath'].'utilit/mcalincl.php';
+include_once $GLOBALS['babInstallPath'].'utilit/uiutil.php';
+include_once $GLOBALS['babInstallPath'].'utilit/evtincl.php';
 
 
 
@@ -1625,7 +1625,7 @@ if (isset($_REQUEST['action']))
 switch($idx)
 	{
 	case "unload":
-		include_once $babInstallPath."utilit/uiutil.php";
+		include_once $GLOBALS['babInstallPath']."utilit/uiutil.php";
 		if( !isset($popupmessage)) {
 			$popupmessage = bab_translate("Your event has been updated");
 		}

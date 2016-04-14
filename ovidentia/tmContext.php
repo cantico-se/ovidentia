@@ -183,8 +183,8 @@ class BAB_TM_Context
 	{
 		if(is_null($this->m_oWorkingHours))
 		{
-			global $babInstallPath;
-			require_once($babInstallPath . 'tmWorkingHoursFunc.php');
+			global $GLOBALS['babInstallPath'];
+			require_once($GLOBALS['babInstallPath'] . 'tmWorkingHoursFunc.php');
 			$this->m_oWorkingHours = new BAB_WorkingHours();
 		}
 		return $this->m_oWorkingHours;
@@ -212,8 +212,8 @@ class BAB_TM_Context
 	// Private
 	function loadConfiguration()
 	{
-		global $babInstallPath;
-		require_once($babInstallPath . 'utilit/tmIncl.php');
+		global $GLOBALS['babInstallPath'];
+		require_once($GLOBALS['babInstallPath'] . 'utilit/tmIncl.php');
 		
 		$success = false;
 		if(0 != $this->m_iIdProjectSpace)

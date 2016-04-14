@@ -28,7 +28,7 @@
 
 include_once 'base.php';
 require_once dirname(__FILE__).'/utilit/registerglobals.php';
-include_once $babInstallPath.'utilit/mcalincl.php';
+include_once $GLOBALS['babInstallPath'].'utilit/mcalincl.php';
 
 
 function accessCalendar($calendar, $urla)
@@ -1186,7 +1186,7 @@ switch($idx)
 		break;
 
 	case "pop_calendarchoice":
-		include_once $babInstallPath."utilit/uiutil.php";
+		include_once $GLOBALS['babInstallPath']."utilit/uiutil.php";
 		$babBodyPopup = new babBodyPopup();
 		pop_calendarchoice();
 		printBabBodyPopup();
@@ -1196,7 +1196,7 @@ switch($idx)
 	case "unload":
 	
 		record_calendarchoice();
-		include_once $babInstallPath."utilit/uiutil.php";
+		include_once $GLOBALS['babInstallPath']."utilit/uiutil.php";
 		$babBodyPopup = new babBodyPopup();
 		unload();
 		printBabBodyPopup();

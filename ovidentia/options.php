@@ -27,7 +27,7 @@
 include_once 'base.php';
 require_once dirname(__FILE__).'/utilit/registerglobals.php';
 require_once dirname(__FILE__).'/utilit/urlincl.php';
-include_once $babInstallPath.'admin/register.php';
+include_once $GLOBALS['babInstallPath'].'admin/register.php';
 
 function changePassword()
 	{
@@ -977,7 +977,7 @@ function userChangePassword($oldpwd, $newpwd)
 
 function updatePassword($oldpwd, $newpwd1, $newpwd2)
 	{
-	global $babBody, $babInstallPath;
+	global $babBody, $GLOBALS['babInstallPath'];
 
 	if( empty($GLOBALS['BAB_SESS_USERID']))
 		return false;

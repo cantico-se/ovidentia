@@ -23,10 +23,10 @@
 ************************************************************************/
 include_once 'base.php';
 require_once dirname(__FILE__).'/utilit/registerglobals.php';
-include_once $babInstallPath.'utilit/uiutil.php';
-include_once $babInstallPath.'utilit/topincl.php';
-include_once $babInstallPath.'utilit/artincl.php';
-include_once $babInstallPath.'utilit/urlincl.php';
+include_once $GLOBALS['babInstallPath'].'utilit/uiutil.php';
+include_once $GLOBALS['babInstallPath'].'utilit/topincl.php';
+include_once $GLOBALS['babInstallPath'].'utilit/artincl.php';
+include_once $GLOBALS['babInstallPath'].'utilit/urlincl.php';
 
 define("BAB_ART_MAXLOGS"	, 25);
 
@@ -1645,7 +1645,7 @@ if( isset($upart) && $upart == "articles" && $manager)
 				break;
 
 			case "Deletea":
-				include_once $babInstallPath."utilit/delincl.php";
+				include_once $GLOBALS['babInstallPath']."utilit/delincl.php";
 				if (isset($_POST['comments']) && count($_POST['comments']) > 0)
 					foreach($_POST['comments'] as $idc) bab_deleteComment($idc);
 				if (isset($_POST['articles']))
@@ -1664,7 +1664,7 @@ elseif( isset($delf) && $delf == "file" && $manager)
 	}
 elseif( isset($delc) && $delc== "com" && $manager)
 	{
-	include_once $babInstallPath."utilit/delincl.php";
+	include_once $GLOBALS['babInstallPath']."utilit/delincl.php";
 	bab_deleteComment($idc);
 	Header("Location: ". $GLOBALS['babUrlScript']."?tg=topman&idx=viewa&item=".$item."&art=".$art);
 	}

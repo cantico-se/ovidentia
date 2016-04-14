@@ -23,7 +23,7 @@
 ************************************************************************/
 include_once 'base.php';
 require_once dirname(__FILE__).'/../utilit/registerglobals.php';
-include_once $babInstallPath.'utilit/grptreeincl.php';
+include_once $GLOBALS['babInstallPath'].'utilit/grptreeincl.php';
 
 function profileCreate($pname, $pdesc, $grpids, $cinscription, $cmultiple, $crequired)
 	{
@@ -551,7 +551,7 @@ elseif( isset($action) && $action == 'Yes' )
 }
 elseif( isset($aclview) )
 {
-	include_once $babInstallPath."admin/acl.php";
+	include_once $GLOBALS['babInstallPath']."admin/acl.php";
 	maclGroups();
 	Header("Location: ". $GLOBALS['babUrlScript']."?tg=profiles&idx=plist");
 	exit;
@@ -561,7 +561,7 @@ elseif( isset($aclview) )
 switch($idx)
 	{
 	case "pacl":
-		include_once $babInstallPath."admin/acl.php";
+		include_once $GLOBALS['babInstallPath']."admin/acl.php";
 		if( bab_isUserAdministrator() || bab_isDelegated('groups'))
 		{
 			$macl = new macl("profiles", "plist", $idprof, "aclview");

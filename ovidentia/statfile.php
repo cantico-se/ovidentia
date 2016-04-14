@@ -22,8 +22,8 @@
  * @copyright Copyright (c) 2008 by CANTICO ({@link http://www.cantico.fr})
  */
 include_once 'base.php';
-include_once $babInstallPath.'utilit/statutil.php';
-include_once $babInstallPath.'utilit/uiutil.php';
+include_once $GLOBALS['babInstallPath'].'utilit/statutil.php';
+include_once $GLOBALS['babInstallPath'].'utilit/uiutil.php';
 
 function summaryFileManager($col, $order)
 	{

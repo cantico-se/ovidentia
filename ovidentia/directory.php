@@ -26,11 +26,11 @@
 */
 include 'base.php';
 require_once dirname(__FILE__).'/utilit/registerglobals.php';
-include_once $babInstallPath.'utilit/dirincl.php';
-include_once $babInstallPath.'utilit/ldap.php';
-include_once $babInstallPath.'utilit/tempfile.php';
-include_once $babInstallPath.'utilit/userinfosincl.php';
-include_once $babInstallPath.'admin/register.php';
+include_once $GLOBALS['babInstallPath'].'utilit/dirincl.php';
+include_once $GLOBALS['babInstallPath'].'utilit/ldap.php';
+include_once $GLOBALS['babInstallPath'].'utilit/tempfile.php';
+include_once $GLOBALS['babInstallPath'].'utilit/userinfosincl.php';
+include_once $GLOBALS['babInstallPath'].'admin/register.php';
 
 function trimQuotes($str)
 {

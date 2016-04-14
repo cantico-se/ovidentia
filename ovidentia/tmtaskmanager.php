@@ -22,14 +22,14 @@
  * USA.																	*
 ************************************************************************/
 include "base.php";
-require_once($babInstallPath . 'utilit/tmdefines.php');
-require_once($babInstallPath . 'utilit/tmIncl.php');
-require_once($babInstallPath . 'utilit/tmToolsIncl.php');
-require_once($babInstallPath . 'utilit/tmList.php');
-require_once($babInstallPath . 'tmSpecificFieldsFunc.php');
-require_once($babInstallPath . 'tmCategoriesFunc.php');
-require_once($babInstallPath . 'utilit/baseFormProcessingClass.php');
-require_once($babInstallPath . 'tmContext.php');
+require_once($GLOBALS['babInstallPath'] . 'utilit/tmdefines.php');
+require_once($GLOBALS['babInstallPath'] . 'utilit/tmIncl.php');
+require_once($GLOBALS['babInstallPath'] . 'utilit/tmToolsIncl.php');
+require_once($GLOBALS['babInstallPath'] . 'utilit/tmList.php');
+require_once($GLOBALS['babInstallPath'] . 'tmSpecificFieldsFunc.php');
+require_once($GLOBALS['babInstallPath'] . 'tmCategoriesFunc.php');
+require_once($GLOBALS['babInstallPath'] . 'utilit/baseFormProcessingClass.php');
+require_once($GLOBALS['babInstallPath'] . 'tmContext.php');
 
 
 
@@ -1534,8 +1534,8 @@ function displayTaskList($sIdx)
 		$aFilters['iCompletion'] = $iTaskCompletion;
 	}
 	
-	global $babInstallPath;
-	require_once($babInstallPath . 'tmTaskClasses.php');
+	global $GLOBALS['babInstallPath'];
+	require_once($GLOBALS['babInstallPath'] . 'tmTaskClasses.php');
 	
 	$sStartDate			= (string) $oTaskFilterForm->m_oFilterSessionContext->get('sStartDate');
 	$sEndDate 			= (string) $oTaskFilterForm->m_oFilterSessionContext->get('sEndDate');
@@ -2194,8 +2194,8 @@ function displayTaskForm()
 
 		add_item_menu($aItemMenu);
 		
-		global $babInstallPath;
-		require_once($babInstallPath . 'tmTaskClasses.php');
+		global $GLOBALS['babInstallPath'];
+		require_once($GLOBALS['babInstallPath'] . 'tmTaskClasses.php');
 		
 		$oTaskForm = new BAB_TaskForm();
 		
@@ -2280,8 +2280,8 @@ function displayDeleteTaskForm()
 	}
 	$oForm->addHiddenField('idx', $sFromIdx);
 	
-	global $babInstallPath;
-	require_once($babInstallPath . 'tmTaskClasses.php');
+	global $GLOBALS['babInstallPath'];
+	require_once($GLOBALS['babInstallPath'] . 'tmTaskClasses.php');
 	
 	$oTask = new BAB_TM_Task();
 	
@@ -2413,8 +2413,8 @@ function displayPersonnalTaskConfigurationForm()
 
 function displayGanttChart()
 {
-	global $babInstallPath;
-	require_once($babInstallPath . 'tmGantt.php');
+	global $GLOBALS['babInstallPath'];
+	require_once($GLOBALS['babInstallPath'] . 'tmGantt.php');
 	
 	$iIdProjectSpace	= (int) bab_rp('iIdProjectSpace', 0);
 	$sStartDate			= date("Y-m-d");
@@ -3015,8 +3015,8 @@ function deleteTaskCommentary()
 
 function addModifyTask()
 {
-	global $babInstallPath;
-	require_once($babInstallPath . 'tmTaskClasses.php');
+	global $GLOBALS['babInstallPath'];
+	require_once($GLOBALS['babInstallPath'] . 'tmTaskClasses.php');
 	
 	$oTmCtx =& getTskMgrContext();
 	$iUserProfil = (int) $oTmCtx->getUserProfil();
@@ -3249,8 +3249,8 @@ function processExport()
 			$aFilters['iCompletion'] = $iTaskCompletion;
 		}
 		
-		global $babInstallPath;
-		require_once($babInstallPath . 'utilit/dateTime.php');
+		global $GLOBALS['babInstallPath'];
+		require_once($GLOBALS['babInstallPath'] . 'utilit/dateTime.php');
 	
 		if(mb_strlen(trim($sStartDate)) > 0)
 		{

@@ -22,10 +22,10 @@
  */
 include_once 'base.php';
 require_once dirname(__FILE__).'/utilit/registerglobals.php';
-include_once $babInstallPath.'utilit/orgincl.php';
-include_once $babInstallPath.'utilit/treeincl.php';
-include_once $babInstallPath.'utilit/orgchart.php';
-include_once $babInstallPath.'utilit/ocapi.php';
+include_once $GLOBALS['babInstallPath'].'utilit/orgincl.php';
+include_once $GLOBALS['babInstallPath'].'utilit/treeincl.php';
+include_once $GLOBALS['babInstallPath'].'utilit/orgchart.php';
+include_once $GLOBALS['babInstallPath'].'utilit/ocapi.php';
 
 
 
@@ -1299,7 +1299,7 @@ switch($idx)
 				break;
 
 			case "disp5":
-				include_once $babInstallPath."utilit/dirincl.php";
+				include_once $GLOBALS['babInstallPath']."utilit/dirincl.php";
 				if( isset($submit))
 				{
 					$pos ='';

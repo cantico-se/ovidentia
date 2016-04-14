@@ -23,10 +23,10 @@
 ************************************************************************/
 include_once 'base.php';
 require_once dirname(__FILE__).'/../utilit/registerglobals.php';
-include_once $babInstallPath.'admin/acl.php';
-include_once $babInstallPath.'utilit/dirincl.php';
-include_once $babInstallPath.'utilit/nwdaysincl.php';
-include_once $babInstallPath.'utilit/sitesincl.php';
+include_once $GLOBALS['babInstallPath'].'admin/acl.php';
+include_once $GLOBALS['babInstallPath'].'utilit/dirincl.php';
+include_once $GLOBALS['babInstallPath'].'utilit/nwdaysincl.php';
+include_once $GLOBALS['babInstallPath'].'utilit/sitesincl.php';
 
 $bab_ldapAttributes = array('uid', 'cn', 'sn', 'givenname', 'mail', 'telephonenumber', 'mobile', 'homephone', 'facsimiletelephonenumber', 'title', 'o', 'street', 'l', 'postalcode', 'st', 'homepostaladdress', 'jpegphoto', 'departmentnumber');
 
@@ -2779,7 +2779,7 @@ if (0 === mb_strpos($idx, 'menu') && is_numeric(mb_substr($idx, 4))) {
 switch($idx)
 	{
 	case "unload":
-		include_once $babInstallPath."utilit/uiutil.php";
+		include_once $GLOBALS['babInstallPath']."utilit/uiutil.php";
 		if( !isset($popupmessage)) { $popupmessage ='';}
 		if( !isset($refreshurl)) { $refreshurl ='';}
 		popupUnload($popupmessage, $refreshurl);
@@ -2862,7 +2862,7 @@ switch($idx)
 
 	case "menu9":
 		$babBody->title = bab_translate("Registration").": ".getSiteName($_REQUEST['item']);
-		include_once $babInstallPath."utilit/dirincl.php";
+		include_once $GLOBALS['babInstallPath']."utilit/dirincl.php";
 		siteRegistration($_REQUEST['item']);
 		$babBody->addItemMenu("menusite", bab_translate("Menu"),$GLOBALS['babUrlScript']."?tg=site&item=".$_REQUEST['item']);
 		$babBody->addItemMenu("menu9", bab_translate("Registration"),'');

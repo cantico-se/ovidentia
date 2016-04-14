@@ -22,7 +22,7 @@
  * USA.																	*
 ************************************************************************/
 	include "base.php";
-	require_once($babInstallPath . 'utilit/baseFormProcessingClass.php');
-	require_once($babInstallPath . 'utilit/tableWrapperClass.php');
+	require_once($GLOBALS['babInstallPath'] . 'utilit/baseFormProcessingClass.php');
+	require_once($GLOBALS['babInstallPath'] . 'utilit/tableWrapperClass.php');
 
 ?>

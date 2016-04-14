@@ -28,8 +28,8 @@
 
 include_once "base.php";
 require_once dirname(__FILE__).'/utilit/registerglobals.php';
-include_once $babInstallPath."utilit/calincl.php";
-include_once $babInstallPath."utilit/mcalincl.php";
+include_once $GLOBALS['babInstallPath']."utilit/calincl.php";
+include_once $GLOBALS['babInstallPath']."utilit/mcalincl.php";
 
 class cal_weekCls extends cal_wmdbaseCls
 	{
@@ -430,7 +430,7 @@ $calid =bab_rp('calid',bab_getICalendars()->getUserCalendars());
 switch($idx)
 	{
 	case "unload":
-		include_once $babInstallPath."utilit/uiutil.php";
+		include_once $GLOBALS['babInstallPath']."utilit/uiutil.php";
 		popupUnload(bab_translate("Done"), $GLOBALS['babUrlScript']."?tg=calweek&idx=free&calid=".$calid."&date=".$date);
 		exit;
 		break;

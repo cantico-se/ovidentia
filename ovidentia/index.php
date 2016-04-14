@@ -100,8 +100,8 @@ if (!isset($babUrl)) {
 }
 
 
-require_once $babInstallPath.'utilit/functionality.class.php';
-require_once $babInstallPath.'utilit/addonapi.php';
+require_once $GLOBALS['babInstallPath'].'utilit/functionality.class.php';
+require_once $GLOBALS['babInstallPath'].'utilit/addonapi.php';
 
 if(!bab_isAjaxRequest() && bab_getUserId()){
     if(isset($_SESSION['pwd_change_log']) && $_SESSION['pwd_change_log']){
@@ -131,7 +131,7 @@ if (!isset($_SERVER['HTTP_HOST']) && isset($_SERVER["argv"][1])) {
 
 if (isset($_REQUEST['addon']))
 {
-    include_once $babInstallPath.'utilit/dbutil.php';
+    include_once $GLOBALS['babInstallPath'].'utilit/dbutil.php';
     include_once $GLOBALS['babInstallPath'].'utilit/addonsincl.php';
 
     $babDB = new babDatabase();
@@ -214,15 +214,15 @@ $babSiteName	= mb_substr($babSiteName, 0, 255);
 
 /* Controler */
 
-include_once $babInstallPath.'utilit/defines.php';
-include_once $babInstallPath.'utilit/dbutil.php';
+include_once $GLOBALS['babInstallPath'].'utilit/defines.php';
+include_once $GLOBALS['babInstallPath'].'utilit/dbutil.php';
 $babDB = new babDatabase();
 $babDB->db_setCharset();
-include_once $babInstallPath.'utilit/statincl.php';
+include_once $GLOBALS['babInstallPath'].'utilit/statincl.php';
 $babWebStat =new bab_WebStatEvent();
 
-include $babInstallPath.'utilit/utilit.php';
-include $babInstallPath.'utilit/skinincl.php';
+include $GLOBALS['babInstallPath'].'utilit/utilit.php';
+include $GLOBALS['babInstallPath'].'utilit/skinincl.php';
 
 bab_initMbString();
 bab_UsersLog::check();
@@ -240,7 +240,7 @@ ini_set('default_charset', bab_charset::getIso());
 if ('version' !== bab_rp('tg') || 'upgrade' !== bab_rp('idx')) {
     bab_updateSiteSettings(); /* Get the site settings */
     if ($GLOBALS['babCookieIdent'] === true) {
-        include $babInstallPath."utilit/cookieident.php";
+        include $GLOBALS['babInstallPath']."utilit/cookieident.php";
     }
 
     if (isset($_GET['clear'])) {
@@ -266,7 +266,7 @@ if ('version' !== bab_rp('tg') || 'upgrade' !== bab_rp('idx')) {
 }
 
 $babSkinPath = bab_getSkinPath();
-$babScriptPath = bab_getStaticUrl().$babInstallPath."scripts/";
+$babScriptPath = bab_getStaticUrl().$GLOBALS['babInstallPath']."scripts/";
 $babOvidentiaJs = $babScriptPath."ovidentia.js";
 $babOvmlPath = bab_Skin::getUserSkin()->getThemePath().'ovml/';
 
@@ -702,25 +702,25 @@ switch(bab_rp('tg'))
     case "chart":
         $babLevelOne = bab_translate("User's section");
         $babLevelTwo = bab_translate("Charts");
-        include $babInstallPath."chart.php";
+        include $GLOBALS['babInstallPath']."chart.php";
         exit;
         break;
     case "frchart":
         $babLevelOne = bab_translate("User's section");
         $babLevelTwo = bab_translate("Charts");
-        include $babInstallPath."frchart.php";
+        include $GLOBALS['babInstallPath']."frchart.php";
         exit;
         break;
     case "fltchart":
         $babLevelOne = bab_translate("User's section");
         $babLevelTwo = bab_translate("Charts");
-        include $babInstallPath."fltchart.php";
+        include $GLOBALS['babInstallPath']."fltchart.php";
         exit;
         break;
     case "flbchart":
         $babLevelOne = bab_translate("User's section");
         $babLevelTwo = bab_translate("Charts");
-        include $babInstallPath."flbchart.php";
+        include $GLOBALS['babInstallPath']."flbchart.php";
         exit;
         break;
     case "faq":
@@ -767,80 +767,80 @@ switch(bab_rp('tg'))
         $babLevelTwo = bab_translate("Contacts");
         if( $BAB_SESS_LOGGED && bab_contactsAccess())
             {
-            include $babInstallPath."contact.php";
+            include $GLOBALS['babInstallPath']."contact.php";
             exit;
             }
         break;
     case "address":
         if( $BAB_SESS_LOGGED)
             {
-            include $babInstallPath."address.php";
+            include $GLOBALS['babInstallPath']."address.php";
             exit;
             }
         break;
     case "lsa":
         if( $BAB_SESS_LOGGED)
             {
-            include $babInstallPath."lsa.php";
+            include $GLOBALS['babInstallPath']."lsa.php";
             exit;
             }
         break;
     case "month":
-        include $babInstallPath."month.php";
+        include $GLOBALS['babInstallPath']."month.php";
         exit;
         break;
     case "images":
-        include $babInstallPath."images.php";
+        include $GLOBALS['babInstallPath']."images.php";
         exit;
         break;
     case "version":
-        include $babInstallPath."version.php";
+        include $GLOBALS['babInstallPath']."version.php";
         exit;
         break;
     case "statproc":
-        include $babInstallPath."utilit/statproc.php";
+        include $GLOBALS['babInstallPath']."utilit/statproc.php";
         break;
     case "calnotif":
-        include $babInstallPath."utilit/calnotif.php";
+        include $GLOBALS['babInstallPath']."utilit/calnotif.php";
         exit;
         break;
     case "editorarticle":
-        include $babInstallPath."editorarticle.php";
+        include $GLOBALS['babInstallPath']."editorarticle.php";
         exit;
         break;
     case "editorfaq":
-        include $babInstallPath."editorfaq.php";
+        include $GLOBALS['babInstallPath']."editorfaq.php";
         exit;
         break;
     case "editorovml":
-        include $babInstallPath."editorovml.php";
+        include $GLOBALS['babInstallPath']."editorovml.php";
         exit;
         break;
     case "editorcontdir":
-        include $babInstallPath."editorcontdir.php";
+        include $GLOBALS['babInstallPath']."editorcontdir.php";
         exit;
         break;
     case 'editorfunctions':
-        include $babInstallPath."editorfunctions.php";
+        include $GLOBALS['babInstallPath']."editorfunctions.php";
         exit;
         break;
     case "selectcolor":
-        include $babInstallPath."selectcolor.php";
+        include $GLOBALS['babInstallPath']."selectcolor.php";
         exit;
         break;
     case "imgget":
-        include $babInstallPath."imgget.php";
+        include $GLOBALS['babInstallPath']."imgget.php";
         exit;
         break;
     case "link":
-        include $babInstallPath."link.php";
+        include $GLOBALS['babInstallPath']."link.php";
         exit;
         break;
     case "oml":
         $incl = "oml";
         break;
     case "omlsoap":
-        include $babInstallPath."omlsoap.php";
+        include $GLOBALS['babInstallPath']."omlsoap.php";
         exit;
         break;
     case "accden":
@@ -861,7 +861,7 @@ switch(bab_rp('tg'))
         $incl = 'admin/charset';
         break;
     case "menu":
-        include $babInstallPath."menu.php";
+        include $GLOBALS['babInstallPath']."menu.php";
         break;
     case 'search':
         /**
@@ -912,7 +912,7 @@ switch(bab_rp('tg'))
 
 if( !empty($incl))
     {
-    include $babInstallPath."$incl.php";
+    include $GLOBALS['babInstallPath']."$incl.php";
     }
 
 

@@ -23,7 +23,7 @@
 ************************************************************************/
 include_once "base.php";
 require_once dirname(__FILE__).'/utilit/registerglobals.php';
-include_once $babInstallPath."admin/acl.php";
+include_once $GLOBALS['babInstallPath']."admin/acl.php";
 
 define("BAB_STAT_BCT_TOPIC",		1);
 define("BAB_STAT_BCT_ARTICLE",		2);
@@ -1047,7 +1047,7 @@ switch($idx)
 		if( bab_getCurrentAdmGroup() == 0 )
 			{
 			$babBody->addItemMenu("maj", bab_translate("Update"), $GLOBALS['babUrlScript']."?tg=statconf&idx=maj&statrows=12000");
-			include_once $babInstallPath."utilit/statproc.php";
+			include_once $GLOBALS['babInstallPath']."utilit/statproc.php";
 			}
 		else
 			{

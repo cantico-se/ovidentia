@@ -23,7 +23,7 @@
 ************************************************************************/
 include_once 'base.php';
 require_once dirname(__FILE__).'/../utilit/registerglobals.php';
-include_once $babInstallPath.'admin/register.php';
+include_once $GLOBALS['babInstallPath'].'admin/register.php';
 
 
 
@@ -383,7 +383,7 @@ function viewgroups()
 
 function notifyUserconfirmation($name, $email)
 {
-    global $babBody, $babAdminEmail, $babInstallPath;
+    global $babBody, $babAdminEmail, $GLOBALS['babInstallPath'];
 
     class NotifyUserconfirmation_Temp
     {
@@ -688,12 +688,12 @@ if (isset($update) && $update == 'password') {
         /* Send an e-mail to the user with its new password */
         $vSendConfirmationEmail = bab_rp('sendconfirmationemail', 'no');
         if ($vSendConfirmationEmail == 'yes') {
-            global $babInstallPath;
-            include_once $babInstallPath.'utilit/mailincl.php';
+            global $GLOBALS['babInstallPath'];
+            include_once $GLOBALS['babInstallPath'].'utilit/mailincl.php';
 
             $mail = bab_mail();
             if ($mail !== false) {
-                global $babBody, $babAdminEmail, $babAdminName, $babInstallPath, $babSiteName;
+                global $babBody, $babAdminEmail, $babAdminName, $GLOBALS['babInstallPath'], $babSiteName;
 
                 $userName = bab_getUserName($item);
                 $userEmail = bab_getUserEmail($item);
@@ -789,7 +789,7 @@ switch($idx) {
 
         $babBody->title = bab_getUserName($item) . bab_translate(" is member of");
 
-        include_once $babInstallPath.'admin/mgroup.php';
+        include_once $GLOBALS['babInstallPath'].'admin/mgroup.php';
 
         $mgroups = new mgroups('user','Groups', BAB_REGISTERED_GROUP);
         $mgroups->setExpandChecked();

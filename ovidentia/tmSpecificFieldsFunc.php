@@ -22,10 +22,10 @@
  * USA.																	*
 ************************************************************************/
 include "base.php";
-require_once $babInstallPath . 'tmContext.php';
-require_once $babInstallPath . 'tmSpecificFieldsClasses.php';
-require_once $babInstallPath . 'utilit/tmToolsIncl.php';
-require_once $babInstallPath . 'utilit/tmIncl.php';
+require_once $GLOBALS['babInstallPath'] . 'tmContext.php';
+require_once $GLOBALS['babInstallPath'] . 'tmSpecificFieldsClasses.php';
+require_once $GLOBALS['babInstallPath'] . 'utilit/tmToolsIncl.php';
+require_once $GLOBALS['babInstallPath'] . 'utilit/tmIncl.php';
 	
 	
 	

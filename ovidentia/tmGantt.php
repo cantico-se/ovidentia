@@ -22,8 +22,8 @@
  * USA.																	*
 ************************************************************************/
 include "base.php";
-require_once($babInstallPath . 'utilit/dateTime.php');
-require_once($babInstallPath . 'tmTaskTime.class.php');
+require_once($GLOBALS['babInstallPath'] . 'utilit/dateTime.php');
+require_once($GLOBALS['babInstallPath'] . 'tmTaskTime.class.php');
 
 
 class BAB_TM_GanttLegend
@@ -399,7 +399,7 @@ class BAB_TM_GanttBase
 
 	function initDates($sStartDate, $iStartWeekDay)
 	{
-		global $babInstallPath;
+		global $GLOBALS['babInstallPath'];
 
 		$this->m_sPrevMonth = bab_translate("Previous month");
 		$this->m_sPrevWeek	= bab_translate("Previous week");

@@ -23,7 +23,7 @@
  */
 include_once 'base.php';
 require_once dirname(__FILE__).'/utilit/registerglobals.php';
-include_once $babInstallPath.'utilit/gdiincl.php';
+include_once $GLOBALS['babInstallPath'].'utilit/gdiincl.php';
 
 function getFmImage($idf, $w, $h)
 {

@@ -724,8 +724,8 @@ function babTopicsSection($cat, $close)
 
 function topicsGetNext()
 	{
-	global $babDB, $babBody, $BAB_SESS_USERID, $babInstallPath;
-	include_once $babInstallPath."utilit/afincl.php";
+	global $babDB, $babBody, $BAB_SESS_USERID, $GLOBALS['babInstallPath'];
+	include_once $GLOBALS['babInstallPath']."utilit/afincl.php";
 	static $i = 0;
 	if( $i < $this->count)
 		{
