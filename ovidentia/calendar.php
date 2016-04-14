@@ -191,7 +191,7 @@ class displayAttendeesCls extends displayEventCls
 			{
 				$partstat = $arr['PARTSTAT'];
 			}
-			
+
 			$this->external = !$arr['AttendeeBackend']->canView();
 
 			if (isset($this->statusdef[$partstat]))
@@ -247,7 +247,7 @@ class displayAttendeesCls extends displayEventCls
 		{
 			return false;
 		}
-		
+
 		require_once dirname(__FILE__).'/utilit/wfincl.php';
 		$approvers = bab_WFGetWaitingApproversInstance($idfai);
 		$id_user = bab_getUserId();
@@ -470,7 +470,7 @@ class displayEventCls
 	public function __construct($evtid, $dtstart, $idcal)
 	{
 		global $babBody;
-		
+
 		$this->evtid = $evtid;
 		$this->dtstart = $dtstart;
 
@@ -491,7 +491,7 @@ class displayEventCls
 	 *
 	 * @param string $evtid
 	 * @param string $dtstart
-	 * 
+	 *
 	 * @return bab_CalendarPeriod
 	 */
 	protected function getPeriod()
@@ -501,7 +501,7 @@ class displayEventCls
 
 			$backend = self::$calendar->getBackend();
 			self::$calendarPeriod = $backend->getPeriod($backend->CalendarEventCollection(self::$calendar), $this->evtid, $this->dtstart);
-			
+
 			if (isset(self::$calendarPeriod))
 			{
 				self::$calendarPeriod->updateCopies();
@@ -615,7 +615,7 @@ class displayEventDetailCls extends displayEventCls
 					$this->updateauthor = bab_toHtml(bab_getUserName($data['id_modifiedby']));
 			}
 		}
-		
+
 		$this->doms = bab_getDomains($calendarPeriod->getProperty('X-CTO-DOMAIN'), true);
 	}
 
@@ -984,7 +984,7 @@ function displayEventDetailUpd($evtid, $dtstart, $idcal)
 		$alert = new displayEventAlertCls($evtid, $dtstart, $idcal);
 		$html.=$notes->getHtml().$alert->getHtml();
 	}
-	
+
 	$babBody->babPopup($html);
 }
 
@@ -993,7 +993,7 @@ function displayEventDetailUpd($evtid, $dtstart, $idcal)
  * Approbation page for one public or resource calendar link to an event (recurring or not)
  * @return unknown_type
  */
-function approbCalendar($evtid, $dtstart, $idcal, $relation, $dtstart)
+function approbCalendar($evtid, $dtstart, $idcal, $relation)
 {
 	require_once dirname(__FILE__).'/utilit/urlincl.php';
 	if (isset($_POST['approbstatus']))
@@ -1535,8 +1535,7 @@ switch($idx)
 			bab_rp('evtid'),
 			bab_rp('dtstart'),
 			bab_rp('idcal'),
-			bab_rp('relation'),
-			bab_rp('dtstart')
+			bab_rp('relation')
 		);
 		break;
 
