@@ -51,8 +51,8 @@ class bab_FileInfo extends SplFileInfo
 	 * @var bool
 	 */
 	private $_isDir = null;
-	
-	
+
+
 	/**
 	 * Returns the number of files (directory or regular files) contained in the
 	 * this file (the file is not a directory 0 is returned).
@@ -104,7 +104,7 @@ class bab_FileInfo extends SplFileInfo
 	private function getFmFolder()
 	{
 		$fmPathname = $this->getFmPathname();
-		
+
 		$pathElements = explode('/', $fmPathname);
 		$delegation = array_shift($pathElements);
 		$filename = array_pop($pathElements);
@@ -112,7 +112,7 @@ class bab_FileInfo extends SplFileInfo
 		if ($relativePath !== '') {
 			$relativePath .= '/';
 		}
-		
+
 		$iIdDelegation = (int)substr($delegation, strlen(BAB_FileManagerEnv::delegationPrefix));
 
 		/* @var $oFmFolderSet BAB_FmFolderSet */
@@ -162,26 +162,26 @@ class bab_FileInfo extends SplFileInfo
 		$oCriteria = $oCriteria->_and($oPathName->in(dirname($pathTmp).'/')); /* Criteria to the path of the file, example : Espace/Repertoire/ */
 		$oCriteria = $oCriteria->_and($oIdDgOwnerField->in($iIdDelegation)); /* Criteria to the delegation of the file */
 
-		
+
 		return $oFolderFileSet->get($oCriteria);
 	}
 
-	
-	
+
+
 	/**
 	 * (non-PHPdoc)
 	 * @see SplFileInfo::isDir()
 	 */
 	public function isDir () {
-	
+
 	    if (!isset($this->_isDir)) {
 	        $this->_isDir = parent::isDir();
 	    }
-	
+
 	    return $this->_isDir;
 	}
-	
-	
+
+
 
 	/**
 	 * Returns the corresponding BAB_FmFolderFile object.
@@ -209,17 +209,17 @@ class bab_FileInfo extends SplFileInfo
 	 *
 	 * @return SplFileObject
 	 */
-	public function openFile($mode = 'r', $use_include_path = false)
+	public function openFile($mode = 'r', $use_include_path = false, $context = null)
 	{
 		if ($mode === 'r'
 				&& $this->isReadable()) {
-			return parent::openFile($mode, $use_include_path);
+			return parent::openFile($mode, $use_include_path, $context);
 		}
 		if (($mode === 'r+'
 				|| $mode === 'w' || $mode === 'w+'
 				|| $mode === 'a' || $mode === 'a+')
 				&& $this->isWritable()) {
-			return parent::openFile($mode, $use_include_path);
+			return parent::openFile($mode, $use_include_path, $context);
 		}
 		throw new RuntimeException();
 	}
@@ -2049,7 +2049,7 @@ class bab_Directory
         if (! $this->setEnv($oDirRenContext->getTrgPathName())) {
             return false;
         }
-        
+
         if (! $this->accessValid()) {
             return false;
         }
@@ -2111,18 +2111,18 @@ class bab_Directory
 			//Si on ne copie pas dans le meme rootFolder
 			$sFirstSrcPath = (string) getFirstPath($oDirRenContext->getSrcPath());
 			$sFirstTrgPath = (string) getFirstPath($oDirRenContext->getTrgPath());
-			
+
             if ($sFirstSrcPath !== $sFirstTrgPath) {
                 $sBaseName = basename($oSrcFile->getPathname());
                 $iFileSize = $oSrcFile->getSize();
                 $this->sizeExceedFmLimit($iFileSize, $sBaseName);
-                
+
                 $sRootFolderPath = $sPathName . $sFirstTrgPath;
                 $iFolderSize = getDirSize($sRootFolderPath);
                 $iTotalSize = $iFolderSize + $iFileSize;
                 $this->sizeExceedFolderLimit($iTotalSize, $sBaseName);
             }
-            
+
             if (0 < count($this->getError())) {
                 return false;
             }
