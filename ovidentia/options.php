@@ -1432,9 +1432,9 @@ if( '' != ($update = bab_pp('update')))
        }
 	}
 
-if( !isset($firstname) &&  !isset($middlename) &&  !isset($lastname) && !isset($nickname) && !isset($email) && $BAB_SESS_USERID != '')
+if( !isset($firstname) &&  !isset($middlename) &&  !isset($lastname) && !isset($nickname) && !isset($email) && bab_isUserLogged())
 	{
-	$req = "select sn, mn, givenname, email from ".BAB_DBDIR_ENTRIES_TBL." where id_directory='0' and id_user='".$babDB->db_escape_string($BAB_SESS_USERID)."'";
+	$req = "select sn, mn, givenname, email from ".BAB_DBDIR_ENTRIES_TBL." where id_directory='0' and id_user='".$babDB->db_escape_string(bab_getUserId())."'";
 	$res = $babDB->db_query($req);
 	if( $res && $babDB->db_num_rows($res) > 0)
 		{
@@ -1443,7 +1443,7 @@ if( !isset($firstname) &&  !isset($middlename) &&  !isset($lastname) && !isset($
 		$lastname = $arr['sn'];
 		$middlename = $arr['mn'];
 		$email = $arr['email'];
-		$nickname = bab_getUserNickname($BAB_SESS_USERID);
+		$nickname = bab_getUserNickname(bab_getUserId());
 		}
 	}
 	
@@ -1515,7 +1515,7 @@ switch($idx)
 			$babBody->addItemMenu('list', bab_translate("Sections"), $GLOBALS['babUrlScript'].'?tg=sectopt&idx=list');
 			}
 		
-		$iduser = isset($iduser)? $iduser: $BAB_SESS_USERID;
+		$iduser = isset($iduser)? $iduser: bab_getUserId();
 		if( ('Y' == $babBody->babsite['change_unavailability'] && $iduser == $GLOBALS['BAB_SESS_USERID']) || bab_isUserAdministrator() || (bab_getCurrentAdmGroup() && bab_isDelegated('users')))
 			{
 			$babBody->addItemMenu('unav', bab_translate("Unavailability"), $GLOBALS['babUrlScript'].'?tg=options&idx=unav&iduser='.$iduser);

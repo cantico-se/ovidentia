@@ -1194,7 +1194,7 @@ $update = false;
 $ocinfo = $babDB->db_fetch_array($babDB->db_query("select * from ".BAB_ORG_CHARTS_TBL." where id='".$ocid."'"));
 if( bab_isAccessValid(BAB_OCUPDATE_GROUPS_TBL, $ocid))
 {
-	if( $ocinfo['edit'] == 'Y' && $ocinfo['edit_author'] == $BAB_SESS_USERID)
+	if( $ocinfo['edit'] == 'Y' && $ocinfo['edit_author'] == bab_getUserId())
 	{
 		$update = true;
 	}

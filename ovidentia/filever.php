@@ -993,7 +993,7 @@ switch($idx)
 
 	case 'conf':
 		include_once $GLOBALS['babInstallPath']."utilit/afincl.php";
-		if( isUserApproverFlow($oFmFolder->getApprobationSchemeId(), $BAB_SESS_USERID) )
+		if( isUserApproverFlow($oFmFolder->getApprobationSchemeId(), bab_getUserId()) )
 		{
 			showConfirmFile(bab_rp('idf'));
 			exit;

@@ -491,6 +491,9 @@ class Func_Ovml_Container_DbDirectoryEntry extends Func_Ovml_Container
 
 				$res = $babDB->db_query("select * from ".BAB_DBDIR_FIELDSEXTRA_TBL." where id_directory='".($idgroup != 0? 0: $babDB->db_escape_string($this->directoryid))."' AND disabled='N' order by list_ordering asc");
 
+				$nfields = array();
+				$xfields = array();
+				
 				while( $arr = $babDB->db_fetch_array($res))
 					{
 					if( $arr['id_field'] < BAB_DBDIR_MAX_COMMON_FIELDS )

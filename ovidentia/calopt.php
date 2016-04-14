@@ -1161,7 +1161,7 @@ if (preg_match('/javascript:/', $urla))
 }
 
 	
-if( isset($modify) && $modify == "options" && $BAB_SESS_USERID != '')
+if( isset($modify) && $modify == "options" && bab_isUserLogged())
 {
 	if (bab_updateCalOptions())
 	{

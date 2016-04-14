@@ -215,7 +215,7 @@ $idx = bab_rp('idx', 'create');
 
 $msgerror = '';
 
-if( $BAB_SESS_USERID != '' )
+if( bab_isUserLogged() )
 {
 if( '' != ($addcontact = bab_pp('addcontact')))
 	{

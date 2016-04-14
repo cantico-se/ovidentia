@@ -831,23 +831,23 @@ if( !isset($signame ))
 if( !isset($signature ))
 	$signature = "";
 
-if( isset($addacc) && $addacc == "add" && $BAB_SESS_USERID != '')
+if( isset($addacc) && $addacc == "add" && bab_isUserLogged())
 	addAccount($account_name, $fullname, $email, $login, $password1, $password2, $domain, $prefacc, $maxrows, $prefformat);
 
-if( isset($modacc) && $modacc == "modify" && $BAB_SESS_USERID != '')
+if( isset($modacc) && $modacc == "modify" && bab_isUserLogged())
 	modifyAccount($account_name, $fullname, $email, $login, $password1, $password2, $domain, $item, $prefacc, $maxrows, $prefformat);
 
-if( isset($action) && $action == "Yes" && $BAB_SESS_USERID != '')
+if( isset($action) && $action == "Yes" && bab_isUserLogged())
 	{
 	confirmDeleteAccount($item);
 	}
 
-if( isset($addsig) && $addsig == "add" && $BAB_SESS_USERID != '')
+if( isset($addsig) && $addsig == "add" && bab_isUserLogged())
 	{
 	addSignature($signame, $html);
 	}
 
-if( isset($modsig) && $modsig == "modify" && $BAB_SESS_USERID != '')
+if( isset($modsig) && $modsig == "modify" && bab_isUserLogged())
 	{
 	modifySignature($signame, $html, $sigid);
 	}
@@ -864,9 +864,9 @@ switch($idx)
 		$babBody->addItemMenu("modacc", bab_translate("Modify"), $GLOBALS['babUrlScript']."?tg=mailopt&idx=modacc&item=".$item);
 		$babBody->addItemMenu("delacc", bab_translate("Delete"), $GLOBALS['babUrlScript']."?tg=mailopt&idx=delacc&item=".$item);
 		if( $bemail == 1 || $bemail == 2)
-			$babBody->addItemMenu("listpd", bab_translate("User's Domains"), $GLOBALS['babUrlScript']."?tg=maildoms&idx=list&userid=".$BAB_SESS_USERID."&bgrp=n");
+			$babBody->addItemMenu("listpd", bab_translate("User's Domains"), $GLOBALS['babUrlScript']."?tg=maildoms&idx=list&userid=".bab_getUserId()."&bgrp=n");
 		if( $bemail == 2 || $bemail == 3)
-			$babBody->addItemMenu("listdg", bab_translate("Group's Domains"), $GLOBALS['babUrlScript']."?tg=maildoms&idx=list&userid=".$BAB_SESS_USERID."&bgrp=y");
+			$babBody->addItemMenu("listdg", bab_translate("Group's Domains"), $GLOBALS['babUrlScript']."?tg=maildoms&idx=list&userid=".bab_getUserId()."&bgrp=y");
 		break;
 
 	case "addacc":
@@ -876,9 +876,9 @@ switch($idx)
 		$babBody->addItemMenu("listacc", bab_translate("Accounts"), $GLOBALS['babUrlScript']."?tg=mailopt&idx=listacc");
 		$babBody->addItemMenu("addacc", bab_translate("Create"), $GLOBALS['babUrlScript']."?tg=mailopt&idx=addacc");
 		if( $bemail == 1 || $bemail == 2)
-			$babBody->addItemMenu("listpd", bab_translate("User's Domains"), $GLOBALS['babUrlScript']."?tg=maildoms&idx=list&userid=".$BAB_SESS_USERID."&bgrp=n");
+			$babBody->addItemMenu("listpd", bab_translate("User's Domains"), $GLOBALS['babUrlScript']."?tg=maildoms&idx=list&userid=".bab_getUserId()."&bgrp=n");
 		if( $bemail == 2 || $bemail == 3)
-			$babBody->addItemMenu("listdg", bab_translate("Group's Domains"), $GLOBALS['babUrlScript']."?tg=maildoms&idx=list&userid=".$BAB_SESS_USERID."&bgrp=y");
+			$babBody->addItemMenu("listdg", bab_translate("Group's Domains"), $GLOBALS['babUrlScript']."?tg=maildoms&idx=list&userid=".bab_getUserId()."&bgrp=y");
 		break;
 	
 	case "modacc":
@@ -890,9 +890,9 @@ switch($idx)
 		$babBody->addItemMenu("modacc", bab_translate("Modify"), $GLOBALS['babUrlScript']."?tg=mailopt&idx=modacc");
 		$babBody->addItemMenu("delacc", bab_translate("Delete"), $GLOBALS['babUrlScript']."?tg=mailopt&idx=delacc&item=".$item);
 		if( $bemail == 1 || $bemail == 2)
-			$babBody->addItemMenu("listpd", bab_translate("User's Domains"), $GLOBALS['babUrlScript']."?tg=maildoms&idx=list&userid=".$BAB_SESS_USERID."&bgrp=n");
+			$babBody->addItemMenu("listpd", bab_translate("User's Domains"), $GLOBALS['babUrlScript']."?tg=maildoms&idx=list&userid=".bab_getUserId()."&bgrp=n");
 		if( $bemail == 2 || $bemail == 3)
-			$babBody->addItemMenu("listdg", bab_translate("Group's Domains"), $GLOBALS['babUrlScript']."?tg=maildoms&idx=list&userid=".$BAB_SESS_USERID."&bgrp=y");
+			$babBody->addItemMenu("listdg", bab_translate("Group's Domains"), $GLOBALS['babUrlScript']."?tg=maildoms&idx=list&userid=".bab_getUserId()."&bgrp=y");
 		break;
 
 	case "modsig":
@@ -905,9 +905,9 @@ switch($idx)
 		$babBody->addItemMenu("addsig", bab_translate("Create"), $GLOBALS['babUrlScript']."?tg=mailopt&idx=addsig");
 		$babBody->addItemMenu("modsig", bab_translate("Modify"), $GLOBALS['babUrlScript']."?tg=mailopt&idx=modsig");
 		if( $bemail == 1 || $bemail == 2)
-			$babBody->addItemMenu("listpd", bab_translate("User's Domains"), $GLOBALS['babUrlScript']."?tg=maildoms&idx=list&userid=".$BAB_SESS_USERID."&bgrp=n");
+			$babBody->addItemMenu("listpd", bab_translate("User's Domains"), $GLOBALS['babUrlScript']."?tg=maildoms&idx=list&userid=".bab_getUserId()."&bgrp=n");
 		if( $bemail == 2 || $bemail == 3)
-			$babBody->addItemMenu("listdg", bab_translate("Group's Domains"), $GLOBALS['babUrlScript']."?tg=maildoms&idx=list&userid=".$BAB_SESS_USERID."&bgrp=y");
+			$babBody->addItemMenu("listdg", bab_translate("Group's Domains"), $GLOBALS['babUrlScript']."?tg=maildoms&idx=list&userid=".bab_getUserId()."&bgrp=y");
 		break;
 
 
@@ -921,9 +921,9 @@ switch($idx)
 		$babBody->addItemMenu("listsig", bab_translate("Signatures"), $GLOBALS['babUrlScript']."?tg=mailopt&idx=listsig");
 		$babBody->addItemMenu("addsig", bab_translate("Create"), $GLOBALS['babUrlScript']."?tg=mailopt&idx=addsig");
 		if( $bemail == 1 || $bemail == 2)
-			$babBody->addItemMenu("listpd", bab_translate("User's Domains"), $GLOBALS['babUrlScript']."?tg=maildoms&idx=list&userid=".$BAB_SESS_USERID."&bgrp=n");
+			$babBody->addItemMenu("listpd", bab_translate("User's Domains"), $GLOBALS['babUrlScript']."?tg=maildoms&idx=list&userid=".bab_getUserId()."&bgrp=n");
 		if( $bemail == 2 || $bemail == 3)
-			$babBody->addItemMenu("listdg", bab_translate("Group's Domains"), $GLOBALS['babUrlScript']."?tg=maildoms&idx=list&userid=".$BAB_SESS_USERID."&bgrp=y");
+			$babBody->addItemMenu("listdg", bab_translate("Group's Domains"), $GLOBALS['babUrlScript']."?tg=maildoms&idx=list&userid=".bab_getUserId()."&bgrp=y");
 		break;
 
     case "delsig":
@@ -937,9 +937,9 @@ switch($idx)
 		$babBody->addItemMenu("listsig", bab_translate("Signatures"), $GLOBALS['babUrlScript']."?tg=mailopt&idx=listsig");
 		$babBody->addItemMenu("addsig", bab_translate("Create"), $GLOBALS['babUrlScript']."?tg=mailopt&idx=addsig");
 		if( $bemail == 1 || $bemail == 2)
-			$babBody->addItemMenu("listpd", bab_translate("User's Domains"), $GLOBALS['babUrlScript']."?tg=maildoms&idx=list&userid=".$BAB_SESS_USERID."&bgrp=n");
+			$babBody->addItemMenu("listpd", bab_translate("User's Domains"), $GLOBALS['babUrlScript']."?tg=maildoms&idx=list&userid=".bab_getUserId()."&bgrp=n");
 		if( $bemail == 2 || $bemail == 3)
-			$babBody->addItemMenu("listdg", bab_translate("Group's Domains"), $GLOBALS['babUrlScript']."?tg=maildoms&idx=list&userid=".$BAB_SESS_USERID."&bgrp=y");
+			$babBody->addItemMenu("listdg", bab_translate("Group's Domains"), $GLOBALS['babUrlScript']."?tg=maildoms&idx=list&userid=".bab_getUserId()."&bgrp=y");
 		break;
 
     default:
@@ -951,9 +951,9 @@ switch($idx)
 		$babBody->addItemMenu("addacc", bab_translate("Create"), $GLOBALS['babUrlScript']."?tg=mailopt&idx=addacc");
 		$babBody->addItemMenu("listsig", bab_translate("Signatures"), $GLOBALS['babUrlScript']."?tg=mailopt&idx=listsig");
 		if( $bemail == 1 || $bemail == 2)
-			$babBody->addItemMenu("listpd", bab_translate("User's Domains"), $GLOBALS['babUrlScript']."?tg=maildoms&idx=list&userid=".$BAB_SESS_USERID."&bgrp=n");
+			$babBody->addItemMenu("listpd", bab_translate("User's Domains"), $GLOBALS['babUrlScript']."?tg=maildoms&idx=list&userid=".bab_getUserId()."&bgrp=n");
 		if( $bemail == 2 || $bemail == 3)
-			$babBody->addItemMenu("listdg", bab_translate("Group's Domains"), $GLOBALS['babUrlScript']."?tg=maildoms&idx=list&userid=".$BAB_SESS_USERID."&bgrp=y");
+			$babBody->addItemMenu("listdg", bab_translate("Group's Domains"), $GLOBALS['babUrlScript']."?tg=maildoms&idx=list&userid=".bab_getUserId()."&bgrp=y");
 		break;
 	}
 if( empty($babBody->msgerror))

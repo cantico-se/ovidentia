@@ -78,7 +78,7 @@ function getUserEmailAccountInfo($userId = null)
 				$this->plainselect = "";
 			}
 		}
-                $req = "select * from ".BAB_MAIL_SIGNATURES_TBL." where owner='".$babDB->db_escape_string($BAB_SESS_USERID)."'";
+                $req = "select * from ".BAB_MAIL_SIGNATURES_TBL." where owner='".$babDB->db_escape_string(bab_getUserId())."'";
                 $this->ressig = $babDB->db_query($req);
                 $this->countsig = $babDB->db_num_rows($this->ressig);
 	} else {

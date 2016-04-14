@@ -392,6 +392,11 @@ function editorcont()
 
 
 /* main */
+	
+$idx = bab_rp('idx');
+$id = bab_rp('id');
+$pos = bab_rp('pos', 'A');
+	
 if(isset($id) && bab_isAccessValid(BAB_DBDIRADD_GROUPS_TBL, $id))
 	$badd = true;
 else
@@ -402,14 +407,13 @@ if(!isset($idx))
 	$idx = "contact";
 	}
 
-if( !isset($pos ))
-	$pos = "A";
 
 switch($idx)
 	{
 	case "directory":
-		if( !isset($pos )){	$pos = "A"; }
-		if( !isset($xf )){	$xf = ""; }
+	    
+	    $xf = bab_rp('xf');
+        
 		if ($badd) directory($id, $pos, $xf, $badd);
 		elseif (isset($id) && !$badd ) directory($id, $pos, $xf, $badd);
 		else dirlist();

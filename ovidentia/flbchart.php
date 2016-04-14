@@ -1290,7 +1290,7 @@ $access = false;
 if( bab_isAccessValid(BAB_OCUPDATE_GROUPS_TBL, $ocid))
 {
 	$ocinfo = $babDB->db_fetch_array($babDB->db_query("select oct.*, ddt.name as dir_name, ddt.id_group from ".BAB_ORG_CHARTS_TBL." oct LEFT JOIN ".BAB_DB_DIRECTORIES_TBL." ddt on oct.id_directory=ddt.id where oct.id='".$ocid."'"));
-	if( $ocinfo['edit'] == 'Y' && $ocinfo['edit_author'] == $BAB_SESS_USERID)
+	if( $ocinfo['edit'] == 'Y' && $ocinfo['edit_author'] == bab_getUserId())
 	{
 		$access = true;
 	}
