@@ -758,6 +758,19 @@ if( !bab_isUserAdministrator() && !bab_isDelegated('sections'))
 	return;
 }
 
+
+$idx = bab_rp('idx', 'List');
+$create = bab_rp('create', null);
+$script = bab_rp('script', null);
+$update = bab_rp('update', null);
+$position = bab_rp('position');
+$title = bab_rp('title');
+$description = bab_rp('description');
+$template = bab_rp('template');
+$lang = bab_rp('lang');
+$opt = bab_rp('opt');
+$js = bab_rp('js');
+
 if( isset($create))
 	{
 	if (!isset($script))
@@ -769,20 +782,18 @@ if( isset($update))
 	{
 	if( $update == "order" )
 		{
-		if ( !isset($listleft))  { $listleft= array(); }
-		if ( !isset($listright)) { $listright= array(); }
+	    $listleft = bab_rp('listleft', array());
+	    $listright = bab_rp('listright', array());
 		saveSectionsOrder($listleft, $listright);
 		}
 	else if( $update == "disable" )
 		{
-		if( !isset($sections)) { $sections= array();}
-		if( !isset($sectopt)) { $sectopt= array();}
+		$sections = bab_rp('sections', array());
+		$sectopt = bab_rp('sectopt', array());
 		disableSections($sections, $sectopt);
 		}
 	}
 
-if( !isset($idx))
-	$idx = "List";
 
 
 switch($idx)

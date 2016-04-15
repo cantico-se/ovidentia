@@ -75,9 +75,9 @@ function bab_OCGetRootEntity($idoc='')
         }
     }
 
-    if( isset($ocentities[$idoc]))
+    if( isset($ocrootentities[$idoc]))
     {
-        return $ocentities[$idoc];
+        return $ocrootentities[$idoc];
     }
 
     $ocrootentities[$idoc] = array();

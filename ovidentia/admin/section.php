@@ -300,6 +300,22 @@ if( !bab_isUserAdministrator() && !bab_isDelegated('sections'))
 	return;
 }
 
+
+
+$idx = bab_rp('idx', 'Modify');
+$modify = bab_rp('modify', null);
+$submit = bab_rp('submit', null);
+$secdel = bab_rp('secdel', null);
+$aclsec = bab_rp('aclsec', null);
+$item = bab_rp('item');
+$title = bab_rp('title');
+$description = bab_rp('description');
+$template = bab_rp('template');
+$lang = bab_rp('lang');
+$opt = bab_rp('opt');
+$section = bab_rp('section');
+
+
 if( isset($modify))
 	{
 	if( isset($submit))
@@ -317,10 +333,9 @@ if( isset($aclsec))
 	exit;
 	}
 
-if( !isset($idx))
-	$idx = "Modify";
 
-if( isset($action) && $action == "Yes")
+
+if( bab_rp('action') == "Yes")
 	{
 	confirmDeleteSection($section);
 	}

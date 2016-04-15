@@ -2657,7 +2657,7 @@ function call_record_site_menu11($item) {
 
 
 /* main */
-if( !isset($BAB_SESS_LOGGED) || empty($BAB_SESS_LOGGED) ||  !bab_isUserAdministrator())
+if( !bab_isUserLogged() ||  !bab_isUserAdministrator())
 {
 	$babBody->msgerror = bab_translate("Access denied");
 	return;
@@ -2718,6 +2718,7 @@ switch ($_POST['action'])
 
 
 	case 'menu8':
+	    $Submit = bab_rp('Submit');
 		if( !empty($Submit))
 			{
 			$hostname = isset($_POST['hostname']) ? $_POST['hostname'] : '';
@@ -2761,7 +2762,7 @@ switch ($_POST['action'])
 }
 
 
-if( isset($aclman) || isset($acluws))
+if( isset($_REQUEST['aclman']) || isset($_REQUEST['acluws']))
 	{
 	maclGroups();
 	}
@@ -2780,13 +2781,10 @@ switch($idx)
 	{
 	case "unload":
 		include_once $GLOBALS['babInstallPath']."utilit/uiutil.php";
-		if( !isset($popupmessage)) { $popupmessage ='';}
-		if( !isset($refreshurl)) { $refreshurl ='';}
-		popupUnload($popupmessage, $refreshurl);
+		popupUnload(bab_rp('popupmessage'), bab_rp('refreshurl'));
 		exit;
 	case "editdp":
-		if( !isset($content)) { $content ='';}
-		editDisclaimerPrivacy($item, $content);
+		editDisclaimerPrivacy($_REQUEST['item'], bab_rp('content'));
 		exit;
 		break;
 

@@ -525,30 +525,10 @@ switch(bab_rp('tg'))
             $incl = "options";
         break;
     case "confcals":
-        if( isset($userid) && $userid == 0 )
-            {
-            $babLevelOne = bab_translate("Administration");
-            $babLevelTwo = bab_translate("Calendar");
-            }
-        else
-            {
-            $babLevelOne = bab_translate("User's section");
-            $babLevelTwo = bab_translate("Options");
-            }
         if( bab_isUserLogged())
             $incl = "confcals";
         break;
     case "confcal":
-        if( isset($userid) && $userid == 0 )
-            {
-            $babLevelOne = bab_translate("Administration");
-            $babLevelTwo = bab_translate("Calendar");
-            }
-        else
-            {
-            $babLevelOne = bab_translate("User's section");
-            $babLevelTwo = bab_translate("Options");
-            }
         if( bab_isUserLogged())
             $incl = "confcal";
         break;

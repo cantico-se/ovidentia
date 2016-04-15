@@ -867,6 +867,9 @@ class babMailSmtp extends babMail
 			$port = $ssl ? 465  : 25;
 		}
 		
+		$errno = null;
+		$errstr = null;
+		
 		$this->smtp_conn = fsockopen(
 				($ssl ? 'ssl://':'').$server,  // the host of the server
 				$port,    // the port to use
@@ -901,6 +904,7 @@ class babMailSmtp extends babMail
 
 		fclose($this->smtp_conn);
 
+		$m = null;
 		if (preg_match('/^250-AUTH[\s=](.+)$/m', $data, $m))
 		{
 			return explode(' ', trim($m[1]));

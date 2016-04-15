@@ -285,7 +285,7 @@ switch($cmd)
         break;
 
     case "confirm":
-        confirmUser( $hash, $name );
+        confirmUser( bab_rp('hash'), bab_rp('name') );
         login_signon();
         break;
 

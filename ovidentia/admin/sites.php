@@ -136,7 +136,7 @@ function database()
 
 
 /* main */
-if( !isset($BAB_SESS_LOGGED) || empty($BAB_SESS_LOGGED) ||  !bab_isUserAdministrator())
+if( !bab_isUserLogged() || !bab_isUserAdministrator())
 {
 	$babBody->msgerror = bab_translate("Access denied");
 	return;
@@ -171,9 +171,8 @@ if (isset($_POST['action']))
 		}
 
 
-if (!isset($message)) {
-	$message = '';
-}
+$message = bab_rp('message');
+
 
 
 switch($idx)
