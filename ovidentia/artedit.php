@@ -828,7 +828,7 @@ function artedit_init()
 
     static $aredit = array();
 
-    if (empty($arrinit))
+    if (empty($aredit))
     {
         $aredit['articles'] = false;
         $aredit['trash'] = false;

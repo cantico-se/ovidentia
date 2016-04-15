@@ -738,7 +738,8 @@ function bab_AddonDel($id)
 
 	$row = bab_addonsInfos::getDbRow($id);
 	$addon = bab_getAddonInfosInstance($row['title']);
-
+	$msgerror = null;
+	
 	if (false === $addon->delete($msgerror)) {
 		global $babBody;
 		$babBody->addError($msgerror);
@@ -1703,24 +1704,21 @@ if( !bab_isUserAdministrator() )
 	return;
 }
 
-if( !isset($idx))
-	$idx = "list";
+$idx = bab_rp('idx', 'list');
+$upgradeall = bab_rp('upgradeall');
+$item = bab_rp('item');
 
-if( !isset($upgradeall))
-	$upgradeall = '';
+if( isset($_REQUEST['update'])) {
+	    $addons = bab_rp('addons', array());
 
-if( isset($update))
-	{
-	if( !isset($addons))
-		$addons = array();
-	if( $update == "disable" )
+	if( "disable" === bab_rp('update')) {
 		disableAddons($addons);
 	}
+}
 
-if( isset($acladd))
-	{
+if( isset($_REQUEST['acladd'])) {
 	maclGroups();
-	}
+}
 
 if (isset($_POST['action'])) {
 	switch($_POST['action']) {

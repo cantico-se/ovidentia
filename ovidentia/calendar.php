@@ -770,6 +770,8 @@ class displayEventAlertCls extends displayEventCls
 
 			$action = $alarm->getProperty('ACTION');
 			$trigger = $alarm->getProperty('TRIGGER');
+			
+			$m = null;
 
 			if (0 === mb_strpos($trigger, '-P') && preg_match_all('/(?P<value>\d+)(?P<type>[DHM]{1})/', $trigger, $m, PREG_SET_ORDER)) {
 
@@ -1097,9 +1099,13 @@ include_once $GLOBALS['babInstallPath']."utilit/uiutil.php";
 			$this->t_notetxt = bab_translate("Personal notes");
 
 			$last_ts = 0;
+			
+			$sortvalue = array();
 
 			foreach ($idcals as $idcal)
 				{
+				    $calPeriod = null;
+				    
 				//$this->mcals->getNextEvent return the event to the variable $calPeriod
 				while ($this->mcals->getNextEvent($idcal, $this->from, $this->to, $calPeriod))
 					{
@@ -1189,6 +1195,8 @@ include_once $GLOBALS['babInstallPath']."utilit/uiutil.php";
 
 				bab_sort::asort($sortvalue);
 				reset($sortvalue);
+				
+				$new_array = array();
 
 				while (list ($arr_key, $arr_val) = each ($sortvalue)) {
 						 $new_array[$arr_key] = $this->resevent[$arr_key];
@@ -1379,7 +1387,7 @@ function updateEventAlert()
 	}
 
 	$alarm = $calendarPeriod->getAlarm();
-	if (!isset($alam))
+	if (!isset($alarm))
 	{
 		$alarm = $backend->CalendarAlarm();
 

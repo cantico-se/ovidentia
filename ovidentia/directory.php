@@ -3292,7 +3292,7 @@ if( '' != ($modify = bab_pp('modify')))
         }
     elseif( $modify == 'cassign' )
         {
-        if( isset($byes) && bab_isAccessValid(BAB_DBDIRBIND_GROUPS_TBL, $id))
+        if( isset($_REQUEST['byes']) && bab_isAccessValid(BAB_DBDIRBIND_GROUPS_TBL, $id))
             {
             $idauser = bab_pp('idauser');
             assignDbContact($id, ($idauser == ''? array(): array($idauser)));

@@ -133,7 +133,7 @@ function bab_getDelegationsFromResource($res, $dgall = true, $dg0 = true) {
 
 	global $babDB;
 
-
+	$allobjects = array();
 	foreach(bab_getDelegationsObjects() as $arr) {
 		$allobjects[$arr[0]] = $arr;
 	}

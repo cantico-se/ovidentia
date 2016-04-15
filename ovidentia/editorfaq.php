@@ -107,12 +107,6 @@ function browse($cat)
 	$babBody->babPopup(bab_printTemplate($temp,"editorfaq.html", "editorfaq"));
 	}
 
-if(!isset($cat))
-	{
-	$cat = 0;
-	}
-
-
 
 
 $cat = 	bab_rp('cat', 0);

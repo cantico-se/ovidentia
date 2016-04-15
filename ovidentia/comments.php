@@ -237,13 +237,8 @@ switch ($idx)
 		$babBodyPopup->msgerror = $msgerror;
 		listComments($topics, $article);
 
-		if (isset($editor)) {
-			$message = $editor->getContent();
-			$messageFormat = $editor->getFormat();
-		} else {
-			$message = '';
-			$messageFormat = null;
-		}
+		$message = '';
+		$messageFormat = null;
 		$subject = bab_pp('subject');
 
 		addComment($topics, $article, $subject, $message, '', $messageFormat);

@@ -348,10 +348,9 @@ function isAccessValid($article, $idg)
 $idx = bab_rp('idx', 'list');
 $idg = bab_rp('idg', 2); // non registered users
 
-if( $BAB_SESS_LOGGED)
-    {
+if(bab_isUserLogged()) {
     $idg = 1; // registered users
-    }
+}
 
 switch($idx)
     {

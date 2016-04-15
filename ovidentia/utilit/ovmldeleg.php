@@ -40,14 +40,14 @@ class bab_CategoryCache
 			$aDatas = $this->getCategoryInfo($iIdCategory);
 			if(false !== $aDatas)
 			{
-				$aCache[$iIdCategory] = $aDatas;
+				$this->aCache[$iIdCategory] = $aDatas;
 			}
 			else
 			{
-				$aCache[$iIdCategory] = 0;
+				$this->aCache[$iIdCategory] = 0;
 			}
 		}
-		return $aCache[$iIdCategory];
+		return $this->aCache[$iIdCategory];
 	}
 
 	public function getCategoryInfo($iIdCategory)

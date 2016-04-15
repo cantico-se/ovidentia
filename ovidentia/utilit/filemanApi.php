@@ -298,6 +298,9 @@ class bab_FileInfo extends SplFileInfo
 		if ($this->isDir()) {
 			return false;
 		}
+		
+		$fmFile = $this->getFmFile();
+		
 		return $fmFile->getMajorVer() . '.' . $fmFile->getMinorVer();
 	}
 }

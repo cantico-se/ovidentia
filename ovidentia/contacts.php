@@ -258,7 +258,7 @@ function confirmDeleteContacts($items)
 }
 
 /* main */
-if( !$BAB_SESS_LOGGED || !bab_contactsAccess())
+if( !bab_isUserLogged() || !bab_contactsAccess())
 {
 	$babBody->msgerror = bab_translate("Access denied");
 	return;

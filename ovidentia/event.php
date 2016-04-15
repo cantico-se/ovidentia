@@ -1626,10 +1626,11 @@ switch($idx)
 	{
 	case "unload":
 		include_once $GLOBALS['babInstallPath']."utilit/uiutil.php";
-		if( !isset($popupmessage)) {
+		$popupmessage = bab_rp('popupmessage');
+		if(empty($popupmessage)) {
 			$popupmessage = bab_translate("Your event has been updated");
 		}
-		switch($view)
+		switch($_REQUEST['view'])
 		{
 			case 'viewd':
 				$refreshurl = $GLOBALS['babUrlScript']."?tg=calday&calid=".bab_rp('curcalids')."&date=".bab_rp('date');

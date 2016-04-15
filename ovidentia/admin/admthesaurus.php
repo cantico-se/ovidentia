@@ -37,7 +37,7 @@ if( !bab_isUserAdministrator())
 
 $idx = bab_rp('idx', 'tags');
 
-if( isset($tagsman) )
+if( isset($_REQUEST['tagsman']) )
 {
 	maclGroups();
 }

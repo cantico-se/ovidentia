@@ -923,7 +923,7 @@ if(isset($_REQUEST['idf']))
 	
 			if($_POST['afile'] == 'confirm')
 			{
-				confirmFile($idf, $bconfirm); 
+				confirmFile($idf, bab_rp('bconfirm')); 
 			}
 		}
 	}

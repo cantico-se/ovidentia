@@ -1456,8 +1456,9 @@ $supp_rfurl = isset($_REQUEST['rfurl']) ? '&rfurl='.urlencode($_REQUEST['rfurl']
 switch($idx)
 	{
 	case "unload":
-		if( !isset($popupmessage)) { $popupmessage ='';}
-		if( !isset($refreshurl)) { $refreshurl ='';}
+		$popupmessage = bab_rp('popupmessage');
+		$refreshurl = bab_rp('refreshurl');
+		
 		popupUnload($popupmessage, $refreshurl);
 		exit;
 

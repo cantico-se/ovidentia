@@ -193,11 +193,10 @@ if( !bab_isUserAdministrator() )
 	return;
 }
 
+$idx = bab_rp('idx', 'man');
 
-if( !isset($idx))
-	$idx = "man";
 
-if( isset($aclman) )
+if( isset($_REQUEST['aclman']) )
 {
 	maclGroups();
 }

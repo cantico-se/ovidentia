@@ -1975,32 +1975,49 @@ if( !bab_isUserAdministrator() && !bab_isDelegated('directories'))
 
 $idx = bab_rp('idx', 'list');
 
-if( isset($add))
+$adname = bab_rp('adname');
+$description = bab_rp('description');
+$servertype = bab_rp('description');
+$decodetype = bab_rp('decodetype');
+$host = bab_rp('host');
+$basedn = bab_rp('basedn');
+$userdn = bab_rp('userdn');
+$password1 = bab_rp('password1');
+$password2 = bab_rp('password2');
+$modify = bab_rp('modify', null);
+$update = bab_rp('update', null);
+$id = bab_rp('id');
+$fxid = bab_rp('fxid');
+
+
+switch(bab_rp('add'))
 {
-	switch($add)
-	{
-		case 'ldap':
-			if( !addLdapDirectory($adname, $description, $servertype, $decodetype, $host, $basedn, $userdn, $password1, $password2))
-				{
-				$idx = 'new';
-				}
-			break;
-		case 'db':
-			if (!isset($ml)) { $ml = array(); }
-			if (!isset($rw)) { $rw = array(); }
-			if (!isset($dz)) { $dz = array(); }
-			if (!isset($req)) { $req = array(); }
-			if( !addDbDirectory($adname, $description, $displayiu, $fields, $rw, $req, $ml, $dz))
-				{
-				$idx = 'new';
-				}
-			break;
-	}
+	case 'ldap':
+		if( !addLdapDirectory($adname, $description, $servertype, $decodetype, $host, $basedn, $userdn, $password1, $password2))
+			{
+			$idx = 'new';
+			}
+		break;
+	case 'db':
+	    
+	    $ml = bab_rp('ml');
+	    $rw = bab_rp('rw');
+	    $dz = bab_rp('dz');
+	    $req = bab_rp('req');
+	    $displayiu = bab_rp('displayiu');
+	    $fields = bab_rp('fields');
+	    
+		if( !addDbDirectory($adname, $description, $displayiu, $fields, $rw, $req, $ml, $dz))
+			{
+			$idx = 'new';
+			}
+		break;
 }
+
 
 if( isset($modify))
 {
-	if( !empty($admod))
+	if( bab_rp('admod'))
 	{
 		switch($modify)
 		{
@@ -2032,7 +2049,7 @@ if( isset($modify))
 				break;
 		}
 	}
-	else if( !empty($delete))
+	else if( bab_rp('delete'))
 	{
 		switch($modify)
 		{
@@ -2049,7 +2066,7 @@ if( isset($modify))
 		switch($modify)
 		{
 			case 'dbfval':
-				if( isset($adfdel))
+				if( isset($_POST['adfdel']))
 					{
 					deleteFieldsExtra($id, bab_pp('fxid'));
 					}
@@ -2059,7 +2076,7 @@ if( isset($modify))
 
 					updateFieldsExtraValues($id, bab_pp('fxid'), $fields_values, bab_pp('fvdef', 0), bab_pp('value'), bab_pp('mvyn'), bab_pp('name'));
 					}
-				if( isset($adfsav) || isset($adfdel))
+				if( isset($_REQUEST['adfsav']) || isset($_REQUEST['adfdel']))
 					{
 					$idx='unload';
 					$popupmessage = bab_translate("Update done");
@@ -2068,6 +2085,8 @@ if( isset($modify))
 				break;
 			case 'addfield':
 				$message = '';
+				$fieldn = bab_rp('fieldn');
+				$fieldv = bab_rp('fieldv');
 				if( !addDbField($id, $fieldn, $fieldv, $message))
 					{
 					$idx = 'addf';
@@ -2083,19 +2102,19 @@ if( isset($modify))
 	}
 }
 
-if( isset($action) && $action == 'Yes')
+if(bab_rp('action') == 'Yes')
 	{
-	confirmDeleteDirectory($id, $type);
+	confirmDeleteDirectory($id, bab_rp('type'));
 	}
 
-if( isset($aclview))
+if( isset($_REQUEST['aclview']))
 	{
 	maclGroups();
 	Header('Location: '. $GLOBALS['babUrlScript'].'?tg=admdir&idx=list');
 	exit;
 	}
 
-if( isset($aclfield))
+if( isset($_REQUEST['aclfield']))
 	{
 	maclGroups();
 	Header('Location: '. $GLOBALS['babUrlScript'].'?tg=admdir&idx=mdb&id='.$id);
@@ -2111,11 +2130,15 @@ if( isset($update) )
 		}
 	elseif( $update == 'ovmldb' )
 		{
+		$ovmllist = bab_rp('ovmllist');
+		$ovmldetail = bab_rp('ovmldetail');
+		$disableemail = bab_rp('disableemail');
 		if(!dbUpdateOvmlFile($id, $ovmllist, $ovmldetail, $disableemail))
 			$idx = 'list';
 		}
 	elseif( $update == 'dblistord' )
 		{
+		$listfields = bab_rp('listfields');
 		if(!dbUpdateListOrder($id, $listfields))
 			$idx = 'list';
 		}
@@ -2128,7 +2151,7 @@ if( isset($update) )
 		}
 	elseif( $update == 'gdirs')
 		{
-		if (!isset($dirgrpids)) { $dirgrpids = array(); }
+		$dirgrpids = bab_rp('dirgrpids', array());
 		updateDirGroups($dirgrpids);
 		$idx = 'list';
 		}
@@ -2268,7 +2291,7 @@ switch($idx)
 
 	case 'dispdb':
 		$babBody->title = bab_translate("Modify directory");
-		$babBody->addJavascriptFile($babScriptPath.'bab_dialog.js');
+		$babBody->addJavascriptFile($GLOBALS['babScriptPath'].'bab_dialog.js');
 		displayDb($id);
 		$babBody->addItemMenu('list', bab_translate("Directories"), $GLOBALS['babUrlScript'].'?tg=admdir&idx=list');
 		$babBody->addItemMenu('mdb', bab_translate("Modify"), $GLOBALS['babUrlScript'].'?tg=admdir&idx=mdb&id='.$id);

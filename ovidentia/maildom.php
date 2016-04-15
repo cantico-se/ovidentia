@@ -187,11 +187,13 @@ function confirmDeleteDomain($userid, $id, $bgrp)
 	}
 
 /* main */
-if( !isset($idx))
-	$idx = "modify";
 
-if(!isset($userid))
-	return;
+$idx = bab_rp('idx');
+$userid = (int) bab_rp('userid');
+$modify = bab_rp('modify');
+$action = bab_rp('action');
+$item = bab_rp('item');
+
 if(  $userid == 0 )
 	{
 	if( !bab_isUserAdministrator() && !bab_isDelegated('mails') )
@@ -215,14 +217,14 @@ else
 
 if( isset($modify) && $modify == "moddom")
 	{
-	if (!isset($oldname))
-		$oldname = '';
-
-	if (!isset($outmailserver))
-		$outmailserver = '';
-
-		if (!isset($outportserver))
-		$outportserver = '';
+	    $oldname = bab_rp('oldname');
+	    $outmailserver = bab_rp('outmailserver');
+	    $outportserver = bab_rp('outportserver');
+	    $dname = bab_rp('dname');
+	    $description = bab_rp('description');
+	    $accessmethod = bab_rp('accessmethod');
+	    $inmailserver = bab_rp('inmailserver');
+	    $inportserver = bab_rp('inportserver');
 
 	modifyDomain($bgrp, $userid, $oldname, $dname, $description, $accessmethod, $inmailserver, $inportserver, $outmailserver, $outportserver, $item);
 	}

@@ -758,6 +758,8 @@ class DisplayFolderFormBase extends BAB_BaseFormProcessing
 
     function handleEdition()
     {
+        $sDirName = null;
+        
         $this->get_data('sDirName', $sDirName);
         $this->set_data('sOldDirName', $sDirName);
     }
@@ -779,6 +781,7 @@ class DisplayUserFolderForm extends DisplayFolderFormBase
         parent::handleEdition();
 
         global $BAB_SESS_USERID;
+        $iId = null;
         $this->get_data('iId', $iId);
         $this->set_data('bDelete', (((int) $iId === (int) $BAB_SESS_USERID) ? true : false));
     }
@@ -914,6 +917,11 @@ class DisplayCollectiveFolderForm extends DisplayFolderFormBase
         $this->set_data('isAddTags', true);
         $this->set_data('sChecked', 'checked');
         $this->set_data('sDisabled', '');
+        
+        $iId = null;
+        $sPath = null;
+        $sDirName = null;
+        $iIdFolder = null;
 
         $this->get_data('iId', $iId);
         $this->get_data('sPath', $sPath);
@@ -926,12 +934,6 @@ class DisplayCollectiveFolderForm extends DisplayFolderFormBase
         $oFileManagerEnv =& getEnvObject();
 
 
-        $manualOdrder = false;
-        $oFirstCollectiveParent = BAB_FmFolderSet::getFirstCollectiveFolder($oFileManagerEnv->sRelativePath);
-        if(!is_null($oFirstCollectiveParent) && $oFirstCollectiveParent->getManualOrder() ){
-            $manualOdrder = true;
-        }
-
         $oFmFolder = $oFmFolder = BAB_FmFolderHelper::getFmFolderById($iIdFolder);
         if(!is_null($oFmFolder))
         {
@@ -943,9 +945,8 @@ class DisplayCollectiveFolderForm extends DisplayFolderFormBase
             $sDisplay				= (string) $oFmFolder->getHide();
             $sAddTags				= (string) $oFmFolder->getAddTags();
             $sDownloadsCapping		= (string) $oFmFolder->getDownloadsCapping();
-            $iMaxDownloads			= (int) $oFmFolder->getMaxDownloads();
             $sDownloadHistory		= (string) $oFmFolder->getDownloadHistory();
-            $bManualOrder			= (bool) $oFmFolder->getManualOrder();
+
 
             $this->iApprobationSchemeId = $iIdApprobationScheme;
             $this->set_data('isCollective', true);
@@ -963,8 +964,6 @@ class DisplayCollectiveFolderForm extends DisplayFolderFormBase
             $this->set_data('sOldDirName', $oFmFolder->getName());
             $this->set_data('sChecked', '');
 
-            $manualOdrder = $bManualOrder;
-
             if ($oFileManagerEnv->userIsInRootFolder()) {
                 $this->set_data('sDisabled', 'disabled');
             }
@@ -972,7 +971,6 @@ class DisplayCollectiveFolderForm extends DisplayFolderFormBase
         else
         {
             $sDownloadsCapping		= (string) $oFileManagerEnv->oFmFolder->getDownloadsCapping();
-            $iMaxDownloads			= (int) $oFileManagerEnv->oFmFolder->getMaxDownloads();
             $sDownloadHistory		= (string) $oFileManagerEnv->oFmFolder->getDownloadHistory();
 
             $this->set_data('isDownloadsCapping', ('Y' === $sDownloadsCapping) ? true : false);

@@ -354,12 +354,17 @@ function addDomain($bgrp, $userid, $groups, $name, $description, $accessmethod, 
 
 
 /* main */
-if( !isset($idx))
-	$idx = "list";
-
+	
+	
+$idx = bab_rp('idx', 'list');
+$bgrp = bab_rp('bgrp');
+$userid = bab_rp('userid', false);
 $grpid = array();
-if( !isset($userid))
-	return;
+$adddom = bab_rp('adddom');
+
+if( false === $userid) {
+	throw new Exception('Missing userid');
+}
 
 if( $bgrp == "y")
 {
@@ -393,14 +398,15 @@ if( $bgrp == "y")
 
 if( isset($adddom) && $adddom == "add")
 	{
-	if (!isset($groups))
-		$groups = array();
-	
-	if (!isset($outmailserver))
-		$outmailserver='';
-
-	if (!isset($outportserver))
-		$outportserver='';
+	    
+	    $groups = bab_rp('groups', array());
+	    $outmailserver = bab_rp('outmailserver');
+	    $outportserver = bab_rp('outportserver');
+	    $dname = bab_rp('outportserver');
+	    $description = bab_rp('description');
+	    $accessmethod = bab_rp('accessmethod');
+	    $inmailserver = bab_rp('inmailserver');
+	    $inportserver = bab_rp('inportserver');
 
 	addDomain($bgrp, $userid, $groups, $dname, $description, $accessmethod, $inmailserver, $inportserver, $outmailserver, $outportserver);
 	}

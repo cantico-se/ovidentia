@@ -375,8 +375,9 @@ if( !bab_isUserAdministrator() && !bab_isDelegated('calendars'))
 }
 
 $idx = bab_rp('idx', 'modp');
+$idcal = bab_rp('idcal');
 
-if( isset($addc))
+if( isset($_REQUEST['addc']))
 {
 	if( "modp" == bab_rp('addc') )
 	{
@@ -402,16 +403,21 @@ if( isset($addc))
 }
 elseif("updcat" == bab_rp('add')  && bab_isUserAdministrator())
 {
+    $idcat = bab_rp('idcat');
+    $catname = bab_rp('catname');
+    $catdesc = bab_rp('catdesc');
+    $bgcolor = bab_rp('bgcolor');
+    
 	updateCalendarCategory($idcat, $catname, $catdesc, $bgcolor);
 
-}elseif( isset($aclpub))
+}elseif( isset($_REQUEST['aclpub']))
 	{
 	include_once $GLOBALS['babInstallPath']."admin/acl.php";
 	maclGroups();
 	Header("Location: ". $GLOBALS['babUrlScript']."?tg=admcals&idx=pub");
 	exit;
 	}
-elseif( isset($aclres))
+elseif( isset($_REQUEST['aclres']))
 	{
 	include_once $GLOBALS['babInstallPath']."admin/acl.php";
 	maclGroups();

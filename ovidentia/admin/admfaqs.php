@@ -235,13 +235,14 @@ if( !bab_isUserAdministrator() && !bab_isDelegated('faqs'))
 	return;
 }
 
-if(!isset($idx))
-	{
-	$idx = "Categories";
-	}
+$idx = bab_rp('idx', "Categories");
 
-if( isset($add))
+
+if( isset($_REQUEST['add']))
 	{
+	    $category = bab_rp('category');
+	    $lang = bab_rp('lang');
+	    
 	$faqCategoryId = saveCategory($category, $lang);
 	header('location:'.$GLOBALS['babUrlScript'].'?tg=admfaqs&idx=Categories#bab_faq_' . $faqCategoryId);
 	}

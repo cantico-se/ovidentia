@@ -131,17 +131,11 @@ function listOrgCharts()
 	}
 
 /* main */
-if(!isset($idx))
-	{
-	$idx = "list";
-	}
 
-if(!isset($disp))
-	{
-	$disp = "disp1";
-	}
+$idx = bab_rp('idx', 'list');
+$disp = bab_rp('disp', 'disp1');
+$ocid = bab_rp('ocid', null);
 
-$access = false;
 if(bab_orgchartAccess())
 {
 	if( $idx == "edit" || $idx == "unlock")

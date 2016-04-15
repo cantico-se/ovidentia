@@ -775,33 +775,43 @@ if(!bab_isUserAdministrator() && !bab_isDelegated('filemanager'))
 	return;
 }
 
-//bab_debug(__FILE__);
-//bab_debug($_POST);
-
-if(!isset($idx))
-{
-	$idx = 'list';
-}
+$idx = bab_rp('idx', 'list');
 
 
-if(isset($add) && $add == 'addfolder')
-{
-	if(!saveFolder($fname, $active, $said, $notification, $version, $bhide, $bautoapp, $baddtags, $bdownloadscapping, $maxdownloads, $bdownloadhistory, $orderm))
-	{
+
+if (bab_rp('add') == 'addfolder') {
+    
+    $fname = bab_rp('fname'); 
+    $active = bab_rp('active');
+    $said = bab_rp('said');
+    $notification = bab_rp('notification');
+    $version = bab_rp('version');
+    $bhide = bab_rp('bhide');
+    $bautoapp = bab_rp('bautoapp');
+    $baddtags = bab_rp('baddtags');
+    $bdownloadscapping = bab_rp('bdownloadscapping');
+    $maxdownloads = bab_rp('maxdownloads');
+    $bdownloadhistory = bab_rp('bdownloadhistory');
+    $orderm = bab_rp('orderm');
+    
+    
+	if (!saveFolder($fname, $active, $said, $notification, $version, $bhide, $bautoapp, $baddtags, $bdownloadscapping, $maxdownloads, $bdownloadhistory, $orderm)) {
 		$idx = 'addf';
 	}
 }
 
 
-if(isset($update) && $update == 'folders')
+if(bab_rp('update') == 'folders')
 {
-	if(!isset($notifies)) { $notifies= array();}
-	if(!isset($actives)) { $actives= array();}
-	if(!isset($versions)) { $versions= array();}
-	if(!isset($bhides)) { $bhides= array();}
+
+	$notifies = bab_rp('notifies', array());
+	$actives = bab_rp('actives', array());
+	$versions = bab_rp('versions', array());
+	$bhides = bab_rp('bhides', array());
+	
 	updateFolders($notifies, $actives, $versions, $bhides);
 }
-elseif(isset($update) && $update == 'displayfm')
+elseif(bab_rp('update') == 'displayfm')
 {
 	updateDisplayFileManager();
 }

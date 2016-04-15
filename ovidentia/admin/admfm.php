@@ -815,40 +815,59 @@ if( !bab_isUserAdministrator() && !bab_isDelegated('filemanager'))
 }
 
 
+$idx = bab_rp('idx');
+$fid = bab_rp('fid');
 
-//bab_debug(__FILE__);
-//bab_debug($_POST);
 
-if( isset($mod) && $mod == "modfolder")
+if( bab_rp('mod') == "modfolder")
 {
-	if( isset($bupdate))
+	if( isset($_REQUEST['bupdate'])) {
+	    $fname = bab_rp('fname');
+	    $active = bab_rp('active');
+	    $said = bab_rp('said');
+	    $notification = bab_rp('notification');
+	    $version = bab_rp('version');
+	    $bhide = bab_rp('bhide');
+	    $bautoapp = bab_rp('bautoapp');
+	    $baddtags = bab_rp('baddtags');
+	    $bdownloadscapping = bab_rp('bdownloadscapping');
+	    $maxdownloads = bab_rp('maxdownloads');
+	    $bdownloadhistory = bab_rp('bdownloadhistory');
+	    $orderm = bab_rp('orderm');
 		updateFolder($fid, $fname, $active, $said, $notification, $version, $bhide, $bautoapp, $baddtags, $bdownloadscapping, $maxdownloads, $bdownloadhistory, $orderm);
-	else if(isset($bdel))
+	} else if(isset($_REQUEST['bdel'])) {
 		$idx = "delf";
-}else if( isset($action)){
-	if( $action == 'fyes'){
+	}
+}else if( isset($_REQUEST['action'])) {
+	if( bab_rp('action') == 'fyes') {
 		confirmDeleteFolder($fid);
-	}else if( $action == 'ffyes' ){
+	}else if( bab_rp('action') == 'ffyes' ) {
+	    $fields = bab_rp('fields');
 		confirmDeleteFields($fid, $fields);
-	}else if( $action == 'order' ){
-		updateOrderFiles($fid,$listfiles);
+	}else if( bab_rp('action') == 'order' ) {
+	    $listfiles = bab_rp('listfiles');
+		updateOrderFiles($fid, $listfiles);
 	}
 }
-else if( isset($fmf))
+else if( isset($_REQUEST['fmf']))
 	{
-	if( $fmf == 'fadd' )
+	    $ffname = bab_rp('ffname');
+	    $defval = bab_rp('defval');
+	    $ffid = bab_rp('ffid');
+	    
+	if( bab_rp('fmf') == 'fadd' )
 		{
 		if( !addField($fid, $ffname, $defval))
 			$idx = 'afield';
 		}
-	else if( $fmf == 'fmod' )
+	else if( bab_rp('fmf') == 'fmod' )
 		{
 		if( !modifyField($fid, $ffid, $ffname, $defval))
 			$idx = 'mfield';
 		}
 
 	}
-else if(isset($aclview))
+else if(isset($_REQUEST['aclview']))
 {
 	maclGroups();
 	Header("Location: ". $GLOBALS['babUrlScript']."?tg=admfms&idx=list");
