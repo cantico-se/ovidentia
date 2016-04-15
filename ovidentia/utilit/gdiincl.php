@@ -104,6 +104,7 @@ function bab_getResizedImage($imgf, $w, $h)
 					  if (function_exists('gd_info'))
 						{
 						$arr = gd_info();
+						$match = null;
 						preg_match('/\d/', $arr['GD Version'], $match);
 						if ( $match[0] >= 2) return true;
 						}
@@ -122,6 +123,7 @@ function bab_getResizedImage($imgf, $w, $h)
 					   // Use the gd_info() function if possible.
 					   if (function_exists('gd_info')) {
 						   $ver_info = gd_info();
+						   $match = null;
 						   preg_match('/\d/', $ver_info['GD Version'], $match);
 						   $gd_ver = $match[0];
 						   return $match[0];
@@ -263,6 +265,7 @@ class bab_ImageResize
 		if(function_exists('gd_info'))
 		{
 			$aInfo = gd_info();
+			$aMatch = null;
 			preg_match('/\d/', $aInfo['GD Version'], $aMatch);
 			if($aMatch[0] >= 2)
 			{
@@ -298,6 +301,7 @@ class bab_ImageResize
 	   if(function_exists('gd_info'))
 	   {
 		   $aInfo = gd_info();
+		   $aMatch = null;
 		   preg_match('/\d/', $aInfo['GD Version'], $aMatch);
 		   $iGdVer = $aMatch[0];
 		   return $aMatch[0];

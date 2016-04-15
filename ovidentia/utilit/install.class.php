@@ -197,6 +197,7 @@ class bab_InstallRepositoryFile
 
 		foreach($dependencies as $addonname => $d )
 		{
+		    $m = null;
 			if (!empty($d) && preg_match('/([<>]*=)([\w\d\.]+)/', $d, $m))
 			{
 				$operator = $m[1];

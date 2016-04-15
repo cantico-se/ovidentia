@@ -270,6 +270,15 @@ function displaySearchResultsForums()
 			$fstype = bab_rp('fstype', '');
 			list($this->iddir) = $babDB->db_fetch_row($babDB->db_query("select id from ".BAB_DB_DIRECTORIES_TBL." where id_group='".$babDB->db_escape_string(BAB_REGISTERED_GROUP)."'"));
 
+			$forum = bab_rp('forum', '');
+			if( empty($forum)) {
+			    $fids = array_keys($this->forums);
+			}
+			else {
+			    $fids = array($forum);
+			}
+			
+			
 			switch($fstype)
 				{
 				case BAB_FORUMS_ST_LASTPOSTS:
@@ -282,15 +291,6 @@ function displaySearchResultsForums()
 					$req = "select tt.forum, pt.*, pt2.subject as thread from ".BAB_POSTS_TBL." pt left join ".BAB_THREADS_TBL." tt on tt.id=pt.id_thread left join ".BAB_POSTS_TBL." pt2 on pt2.id=tt.post where forum in (".$babDB->quote($fids).") and active='Y' and pt.confirmed='N'";
 					break;
 				default:
-					$forum = bab_rp('forum', '');
-					if( empty($forum))
-					{
-						$fids = array_keys($this->forums);
-					}
-					else
-					{
-						$fids = array($forum);
-					}
 
 					$sword = bab_rp('sword', '');
 					if( !empty($sword))
@@ -648,12 +648,10 @@ function saveForumsOptions()
 }	
 	
 /* main */
-if(!isset($idx))
-	{
-	$idx = "list";
-	}
 
+$idx = bab_rp('idx', 'list');
 $action = bab_pp('action', '');
+
 if( $action == 'options')
 {
 	saveForumsOptions();

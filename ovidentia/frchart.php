@@ -592,6 +592,7 @@ function displayUsersList($ocid, $oeid, $update, $pos, $xf, $q, $entityId = null
 
 				$dbdirfields = array();
 				$dbdirxfields = array();
+				$leftjoin = array();
 				$rescol = $this->db->db_query("select * from ".BAB_DBDIR_FIELDSEXTRA_TBL." where id_directory='".($this->idgroup != 0? 0: $this->iddir)."' and ordering!='0' order by ordering asc");
 				while( $row = $this->db->db_fetch_array($rescol))
 					{
@@ -1190,6 +1191,17 @@ function openNode($ocid, $oeid)
 
 
 /* main */
+
+
+
+$idx= bab_rp('idx', 'list');
+$disp = bab_rp('disp', 'disp1');
+
+$ocid = bab_rp('ocid');
+$oeid = bab_rp('oeid', null);
+$iduser = bab_rp('iduser');
+$submit = bab_rp('submit', null);
+
 $update = false;
 $ocinfo = $babDB->db_fetch_array($babDB->db_query("select * from ".BAB_ORG_CHARTS_TBL." where id='".$ocid."'"));
 if( bab_isAccessValid(BAB_OCUPDATE_GROUPS_TBL, $ocid))
@@ -1214,15 +1226,7 @@ $ocinfo['id_first_node'] = isset($_SESSION['BAB_SESS_CHARTRN-'.$ocid])?$_SESSION
 $oeid = !isset($oeid)? $_SESSION['BAB_SESS_CHARTOEID-'.$ocid] :$oeid;
 
 
-if(!isset($idx))
-{
-	$idx = "list";
-}
 
-if(!isset($disp))
-{
-	$disp = "disp1";
-}
 if( $idx == "startn" )
 {
 	changeRootNode($ocid, $oeid);
@@ -1284,17 +1288,16 @@ switch($idx)
 	default:
 	case "list":
 		
-		if( !isset($oeid)) { $oeid = 0;}
-		if( !isset($iduser)) { $iduser = 0;}
 		switch($disp)
 		{
 			case "disp4":
-				if( !isset($role)) $role =0;
-				if( !isset($vpos)) $vpos =0;
-				if( !isset($type)) $type ='';
-				if( !isset($eid)) $eid =0;
-				if( !isset($word)) $word ='';
-				if( !isset($swhat)) $swhat =0;
+			    $role = bab_rp('role', 0);
+			    $vpos = bab_rp('vpos', 0);
+			    $type = bab_rp('type');
+			    $eid = bab_rp('eid', 0);
+			    $word = bab_rp('word');
+			    $swhat = bab_rp('swhat', 0);
+
 				browseRoles($ocid, $eid, $role, $swhat, $word, $type, $vpos, $update);
 				break;
 
@@ -1304,9 +1307,11 @@ switch($idx)
 				{
 					$pos ='';
 				}
-				if( !isset($pos )){	$pos = "A"; }
-				if( !isset($q )){	$q = ""; }
-				if( !isset($xf )){	$xf = ""; }
+				
+				$pos = bab_rp('pos', 'A');
+				$q = bab_rp('q');
+				$xf = bab_rp('xf');
+				
 				$entityId = bab_rp('entity', null);
 				if ($entityId == '') {
 					 $entityId = null;

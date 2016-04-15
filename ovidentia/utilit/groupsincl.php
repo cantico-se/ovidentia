@@ -207,8 +207,9 @@ class bab_Groups
 	 */
 	public static function getGroupPathName($id_group, $id_parent = BAB_REGISTERED_GROUP)
 	{
-		if (isset(self::$groupPathName[$id_parent][$id_group]))
+		if (isset(self::$groupPathName[$id_parent][$id_group])) {
 			return self::$groupPathName[$id_parent][$id_group];
+		}
 		
 		include_once $GLOBALS['babInstallPath'].'utilit/grptreeincl.php';
 	

@@ -897,6 +897,8 @@ function confirmDeleteOrgChartEntity($ocid, $oeid, $what)
 
 	list($idnode) = $babDB->db_fetch_row($babDB->db_query("select id_node from ".BAB_OC_ENTITIES_TBL." where id='".$oeid."'"));
 
+	$arroe = array();
+	
 	$babTree = new bab_dbtree(BAB_OC_TREES_TBL, $ocid);
 	switch($what)
 		{
@@ -1284,8 +1286,20 @@ function updateOrgChartRoleUser($ocid, $oeid, $iduser, $ruid, $userroles)
 
 /* main */
 $babLittleBody = new babLittleBody();
-$babLittleBody->frrefresh = isset($rf)? $rf: false;
-$babLittleBody->fltrefresh = isset($ltf)? $ltf: false;
+$babLittleBody->frrefresh = bab_rp('rf', false);
+$babLittleBody->fltrefresh = bab_rp('ltf', false);
+
+$ocid = bab_rp('ocid');
+$oeid = bab_rp('oeid', null);
+$orid = bab_rp('orid', null);
+$idx = bab_rp('idx', 'adde');
+$fname = bab_rp('fname');
+$description = bab_rp('description');
+$hsel = bab_rp('hsel');
+$what = bab_rp('what');
+$iduser = bab_rp('iduser');
+
+
 $access = false;
 if( bab_isAccessValid(BAB_OCUPDATE_GROUPS_TBL, $ocid))
 {
@@ -1304,7 +1318,7 @@ if( !$access)
 
 if( isset($oeid) && $oeid != 0)
 {
-$oeinfo = $babDB->db_fetch_array($babDB->db_query("select oet.*, ctt.id_parent from ".BAB_OC_ENTITIES_TBL." oet left join ".BAB_OC_TREES_TBL." ctt on ctt.id=oet.id_node where oet.id='".$oeid."'"));
+    $oeinfo = $babDB->db_fetch_array($babDB->db_query("select oet.*, ctt.id_parent from ".BAB_OC_ENTITIES_TBL." oet left join ".BAB_OC_TREES_TBL." ctt on ctt.id=oet.id_node where oet.id='".$oeid."'"));
 }
 else
 {
@@ -1314,60 +1328,52 @@ chart_session_oeid($ocid);
 
 if( isset($orid) && $orid != 0)
 {
-$orinfo = $babDB->db_fetch_array($babDB->db_query("select * from ".BAB_OC_ROLES_TBL." where id='".$orid."'"));
+    $orinfo = $babDB->db_fetch_array($babDB->db_query("select * from ".BAB_OC_ROLES_TBL." where id='".$orid."'"));
 }
 else
 {
 	$orid = 0;
 }
 
-if(!isset($idx))
-	{
-	$idx = "adde";
-	}
 
-if( isset($addoce) )
+
+
+switch(bab_rp('addoce'))
 {
-	switch($addoce)
-	{
-		case "addoce":
-			if( !isset($grpid)) { $grpid ='';}
-			if( !saveOrgChartEntity($ocid, $fname, $description, $oeid, $hsel, $grpid))
-			{
-			$idx = "adde";
-			}
-			break;
+	case "addoce":
+	    $grpid = bab_rp('grpid');
+		if( !saveOrgChartEntity($ocid, $fname, $description, $oeid, $hsel, $grpid))
+		{
+		$idx = "adde";
+		}
+		break;
 
-		case "modoce":
-				$entityTypes = array_keys(bab_rp('entity_type', array()));
-				if( !updateOrgChartEntity($ocid, $fname, $description, $oeid, $entityTypes))
-				{
-				$idx = "mode";
-				}
-			break;
-	}
-}
-else if( isset($addocr) )
-{
-	switch($addocr)
-	{
-		case "addocr":
-			if( !saveOrgChartRole($ocid, $fname, $description, $oeid, $cardinality))
+	case "modoce":
+			$entityTypes = array_keys(bab_rp('entity_type', array()));
+			if( !updateOrgChartEntity($ocid, $fname, $description, $oeid, $entityTypes))
 			{
-			$idx = "addr";
+			$idx = "mode";
 			}
-			break;
-
-	}
+		break;
 }
 
-else if( isset($modocr) )
+switch(bab_rp('addocr'))
 {
-	switch($modocr)
+	case "addocr":
+		if( !saveOrgChartRole($ocid, $fname, $description, $oeid, bab_rp('cardinality')))
+		{
+		$idx = "addr";
+		}
+		break;
+
+}
+
+
+
+	switch(bab_rp('modocr'))
 	{
 		case "modocr":
-			if( !isset($cardinality)) {$cardinality='';}
-			if( !updateOrgChartRole($ocid, $fname, $description, $oeid, $orid, $cardinality))
+			if( !updateOrgChartRole($ocid, $fname, $description, $oeid, $orid, bab_rp('cardinality')))
 			{
 			$idx = "modr";
 			}
@@ -1381,10 +1387,8 @@ else if( isset($modocr) )
 			break;
 
 	}
-}
-else if( isset($deloce) )
-{
-	switch($deloce)
+
+	switch(bab_rp('deloce'))
 	{
 		case "deloce":
 			if( !confirmDeleteOrgChartEntity($ocid, $oeid, $what))
@@ -1394,18 +1398,19 @@ else if( isset($deloce) )
 			break;
 
 	}
-}
-else if( isset($movoce) )
-{
-	switch($movoce)
+
+	switch(bab_rp('movoce'))
 	{
 		case "movoce":
+		    $parentid = bab_rp('parentid');
+		    $as = bab_rp('as');
 			if( !confirmMoveOrgChartEntity($ocid, $oeid, $what, $parentid, $as))
 			{
 			$idx = "move";
 			}
 			break;
 		case "peroce":
+		    $permid = bab_rp('permid');
 			if( !confirmPermuteOrgChartEntity($ocid, $oeid, $permid))
 			{
 			$idx = "move";
@@ -1413,9 +1418,11 @@ else if( isset($movoce) )
 			break;
 
 	}
-}else if( isset($updru) && $updru == "updru" )
+	
+if( bab_rp('updru') == "updru" )
 {
-	if( !isset($ruid)) { $ruid = array();}
+    $ruid = bab_rp('ruid', array());
+    $userroles = bab_rp('userroles');
 	updateOrgChartRoleUser($ocid, $oeid, $iduser, $ruid, $userroles);
 }
 

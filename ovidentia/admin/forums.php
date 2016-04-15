@@ -413,24 +413,33 @@ if( !bab_isUserAdministrator() && !bab_isDelegated('forums'))
 	return;
 }
 
-if(!isset($idx))
-	{
-	$idx = "List";
-	}
+$idx = bab_rp('idx', 'Modify');
+$update = bab_rp('update', null);
+$addforum = bab_rp('addforum', null);
+$nbmsgdisplay = bab_rp('nbmsgdisplay');
+$description = bab_rp('description');
+
 
 if( isset($addforum) && $addforum == "addforum" )
 	{
+	    $fname = bab_rp('fname');
+	    $moderation = bab_rp('moderation');
+	    $notification = bab_rp('notification');
+	    $active = bab_rp('active');
+	    
 	if( !saveForum($fname, $description, $moderation, $notification, $nbmsgdisplay, $active))
 		$idx = "addforum";
 	}
 
 if( isset($update) && $update == "order")
 	{
+	    $listforums = bab_rp('listforums');
 	saveOrderForums($listforums);
 	}
 
 if( isset($update) && $update == "forumnotices")
 	{
+	    $listfd = bab_rp('listfd');
 	updateForumFields($listfd);
 	Header("Location: ". $GLOBALS['babUrlScript']."?tg=forums&idx=List");
 	}
@@ -441,10 +450,9 @@ switch($idx)
 		$babBody->title = bab_translate("Add a new forum");
 		$babBody->addItemMenu("List", bab_translate("Forums"), $GLOBALS['babUrlScript']."?tg=forums&idx=List");
 		$babBody->addItemMenu("addforum", bab_translate("Add"), $GLOBALS['babUrlScript']."?tg=forums&idx=addforum");
-		if (!isset($name)) $name  ='';
 		if (!isset($description)) $description  ='';
 		if (!isset($nbmsgdisplay)) $nbmsgdisplay  ='';
-		addForum($name, $description, $nbmsgdisplay);
+		addForum(bab_rp('name'), $description, $nbmsgdisplay);
 		break;
 
 	case "ord":

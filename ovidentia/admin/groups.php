@@ -578,14 +578,14 @@ if( isset($_POST['add']))
 		}
 	}
 
-if( isset($update) && $update == "options")
+if( bab_rp('update') == "options")
 	{
-	if (!isset($mailgrpids)) $mailgrpids = array();
-	if (!isset($notgrpids)) $notgrpids = array();
-	if (!isset($congrpids)) $congrpids = array();
-	if (!isset($pdsgrpids)) $pdsgrpids = array();
-	if (!isset($pcalgrpids)) $pcalgrpids = array();
-	if (!isset($calperids)) $calperids = array();
+    $mailgrpids = bab_rp('mailgrpids', array());
+    $notgrpids = bab_rp('notgrpids', array());
+    $congrpids = bab_rp('congrpids', array());
+    $pdsgrpids = bab_rp('pdsgrpids', array());
+    $pcalgrpids = bab_rp('pcalgrpids',array());
+
 	saveGroupsOptions($mailgrpids, $notgrpids, $congrpids, $pdsgrpids, $pcalgrpids);
 	}
 

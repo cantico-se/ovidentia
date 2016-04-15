@@ -483,9 +483,16 @@ function updateOrgChartPrimaryRoleUser($ocid, $oeid, $iduser, $prole)
 
 /* main */
 $babLittleBody = new babLittleBody();
-$babLittleBody->frrefresh = isset($rf)?$rf: false;
+$babLittleBody->frrefresh = bab_rp('rf', false);
 $access = false;
 $update = false;
+
+$ocid = bab_rp('ocid');
+$updr = bab_rp('updr', null);
+$oeid = bab_rp('oeid');
+$idx = bab_rp('idx', "listr");
+$iduser = bab_rp('iduser', 0);
+$prole = bab_rp('prole');
 
 if( bab_isAccessValid(BAB_OCUPDATE_GROUPS_TBL, $ocid))
 {
@@ -515,15 +522,12 @@ $oeinfo = $babDB->db_fetch_array($babDB->db_query("select * from ".BAB_OC_ENTITI
 chart_session_oeid($ocid);
 }
 
-if( !isset($idx) || empty($idx)) { $idx = "listr"; }
 
 if( isset($updr) && $updr == "updr" && $update)
 {
 	updateOrgChartPrimaryRoleUser($ocid, $oeid, $iduser, $prole);
 }
 
-if (!isset($iduser))
-	$iduser = 0;
 
 switch($idx)
 	{
