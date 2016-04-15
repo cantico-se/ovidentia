@@ -524,52 +524,6 @@ switch(bab_rp('tg'))
         if( bab_isUserLogged())
             $incl = "options";
         break;
-    case "composemail":
-        $babLevelOne = bab_translate("User's section");
-        $babLevelTwo = bab_translate("Compose mail");
-        if( bab_isUserLogged())
-            $incl = "composemail";
-        break;
-    case "mail":
-        $babLevelOne = bab_translate("User's section");
-        $babLevelTwo = bab_translate("Mail");
-        if( bab_isUserLogged())
-            $incl = "mail";
-        break;
-    case "mailopt":
-        $babLevelOne = bab_translate("User's section");
-        $babLevelTwo = bab_translate("Options");
-        if( bab_isUserLogged())
-            $incl = "mailopt";
-        break;
-    case "maildoms":
-        if( isset($userid) && $userid == 0 )
-            {
-            $babLevelOne = bab_translate("Administration");
-            $babLevelTwo = bab_translate("Mail");
-            }
-        else
-            {
-            $babLevelOne = bab_translate("User's section");
-            $babLevelTwo = bab_translate("Options");
-            }
-        if( bab_isUserLogged())
-            $incl = "maildoms";
-        break;
-    case "maildom":
-        if( isset($userid) && $userid == 0 )
-            {
-            $babLevelOne = bab_translate("Administration");
-            $babLevelTwo = bab_translate("Mail");
-            }
-        else
-            {
-            $babLevelOne = bab_translate("User's section");
-            $babLevelTwo = bab_translate("Options");
-            }
-        if( bab_isUserLogged())
-            $incl = "maildom";
-        break;
     case "confcals":
         if( isset($userid) && $userid == 0 )
             {

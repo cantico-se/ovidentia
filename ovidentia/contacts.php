@@ -105,22 +105,8 @@ function listContacts($pos)
 			$this->allurl = bab_toHtml($GLOBALS['babUrlScript']."?tg=contacts&idx=list&pos=");
 			$this->addurl = bab_toHtml($GLOBALS['babUrlScript']."?tg=contact&idx=create&bliste=1");
 
-			/* find prefered mail account */
-			$req = "select * from ".BAB_MAIL_ACCOUNTS_TBL." where owner='".$babDB->db_escape_string($BAB_SESS_USERID)."' and prefered='Y'";
-			$res = $babDB->db_query($req);
-			if( !$res || $babDB->db_num_rows($res) == 0 )
-				{
-				$req = "select * from ".BAB_MAIL_ACCOUNTS_TBL." where owner='".$babDB->db_escape_string($BAB_SESS_USERID)."'";
-				$res = $babDB->db_query($req);
-				}
-
-			if( $babDB->db_num_rows($res) > 0 )
-				{
-				$arr = $babDB->db_fetch_array($res);
-				$this->accid = $arr['id'];
-				}
-			else
-				$this->accid = 0;
+			
+			$this->accid = 0;
 			}
 
 		function getnext()
@@ -138,7 +124,7 @@ function listContacts($pos)
 				$this->arr_mobiletel = bab_toHtml($this->arr['mobiletel']);
 
 				$this->url = bab_toHtml($GLOBALS['babUrlScript']."?tg=contact&idx=modify&item=".$this->arr['id']."&bliste=1");
-				$this->urlmail = bab_toHtml($GLOBALS['babUrlScript']."?tg=mail&idx=compose&accid=".$this->accid."&to=".$this->arr['email']);
+				$this->urlmail = null;
 				if( $this->ord == "-" )
 					$this->urlname = bab_toHtml(bab_composeUserName( $this->arr['lastname'], $this->arr['firstname']));
 				else

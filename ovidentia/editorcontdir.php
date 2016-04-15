@@ -157,21 +157,7 @@ function directory($id, $pos, $xf, $badd)
 				}
 
 			/* find prefered mail account */
-			$req = "select * from ".BAB_MAIL_ACCOUNTS_TBL." where owner='".$babDB->db_escape_string($GLOBALS['BAB_SESS_USERID'])."' and prefered='Y'";
-			$res = $babDB->db_query($req);
-			if( !$res || $babDB->db_num_rows($res) == 0 )
-				{
-				$req = "select * from ".BAB_MAIL_ACCOUNTS_TBL." where owner='".$babDB->db_escape_string($GLOBALS['BAB_SESS_USERID'])."'";
-				$res = $babDB->db_query($req);
-				}
-
-			if( $babDB->db_num_rows($res) > 0 )
-				{
-				$arr = $babDB->db_fetch_array($res);
-				$this->accid = $arr['id'];
-				}
-			else
-				$this->accid = 0;			
+			$this->accid = 0;			
 			}
 
 		function getnextcol()
@@ -269,7 +255,7 @@ function directory($id, $pos, $xf, $badd)
 			if( $i < $this->count)
 				{
 				$this->arrf = $babDB->db_fetch_array($this->res);
-				$this->urlmail = $GLOBALS['babUrlScript']."?tg=mail&idx=compose&accid=".$this->accid."&to=".$this->arrf['email'];
+				$this->urlmail = null;
 				$this->email = bab_toHtml($this->arrf['email']);
 				$this->js_id = bab_toHtml($this->arrf['id'], BAB_HTML_JS);
 				$this->js_name = bab_toHtml(bab_composeUserName($this->arrf['givenname'],$this->arrf['sn']), BAB_HTML_JS);

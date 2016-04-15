@@ -317,7 +317,6 @@ function groupsOptions()
 
 			if( bab_isUserAdministrator() && bab_getCurrentAdmGroup() == 0 )
 				{
-				$this->bdgmail = true;
 				$this->bdgnotes = true;
 				$this->bdgcontacts = true;
 				$this->bpcalendar = true;
@@ -325,10 +324,6 @@ function groupsOptions()
 				}
 			else
 				{
-				if( bab_isDelegated('mails') )
-					$this->bdgmail = true;
-				else
-					$this->bdgmail = false;
 
 				$this->bdgnotes = true;
 				$this->bdgcontacts = true;
@@ -354,10 +349,7 @@ function groupsOptions()
 				$this->burl = true;
 				$this->grpid = $this->arr['id'];
 
-				if( $this->arr['mail'] == "Y")
-					$this->mailcheck = "checked";
-				else
-					$this->mailcheck = "";
+				
 				if( $this->arr['notes'] == "Y")
 					$this->notescheck = "checked";
 				else
