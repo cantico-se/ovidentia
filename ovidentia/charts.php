@@ -131,17 +131,11 @@ function listOrgCharts()
 	}
 
 /* main */
-if(!isset($idx))
-	{
-	$idx = "list";
-	}
 
-if(!isset($disp))
-	{
-	$disp = "disp1";
-	}
+$idx = bab_rp('idx', 'list');
+$disp = bab_rp('disp', 'disp1');
+$ocid = bab_rp('ocid', null);
 
-$access = false;
 if(bab_orgchartAccess())
 {
 	if( $idx == "edit" || $idx == "unlock")
@@ -149,7 +143,7 @@ if(bab_orgchartAccess())
 	if( isset($ocid) && bab_isAccessValid(BAB_OCUPDATE_GROUPS_TBL, $ocid))
 		{
 		$ocinfo = $babDB->db_fetch_array($babDB->db_query("select * from ".BAB_ORG_CHARTS_TBL." where id='".$babDB->db_escape_string($ocid)."'"));
-		if( $ocinfo['edit'] == 'Y' && $ocinfo['edit_author'] == $BAB_SESS_USERID)
+		if( $ocinfo['edit'] == 'Y' && $ocinfo['edit_author'] == bab_getUserId())
 			{
 			if( $idx == "edit" )
 				{
@@ -168,7 +162,7 @@ if(bab_orgchartAccess())
 			{
 			if( $idx == "edit" )
 				{
-				$babDB->db_query("update ".BAB_ORG_CHARTS_TBL." set edit='Y', edit_author='".$babDB->db_escape_string($BAB_SESS_USERID)."', edit_date=now() where id='".$babDB->db_escape_string($ocid)."'");
+				$babDB->db_query("update ".BAB_ORG_CHARTS_TBL." set edit='Y', edit_author='".$babDB->db_escape_string(bab_getUserId())."', edit_date=now() where id='".$babDB->db_escape_string($ocid)."'");
 				Header("Location: ". $GLOBALS['babUrlScript']."?tg=chart&mode=edit&ocid=".$ocid."&disp=".$disp);
 				exit;
 				}

@@ -666,6 +666,10 @@ function bab_getOrgChartRoleUsers($idroles)
 
 /**
  * Get superior in organizational chart
+ * Before ovidentia 8.4.90 this function serach only in the superiors main roles
+ * after 8.4.90, the function will get the superior also if not the main role
+ * 
+ * 
  * @param int	$iduser
  * @param int	$idoc
  * @return unknown_type
@@ -772,7 +776,6 @@ function bab_getSuperior($iduser, $idoc = '')
                 ocrt.id_oc='".$babDB->db_escape_string($idoc)."'
                 and oct.lf <  '".$babDB->db_escape_string($rr['lf'])."'
                 AND oct.lr >  '".$babDB->db_escape_string($rr['lr'])."'
-                AND ocrut.isprimary='Y'
                 and ocrt.type ='1'
             ORDER  BY oct.lf desc
             limit 0,1

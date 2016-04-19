@@ -28,8 +28,8 @@
 
 include_once "base.php";
 require_once dirname(__FILE__).'/../utilit/registerglobals.php';
-include_once $babInstallPath."utilit/evtincl.php";
-include_once $babInstallPath."utilit/calincl.php";
+include_once $GLOBALS['babInstallPath']."utilit/evtincl.php";
+include_once $GLOBALS['babInstallPath']."utilit/calincl.php";
 
 function modifyCalendarCategory()
 	{
@@ -375,8 +375,9 @@ if( !bab_isUserAdministrator() && !bab_isDelegated('calendars'))
 }
 
 $idx = bab_rp('idx', 'modp');
+$idcal = bab_rp('idcal');
 
-if( isset($addc))
+if( isset($_REQUEST['addc']))
 {
 	if( "modp" == bab_rp('addc') )
 	{
@@ -402,18 +403,23 @@ if( isset($addc))
 }
 elseif("updcat" == bab_rp('add')  && bab_isUserAdministrator())
 {
+    $idcat = bab_rp('idcat');
+    $catname = bab_rp('catname');
+    $catdesc = bab_rp('catdesc');
+    $bgcolor = bab_rp('bgcolor');
+    
 	updateCalendarCategory($idcat, $catname, $catdesc, $bgcolor);
 
-}elseif( isset($aclpub))
+}elseif( isset($_REQUEST['aclpub']))
 	{
-	include_once $babInstallPath."admin/acl.php";
+	include_once $GLOBALS['babInstallPath']."admin/acl.php";
 	maclGroups();
 	Header("Location: ". $GLOBALS['babUrlScript']."?tg=admcals&idx=pub");
 	exit;
 	}
-elseif( isset($aclres))
+elseif( isset($_REQUEST['aclres']))
 	{
-	include_once $babInstallPath."admin/acl.php";
+	include_once $GLOBALS['babInstallPath']."admin/acl.php";
 	maclGroups();
 	Header("Location: ". $GLOBALS['babUrlScript']."?tg=admcals&idx=res");
 	exit;
@@ -423,7 +429,7 @@ elseif( isset($aclres))
 switch($idx)
 	{
 	case "rigthsr":
-		include_once $babInstallPath."admin/acl.php";
+		include_once $GLOBALS['babInstallPath']."admin/acl.php";
 		$babBody->setTitle(bab_translate("Rights for resource calendar").": ".bab_getCalendarOwnerName($idcal, BAB_CAL_RES_TYPE));
 		$macl = new macl("admcal", "rightsp", $idcal, "aclres");
         $macl->addtable( BAB_CAL_RES_VIEW_GROUPS_TBL,bab_translate("Who can view this calendar"));
@@ -443,7 +449,7 @@ switch($idx)
 		$babBody->addItemMenu("cats", bab_translate("Categories"), $GLOBALS['babUrlScript']."?tg=admcals&idx=cats");
 		break;
 	case "rigthsp":
-		include_once $babInstallPath."admin/acl.php";
+		include_once $GLOBALS['babInstallPath']."admin/acl.php";
 		$babBody->setTitle(bab_translate("Rights for public calendar").": ".bab_getCalendarOwnerName($idcal, BAB_CAL_PUB_TYPE));
 		$macl = new macl("admcal", "rightsp", $idcal, "aclpub");
         $macl->addtable( BAB_CAL_PUB_VIEW_GROUPS_TBL,bab_translate("Who can view this calendar"));

@@ -1550,7 +1550,7 @@ function bab_ldapEntryGroups($id_user, $entry, $ldap_groups, $create)
             continue;
         }
 
-
+        $m = null;
         if (preg_match('/^CN=([^,]+),'.preg_quote($babBody->babsite['ldap_searchdn']).'$/i', $group, $m))
         {
             // if group is in search DN use CN as group name

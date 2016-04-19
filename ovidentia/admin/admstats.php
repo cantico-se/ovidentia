@@ -23,7 +23,7 @@
 ************************************************************************/
 include_once "base.php";
 require_once dirname(__FILE__).'/../utilit/registerglobals.php';
-include_once $babInstallPath."admin/acl.php";
+include_once $GLOBALS['babInstallPath']."admin/acl.php";
 /*
 function cleanStatsTables()
 	{
@@ -193,11 +193,10 @@ if( !bab_isUserAdministrator() )
 	return;
 }
 
+$idx = bab_rp('idx', 'man');
 
-if( !isset($idx))
-	$idx = "man";
 
-if( isset($aclman) )
+if( isset($_REQUEST['aclman']) )
 {
 	maclGroups();
 }
@@ -226,7 +225,7 @@ switch($idx)
 			$removeBefore = null;
 		}
 		if (!is_null($removeBefore)) {
-			require_once $babInstallPath . 'utilit/dateTime.php';
+			require_once $GLOBALS['babInstallPath'] . 'utilit/dateTime.php';
 			$removeBefore = BAB_DateTime::fromDateStr($removeBefore);
 		}
 		saveConnectionLogSettings($activate, $removeBefore);
@@ -238,7 +237,7 @@ switch($idx)
 		$removeBefore = bab_rp('remove_before', '');
 
 		if (!empty($removeBefore)) {
-			require_once $babInstallPath . 'utilit/dateTime.php';
+			require_once $GLOBALS['babInstallPath'] . 'utilit/dateTime.php';
 			$removeBefore = BAB_DateTime::fromDateStr($removeBefore);
 			confirmCleanStatTables($removeBefore);
 			$babBody->msgerror = bab_translate("Done");

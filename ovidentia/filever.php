@@ -23,8 +23,8 @@
 ************************************************************************/
 include_once 'base.php';
 require_once dirname(__FILE__).'/utilit/registerglobals.php';
-include_once $babInstallPath.'utilit/fileincl.php';
-include_once $babInstallPath."utilit/uploadincl.php";
+include_once $GLOBALS['babInstallPath'].'utilit/fileincl.php';
+include_once $GLOBALS['babInstallPath']."utilit/uploadincl.php";
 
 define('BAB_FM_MAXLOGS'	, 10);
 
@@ -923,7 +923,7 @@ if(isset($_REQUEST['idf']))
 	
 			if($_POST['afile'] == 'confirm')
 			{
-				confirmFile($idf, $bconfirm); 
+				confirmFile($idf, bab_rp('bconfirm')); 
 			}
 		}
 	}
@@ -993,7 +993,7 @@ switch($idx)
 
 	case 'conf':
 		include_once $GLOBALS['babInstallPath']."utilit/afincl.php";
-		if( isUserApproverFlow($oFmFolder->getApprobationSchemeId(), $BAB_SESS_USERID) )
+		if( isUserApproverFlow($oFmFolder->getApprobationSchemeId(), bab_getUserId()) )
 		{
 			showConfirmFile(bab_rp('idf'));
 			exit;

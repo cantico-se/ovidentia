@@ -23,7 +23,7 @@
 ************************************************************************/
 include_once 'base.php';
 require_once dirname(__FILE__).'/utilit/registerglobals.php';
-include_once $babInstallPath.'utilit/topincl.php';
+include_once $GLOBALS['babInstallPath'].'utilit/topincl.php';
 
 function browse($cat)
 	{
@@ -106,12 +106,6 @@ function browse($cat)
 	$temp = new temp($cat);
 	$babBody->babPopup(bab_printTemplate($temp,"editorfaq.html", "editorfaq"));
 	}
-
-if(!isset($cat))
-	{
-	$cat = 0;
-	}
-
 
 
 

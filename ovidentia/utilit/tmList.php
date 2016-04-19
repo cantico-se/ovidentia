@@ -22,8 +22,8 @@
  * USA.																	*
 ************************************************************************/
 
-require_once($babInstallPath . 'utilit/tmdefines.php');
-require_once($babInstallPath . 'utilit/baseFormProcessingClass.php');
+require_once($GLOBALS['babInstallPath'] . 'utilit/tmdefines.php');
+require_once($GLOBALS['babInstallPath'] . 'utilit/baseFormProcessingClass.php');
 
 		
 class BAB_TM_ListBase extends BAB_BaseFormProcessing

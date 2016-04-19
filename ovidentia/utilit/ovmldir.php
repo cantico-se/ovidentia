@@ -353,11 +353,7 @@ class Func_Ovml_Container_DbDirectoryMembers extends Func_Ovml_Container
 
 					/* find prefered mail account */
 					$this->accountid = 0;
-					$res = $babDB->db_query("select id from ".BAB_MAIL_ACCOUNTS_TBL." where owner='".$babDB->db_escape_string($GLOBALS['BAB_SESS_USERID'])."' order by prefered desc limit 0,1");
-					if( $res && $babDB->db_num_rows($res) > 0 ) {
-						$arr = $babDB->db_fetch_array($res);
-						$this->accountid = $arr['id'];
-					}
+					
 				}
 			}
 		} else {
@@ -382,11 +378,8 @@ class Func_Ovml_Container_DbDirectoryMembers extends Func_Ovml_Container
 			}
 			$this->ctx->curctx->push('DirectoryMemberUpdateAuthor', $this->memberfields['id_modifiedby']);
 			$this->ctx->curctx->push('DirectoryMemberUrl', $GLOBALS['babUrlScript']."?tg=directory&idx=ddbovml&directoryid=".$this->directoryid."&userid=".$this->memberfields['id']);
-			if( isset($this->memberfields['email']) && $this->accountid ) {
-				$this->ctx->curctx->push('DirectoryMemberEmailUrl', $GLOBALS['babUrlScript']."?tg=mail&idx=compose&accid=".$this->accountid."&to=".$this->memberfields['email']);
-			} else {
-				$this->ctx->curctx->push('DirectoryMemberEmailUrl', '');
-			}
+			$this->ctx->curctx->push('DirectoryMemberEmailUrl', '');
+
 
 			for( $k = 0; $k < count($this->IdEntries); $k++ ) {
 				$this->ctx->curctx->push($this->IdEntries[$k]['xname']."Name", $this->IdEntries[$k]['name']);
@@ -491,6 +484,9 @@ class Func_Ovml_Container_DbDirectoryEntry extends Func_Ovml_Container
 
 				$res = $babDB->db_query("select * from ".BAB_DBDIR_FIELDSEXTRA_TBL." where id_directory='".($idgroup != 0? 0: $babDB->db_escape_string($this->directoryid))."' AND disabled='N' order by list_ordering asc");
 
+				$nfields = array();
+				$xfields = array();
+				
 				while( $arr = $babDB->db_fetch_array($res))
 					{
 					if( $arr['id_field'] < BAB_DBDIR_MAX_COMMON_FIELDS )

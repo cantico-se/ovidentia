@@ -47,6 +47,8 @@ if (!function_exists('easter_date'))
 
 function bab_getNonWorkingDayTypes($with_date = false)
 {
+    $arr = array();
+    
 	$arr[101] = $with_date ? bab_translate("Day") : bab_translate("Non-working day");
 	$arr[102] = $with_date ? bab_translate("Repeat yearly") : bab_translate("Non-working day");
 

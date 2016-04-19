@@ -975,6 +975,7 @@ class bab_ICalendarProperty
 	 */ 
 	public function setFromIcal($property)
 	{
+	    $m = null;
 		if (preg_match('/^([^:^;]+)/', $property, $m))
 		{
 			$this->name = $m[1];

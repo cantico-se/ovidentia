@@ -497,7 +497,7 @@ switch($idx)
 	case 'connections':
 		if( bab_statisticsAccess() == BAB_STAT_ACCESS_MANAGER || bab_statisticsAccess() == BAB_STAT_ACCESS_DELEGATION)
 		{
-			include_once $babInstallPath . 'statconnections.php';
+			include_once $GLOBALS['babInstallPath'] . 'statconnections.php';
 			if (!isset($col)) $col = 'connections';
 			if (!isset($order)) $order = 'asc';
 			if (!isset($pos)) $pos = 0;
@@ -507,7 +507,7 @@ switch($idx)
 	case 'connection':
 		if( bab_statisticsAccess() == BAB_STAT_ACCESS_MANAGER || bab_statisticsAccess() == BAB_STAT_ACCESS_DELEGATION)
 			{
-			include_once $babInstallPath . 'statconnections.php';
+			include_once $GLOBALS['babInstallPath'] . 'statconnections.php';
 			if (!isset($col)) $col = 'connection';
 			if (!isset($order)) $order = 'asc';
 			if (!isset($pos)) $pos = 0;
@@ -521,7 +521,7 @@ switch($idx)
 	case "xlink":
 		if( bab_statisticsAccess() == BAB_STAT_ACCESS_MANAGER )
 			{
-			include_once $babInstallPath."statxlink.php";
+			include_once $GLOBALS['babInstallPath']."statxlink.php";
 			if( !isset($col)) { $col = 'hits';}
 			if( !isset($order)) { $order = 'asc';}
 			summaryXlinks($col, $order, $sd, $ed);
@@ -530,14 +530,14 @@ switch($idx)
 	case "arttree":
 		if( bab_statisticsAccess() == BAB_STAT_ACCESS_MANAGER || (bab_statisticsAccess() == BAB_STAT_ACCESS_DELEGATION &&  bab_isDelegated('articles') ))
 			{
-			include_once $babInstallPath."statart.php";
+			include_once $GLOBALS['babInstallPath']."statart.php";
 			displayArticleTree($sd, $ed);
 			}
 		break;
 	case "art":
 		if( bab_statisticsAccess() == BAB_STAT_ACCESS_MANAGER || (bab_statisticsAccess() == BAB_STAT_ACCESS_DELEGATION &&  bab_isDelegated('articles') ))
 			{
-			include_once $babInstallPath."statart.php";
+			include_once $GLOBALS['babInstallPath']."statart.php";
 			if( !isset($col)) { $col = 'hits';}
 			if( !isset($order)) { $order = 'asc';}
 			if( !isset($pos)) { $pos = 0;}
@@ -547,7 +547,7 @@ switch($idx)
 	case "sart":
 		if( bab_statisticsAccess() == BAB_STAT_ACCESS_MANAGER || (bab_statisticsAccess() == BAB_STAT_ACCESS_DELEGATION &&  bab_isDelegated('articles') ))
 			{
-			include_once $babInstallPath."statart.php";
+			include_once $GLOBALS['babInstallPath']."statart.php";
 			$babBodyPopup = new babBodyPopup();
 			showStatArticle($item, $date);
 			$babBodyPopup->addItemMenu("sart", bab_translate("Statistic"), $GLOBALS['babUrlScript']."?tg=stat&idx=sart&item=".$item."&date=".$date);
@@ -560,7 +560,7 @@ switch($idx)
 	case "refart":
 		if( bab_statisticsAccess() == BAB_STAT_ACCESS_MANAGER || (bab_statisticsAccess() == BAB_STAT_ACCESS_DELEGATION &&  bab_isDelegated('articles') ))
 			{
-			include_once $babInstallPath."statart.php";
+			include_once $GLOBALS['babInstallPath']."statart.php";
 			$babBodyPopup = new babBodyPopup();
 			if( !isset($col)) { $col = 'hits';}
 			if( !isset($order)) { $order = 'asc';}
@@ -576,7 +576,7 @@ switch($idx)
 	case "topart":
 		if( bab_statisticsAccess() == BAB_STAT_ACCESS_MANAGER || (bab_statisticsAccess() == BAB_STAT_ACCESS_DELEGATION &&  bab_isDelegated('articles') ))
 			{
-			include_once $babInstallPath."statart.php";
+			include_once $GLOBALS['babInstallPath']."statart.php";
 			if( !isset($col)) { $col = 'hits';}
 			if( !isset($order)) { $order = 'asc';}
 			if( !isset($pos)) { $pos = 0;}
@@ -586,7 +586,7 @@ switch($idx)
 	case "stop":
 		if( bab_statisticsAccess() == BAB_STAT_ACCESS_MANAGER || (bab_statisticsAccess() == BAB_STAT_ACCESS_DELEGATION &&  bab_isDelegated('articles') ))
 			{
-			include_once $babInstallPath."statart.php";
+			include_once $GLOBALS['babInstallPath']."statart.php";
 			$babBodyPopup = new babBodyPopup();
 			showStatTopic($item, $date);
 			printBabBodyPopup();
@@ -596,7 +596,7 @@ switch($idx)
 	case "topcat":
 		if( bab_statisticsAccess() == BAB_STAT_ACCESS_MANAGER || (bab_statisticsAccess() == BAB_STAT_ACCESS_DELEGATION &&  bab_isDelegated('articles') ))
 			{
-			include_once $babInstallPath."statart.php";
+			include_once $GLOBALS['babInstallPath']."statart.php";
 			if( !isset($col)) { $col = 'hits';}
 			if( !isset($order)) { $order = 'asc';}
 			if( !isset($pos)) { $pos = 0;}
@@ -606,7 +606,7 @@ switch($idx)
 	case "scat":
 		if( bab_statisticsAccess() == BAB_STAT_ACCESS_MANAGER || (bab_statisticsAccess() == BAB_STAT_ACCESS_DELEGATION &&  bab_isDelegated('articles') ))
 			{
-			include_once $babInstallPath."statart.php";
+			include_once $GLOBALS['babInstallPath']."statart.php";
 			$babBodyPopup = new babBodyPopup();
 			showStatTopicCategory($item, $date);
 			printBabBodyPopup();
@@ -616,14 +616,14 @@ switch($idx)
 	case "fortree":
 		if( bab_statisticsAccess() == BAB_STAT_ACCESS_MANAGER || (bab_statisticsAccess() == BAB_STAT_ACCESS_DELEGATION &&  bab_isDelegated('forums')) )
 			{
-			include_once $babInstallPath."statfor.php";
+			include_once $GLOBALS['babInstallPath']."statfor.php";
 			displayForumTree($sd, $ed);
 			}
 		break;
 	case "for":
 		if( bab_statisticsAccess() == BAB_STAT_ACCESS_MANAGER || (bab_statisticsAccess() == BAB_STAT_ACCESS_DELEGATION &&  bab_isDelegated('forums')) )
 			{
-			include_once $babInstallPath."statfor.php";
+			include_once $GLOBALS['babInstallPath']."statfor.php";
 			if( !isset($col)) { $col = 'hits';}
 			if( !isset($order)) { $order = 'asc';}
 			if( !isset($pos)) { $pos = 0;}
@@ -633,7 +633,7 @@ switch($idx)
 	case "sfor":
 		if( bab_statisticsAccess() == BAB_STAT_ACCESS_MANAGER || (bab_statisticsAccess() == BAB_STAT_ACCESS_DELEGATION &&  bab_isDelegated('forums')) )
 			{
-			include_once $babInstallPath."statfor.php";
+			include_once $GLOBALS['babInstallPath']."statfor.php";
 			$babBodyPopup = new babBodyPopup();
 			showStatForum($item, $date);
 			printBabBodyPopup();
@@ -643,7 +643,7 @@ switch($idx)
 	case "forth":
 		if( bab_statisticsAccess() == BAB_STAT_ACCESS_MANAGER || (bab_statisticsAccess() == BAB_STAT_ACCESS_DELEGATION &&  bab_isDelegated('forums')) )
 			{
-			include_once $babInstallPath."statfor.php";
+			include_once $GLOBALS['babInstallPath']."statfor.php";
 			if( !isset($col)) { $col = 'hits';}
 			if( !isset($order)) { $order = 'asc';}
 			if( !isset($pos)) { $pos = 0;}
@@ -653,7 +653,7 @@ switch($idx)
 	case "sforth":
 		if( bab_statisticsAccess() == BAB_STAT_ACCESS_MANAGER || (bab_statisticsAccess() == BAB_STAT_ACCESS_DELEGATION &&  bab_isDelegated('forums')) )
 			{
-			include_once $babInstallPath."statfor.php";
+			include_once $GLOBALS['babInstallPath']."statfor.php";
 			$babBodyPopup = new babBodyPopup();
 			showStatThread($item, $date);
 			printBabBodyPopup();
@@ -663,7 +663,7 @@ switch($idx)
 	case "forpo":
 		if( bab_statisticsAccess() == BAB_STAT_ACCESS_MANAGER || (bab_statisticsAccess() == BAB_STAT_ACCESS_DELEGATION &&  bab_isDelegated('forums')) )
 			{
-			include_once $babInstallPath."statfor.php";
+			include_once $GLOBALS['babInstallPath']."statfor.php";
 			if( !isset($col)) { $col = 'hits';}
 			if( !isset($order)) { $order = 'asc';}
 			if( !isset($pos)) { $pos = 0;}
@@ -673,7 +673,7 @@ switch($idx)
 	case "sforpo":
 		if( bab_statisticsAccess() == BAB_STAT_ACCESS_MANAGER || (bab_statisticsAccess() == BAB_STAT_ACCESS_DELEGATION &&  bab_isDelegated('forums')) )
 			{
-			include_once $babInstallPath."statfor.php";
+			include_once $GLOBALS['babInstallPath']."statfor.php";
 			$babBodyPopup = new babBodyPopup();
 			showStatPost($item, $date);
 			printBabBodyPopup();
@@ -683,14 +683,14 @@ switch($idx)
 	case "faqtree":
 		if( bab_statisticsAccess() == BAB_STAT_ACCESS_MANAGER || (bab_statisticsAccess() == BAB_STAT_ACCESS_DELEGATION &&  bab_isDelegated('faqs')) )
 			{
-			include_once $babInstallPath."statfaq.php";
+			include_once $GLOBALS['babInstallPath']."statfaq.php";
 			displayFaqTree($sd, $ed);
 			}
 		break;
 	case "faq":
 		if( bab_statisticsAccess() == BAB_STAT_ACCESS_MANAGER || (bab_statisticsAccess() == BAB_STAT_ACCESS_DELEGATION &&  bab_isDelegated('faqs')) )
 			{
-			include_once $babInstallPath."statfaq.php";
+			include_once $GLOBALS['babInstallPath']."statfaq.php";
 			if( !isset($col)) { $col = 'hits';}
 			if( !isset($order)) { $order = 'asc';}
 			if( !isset($pos)) { $pos = 0;}
@@ -700,7 +700,7 @@ switch($idx)
 	case "sfaq":
 		if( bab_statisticsAccess() == BAB_STAT_ACCESS_MANAGER || (bab_statisticsAccess() == BAB_STAT_ACCESS_DELEGATION &&  bab_isDelegated('faqs')) )
 			{
-			include_once $babInstallPath."statfaq.php";
+			include_once $GLOBALS['babInstallPath']."statfaq.php";
 			$babBodyPopup = new babBodyPopup();
 			showStatFaq($item, $date);
 			printBabBodyPopup();
@@ -710,7 +710,7 @@ switch($idx)
 	case "faqqr":
 		if( bab_statisticsAccess() == BAB_STAT_ACCESS_MANAGER || (bab_statisticsAccess() == BAB_STAT_ACCESS_DELEGATION &&  bab_isDelegated('faqs')) )
 			{
-			include_once $babInstallPath."statfaq.php";
+			include_once $GLOBALS['babInstallPath']."statfaq.php";
 			if( !isset($col)) { $col = 'hits';}
 			if( !isset($order)) { $order = 'asc';}
 			if( !isset($pos)) { $pos = 0;}
@@ -720,7 +720,7 @@ switch($idx)
 	case "sfaqqr":
 		if( bab_statisticsAccess() == BAB_STAT_ACCESS_MANAGER || (bab_statisticsAccess() == BAB_STAT_ACCESS_DELEGATION &&  bab_isDelegated('faqs')) )
 			{
-			include_once $babInstallPath."statfaq.php";
+			include_once $GLOBALS['babInstallPath']."statfaq.php";
 			$babBodyPopup = new babBodyPopup();
 			showStatFaqQuestion($item, $date);
 			printBabBodyPopup();
@@ -730,7 +730,7 @@ switch($idx)
 	case "search":
 		if( bab_statisticsAccess() == BAB_STAT_ACCESS_MANAGER )
 		{
-		include_once $babInstallPath."statword.php";
+		include_once $GLOBALS['babInstallPath']."statword.php";
 		if( !isset($col)) { $col = 'hits';}
 		if( !isset($order)) { $order = 'asc';}
 		if( !isset($pos)) { $pos = 0;}
@@ -740,7 +740,7 @@ switch($idx)
 	case "mod":
 		if( bab_statisticsAccess() == BAB_STAT_ACCESS_MANAGER )
 		{
-		include_once $babInstallPath."statmod.php";
+		include_once $GLOBALS['babInstallPath']."statmod.php";
 		if( !isset($col)) { $col = 'hits';}
 		if( !isset($order)) { $order = 'asc';}
 		summaryModules($col, $order, $sd, $ed);
@@ -749,7 +749,7 @@ switch($idx)
 	case "page":
 		if( bab_statisticsAccess() == BAB_STAT_ACCESS_MANAGER || bab_statisticsAccess() == BAB_STAT_ACCESS_DELEGATION)
 		{
-		include_once $babInstallPath."statpages.php";
+		include_once $GLOBALS['babInstallPath']."statpages.php";
 		if( !isset($col)) { $col = 'hits';}
 		if( !isset($order)) { $order = 'asc';}
 		summaryPages($col, $order, $sd, $ed);
@@ -758,7 +758,7 @@ switch($idx)
 	case "users":
 		if( bab_statisticsAccess() == BAB_STAT_ACCESS_MANAGER )
 		{
-		include_once $babInstallPath."statboard.php";
+		include_once $GLOBALS['babInstallPath']."statboard.php";
 		summaryUsers();
 		}
 		break;
@@ -767,7 +767,7 @@ switch($idx)
 		{
 		if( !isset($col)) { $col = 'usage';}
 		if( !isset($order)) { $order = 'desc';}
-		include_once $babInstallPath."statboard.php";
+		include_once $GLOBALS['babInstallPath']."statboard.php";
 		summarySections($col, $order);
 		}
 		break;
@@ -777,13 +777,13 @@ switch($idx)
 		{
 		if( !isset($col)) { $col = 'dgname';}
 		if( !isset($order)) { $order = 'desc';}
-		include_once $babInstallPath."statboard.php";
+		include_once $GLOBALS['babInstallPath']."statboard.php";
 		summaryDelegatList($col, $order);
 		}
 		break;
 	case "sumdp":
-		include_once $babInstallPath."utilit/fileincl.php";
-		include_once $babInstallPath."statfile.php";
+		include_once $GLOBALS['babInstallPath']."utilit/fileincl.php";
+		include_once $GLOBALS['babInstallPath']."statfile.php";
 		$babBodyPopup = new babBodyPopup();
 		$babBodyPopup->title = bab_translate("Personal Folders");
 		if( $fid == 0 )
@@ -796,15 +796,15 @@ switch($idx)
 	case "fmtree":
 		if( bab_statisticsAccess() == BAB_STAT_ACCESS_MANAGER || (bab_statisticsAccess() == BAB_STAT_ACCESS_DELEGATION &&  bab_isDelegated('filemanager')) )
 		{
-		include_once $babInstallPath."statfile.php";
+		include_once $GLOBALS['babInstallPath']."statfile.php";
 		displayFileTree($sd, $ed);
 		}
 		break;
 	case "fm":
 		if( bab_statisticsAccess() == BAB_STAT_ACCESS_MANAGER || (bab_statisticsAccess() == BAB_STAT_ACCESS_DELEGATION &&  bab_isDelegated('filemanager')) )
 		{
-		include_once $babInstallPath."utilit/fileincl.php";
-		include_once $babInstallPath."statfile.php";
+		include_once $GLOBALS['babInstallPath']."utilit/fileincl.php";
+		include_once $GLOBALS['babInstallPath']."statfile.php";
 		if( !isset($col)) { $col = 'diskspace';}
 		if( !isset($order)) { $order = 'asc';}
 		summaryFileManager($col, $order);
@@ -813,8 +813,8 @@ switch($idx)
 	case "fmfold":
 		if( bab_statisticsAccess() == BAB_STAT_ACCESS_MANAGER || (bab_statisticsAccess() == BAB_STAT_ACCESS_DELEGATION &&  bab_isDelegated('filemanager')) )
 		{
-		include_once $babInstallPath."utilit/fileincl.php";
-		include_once $babInstallPath."statfile.php";
+		include_once $GLOBALS['babInstallPath']."utilit/fileincl.php";
+		include_once $GLOBALS['babInstallPath']."statfile.php";
 		if( !isset($col)) { $col = 'hits';}
 		if( !isset($order)) { $order = 'asc';}
 		if( !isset($pos)) { $pos = 0;}
@@ -824,7 +824,7 @@ switch($idx)
 	case "sfmfold":
 		if( bab_statisticsAccess() == BAB_STAT_ACCESS_MANAGER || (bab_statisticsAccess() == BAB_STAT_ACCESS_DELEGATION &&  bab_isDelegated('filemanager')) )
 		{
-		include_once $babInstallPath."statfile.php";
+		include_once $GLOBALS['babInstallPath']."statfile.php";
 		$babBodyPopup = new babBodyPopup();
 		showStatFmFolder($item, $date);
 		printBabBodyPopup();
@@ -834,8 +834,8 @@ switch($idx)
 	case "fmdown":
 		if( bab_statisticsAccess() == BAB_STAT_ACCESS_MANAGER || (bab_statisticsAccess() == BAB_STAT_ACCESS_DELEGATION &&  bab_isDelegated('filemanager')) )
 		{
-		include_once $babInstallPath."utilit/fileincl.php";
-		include_once $babInstallPath."statfile.php";
+		include_once $GLOBALS['babInstallPath']."utilit/fileincl.php";
+		include_once $GLOBALS['babInstallPath']."statfile.php";
 		if( !isset($col)) { $col = 'hits';}
 		if( !isset($order)) { $order = 'asc';}
 		if( !isset($pos)) { $pos = 0;}
@@ -845,7 +845,7 @@ switch($idx)
 	case "sfmdown":
 		if( bab_statisticsAccess() == BAB_STAT_ACCESS_MANAGER || (bab_statisticsAccess() == BAB_STAT_ACCESS_DELEGATION &&  bab_isDelegated('filemanager')) )
 		{
-		include_once $babInstallPath."statfile.php";
+		include_once $GLOBALS['babInstallPath']."statfile.php";
 		$babBodyPopup = new babBodyPopup();
 		showStatFmDownloads($item, $date);
 		printBabBodyPopup();
@@ -855,7 +855,7 @@ switch($idx)
 	case "ovml":
 		if( bab_statisticsAccess() == BAB_STAT_ACCESS_MANAGER )
 			{
-			include_once $babInstallPath."statovml.php";
+			include_once $GLOBALS['babInstallPath']."statovml.php";
 			if( !isset($col)) { $col = 'hits';}
 			if( !isset($order)) { $order = 'asc';}
 			if( !isset($pos)) { $pos = 0;}
@@ -865,7 +865,7 @@ switch($idx)
 	case "addon":
 		if( bab_statisticsAccess() == BAB_STAT_ACCESS_MANAGER )
 			{
-			include_once $babInstallPath."stataddons.php";
+			include_once $GLOBALS['babInstallPath']."stataddons.php";
 			if( !isset($col)) { $col = 'hits';}
 			if( !isset($order)) { $order = 'asc';}
 			if( !isset($pos)) { $pos = 0;}
@@ -875,7 +875,7 @@ switch($idx)
 	case "saddon":
 		if( bab_statisticsAccess() == BAB_STAT_ACCESS_MANAGER )
 			{
-			include_once $babInstallPath."stataddons.php";
+			include_once $GLOBALS['babInstallPath']."stataddons.php";
 			$babBodyPopup = new babBodyPopup();
 			showStatAddon($item, $date);
 			printBabBodyPopup();
@@ -883,14 +883,14 @@ switch($idx)
 			}
 		break;
 	case "baskets":
-		include_once $babInstallPath."statbaskets.php";
+		include_once $GLOBALS['babInstallPath']."statbaskets.php";
 		listUserBaskets();
 		break;
 	case "dashboard":
 		if( bab_statisticsAccess() == BAB_STAT_ACCESS_MANAGER || bab_statisticsAccess() == BAB_STAT_ACCESS_DELEGATION )
 			{
-			include_once $babInstallPath."utilit/uiutil.php";
-			include_once $babInstallPath."statdashboard.php";
+			include_once $GLOBALS['babInstallPath']."utilit/uiutil.php";
+			include_once $GLOBALS['babInstallPath']."statdashboard.php";
 			$GLOBALS['babBodyPopup'] = new babBodyPopup();
 			displayTimeIntervalInPopup($itwhat, $sd, $ed, $idx, $GLOBALS['babBodyPopup']);
 			showDashboard($sd, $ed);
@@ -901,8 +901,8 @@ switch($idx)
 	case "dashboardexport":
 		if( bab_statisticsAccess() == BAB_STAT_ACCESS_MANAGER || bab_statisticsAccess() == BAB_STAT_ACCESS_DELEGATION )
 			{
-			include_once $babInstallPath."utilit/uiutil.php";
-			include_once $babInstallPath."statdashboard.php";
+			include_once $GLOBALS['babInstallPath']."utilit/uiutil.php";
+			include_once $GLOBALS['babInstallPath']."statdashboard.php";
 	//		$GLOBALS['babBodyPopup'] = new babBodyPopup();
 	//		displayTimeIntervalInPopup($itwhat, $sd, $ed, $idx, $GLOBALS['babBodyPopup']);
 			exportDashboard($sd, $ed);
@@ -913,10 +913,10 @@ switch($idx)
 	case "delegation":
 		if( bab_statisticsAccess() == BAB_STAT_ACCESS_MANAGER )
 			{
-	//		include_once $babInstallPath."statboard.php";
+	//		include_once $GLOBALS['babInstallPath']."statboard.php";
 	//		summaryDelegatList($col, $order);
-			include_once $babInstallPath."utilit/uiutil.php";
-			include_once $babInstallPath."statdashboard.php";
+			include_once $GLOBALS['babInstallPath']."utilit/uiutil.php";
+			include_once $GLOBALS['babInstallPath']."statdashboard.php";
 			$GLOBALS['babBodyPopup'] = new babBodyPopup();
 			displayTimeIntervalInPopup($itwhat, $sd, $ed, $idx, $GLOBALS['babBodyPopup']);
 			showDelegationDashboard($sd, $ed);
@@ -925,8 +925,8 @@ switch($idx)
 			}
 		break;
 	case "basket":
-		include_once $babInstallPath."utilit/uiutil.php";
-		include_once $babInstallPath."statdashboard.php";
+		include_once $GLOBALS['babInstallPath']."utilit/uiutil.php";
+		include_once $GLOBALS['babInstallPath']."statdashboard.php";
 		$GLOBALS['babBodyPopup'] = new babBodyPopup();
 		$idbasket = bab_rp('idbasket');
 		displayTimeIntervalInPopup($itwhat, $sd, $ed, $idx, $GLOBALS['babBodyPopup'], $idbasket);
@@ -935,8 +935,8 @@ switch($idx)
 		exit;
 		break;
 	case "basketexport":
-		include_once $babInstallPath."utilit/uiutil.php";
-		include_once $babInstallPath."statdashboard.php";
+		include_once $GLOBALS['babInstallPath']."utilit/uiutil.php";
+		include_once $GLOBALS['babInstallPath']."statdashboard.php";
 		$idbasket = bab_rp('idbasket');
 		exportBasket($idbasket, $sd, $ed);
 		exit;

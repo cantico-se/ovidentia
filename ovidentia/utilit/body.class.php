@@ -333,6 +333,8 @@ class babBody
         // BAB_PRIVATE_SECTIONS_TBL
 
         $type = 1;
+        $arrdbinfo = array();
+        
         if (! empty($arrsectionsbytype[$type]) && ($babSectionsType & BAB_SECTIONS_CORE)) {
             $res2 = $babDB->db_query("select * from " . BAB_PRIVATE_SECTIONS_TBL . " where id IN(" . $babDB->quote(array_keys($arrsectionsbytype[$type])) . ")");
             while ($arr2 = $babDB->db_fetch_array($res2)) {
@@ -417,8 +419,7 @@ class babBody
                         require_once ($GLOBALS['babInstallPath'] . 'addons/' . $arr2['title'] . '/init.php');
                         $func = $arr2['title'] . '_onSectionCreate';
                         if (function_exists($func)) {
-                            if (! isset($template))
-                                $template = false;
+                            $template = false;
                             $stitle = '';
                             $scontent = '';
                             if ($func($stitle, $scontent, $template)) {

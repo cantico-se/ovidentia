@@ -22,10 +22,10 @@
  * USA.																	*
 ************************************************************************/
 	include "base.php";
-	require_once($babInstallPath . 'utilit/baseFormProcessingClass.php');
-	require_once($babInstallPath . 'utilit/tableWrapperClass.php');
-	require_once($babInstallPath . 'utilit/tmdefines.php');
-	require_once($babInstallPath . 'utilit/tmIncl.php');
+	require_once($GLOBALS['babInstallPath'] . 'utilit/baseFormProcessingClass.php');
+	require_once($GLOBALS['babInstallPath'] . 'utilit/tableWrapperClass.php');
+	require_once($GLOBALS['babInstallPath'] . 'utilit/tmdefines.php');
+	require_once($GLOBALS['babInstallPath'] . 'utilit/tmIncl.php');
 	
 class BAB_TM_FieldBase extends BAB_BaseFormProcessing
 {

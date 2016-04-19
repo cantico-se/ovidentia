@@ -109,6 +109,7 @@ function bab_sitemap_adminSection(bab_eventBeforeSiteMapCreated $event) {
 
 	// add nodes to delegations
 
+	$allobjects = array();
 	foreach(bab_getDelegationsObjects() as $arr) {
 		$allobjects[$arr[0]] = $arr;
 	}

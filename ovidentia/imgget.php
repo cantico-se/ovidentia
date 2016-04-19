@@ -23,7 +23,7 @@
  */
 include_once 'base.php';
 require_once dirname(__FILE__).'/utilit/registerglobals.php';
-include_once $babInstallPath.'utilit/gdiincl.php';
+include_once $GLOBALS['babInstallPath'].'utilit/gdiincl.php';
 
 function getFmImage($idf, $w, $h)
 {
@@ -43,16 +43,16 @@ function getFmImage($idf, $w, $h)
 
 
 /* main */
-if( !isset($idx))
-	$idx = "get";
+
+$idx = bab_rp('idx', 'get');
 
 switch($idx)
 	{
 	case "get":
 	default:
-		if( !isset($w)) $w = "";
-		if( !isset($h)) $h = "";
+	    $idf = abab_rp('idf');
+	    $w = bab_rp('w');
+	    $h = bab_rp('h');
 		getFmImage($idf, $w, $h);
 		break;
 	}
-?>

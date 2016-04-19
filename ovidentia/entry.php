@@ -26,8 +26,8 @@
 */
 include_once 'base.php';
 require_once dirname(__FILE__).'/utilit/registerglobals.php';
-include_once $babInstallPath.'utilit/topincl.php';
-include_once $babInstallPath.'utilit/artincl.php';
+include_once $GLOBALS['babInstallPath'].'utilit/topincl.php';
+include_once $GLOBALS['babInstallPath'].'utilit/artincl.php';
 
 function ListArticles($idgroup)
     {
@@ -348,10 +348,9 @@ function isAccessValid($article, $idg)
 $idx = bab_rp('idx', 'list');
 $idg = bab_rp('idg', 2); // non registered users
 
-if( $BAB_SESS_LOGGED)
-    {
+if(bab_isUserLogged()) {
     $idg = 1; // registered users
-    }
+}
 
 switch($idx)
     {

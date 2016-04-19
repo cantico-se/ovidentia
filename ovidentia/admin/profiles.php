@@ -23,7 +23,7 @@
 ************************************************************************/
 include_once 'base.php';
 require_once dirname(__FILE__).'/../utilit/registerglobals.php';
-include_once $babInstallPath.'utilit/grptreeincl.php';
+include_once $GLOBALS['babInstallPath'].'utilit/grptreeincl.php';
 
 function profileCreate($pname, $pdesc, $grpids, $cinscription, $cmultiple, $crequired)
 	{
@@ -506,18 +506,27 @@ if( !bab_isUserAdministrator() /*&& !bab_isDelegated('profiles')*/)
 	return;
 }
 
-if( !isset($idx)){$idx = "plist";}
+$idx = bab_rp('idx', 'plist');
+$add = bab_rp('add', null);
+$deletep = bab_rp('deletep', null);
+
+$idprof = bab_rp('idprof');
+$pname = bab_rp('pname');
+$pdesc = bab_rp('pdesc');
+$grpids = bab_rp('grpids', array());
+$cinscription = bab_rp('cinscription');
+$cmultiple = bab_rp('cmultiple');
+$crequired = bab_rp('crequired');
+
+$aclview = bab_rp('aclview', null);
+
 
 if( isset($add))
 {
 	if( $add == 'addp' )
 	{
-		if( !isset($pname)){$pname = "";}
-		if( !isset($pdesc)){$pdesc = "";}
-		if( !isset($grpids)){$grpids = array();}
-		if( !isset($cinscription)){$cinscription = "";}
-		if( !isset($cmultiple)){$cmultiple = "";}
-		if( !isset($crequired)){$crequired = "";}
+	    
+
 		if(!saveProfile($pname, $pdesc, $grpids, $cinscription, $cmultiple, $crequired))
 		{
 			$idx = 'padd';
@@ -531,12 +540,6 @@ if( isset($add))
 		}
 		else
 		{
-			if( !isset($pname)){$pname = "";}
-			if( !isset($pdesc)){$pdesc = "";}
-			if( !isset($grpids)){$grpids = array();}
-			if( !isset($cinscription)){$cinscription = "";}
-			if( !isset($cmultiple)){$cmultiple = "";}
-			if( !isset($crequired)){$crequired = "";}
 			if(!updateProfile($idprof, $pname, $pdesc, $grpids, $cinscription, $cmultiple, $crequired))
 			{
 				$idx = 'pmod';
@@ -544,14 +547,14 @@ if( isset($add))
 		}
 	}
 }
-elseif( isset($action) && $action == 'Yes' )
+elseif( bab_rp('action') == 'Yes' )
 {
 	confirmDeleteProfile($idprof);
 	$idx = 'plist';
 }
 elseif( isset($aclview) )
 {
-	include_once $babInstallPath."admin/acl.php";
+	include_once $GLOBALS['babInstallPath']."admin/acl.php";
 	maclGroups();
 	Header("Location: ". $GLOBALS['babUrlScript']."?tg=profiles&idx=plist");
 	exit;
@@ -561,7 +564,7 @@ elseif( isset($aclview) )
 switch($idx)
 	{
 	case "pacl":
-		include_once $babInstallPath."admin/acl.php";
+		include_once $GLOBALS['babInstallPath']."admin/acl.php";
 		if( bab_isUserAdministrator() || bab_isDelegated('groups'))
 		{
 			$macl = new macl("profiles", "plist", $idprof, "aclview");

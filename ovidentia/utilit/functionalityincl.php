@@ -502,7 +502,7 @@ class bab_functionalities {
 	{
 		$return = array();
 		$contents = file_get_contents($file);
-		
+		$matches = null;
 		if (preg_match_all('/class\s+Func_([_\w]+)\s+extends\s+/', $contents, $matches)) {
 			foreach($matches[1] as $func) {
 				$arr = explode('_', $func);

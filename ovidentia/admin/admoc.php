@@ -22,8 +22,8 @@
  * USA.																	*
 ************************************************************************/
 include_once "base.php";
-include_once $babInstallPath."admin/acl.php";
-include_once $babInstallPath.'utilit/ocapi.php';
+include_once $GLOBALS['babInstallPath']."admin/acl.php";
+include_once $GLOBALS['babInstallPath'].'utilit/ocapi.php';
 
 function modifyOrgChart($id)
 {

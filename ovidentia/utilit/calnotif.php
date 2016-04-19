@@ -178,7 +178,7 @@ $idx = bab_rp('idx');
 
 if( $idx == 'dismiss')
 {
-	dismissEvent($evtid);
+	dismissEvent(bab_rp('evtid'));
 	$idx = 'popup';
 }
 

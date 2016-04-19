@@ -543,6 +543,7 @@ function bab_removeDiacritics($string, $charset = null)
         $chars['out'] = "EfSZszYcYuAAAAAACEEEEIIIINOOOOOOUUUUYaaaaaaceeeeiiiinoooooouuuuyy";
 
         $string = strtr($string, $chars['in'], $chars['out']);
+        $double_chars = array();
         $double_chars['in'] = array(chr(140), chr(156), chr(198), chr(208), chr(222), chr(223), chr(230), chr(240), chr(254));
         $double_chars['out'] = array('OE', 'oe', 'AE', 'DH', 'TH', 'ss', 'ae', 'dh', 'th');
         $string = str_replace($double_chars['in'], $double_chars['out'], $string);
@@ -836,6 +837,7 @@ class bab_DateStrings
 function bab_formatDate($format, $time)
 {
     $txt = $format;
+    $m = null;
     if(preg_match_all("/%(.)/", $format, $m))
         {
         for( $i = 0; $i< count($m[1]); $i++)
@@ -1009,6 +1011,7 @@ function bab_editor_record(&$str)
 
     $worked = array();
 
+    $out = null;
     preg_match_all("/<\/?([^>]+?)\/?>/i",$str,$out);
 
     $nbtags = count($out[0]);
@@ -1025,6 +1028,7 @@ function bab_editor_record(&$str)
             if (isset($allowed_tags[$name]))
                 {
                 // work on attributes
+                $elements = null;
                 preg_match_all("/(\w+)\s*=\s*([\"'])(.*?)\\2/", $out[1][$i], $elements);
 
                 $worked_attributes = array();
@@ -1135,7 +1139,9 @@ function bab_browserVersion()
         }
 
     $tab = explode(";", $_SERVER['HTTP_USER_AGENT']);
-    if( ereg("([^(]*)([0-9].[0-9]{1,2})",$tab[1],$res))
+    $res = null;
+    
+    if( preg_match("/([^(]*)([0-9]\.[0-9]{1,2})/",$tab[1],$res))
         {
         return trim($res[2]);
         }
@@ -1560,6 +1566,7 @@ function bab_getUsersByName( $name, $nb = 5 )
     if( $babDB->db_num_rows($res) > 0)
         {
         $i = 0;
+        $resArr = array();
         while ($arr = $babDB->db_fetch_assoc($res)){
             $resArr[$i]['id'] = $arr['id'];
             $resArr[$i]['lastname'] = $arr['lastname'];
@@ -1941,6 +1948,7 @@ function bab_getAvailableLanguages()
         {
         if ($file != "." && $file != "..")
             {
+            $regs = null;
             if( preg_match("/lang-([^.]*)/", $file, $regs))
                 {
                 if( $file == 'lang-'.$regs[1].'.xml')
@@ -1989,7 +1997,7 @@ function bab_printTemplate($class, $file, $section = '')
 {
     //bab_debug('Template file : '.$file.'<br />'.'Section in template file : '.$section);
 
-    global $babInstallPath, $babSkinPath, $babSkin;
+    global $babSkinPath, $babSkin;
 
 
     $skin = new bab_Skin($babSkin);
@@ -1998,7 +2006,7 @@ function bab_printTemplate($class, $file, $section = '')
     $html = $tpl->printTemplate($class, $skin->getThemePath().'templates/'. $file, $section);
 
     if (!$html) {
-        $html = $tpl->printTemplate($class, $babInstallPath.'skins/ovidentia/templates/'.$file, $section);
+        $html = $tpl->printTemplate($class, $GLOBALS['babInstallPath'].'skins/ovidentia/templates/'.$file, $section);
     }
     //VENDOR
     //if (!$html) {
@@ -3150,7 +3158,7 @@ function bab_printCachedOvmlTemplate($file, $args = array())
  */
 function bab_printOvmlTemplate($file, $args=array())
 {
-    global $babInstallPath, $babSkinPath, $babOvmlPath;
+    global $babSkinPath, $babOvmlPath;
 
     /* Skin local path */
     $filepath = $babOvmlPath.$file; /* Ex. : skins/ovidentia_sw/ovml/test.ovml */
@@ -3186,7 +3194,7 @@ function bab_printOvmlTemplate($file, $args=array())
 
     $GLOBALS['babWebStat']->addOvmlFile($filepath);
 
-    include_once $babInstallPath.'utilit/omlincl.php';
+    include_once $GLOBALS['babInstallPath'].'utilit/omlincl.php';
     $tpl = new babOvTemplate($args);
     $template = $tpl->printout(file_get_contents($filepath), $filepath);
     return $template;

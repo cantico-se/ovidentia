@@ -26,10 +26,10 @@
 */
 include_once 'base.php';
 require_once dirname(__FILE__).'/utilit/registerglobals.php';
-include_once $babInstallPath.'utilit/topincl.php';
-include_once $babInstallPath.'utilit/treeincl.php';
-include_once $babInstallPath.'utilit/imgincl.php';
-require_once $babInstallPath . 'utilit/toolbar.class.php';
+include_once $GLOBALS['babInstallPath'].'utilit/topincl.php';
+include_once $GLOBALS['babInstallPath'].'utilit/treeincl.php';
+include_once $GLOBALS['babInstallPath'].'utilit/imgincl.php';
+require_once $GLOBALS['babInstallPath'] . 'utilit/toolbar.class.php';
 
 function isUserManager()
 {

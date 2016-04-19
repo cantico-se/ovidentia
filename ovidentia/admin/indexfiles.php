@@ -200,7 +200,7 @@ function record_status() {
 
 // main
 
-if( !isset($BAB_SESS_LOGGED) || empty($BAB_SESS_LOGGED) ||  !bab_isUserAdministrator() || false === bab_searchEngineInfos())
+if( !bab_isUserLogged() ||  !bab_isUserAdministrator() || false === bab_searchEngineInfos())
 {
 	$babBody->msgerror = bab_translate("Access denied");
 	return;

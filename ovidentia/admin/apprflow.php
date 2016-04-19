@@ -28,7 +28,7 @@
 
 include_once 'base.php';
 require_once dirname(__FILE__).'/../utilit/registerglobals.php';
-include_once $babInstallPath.'utilit/afincl.php';
+include_once $GLOBALS['babInstallPath'].'utilit/afincl.php';
 
 //define("BAB_DEBUG_FA", 1);
 
@@ -761,6 +761,7 @@ if( !bab_isUserAdministrator() && !bab_isDelegated('approbations'))
 
 $idx = bab_rp('idx', 'list');
 $res = bab_rp('res', -1);
+$idsch = bab_rp('idsch');
 
 if( defined("BAB_DEBUG_FA") && ('testsc' == bab_pp('test')))
 {
@@ -867,6 +868,7 @@ switch($idx)
 		$schdesc = bab_pp('schdesc');
 		$order = bab_pp('order');
 		$ocid = bab_pp('ocid');
+		$type = bab_pp('type');
 		schemaCreate($formula, $idsch, $schname, $schdesc, $order, false, $ocid, $type);
 		$babBody->addItemMenu("list", bab_translate("Schemas"),$GLOBALS['babUrlScript']."?tg=apprflow&idx=list");
 		$babBody->addItemMenu("newa", bab_translate("Nominative schema"), $GLOBALS['babUrlScript']."?tg=apprflow&idx=newa&type=0");

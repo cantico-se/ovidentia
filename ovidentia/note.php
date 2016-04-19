@@ -105,7 +105,7 @@ $item = bab_rp('item', 0);
 
 list($iduser) = $babDB->db_fetch_row($babDB->db_query("select id_user from ".BAB_NOTES_TBL." where id = '".$babDB->db_escape_string($item)."'"));
 
-if( isset($_POST['update']) && $iduser == $BAB_SESS_USERID)
+if( isset($_POST['update']) && $iduser == bab_getUserId())
 	{
 	updateNotes($item, bab_pp('content'));
 	}
@@ -113,7 +113,7 @@ if( isset($_POST['update']) && $iduser == $BAB_SESS_USERID)
 switch($idx)
 	{
 	case 'Delete':
-		if( $iduser != $BAB_SESS_USERID )
+		if( $iduser != bab_getUserId() )
 			{
 			$babBody->msgerror = bab_translate("Access denied");
 			}
@@ -125,7 +125,7 @@ switch($idx)
 
 	default:
 	case 'Modify':
-		if( $iduser != $BAB_SESS_USERID )
+		if( $iduser != bab_getUserId() )
 			{
 			$babBody->msgerror = bab_translate("Access denied");
 			}

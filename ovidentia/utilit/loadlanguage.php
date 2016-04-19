@@ -51,6 +51,7 @@ function bab_getLangFileMatchs($lang, $filename)
 		$xml_header_pos = strpos($tmp, "?>");
 		if (false !== $xml_header_pos) {
 			$xml_header = substr($tmp, 0, $xml_header_pos);
+			$m = null;
 			if (preg_match('/encoding="(UTF-8|ISO-8859-[0-9]{1,2})"/', $xml_header, $m)) {
 				$charset = $m[1];
 			}
@@ -59,6 +60,7 @@ function bab_getLangFileMatchs($lang, $filename)
 		$tmp = bab_getStringAccordingToDataBase($tmp, $charset);
 
 		if (preg_match('/<'.$lang.'>(.*)<\/'.$lang.'>/s', $tmp)) {
+		    $tmparr = null;
 			preg_match_all('/<string\s+id=\"([^\"]*)\">(.*?)<\/string>/s', $tmp , $tmparr);
 			return $tmparr;
 		}

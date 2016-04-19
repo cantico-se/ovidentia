@@ -26,10 +26,10 @@
 */
 include 'base.php';
 require_once dirname(__FILE__).'/utilit/registerglobals.php';
-include_once $babInstallPath.'utilit/uiutil.php';
-include_once $babInstallPath.'utilit/topincl.php';
-include_once $babInstallPath.'utilit/artincl.php';
-include_once $babInstallPath.'utilit/urlincl.php';
+include_once $GLOBALS['babInstallPath'].'utilit/uiutil.php';
+include_once $GLOBALS['babInstallPath'].'utilit/topincl.php';
+include_once $GLOBALS['babInstallPath'].'utilit/artincl.php';
+include_once $GLOBALS['babInstallPath'].'utilit/urlincl.php';
 
 
 
@@ -1456,8 +1456,9 @@ $supp_rfurl = isset($_REQUEST['rfurl']) ? '&rfurl='.urlencode($_REQUEST['rfurl']
 switch($idx)
 	{
 	case "unload":
-		if( !isset($popupmessage)) { $popupmessage ='';}
-		if( !isset($refreshurl)) { $refreshurl ='';}
+		$popupmessage = bab_rp('popupmessage');
+		$refreshurl = bab_rp('refreshurl');
+		
 		popupUnload($popupmessage, $refreshurl);
 		exit;
 
