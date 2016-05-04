@@ -64,8 +64,7 @@ function bab_selectWorkingHours($iIdUser, $iWeekDay, &$bHaveWorkingHours)
 
 function displayWorkingHoursForm()
 {
-	global $babInstallPath;
-	require_once($babInstallPath . 'utilit/calapi.php');
+	require_once($GLOBALS['babInstallPath'] . 'utilit/calapi.php');
 	
 	class BAB_DisplayWorkingHours extends BAB_BaseFormProcessing
 	{
@@ -216,8 +215,7 @@ class BAB_WorkingHours
 
 		//Get working days
 		{
-			global $babInstallPath;
-			require_once($babInstallPath . 'utilit/calapi.php');
+			require_once($GLOBALS['babInstallPath'] . 'utilit/calapi.php');
 
 			$this->m_iIdUser = (bab_rp('tg', 'admTskMgr') == 'admTskMgr' ? 0 : $GLOBALS['BAB_SESS_USERID']);
 			$sWorkingDays = null;
@@ -337,7 +335,6 @@ class BAB_WorkingHours
 	function isOverlapping($iStartIndex, $iCount, $iWeekDay, $iStartTimeToSec, $iEndTimeToSec, $aDebut = '', $aFin = '')
 	{
 		global $babBody;
-		global $babInstallPath;
 
 		$iIndex = 0;
 		for($iIndex = $iStartIndex; $iIndex < $iCount; $iIndex++)

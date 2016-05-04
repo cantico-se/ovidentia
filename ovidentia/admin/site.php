@@ -23,10 +23,10 @@
 ************************************************************************/
 include_once 'base.php';
 require_once dirname(__FILE__).'/../utilit/registerglobals.php';
-include_once $babInstallPath.'admin/acl.php';
-include_once $babInstallPath.'utilit/dirincl.php';
-include_once $babInstallPath.'utilit/nwdaysincl.php';
-include_once $babInstallPath.'utilit/sitesincl.php';
+include_once $GLOBALS['babInstallPath'].'admin/acl.php';
+include_once $GLOBALS['babInstallPath'].'utilit/dirincl.php';
+include_once $GLOBALS['babInstallPath'].'utilit/nwdaysincl.php';
+include_once $GLOBALS['babInstallPath'].'utilit/sitesincl.php';
 
 $bab_ldapAttributes = array('uid', 'cn', 'sn', 'givenname', 'mail', 'telephonenumber', 'mobile', 'homephone', 'facsimiletelephonenumber', 'title', 'o', 'street', 'l', 'postalcode', 'st', 'homepostaladdress', 'jpegphoto', 'departmentnumber');
 
@@ -2657,7 +2657,7 @@ function call_record_site_menu11($item) {
 
 
 /* main */
-if( !isset($BAB_SESS_LOGGED) || empty($BAB_SESS_LOGGED) ||  !bab_isUserAdministrator())
+if( !bab_isUserLogged() ||  !bab_isUserAdministrator())
 {
 	$babBody->msgerror = bab_translate("Access denied");
 	return;
@@ -2718,6 +2718,7 @@ switch ($_POST['action'])
 
 
 	case 'menu8':
+	    $Submit = bab_rp('Submit');
 		if( !empty($Submit))
 			{
 			$hostname = isset($_POST['hostname']) ? $_POST['hostname'] : '';
@@ -2761,7 +2762,7 @@ switch ($_POST['action'])
 }
 
 
-if( isset($aclman) || isset($acluws))
+if( isset($_REQUEST['aclman']) || isset($_REQUEST['acluws']))
 	{
 	maclGroups();
 	}
@@ -2779,14 +2780,11 @@ if (0 === mb_strpos($idx, 'menu') && is_numeric(mb_substr($idx, 4))) {
 switch($idx)
 	{
 	case "unload":
-		include_once $babInstallPath."utilit/uiutil.php";
-		if( !isset($popupmessage)) { $popupmessage ='';}
-		if( !isset($refreshurl)) { $refreshurl ='';}
-		popupUnload($popupmessage, $refreshurl);
+		include_once $GLOBALS['babInstallPath']."utilit/uiutil.php";
+		popupUnload(bab_rp('popupmessage'), bab_rp('refreshurl'));
 		exit;
 	case "editdp":
-		if( !isset($content)) { $content ='';}
-		editDisclaimerPrivacy($item, $content);
+		editDisclaimerPrivacy($_REQUEST['item'], bab_rp('content'));
 		exit;
 		break;
 
@@ -2862,7 +2860,7 @@ switch($idx)
 
 	case "menu9":
 		$babBody->title = bab_translate("Registration").": ".getSiteName($_REQUEST['item']);
-		include_once $babInstallPath."utilit/dirincl.php";
+		include_once $GLOBALS['babInstallPath']."utilit/dirincl.php";
 		siteRegistration($_REQUEST['item']);
 		$babBody->addItemMenu("menusite", bab_translate("Menu"),$GLOBALS['babUrlScript']."?tg=site&item=".$_REQUEST['item']);
 		$babBody->addItemMenu("menu9", bab_translate("Registration"),'');

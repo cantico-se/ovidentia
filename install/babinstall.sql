@@ -308,7 +308,6 @@ CREATE TABLE `bab_groups` (
   `id` int(11) unsigned NOT NULL default '0',
   `name` varchar(255) NOT NULL default '',
   `description` varchar(255) NOT NULL default '',
-  `mail` enum('N','Y') default NULL,
   `manager` int(11) unsigned NOT NULL default '0',
   `ustorage` enum('N','Y') default NULL,
   `notes` enum('Y','N') default NULL,
@@ -326,10 +325,10 @@ CREATE TABLE `bab_groups` (
   KEY `id_parent` (`id_parent`,`lf`,`lr`)
 );
 
-INSERT INTO bab_groups (id, name, description, mail, ustorage, notes, contacts, directory, pcalendar, id_parent, lf, lr, nb_set) VALUES ( '0', 'Ovidentia users', '', NULL, NULL, NULL, NULL, NULL, NULL, NULL, '1', '8', '0');
-INSERT INTO bab_groups (id, name, description, mail, ustorage, notes, contacts, directory, pcalendar, id_parent, lf, lr, nb_set) VALUES ( '1', 'Registered users', 'All registered users', 'N', 'N', 'Y', 'Y', 'Y', 'Y', '0', '2', '5', '0');
-INSERT INTO bab_groups (id, name, description, mail, ustorage, notes, contacts, directory, pcalendar, id_parent, lf, lr, nb_set) VALUES ( '2', 'Anonymous users', 'all not registered users', NULL, NULL, NULL, NULL, NULL, NULL, '0', '6', '7', '0');
-INSERT INTO bab_groups (id, name, description, mail, ustorage, notes, contacts, directory, pcalendar, id_parent, lf, lr, nb_set) VALUES ( '3', 'Administrators', 'Manage the site', 'N', 'N', 'Y', 'Y', 'N', 'Y', '1', '3', '4', '0');
+INSERT INTO bab_groups (id, name, description, ustorage, notes, contacts, directory, pcalendar, id_parent, lf, lr, nb_set) VALUES ( '0', 'Ovidentia users', '', NULL, NULL, NULL, NULL, NULL, NULL, '1', '8', '0');
+INSERT INTO bab_groups (id, name, description, ustorage, notes, contacts, directory, pcalendar, id_parent, lf, lr, nb_set) VALUES ( '1', 'Registered users', 'All registered users', 'N', 'Y', 'Y', 'Y', 'Y', '0', '2', '5', '0');
+INSERT INTO bab_groups (id, name, description, ustorage, notes, contacts, directory, pcalendar, id_parent, lf, lr, nb_set) VALUES ( '2', 'Anonymous users', 'all not registered users', NULL, NULL, NULL, NULL, NULL, '0', '6', '7', '0');
+INSERT INTO bab_groups (id, name, description, ustorage, notes, contacts, directory, pcalendar, id_parent, lf, lr, nb_set) VALUES ( '3', 'Administrators', 'Manage the site', 'N', 'Y', 'Y', 'N', 'Y', '1', '3', '4', '0');
 
 
 
@@ -917,63 +916,6 @@ CREATE TABLE bab_calaccess_users (
 );
 
 
-# --------------------------------------------------------
-#
-# Structure de la table 'bab_mail_domains'
-#
-
-CREATE TABLE bab_mail_domains (
-    id INT (11) UNSIGNED not null AUTO_INCREMENT,
-    name VARCHAR (254) not null,
-    description VARCHAR (224) not null,
-    outserver VARCHAR (224) not null,
-    inserver VARCHAR (224) not null,
-    outport VARCHAR (5) not null,
-    inport VARCHAR (5) not null,
-    access VARCHAR (10) not null,
-    bgroup enum('N','Y') DEFAULT 'N' NOT NULL,
-    owner INT (11) UNSIGNED not null,
-    id_dgowner int(11) unsigned NOT NULL default '0',
-    PRIMARY KEY (id),
-    KEY owner (owner)
-);
-
-
-# --------------------------------------------------------
-#
-# Structure de la table 'bab_mail_accounts'
-#
-
-CREATE TABLE bab_mail_accounts (
-    id INT (11) UNSIGNED not null AUTO_INCREMENT,
-    account_name VARCHAR (255) not null,
-    name VARCHAR (255) not null,
-    email VARCHAR (255) not null,
-    login VARCHAR (255) not null,
-    password blob not null,
-    domain INT (11) UNSIGNED not null,
-    owner INT (11) UNSIGNED not null,
-    maxrows TINYINT (2) not null,
-    prefered enum('N','Y') DEFAULT 'N' NOT NULL,
-    format VARCHAR (5) DEFAULT 'plain' NOT NULL,
-    PRIMARY KEY (id),
-    KEY owner (owner)
-);
-
-# --------------------------------------------------------
-#
-# Structure de la table 'bab_mail_signatures'
-#
-
-CREATE TABLE bab_mail_signatures (
-    id INT (11) UNSIGNED not null AUTO_INCREMENT,
-    name varchar(255) NOT NULL,
-    owner INT (11) UNSIGNED not null,
-    html enum('Y','N') DEFAULT 'N' NOT NULL,
-    text TEXT not null,
-    PRIMARY KEY (id),
-    KEY owner (owner)
-);
 
 # --------------------------------------------------------
 #
@@ -1826,7 +1768,6 @@ CREATE TABLE `bab_dg_groups` (
   `faqs` enum('N','Y') NOT NULL default 'N',
   `forums` enum('N','Y') NOT NULL default 'N',
   `calendars` enum('N','Y') NOT NULL default 'N',
-  `mails` enum('N','Y') NOT NULL default 'N',
   `directories` enum('N','Y') NOT NULL default 'N',
   `approbations` enum('N','Y') NOT NULL default 'N',
   `filemanager` enum('N','Y') NOT NULL default 'N',

@@ -22,11 +22,11 @@
  * USA.																	*
 ************************************************************************/
 include "base.php";
-require_once($babInstallPath . 'utilit/tmdefines.php');
-require_once($babInstallPath . 'utilit/tmIncl.php');
-require_once($babInstallPath . 'utilit/tmList.php');
-require_once($babInstallPath . 'tmSpecificFieldsFunc.php');
-require_once($babInstallPath . 'tmCategoriesFunc.php');
+require_once($GLOBALS['babInstallPath'] . 'utilit/tmdefines.php');
+require_once($GLOBALS['babInstallPath'] . 'utilit/tmIncl.php');
+require_once($GLOBALS['babInstallPath'] . 'utilit/tmList.php');
+require_once($GLOBALS['babInstallPath'] . 'tmSpecificFieldsFunc.php');
+require_once($GLOBALS['babInstallPath'] . 'tmCategoriesFunc.php');
 
 
 

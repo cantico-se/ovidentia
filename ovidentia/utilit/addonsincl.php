@@ -438,7 +438,7 @@ function bab_callAddonsFunction($func)
 	
 	$addons = bab_addonsInfos::getRows();
 	
-	foreach($addons as $key => $row)
+	foreach($addons as $row)
 		{ 
 		if($row['access'])
 			{
@@ -468,6 +468,7 @@ function bab_callAddonsFunction($func)
 					}
 					$call .= ')';
 					
+					$retval = null;
 					eval ( "\$retval = $call;");
 					
 						$results[$row['id']] = array(

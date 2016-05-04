@@ -115,7 +115,7 @@ class bab_inifile_requirements {
             $arr = $db->db_fetch_assoc($res);
 
             $mysql = 'Undefined';
-
+            $matches = null;
             if (preg_match('/([0-9\.]+)/', $arr['Value'], $matches)) {
                 $mysql = $matches[1];
             }
@@ -158,6 +158,7 @@ class bab_inifile_requirements {
 
             while ($arr = $db->db_fetch_array($res))
             {
+                $m = null;
                 if (preg_match('/^GRANT\s([A-Z\s,]+)\sON/', $arr[0], $m))
                 {
                     foreach(preg_split('/\s*,\s*/', strtoupper($m[1])) as $privilege)
@@ -729,6 +730,7 @@ class bab_inifile_requirements {
 
         if (extension_loaded('gd') && function_exists('gd_info')) {
            $ver_info = gd_info();
+           $match = null;
            preg_match('/\d/', $ver_info['GD Version'], $match);
            $status = 2 == $match[0];
        }
@@ -986,6 +988,7 @@ class bab_inifile_requirements {
         {
             $r = trim($r);
             $operator = '>=';
+            $m = null;
             if (preg_match('/^(>=|<=|>|<|=)([0-9\.]+)$/', $r, $m)) {
                 $operator = $m[1];
                 $r = $m[2];
@@ -1178,11 +1181,12 @@ class bab_inifile {
             $preinstall_script = dirname($tmp_extract.'/'.$inifile).$this->inifile['preinstall_script'];
             if (file_exists($preinstall_script))
             {
-                $this->addCustomScript($name, $this->getTmpPath().'/'.$preinstall_script);
+                $this->addCustomScript($this->inifile['name'], $this->getTmpPath().'/'.$preinstall_script);
             }
         }
 
         require_once dirname(__FILE__).'/delincl.php';
+        $msgerror = null;
         bab_deldir($tmp_extract, $msgerror);
     }
 
@@ -1328,7 +1332,7 @@ class bab_inifile {
     function getVersion() {
 
         if (isset($this->inifile['version'])) {
-
+            $m = null;
             if (preg_match('/\$Name$/', $this->inifile['version'], $m)) {
                 $tag = trim($m[1]);
 

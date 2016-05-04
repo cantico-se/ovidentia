@@ -936,7 +936,7 @@ if( $idx == 'list' )
 
 if( isset($aclupdate))
 	{
-	include_once $babInstallPath.'admin/acl.php';
+	include_once $GLOBALS['babInstallPath'].'admin/acl.php';
 	maclGroups();
 	Header("Location: ". $GLOBALS['babUrlScript']."?tg=delegat&idx=list");
 	exit;
@@ -955,7 +955,7 @@ switch($idx)
 		exit;
 		break;
 	case "acl":
-		include_once $babInstallPath.'admin/acl.php';
+		include_once $GLOBALS['babInstallPath'].'admin/acl.php';
 		$babBody->title = bab_translate("ACL delegation");
 		$macl = new macl("delegat", "Modify", $id, "aclupdate", false);
         $macl->addtable( BAB_DG_ACL_GROUPS_TBL,bab_translate("ACL to use with this delegation"));

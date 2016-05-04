@@ -1447,7 +1447,7 @@ function cal_getFreeEvents($idcals, $date0, $date1, $gap, $bopt = 0)
 
 	$whObj = bab_mcalendars::create_events($sdate, $edate, $idcals);
 
-
+	$arr = null;
 	while (bab_mcalendars::getNextFreeEvent($whObj, $sdate, $edate, $arr, $gap)) {
 		if (0 === $arr[2]) {
 			$freeevents[] = array(

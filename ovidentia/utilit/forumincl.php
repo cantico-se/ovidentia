@@ -232,7 +232,7 @@ function bab_getForumThreadTitle($id)
 
 function notifyForumGroups(bab_eventForumPost $event)
 	{
-	global $babBody, $babDB, $BAB_SESS_USER, $BAB_SESS_EMAIL, $babAdminEmail, $babInstallPath;
+	global $babBody, $babDB, $BAB_SESS_USER, $BAB_SESS_EMAIL, $babAdminEmail;
  
 	class tempa
 		{
@@ -427,7 +427,7 @@ function bab_getNoticesContributor($id_post, $author)
 
 function notifyThreadAuthor($threadTitle, $email, $author, $idpost = null)
 	{
-	global $babBody, $BAB_SESS_USER, $BAB_SESS_EMAIL, $babAdminEmail, $babInstallPath;
+	global $babBody, $BAB_SESS_USER, $BAB_SESS_EMAIL, $babAdminEmail;
 
 	class tempb
 		{

@@ -170,9 +170,7 @@ function ovidentia_hidegroupselect(select) {
 <table class="BabMailBackground" border="0" width="100%" cellpadding="2" cellspacing="0">
 <tr class="BabSiteAdminTitleFontBackground">
 <td valign="middle">{ fullname } </td>
-<!--#if bdgmail -->
-<td valign="middle" align="center">{ mail } </td>
-<!--#endif bdgmail -->
+
 <!--#if bdgnotes -->
 <td valign="middle" align="center">{ notes } </td>
 <!--#endif bdgnotes -->
@@ -191,11 +189,6 @@ function ovidentia_hidegroupselect(select) {
 <td valign="middle"> 
 { urlname } 
 </td>
-<!--#if bdgmail -->
-<td valign="middle" width="0%" align="center"> 
-<input type="checkbox" name="mailgrpids[]" { mailcheck } value="{ grpid }">
-</td>
-<!--#endif bdgmail -->
 <!--#if bdgnotes -->
 <td valign="middle" width="0%" align="center"> 
 <input type="checkbox" name="notgrpids[]" { notescheck } value="{ grpid }">
@@ -220,9 +213,7 @@ function ovidentia_hidegroupselect(select) {
 <!--#endin getnext -->
 <tr class="BabSiteAdminTitleFontBackground"> 
 <td valign="middle">&nbsp;</td>
-<!--#if bdgmail -->
-<td width="1%" align="center"><a href="javascript:onCheckAll('mailgrpids', true)"><img src="{ babSkinPath }images/Puces/Pucecheked.gif" alt="{ checkall }" width="10" height="10" border="0"></a><a href="javascript:onCheckAll('mailgrpids', false)"><img src="{ babSkinPath }images/Puces/PuceUncheked.gif" alt="{ uncheckall }" width="10" height="10" border="0"></a></td>
-<!--#endif bdgmail -->
+
 <!--#if bdgnotes -->
 <td width="1%" align="center"><a href="javascript:onCheckAll('notgrpids', true)"><img src="{ babSkinPath }images/Puces/Pucecheked.gif" alt="{ checkall }" width="10" height="10" border="0"></a><a href="javascript:onCheckAll('notgrpids', false)"><img src="{ babSkinPath }images/Puces/PuceUncheked.gif" alt="{ uncheckall }" width="10" height="10" border="0"></a></td>
 <!--#endif bdgnotes -->

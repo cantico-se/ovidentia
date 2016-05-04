@@ -372,6 +372,7 @@ function bab_createCalendarPeriod(Func_CalendarBackend $backend, $args, bab_Peri
 	if ($args['domain'] && is_array($args['domain']))
 	{
 		$domainStr = '';
+		$domain = array();
 		foreach($args['domain'] as $domains){
 			$domain[] = implode(',', $domains);
 		}

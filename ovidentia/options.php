@@ -27,7 +27,7 @@
 include_once 'base.php';
 require_once dirname(__FILE__).'/utilit/registerglobals.php';
 require_once dirname(__FILE__).'/utilit/urlincl.php';
-include_once $babInstallPath.'admin/register.php';
+include_once $GLOBALS['babInstallPath'].'admin/register.php';
 
 function changePassword()
 	{
@@ -873,11 +873,11 @@ function userChangePassword($oldpwd, $newpwd)
 				if( isset($babBody->babsite['ldap_userdn']) && !empty($babBody->babsite['ldap_userdn']))
 				{
 				$userdn = str_replace('%UID', ldap_escapefilter($babBody->babsite['ldap_attribute']), $babBody->babsite['ldap_userdn']);
-				$userdn = str_replace('%NICKNAME', ldap_escapefilter($nickname), $userdn);
-				$ret = $ldap->bind($userdn, $password);
+				$userdn = str_replace('%NICKNAME', ldap_escapefilter(bab_getUserNickname(bab_getUserId())), $userdn);
+				$ret = $ldap->bind($userdn, $oldpwd);
 				if( !$ret )
 					{
-					$msgerror = bab_translate("LDAP authentification failed. Please verify your login ID and your password");
+					$babBody->msgerror = bab_translate("LDAP authentification failed. Please verify your login ID and your password");
 					$ldap->close();
 					return false;
 					}
@@ -899,7 +899,7 @@ function userChangePassword($oldpwd, $newpwd)
 					if( isset($babBody->babsite['ldap_filter']) && !empty($babBody->babsite['ldap_filter']))
 						{
 						$filter = str_replace('%UID', ldap_escapefilter($babBody->babsite['ldap_attribute']), $babBody->babsite['ldap_filter']);
-						$filter = str_replace('%NICKNAME', ldap_escapefilter($GLOBALS['BAB_SESS_NICKNAME']), $filter);
+						$filter = str_replace('%NICKNAME', ldap_escapefilter(bab_getUserNickname(bab_getUserId())), $filter);
 						}
 					else
 						{
@@ -977,7 +977,7 @@ function userChangePassword($oldpwd, $newpwd)
 
 function updatePassword($oldpwd, $newpwd1, $newpwd2)
 	{
-	global $babBody, $babInstallPath;
+	global $babBody;
 
 	if( empty($GLOBALS['BAB_SESS_USERID']))
 		return false;
@@ -1334,7 +1334,7 @@ function bab_haveOptionalSections()
 	
 
 /* main */
-if( !isset($BAB_SESS_LOGGED) || !$BAB_SESS_LOGGED)
+if( !bab_isUserLogged())
 {
 	$babBody->addError(bab_translate("Access denied"));
 	return;
@@ -1377,24 +1377,7 @@ if( '' != ($update = bab_pp('update')))
 				}
             break;
             
-        /*
-        case 'userinfo':
- 			$password = bab_pp('password');
-			$firstname = bab_pp('firstname');
-			$middlename = bab_pp('middlename');
-			$lastname = bab_pp('lastname');
-			$nickname = bab_pp('nickname');
-			$email = bab_pp('email');
-       		if(updateUserInfo($password, $firstname, $middlename, $lastname, $nickname, $email))
-				{
-				unset($firstname);
-				unset($lastname);
-				unset($middlename);
-				unset($nickname);
-				unset($email);
-				}
-            break;
-        */
+
             
         case 'profiles':
         	updateProfiles();
@@ -1432,20 +1415,7 @@ if( '' != ($update = bab_pp('update')))
        }
 	}
 
-if( !isset($firstname) &&  !isset($middlename) &&  !isset($lastname) && !isset($nickname) && !isset($email) && $BAB_SESS_USERID != '')
-	{
-	$req = "select sn, mn, givenname, email from ".BAB_DBDIR_ENTRIES_TBL." where id_directory='0' and id_user='".$babDB->db_escape_string($BAB_SESS_USERID)."'";
-	$res = $babDB->db_query($req);
-	if( $res && $babDB->db_num_rows($res) > 0)
-		{
-		$arr = $babDB->db_fetch_array($res);
-		$firstname = $arr['givenname'];
-		$lastname = $arr['sn'];
-		$middlename = $arr['mn'];
-		$email = $arr['email'];
-		$nickname = bab_getUserNickname($BAB_SESS_USERID);
-		}
-	}
+
 	
 switch($idx)
 	{
@@ -1515,7 +1485,7 @@ switch($idx)
 			$babBody->addItemMenu('list', bab_translate("Sections"), $GLOBALS['babUrlScript'].'?tg=sectopt&idx=list');
 			}
 		
-		$iduser = isset($iduser)? $iduser: $BAB_SESS_USERID;
+		$iduser = isset($iduser)? $iduser: bab_getUserId();
 		if( ('Y' == $babBody->babsite['change_unavailability'] && $iduser == $GLOBALS['BAB_SESS_USERID']) || bab_isUserAdministrator() || (bab_getCurrentAdmGroup() && bab_isDelegated('users')))
 			{
 			$babBody->addItemMenu('unav', bab_translate("Unavailability"), $GLOBALS['babUrlScript'].'?tg=options&idx=unav&iduser='.$iduser);

@@ -136,7 +136,7 @@ function bab_isEmailValid($email)
  */
 function bab_getCssUrl()
 	{
-	global $babInstallPath, $babSkinPath, $babSkin;
+	global $babSkinPath, $babSkin;
 	
 	$skin = new bab_Skin($babSkin);
 	
@@ -146,7 +146,7 @@ function bab_getCssUrl()
 		$filepath = $babSkinPath.'styles/'. $GLOBALS['babStyle'];
 		if( !file_exists( $filepath ) )
 			{
-			$filepath = $babInstallPath.'skins/ovidentia/styles/ovidentia.css';
+			$filepath = $GLOBALS['babInstallPath'].'skins/ovidentia/styles/ovidentia.css';
 			}
 		}
 	return bab_getStaticUrl().$filepath;
@@ -886,8 +886,7 @@ function bab_getIniVersion() {
  * @return string
  */
 function bab_getSkinPath() {
-	global $babInstallPath;
-	return bab_getStaticUrl().$babInstallPath."skins/ovidentia/";
+	return bab_getStaticUrl().$GLOBALS['babInstallPath']."skins/ovidentia/";
 }
 
 
@@ -1299,12 +1298,11 @@ class babLanguageFilter
 
 	function readLangFiles()
 		{
-			global $babInstallPath;
 			$tmpLangFiles = array();
 			$i = 0;
-			if (file_exists($babInstallPath.'lang'))
+			if (file_exists($GLOBALS['babInstallPath'].'lang'))
 				{
-					$folder = opendir($babInstallPath.'lang');
+					$folder = opendir($GLOBALS['babInstallPath'].'lang');
 					while (false!==($file = readdir($folder)))
 						{
 							if ($this->isLangFile($file))

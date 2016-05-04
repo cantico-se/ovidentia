@@ -24,8 +24,8 @@
 
 include_once 'base.php';
 
-include_once $babInstallPath.'utilit/tempfile.php';
-include_once $babInstallPath.'utilit/imgincl.php';
+include_once $GLOBALS['babInstallPath'].'utilit/tempfile.php';
+include_once $GLOBALS['babInstallPath'].'utilit/imgincl.php';
 
 
 

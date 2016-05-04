@@ -206,7 +206,7 @@ function updateContact( $id, $firstname, $lastname, $email, $compagny, $hometel,
 }
 
 /* main */
-if( !$BAB_SESS_LOGGED || !bab_contactsAccess())
+if( !bab_isUserLogged() || !bab_contactsAccess())
 {
 	$babBody->msgerror = bab_translate("Access denied");
 	return;
@@ -215,7 +215,7 @@ $idx = bab_rp('idx', 'create');
 
 $msgerror = '';
 
-if( $BAB_SESS_USERID != '' )
+if( bab_isUserLogged() )
 {
 if( '' != ($addcontact = bab_pp('addcontact')))
 	{

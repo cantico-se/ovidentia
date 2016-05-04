@@ -559,9 +559,6 @@ function bab_deleteGroup($id)
 
 	bab_deleteGroupAclTables($id);
 
-	// delete user from BAB_MAIL_DOMAINS_TBL
-	$babDB->db_query("delete from ".BAB_MAIL_DOMAINS_TBL." where owner='".$babDB->db_escape_string($id)."' and bgroup='Y'");	
-
 	// delete group directory
 	$res = $babDB->db_query("select id from ".BAB_DB_DIRECTORIES_TBL." where id_group='".$babDB->db_escape_string($id)."'");
 	while( $arr = $babDB->db_fetch_array($res))
@@ -671,15 +668,6 @@ function bab_deleteUser($id)
 
 	// delete user from BAB_USERS_LOG_TBL
 	$res = $babDB->db_query("delete from ".BAB_USERS_LOG_TBL." where id_user='".$babDB->db_escape_string($id)."'");	
-
-	// delete user from BAB_MAIL_SIGNATURES_TBL
-	$res = $babDB->db_query("delete from ".BAB_MAIL_SIGNATURES_TBL." where owner='".$babDB->db_escape_string($id)."'");	
-
-	// delete user from BAB_MAIL_ACCOUNTS_TBL
-	$res = $babDB->db_query("delete from ".BAB_MAIL_ACCOUNTS_TBL." where owner='".$babDB->db_escape_string($id)."'");	
-
-	// delete user from BAB_MAIL_DOMAINS_TBL
-	$res = $babDB->db_query("delete from ".BAB_MAIL_DOMAINS_TBL." where owner='".$babDB->db_escape_string($id)."' and bgroup='N'");	
 
 	// delete user from contacts
 	$res = $babDB->db_query("delete from ".BAB_CONTACTS_TBL." where owner='".$babDB->db_escape_string($id)."'");	

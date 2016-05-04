@@ -383,8 +383,15 @@ function disableCalResource($resids, $userid, $grpid)
 }
 
 /* main */
-if( !isset($idx))
-	$idx = "listcat";
+
+$idx = bab_rp('idx', 'listcat');
+$userid = bab_rp('userid', 0);
+$groups = bab_rp('groups');
+$name = bab_rp('name');
+$description = bab_rp('description');
+$bgcolor = bab_rp('bgcolor');
+$resids = bab_rp('resids');
+
 
 $grpid = array();
 if( $userid == 0 )
@@ -410,13 +417,13 @@ else
 		}
 	}
 
-if( isset($addcat) && $addcat == "add")
+if( bab_rp('addcat') == "add") {
 	addCalCategory($groups, $name, $description, $bgcolor);
-else if( isset($addres) && $addres == "add")
+} else if( bab_rp('addres') == "add") {
 	addCalResource($groups, $name, $description);
-else if( isset($update) && $update == "disable")
+} else if( bab_rp('update') == "disable") {
 	disableCalResource($resids, $userid, $grpid);
-
+}
 
 switch($idx)
 	{

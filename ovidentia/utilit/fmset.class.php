@@ -102,6 +102,7 @@ class BAB_BaseSet extends BAB_MySqlResultIterator
             if(false !== $aItem)
             {
                 $aInto[] = $aItem['value']->getName();
+                $iId = null;
                 $oObject->_get($aItem['key'], $iId);
                 $aValue[] = (is_null($iId)) ? '\'\'' : '\'' . $babDB->db_escape_string($iId) . '\'';
             }
@@ -112,6 +113,7 @@ class BAB_BaseSet extends BAB_MySqlResultIterator
                 $aInto[] = $sColName;
 
                 $sKey = $aItem['key'];
+                $sValue = null;
                 $oObject->_get($sKey, $sValue);
 
                 $sValue = '\'' . $babDB->db_escape_string($sValue) . '\'';
@@ -1336,7 +1338,6 @@ class BAB_FmFolder extends BAB_FmFolderFile
 
     function setRelativePath($sRelativePath)
     {
-        BAB_FmFolderHelper::sanitizePathname($sPathname);
         $this->_set('sRelativePath', $sRelativePath);
     }
 
@@ -1595,7 +1596,6 @@ class BAB_FmFolderCliboard extends BAB_DbRecord
 
     function setRelativePath($sRelativePath)
     {
-        BAB_FmFolderHelper::sanitizePathname($sPathname);
         $this->_set('sRelativePath', $sRelativePath);
     }
 
@@ -1732,7 +1732,7 @@ class BAB_FolderFile extends BAB_FmFolderFile
      */
     function setPathName($sPathName)
     {
-        BAB_FmFolderHelper::sanitizePathname($sPathname);
+        BAB_FmFolderHelper::sanitizePathname($sPathName);
         $this->_set('sPathName', $sPathName);
     }
 

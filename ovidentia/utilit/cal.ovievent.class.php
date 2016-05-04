@@ -465,6 +465,8 @@ class bab_cal_OviEventUpdate
             $action = $alarm->getProperty('ACTION');
             $trigger = $alarm->getProperty('TRIGGER');
 
+            $m = null;
+            
             if (0 === mb_strpos($trigger, '-P') && preg_match_all('/(?P<value>\d+)(?P<type>[DHM]{1})/', $trigger, $m, PREG_SET_ORDER)) {
 
                 foreach($m as $trigger)
@@ -1344,7 +1346,7 @@ class bab_cal_OviEventSelect
             ";
         }
 
-
+        $hashcollections = array();
         $duplicates_index = array();
 
         $query = $this->getQuery($where);

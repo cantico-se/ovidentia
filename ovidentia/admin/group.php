@@ -23,9 +23,9 @@
 ************************************************************************/
 include_once "base.php";
 require_once dirname(__FILE__).'/../utilit/registerglobals.php';
-include_once $babInstallPath."utilit/grpincl.php";
-include_once $babInstallPath."utilit/fileincl.php";
-include_once $babInstallPath."utilit/grptreeincl.php";
+include_once $GLOBALS['babInstallPath']."utilit/grpincl.php";
+include_once $GLOBALS['babInstallPath']."utilit/fileincl.php";
+include_once $GLOBALS['babInstallPath']."utilit/grptreeincl.php";
 
 
 function groupMembers($id)
@@ -318,10 +318,11 @@ if( !bab_isUserAdministrator() && bab_getCurrentAdmGroup() == 0 )
 	return;
 }
 
-if( !isset($idx))
-	$idx = "Members";
+$idx = bab_rp('idx', 'Members');
+$item = bab_rp('item');
+$names = bab_rp('names');
 
-if( isset($action) && $action == "Yes")
+if( bab_rp('action') == "Yes")
 	{
 	if($idx == "Deletem")
 		{
@@ -332,9 +333,9 @@ if( isset($action) && $action == "Yes")
 			}
 		}
 	}
-elseif(isset($action) && $action=="DeleteG")
+elseif(bab_rp('action')=="DeleteG")
 {
-	if( isset($byes))
+	if( isset($_REQUEST['byes']))
 	{
 		$dgwhat = bab_pp('dgwhat', 0);
 		$idgroup = bab_pp('idgroup', '');
@@ -391,7 +392,7 @@ switch($idx)
 		$babBody->addItemMenu("deldg", bab_translate("Delete"), $GLOBALS['babUrlScript']."?tg=group&idx=deldg&item=".$item);
 		break;
 	case "Deletem":
-			if(!isset($users)) { $users = array();}
+			$users = bab_rp('users', array());
 			if(deleteMembers($users, $item))
 			{
 			$babBody->title = bab_translate("Delete group's members");

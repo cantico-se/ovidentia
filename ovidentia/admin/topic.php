@@ -23,10 +23,10 @@
 ************************************************************************/
 include_once "base.php";
 require_once dirname(__FILE__).'/../utilit/registerglobals.php';
-include_once $babInstallPath."admin/acl.php";
-include_once $babInstallPath."utilit/mailincl.php";
-include_once $babInstallPath."utilit/topincl.php";
-include_once $babInstallPath."utilit/artincl.php";
+include_once $GLOBALS['babInstallPath']."admin/acl.php";
+include_once $GLOBALS['babInstallPath']."utilit/mailincl.php";
+include_once $GLOBALS['babInstallPath']."utilit/topincl.php";
+include_once $GLOBALS['babInstallPath']."utilit/artincl.php";
 
 function listArticles($id)
 	{
@@ -1535,7 +1535,7 @@ if( isset($action) && $action == "Yes")
 	{
 	if( $idx == "Delete" )
 		{
-		include_once $babInstallPath."utilit/delincl.php";
+		include_once $GLOBALS['babInstallPath']."utilit/delincl.php";
 		bab_confirmDeleteTopic($category);
 		bab_sitemap::clearAll();
 		Header("Location: ". $GLOBALS['babUrlScript']."?tg=topcats");
@@ -1543,7 +1543,7 @@ if( isset($action) && $action == "Yes")
 		}
 	else if( $idx == "Deletea")
 		{
-		include_once $babInstallPath."utilit/delincl.php";
+		include_once $GLOBALS['babInstallPath']."utilit/delincl.php";
 		bab_confirmDeleteArticles($items);
 		bab_sitemap::clearAll();
 		Header("Location: ". $GLOBALS['babUrlScript']."?tg=topcats");

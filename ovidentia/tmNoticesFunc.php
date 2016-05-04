@@ -22,7 +22,7 @@
  * USA.																	*
 ************************************************************************/
 	include "base.php";
-	require_once($babInstallPath . 'tmContext.php');
+	require_once($GLOBALS['babInstallPath'] . 'tmContext.php');
 	
 function displayNoticeEventForm()
 {

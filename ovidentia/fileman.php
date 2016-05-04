@@ -758,6 +758,8 @@ class DisplayFolderFormBase extends BAB_BaseFormProcessing
 
     function handleEdition()
     {
+        $sDirName = null;
+        
         $this->get_data('sDirName', $sDirName);
         $this->set_data('sOldDirName', $sDirName);
     }
@@ -779,6 +781,7 @@ class DisplayUserFolderForm extends DisplayFolderFormBase
         parent::handleEdition();
 
         global $BAB_SESS_USERID;
+        $iId = null;
         $this->get_data('iId', $iId);
         $this->set_data('bDelete', (((int) $iId === (int) $BAB_SESS_USERID) ? true : false));
     }
@@ -915,6 +918,11 @@ class DisplayCollectiveFolderForm extends DisplayFolderFormBase
         $this->set_data('sChecked', 'checked');
         $this->set_data('sDisabled', '');
 
+        $iId = null;
+        $sPath = null;
+        $sDirName = null;
+        $iIdFolder = null;
+
         $this->get_data('iId', $iId);
         $this->get_data('sPath', $sPath);
         $this->get_data('sDirName', $sDirName);
@@ -925,12 +933,6 @@ class DisplayCollectiveFolderForm extends DisplayFolderFormBase
 
         $oFileManagerEnv =& getEnvObject();
 
-
-        $manualOdrder = false;
-        $oFirstCollectiveParent = BAB_FmFolderSet::getFirstCollectiveFolder($oFileManagerEnv->sRelativePath);
-        if(!is_null($oFirstCollectiveParent) && $oFirstCollectiveParent->getManualOrder() ){
-            $manualOdrder = true;
-        }
 
         $oFmFolder = $oFmFolder = BAB_FmFolderHelper::getFmFolderById($iIdFolder);
         if(!is_null($oFmFolder))
@@ -943,10 +945,9 @@ class DisplayCollectiveFolderForm extends DisplayFolderFormBase
             $sDisplay				= (string) $oFmFolder->getHide();
             $sAddTags				= (string) $oFmFolder->getAddTags();
             $sDownloadsCapping		= (string) $oFmFolder->getDownloadsCapping();
-            $iMaxDownloads			= (int) $oFmFolder->getMaxDownloads();
             $sDownloadHistory		= (string) $oFmFolder->getDownloadHistory();
-            $bManualOrder			= (bool) $oFmFolder->getManualOrder();
-
+			
+			
             $this->iApprobationSchemeId = $iIdApprobationScheme;
             $this->set_data('isCollective', true);
             $this->set_data('isActive', ('Y' === $sActive) ? true : false);
@@ -963,8 +964,6 @@ class DisplayCollectiveFolderForm extends DisplayFolderFormBase
             $this->set_data('sOldDirName', $oFmFolder->getName());
             $this->set_data('sChecked', '');
 
-            $manualOdrder = $bManualOrder;
-
             if ($oFileManagerEnv->userIsInRootFolder()) {
                 $this->set_data('sDisabled', 'disabled');
             }
@@ -972,7 +971,6 @@ class DisplayCollectiveFolderForm extends DisplayFolderFormBase
         else
         {
             $sDownloadsCapping		= (string) $oFileManagerEnv->oFmFolder->getDownloadsCapping();
-            $iMaxDownloads			= (int) $oFileManagerEnv->oFmFolder->getMaxDownloads();
             $sDownloadHistory		= (string) $oFileManagerEnv->oFmFolder->getDownloadHistory();
 
             $this->set_data('isDownloadsCapping', ('Y' === $sDownloadsCapping) ? true : false);
@@ -1023,21 +1021,21 @@ function listTrashFiles()
     $babBody->title = bab_translate("Trash");
 
     $babBody->addItemMenu("list", bab_translate("Folders"), $GLOBALS['babUrlScript'] .
-        '?tg=fileman&idx=list&id=' . $oFileManagerEnv->iId .
-        '&gr=' . $oFileManagerEnv->sGr . '&path=' . urlencode($oFileManagerEnv->sPath));
+        '?idx=list&id=' . $oFileManagerEnv->iId .
+        '&gr=' . $oFileManagerEnv->sGr . '&path=' . urlencode($oFileManagerEnv->sPath)).'&tg=fileman';
 
     if(canUpload($oFileManagerEnv->sRelativePath))
     {
         $babBody->addItemMenu("add", bab_translate("Upload"), $GLOBALS['babUrlScript'] .
-            '?tg=fileman&idx=displayAddFileForm&id=' . $oFileManagerEnv->iId .
-            '&gr=' . $oFileManagerEnv->sGr . '&path=' . urlencode($oFileManagerEnv->sPath));
+            '?idx=displayAddFileForm&id=' . $oFileManagerEnv->iId .
+            '&gr=' . $oFileManagerEnv->sGr . '&path=' . urlencode($oFileManagerEnv->sPath)).'&tg=fileman';
     }
 
     if(canManage($oFileManagerEnv->sRelativePath))
     {
         $babBody->addItemMenu("trash", bab_translate("Trash"), $GLOBALS['babUrlScript'] .
-            '?tg=fileman&idx=trash&id=' . $oFileManagerEnv->iId .
-            '&gr=' . $oFileManagerEnv->sGr . '&path=' . urlencode($oFileManagerEnv->sPath));
+            '?idx=trash&id=' . $oFileManagerEnv->iId .
+            '&gr=' . $oFileManagerEnv->sGr . '&path=' . urlencode($oFileManagerEnv->sPath)).'&tg=fileman';
     }
 
 
@@ -1154,21 +1152,21 @@ function showDiskSpace()
     $babBody->title = bab_translate("Trash");
 
     $babBody->addItemMenu("list", bab_translate("Folders"), $GLOBALS['babUrlScript'] .
-        '?tg=fileman&idx=list&id=' . $oFileManagerEnv->iId .
-        '&gr=' . $oFileManagerEnv->sGr . '&path=' . urlencode($oFileManagerEnv->sPath));
+        '?idx=list&id=' . $oFileManagerEnv->iId .
+        '&gr=' . $oFileManagerEnv->sGr . '&path=' . urlencode($oFileManagerEnv->sPath)).'&tg=fileman';
 
     if(canUpload($oFileManagerEnv->sRelativePath))
     {
         $babBody->addItemMenu("add", bab_translate("Upload"), $GLOBALS['babUrlScript'] .
-            '?tg=fileman&idx=displayAddFileForm&id=' . $oFileManagerEnv->iId .
-            '&gr=' . $oFileManagerEnv->sGr . '&path=' . urlencode($oFileManagerEnv->sPath));
+            '?idx=displayAddFileForm&id=' . $oFileManagerEnv->iId .
+            '&gr=' . $oFileManagerEnv->sGr . '&path=' . urlencode($oFileManagerEnv->sPath)).'&tg=fileman';
     }
 
     if(canManage($oFileManagerEnv->sRelativePath))
     {
         $babBody->addItemMenu("trash", bab_translate("Trash"), $GLOBALS['babUrlScript'] .
-            '?tg=fileman&idx=trash&id=' . $oFileManagerEnv->iId .
-            '&gr=' . $oFileManagerEnv->sGr . '&path=' . urlencode($oFileManagerEnv->sPath));
+            '?idx=trash&id=' . $oFileManagerEnv->iId .
+            '&gr=' . $oFileManagerEnv->sGr . '&path=' . urlencode($oFileManagerEnv->sPath)).'&tg=fileman';
     }
 
 
@@ -1496,7 +1494,7 @@ function listFiles()
                     $pathString.= '/' . $path;
                 }
 
-                $this->pathLink.= '/<a href="' . bab_toHtml($GLOBALS['babUrlScript'] . "?tg=fileman&idx=list&id=".$iId."&gr=".$sGr."&path=".urlencode($pathString)) . '">' . $path . '</a>';
+                $this->pathLink.= '/<a href="' . bab_toHtml($GLOBALS['babUrlScript'] . "?idx=list&id=".$iId."&gr=".$sGr."&path=".urlencode($pathString).'&tg=fileman') . '">' . $path . '</a>';
             }
             $this->pathLink.= '/'.$lastArray;
 
@@ -1505,15 +1503,15 @@ function listFiles()
                 if($this->pathLink == '/'){
                     $this->pathLink = '/'.bab_translate('Private folder').$this->pathLink;
                 }else{
-                    $this->pathLink = '/<a href="' . bab_toHtml($GLOBALS['babUrlScript'] . "?tg=fileman&idx=list&id=".$iId."&gr=".$sGr."&path=") . '">'.bab_translate('Private folder').'</a>' . $this->pathLink;
+                    $this->pathLink = '/<a href="' . bab_toHtml($GLOBALS['babUrlScript'] . "?idx=list&id=".$iId."&gr=".$sGr."&path=".'&tg=fileman') . '">'.bab_translate('Private folder').'</a>' . $this->pathLink;
                 }
             }
 
             $this->pathLink = '<a href="' . bab_toHtml($GLOBALS['babUrlScript']."?tg=fileman&idx=list") . '">...</a>'.$this->pathLink;
 
             $this->rooturl = bab_toHtml($GLOBALS['babUrlScript']."?tg=fileman&idx=list");
-            $this->refreshurl = bab_toHtml($GLOBALS['babUrlScript']."?tg=fileman&idx=list&id=".$iId."&gr=".$sGr."&path=".urlencode($this->path));
-            $this->urldiskspace = bab_toHtml($GLOBALS['babUrlScript']."?tg=fileman&idx=disk&id=".$iId."&gr=".$sGr."&path=".urlencode($this->path));
+            $this->refreshurl = bab_toHtml($GLOBALS['babUrlScript']."?idx=list&id=".$iId."&gr=".$sGr."&path=".urlencode($this->path).'&tg=fileman');
+            $this->urldiskspace = bab_toHtml($GLOBALS['babUrlScript']."?idx=disk&id=".$iId."&gr=".$sGr."&path=".urlencode($this->path).'&tg=fileman');
 
             $order = $this->order;
 
@@ -1553,7 +1551,7 @@ function listFiles()
             if ($order == 'sNameD') {
                 $this->aFolders = array_reverse($this->aFolders);
             }
-            $this->sAddFolderFormUrl = bab_toHtml($GLOBALS['babUrlScript']."?tg=fileman&idx=displayFolderForm&sFunction=createFolder&id=".$iId."&gr=".$sGr."&path=".urlencode($this->path));
+            $this->sAddFolderFormUrl = bab_toHtml($GLOBALS['babUrlScript']."?idx=displayFolderForm&sFunction=createFolder&id=".$iId."&gr=".$sGr."&path=".urlencode($this->path).'&tg=fileman');
 
             $this->sCutFolderUrl = '#';
             $this->bCutFolderUrl = false;
@@ -1694,13 +1692,13 @@ function listFiles()
                 $this->sFolderFormUrl = bab_toHtml($GLOBALS['babUrlScript'] . '?tg=fileman&idx=displayFolderForm&sFunction=editFolder&id=' . $iIdRootFolder .
                     '&gr=' . $this->oFileManagerEnv->sGr . '&path=' . $sEncodedPath . '&sDirName=' . $sEncodedName . '&iIdFolder=' . $iIdFolder);
 
-                $this->sCutFolderUrl = bab_toHtml($GLOBALS['babUrlScript'] . '?tg=fileman&sAction=cutFolder&id=' . $iIdRootFolder .
-                    '&gr=' . $this->oFileManagerEnv->sGr . '&path=' . $sEncodedPath . '&sDirName=' . $sEncodedName);
+                $this->sCutFolderUrl = bab_toHtml($GLOBALS['babUrlScript'] . '?sAction=cutFolder&id=' . $iIdRootFolder .
+                    '&gr=' . $this->oFileManagerEnv->sGr . '&path=' . $sEncodedPath . '&sDirName=' . $sEncodedName.'&tg=fileman');
 
                 $this->sFolderZipUrl = bab_toHtml($GLOBALS['babUrlScript'] . '?tg=fileman&sAction=zipFolder&id=' . $iIdRootFolder .
                     '&gr=' . $this->oFileManagerEnv->sGr . '&path=' . $sEncodedPath . '&sDirName=' . $sEncodedName . '&iIdFolder=' . $iIdFolder);
 
-                $this->url = bab_toHtml($GLOBALS['babUrlScript'] . '?tg=fileman&idx=list&id=' . $iIdRootFolder . '&gr=' . $sGr . '&path=' . $sUrlEncodedPath);
+                $this->url = bab_toHtml($GLOBALS['babUrlScript'] . '?idx=list&id=' . $iIdRootFolder . '&gr=' . $sGr . '&path=' . $sUrlEncodedPath.'&tg=fileman');
 
                 $this->altbg = !$this->altbg;
                 $this->fname = $aItem['sName'];
@@ -1741,15 +1739,15 @@ function listFiles()
                 $this->sFolderFormUrl = bab_toHtml($GLOBALS['babUrlScript'] . '?tg=fileman&idx=displayFolderForm&sFunction=editFolder&id=' . $iIdRootFolder .
                     '&gr=' . $this->oFileManagerEnv->sGr . '&path=' . $sEncodedPath . '&sDirName=' . $sEncodedName . '&iIdFolder=' . $iIdFolder);
 
-                $this->pasteurl = bab_toHtml($GLOBALS['babUrlScript'] . '?tg=fileman&sAction=pasteFolder&id=' . $iIdRootFolder .
+                $this->pasteurl = bab_toHtml($GLOBALS['babUrlScript'] . '?sAction=pasteFolder&id=' . $iIdRootFolder .
                     '&gr=' . $this->oFileManagerEnv->sGr . '&path=' . urlencode($this->oFileManagerEnv->sPath) .
-                    '&iIdSrcRootFolder=' . $iIdSrcRootFolder . '&sSrcPath=' . $sEncodedSrcPath);
+                    '&iIdSrcRootFolder=' . $iIdSrcRootFolder . '&sSrcPath=' . $sEncodedSrcPath.'&tg=fileman');
 
                 $this->undopasteurl = bab_toHtml($GLOBALS['babUrlScript'] . '?tg=fileman&sAction=undopasteFolder&id=' . $iIdRootFolder .
                     '&gr=' . $this->oFileManagerEnv->sGr . '&path=' . urlencode($this->oFileManagerEnv->sPath) .
                     '&iIdSrcRootFolder=' . $iIdSrcRootFolder . '&sSrcPath=' . $sEncodedSrcPath);
 
-                $this->url = bab_toHtml($GLOBALS['babUrlScript'] . '?tg=fileman&idx=list&id=' . $iIdSrcRootFolder . '&gr=' . $sGr . '&path=' . $sEncodedSrcPath);
+                $this->url = bab_toHtml($GLOBALS['babUrlScript'] . '?idx=list&id=' . $iIdSrcRootFolder . '&gr=' . $sGr . '&path=' . $sEncodedSrcPath.'&tg=fileman');
 
                 $this->altbg = !$this->altbg;
                 $this->fname = $aItem['sName'];
@@ -1991,7 +1989,7 @@ function listFiles()
 
 
     $babBody->title = bab_translate("File manager");
-    $babBody->addItemMenu("list", bab_translate("Folders"), $GLOBALS['babUrlScript']."?tg=fileman&idx=list&id=".$oFileManagerEnv->iId."&gr=".$oFileManagerEnv->sGr."&path=".urlencode($oFileManagerEnv->sPath));
+    $babBody->addItemMenu("list", bab_translate("Folders"), $GLOBALS['babUrlScript']."?idx=list&id=".$oFileManagerEnv->iId."&gr=".$oFileManagerEnv->sGr."&path=".urlencode($oFileManagerEnv->sPath).'&tg=fileman');
 
     if('Y' === $oFileManagerEnv->sGr)
     {
@@ -2004,11 +2002,11 @@ function listFiles()
     $sParentPath = $oFileManagerEnv->sRelativePath;
 
     if(canUpload($sParentPath)) {
-        $babBody->addItemMenu('add', bab_translate("Upload"), $GLOBALS['babUrlScript']."?tg=fileman&idx=displayAddFileForm&id=".$oFileManagerEnv->iId."&gr=".$oFileManagerEnv->sGr."&path=".urlencode($oFileManagerEnv->sPath));
+        $babBody->addItemMenu('add', bab_translate("Upload"), $GLOBALS['babUrlScript']."?idx=displayAddFileForm&id=".$oFileManagerEnv->iId."&gr=".$oFileManagerEnv->sGr."&path=".urlencode($oFileManagerEnv->sPath).'&tg=fileman');
     }
 
     if (haveRightOn($sParentPath, BAB_FMMANAGERS_GROUPS_TBL)) {
-        $babBody->addItemMenu('trash', bab_translate("Trash"), $GLOBALS['babUrlScript']."?tg=fileman&idx=trash&id=".$oFileManagerEnv->iId."&gr=".$oFileManagerEnv->sGr."&path=".urlencode($oFileManagerEnv->sPath));
+        $babBody->addItemMenu('trash', bab_translate("Trash"), $GLOBALS['babUrlScript']."?idx=trash&id=".$oFileManagerEnv->iId."&gr=".$oFileManagerEnv->sGr."&path=".urlencode($oFileManagerEnv->sPath).'&tg=fileman');
     }
 
     $babBody->addJavascriptFile($GLOBALS['babScriptPath'].'prototype/prototype.js');

@@ -615,10 +615,15 @@ class Func_Ovml_Container_ArticlesHomePages extends Func_Ovml_Container
 
     public function setOvmlContext(babOvTemplate $ctx)
     {
-        global $babBody, $babDB;
+        global $babDB;
 
         parent::setOvmlContext($ctx);
-        $arr['id'] = $babBody->babsite['id'];
+        
+        require_once dirname(__FILE__).'/settings.class.php';
+        $settings = bab_getInstance('bab_Settings');
+        /*@var $settings bab_Settings */
+        $site = $settings->getSiteSettings();
+        
         $this->idgroup = $ctx->get_value('type');
         $order = $ctx->get_value('order');
         if( $order === false || $order === '' )
@@ -656,7 +661,15 @@ class Func_Ovml_Container_ArticlesHomePages extends Func_Ovml_Container
 
         $topview = bab_getUserIdObjects(BAB_TOPICSVIEW_GROUPS_TBL);
 
-        $res = $babDB->db_query("select ht.id, at.id_topic, at.restriction from ".BAB_ARTICLES_TBL." at LEFT JOIN ".BAB_HOMEPAGES_TBL." ht on ht.id_article=at.id where ht.id_group='".$babDB->db_escape_string($this->idgroup)."' and ht.id_site='".$arr['id']."' and ht.ordering!='0' and (at.date_publication='0000-00-00 00:00:00' or at.date_publication <= now()) and (date_archiving='0000-00-00 00:00:00' or date_archiving >= now()) GROUP BY at.id order by ".$babDB->db_escape_string($order));
+        $res = $babDB->db_query("select ht.id, at.id_topic, at.restriction from ".BAB_ARTICLES_TBL." at 
+            LEFT JOIN ".BAB_HOMEPAGES_TBL." ht on ht.id_article=at.id 
+            where 
+                ht.id_group='".$babDB->db_escape_string($this->idgroup)."' 
+                and ht.id_site='".$site['id']."' and ht.ordering!='0' 
+                and (at.date_publication='0000-00-00 00:00:00' or at.date_publication <= now()) 
+                and (date_archiving='0000-00-00 00:00:00' or date_archiving >= now()) 
+            GROUP BY at.id order by ".$babDB->db_escape_string($order));
+        
         while($arr = $babDB->db_fetch_array($res))
         {
             if( $arr['restriction'] == '' || bab_articleAccessByRestriction($arr['restriction']) )
@@ -2588,7 +2601,7 @@ class Func_Ovml_Container_Files extends Func_Ovml_Container
 
         if($iLength && '/' === $this->sPath{$iLength - 1})
         {
-            $this->sPath = mb_substr($sEncodedPath, 0, -1);
+            $this->sPath = mb_substr($this->sPath, 0, -1);
         }
 
         $this->sEncodedPath = urlencode($this->sPath);
@@ -5768,6 +5781,7 @@ class Func_Ovml_Container_OvmlArray extends Func_Ovml_Container
         parent::setOvmlContext($ctx);
         $this->name = $ctx->get_value('name');
         $value = $ctx->get_value('value');
+        $m2 = null;
         if( preg_match_all("/(.*?)\[([^\]]+)\]/", $value, $m2) > 0)
         {
             $this->IdEntries = $ctx->get_value($m2[1][0]);
@@ -5832,6 +5846,7 @@ class Func_Ovml_Container_OvmlArrayFields extends Func_Ovml_Container
         parent::setOvmlContext($ctx);
         $this->name = $ctx->get_value('name');
         $value = $ctx->get_value('value');
+        $m2 = null;
         if( preg_match_all("/(.*?)\[([^\]]+)\]/", $value, $m2) > 0)
         {
             $this->IdEntries = $ctx->get_value($m2[1][0]);
@@ -6208,6 +6223,7 @@ class Func_Ovml_Container_Multipages extends Func_Ovml_Container
                     $maxpages = $total_pages;
                 }
 
+            $tmp = array();
             for( $k = 0; $k < $maxpages && $currentpage + $k <= $total_pages; $k++ )
                 {
                 $tmp['CurrentPageNumber'] = $currentpage + $k;
@@ -6851,7 +6867,7 @@ class babOvTemplate
     public function getArgs($str)
     {
     $args = array();
-
+    $mm = null;
     if(preg_match_all("/(\w+)\s*=\s*([\"'])(.*?)\\2/", $this->vars_replace($str), $mm))
         {
         for( $j = 0; $j< count($mm[1]); $j++)
@@ -6902,6 +6918,7 @@ class babOvTemplate
     {
         if( !empty($str) && $str{0} == '(' )
             {
+            $m = null;
             if(preg_match('/\(\s*(.*?)\s*\)(.*)/',$str, $m))
                 {
                 switch($m[1])
@@ -6985,7 +7002,7 @@ class babOvTemplate
         {
         return $txt;
         }
-
+    $m = null;
     if(preg_match_all("/<(".BAB_TAG_FUNCTION."|".BAB_TAG_VARIABLE.")([^\s>]*)\s*(\w+\s*=\s*[\"].*?\")*\s*\/?>/s", $txt, $m))
         {
         for( $i = 0; $i< count($m[1]); $i++)
@@ -6997,6 +7014,7 @@ class babOvTemplate
                     $params = array();
                     $argsStr = $this->vars_replace(trim($m[3][$i]));
 
+                    $mm = null;
                     if($this->match_args($argsStr, $mm))
                         {
                         for( $j = 0; $j< count($mm[1]); $j++)
@@ -7026,6 +7044,7 @@ class babOvTemplate
                     $txt = preg_replace("/".preg_quote($m[0][$i], "/")."/", preg_replace("/\\$[0-9]/", "\\\\$0", $val), $txt);
                     break;
                 case BAB_TAG_VARIABLE:
+                    $m2 = null;
                     if( preg_match_all("/(.*?)\[([^\]]+)\]/", $m[2][$i], $m2) > 0)
                     {
                         //print_r($m2);
@@ -7078,6 +7097,7 @@ class babOvTemplate
 
     public function handle_text($txt)
     {
+    $m = null;
     if(preg_match_all("/(.*?)<".BAB_TAG_CONTAINER."([^\s]*)\s*(\w+\s*=\s*[\"].*?\")*\s*(\w*)\s*>(.*?)<\/".BAB_TAG_CONTAINER."\\2\s*\\4\s*>(.*)/s", $txt, $m))
         {
         $out = '';
@@ -8414,10 +8434,12 @@ class Func_Ovml_Function_FileTree extends Func_Ovml_Function {
     private function getChildTree($relativePath = '')
     {
         global $babDB;
-        $nextFolder = '';
-        $currentFolder = '';
+
         $return = '';
         $child = '';
+        
+        $iIdRootFolder = null;
+        $oFmFolder = null;
 
         BAB_FmFolderHelper::getInfoFromCollectivePath($this->path.$relativePath, $iIdRootFolder, $oFmFolder);
         $rPath = new bab_Path(realpath(BAB_FileManagerEnv::getCollectivePath($this->delegation)), $this->path, $relativePath);

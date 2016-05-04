@@ -25,12 +25,12 @@
 * @internal SEC1 NA 08/12/2006 FULL
 */
 include 'base.php';
-include_once $babInstallPath.'utilit/uiutil.php';
-include_once $babInstallPath.'utilit/mailincl.php';
-include_once $babInstallPath.'utilit/topincl.php';
-include_once $babInstallPath.'utilit/artincl.php';
-include_once $babInstallPath.'utilit/urlincl.php';
-require_once $babInstallPath.'utilit/tree.php';
+include_once $GLOBALS['babInstallPath'].'utilit/uiutil.php';
+include_once $GLOBALS['babInstallPath'].'utilit/mailincl.php';
+include_once $GLOBALS['babInstallPath'].'utilit/topincl.php';
+include_once $GLOBALS['babInstallPath'].'utilit/artincl.php';
+include_once $GLOBALS['babInstallPath'].'utilit/urlincl.php';
+require_once $GLOBALS['babInstallPath'].'utilit/tree.php';
 require_once dirname(__FILE__) . '/utilit/tagApi.php';
 
 
@@ -828,7 +828,7 @@ function artedit_init()
 
     static $aredit = array();
 
-    if (empty($arrinit))
+    if (empty($aredit))
     {
         $aredit['articles'] = false;
         $aredit['trash'] = false;

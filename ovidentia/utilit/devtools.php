@@ -279,6 +279,7 @@ class bab_synchronizeSql
 
 	function getCreateQueries()
 	{
+	    $m = null;
 		if (preg_match_all("/CREATE\s+TABLE\s+`(.*?)`\s+\((.*?)\;/s", $this->fileContent, $m)) {
 			for ($k = 0; $k < count($m[1]); $k++ )
 				{
@@ -287,7 +288,8 @@ class bab_synchronizeSql
 
 				$field = array();
 				$keys = array();
-
+                $n = null;
+                
 				preg_match_all("/(.*?)[\s|\(]`(.*?)`.*/", $fields, $n);
 
 				for ($l = 0; $l < count($n[2]); $l++ )
@@ -710,6 +712,7 @@ class bab_synchronizeSql
 	public function alterTables()
 	{
 		global $babDB;
+		$m = null;
 		if (preg_match_all("/ALTER\s+TABLE\s+`(.*?)`\s+[^;]+\;/s", $this->fileContent, $m))
 			{
 			for ($k = 0; $k < count($m[0]); $k++ )
@@ -781,6 +784,7 @@ function bab_execSqlFile($file, $fileEncoding = null) {
 	
 	// match sql query, split with ; but ignore ; in content strings
 	$reg = "/\w(?:[^';]*'(?:[^']|\\\\'|'')*')*[^';]*;/";
+	$m = null;
 	if (preg_match_all($reg, $content, $m)) {
 		for ($k = 0; $k < count($m[0]); $k++ ) {
 			$query = trim($m[0][$k]);

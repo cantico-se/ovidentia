@@ -598,7 +598,7 @@ if( '' != ($conf = bab_rp('conf')))
 switch($idx)
 {
 	case "unload":
-		include_once $babInstallPath."utilit/uiutil.php";
+		include_once $GLOBALS['babInstallPath']."utilit/uiutil.php";
 		popupUnload(bab_translate("Update done"), $GLOBALS['babUrlScript']."?tg=approb&idx=all");
 		exit;
 		

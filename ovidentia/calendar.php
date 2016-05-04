@@ -28,8 +28,8 @@
 
 include_once 'base.php';
 require_once dirname(__FILE__).'/utilit/registerglobals.php';
-include_once $babInstallPath.'utilit/calincl.php';
-include_once $babInstallPath.'utilit/evtincl.php';
+include_once $GLOBALS['babInstallPath'].'utilit/calincl.php';
+include_once $GLOBALS['babInstallPath'].'utilit/evtincl.php';
 
 
 
@@ -191,7 +191,7 @@ class displayAttendeesCls extends displayEventCls
 			{
 				$partstat = $arr['PARTSTAT'];
 			}
-			
+
 			$this->external = !$arr['AttendeeBackend']->canView();
 
 			if (isset($this->statusdef[$partstat]))
@@ -247,7 +247,7 @@ class displayAttendeesCls extends displayEventCls
 		{
 			return false;
 		}
-		
+
 		require_once dirname(__FILE__).'/utilit/wfincl.php';
 		$approvers = bab_WFGetWaitingApproversInstance($idfai);
 		$id_user = bab_getUserId();
@@ -470,7 +470,7 @@ class displayEventCls
 	public function __construct($evtid, $dtstart, $idcal)
 	{
 		global $babBody;
-		
+
 		$this->evtid = $evtid;
 		$this->dtstart = $dtstart;
 
@@ -491,7 +491,7 @@ class displayEventCls
 	 *
 	 * @param string $evtid
 	 * @param string $dtstart
-	 * 
+	 *
 	 * @return bab_CalendarPeriod
 	 */
 	protected function getPeriod()
@@ -501,7 +501,7 @@ class displayEventCls
 
 			$backend = self::$calendar->getBackend();
 			self::$calendarPeriod = $backend->getPeriod($backend->CalendarEventCollection(self::$calendar), $this->evtid, $this->dtstart);
-			
+
 			if (isset(self::$calendarPeriod))
 			{
 				self::$calendarPeriod->updateCopies();
@@ -615,7 +615,7 @@ class displayEventDetailCls extends displayEventCls
 					$this->updateauthor = bab_toHtml(bab_getUserName($data['id_modifiedby']));
 			}
 		}
-		
+
 		$this->doms = bab_getDomains($calendarPeriod->getProperty('X-CTO-DOMAIN'), true);
 	}
 
@@ -770,6 +770,8 @@ class displayEventAlertCls extends displayEventCls
 
 			$action = $alarm->getProperty('ACTION');
 			$trigger = $alarm->getProperty('TRIGGER');
+			
+			$m = null;
 
 			if (0 === mb_strpos($trigger, '-P') && preg_match_all('/(?P<value>\d+)(?P<type>[DHM]{1})/', $trigger, $m, PREG_SET_ORDER)) {
 
@@ -984,7 +986,7 @@ function displayEventDetailUpd($evtid, $dtstart, $idcal)
 		$alert = new displayEventAlertCls($evtid, $dtstart, $idcal);
 		$html.=$notes->getHtml().$alert->getHtml();
 	}
-	
+
 	$babBody->babPopup($html);
 }
 
@@ -993,7 +995,7 @@ function displayEventDetailUpd($evtid, $dtstart, $idcal)
  * Approbation page for one public or resource calendar link to an event (recurring or not)
  * @return unknown_type
  */
-function approbCalendar($evtid, $dtstart, $idcal, $relation, $dtstart)
+function approbCalendar($evtid, $dtstart, $idcal, $relation)
 {
 	require_once dirname(__FILE__).'/utilit/urlincl.php';
 	if (isset($_POST['approbstatus']))
@@ -1097,9 +1099,13 @@ include_once $GLOBALS['babInstallPath']."utilit/uiutil.php";
 			$this->t_notetxt = bab_translate("Personal notes");
 
 			$last_ts = 0;
+			
+			$sortvalue = array();
 
 			foreach ($idcals as $idcal)
 				{
+				    $calPeriod = null;
+				    
 				//$this->mcals->getNextEvent return the event to the variable $calPeriod
 				while ($this->mcals->getNextEvent($idcal, $this->from, $this->to, $calPeriod))
 					{
@@ -1189,6 +1195,8 @@ include_once $GLOBALS['babInstallPath']."utilit/uiutil.php";
 
 				bab_sort::asort($sortvalue);
 				reset($sortvalue);
+				
+				$new_array = array();
 
 				while (list ($arr_key, $arr_val) = each ($sortvalue)) {
 						 $new_array[$arr_key] = $this->resevent[$arr_key];
@@ -1379,7 +1387,7 @@ function updateEventAlert()
 	}
 
 	$alarm = $calendarPeriod->getAlarm();
-	if (!isset($alam))
+	if (!isset($alarm))
 	{
 		$alarm = $backend->CalendarAlarm();
 
@@ -1477,7 +1485,7 @@ if( isset($_REQUEST['conf']) )
 switch($idx)
 	{
 	case "unload":
-		include_once $babInstallPath."utilit/uiutil.php";
+		include_once $GLOBALS['babInstallPath']."utilit/uiutil.php";
 		$popupmessage = bab_translate("Your event has been updated");
 		if( isset($reload)) {
 			$autoclose = false;
@@ -1535,8 +1543,7 @@ switch($idx)
 			bab_rp('evtid'),
 			bab_rp('dtstart'),
 			bab_rp('idcal'),
-			bab_rp('relation'),
-			bab_rp('dtstart')
+			bab_rp('relation')
 		);
 		break;
 

@@ -23,7 +23,7 @@
 ************************************************************************/
 include_once "base.php";
 require_once dirname(__FILE__).'/../utilit/registerglobals.php';
-include_once $babInstallPath."utilit/grptreeincl.php";
+include_once $GLOBALS['babInstallPath']."utilit/grptreeincl.php";
 
 function groupCreateMod()
 	{
@@ -317,7 +317,6 @@ function groupsOptions()
 
 			if( bab_isUserAdministrator() && bab_getCurrentAdmGroup() == 0 )
 				{
-				$this->bdgmail = true;
 				$this->bdgnotes = true;
 				$this->bdgcontacts = true;
 				$this->bpcalendar = true;
@@ -325,10 +324,6 @@ function groupsOptions()
 				}
 			else
 				{
-				if( bab_isDelegated('mails') )
-					$this->bdgmail = true;
-				else
-					$this->bdgmail = false;
 
 				$this->bdgnotes = true;
 				$this->bdgcontacts = true;
@@ -354,10 +349,7 @@ function groupsOptions()
 				$this->burl = true;
 				$this->grpid = $this->arr['id'];
 
-				if( $this->arr['mail'] == "Y")
-					$this->mailcheck = "checked";
-				else
-					$this->mailcheck = "";
+				
 				if( $this->arr['notes'] == "Y")
 					$this->notescheck = "checked";
 				else
@@ -578,14 +570,14 @@ if( isset($_POST['add']))
 		}
 	}
 
-if( isset($update) && $update == "options")
+if( bab_rp('update') == "options")
 	{
-	if (!isset($mailgrpids)) $mailgrpids = array();
-	if (!isset($notgrpids)) $notgrpids = array();
-	if (!isset($congrpids)) $congrpids = array();
-	if (!isset($pdsgrpids)) $pdsgrpids = array();
-	if (!isset($pcalgrpids)) $pcalgrpids = array();
-	if (!isset($calperids)) $calperids = array();
+    $mailgrpids = bab_rp('mailgrpids', array());
+    $notgrpids = bab_rp('notgrpids', array());
+    $congrpids = bab_rp('congrpids', array());
+    $pdsgrpids = bab_rp('pdsgrpids', array());
+    $pcalgrpids = bab_rp('pcalgrpids',array());
+
 	saveGroupsOptions($mailgrpids, $notgrpids, $congrpids, $pdsgrpids, $pcalgrpids);
 	}
 
@@ -606,7 +598,7 @@ switch($idx)
 	case "brow": 
 		// Used by add-ons and deprecated after 6.1.0 for security reasons
 		// user must be admin
-		include_once $babInstallPath."utilit/grpincl.php";
+		include_once $GLOBALS['babInstallPath']."utilit/grpincl.php";
 		browseGroups(bab_gp('cb'));
 		exit;
 		break;

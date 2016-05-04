@@ -23,9 +23,9 @@
 ************************************************************************/
 include_once 'base.php';
 require_once dirname(__FILE__).'/../utilit/registerglobals.php';
-include_once $babInstallPath.'admin/acl.php';
-include_once $babInstallPath.'utilit/dirincl.php';
-include_once $babInstallPath.'utilit/forumincl.php';
+include_once $GLOBALS['babInstallPath'].'admin/acl.php';
+include_once $GLOBALS['babInstallPath'].'utilit/dirincl.php';
+include_once $GLOBALS['babInstallPath'].'utilit/forumincl.php';
 
 function modifyForum($id)
 	{
@@ -277,16 +277,25 @@ if( !bab_isUserAdministrator() && !bab_isDelegated('forums'))
 }
 
 
-
-if(!isset($idx))
-	{
-	$idx = "Modify";
-	}
+$idx = bab_rp('idx', 'Modify');
+$update = bab_rp('update', null);
+$submit = bab_rp('submit', null);
+$bdelete = bab_rp('bdelete', null);
+$item = bab_rp('item');
+$category = bab_rp('category');
 
 if( isset($update) && $update == "updateforum")
 	{
 	if( isset($submit))
 		{
+		    
+		    $fname = bab_rp('fname');
+		    $description = bab_rp('description');
+		    $moderation = bab_rp('moderation');
+		    $notification = bab_rp('notification');
+		    $nbmsgdisplay = bab_rp('nbmsgdisplay');
+		    $active = bab_rp('active');
+		    
 		updateForum($item, $fname, $description, $moderation, $notification, $nbmsgdisplay, $active);
 		}
 	elseif( isset($bdelete))
@@ -297,19 +306,20 @@ if( isset($update) && $update == "updateforum")
 
 if( isset($update) && $update == "displayfield")
 	{
+	    $listfd = bab_rp('listfd');
 	updateForumFields($item, $listfd);
 	Header("Location: ". $GLOBALS['babUrlScript']."?tg=forums&idx=List");
 	}
 	
 
-if( isset($aclview))
+if( isset($_REQUEST['aclview']))
 	{
 	maclGroups();
 	Header("Location: ". $GLOBALS['babUrlScript']."?tg=forums&idx=list");
 	exit;
 	}
 
-if( isset($action) && $action == "Yes")
+if( bab_rp('action') == "Yes")
 	{
 	confirmDeleteForum($category);
 	Header("Location: ". $GLOBALS['babUrlScript']."?tg=forums&idx=List");
@@ -365,5 +375,3 @@ switch($idx)
 		break;
 	}
 $babBody->setCurrentItemMenu($idx);
-
-?>
