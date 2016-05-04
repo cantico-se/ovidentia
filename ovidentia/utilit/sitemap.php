@@ -1025,68 +1025,188 @@ class bab_siteMapItem {
 
         return $this;
     }
+    
+    
 
-    /**
-     * get array of rights
-     * keys can be 'create', 'read', 'update', 'delete'
-     * the default value is array('read' => true) because the node is not in sitemap when not readable
-     * @see self::getRights()
-     * @var array
-     */
-    public function getRights()
-    {
-        $item = $this->getTarget();
-        
-        if (!isset($item->rights)) {
-            return array(
-                'read' => true
-            );
-        }
-        
-        return $item->rights;
-    }
-    
-    /**
-     * Generic method to test custom right
-     * @return bool
-     */
-    public function canDo($right)
-    {
-        $rights = $this->getRights();
-        if (!isset($rights[$right])) {
-            return false;
-        }
-        
-        return $rights[$right];
-    }
     
     
     
     /**
+     * Test if a sub-node can be created
      * @return bool
      */
     public function canCreate()
     {
-        return $this->canDo('create');
+        $target = $this->getTarget();
+        
+        if (isset($target)) {
+            return $target->canCreate();
+        }
+
+        return bab_isAccessValid('smed_node_create_groups', $this->id_function);
     }
     
+    /**
+     * Test if the node is readable
+     * this method should not be used for all nodes, only the nodes with a right form 
+     * in sitemap_editor
+     * 
+     * @return bool
+     */
+    public function canRead()
+    {
+        $target = $this->getTarget();
+        
+        if (isset($target)) {
+            return $target->canRead();
+        }
+        
+        return bab_isAccessValid('smed_node_read_groups', $this->id_function);
+    }
     
     /**
      * @return bool
      */
     public function canUpdate()
     {
-        return $this->canDo('update');
+        $target = $this->getTarget();
+        
+        if (isset($target)) {
+            return $target->canUpdate();
+        }
+        
+        return bab_isAccessValid('smed_node_update_groups', $this->id_function);
     }
-    
     
     /**
      * @return bool
      */
     public function canDelete()
     {
-        return $this->canDo('delete');
+        $target = $this->getTarget();
+        
+        if (isset($target)) {
+            return $target->canDelete();
+        }
+        
+        return bab_isAccessValid('smed_node_delete_groups', $this->id_function);
     }
+    
+    
+    
+    
+    
+    private function getRightString($table)
+    {
+        require_once $GLOBALS['babInstallPath'].'admin/acl.php';
+        return aclGetRightsString($table, $this->id_function);
+    }
+    
+    private function setRightString($table, $value)
+    {
+        require_once $GLOBALS['babInstallPath'].'admin/acl.php';
+        return aclSetRightsString($table, $this->id_function, $value);
+    }
+    
+    public function getCreate()
+    {
+        return $this->getRightString('smed_node_create_groups');
+    }
+    
+    public function setCreate($value)
+    {
+        return $this->setRightString('smed_node_create_groups', $value);
+    }
+    
+    public function getRead()
+    {
+        return $this->getRightString('smed_node_read_groups');
+    }
+    
+    public function setRead($value)
+    {
+        return $this->setRightString('smed_node_read_groups', $value);
+    }
+    
+    public function getUpdate()
+    {
+        return $this->getRightString('smed_node_update_groups');
+    }
+    
+    public function setUpdate($value)
+    {
+        return $this->setRightString('smed_node_update_groups', $value);
+    }
+    
+    
+    public function getDelete()
+    {
+        return $this->getRightString('smed_node_delete_groups');
+    }
+    
+    public function setDelete($value)
+    {
+        return $this->setRightString('smed_node_delete_groups', $value);
+    }
+    
+    /**
+     * Get an array with acess rights as boolean
+     * @return array
+     */
+    public function getAccessRights()
+    {
+        return array(
+            'create' => $this->canCreate(),
+            'read'   => $this->canRead(),
+            'update' => $this->canUpdate(),
+            'delete' => $this->canDelete()
+        );
+    }
+    
+    /**
+     * Get rights as an array of string suitable for widget acl
+     * keys can be 'create', 'read', 'update', 'delete'
+     * if there is a target, rights of target is used
+     * 
+     * @return array
+     */
+    public function getRights()
+    {
+        return array(
+                'create' => $this->getCreate(),
+                'read'   => $this->getRead(),
+                'update' => $this->getUpdate(),
+                'delete' => $this->getDelete()
+        );
+    }
+    
+    /**
+     * Set rights strings from an array provided by a form with widget acl
+     * @param array $rights
+     */
+    public function setRights(Array $rights)
+    {
+        if (isset($rights['create'])) {
+            $this->setCreate($rights['create']);
+        }
+    
+        if (isset($rights['read'])) {
+            $this->setRead($rights['read']);
+        }
+    
+        if (isset($rights['update'])) {
+            $this->setUpdate($rights['update']);
+        }
+    
+        if (isset($rights['delete'])) {
+            $this->setDelete($rights['delete']);
+        }
+    }
+    
+    
+    
+
+    
     
     
 

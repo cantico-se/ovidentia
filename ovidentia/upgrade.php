@@ -7187,6 +7187,66 @@ function ovidentia_upgrade($version_base,$version_ini) {
         $functionalities->copyToParent('Archive/Zip/ZipArchive');
     }
     
+    
+    
+    
+    /**
+     * Upgrade to 8.4.91
+     */
+    
+    
+    
+    if (!bab_isTable('bab_sitemap_node_create_groups')) {
+        $babDB->db_query("
+            CREATE TABLE `bab_sitemap_node_create_groups` (
+            `id` int(11) unsigned         NOT NULL AUTO_INCREMENT,
+            `id_object` varchar(64)       NOT NULL default '',
+            `id_group` int(11) unsigned   NOT NULL,
+            PRIMARY KEY (`id`),
+            KEY `id_object` (`id_object`),
+            KEY `id_group` (`id_group`)
+            )
+        ");
+    }
+    
+    if (!bab_isTable('bab_sitemap_node_read_groups')) {
+        $babDB->db_query("
+            CREATE TABLE `bab_sitemap_node_read_groups` (
+            `id` int(11) unsigned         NOT NULL AUTO_INCREMENT,
+            `id_object` varchar(64)       NOT NULL default '',
+            `id_group` int(11) unsigned   NOT NULL,
+            PRIMARY KEY (`id`),
+            KEY `id_object` (`id_object`),
+            KEY `id_group` (`id_group`)
+            )
+        ");
+    }
+    
+    if (!bab_isTable('bab_sitemap_node_update_groups')) {
+        $babDB->db_query("
+            CREATE TABLE `bab_sitemap_node_update_groups` (
+            `id` int(11) unsigned         NOT NULL AUTO_INCREMENT,
+            `id_object` varchar(64)       NOT NULL default '',
+            `id_group` int(11) unsigned   NOT NULL,
+            PRIMARY KEY (`id`),
+            KEY `id_object` (`id_object`),
+            KEY `id_group` (`id_group`)
+            )
+        ");
+    }
+    
+    if (!bab_isTable('bab_sitemap_node_delete_groups')) {
+        $babDB->db_query("
+            CREATE TABLE `bab_sitemap_node_delete_groups` (
+            `id` int(11) unsigned         NOT NULL AUTO_INCREMENT,
+            `id_object` varchar(64)       NOT NULL default '',
+            `id_group` int(11) unsigned   NOT NULL,
+            PRIMARY KEY (`id`),
+            KEY `id_object` (`id_object`),
+            KEY `id_group` (`id_group`)
+            )
+        ");
+    }
 
     return true;
 

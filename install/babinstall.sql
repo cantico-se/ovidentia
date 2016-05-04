@@ -4095,6 +4095,50 @@ CREATE TABLE bab_sitemap_profile_versions (
 );
 
 
+
+
+CREATE TABLE `bab_sitemap_node_create_groups` (
+  `id` int(11) unsigned         NOT NULL AUTO_INCREMENT,
+  `id_object` varchar(64)       NOT NULL default '',
+  `id_group` int(11) unsigned   NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `id_object` (`id_object`),
+  KEY `id_group` (`id_group`)
+);
+
+
+CREATE TABLE `bab_sitemap_node_read_groups` (
+  `id` int(11) unsigned         NOT NULL AUTO_INCREMENT,
+  `id_object` varchar(64)       NOT NULL default '',
+  `id_group` int(11) unsigned   NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `id_object` (`id_object`),
+  KEY `id_group` (`id_group`)
+);
+
+
+CREATE TABLE `bab_sitemap_node_update_groups` (
+  `id` int(11) unsigned         NOT NULL AUTO_INCREMENT,
+  `id_object` varchar(64)       NOT NULL default '',
+  `id_group` int(11) unsigned   NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `id_object` (`id_object`),
+  KEY `id_group` (`id_group`)
+);
+
+
+CREATE TABLE `bab_sitemap_node_delete_groups` (
+  `id` int(11) unsigned         NOT NULL AUTO_INCREMENT,
+  `id_object` varchar(64)       NOT NULL default '',
+  `id_group` int(11) unsigned   NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `id_object` (`id_object`),
+  KEY `id_group` (`id_group`)
+);
+
+
+
+
 # --------------------------------------------------------
 #
 # Structure de la table 'bab_dg_categories'
