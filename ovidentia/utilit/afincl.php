@@ -270,13 +270,20 @@ class bab_UserUnavailability
 	 */
 	public static function get($id_user)
 	{
-		global $babBody, $babDB;
+	    require_once dirname(__FILE__).'/settings.class.php';
+	    $settings = bab_getInstance('bab_Settings');
+	    /*@var $settings bab_Settings */
+	    $site = $settings->getSiteSettings();
+	    
+		global $babDB;
+		
+		
 		$substitutes = array(
 			0 => array(),
 			1 => array()
 		);
 		
-		if('Y' === $babBody->babsite['change_unavailability']) 
+		if('Y' === $site['change_unavailability']) 
 		{
 			$res = $babDB->db_query("select id_user, id_substitute from ".BAB_USERS_UNAVAILABILITY_TBL." where curdate() between start_date and end_date");
 			if( $res && $babDB->db_num_rows($res) > 0 )
