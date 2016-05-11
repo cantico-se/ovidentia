@@ -1601,23 +1601,18 @@ $iNbSeconds = 2 * 86400; //2 jours
 require_once dirname(__FILE__) . '/utilit/artincl.php';
 bab_PublicationImageUploader::deleteOutDatedTempImage($iNbSeconds);
 
+$idx = bab_rp('idx', 'list');
+$item = bab_rp('item', null);
 
-if(!isset($idx))
-	{
-	$idx = "list";
-	}
-
-if( isset($item) && bab_isUserTopicManager($item) )
-{
+if( isset($item) && bab_isUserTopicManager($item) ) {
 	$manager = true;
 }
-else
-{
+else {
 	$manager = false;
 }
 
 
-if( isset($upart) && $upart == "articles" && $manager)
+if("articles" === bab_rp('upart') && $manager)
 	{
 	if (isset($_POST['action']))
 		switch($_POST['action'])
@@ -1657,51 +1652,52 @@ if( isset($upart) && $upart == "articles" && $manager)
 		unarchiveArticles($_POST['item'], $_POST['aart']);
 		}
 	}
-elseif( isset($delf) && $delf == "file" && $manager)
+elseif("file" === bab_rp('delf') && $manager)
 	{
 	delDocumentArticle($idf);
 	Header("Location: ". $GLOBALS['babUrlScript']."?tg=topman&idx=viewa&item=".$item."&art=".$art);
+	exit;
 	}
-elseif( isset($delc) && $delc== "com" && $manager)
+elseif("com" === bab_rp('delc') && $manager)
 	{
 	include_once $GLOBALS['babInstallPath']."utilit/delincl.php";
 	bab_deleteComment($idc);
 	Header("Location: ". $GLOBALS['babUrlScript']."?tg=topman&idx=viewa&item=".$item."&art=".$art);
+	exit;
 	}
-elseif( isset($update)  && $manager)
+elseif( bab_rp('update')  && $manager)
 	{
-	if( $update == "order" )
+	if("order" === bab_rp('update') )
 		{
-		saveOrderArticles($item, $listarts);
+		saveOrderArticles($item, bab_rp('listarts'));
 		}
-	elseif( $update == "propa" )
+	elseif("propa" === bab_rp('update') )
 		{
-		saveArticleProperties($item, $idart);
+		saveArticleProperties($item, bab_rp('idart'));
 		$idx='unload';
 		$popupmessage = bab_translate("Update done");
 		$refreshurl = $GLOBALS['babUrlScript']."?tg=topman&idx=Articles&item=".$item;
 		}
 	}
-elseif( isset($updateh)  && bab_isAccessValid(BAB_SITES_HPMAN_GROUPS_TBL, $babBody->babsite['id']))
+elseif( bab_rp('updateh') && bab_isAccessValid(BAB_SITES_HPMAN_GROUPS_TBL, $babBody->babsite['id']))
 	{
-	if( $updateh == "homepage0" )
+	if( "homepage0" === bab_rp('updateh') )
 		{
-		if( !isset($listpage0)) { $listpage0 = array();}
-		siteUpdateHomePage0($item, $listpage0);
+		siteUpdateHomePage0($item, bab_rp('listpage0', array()));
 		}
-	else if( $updateh == "homepage1" )
+	else if( "homepage1" === bab_rp('updateh') )
 		{
-		if( !isset($listpage1)) { $listpage1 = array();}
-		siteUpdateHomePage1($item, $listpage1);
+		siteUpdateHomePage1($item, bab_rp('listpage1', array()));
 		}
 	Header("Location: ". $GLOBALS['babUrlScript']."?tg=topman&idx=list");
+	exit;
 	}
 
 switch($idx)
 	{
 	case "rmdraft":
 		$art = bab_gp('art', '');
-		if( $manager && $art != '' )
+		if ( $manager && $art != '' )
 		{
 			bab_removeDraft($art);
 		}
@@ -1711,46 +1707,40 @@ switch($idx)
 		}
 		exit;
 		break;
+		
 	case "unload":
-		if( !isset($popupmessage)) { $popupmessage ='';}
-		if( !isset($refreshurl)) { $refreshurl ='';}
-		popupUnload($popupmessage, $refreshurl);
+		popupUnload(bab_rp('popupmessage'), bab_rp('refreshurl'));
 		exit;
+		
 	case "getf":
-		if( $manager )
-		{
-		bab_getDocumentArticle( $idf );
+		if ( $manager ) {
+		    bab_getDocumentArticle( bab_rp('idf'));
 		}
-		else
-		{
+		else {
 			echo bab_translate("Access denied");
 		}
 		exit;
 		break;
 
 	case "viewa":
-		if( $manager )
-		{
-		viewArticle($art);
+		if ( $manager ) {
+		    viewArticle(bab_rp('art'));
 		}
-		else
-		{
+		else {
 			echo bab_translate("Access denied");
 		}
 		exit;
 
 
 	case 'history';
-		if( $manager )
-		{
+		if ( $manager ) {
 			$babBody->setTitle = bab_translate("Article history");
-			$babBody->addItemMenu("propa", bab_translate("Properties"), $GLOBALS['babUrlScript']."?tg=topman&idx=propa&item=".$item."&art=".$art);
-			$babBody->addItemMenu("history", bab_translate("History"), $GLOBALS['babUrlScript']."?tg=topman&idx=history&item=".$item."&art=".$art);
+			$babBody->addItemMenu("propa", bab_translate("Properties"), $GLOBALS['babUrlScript']."?tg=topman&idx=propa&item=".$item."&art=".bab_rp('art'));
+			$babBody->addItemMenu("history", bab_translate("History"), $GLOBALS['babUrlScript']."?tg=topman&idx=history&item=".$item."&art=".bab_rp('art'));
 			$babBody->setCurrentItemMenu($idx);
-			viewArticleHistory($art);
+			viewArticleHistory(bab_rp('art'));
 		}
-		else
-		{
+		else {
 			echo bab_translate("Access denied");
 		}
 		exit;
@@ -1760,10 +1750,10 @@ switch($idx)
 		if( $manager )
 		{
 			$babBody->setTitle = bab_translate("Article properties");
-			$babBody->addItemMenu("propa", bab_translate("Properties"), $GLOBALS['babUrlScript']."?tg=topman&idx=propa&item=".$item."&art=".$art);
-			$babBody->addItemMenu("history", bab_translate("History"), $GLOBALS['babUrlScript']."?tg=topman&idx=history&item=".$item."&art=".$art);
+			$babBody->addItemMenu("propa", bab_translate("Properties"), $GLOBALS['babUrlScript']."?tg=topman&idx=propa&item=".$item."&art=".bab_rp('art'));
+			$babBody->addItemMenu("history", bab_translate("History"), $GLOBALS['babUrlScript']."?tg=topman&idx=history&item=".$item."&art=".bab_rp('art'));
 			$babBody->setCurrentItemMenu($idx);
-			viewArticleProperties( $item, $art );
+			viewArticleProperties( $item, bab_rp('art'));
 		}
 		else
 		{
@@ -1776,10 +1766,10 @@ switch($idx)
 		if( $manager && $arrinit['nbonline'] > 0)
 		{
 		$babBody->title = bab_translate("Delete articles");
-		deleteArticles($art, $item);
+		deleteArticles(bab_rp('art'), $item);
 		$babBody->addItemMenu("list", bab_translate("Topics"), $GLOBALS['babUrlScript']."?tg=topman");
 		$babBody->addItemMenu("Articles", bab_translate("Articles"), $GLOBALS['babUrlScript']."?tg=topman&idx=Articles&item=".$item);
-		$babBody->addItemMenu("deletea", bab_translate("Delete"), $GLOBALS['babUrlScript']."?tg=topman&idx=deletea&art=".$art);
+		$babBody->addItemMenu("deletea", bab_translate("Delete"), $GLOBALS['babUrlScript']."?tg=topman&idx=deletea&art=".bab_rp('art'));
 		if( $arrinit['nbarchive'] > 0)
 			{
 			$babBody->addItemMenu("alist", bab_translate("Archives"), $GLOBALS['babUrlScript']."?tg=topman&idx=alist&item=".$item);
@@ -1885,7 +1875,7 @@ switch($idx)
 		$babBody->addItemMenu("list", bab_translate("Topics"), $GLOBALS['babUrlScript']."?tg=topman");
 		if( bab_isAccessValid(BAB_SITES_HPMAN_GROUPS_TBL, $babBody->babsite['id']) )
 			{
-			siteHomePage1($ids);
+			siteHomePage1(bab_rp('ids'));
 			$babBody->addItemMenu("hpriv", bab_translate("Private home page"),$GLOBALS['babUrlScript']."?tg=topman&idx=hpriv&ids=".$babBody->babsite['id']);
 			$babBody->addItemMenu("hpub", bab_translate("Public home page"),$GLOBALS['babUrlScript']."?tg=topman&idx=hpub&ids=".$babBody->babsite['id']);
 			}
@@ -1904,7 +1894,7 @@ switch($idx)
 		$babBody->addItemMenu("list", bab_translate("Topics"), $GLOBALS['babUrlScript']."?tg=topman");
 		if( bab_isAccessValid(BAB_SITES_HPMAN_GROUPS_TBL, $babBody->babsite['id']) )
 			{
-			siteHomePage0($ids);
+			siteHomePage0(bab_rp('ids'));
 			$babBody->addItemMenu("hpriv", bab_translate("Private home page"),$GLOBALS['babUrlScript']."?tg=topman&idx=hpriv&ids=".$babBody->babsite['id']);
 			$babBody->addItemMenu("hpub", bab_translate("Public home page"),$GLOBALS['babUrlScript']."?tg=topman&idx=hpub&ids=".$babBody->babsite['id']);
 			}
@@ -1929,4 +1919,3 @@ switch($idx)
 	}
 $babBody->setCurrentItemMenu($idx);
 bab_siteMap::setPosition('bab','UserArticlesMan');
-?>
