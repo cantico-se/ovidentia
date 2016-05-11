@@ -1041,7 +1041,7 @@ class bab_siteMapItem {
             return $this->target->canCreate();
         }
 
-        return bab_isAccessValid('smed_node_create_groups', $this->id_function);
+        return bab_isAccessValid('bab_sitemap_node_create_groups', $this->id_function);
     }
     
     /**
@@ -1057,7 +1057,7 @@ class bab_siteMapItem {
             return $this->target->canRead();
         }
         
-        return bab_isAccessValid('smed_node_read_groups', $this->id_function);
+        return bab_isAccessValid('bab_sitemap_node_read_groups', $this->id_function);
     }
     
     /**
@@ -1069,7 +1069,7 @@ class bab_siteMapItem {
             return $this->target->canUpdate();
         }
         
-        return bab_isAccessValid('smed_node_update_groups', $this->id_function);
+        return bab_isAccessValid('bab_sitemap_node_update_groups', $this->id_function);
     }
     
     /**
@@ -1081,7 +1081,7 @@ class bab_siteMapItem {
             return $this->target->canDelete();
         }
         
-        return bab_isAccessValid('smed_node_delete_groups', $this->id_function);
+        return bab_isAccessValid('bab_sitemap_node_delete_groups', $this->id_function);
     }
     
     
