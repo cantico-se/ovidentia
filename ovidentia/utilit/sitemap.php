@@ -1037,13 +1037,11 @@ class bab_siteMapItem {
      */
     public function canCreate()
     {
-        $target = $this->getTarget();
-        
-        if (isset($target)) {
-            return $target->canCreate();
+        if (isset($this->target)) {
+            return $this->target->canCreate();
         }
 
-        return bab_isAccessValid('smed_node_create_groups', $this->id_function);
+        return bab_isAccessValid('bab_sitemap_node_create_groups', $this->id_function);
     }
     
     /**
@@ -1055,13 +1053,11 @@ class bab_siteMapItem {
      */
     public function canRead()
     {
-        $target = $this->getTarget();
-        
-        if (isset($target)) {
-            return $target->canRead();
+        if (isset($this->target)) {
+            return $this->target->canRead();
         }
         
-        return bab_isAccessValid('smed_node_read_groups', $this->id_function);
+        return bab_isAccessValid('bab_sitemap_node_read_groups', $this->id_function);
     }
     
     /**
@@ -1069,13 +1065,11 @@ class bab_siteMapItem {
      */
     public function canUpdate()
     {
-        $target = $this->getTarget();
-        
-        if (isset($target)) {
-            return $target->canUpdate();
+        if (isset($this->target)) {
+            return $this->target->canUpdate();
         }
         
-        return bab_isAccessValid('smed_node_update_groups', $this->id_function);
+        return bab_isAccessValid('bab_sitemap_node_update_groups', $this->id_function);
     }
     
     /**
@@ -1083,13 +1077,11 @@ class bab_siteMapItem {
      */
     public function canDelete()
     {
-        $target = $this->getTarget();
-        
-        if (isset($target)) {
-            return $target->canDelete();
+        if (isset($this->target)) {
+            return $this->target->canDelete();
         }
         
-        return bab_isAccessValid('smed_node_delete_groups', $this->id_function);
+        return bab_isAccessValid('bab_sitemap_node_delete_groups', $this->id_function);
     }
     
     
@@ -1110,43 +1102,43 @@ class bab_siteMapItem {
     
     public function getCreate()
     {
-        return $this->getRightString('smed_node_create_groups');
+        return $this->getRightString('bab_sitemap_node_create_groups');
     }
     
     public function setCreate($value)
     {
-        return $this->setRightString('smed_node_create_groups', $value);
+        return $this->setRightString('bab_sitemap_node_create_groups', $value);
     }
     
     public function getRead()
     {
-        return $this->getRightString('smed_node_read_groups');
+        return $this->getRightString('bab_sitemap_node_read_groups');
     }
     
     public function setRead($value)
     {
-        return $this->setRightString('smed_node_read_groups', $value);
+        return $this->setRightString('bab_sitemap_node_read_groups', $value);
     }
     
     public function getUpdate()
     {
-        return $this->getRightString('smed_node_update_groups');
+        return $this->getRightString('bab_sitemap_node_update_groups');
     }
     
     public function setUpdate($value)
     {
-        return $this->setRightString('smed_node_update_groups', $value);
+        return $this->setRightString('bab_sitemap_node_update_groups', $value);
     }
     
     
     public function getDelete()
     {
-        return $this->getRightString('smed_node_delete_groups');
+        return $this->getRightString('bab_sitemap_node_delete_groups');
     }
     
     public function setDelete($value)
     {
-        return $this->setRightString('smed_node_delete_groups', $value);
+        return $this->setRightString('bab_sitemap_node_delete_groups', $value);
     }
     
     /**
