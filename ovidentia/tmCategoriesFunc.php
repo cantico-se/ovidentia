@@ -193,6 +193,7 @@ function displayCategoryForm()
 
 			$this->set_data('tg', bab_rp('tg', ''));
 			$this->set_data('iIdCategory', (int) bab_rp('iIdCategory', 0));
+			$iIdCategory = null;
 			$this->get_data('iIdCategory', $iIdCategory);
 			
 			if(!isset($_POST['iIdCategory']) && !isset($_GET['iIdCategory']))
@@ -287,6 +288,7 @@ function displayDeleteCategoryForm()
 	if(count($aIdCategories) > 0)
 	{	
 		$title = '';
+		$items = array();
 		foreach($aIdCategories as $key => $aItem)
 		{
 			$title .= "\n"."- ". $aItem['sCategoryName'];

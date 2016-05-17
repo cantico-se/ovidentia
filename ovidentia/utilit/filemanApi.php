@@ -684,13 +684,7 @@ class bab_Directory
 			);
 		}
 
-		foreach($aRights as $iBit => $sTable)
-		{
-			if($iBits & $iBit)
-			{
-				aclAdd($sTable, $iIdGroup, $oFolder->getId());
-			}
-		}
+		
 
 		static $aRights = null;
 		if(!isset($aRights))
@@ -702,6 +696,14 @@ class bab_Directory
 				bab_Directory::RIGHT_MANAGE => BAB_FMMANAGERS_GROUPS_TBL,
 				bab_Directory::RIGHT_NOTIFY => BAB_FMNOTIFY_GROUPS_TBL,
 			);
+		}
+		
+		foreach($aRights as $iBit => $sTable)
+		{
+		    if($iBits & $iBit)
+		    {
+		        aclAdd($sTable, $iIdGroup, $oFolder->getId());
+		    }
 		}
 
 		foreach($aRightsChild as $iBit => $sTable)
@@ -2242,7 +2244,7 @@ class bab_Directory
 		else
 		{
 			$aSearch		= array('%path%');
-			$aReplace		= array($sTrgPathName);
+			$aReplace		= array($sPathName);
 			$sMessage		= str_replace($aSearch, $aReplace, bab_translate("The pathName %path% is not valid, it should start with DGx/."));
 			$this->aError[]	= $sMessage;
 		}

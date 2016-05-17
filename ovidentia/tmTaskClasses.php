@@ -424,6 +424,8 @@
 			$aCompletion = each($this->m_aCompletion);
 			if(false != $aCompletion)
 			{
+			    $iCompletion = null;
+			    
 				$this->get_data('iSelectedCompletion', $iCompletion);
 				$this->set_data('sSelectedCompletion', ((int)$aCompletion['value'] == (int)$iCompletion) ? 
 					'selected="selected"' : '');
@@ -438,6 +440,8 @@
 			$aTaskPriority = each($this->m_aTaskPriority);
 			if(false != $aTaskPriority)
 			{
+			    $iPriority = null;
+			    
 				$this->get_data('iSelectedTaskPriority', $iPriority);
 				$this->set_data('sSlectedTaskPriority', ((int)$aTaskPriority['value'] == (int)$iPriority) ? 
 					'selected="selected"' : '');
@@ -452,6 +456,8 @@
 			$aProposable = each($this->m_aProposable);
 			if(false != $aProposable)
 			{
+			    $iProposable = null;
+			    
 				$this->get_data('iSelectedProposable', $iProposable);
 				$this->set_data('sSelectedProposable', ((int)$aProposable['value']['iProposable'] == (int)$iProposable) ? 
 					'selected="selected"' : '');
@@ -482,6 +488,8 @@
 			$class = each($this->m_aClasses);
 			if(false != $class)
 			{
+			    $iClassType = null;
+			    
 				$this->get_data('iSelectedClass', $iClassType);
 				$this->set_data('sSelectedClass', ((int)$class['value']['iClassType'] == (int)$iClassType) ? 
 					'selected="selected"' : '');
@@ -497,6 +505,8 @@
 			$duration = each($this->m_aDurations);
 			if(false != $duration)
 			{
+			    $oDurationType = null;
+			    
 				$this->get_data('oDurationType', $oDurationType);
 				$this->set_data('sSelectedDuration', ($duration['value']['iDurationType'] == $oDurationType) ? 
 					'selected="selected"' : '');
@@ -513,6 +523,8 @@
 			$aDurationUnit = each($this->m_aDurationUnit);
 			if(false != $aDurationUnit)
 			{
+			    $oDurationUnit = null;
+			    
 				$this->get_data($sFieldName, $oDurationUnit);
 				$this->set_data('sSelectedDurationUnit', ($aDurationUnit['value']['iUnit'] == $oDurationUnit) ? 
 					'selected="selected"' : '');
@@ -596,6 +608,9 @@
 			{
 				$this->set_data('iHour', ++$iHour);
 				$this->set_data('sHour', sprintf("%02d", $iHour));
+				
+				$iFieldValue = null;
+				
 				$this->get_data('i' . $sFieldPart . 'Hour', $iFieldValue);
 				$this->set_data('sSelected' . $sFieldPart . 'Hour', ($iHour == $iFieldValue) ? 
 					'selected="selected"' : '');
@@ -640,6 +655,7 @@
 			{
 				$this->set_data('iMinut', ++$iMinut);
 				$this->set_data('sMinut', sprintf("%02d", $iMinut));
+				$iFieldValue =null;
 				$this->get_data('i' . $sFieldPart . 'Minut', $iFieldValue);
 				$this->set_data('sSelected' . $sFieldPart . 'Minut', ($iMinut == $iFieldValue) ? 
 					'selected="selected"' : '');
@@ -736,11 +752,13 @@
 			}
 			else
 			{
+			    $aProjectSpace = null;
 				if(bab_getProjectSpace($this->m_iIdProjectSpace, $aProjectSpace))
 				{
 					$this->set_data('sProjectSpace', $aProjectSpace['name']);
 				}
 				
+				$aProject = null;
 				if(bab_getProject($this->m_iIdProject, $aProject))
 				{
 					$this->set_data('sProject', $aProject['name']);
@@ -981,12 +999,17 @@
 
 		function initFormVariables()
 		{
+		    $bIsCreation = null;
+		    $bIsEdition = null;
+		    $bIsResubmission = null;
+		    
 			$this->get_data('is_creation', $bIsCreation);
 			$this->get_data('is_edition', $bIsEdition);
 			$this->get_data('is_resubmission', $bIsResubmission);
 
 			if($bIsCreation || $bIsResubmission)
 			{
+			    $sTaskNumber = null;
 				bab_getNextTaskNumber($this->m_iIdProject, $this->m_aCfg['tasksNumerotation'], $sTaskNumber);
 				$iClassType 				= (int) bab_rp('iClass', BAB_TM_TASK);
 				$iIdCategory 				= (int) bab_rp('iIdCategory', 0);
@@ -1019,6 +1042,20 @@
 				$iCost 						= number_format(bab_rp('oCost', 0), 2, '.', '');
 				$iPriority					= (int) bab_rp('oTaskPriority', 5);
 				
+				$sPlannedStartDate = null;
+				$iPlannedStartHour = null;
+				$iPlannedStartMinut = null;
+				$sPlannedEndDate = null;
+				$iPlannedEndHour = null;
+				$iPlannedEndMinut = null;
+				$sStartDate = null;
+				$iStartHour = null;
+				$iStartMinut = null;
+				$sEndDate = null;
+				$iEndHour = null;
+				$iEndMinut = null;
+				
+				
 				$this->extractDateTimePart('PlannedStart', $sPlannedStartDate, 
 					$iPlannedStartHour, $iPlannedStartMinut);
 				
@@ -1038,6 +1075,7 @@
 				
 				$iIsLinked = -1;
 				$iLinkType = -1;
+				$aTask = null;
 				if(-1 != $iPredecessor && bab_getTask($iPredecessor, $aTask))
 				{
 					//zero basediUseEditor
@@ -1174,6 +1212,7 @@
 			if('undefined' == $sDate)
 			{
 				$sDate = $this->m_oTask->m_aTask['s' . $sFieldNamePart . 'Date'];
+				$aExplodedDate = null;
 				
 				if('0000-00-00 00:00:00' !== $sDate && preg_match("/(^[0-9]{4}-[0-9]{2}-[0-9]{2}) ([0-9]{2}):([0-9]{2}).*$/", $sDate, $aExplodedDate))
 				{
@@ -1238,6 +1277,7 @@
 				$datas = $babDB->db_fetch_assoc($this->m_catResult);
 				if(false != $datas)
 				{
+				    $iIdCategory = null;
 					$this->get_data('iIdSelectedCategory', $iIdCategory);
 					$this->set_data('sSelectedCategory', ($iIdCategory == $datas['id']) ? 
 						'selected="selected"' : '');
@@ -1281,6 +1321,7 @@
 				$datas = $babDB->db_fetch_assoc($this->m_linkableTaskResult);
 				if(false != $datas)
 				{
+				    $iSelectedPredecessor = null;
 					$this->get_data('iSelectedPredecessor', $iSelectedPredecessor);
 					$this->set_data('sSelectedPredecessor', ($datas['id'] == $iSelectedPredecessor) ? 'checked="checked"' : '');
 					$this->set_data('iIdPredecessor', $datas['id']);
@@ -1300,6 +1341,10 @@
 			$aRelation = each($this->m_aRelation);
 			if(false != $aRelation)
 			{
+			    $iLinkType = null;
+			    $datas = array();
+			    $sSelectedPredecessor = null;
+			    
 				$this->get_data('iSelectedLinkType', $iLinkType);
 				$this->get_data('iIsStarted', $datas['isStarted']);
 				$this->get_data('sSelectedPredecessor', $sSelectedPredecessor);
@@ -1364,6 +1409,8 @@ $this->set_data('iSpFldInstanceId', $aItem['value']['iIdFieldClass']);
 				$datas = $babDB->db_fetch_assoc($this->m_spfValueResult);
 				if(false != $datas)
 				{
+				    $sSpFldInstanceValue = null;
+				    
 					$this->get_data('sSpFldInstanceValue', $sSpFldInstanceValue);
 					$this->set_data('sSpFldInstanceSelected', ($datas['sValue'] == $sSpFldInstanceValue) ? 'selected="selected"' : '');
 					$this->set_data('sSpFldInstanceRdValue', $datas['sValue']);
@@ -1692,6 +1739,7 @@ bab_debug($sMsg);
 		function getProjectSpaceName()
 		{
 			$sProjectSpaceName = '???';
+			$aProjectSpace = null;
 			if(bab_getProjectSpace($this->m_iIdProjectSpace, $aProjectSpace))
 			{
 				$sProjectSpaceName = $aProjectSpace['name'];
@@ -1702,6 +1750,7 @@ bab_debug($sMsg);
 		function getProjectName()
 		{
 			$sProjectName = '???';
+			$aProject = null;
 			if(bab_getProject($this->m_iIdProject, $aProject))
 			{
 				$sProjectName = $aProject['name'];
@@ -1824,6 +1873,7 @@ bab_debug($sMsg);
 				{
 					//bab_debug('class: ' . __CLASS__ . ' fn: ' . __FUNCTION__ . ' the task is linked');
 					
+				    $aTask = null;
 					$success = bab_getTask($this->m_iIdPredecessor, $aTask);
 					if($success)
 					{
@@ -2159,6 +2209,10 @@ bab_debug($sMsg);
 				$aTask['iPosition']					= $this->m_iPosition;
 				$aTask['iCompletion']				= 0;
 				
+				
+				$sStartDate = null;
+				$sEndDate = null;
+				
 				$this->getIsoDatesFromEndDate($sStartDate, $sEndDate);
 				
 				$aTask['sStartDate']				= $sStartDate;
@@ -2220,6 +2274,9 @@ bab_debug($sMsg);
 				$aTask['sColor']					= $this->m_sColor;
 				$aTask['iPosition']					= $this->m_iPosition;
 				$aTask['iCompletion']				= 0;
+				
+				$sStartDate = null;
+				$sEndDate = null;
 				
 				$this->getIsoDatesFromEndDate($sStartDate, $sEndDate);
 				
@@ -2525,6 +2582,9 @@ bab_debug('A terminer, PB avec la date butoir de fin');
 				$aTask['iPosition']					= $this->m_iPosition;
 				$aTask['iCompletion']				= $this->m_iCompletion;
 				
+				$sStartDate = null;
+				$sEndDate = null;
+				
 				$this->getIsoDatesFromEndDate($sStartDate, $sEndDate);
 				
 				$aTask['sStartDate']				= $sStartDate;
@@ -2581,6 +2641,9 @@ bab_debug('A terminer, PB avec la date butoir de fin');
 				$aTask['sColor']					= $this->m_sColor;
 				$aTask['iPosition']					= $this->m_iPosition;
 				$aTask['iCompletion']				= $this->m_iCompletion;
+				
+				$sStartDate = null;
+				$sEndDate = null;
 				
 				$this->getIsoDatesFromEndDate($sStartDate, $sEndDate);
 				
@@ -2740,6 +2803,8 @@ bab_debug('A terminer, PB avec la date butoir de fin');
 		
 		function isoDateTimeDateValid($sIsoDateTime)
 		{
+		    $aMatch = null;
+		    
 			if(0 !== preg_match("/^([0-9]{4}).{1}([0-9]{2}).{1}([0-9]{2})[[:space:]]{1}([0-9]{2})\:([0-9]{2})\:([0-9]{2})/", $sIsoDateTime, $aMatch))
 			{
 				if(mb_strlen(trim($sIsoDateTime)) > 0)
@@ -2757,6 +2822,7 @@ bab_debug('A terminer, PB avec la date butoir de fin');
 		function getProjectSpaceName()
 		{
 			$sProjectSpaceName = '???';
+			$aProjectSpace = null;
 			if(bab_getProjectSpace($this->m_iIdProjectSpace, $aProjectSpace))
 			{
 				$sProjectSpaceName = $aProjectSpace['name'];
@@ -2767,6 +2833,7 @@ bab_debug('A terminer, PB avec la date butoir de fin');
 		function getProjectName()
 		{
 			$sProjectName = '???';
+			$aProject = null;
 			if(bab_getProject($this->m_iIdProject, $aProject))
 			{
 				$sProjectName = $aProject['name'];

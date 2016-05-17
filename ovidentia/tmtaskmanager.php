@@ -797,6 +797,7 @@ function displayProjectPropertiesForm()
 				
 				function getNextTaskNumerotation()
 				{
+				    $taskNumerotation = null;
 					$this->get_data('taskNumerotation', $taskNumerotation);
 					$this->set_data('tnSelected', '');
 					
@@ -939,6 +940,7 @@ function displayCommentaryForm()
 			$oBf->set_data('modifyAction', BAB_TM_ACTION_MODIFY_PROJECT_COMMENTARY);
 			$oBf->set_data('delIdx', BAB_TM_IDX_DISPLAY_DELETE_PROJECT_COMMENTARY);
 			
+			$sCommentary = null;
 			$success = bab_getProjectCommentary($iIdCommentary, $sCommentary);
 		}
 		else 
@@ -950,6 +952,7 @@ function displayCommentaryForm()
 			$oBf->set_data('delIdx', '');
 			$oBf->set_data('delAction', BAB_TM_ACTION_DELETE_TASK_COMMENTARY);
 			
+			$sCommentary = null;
 			$success = bab_getTaskCommentary($iIdCommentary, $sCommentary);
 		}
 
@@ -1045,6 +1048,7 @@ function displayTaskList($sIdx)
 		else
 		{
 			$sTitle = bab_translate("Tasks of the project");
+			$aProject = null;
 			if(false !== bab_getProject($iIdProject, $aProject))
 			{
 				$sTitle .= ': ' . $aProject['name'];
@@ -1124,6 +1128,8 @@ function displayTaskList($sIdx)
 			$this->iniContext();
 
 			$this->set_data('isProjectDisplayed', (0 === (int) bab_rp('isProject', 0)));
+			
+			$isProjectDisplayed = null;
 			$this->get_data('isProjectDisplayed', $isProjectDisplayed);
 
 			$this->set_data('iIdProjectSpace', (int) bab_rp('iIdProjectSpace', 0));
@@ -1168,6 +1174,7 @@ function displayTaskList($sIdx)
 		
 		function iniContext()
 		{
+		    $iIsProject = null;
 			$this->get_data('isProject', $iIsProject);
 			
 			$sKey = (0 === $iIsProject) ? 'tskMgrPersonnalFilter' : 'tskMgrProjectFilter';
@@ -1321,6 +1328,8 @@ function displayTaskList($sIdx)
 		function getNextTaskResponsible()
 		{
 			$this->set_data('sSelectedUserName', '');
+			
+			$iIdOwner = null;
 			$this->get_data('iIdOwner', $iIdOwner);
 			
 			$this->set_data('idResponsible', 0);
@@ -1346,6 +1355,7 @@ function displayTaskList($sIdx)
 			$datas = each($this->m_aTasksFilter);
 			if(false != $datas)
 			{
+			    $iSelectedTaskFilter = null;
 				$this->get_data('iSelectedTaskFilter', $iSelectedTaskFilter);
 				$this->set_data('sTaskFilterSelected', bab_toHtml(($iSelectedTaskFilter == $datas['value']['value']) ? 'selected="selected"' : ''));
 				
@@ -1363,6 +1373,7 @@ function displayTaskList($sIdx)
 			$datas = each($this->m_aTasksTypeFilter);
 			if(false != $datas)
 			{
+			    $iSelectedTaskTypeFilter = null;
 				$this->get_data('iTaskClass', $iSelectedTaskTypeFilter);
 				$this->set_data('sTaskTypeFilterSelected', bab_toHtml(($iSelectedTaskTypeFilter == $datas['value']['value']) ? 'selected="selected"' : ''));
 				
@@ -1379,6 +1390,7 @@ function displayTaskList($sIdx)
 			$datas = each($this->m_aCompletion);
 			if(false != $datas)
 			{
+			    $iCompletion = null;
 				$this->get_data('iCompletion', $iCompletion);
 				$this->set_data('sSelectedTaskCompletion', (($iCompletion == $datas['value']['value']) ? 'selected="selected"' : ''));
 				
@@ -1427,6 +1439,7 @@ function displayTaskList($sIdx)
 			{
 				$this->set_data('iHour', ++$iHour);
 				$this->set_data('sHour', sprintf("%02d", $iHour));
+				$iFieldValue = null;
 				$this->get_data('i' . $sFieldPart . 'Hour', $iFieldValue);
 				$this->set_data('sSelected' . $sFieldPart . 'Hour', ($iHour == $iFieldValue) ? 
 					'selected="selected"' : '');
@@ -1471,6 +1484,7 @@ function displayTaskList($sIdx)
 			{
 				$this->set_data('iMinut', ++$iMinut);
 				$this->set_data('sMinut', sprintf("%02d", $iMinut));
+				$iFieldValue = null;
 				$this->get_data('i' . $sFieldPart . 'Minut', $iFieldValue);
 				$this->set_data('sSelected' . $sFieldPart . 'Minut', ($iMinut == $iFieldValue) ? 
 					'selected="selected"' : '');
@@ -2143,6 +2157,7 @@ function displayTaskForm()
 	
 	if(0 < $iIdProject)
 	{
+	    $aProject = null;
 		if(false != bab_getProject($iIdProject, $aProject))
 		{
 			$iIdProjectSpace = $oTmCtx->m_iIdProjectSpace = (int) $aProject['idProjectSpace'];
@@ -2369,6 +2384,7 @@ function displayPersonnalTaskConfigurationForm()
 			
 			function getNextTaskNumerotation()
 			{
+			    $taskNumerotation = null;
 				$this->get_data('taskNumerotation', $taskNumerotation);
 				$this->set_data('tnSelected', '');
 				$datas = each($this->m_datas['aTaskNumerotation']);
@@ -2458,6 +2474,7 @@ function displayOrderTaskFieldsForm()
 	}
 	
 	$sTitle = bab_translate("Field(s) list");
+	$aProject = null;
 	if(false !== bab_getProject($iIdProject, $aProject))
 	{
 		$sTitle .= ': ' . $aProject['name'];
@@ -2689,8 +2706,10 @@ function displayOrderTaskFieldsForm()
 		
 		function getNextField($sSessionKeyName)
 		{
-			$this->set_data('sSelected', '');//Utilis� seulement lors du d�placement
-			$this->get_data('sSelectedField', $sSelectedField);//Utilis� seulement lors du d�placement
+			$this->set_data('sSelected', '');//Utilise seulement lors du deplacement
+			
+			$sSelectedField = null;
+			$this->get_data('sSelectedField', $sSelectedField);//Utilise seulement lors du deplacement
 
 			if(array_key_exists($sSessionKeyName, $_SESSION))
 			{
@@ -2762,6 +2781,7 @@ function addModifyProject()
 						require_once $GLOBALS['babInstallPath'] . 'tmSendMail.php';
 				
 						$sProjectSpaceName = '???';
+						$aProjectSpace = null;
 						if(bab_getProjectSpace($iIdProjectSpace, $aProjectSpace))
 						{
 							$sProjectSpaceName = $aProjectSpace['name'];
@@ -2818,12 +2838,14 @@ function deleteProject()
 		{
 			{
 				$sProjectName = '???';
+				$aProject = null;
 				if(bab_getProject($iIdProject, $aProject))
 				{
 					$sProjectName = $aProject['name'];
 				}
 					
 				$sProjectSpaceName = '???';
+				$aProjectSpace = null;
 				if(bab_getProjectSpace($iIdProjectSpace, $aProjectSpace))
 				{
 					$sProjectSpaceName = $aProjectSpace['name'];
@@ -3106,12 +3128,14 @@ function deleteTask()
 		$sTaskNumber = ((mb_strlen(trim($aTaskToDel['sShortDescription'])) > 0) ? $aTaskToDel['sShortDescription'] : $aTaskToDel['sTaskNumber']);
 		{
 			$sProjectSpaceName = '???';
+			$aProjectSpace = null;
 			if(bab_getProjectSpace($iIdProjectSpace, $aProjectSpace))
 			{
 				$sProjectSpaceName = $aProjectSpace['name'];
 			}
 			
 			$sProjectName = '???';
+			$aProject = null;
 			if(bab_getProject($iIdProject, $aProject))
 			{
 				$sProjectName = $aProject['name'];

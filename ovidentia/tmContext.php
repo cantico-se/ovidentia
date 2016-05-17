@@ -424,6 +424,7 @@ class BAB_TM_Context
 				}
 				else 
 				{
+				    $aTaskResponsible = null;
 					bab_getTaskResponsibles($this->m_iIdTask, $aTaskResponsible);
 					if(isset($aTaskResponsible[$GLOBALS['BAB_SESS_USERID']]))
 					{

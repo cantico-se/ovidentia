@@ -3390,7 +3390,6 @@ function restoreFiles($items)
     $oFolderFileSet = new BAB_FolderFileSet();
     $oId =& $oFolderFileSet->aField['iId'];
 
-    global $babDB;
     for($i = 0; $i < count($items); $i++)
     {
         $oFolderFile = $oFolderFileSet->get($oId->in($items[$i]));
@@ -3399,7 +3398,7 @@ function restoreFiles($items)
             if(!is_dir($sPathName))
             {
                 $rr = explode("/", $sPathName);
-                $sPath = $sUploadPath;
+                $sPath = $oFileManagerEnv->getFmUploadPath();
                 for($k = 0; $k < count($rr); $k++ )
                 {
                     $sPath .= $rr[$k]."/";

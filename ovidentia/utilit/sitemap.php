@@ -519,7 +519,7 @@ class bab_siteMapOrphanRootNode extends bab_OrphanRootNode {
         $languages = bab_getAvailableLanguages();
         
         $list = array();
-        foreach ($language as $langCode) {
+        foreach ($languages as $langCode) {
             $list[$langCode] = $this->getNodeByLangId($langCode, $id);
         }
         
@@ -658,7 +658,7 @@ class bab_siteMapOrphanRootNode extends bab_OrphanRootNode {
         $I = new bab_NodeIterator($baseNode);
         while($childNode = $I->nextNode()) {
             /*@var $childNode \bab_Node */
-    
+            $m = null;
             if (preg_match($pattern, $childNode->getId(), $m)) {
     
                 $return->nodes[] = $childNode;
@@ -710,7 +710,7 @@ class bab_siteMapOrphanRootNode extends bab_OrphanRootNode {
         
         foreach ($targetIndex as $targetId => $customNodes) {
 
-
+            $m = null;
             if (preg_match($pattern, $targetId, $m)) {
                 
                 $customNodes = $this->filterByBaseNodeId($baseNodeId, $customNodes);

@@ -149,6 +149,7 @@ class bab_replace {
 	global $babBody, $babDB;
 	
 	$reg = "/\\\$([A-Z]*?)\((.*?)\)/";
+	$m = null;
 	if (preg_match_all($reg, $txt, $m))
 		{
 		for ($k = 0; $k < count($m[1]); $k++ )
@@ -516,6 +517,7 @@ class bab_replace {
 		
 		if (isset($ref[1]))
 		{
+		    $arr = null;
 			parse_str($ref[1], $arr);
 			
 			if (isset($this->ext_url) && isset($arr['popup'])) {

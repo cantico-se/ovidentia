@@ -417,6 +417,7 @@ function displayProjectsConfigurationForm()
 				
 				function getNextTaskNumerotation()
 				{
+				    $taskNumerotation = null;
 					$this->get_data('taskNumerotation', $taskNumerotation);
 					$this->set_data('tnSelected', '');
 					

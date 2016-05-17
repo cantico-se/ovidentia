@@ -2964,13 +2964,8 @@ function confirmAddDbContact($id, $fields, $file, $tmp_file, $password1, $passwo
 
         if ( $arr['name'] == 'jpegphoto' && $rr['required'] == "Y" && (empty($file) || $file == "none"))
             {
-            $tmp = $babDB->db_fetch_assoc($babDB->db_query("select photo_data from ".BAB_DBDIR_ENTRIES_TBL." where id_directory='".($idgroup !=0 ? 0: $babDB->db_escape_string($id))."' and id='".$babDB->db_escape_string($idu)."'"));
-
-            if (empty($tmp['photo_data']))
-                {
-                $babBody->msgerror = bab_translate("You must complete required fields");
-                return 0;
-                }
+            $babBody->msgerror = bab_translate("You must complete required fields");
+            return 0;
             }
 
         if( isset($fields[$arr['name']]) && $arr['name'] != 'jpegphoto')

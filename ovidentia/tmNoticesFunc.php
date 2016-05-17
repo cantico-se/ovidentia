@@ -90,6 +90,7 @@ function displayNoticeEventForm()
 			
 			if(false != $datas)
 			{
+			    $iIdEvent = null;
 				$this->get_data('iIdEvent', $iIdEvent);
 				
 				$iProfil =& $datas['value'];

@@ -227,7 +227,7 @@ class bab_SearchRealmArticles extends bab_SearchRealmTopic {
 
 		foreach($arr as $result) {
 			$file = basename($result['file']);
-
+            $m = null;
 			if (preg_match('/^top([0-9]+)_art([0-9]+)\.html$/', $file, $m)) {
 
 				$id_topic 	= (int) $m[1];

@@ -587,15 +587,14 @@ function getClosedThreads($forum)
 	}
 
 /* main */
-if(!isset($idx))
-	{
-	$idx = 'List';
-	}
+$idx = bab_rp('idx', 'List');
+$pos = bab_rp('pos', 0);
+$forum = bab_rp('forum');
 
 if( !isset($pos))
 	$pos = 0;
 
-if( isset($add) && $add == 'addthread' && bab_isAccessValid(BAB_FORUMSPOST_GROUPS_TBL, $forum))
+if('addthread' === bab_rp('add') && bab_isAccessValid(BAB_FORUMSPOST_GROUPS_TBL, $forum))
 	{
 	if (!saveThread())
 		{

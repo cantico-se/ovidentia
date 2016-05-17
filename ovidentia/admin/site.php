@@ -1953,6 +1953,7 @@ function siteUpdate_menu1()
 		$txt = fread($file, filesize($filename));
 		fclose($file);
 		$reg = "/babSiteName[[:space:]]*=[[:space:]]*\"([^\"]*)\"/";
+		$match = null;
 		$res = preg_match($reg, $txt, $match);
 		$reg = "/babSiteName[[:space:]]*=[[:space:]]*\"".$match[1]."\"/";
 		$out = preg_replace($reg, "babSiteName = \"".$name."\"", $txt);

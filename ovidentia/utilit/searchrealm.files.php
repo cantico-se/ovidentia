@@ -438,6 +438,7 @@ class bab_SearchRealmFiles extends bab_SearchRealm {
 			}
 	
 			$path = dirname($path).'/';
+			$match = null;
 			if (!preg_match('/^\d+,\d+,(.*)$/', $name, $match)) {
 				bab_debug('Unexpected error, version file format', DBG_ERROR , 'Search');
 				return;
