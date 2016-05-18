@@ -1621,8 +1621,8 @@ class bab_siteMap {
      * @param int $levels
      * @return bab_siteMapOrphanRootNode
      */
-    public function getRootNode($path = null, $levels = null) {
-        return bab_siteMap::get($path, $levels);
+    public function getRootNode($path = null, $levels = null, $build = true) {
+        return bab_siteMap::get($path, $levels, $build);
     }
 
     /**
@@ -1921,7 +1921,7 @@ class bab_siteMap {
      *
      * @return bab_siteMapOrphanRootNode
      */
-    public static function get($path = null, $levels = null) {
+    public static function get($path = null, $levels = null, $build = true) {
 
         // echo "sitemap get ".implode('/',$path)."\n";
 
@@ -2030,6 +2030,11 @@ class bab_siteMap {
         $res = $babDB->db_query($query);
 
         if (0 === $babDB->db_num_rows($res)) {
+            
+            if (!$build) {
+                return null;
+            }
+            
             // no sitemap for user, build it
 
             self::build($path, $levels);
@@ -2040,6 +2045,12 @@ class bab_siteMap {
         $firstnode = $babDB->db_fetch_assoc($res);
 
         if (null === $firstnode['profile_version']) {
+            
+            if (!$build) {
+                return null;
+            }
+            
+            
             // the profile version is missing, add version to profile
             // the user have a correct profile and a correct sitemap but the sitemap is incomplete
             // additional nodes need to be created in sitemap without deleting the profile

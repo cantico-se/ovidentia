@@ -930,14 +930,32 @@ class bab_inifile_requirements {
 
         require_once dirname(__FILE__).'/settings.class.php';
         $error = null;
-
-        $rootNode = bab_sitemap::getFromSite();
-
-
+        
         $settings = bab_getInstance('bab_Settings');
         /*@var $settings bab_Settings */
-
+        
         $site = $settings->getSiteSettings();
+
+        $sitemap = bab_sitemap::getSiteSitemap();
+        $rootNode = $sitemap->getRootNode(null, null, false);
+        
+        if (!isset($rootNode)) {
+            
+            // il ne faut pas construire le plan au moment des tests car cela peut provoquer des boucles infinies
+            // car pour construire le plan, beaucoup de tests sont effectues dont la validite des modules
+            
+            
+            return array(
+                'description'	=> sprintf(bab_translate("Node ID in the site sitemap (%s)"), $site['sitemap']),
+                'display_value' => bab_translate('Node not found'),
+                'current'		=> bab_translate('Node not found'),
+                'result'		=> true,
+                'error'			=> bab_translate('Test disabled because no valid sitemap')
+            );
+        }
+
+
+        
 
 
         $found = array();
