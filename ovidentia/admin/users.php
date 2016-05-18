@@ -26,7 +26,7 @@
 * @internal SEC1 PR 16/02/2007 FULL
 */
 include_once "base.php";
-require_once dirname(__FILE__).'/../utilit/registerglobals.php';
+
 require_once $GLOBALS['babInstallPath'] . 'utilit/toolbar.class.php';
 include_once $GLOBALS['babInstallPath'] . 'admin/register.php';
 include_once $GLOBALS['babInstallPath'] . 'utilit/lusersincl.php';
