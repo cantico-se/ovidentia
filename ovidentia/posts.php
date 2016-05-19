@@ -1297,7 +1297,7 @@ $flat = bab_rp('flat', 0);
 $forum = bab_rp('forum', 0);
 $thread = bab_rp('thread', 0);
 $add = bab_rp('add', null);
-$action = bab_rp('action', null);
+$action = bab_pp('action', null);
 
 bab_siteMap::setPosition('bab', 'UserForum'.$forum);
 

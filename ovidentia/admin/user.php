@@ -719,6 +719,7 @@ switch($idx) {
 
 
     case 'Modify':
+        
         /* $item : contains id of the user who must be modified */
         if (is_numeric($item)) {
 
