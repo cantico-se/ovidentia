@@ -583,6 +583,7 @@ function confirmDeleteUser($userId)
         bab_deleteUser($userId);
     }
     header('Location: ' . $GLOBALS['babUrlScript'] . '?tg=users&idx=List');
+    exit;
 }
 
 
@@ -757,8 +758,8 @@ if (bab_rp('update') == 'nickname') {
     }
 }
 
-if (bab_rp('action') == 'Yes') {
-    confirmDeleteUser(bab_rp('user'));
+if (bab_pp('action') == 'Yes') {
+    confirmDeleteUser(bab_pp('user'));
 }
 
 if (isset($_POST['action'])) {
