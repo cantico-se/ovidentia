@@ -25,7 +25,7 @@
 * @internal SEC1 NA 05/12/2006 FULL
 */
 include_once 'base.php';
-require_once dirname(__FILE__).'/utilit/registerglobals.php';
+
 
 function listAddress($pos)
 	{
@@ -331,4 +331,3 @@ switch($idx)
 	}
 
 $babBody->setCurrentItemMenu($idx);
-?>

@@ -25,7 +25,7 @@
 * @internal SEC1 NA 18/12/2006 FULL
 */
 include_once 'base.php';
-require_once dirname(__FILE__).'/utilit/registerglobals.php';
+
 require_once dirname(__FILE__).'/utilit/urlincl.php';
 include_once $GLOBALS['babInstallPath'].'admin/register.php';
 
