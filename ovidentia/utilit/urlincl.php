@@ -49,6 +49,7 @@ class bab_url {
 			$keyval = urlencode($param).'='.urlencode($value);
 		}
 	
+		$count = 0;
 		$newurl = preg_replace('/(&|\?)'.preg_quote(urlencode($param), '/').'=[^&]*/', '\\1'.$keyval, $url, 1, $count);
 		if ($count > 0) {
 			return $newurl;
@@ -233,6 +234,7 @@ class bab_url {
 			return null;
 		}
 		
+		$arr = null;
 		parse_str($p['query'], $arr);
 		
 		if (!isset($arr[$param]))
@@ -283,6 +285,7 @@ class bab_url {
 			return 0;
 		}
 		
+		$arr = null;
 		parse_str($p['query'], $arr);
 		return $this->arrChecksum($arr);
 	}

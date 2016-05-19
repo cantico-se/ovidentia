@@ -39,6 +39,9 @@ function bab_getAddonsMenus($row, $what)
 		$func = $row['title']."_".$what;
 		if( !empty($func) && function_exists($func))
 			{
+			$url = null;
+			$txt = null;
+			
 			while( $func($url, $txt))
 				{
 				$addon_urls[$txt] = $url;

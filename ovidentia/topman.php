@@ -1612,6 +1612,12 @@ else {
 }
 
 
+
+$popupmessage = bab_rp('popupmessage');
+$refreshurl = bab_rp('refreshurl');
+
+
+
 if("articles" === bab_rp('upart') && $manager)
 	{
 	if (isset($_POST['action']))
@@ -1654,15 +1660,15 @@ if("articles" === bab_rp('upart') && $manager)
 	}
 elseif("file" === bab_rp('delf') && $manager)
 	{
-	delDocumentArticle($idf);
-	Header("Location: ". $GLOBALS['babUrlScript']."?tg=topman&idx=viewa&item=".$item."&art=".$art);
+	delDocumentArticle(bab_rp('idf'));
+	Header("Location: ". $GLOBALS['babUrlScript']."?tg=topman&idx=viewa&item=".$item."&art=".bab_rp('art'));
 	exit;
 	}
 elseif("com" === bab_rp('delc') && $manager)
 	{
 	include_once $GLOBALS['babInstallPath']."utilit/delincl.php";
 	bab_deleteComment($idc);
-	Header("Location: ". $GLOBALS['babUrlScript']."?tg=topman&idx=viewa&item=".$item."&art=".$art);
+	Header("Location: ". $GLOBALS['babUrlScript']."?tg=topman&idx=viewa&item=".$item."&art=".bab_rp('art'));
 	exit;
 	}
 elseif( bab_rp('update')  && $manager)
@@ -1709,7 +1715,7 @@ switch($idx)
 		break;
 		
 	case "unload":
-		popupUnload(bab_rp('popupmessage'), bab_rp('refreshurl'));
+		popupUnload($popupmessage, $refreshurl);
 		exit;
 		
 	case "getf":

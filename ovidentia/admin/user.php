@@ -681,8 +681,8 @@ if (isset($modify)) {
     }
 }
 
-if (isset($update) && $update == 'password') {
-    if(!updatePassword($item, $newpwd1, $newpwd2)) {
+if (bab_rp('update') == 'password') {
+    if(!updatePassword($item, bab_rp('newpwd1'), bab_rp('newpwd2'))) {
         $idx = 'Modify';
     } else {
         /* Send an e-mail to the user with its new password */
@@ -697,7 +697,7 @@ if (isset($update) && $update == 'password') {
                 $userName = bab_getUserName($item);
                 $userEmail = bab_getUserEmail($item);
                 list($nickname) = $babDB->db_fetch_row($babDB->db_query("select nickname from ".BAB_USERS_TBL." where id='".$item."'"));
-                $newPassword = $newpwd1;
+                $newPassword = bab_rp('newpwd1');
 
                 $mail->mailTo($userEmail, $userName);
                 $mail->mailFrom($babAdminEmail, $babAdminName);
@@ -748,8 +748,8 @@ function bab_adm_userEditor()
 // main
 
 
-if (isset($update) && $update == 'nickname') {
-    if(!updateNickname($item, $newnick)) {
+if (bab_rp('update') == 'nickname') {
+    if(!updateNickname(bab_rp('item'), bab_rp('newnick'))) {
         $idx = 'Modify';
     } else {
         header('Location: ' . $GLOBALS['babUrlScript'] . '?tg=users&idx=List&pos=' . $pos . '&grp=' . $grp);
@@ -757,8 +757,8 @@ if (isset($update) && $update == 'nickname') {
     }
 }
 
-if (isset($action) && $action == 'Yes') {
-    confirmDeleteUser($user);
+if (bab_rp('action') == 'Yes') {
+    confirmDeleteUser(bab_rp('user'));
 }
 
 if (isset($_POST['action'])) {
@@ -774,7 +774,7 @@ switch($idx) {
     case 'Delete':
 
         $babBody->title = bab_translate("Delete a user");
-        deleteUser($item);
+        deleteUser(bab_rp('item'));
         $babBody->addItemMenu('List', bab_translate("Users"), $GLOBALS['babUrlScript']."?tg=users&idx=List&pos=".$pos."&grp=".$grp);
         $babBody->addItemMenu('Modify', bab_translate("Modify"), $GLOBALS['babUrlScript']."?tg=user&idx=Modify&item=".$item."&pos=".$pos."&grp=".$grp);
         $babBody->addItemMenu('Groups', bab_translate("Groups"), $GLOBALS['babUrlScript']."?tg=user&idx=Groups&item=".$item."&pos=".$pos."&grp=".$grp);

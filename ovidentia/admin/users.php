@@ -673,8 +673,6 @@ function confirmDeleteUsers($names)
 
 function confirmDisableUsers($names)
 {
-    global $babBody, $babDB;
-
     if( !empty($names) && bab_isUserAdministrator() && bab_getCurrentAdmGroup() == 0)
     {
         include_once $GLOBALS['babInstallPath'] . 'utilit/delincl.php';
@@ -682,6 +680,7 @@ function confirmDisableUsers($names)
         $cnt = count($arr);
         for($i = 0; $i < $cnt; $i++)
         {
+            $error = null;
             bab_updateUserById($arr[$i], array('disabled' => 1), $error);
         }
     }
@@ -735,28 +734,28 @@ if( $idx == "chg")
     $idx = "List";
 }
 
-if( isset($Updateg) && (bab_isUserAdministrator() || bab_getCurrentAdmGroup() != 0 ))
+if( bab_rp('Updateg') && (bab_isUserAdministrator() || bab_getCurrentAdmGroup() != 0 ))
 {
     $users = isset($_POST['users']) ? $_POST['users'] : array();
     updateGroup($_POST['grp'], $users, $_POST['userst']);
     Header("Location: ". $GLOBALS['babUrlScript']."?tg=users&idx=List&pos=".$pos."&grp=".$grp."&bupd=".$_REQUEST['bupd']);
     exit;
 }
-elseif(isset($Deleteg) && bab_isUserAdministrator())
+elseif(bab_rp('Deleteg') && bab_isUserAdministrator())
 {
     $idx = 'deletem';
 }
 
-if( isset($action) && $action == 'Yes')
+if( bab_rp('action') === 'Yes')
     {
     if(bab_isUserAdministrator() && bab_getCurrentAdmGroup() == 0)
         {
         if ($idx == "Deleteu")
         {
-            confirmDeleteUsers($names);
+            confirmDeleteUsers(bab_rp('names'));
         } else if ($idx == 'Disableu')
         {
-            confirmDisableUsers($names);
+            confirmDisableUsers(bab_rp('names'));
         }
         Header('Location: '. $GLOBALS['babUrlScript'].'?tg=users&idx=List&pos='.$pos.'&grp='.$grp);
         exit;
@@ -769,7 +768,7 @@ if( $idx == "Create" && !bab_isUserAdministrator() && !bab_isDelegated('users'))
     return;
 }
 
-if( isset($aclnotif))
+if( bab_rp('aclnotif'))
 {
     require_once $GLOBALS['babInstallPath']."admin/acl.php";
     maclGroups();
@@ -786,7 +785,7 @@ switch($idx)
     case "brow": // Used by add-ons but deprecated
         if( bab_isUserAdministrator() || bab_getCurrentAdmGroup() != 0 )
             {
-            bab_adminBrowseUsers($pos, $cb);
+            bab_adminBrowseUsers($pos, bab_rp('cb'));
             }
         else
             {

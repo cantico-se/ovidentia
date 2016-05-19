@@ -1402,7 +1402,7 @@ class Func_UserEditor extends bab_functionality {
 
         require_once $GLOBALS['babInstallPath'].'admin/register.php';
 
-
+        $error = null;
         if (false === $id_user = bab_registerUser($user['sn'], $user['givenname'], '', $user['email'], $user['nickname'], $user['password1'], $user['password2'], $isconfirmed, $error))
         {
             throw new Exception($error);
@@ -1577,6 +1577,7 @@ class Func_UserEditor extends bab_functionality {
         }
 
 
+        $error = null;
         if (!bab_updateUserById($id_user, $user, $error))
         {
             throw new Exception($error);
@@ -1693,6 +1694,7 @@ class Func_UserEditor extends bab_functionality {
             $user['jpegphoto'] = $this->getJpegphotoField();
         }
 
+        $error = null;
         if (!bab_updateUserById($id_user, $user, $error))
         {
             throw new Exception($error);

@@ -798,7 +798,7 @@ function bab_getSuperior($iduser, $idoc = '')
 
 function bab_addUserToGroup($iduser, $idgroup, $oc = true)
 {
-    global $babDB, $babBody;
+    global $babDB;
 
     if( $oc )
     {
@@ -807,6 +807,7 @@ function bab_addUserToGroup($iduser, $idgroup, $oc = true)
         {
             $role = $babDB->db_fetch_assoc($babDB->db_query("select id, id_oc from ".BAB_OC_ROLES_TBL." where id_entity='".$babDB->db_escape_string($identity)."' and type='3'"));
             $restemp = $babDB->db_query("select id from ".BAB_OC_ROLES_TBL." where id_entity='".$babDB->db_escape_string($identity)."'");
+            $roles = array();
             while($temproles = $babDB->db_fetch_assoc($restemp)){
                 $roles[] = $temproles['id'];
             };

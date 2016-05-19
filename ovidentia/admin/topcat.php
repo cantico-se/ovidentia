@@ -279,6 +279,7 @@ function topcatModify($id)
 		
 		function arr_child($id)
 		{
+		    $out = array();
 			$out[] = $id;
 			global $babDB;
 			$res = $babDB->db_query("SELECT id FROM ".BAB_TOPICS_CATEGORIES_TBL." WHERE id_parent='".$id."'");
@@ -809,14 +810,23 @@ bab_PublicationImageUploader::deleteOutDatedTempImage($iNbSeconds);
 
 
 $idx = bab_rp('idx', 'Modify');
+$action = bab_rp('action');
 
-if( isset($modify))
+if( bab_rp('modify'))
 	{
-	if( isset($submit))
+	if( bab_pp('submit'))
 	{
-		if(false !== modifyTopcat($oldname, $title, $description, $benabled, $item, $template, $disptmpl, $topcatid))
+		if(false !== modifyTopcat(
+		    bab_pp('oldname'), 
+		    bab_pp('title'), 
+		    bab_pp('description'), 
+		    bab_pp('benabled'), 
+		    bab_pp('item'), 
+		    bab_pp('template'), 
+		    bab_pp('disptmpl'), 
+		    bab_pp('topcatid')))
 		{
-			bab_sitemap::clearAll();
+			bab_siteMap::clearAll();
 			Header("Location: ". $GLOBALS['babUrlScript'] . '?tg=topcats');
 			exit;
 		}
@@ -825,7 +835,7 @@ if( isset($modify))
 			$idx = 'Modify';
 		}
 	}
-	else if( isset($catdel))
+	else if( bab_pp('catdel'))
 		$idx = "Delete";
 	}
 
@@ -836,18 +846,18 @@ if( isset($action))
 		case 'Yes':
 			if($idx == "Delete")
 				{
-				confirmDeleteTopcat($group);
+				confirmDeleteTopcat(bab_pp('group'));
 				}
 			break;
 		case 'updrights':
 			$opt = bab_pp('opt', array());
-			updateDefaultRights($item, $opt);
+			updateDefaultRights(bab_pp('item'), $opt);
 			Header("Location: ". $GLOBALS['babUrlScript']."?tg=topcats");
 			break;
 		}
 	}
 
-if( isset($aclview) )
+if( bab_rp('aclview') )
 	{
 	updateAclGroups();
 	}
@@ -873,14 +883,14 @@ switch($idx)
 		
 		break;
 	case 'crights':
-		howToUseDefaultRights($item);
-		$babBody->title = bab_translate("Default rights for").": ".bab_getTopicCategoryTitle($item);
+		howToUseDefaultRights(bab_rp('item'));
+		$babBody->title = bab_translate("Default rights for").": ".bab_getTopicCategoryTitle(bab_rp('item'));
 		$babBody->addItemMenu("List", bab_translate("Categories"), $GLOBALS['babUrlScript']."?tg=topcats");
-		$babBody->addItemMenu("rights", bab_translate("Default rights"), $GLOBALS['babUrlScript']."?tg=topcat&idx=rights&item=".$item);
+		$babBody->addItemMenu("rights", bab_translate("Default rights"), $GLOBALS['babUrlScript']."?tg=topcat&idx=rights&item=".bab_rp('item'));
 		break;
 	case 'rights':
-		$babBody->title = bab_translate("Default rights for").": ".bab_getTopicCategoryTitle($item);
-		$macl = new macl("topcat", "crights", $item, "aclview");
+		$babBody->title = bab_translate("Default rights for").": ".bab_getTopicCategoryTitle(bab_rp('item'));
+		$macl = new macl("topcat", "crights", bab_rp('item'), "aclview");
         $macl->addtable( BAB_DEF_TOPCATVIEW_GROUPS_TBL,bab_translate("Who can read articles ?"));
         $macl->addtable( BAB_DEF_TOPCATSUB_GROUPS_TBL,bab_translate("Who can submit new articles ?"));
 		$macl->addtable( BAB_DEF_TOPCATCOM_GROUPS_TBL,bab_translate("Who can post comment ?"));
@@ -889,27 +899,25 @@ switch($idx)
 		$macl->filter(0,0,1,1,1);
         $macl->babecho();
 		$babBody->addItemMenu("List", bab_translate("Categories"), $GLOBALS['babUrlScript']."?tg=topcats");
-		$babBody->addItemMenu("rights", bab_translate("Default rights"), $GLOBALS['babUrlScript']."?tg=topcat&idx=rights&item=".$item);
+		$babBody->addItemMenu("rights", bab_translate("Default rights"), $GLOBALS['babUrlScript']."?tg=topcat&idx=rights&item=".bab_rp('item'));
 		break;
 	case 'Delete':
-		if(topcatDelete($item, $idp))
+		if(topcatDelete(bab_rp('item'), bab_rp('idp')))
 			{
 			$babBody->title = bab_translate("Delete topic category");
-			$babBody->addItemMenu("List", bab_translate("Categories"), $GLOBALS['babUrlScript']."?tg=topcats&idx=List&idp=".$idp);
-			$babBody->addItemMenu("Delete", bab_translate("Delete"), $GLOBALS['babUrlScript']."?tg=topcat&idx=Delete&item=".$item);
+			$babBody->addItemMenu("List", bab_translate("Categories"), $GLOBALS['babUrlScript']."?tg=topcats&idx=List&idp=".bab_rp('idp'));
+			$babBody->addItemMenu("Delete", bab_translate("Delete"), $GLOBALS['babUrlScript']."?tg=topcat&idx=Delete&item=".bab_rp('item'));
 			break;
 			}
 		/* no break; */
 		$idx = 'Modify';
 	case 'Modify':
 	default:
-		topcatModify($item);
+		topcatModify(bab_rp('item'));
 		$babBody->title = bab_translate("Modify topic category");
-		$babBody->addItemMenu("List", bab_translate("Categories"), $GLOBALS['babUrlScript']."?tg=topcats&idx=List&idp=".$idp);
-		$babBody->addItemMenu("Modify", bab_translate("Modify"), $GLOBALS['babUrlScript']."?tg=topcat&idx=Modify&item=".$item."&idp=".$idp);
+		$babBody->addItemMenu("List", bab_translate("Categories"), $GLOBALS['babUrlScript']."?tg=topcats&idx=List&idp=".bab_rp('idp'));
+		$babBody->addItemMenu("Modify", bab_translate("Modify"), $GLOBALS['babUrlScript']."?tg=topcat&idx=Modify&item=".bab_rp('item')."&idp=".bab_rp('idp'));
 		break;
 	}
 
 $babBody->setCurrentItemMenu($idx);
-
-?>

@@ -971,14 +971,32 @@ $cat = intval(bab_rp('cat', 0));
 
 if(isset($_POST['add']))
 {
-	$sAllowAddImg = bab_rp('sAllowAddImg', 'N');
-	if(!saveCategory($category, $ncat, $sacom, $saart, $saupd, $bnotif, $lang, $atid, $disptid, $bhpages, $bpubdates, $battachment, $bartupdate, $bmanmod, $maxarts, $bautoapp, $busetags, $sAllowAddImg, bab_rp('allow_empty_head')))
+	if(!saveCategory(
+	    bab_rp('category'), 
+	    bab_rp('ncat'), 
+	    bab_rp('sacom'), 
+	    bab_rp('saart'), 
+	    bab_rp('saupd'), 
+	    bab_rp('bnotif'), 
+	    bab_rp('lang'), 
+	    bab_rp('atid'), 
+	    bab_rp('disptid'), 
+	    bab_rp('bhpages'), 
+	    bab_rp('bpubdates'), 
+	    bab_rp('battachment'), 
+	    bab_rp('bartupdate'), 
+	    bab_rp('bmanmod'), 
+	    bab_rp('maxarts'), 
+	    bab_rp('bautoapp'), 
+	    bab_rp('busetags'), 
+	    bab_rp('sAllowAddImg', 'N'), 
+	    bab_rp('allow_empty_head')))
 	{
 		$idx = 'addtopic';
 	}
 	else
 	{
-		$cat = $ncat;
+		$cat = bab_rp('ncat');
 		Header("Location: ". $GLOBALS['babUrlScript']."?tg=topcats");
 		exit;
 	}
@@ -990,6 +1008,7 @@ if( !$cat )
 	return;
 }
 
+$idp = bab_rp('idp', null);
 if( !isset($idp))
 {
 	list($idp) = $babDB->db_fetch_row($babDB->db_query("select id_parent from ".BAB_TOPICS_CATEGORIES_TBL." where id='".$cat."'"));

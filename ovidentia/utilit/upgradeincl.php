@@ -79,23 +79,24 @@ class BabDirectoryFiltered extends FilterIterator
 
 
 function bab_recursive_cp_ls_a($wh){
-         if ($handle = opendir($wh)) {
-             while (false !== ($file = readdir($handle))) {
-				if ($file != "." && $file != ".." ) {
-						if(!isset($files)) {
-							$files="$file";
-						} else {
-							$files="$file\n$files";
-						}
-				   }
-              }
-               closedir($handle);
-         }
-		 if (!isset($files))
-			return array();
-        $arr=explode("\n",$files);
-        return $arr;
-    }
+    $files = null;
+     if ($handle = opendir($wh)) {
+         while (false !== ($file = readdir($handle))) {
+			if ($file != "." && $file != ".." ) {
+					if(!isset($files)) {
+						$files="$file";
+					} else {
+						$files="$file\n$files";
+					}
+			   }
+          }
+           closedir($handle);
+     }
+	 if (!isset($files))
+		return array();
+    $arr=explode("\n",$files);
+    return $arr;
+}
 
 
 /**
@@ -191,6 +192,7 @@ function bab_writeConfig($replace)
 	global $babBody;
 	function replace($txt, $var, $value)
 		{
+		$match = null;
 		preg_match('/'.preg_quote($var, '/')."\s*=\s*\"([^\"]*)\"/", $txt, $match);
 		if ($match[1] != $value)
 			{
@@ -253,8 +255,6 @@ function bab_upgrade($core_dir, &$ret, $forceUpgrade = false)
 {
 
 	global $babBody;
-	$db = $GLOBALS['babDB'];
-
 
 	function putVersion($version)
 	{
@@ -265,15 +265,17 @@ function bab_upgrade($core_dir, &$ret, $forceUpgrade = false)
 		$txt = fread($file, filesize($filename));
 		fclose($file);
 		$reg = "/babVersion[[:space:]]*=[[:space:]]*\"([^\"]*)\"/";
-		$res = preg_match($reg, $txt, $match);
-
-		$reg = "/babVersion[[:space:]]*=[[:space:]]*\"".$match[1]."\"/";
-		$out = preg_replace($reg, "babVersion = \"".$version."\"", $txt);
-		if (is_writable($filename)) {
-			$file = fopen($filename, "w");
-			fputs($file, $out);
-			fclose($file);
-			return $match[1];
+		
+		$match = null;
+		if (preg_match($reg, $txt, $match)) {
+    		$reg = "/babVersion[[:space:]]*=[[:space:]]*\"".$match[1]."\"/";
+    		$out = preg_replace($reg, "babVersion = \"".$version."\"", $txt);
+    		if (is_writable($filename)) {
+    			$file = fopen($filename, "w");
+    			fputs($file, $out);
+    			fclose($file);
+    			return $match[1];
+    		}
 		}
 		return false;
 	}
