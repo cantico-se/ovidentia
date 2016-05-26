@@ -1410,16 +1410,18 @@ class bab_siteMapItem {
         /* @var $node bab_Node */
         $node = $this->node;
         $arr = array();
+        $pos = 0;
 
         do
         {
+            $pos++;
             $sitemapItem = $node->getData();
             /*@var $sitemapItem $sitemapItem */
             if (!$sitemapItem || $sitemapItem->getRewriteName() === bab_siteMap::REWRITING_ROOT_NODE || $sitemapItem->id_function == 'DGAll') {
                 break;
             }
 
-            if (!$sitemapItem->rewriteIgnore) {
+            if (!$sitemapItem->rewriteIgnore && $pos > 1) {
                 array_unshift($arr, $sitemapItem->getRewriteName());
             }
         } while ($node = $node->parentNode());
