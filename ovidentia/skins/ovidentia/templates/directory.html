@@ -738,12 +738,12 @@ bab_initFunctions.push(function() {
 			
 			<!--#if unassign -->
 			&nbsp;&nbsp;
-			<a href="{ unassignurl }" onclick="return confirm('{ t_unassignconf }')">{ unassigntxt }</a>
+			<a href="{ unassignurl }" title="{ t_unassignconf }" onclick="return bab_postLinkConfirm(this)">{ unassigntxt }</a>
 			<!--#endif unassign -->
 			
 			<!--#if del -->
 			&nbsp;&nbsp;
-			<img src="{ babSkinPath }images/Puces/del.gif" align="absmiddle" alt="" border="0" />&nbsp;<a href="{ delurl }" onclick="return confirm('{ t_delconf }')">{ deltxt }</a>
+			<img src="{ babSkinPath }images/Puces/del.gif" align="absmiddle" alt="" border="0" />&nbsp;<a href="{ delurl }" title="{ t_delconf }" onclick="return bab_postLinkConfirm(this)">{ deltxt }</a>
 			<!--#endif del -->
 			
 			&nbsp;&nbsp; 

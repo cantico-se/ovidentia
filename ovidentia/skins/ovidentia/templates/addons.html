@@ -3,15 +3,6 @@
 
 <!--#if display_in_form -->
 
-<script type="text/javascript">
-<!--
-function deladdon(id)
-	{
-	//}
-	return confirm('{ confirmdelete }');
-	}
-//-->
-</script>
 <form method="post" action="{ babPhpSelf }" name="listform">
 <input type="hidden" name="tg" value="addons" />
 <input type="hidden" name="idx" value="list" />
@@ -193,7 +184,7 @@ function deladdon(id)
 						&nbsp;&nbsp;
 
 						<!--#if deleteurl -->
-						<a href="{ deleteurl }" title="{ confirmdelete }" onclick="return confirm(this.title);" style="white-space:nowrap;"><img alt="" border="0" src="{ babSkinPath }images/Puces/del.gif" align="absmiddle" />&nbsp;{ t_delete }</a>
+						<a href="{ deleteurl }" title="{ confirmdelete }" onclick="return bab_postLinkConfirm(this);" style="white-space:nowrap;"><img alt="" border="0" src="{ babSkinPath }images/Puces/del.gif" align="absmiddle" />&nbsp;{ t_delete }</a>
 						<!--#endif deleteurl -->
 						
 						&nbsp;&nbsp;

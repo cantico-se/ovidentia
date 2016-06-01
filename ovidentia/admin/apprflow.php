@@ -27,7 +27,7 @@
 */
 
 include_once 'base.php';
-require_once dirname(__FILE__).'/../utilit/registerglobals.php';
+
 include_once $GLOBALS['babInstallPath'].'utilit/afincl.php';
 
 //define("BAB_DEBUG_FA", 1);

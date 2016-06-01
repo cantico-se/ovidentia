@@ -26,7 +26,7 @@ function confirm_submit(url)
 	<!--#if altbg --><tr class="BabSiteAdminFontBackground"><!--#else altbg --><tr class="BabForumBackground1"><!--#endif altbg -->
 		<td align="center" width="1%" nowrap>
 			<a title="{ t_modify }" href="{ urlname }"><img valign="absmiddle" src="{ babSkinPath }images/Puces/edit.gif" alt="{ t_modify }" border="0"></a>
-			&nbsp;<a title="{ confirmdelete }" href="{ deleteurl }" onclick="return confirm(this.title);"><img valign="absmiddle" src="{ babSkinPath }images/Puces/del.gif" alt="{ deletetxt }" border="0"></a>
+			&nbsp;<a title="{ confirmdelete }" href="{ deleteurl }" onclick="return bab_postLinkConfirm(this);"><img valign="absmiddle" src="{ babSkinPath }images/Puces/del.gif" alt="{ deletetxt }" border="0"></a>
 			
 		</td>
 		<td>

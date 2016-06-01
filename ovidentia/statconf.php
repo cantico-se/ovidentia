@@ -22,7 +22,7 @@
  * USA.																	*
 ************************************************************************/
 include_once "base.php";
-require_once dirname(__FILE__).'/utilit/registerglobals.php';
+
 include_once $GLOBALS['babInstallPath']."admin/acl.php";
 
 define("BAB_STAT_BCT_TOPIC",		1);
@@ -834,38 +834,41 @@ $action = bab_rp('action', null);
 
 $aclview = bab_rp('aclview', null);
 
+$baskid = bab_rp('baskid');
+$url = bab_rp('url');
+$desc = bab_rp('desc');
+
 
 if( isset($action))
 {
 	switch( $action)
 	{
 		case 'dpages':
-		deletePages($pages);
+		deletePages(bab_rp('pages'));
 			break;
 		case 'apage':
-		if(addPage($url, $desc))
-		{
-			$url = '';
-			$desc = '';
-		}
+		    if (addPage($url, $desc)) {
+    			$url = '';
+    			$desc = '';
+    		}
 			break;
+			
 		case 'apref':
-		updateStatPreferences($wsepar, $separ);
-		Header("Location: ". $GLOBALS['babUrlScript']."?tg=stat");
-		exit;
+		    updateStatPreferences(bab_rp('wsepar'), bab_rp('separ'));
+		    Header("Location: ". $GLOBALS['babUrlScript']."?tg=stat");
+		    exit;
 			break;
+			
 		case 'abask':
-			addStatBasket($baskname, $baskdesc);
+			addStatBasket(bab_rp('baskname'), bab_rp('baskdesc'));
 			Header("Location: ". $GLOBALS['babUrlScript']."?tg=statconf&idx=bask");
 			exit;
 			break;
 		case 'dbask':
-			deleteStatBasket($baskid);
+			deleteStatBasket(bab_rp('baskid'));
 			break;
 		case 'mbask':
-			updateStatBasket($baskid, $baskname, $baskdesc);
-			unset($baskname);
-			unset($baskdesc);
+			updateStatBasket(bab_rp('baskid'), bab_rp('baskname'), bab_rp('baskdesc'));
 			break;
 		case 'bcdel':
 			deleteStatBasketContentItem();
@@ -930,8 +933,6 @@ switch($idx)
 			{
 			$babBody->addItemMenu("maj", bab_translate("Update"), $GLOBALS['babUrlScript']."?tg=statconf&idx=maj&statrows=12000");
 			}
-		if( !isset($baskname) ) { $baskname ='';}
-		if( !isset($baskdesc) ) { $baskdesc ='';}
 		statDeleteBasket($baskid);
 		break;
 
@@ -990,8 +991,6 @@ switch($idx)
 			{
 			$babBody->addItemMenu("maj", bab_translate("Update"), $GLOBALS['babUrlScript']."?tg=statconf&idx=maj&statrows=12000");
 			}
-		if( !isset($baskname) ) { $baskname ='';}
-		if( !isset($baskdesc) ) { $baskdesc ='';}
 		statContentBasket($baskid);
 		break;
 
@@ -1005,9 +1004,7 @@ switch($idx)
 			{
 			$babBody->addItemMenu("maj", bab_translate("Update"), $GLOBALS['babUrlScript']."?tg=statconf&idx=maj&statrows=12000");
 			}
-		if( !isset($baskname) ) { $baskname ='';}
-		if( !isset($baskdesc) ) { $baskdesc ='';}
-		statBaskets($baskname, $baskdesc);
+		statBaskets(bab_rp('baskname'), bab_rp('baskdesc'));
 		break;
 
 	case 'pref':

@@ -621,7 +621,7 @@ class bab_FolderReferenceDescription extends bab_ReferenceDescriptionImpl
         $arr = explode('/', $fullpath);
 
         $id_delegation = 0;
-
+        $m = null;
         if (preg_match('/^DG(\d+)$/', $arr['0'], $m)) {
             $id_delegation = (int) $m[1];
             array_shift($arr);
@@ -655,6 +655,10 @@ class bab_FolderReferenceDescription extends bab_ReferenceDescriptionImpl
             require_once dirname(__FILE__).'/fileincl.php';
 
             list($id_delegation, $path) = $this->getPath();
+            
+            $iIdRootFolder = null;
+            $oFmFolder = null;
+            
             BAB_FmFolderHelper::getInfoFromCollectivePath($path, $iIdRootFolder, $oFmFolder, false, $id_delegation);
 
             $this->folderInfos = array($iIdRootFolder, $oFmFolder);

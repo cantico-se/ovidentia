@@ -79,6 +79,9 @@
 				return;
 			}
 			
+			$admin_name = null;
+			$admin_email = null;
+			
 			$this->get_admin_info($admin_name, $admin_email);
 
 			$this->m_mail->mailFrom($admin_email, $admin_name);
@@ -155,6 +158,7 @@
 			{
 				//if($iIdEvent == BAB_TM_EV_TASK_UPDATED_BY_MGR)
 				{
+				    $aTaskResponsibles = null;
 					bab_getTaskResponsibles($iIdTask, $aTaskResponsibles);
 					foreach($aTaskResponsibles as $iIdResponsible => $aResponsible)
 					{

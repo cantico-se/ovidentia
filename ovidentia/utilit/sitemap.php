@@ -519,7 +519,7 @@ class bab_siteMapOrphanRootNode extends bab_OrphanRootNode {
         $languages = bab_getAvailableLanguages();
         
         $list = array();
-        foreach ($language as $langCode) {
+        foreach ($languages as $langCode) {
             $list[$langCode] = $this->getNodeByLangId($langCode, $id);
         }
         
@@ -658,7 +658,7 @@ class bab_siteMapOrphanRootNode extends bab_OrphanRootNode {
         $I = new bab_NodeIterator($baseNode);
         while($childNode = $I->nextNode()) {
             /*@var $childNode \bab_Node */
-    
+            $m = null;
             if (preg_match($pattern, $childNode->getId(), $m)) {
     
                 $return->nodes[] = $childNode;
@@ -710,7 +710,7 @@ class bab_siteMapOrphanRootNode extends bab_OrphanRootNode {
         
         foreach ($targetIndex as $targetId => $customNodes) {
 
-
+            $m = null;
             if (preg_match($pattern, $targetId, $m)) {
                 
                 $customNodes = $this->filterByBaseNodeId($baseNodeId, $customNodes);
@@ -1410,16 +1410,18 @@ class bab_siteMapItem {
         /* @var $node bab_Node */
         $node = $this->node;
         $arr = array();
+        $pos = 0;
 
         do
         {
+            $pos++;
             $sitemapItem = $node->getData();
             /*@var $sitemapItem $sitemapItem */
             if (!$sitemapItem || $sitemapItem->getRewriteName() === bab_siteMap::REWRITING_ROOT_NODE || $sitemapItem->id_function == 'DGAll') {
                 break;
             }
 
-            if (!$sitemapItem->rewriteIgnore) {
+            if (!$sitemapItem->rewriteIgnore && $pos > 1) {
                 array_unshift($arr, $sitemapItem->getRewriteName());
             }
         } while ($node = $node->parentNode());
@@ -1621,8 +1623,8 @@ class bab_siteMap {
      * @param int $levels
      * @return bab_siteMapOrphanRootNode
      */
-    public function getRootNode($path = null, $levels = null) {
-        return bab_siteMap::get($path, $levels);
+    public function getRootNode($path = null, $levels = null, $build = true) {
+        return bab_siteMap::get($path, $levels, $build);
     }
 
     /**
@@ -1921,7 +1923,7 @@ class bab_siteMap {
      *
      * @return bab_siteMapOrphanRootNode
      */
-    public static function get($path = null, $levels = null) {
+    public static function get($path = null, $levels = null, $build = true) {
 
         // echo "sitemap get ".implode('/',$path)."\n";
 
@@ -2030,6 +2032,11 @@ class bab_siteMap {
         $res = $babDB->db_query($query);
 
         if (0 === $babDB->db_num_rows($res)) {
+            
+            if (!$build) {
+                return null;
+            }
+            
             // no sitemap for user, build it
 
             self::build($path, $levels);
@@ -2040,6 +2047,12 @@ class bab_siteMap {
         $firstnode = $babDB->db_fetch_assoc($res);
 
         if (null === $firstnode['profile_version']) {
+            
+            if (!$build) {
+                return null;
+            }
+            
+            
             // the profile version is missing, add version to profile
             // the user have a correct profile and a correct sitemap but the sitemap is incomplete
             // additional nodes need to be created in sitemap without deleting the profile

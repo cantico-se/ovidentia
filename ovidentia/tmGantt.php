@@ -1139,6 +1139,7 @@ class BAB_TM_GanttTaskBase
 
 		if(BAB_TM_TASK === (int) $aTask['iClass'])
 		{
+		    $aTaskResponsible = null;
 			bab_getTaskResponsibles($aTask['iIdTask'], $aTaskResponsible);
 
 			if(count($aTaskResponsible) > 0)

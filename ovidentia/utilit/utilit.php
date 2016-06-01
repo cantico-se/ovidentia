@@ -91,6 +91,7 @@ function bab_formatAuthor($format, $id)
 			}
 		}
 		if (isset($bab_authors[$id])) {
+		    $m = null;
 			if(preg_match_all('/%(.)/', $format, $m))
 				{
 				$txt = $format;

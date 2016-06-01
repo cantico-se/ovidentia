@@ -296,3 +296,40 @@ function bab_getInstallPath()
     }
     return '';
 }
+
+
+
+/**
+ * send the link variables with a POST form
+ * if there is a title, use it as confirm
+ * This function must be used with a return on a onclick attribute of a <a href=""> tag
+ * @param {DOMNode} a
+ * @return {boolean}
+ */
+function bab_postLinkConfirm(a)
+{
+	var title = a.getAttribute('title');
+	if (title && !confirm(title)) {
+		return false;
+	}
+
+	var pathItems = a.pathname.split('/');
+	var f = document.createElement('form');
+	f.action=pathItems[pathItems.length-1];
+	f.method='POST';
+	
+	var vars = a.search.substr(1).split('&');
+    for (var i = 0; i < vars.length; i++) {
+        var pair = vars[i].split('=');
+        var input=document.createElement('input');
+		input.type='hidden';
+		input.name=decodeURIComponent(pair[0]);
+		input.value=decodeURIComponent(pair[1]);
+		f.appendChild(input);
+    }
+	
+	document.body.appendChild(f);
+	f.submit();
+	
+	return false;
+}

@@ -1474,6 +1474,7 @@ function bab_selectPersonnalTasksList($iLenght = 50)
 
 function bab_getNextTaskNumber($iIdProject, $iTasksNumerotation, &$sTaskNumber)
 {
+    $iPosition = null;
 	bab_getNextTaskPosition($iIdProject, $iPosition);
 	
 	switch($iTasksNumerotation)

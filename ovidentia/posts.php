@@ -25,7 +25,7 @@
 * @internal SEC1 NA 18/12/2006 FULL
 */
 include_once 'base.php';
-require_once dirname(__FILE__).'/utilit/registerglobals.php';
+
 include_once $GLOBALS['babInstallPath'].'utilit/forumincl.php';
 include_once $GLOBALS['babInstallPath'].'utilit/topincl.php';
 include_once $GLOBALS['babInstallPath'].'utilit/mailincl.php';
@@ -1297,7 +1297,7 @@ $flat = bab_rp('flat', 0);
 $forum = bab_rp('forum', 0);
 $thread = bab_rp('thread', 0);
 $add = bab_rp('add', null);
-$action = bab_rp('action', null);
+$action = bab_pp('action', null);
 
 bab_siteMap::setPosition('bab', 'UserForum'.$forum);
 

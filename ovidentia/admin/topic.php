@@ -22,7 +22,7 @@
  * USA.																	*
 ************************************************************************/
 include_once "base.php";
-require_once dirname(__FILE__).'/../utilit/registerglobals.php';
+
 include_once $GLOBALS['babInstallPath']."admin/acl.php";
 include_once $GLOBALS['babInstallPath']."utilit/mailincl.php";
 include_once $GLOBALS['babInstallPath']."utilit/topincl.php";
@@ -1473,14 +1473,10 @@ require_once dirname(__FILE__) . '/../utilit/artincl.php';
 bab_PublicationImageUploader::deleteOutDatedTempImage($iNbSeconds);
 
 
-$idx = bab_rp('idx');
+$idx = bab_rp('idx', "Modify");
 $item = bab_rp('item');
+$cat = bab_rp('cat');
 
-
-if(!isset($idx))
-	{
-	$idx = "Modify";
-	}
 
 
 if(!isset($cat))
@@ -1490,62 +1486,83 @@ if(!isset($cat))
 	$cat = $r['id_cat'];
 	}
 
-if( isset($add) )
+if( bab_rp('add') )
 	{
-	if( isset($submit))
+	if( bab_rp('submit'))
 	{
-		$sAllowAddImg = bab_rp('sAllowAddImg', 'N');
-		if(!updateCategory($item, $category, $ncat, $saart, $sacom, $saupd, $bnotif, $lang, $atid, $disptid, bab_rp('restrict'), $bhpages, $bpubdates,$battachment, $bartupdate, $bmanmod, $maxarts, $bautoapp, $busetags, $sAllowAddImg, $allowarticlerating, bab_rp('allow_empty_head')))
+		if(!updateCategory(
+		    $item, 
+		    bab_rp('category'), 
+		    bab_rp('ncat'), 
+		    bab_rp('saart'), 
+		    bab_rp('sacom'), 
+		    bab_rp('saupd'), 
+		    bab_rp('bnotif'),
+		    bab_rp('lang'),
+		    bab_rp('atid'), 
+		    bab_rp('disptid'), 
+		    bab_rp('restrict'), 
+		    bab_rp('bhpages'), 
+		    bab_rp('bpubdates'),
+		    bab_rp('battachment'), 
+		    bab_rp('bartupdate'), 
+		    bab_rp('bmanmod'), 
+		    bab_rp('maxarts'), 
+		    bab_rp('bautoapp'), 
+		    bab_rp('busetags'), 
+		    bab_rp('sAllowAddImg', 'N'), 
+		    bab_rp('allowarticlerating'), 
+		    bab_rp('allow_empty_head')))
 		{
 			$idx = "Modify";
 		}
 		else
 		{
-			bab_sitemap::clearAll();
+			bab_siteMap::clearAll();
 			Header("Location: ". $GLOBALS['babUrlScript'] . '?tg=topcats');
 			exit;
 		}
 	}
-	else if( isset($topdel))
+	else if( bab_rp('topdel'))
 		$idx = "Delete";
 	}
 
-if( isset($aclview) )
+if( bab_rp('aclview') )
 	{
 	maclGroups();
 	Header("Location: ". $GLOBALS['babUrlScript']."?tg=topcats");
 	exit;
 	}
 
-if( isset($upart) && $upart == "articles")
+if( bab_rp('upart') == "articles")
 	{
 	switch($idx)
 		{
 		case "homepage0":
-			addToHomePages($item, 2, $hart0);
+			addToHomePages($item, 2, bab_rp('hart0'));
 			break;
 		case "homepage1":
-			addToHomePages($item, 1, $hart1);
+			addToHomePages($item, 1, bab_rp('hart1'));
 			break;
 		}
 	}
 
 
-if( isset($action) && $action == "Yes")
+if( bab_rp('action') == "Yes")
 	{
 	if( $idx == "Delete" )
 		{
 		include_once $GLOBALS['babInstallPath']."utilit/delincl.php";
-		bab_confirmDeleteTopic($category);
-		bab_sitemap::clearAll();
+		bab_confirmDeleteTopic(bab_rp('category'));
+		bab_siteMap::clearAll();
 		Header("Location: ". $GLOBALS['babUrlScript']."?tg=topcats");
 		exit;
 		}
 	else if( $idx == "Deletea")
 		{
 		include_once $GLOBALS['babInstallPath']."utilit/delincl.php";
-		bab_confirmDeleteArticles($items);
-		bab_sitemap::clearAll();
+		bab_confirmDeleteArticles(bab_rp('items'));
+		bab_siteMap::clearAll();
 		Header("Location: ". $GLOBALS['babUrlScript']."?tg=topcats");
 		exit;
 		}

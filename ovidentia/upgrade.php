@@ -1671,6 +1671,7 @@ if ($arr[0] != 'id_group')
         }
 
     $level3 = array();
+    $level4 = array();
 
     $res = $db->db_query("SELECT id, id_dggroup, name, id_dgowner FROM ".BAB_GROUPS_TBL."");
     while ($arr = $db->db_fetch_array($res))
@@ -4691,6 +4692,7 @@ function ovidentia_upgrade($version_base,$version_ini) {
 
     if (!bab_isTableField(BAB_FAR_INSTANCES_TBL, 'far_order'))
         {
+        $results = array();
         $babDB->db_query("ALTER TABLE ".BAB_FAR_INSTANCES_TBL." ADD far_order INT( 11 )  UNSIGNED DEFAULT '0' NOT NULL");
         $res = $babDB->db_query("select fat.*, fit.iduser, fit.id as fitid from ".BAB_FLOW_APPROVERS_TBL." fat left join ".BAB_FA_INSTANCES_TBL." fit on  fat.id=fit.idsch");
         while( $row = $babDB->db_fetch_array($res))

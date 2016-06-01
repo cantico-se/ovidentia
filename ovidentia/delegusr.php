@@ -26,7 +26,7 @@
 */
 
 include_once 'base.php';
-require_once dirname(__FILE__).'/utilit/registerglobals.php';
+
 require_once dirname(__FILE__).'/utilit/delegincl.php';
 
 

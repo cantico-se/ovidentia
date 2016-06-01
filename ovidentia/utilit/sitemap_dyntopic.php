@@ -134,6 +134,7 @@ class Func_SitemapDynamicNode_Topic extends Func_SitemapDynamicNode
 		$rewritename = reset($rewritePath);
 		$default_article_id = null;
 		
+		$m = null;
 		if (preg_match('/babArticle_(\d+)/', $rewritename, $m))
 		{
 			$default_article_id = (int) $m[1];

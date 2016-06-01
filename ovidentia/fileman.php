@@ -22,7 +22,7 @@
  * USA.																	*
 ************************************************************************/
 require_once 'base.php';
-require_once dirname(__FILE__).'/utilit/registerglobals.php';
+
 require_once $GLOBALS['babInstallPath'].'utilit/delegincl.php';
 require_once $GLOBALS['babInstallPath'].'utilit/pathUtil.class.php';
 require_once $GLOBALS['babInstallPath'].'utilit/fileincl.php';
@@ -3390,7 +3390,6 @@ function restoreFiles($items)
     $oFolderFileSet = new BAB_FolderFileSet();
     $oId =& $oFolderFileSet->aField['iId'];
 
-    global $babDB;
     for($i = 0; $i < count($items); $i++)
     {
         $oFolderFile = $oFolderFileSet->get($oId->in($items[$i]));
@@ -3399,7 +3398,7 @@ function restoreFiles($items)
             if(!is_dir($sPathName))
             {
                 $rr = explode("/", $sPathName);
-                $sPath = $sUploadPath;
+                $sPath = $oFileManagerEnv->getFmUploadPath();
                 for($k = 0; $k < count($rr); $k++ )
                 {
                     $sPath .= $rr[$k]."/";

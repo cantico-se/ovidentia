@@ -351,7 +351,7 @@ function bab_removeIndexObject($object) {
 
 	$obj = new bab_indexFileCls($object);
 	if ($obj->removeObject()) {
-		$db->db_query("DELETE FROM ".BAB_INDEX_FILES_TBL." WHERE id='".$id_index."'");
+		$db->db_query("DELETE FROM ".BAB_INDEX_FILES_TBL." WHERE object=".$db->quote($object));
 		return true;
 	}
 

@@ -360,18 +360,18 @@ class bab_WebStatEvent
 	}
 }
 
-if( isset($tg) && $tg == "version" )
+if( "version" === bab_rp('tg'))
 {
 	$babStatOnOff = 'N';
 }
 else
 {
-list($babStatOnOff) = $babDB->db_fetch_row($babDB->db_query("select stat_log from ".BAB_SITES_TBL." where name='".$babDB->db_escape_string($GLOBALS['babSiteName'])."'"));
+    list($babStatOnOff) = $babDB->db_fetch_row($babDB->db_query("select stat_log from ".BAB_SITES_TBL." where name='".$babDB->db_escape_string($GLOBALS['babSiteName'])."'"));
 }
 
-if( isset($tg) && $tg == "statinfo" )
+if( "statinfo" === bab_rp('tg') )
 {
-	$res = $babDB->db_query("select evt_info from ".BAB_STATS_EVENTS_TBL." where id='".$babDB->db_escape_string($statevt)."'");
+	$res = $babDB->db_query("select evt_info from ".BAB_STATS_EVENTS_TBL." where id='".$babDB->db_escape_string(bab_rp('statevt'))."'");
 	if( $res && $babDB->db_num_rows($res) > 0 )
 	{
 		$arr = $babDB->db_fetch_array($res);
@@ -411,7 +411,7 @@ if( isset($tg) && $tg == "statinfo" )
 
 		if( count($variables) > 0 )
 		{
-			$babDB->db_query("update ".BAB_STATS_EVENTS_TBL." set evt_info='".$babDB->db_escape_string(serialize($variables))."' where id='".$babDB->db_escape_string($statevt)."'");
+			$babDB->db_query("update ".BAB_STATS_EVENTS_TBL." set evt_info='".$babDB->db_escape_string(serialize($variables))."' where id='".$babDB->db_escape_string(bab_rp('statevt'))."'");
 		}
 	
 	}

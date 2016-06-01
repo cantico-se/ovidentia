@@ -25,7 +25,7 @@
 * @internal SEC1 NA 18/12/2006 FULL
 */
 include_once 'base.php';
-require_once dirname(__FILE__).'/utilit/registerglobals.php';
+
 include_once $GLOBALS['babInstallPath'].'utilit/forumincl.php';
 include_once $GLOBALS['babInstallPath'].'utilit/mailincl.php';
 
@@ -587,15 +587,14 @@ function getClosedThreads($forum)
 	}
 
 /* main */
-if(!isset($idx))
-	{
-	$idx = 'List';
-	}
+$idx = bab_rp('idx', 'List');
+$pos = bab_rp('pos', 0);
+$forum = bab_rp('forum');
 
 if( !isset($pos))
 	$pos = 0;
 
-if( isset($add) && $add == 'addthread' && bab_isAccessValid(BAB_FORUMSPOST_GROUPS_TBL, $forum))
+if('addthread' === bab_rp('add') && bab_isAccessValid(BAB_FORUMSPOST_GROUPS_TBL, $forum))
 	{
 	if (!saveThread())
 		{

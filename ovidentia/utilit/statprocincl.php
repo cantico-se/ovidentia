@@ -1246,6 +1246,7 @@ class bab_stats_handler
 				$rr = explode(":", $time);
 				$hour = $rr[0];
 				settype($hour, "integer");
+				$datas = array();
 				$datas['hour'] = $hour;
 				$datas['date'] = $date;
 				$datas['url'] = $arr['evt_url'];

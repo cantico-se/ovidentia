@@ -22,7 +22,7 @@
  * USA.																	*
 ************************************************************************/
 include_once 'base.php';
-require_once dirname(__FILE__).'/../utilit/registerglobals.php';
+
 include_once $GLOBALS['babInstallPath'].'admin/register.php';
 
 
@@ -206,116 +206,8 @@ function deleteUser($id)
 }
 
 
-/**
- * Display the form for modify nickname of a user
- * $item : id of the user who must be modify
- * $pos : filter for the list of the users when you clic a letter (a letter (A, B...) or nothing (all letters))
- * $grp : filter for the list of the users when you attach a user in a group (id of a group or nothing)
- *
- *
- * @deprecated use the userEditor functionality instead
- *
- */
-function changeNickname($item, $pos, $grp)
-{
-    global $babBody,$BAB_SESS_USERID;
-
-    class changeNicknameCls
-    {
-        var $newnickname;
-        var $nicknameval;
-        var $update;
-        var $item;
-        var $pos;
-        var $grp;
-
-        function changeNicknameCls($item, $pos, $grp)
-        {
-            global $babDB;
-            $this->item = $item;
-            $this->pos = $pos;
-            $this->grp = $grp;
-            $this->newnickname = bab_translate("Login ID");
-            $this->update = bab_translate("Update");
-            list($this->nicknameval) = $babDB->db_fetch_row($babDB->db_query("select nickname from ".BAB_USERS_TBL." where id='".$item."'"));
-        }
-    }
-
-    $tempb = new changeNicknameCls($item, $pos, $grp);
-    $babBody->babecho(bab_printTemplate($tempb, 'users.html', 'changenickname'));
-}
 
 
-
-/**
- * Display the form for modify password of a user
- * $userId : id of the user who must be modify
- * $pos : filter for the list of the users when you clic a letter (a letter (A, B...) or nothing (all letters))
- * $grp : filter for the list of the users when you attach a user in a group (id of a group or nothing)
- *
- *
- * @deprecated use the userEditor functionality instead
- */
-function changePassword($userId, $pos, $grp)
-{
-    global $babBody;
-
-    class changePasswordCls
-    {
-        var $newpwd;
-        var $renewpwd;
-        var $update;
-        var $userId;
-        var $pos;
-        var $grp;
-
-        function changePasswordCls($userId, $pos, $grp)
-        {
-            global $babBody, $babDB;
-
-            $sql = 'SELECT db_authentification FROM ' . BAB_USERS_TBL . ' WHERE id=' . $babDB->quote($userId);
-            $res = $babDB->db_query($sql);
-            $arruser = $babDB->db_fetch_assoc($res);
-
-            $authentication = $babBody->babsite['authentification'];
-            if ($arruser['db_authentification'] == 'Y') {
-                $authentication = ''; // force to default
-            }
-
-            switch ($authentication)
-            {
-                case BAB_AUTHENTIFICATION_AD:
-                    $this->bshowform = false;
-                    break;
-
-                case BAB_AUTHENTIFICATION_LDAP:
-                    if (empty($babBody->babsite['ldap_encryptiontype'])) {
-                        $this->bshowform = false;
-                    } else {
-                        $this->bshowform = true;
-                    }
-                    break;
-
-                default:
-                    $this->bshowform = true;
-                    break;
-            }
-
-            $this->item = $userId;
-            $this->pos = $pos;
-            $this->grp = $grp;
-            $this->newpwd = bab_translate("New Password");
-            $this->renewpwd = bab_translate("Retype New Password");
-            $this->update = bab_translate("Update");
-            $this->tsendconfirmationemail = bab_translate("Send an e-mail to the user with its new password");
-            $this->tyes = bab_translate("Yes");
-            $this->tno = bab_translate("No");
-        }
-    }
-
-    $tempb = new changePasswordCls($userId, $pos, $grp);
-    $babBody->babEcho(bab_printTemplate($tempb, 'users.html', 'changepassword'));
-}
 
 
 
@@ -565,6 +457,7 @@ function updateUser($userId, $changepwd, $isConfirmed, $disabled, $validityStart
     $pos = bab_rp('pos', 'A');
     $grp = bab_rp('grp', '');
     header('Location: ' . $GLOBALS['babUrlScript'] . '?tg=users&idx=List&pos=' . $pos . '&grp=' . $grp);
+    exit;
 }
 
 
@@ -583,6 +476,7 @@ function confirmDeleteUser($userId)
         bab_deleteUser($userId);
     }
     header('Location: ' . $GLOBALS['babUrlScript'] . '?tg=users&idx=List');
+    exit;
 }
 
 
@@ -681,8 +575,8 @@ if (isset($modify)) {
     }
 }
 
-if (isset($update) && $update == 'password') {
-    if(!updatePassword($item, $newpwd1, $newpwd2)) {
+if (bab_rp('update') == 'password') {
+    if(!updatePassword($item, bab_rp('newpwd1'), bab_rp('newpwd2'))) {
         $idx = 'Modify';
     } else {
         /* Send an e-mail to the user with its new password */
@@ -697,7 +591,7 @@ if (isset($update) && $update == 'password') {
                 $userName = bab_getUserName($item);
                 $userEmail = bab_getUserEmail($item);
                 list($nickname) = $babDB->db_fetch_row($babDB->db_query("select nickname from ".BAB_USERS_TBL." where id='".$item."'"));
-                $newPassword = $newpwd1;
+                $newPassword = bab_rp('newpwd1');
 
                 $mail->mailTo($userEmail, $userName);
                 $mail->mailFrom($babAdminEmail, $babAdminName);
@@ -739,7 +633,7 @@ function bab_adm_userEditor()
 
 
     $usereditor = bab_functionality::get('UserEditor');
-
+    /*@var $usereditor Func_UserEditor */
     $usereditor->getAsPage(bab_rp('item'), $list)->displayHtml();
 }
 
@@ -747,18 +641,10 @@ function bab_adm_userEditor()
 
 // main
 
+$idx = bab_rp('idx');
 
-if (isset($update) && $update == 'nickname') {
-    if(!updateNickname($item, $newnick)) {
-        $idx = 'Modify';
-    } else {
-        header('Location: ' . $GLOBALS['babUrlScript'] . '?tg=users&idx=List&pos=' . $pos . '&grp=' . $grp);
-        return;
-    }
-}
-
-if (isset($action) && $action == 'Yes') {
-    confirmDeleteUser($user);
+if (bab_pp('action') == 'Yes') {
+    confirmDeleteUser(bab_pp('user'));
 }
 
 if (isset($_POST['action'])) {
@@ -774,7 +660,7 @@ switch($idx) {
     case 'Delete':
 
         $babBody->title = bab_translate("Delete a user");
-        deleteUser($item);
+        deleteUser(bab_rp('item'));
         $babBody->addItemMenu('List', bab_translate("Users"), $GLOBALS['babUrlScript']."?tg=users&idx=List&pos=".$pos."&grp=".$grp);
         $babBody->addItemMenu('Modify', bab_translate("Modify"), $GLOBALS['babUrlScript']."?tg=user&idx=Modify&item=".$item."&pos=".$pos."&grp=".$grp);
         $babBody->addItemMenu('Groups', bab_translate("Groups"), $GLOBALS['babUrlScript']."?tg=user&idx=Groups&item=".$item."&pos=".$pos."&grp=".$grp);
@@ -833,6 +719,7 @@ switch($idx) {
 
 
     case 'Modify':
+        
         /* $item : contains id of the user who must be modified */
         if (is_numeric($item)) {
 
@@ -849,11 +736,6 @@ switch($idx) {
              */
             modifyUser($item, $pos, $grp);
 
-
-            /*
-            changeNickname($item, $pos, $grp);
-            changePassword($item, $pos, $grp);
-            */
 
             $babBody->addItemMenu('List', bab_translate("Users"), $GLOBALS['babUrlScript']."?tg=users&idx=List&pos=".$pos."&grp=".$grp);
             $babBody->addItemMenu('Modify', bab_translate("Modify"), $GLOBALS['babUrlScript']."?tg=user&idx=Modify&item=".$item."&pos=".$pos."&grp=".$grp);

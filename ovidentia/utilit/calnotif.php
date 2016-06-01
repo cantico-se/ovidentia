@@ -25,7 +25,6 @@
 * @internal SEC1 NA 12/12/2006 FULL
 */
 
-require_once dirname(__FILE__).'/registerglobals.php';
 
 function sendReminders()
 {

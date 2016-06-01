@@ -21,9 +21,9 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307,*
  * USA.																	*
 ************************************************************************/
-/**
-* @internal SEC1 NA 05/12/2006 FULL
-*/
+
+
+trigger_error('registerglobals is deprecated');
 
 
 /** 

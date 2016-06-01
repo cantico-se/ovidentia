@@ -22,7 +22,7 @@
  * @copyright Copyright (c) 2008 by CANTICO ({@link http://www.cantico.fr})
  */
 require_once 'base.php';
-require_once dirname(__FILE__).'/../utilit/registerglobals.php';
+
 require_once dirname(__FILE__) . '/acl.php';
 require_once dirname(__FILE__) . '/../utilit/topincl.php';
 require_once dirname(__FILE__) . '/../utilit/tree.php';
@@ -939,29 +939,34 @@ require_once dirname(__FILE__) . '/../utilit/artincl.php';
 bab_PublicationImageUploader::deleteOutDatedTempImage($iNbSeconds);
 
 
-if( !isset($idx))
-	$idx = "List";
+$idx = bab_rp('idx', "List");
+$idp = bab_rp('idp', 0);
 
-if( !isset($idp))
-	$idp = 0;
-
-if( isset($add))
+if( bab_pp('add'))
 	{
-	$idp = $topcatid;
-	if(false === addTopCat($name, $description, $benabled, $template, $disptmpl, $topcatid))
+	$idp = bab_pp('topcatid');
+	if(false === addTopCat(
+	    bab_pp('name'), 
+	    bab_pp('description'), 
+	    bab_pp('benabled'), 
+	    bab_pp('template'), 
+	    bab_pp('disptmpl'), 
+	    bab_pp('topcatid')))
 		{
 			$idx = 'Create';
 		}
 	}
-elseif( isset($update))
+elseif( bab_pp('update'))
 	{
+    $update = bab_pp('update');
+	    
 	if( $update == 'disable' || $update == 'enable' )
 	{
-		disableEnableTopcat($iIdTopCat, (($update == 'enable') ? 'Y' : 'N'));
+		disableEnableTopcat(bab_pp('iIdTopCat'), ($update == 'enable' ? 'Y' : 'N'));
 	}
 	if( $update == "order" )
 		{
-		saveOrderTopcats($idp, $listtopcats);
+		saveOrderTopcats($idp, bab_pp('listtopcats'));
 		}
 	}
 
@@ -1033,4 +1038,3 @@ switch($idx)
 
 $babBody->setCurrentItemMenu($idx);
 bab_siteMap::setPosition('bab','AdminArticles');
-?>

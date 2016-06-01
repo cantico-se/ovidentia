@@ -1276,7 +1276,7 @@ class bab_siteMap_insertTree
             return BAB_UNREGISTERED_SITEMAP_PROFILE;
         }
 
-        return $id_profile;
+        return null;
     }
 
 

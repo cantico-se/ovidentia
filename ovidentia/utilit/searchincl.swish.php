@@ -136,6 +136,7 @@ class swishCls
 		
 		$obj = $this->execCmd('whereis -b '.$command);
 		while ($str = $obj->getNextDebug()) {
+		    $m = null;
 			if (preg_match("/\/[\/\w+\-]+/", $str, $m)) {
 				if (isset($m[0])) {
 					return $m[0];
@@ -583,7 +584,7 @@ class bab_searchFilesCls extends swishCls
 
 		$files = array();
 		$debug = '';
-		
+		$matches = null;
 		if (preg_match_all('/(\d+)\s+(.*)\s+\"(.*)\"\s+\d+/', $str, $matches))
 			{
 			for( $j = 0; $j< count($matches[1]); $j++)

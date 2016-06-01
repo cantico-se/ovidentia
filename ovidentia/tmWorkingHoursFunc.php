@@ -121,6 +121,7 @@ function displayWorkingHoursForm()
 		
 		function getNextWorkingHour()
 		{
+		    $iWeekDay = null;
 			$this->get_data('numDay', $iWeekDay);
 
 			$wh = each($this->m_oWh->m_aWorkingHours[$iWeekDay]);

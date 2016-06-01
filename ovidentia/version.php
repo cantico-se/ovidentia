@@ -22,7 +22,7 @@
  * USA.																	*
 ************************************************************************/
 include_once "base.php";
-require_once dirname(__FILE__).'/utilit/registerglobals.php';
+
 include_once $GLOBALS['babInstallPath'].'utilit/inifileincl.php';
 include_once $GLOBALS['babInstallPath'].'utilit/upgradeincl.php';
 
@@ -69,6 +69,7 @@ function echoLang($path)
 						$txt = fread($file, filesize($path.$filename));
 						fclose($file);
 						$reg = "/bab_translate[[:space:]]*\([[:space:]]*\"([^\"]*)/s";
+						$m1 = null;
 						preg_match_all($reg, $txt, $m1);
 						for ($i = 0; $i < count($m1[1]); $i++ )
 							{
@@ -159,8 +160,10 @@ switch($idx)
 			if( in_array($ar[$i], $tab) == false )
 				$tab[] = $ar[$i];
 			}
-		if( !isset($cmd) || empty($cmd))
+			
+		if($cmd = bab_rp('cmd', null)) {
 			$cmd = $GLOBALS['babLanguage'];
+		}
 		$filename = $GLOBALS['babInstallPath']."lang/lang-".$cmd.".xml";
 		if( !file_exists($filename))
 			{
@@ -172,14 +175,14 @@ switch($idx)
 			$txt = fread($file, filesize($filename));
 			fclose($file);
 			}
-		$old = "";
+
 		$new = "";
 		for( $i = 0; $i < count($tab); $i++)
 			{
 			$reg = "/<string[[:space:]]*id=\"".preg_quote($tab[$i])."\">([^<]*)<\/string>/";
 			if( !empty($tab[$i]))
 				{
-				if( !preg_match($reg, $txt, $m))
+				if( !preg_match($reg, $txt))
 					{
 					$new .= "<string id=\"$tab[$i]\">".$tab[$i]."</string>"."\r\n";
 					}
@@ -189,6 +192,7 @@ switch($idx)
 		if( $file )
 			{
 			$reg = "/<".$cmd.">(.*)<\/".$cmd.">/s";
+			$m = null;
 			preg_match($reg, $txt, $m);
 			$txt = "<".$cmd.">".$m[1].$new."</".$cmd.">";
 			fputs($file, $txt);
@@ -235,7 +239,7 @@ switch($idx)
 		<h1>Ovidentia</h1>
 		
 		<?php
-		echo $babSiteName . "<br>";
+		echo $GLOBALS['babSiteName'] . "<br>";
 		echo bab_toHtml($str, BAB_HTML_ALL);
 	?>
 		<br>

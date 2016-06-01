@@ -226,7 +226,7 @@ class bab_Template
 
 		for ($sectionStartFound = false; !feof($templateFile); ) {
 			$line = fgets($templateFile, 8192);
-			if (preg_match($sectionStart, $line, $matches)) {
+			if (preg_match($sectionStart, $line)) {
 				$sectionStartFound = true;
 				break;
 			}
@@ -237,7 +237,7 @@ class bab_Template
 		$sectionContent = '';
 		for ($sectionEndFound = false; !feof($templateFile); ) {
 			$line = fgets($templateFile, 8192);
-			if (preg_match($sectionEnd, $line, $matches)) {
+			if (preg_match($sectionEnd, $line)) {
 				$sectionEndFound = true;
 				break;
 			}
@@ -358,6 +358,7 @@ class bab_Template
 		ob_start();
 		if (eval('?>' . $this->_parsedTemplate) === false) {
 			$errorMessage = ob_get_contents();
+			$matches = null;
 			$lineNumber = preg_match('/line ([0-9]+)$/', strip_tags($errorMessage), $matches) ? $matches[1] : -1;
 			bab_Template::addError($template, $errorMessage, $lineNumber);
 			$processedTemplate = '';
@@ -605,6 +606,7 @@ class bab_Template
 	 */
 	public static function getTemplates($pathname)
 	{
+	    $m = null;
 		if (preg_match_all('/<\!--#begin\s+(.*?)\s+-->/', file_get_contents($pathname), $m)) {
 			return $m[1];
 		}

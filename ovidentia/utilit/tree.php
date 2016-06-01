@@ -1146,6 +1146,8 @@ class bab_ArticleTreeView extends bab_TreeView
 
 				if (count($topsub) > 0  || count($topman) > 0 || count($topmod) > 0)
 				{
+				    $tmp = array();
+				    
 					if (count($topsub) > 0) {
 						/* allow_update != 0 : authors can modify their articles */
 						$tmp[] = '(topics.id IN (' . $babDB->quote(array_keys($topsub)) . ") AND topics.allow_update != '0')";

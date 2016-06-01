@@ -500,6 +500,35 @@ abstract class bab_Controller
 	}
 
 
+	/**
+	 * Method to call before saving
+	 * @since 8.4.91
+	 * @return self
+	 */
+	public function requireSaveMethod()
+	{
+	    if ('GET' === $_SERVER['REQUEST_METHOD']) {
+	        throw new bab_SaveErrorException('Method not allowed');
+	    }
+	    
+	    return $this;
+	}
+	
+	
+	/**
+	 * Method to call before deleting
+	 * @since 8.4.91
+	 * @return self
+	 */
+	public function requireDeleteMethod()
+	{
+	    if ('GET' === $_SERVER['REQUEST_METHOD']) {
+	        throw new bab_SaveErrorException('Method not allowed');
+	    }
+	    
+	    return $this;
+	}
+	
 
 
 	/**

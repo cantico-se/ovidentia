@@ -90,6 +90,9 @@ function displaySpecificFieldList()
 				{
 					$this->m_is_altbg = !$this->m_is_altbg;
 
+					$iIdProjectSpace = null;
+					$iIdProject = null;
+					
 					$this->get_data('iIdProjectSpace', $iIdProjectSpace);
 					$this->get_data('iIdProject', $iIdProject);
 					
@@ -181,9 +184,10 @@ function displaySpecificFieldForm()
 		}
 		else
 		{
-			die("Die with honor !!!");
+		    throw new Exception('Unexpected field type');
 		}
 		
+		$bCreation = null;
 		$oField->get_data('bCreation', $bCreation);
 		if($bCreation)
 		{
