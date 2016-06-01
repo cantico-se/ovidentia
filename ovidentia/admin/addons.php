@@ -735,7 +735,6 @@ function exportall($id)
  */
 function bab_AddonDel($id)
 	{
-
 	$row = bab_addonsInfos::getDbRow($id);
 	$addon = bab_getAddonInfosInstance($row['title']);
 	$msgerror = null;
@@ -1709,18 +1708,18 @@ $upgradeall = bab_rp('upgradeall');
 $item = bab_rp('item');
 
 if( isset($_REQUEST['update'])) {
-	    $addons = bab_rp('addons', array());
+	$addons = bab_rp('addons', array());
 
-	if( "disable" === bab_rp('update')) {
+	if( "disable" === bab_rp('update') && bab_requireSaveMethod()) {
 		disableAddons($addons);
 	}
 }
 
-if( isset($_REQUEST['acladd'])) {
+if( isset($_REQUEST['acladd']) && bab_requireSaveMethod()) {
 	maclGroups();
 }
 
-if (isset($_POST['action'])) {
+if (isset($_POST['action']) && bab_requireSaveMethod()) {
 	switch($_POST['action']) {
 
 		case 'upgrade':
@@ -1728,6 +1727,7 @@ if (isset($_POST['action'])) {
 			break;
 	}
 }
+
 
 switch($idx)
 	{
@@ -1814,10 +1814,7 @@ switch($idx)
 
 
 	case "del":
-		$babBody->setTitle(bab_translate('Delete addon'));
-		display_addons_menu();
-		$babBody->addItemMenu("del", bab_translate("Delete"), $GLOBALS['babUrlScript']."?tg=addons&idx=del");
-		bab_AddonDel($item);
+		bab_requireDeleteMethod() && bab_AddonDel($item);
 		break;
 
 	case "export":
