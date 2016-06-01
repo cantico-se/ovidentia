@@ -26,9 +26,9 @@
 class bab_Settings
 {
 	private $siteSettings = null;
-	
+
 	private $userSettings = null;
-	
+
 	/**
 	 * Get get current site settings
 	 * @throws ErrorException
@@ -36,19 +36,19 @@ class bab_Settings
 	 */
 	public function getSiteSettings()
 	{
-		
+
 		if (null === $this->siteSettings)
 		{
 			global $babDB;
-		
+
 			$BAB_HASH_VAR = bab_getHashVar();
-			
+
 			$req="select *, DECODE(smtppassword, \"".$babDB->db_escape_string($BAB_HASH_VAR)."\") as smtppass, DECODE(ldap_adminpassword, \"".$babDB->db_escape_string($BAB_HASH_VAR)."\") as ldap_adminpassword from bab_sites";
-			
+
 			if (isset($GLOBALS['babSiteName'])) {
 			    $req .= " where name='".$babDB->db_escape_string($GLOBALS['babSiteName'])."'";
 			}
-			
+
 			$res=$babDB->db_query($req);
 			if ($babDB->db_num_rows($res) == 0)
 			{
@@ -56,40 +56,47 @@ class bab_Settings
 			}
 			$arr = $babDB->db_fetch_assoc($res);
 			$this->siteSettings = $arr;
-		
+
 		}
-		
+
 		return $this->siteSettings;
 	}
-	
-	/**
-	 * Get absolute upload path
-	 * @return string
-	 */
-	public function getUploadPath()
-	{
-	    $site = $this->getSiteSettings();
-	    
-	    if ('' === $site['uploadpath']) {
-	        return '';
-	    }
-	    
-	    return realpath($site['uploadpath']); 
-	}
-	
-	
+
+    /**
+     * Get absolute upload path
+     *
+     * The value can be overriden by the global variable $babUploadPath.
+     *
+     * @return string
+     */
+    public function getUploadPath()
+    {
+        if (isset($GLOBALS['babUploadPath'])){
+            return $GLOBALS['babUploadPath'];
+        }
+
+        $site = $this->getSiteSettings();
+
+        if ('' === $site['uploadpath']) {
+            return '';
+        }
+
+        return realpath($site['uploadpath']);
+    }
+
+
 	public function setForCurrentSite($key, $value)
 	{
 		global $babDB;
 		$babDB->db_query('UPDATE bab_sites SET '.$babDB->backTick($key).'='.$babDB->quote($value).' WHERE name='.$babDB->quote($GLOBALS['babSiteName']));
 	}
-	
+
 	public function setForAllSites($key, $value)
 	{
 		global $babDB;
 		$babDB->db_query('UPDATE bab_sites SET '.$babDB->backTick($key).'='.$babDB->quote($value));
 	}
-	
+
 	/**
 	 * @return array()
 	 */
@@ -98,7 +105,7 @@ class bab_Settings
         if (!bab_isUserLogged()) {
             return null;
         }
-	    
+
 	    if (null === $this->userSettings)
 	    {
 	        global $babDB;
@@ -116,7 +123,7 @@ class bab_Settings
 	                '.BAB_USERS_TBL.'
 	            WHERE id='.$babDB->quote(bab_getUserId())
 	        );
-	    
+
 	        if (!$res || 0 === $babDB->db_num_rows($res))
 	        {
 	            $this->userSettings = false;
@@ -124,11 +131,11 @@ class bab_Settings
 	            $this->userSettings = $babDB->db_fetch_assoc($res);
 	        }
 	    }
-	    
+
 	    return $this->userSettings;
 	}
-	
-	
+
+
 	/**
 	 * Get site language
 	 * @return string
@@ -136,20 +143,20 @@ class bab_Settings
 	public function getSiteLanguage()
 	{
 	    $site = $this->getSiteSettings();
-	    
+
 	    if (!empty($site['lang'])) {
 	        return $site['lang'];
 	    }
-	    
+
 	    // detect from browser setting
-	    
+
 	    if (isset($_SERVER["HTTP_ACCEPT_LANGUAGE"])) {
-	        
+
 	        $arrLanguages = bab_getAvailableLanguages();
 	        $previousPos = 1000;
 	        $bLang = null;
 	        $accepted = mb_strtolower($_SERVER["HTTP_ACCEPT_LANGUAGE"]);
-	        
+
 	        foreach ($arrLanguages as $bLangTmp) {
 	            $pos = mb_strpos($accepted, $bLangTmp);
 	            if (false === $pos) {
@@ -160,21 +167,21 @@ class bab_Settings
 	                $bLang = $bLangTmp;
 	            }
 	        }
-	        
+
 	        if (isset($bLang)) {
 	            return $bLang;
 	        }
-	         
+
 	    }
-	     
-	    
-	    
+
+
+
 	    // default to FR
-	    
+
 	    return 'fr';
 	}
-	
-	
+
+
 	/**
 	 * @return bab_Settings
 	 */
