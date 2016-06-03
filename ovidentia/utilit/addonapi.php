@@ -3742,3 +3742,33 @@ function bab_setLanguage($code)
     $session = bab_getInstance('bab_Session');
     $session->babLanguage = $code;
 }
+
+
+
+/**
+ * function to call before saving
+ * @since 8.4.91
+ * @return bool
+ */
+function bab_requireSaveMethod()
+{
+    if ('GET' === $_SERVER['REQUEST_METHOD']) {
+        header($_SERVER["SERVER_PROTOCOL"]." 405 Method Not Allowed", true, 405);
+        $babBody = bab_getBody();
+        $babBody->addError('Method not allowed');
+        $babBody->babpopup('');
+    }
+    
+    return true;
+}
+
+
+/**
+ * function to call before deleting
+ * @since 8.4.91
+ * 
+ */
+function bab_requireDeleteMethod()
+{
+    return bab_requireSaveMethod();
+}

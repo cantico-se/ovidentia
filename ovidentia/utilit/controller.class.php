@@ -508,6 +508,7 @@ abstract class bab_Controller
 	public function requireSaveMethod()
 	{
 	    if ('GET' === $_SERVER['REQUEST_METHOD']) {
+	        header($_SERVER["SERVER_PROTOCOL"]." 405 Method Not Allowed", true, 405);
 	        throw new bab_SaveErrorException('Method not allowed');
 	    }
 	    
@@ -522,11 +523,7 @@ abstract class bab_Controller
 	 */
 	public function requireDeleteMethod()
 	{
-	    if ('GET' === $_SERVER['REQUEST_METHOD']) {
-	        throw new bab_SaveErrorException('Method not allowed');
-	    }
-	    
-	    return $this;
+	    return $this->requireSaveMethod();
 	}
 	
 
