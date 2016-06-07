@@ -241,7 +241,7 @@ switch($idx)
 		    
 		    ?>
 		    <p>
-		    	<a href="?tg=version&idx=upgradeaddons"><?php echo bab_translate("Install or update the addons provided in this package (optional)") ?></a>
+		    	<a href="?tg=version&amp;idx=upgradeaddons&amp;iframe=1"><?php echo bab_translate("Install or update the addons provided in this package (optional)") ?></a>
 		    </p>
 		    <?php
 		}
