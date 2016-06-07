@@ -439,7 +439,14 @@ function bab_upgradeAddons(&$ret)
     $ini = new bab_inifile();
     $ini->inifile($GLBOALS['babInstallPath'].'version.inc');
     
-    bab_upgradeAddonsFromInstall(false, $ini->getVersion());
+    try {
+        bab_upgradeAddonsFromInstall(false, $ini->getVersion());
+        $ret = bab_translate('Addons installed without errors');
+    } catch (Exception $e) {
+        $ret = $e->getMessage();
+    }
+    
+    return true;
 }
 
 
