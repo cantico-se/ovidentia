@@ -439,7 +439,7 @@ function bab_upgradeAddons(&$ret)
 {
     
     $ini = new bab_inifile();
-    $ini->inifile($GLBOALS['babInstallPath'].'version.inc');
+    $ini->inifile($GLOBALS['babInstallPath'].'version.inc');
     
     try {
         bab_upgradeAddonsFromInstall(false, $ini->getVersion());
