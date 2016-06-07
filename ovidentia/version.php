@@ -99,8 +99,13 @@ switch($idx)
 	{
 	case "upgrade":
 		$force = bab_rp('force', false);
-		bab_upgrade($GLOBALS['babInstallPath'], $str, $force);
+		$upgradeStatus = bab_upgrade($GLOBALS['babInstallPath'], $str, $force);
 		break;
+		
+	case 'upgradeaddons':
+	    // upgrade addons found in the install folder
+	    bab_upgradeAddons($str);
+	    break;
 
 	case "addons":
 		if( !bab_isUserAdministrator())
@@ -230,6 +235,17 @@ switch($idx)
 	if (bab_rp('iframe')) {
 		
 		echo bab_toHtml($str, BAB_HTML_ALL);
+		
+		if (isset($upgradeStatus) && true === $upgradeStatus) {
+		    // link to upgrade of addons in the install subfolder (next step)
+		    
+		    ?>
+		    <p>
+		    	<a href="?tg=version&idx=upgradeaddons"><?php echo bab_translate("Install or update the addons provided in this package (optional)") ?></a>
+		    </p>
+		    <?php
+		}
+		
 		?>
 		<br id="BAB_ADDON_INSTALL_END" />
 		<?php 
@@ -241,7 +257,7 @@ switch($idx)
 		<?php
 		echo $GLOBALS['babSiteName'] . "<br>";
 		echo bab_toHtml($str, BAB_HTML_ALL);
-	?>
+	    ?>
 		<br>
 		<p><a href="?"><?php echo bab_translate("Home");  ?></a></p>
 		<p class="copyright">&copy; 2001, <a href="http://www.cantico.fr/">CANTICO</a> All rights reserved.</p>
