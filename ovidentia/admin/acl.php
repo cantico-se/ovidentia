@@ -345,6 +345,7 @@ function _maclGroups()
 function maclGroups()
 {
 	global $babDB;
+	bab_requireSaveMethod();
 	$id_object = &$_POST['item'];
 
 	unset($_SESSION['bab_groupAccess']['acltables']);

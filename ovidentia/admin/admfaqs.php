@@ -240,6 +240,7 @@ $idx = bab_rp('idx', "Categories");
 
 if( isset($_REQUEST['add']))
 	{
+	    bab_requireSaveMethod();
 	    $category = bab_rp('category');
 	    $lang = bab_rp('lang');
 	    
@@ -270,4 +271,3 @@ switch($idx)
 	}
 $babBody->setCurrentItemMenu($idx);
 bab_siteMap::setPosition('bab','AdminFaqs');
-?>

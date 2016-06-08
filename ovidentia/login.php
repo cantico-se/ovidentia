@@ -168,7 +168,7 @@ function login_signon()
 /* main */
 
 $cmd = bab_rp('cmd','signon');
-if('send' === bab_pp('sendpassword'))
+if('send' === bab_pp('sendpassword') && bab_requireSaveMethod())
 {
     sendPassword(bab_pp('nickname'), bab_pp('email'));
     $cmd = 'displayMessageResetPwd';
@@ -183,7 +183,7 @@ switch($cmd)
         require_once $GLOBALS['babInstallPath'].'utilit/loginIncl.php';
         $cmd = 'changePwd';
         $error = bab_translate('All field has to be fill');
-        if(bab_pp('user') && bab_pp('old_pwd') && bab_pp('new_pwd1') && bab_pp('new_pwd2') && bab_forceChangePwd(bab_pp('user'), bab_pp('old_pwd'), bab_pp('new_pwd1'), bab_pp('new_pwd2'), $error)){
+        if(bab_requireSaveMethod() && bab_pp('user') && bab_pp('old_pwd') && bab_pp('new_pwd1') && bab_pp('new_pwd2') && bab_forceChangePwd(bab_pp('user'), bab_pp('old_pwd'), bab_pp('new_pwd1'), bab_pp('new_pwd2'), $error)){
             loginRedirect($GLOBALS['babUrlScript'] . '?babHttpContext=restore');
             break;
         }
@@ -285,11 +285,11 @@ switch($cmd)
         break;
 
     case "confirm":
-        confirmUser( bab_rp('hash'), bab_rp('name') );
+        bab_requireSaveMethod() && confirmUser( bab_rp('hash'), bab_rp('name') );
         login_signon();
         break;
 
-    case 'detect':
+    case 'detect': // This is deprecated, bab_requireCredential should be used instead
         if ($GLOBALS['BAB_SESS_LOGGED']) {
             header( "location:".bab_rp('referer') );
             exit;

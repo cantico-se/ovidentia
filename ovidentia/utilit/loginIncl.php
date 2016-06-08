@@ -349,6 +349,7 @@ class Func_PortalAuthentication_AuthOvidentia extends Func_PortalAuthentication
 
     public function login()
     {
+        bab_requireSaveMethod();
         $sLogin		= bab_pp('nickname', null);
         $sPassword	= bab_pp('password', null);
         $iLifeTime	= (int) bab_pp('lifetime', 0);
@@ -861,6 +862,7 @@ function bab_doRequireCredential($sLoginMessage, $sAuthType)
     }
 
     $oAuthObject = bab_functionality::get($sAuthPath);
+    /*@var $oAuthObject Func_PortalAuthentication_AuthOvidentia */
 
     if (false === $oAuthObject)
     {

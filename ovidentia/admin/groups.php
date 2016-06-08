@@ -559,6 +559,7 @@ $idx = bab_rp('idx','List');
 
 if( isset($_POST['add']))
 	{
+	    
 	if (isset($_POST['deleteg']))
 		{
 		$item = $_POST['grpid'];
@@ -566,6 +567,7 @@ if( isset($_POST['add']))
 		}
 	else
 		{
+		bab_requireSaveMethod();
 		$idx = addModGroup();
 		}
 	}
@@ -578,7 +580,7 @@ if( bab_rp('update') == "options")
     $pdsgrpids = bab_rp('pdsgrpids', array());
     $pcalgrpids = bab_rp('pcalgrpids',array());
 
-	saveGroupsOptions($mailgrpids, $notgrpids, $congrpids, $pdsgrpids, $pcalgrpids);
+	bab_requireSaveMethod() && saveGroupsOptions($mailgrpids, $notgrpids, $congrpids, $pdsgrpids, $pcalgrpids);
 	}
 
 if ($idx != "brow")
@@ -622,8 +624,9 @@ switch($idx)
 			}
 		break;
 	case "Delete":
-		if( $item > 3 )
+		if( $item > 3 ) {
 			groupDelete($item);
+		}
 		$babBody->title = bab_translate("Delete group");
 		$babBody->addItemMenu("Delete", bab_translate("Delete"), $GLOBALS['babUrlScript']."?tg=group&idx=Delete&item=".$item);
 		break;

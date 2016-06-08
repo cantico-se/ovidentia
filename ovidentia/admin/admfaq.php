@@ -204,7 +204,7 @@ if( isset($_REQUEST['add']))
 	{
 	if( isset($_REQUEST['submit']))
 		{
-		    
+		    bab_requireSaveMethod();
 		    $category = babrp('category');
 		    $lang = bab_rp('lang');
 		if(!updateCategory($item, $category, $lang))
@@ -220,13 +220,14 @@ if( isset($_REQUEST['aclfaq']))
 	    $table = bab_rp('table');
 	    $what = bab_rp('what');
 	    
-	aclUpdate($table, $item, $groups, $what);
+	
+	bab_requireSaveMethod() && aclUpdate($table, $item, $groups, $what);
 	Header("Location: ". $GLOBALS['babUrlScript']."?tg=admfaqs&idx=Categories");
 	}
 
 if( bab_rp('action') == "Yes")
 	{
-	confirmDeleteFaq($item);
+	bab_requireDeleteMethod() && confirmDeleteFaq($item);
 	}
 
 switch($idx)
@@ -265,5 +266,3 @@ switch($idx)
 		break;
 	}
 $babBody->setCurrentItemMenu($idx);
-
-?>

@@ -942,7 +942,7 @@ bab_PublicationImageUploader::deleteOutDatedTempImage($iNbSeconds);
 $idx = bab_rp('idx', "List");
 $idp = bab_rp('idp', 0);
 
-if( bab_pp('add'))
+if( bab_pp('add') && bab_requireSaveMethod())
 	{
 	$idp = bab_pp('topcatid');
 	if(false === addTopCat(
@@ -962,11 +962,11 @@ elseif( bab_pp('update'))
 	    
 	if( $update == 'disable' || $update == 'enable' )
 	{
-		disableEnableTopcat(bab_pp('iIdTopCat'), ($update == 'enable' ? 'Y' : 'N'));
+		bab_requireSaveMethod() && disableEnableTopcat(bab_pp('iIdTopCat'), ($update == 'enable' ? 'Y' : 'N'));
 	}
 	if( $update == "order" )
 		{
-		saveOrderTopcats($idp, bab_pp('listtopcats'));
+		bab_requireSaveMethod() && saveOrderTopcats($idp, bab_pp('listtopcats'));
 		}
 	}
 

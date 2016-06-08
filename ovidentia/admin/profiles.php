@@ -523,7 +523,7 @@ $aclview = bab_rp('aclview', null);
 
 if( isset($add))
 {
-	if( $add == 'addp' )
+	if( $add == 'addp' && bab_requireSaveMethod())
 	{
 	    
 
@@ -532,14 +532,15 @@ if( isset($add))
 			$idx = 'padd';
 		}
 	}
-	elseif( $add == 'modp' )
+	elseif( $add == 'modp')
 	{
-		if( isset($deletep))
+		if( isset($deletep) && bab_requireDeleteMethod())
 		{
 			$idx = 'pdel';
 		}
 		else
 		{
+		    bab_requireSaveMethod();
 			if(!updateProfile($idprof, $pname, $pdesc, $grpids, $cinscription, $cmultiple, $crequired))
 			{
 				$idx = 'pmod';
@@ -549,13 +550,13 @@ if( isset($add))
 }
 elseif( bab_rp('action') == 'Yes' )
 {
-	confirmDeleteProfile($idprof);
+	bab_requireDeleteMethod() && confirmDeleteProfile($idprof);
 	$idx = 'plist';
 }
 elseif( isset($aclview) )
 {
 	include_once $GLOBALS['babInstallPath']."admin/acl.php";
-	maclGroups();
+	bab_requireSaveMethod() && maclGroups();
 	Header("Location: ". $GLOBALS['babUrlScript']."?tg=profiles&idx=plist");
 	exit;
 }
@@ -657,4 +658,3 @@ switch($idx)
 	}
 
 $babBody->setCurrentItemMenu($idx);
-?>
