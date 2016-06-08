@@ -281,7 +281,7 @@ if (isset($_GET['babrw']))
     {
         $_GET += $arr;
         $_REQUEST += $arr;
-        extract($arr, EXTR_SKIP);
+        
     } else {
         bab_pageNotFound();
     }
