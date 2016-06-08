@@ -834,23 +834,25 @@ if( bab_rp('mod') == "modfolder")
 	    $maxdownloads = bab_rp('maxdownloads');
 	    $bdownloadhistory = bab_rp('bdownloadhistory');
 	    $orderm = bab_rp('orderm');
-		updateFolder($fid, $fname, $active, $said, $notification, $version, $bhide, $bautoapp, $baddtags, $bdownloadscapping, $maxdownloads, $bdownloadhistory, $orderm);
+		bab_requireSaveMethod() && updateFolder($fid, $fname, $active, $said, $notification, $version, $bhide, $bautoapp, $baddtags, $bdownloadscapping, $maxdownloads, $bdownloadhistory, $orderm);
 	} else if(isset($_REQUEST['bdel'])) {
 		$idx = "delf";
 	}
 }else if( isset($_REQUEST['action'])) {
 	if( bab_rp('action') == 'fyes') {
-		confirmDeleteFolder($fid);
+		bab_requireDeleteMethod() && confirmDeleteFolder($fid);
 	}else if( bab_rp('action') == 'ffyes' ) {
 	    $fields = bab_rp('fields');
-		confirmDeleteFields($fid, $fields);
+		bab_requireDeleteMethod() && confirmDeleteFields($fid, $fields);
 	}else if( bab_rp('action') == 'order' ) {
 	    $listfiles = bab_rp('listfiles');
-		updateOrderFiles($fid, $listfiles);
+		bab_requireSaveMethod() && updateOrderFiles($fid, $listfiles);
 	}
 }
 else if( isset($_REQUEST['fmf']))
 	{
+	    bab_requireSaveMethod();
+	    
 	    $ffname = bab_rp('ffname');
 	    $defval = bab_rp('defval');
 	    $ffid = bab_rp('ffid');
@@ -918,4 +920,3 @@ switch($idx)
 }
 $babBody->setCurrentItemMenu($idx);
 
-?>

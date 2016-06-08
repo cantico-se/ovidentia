@@ -211,6 +211,9 @@ $idx = bab_rp('idx','files');
 
 
 if (isset($_POST['action'])) {
+    
+    bab_requireSaveMethod();
+    
 	switch($_POST['action']) {
 		case 'status':
 			if (!record_status()) {
