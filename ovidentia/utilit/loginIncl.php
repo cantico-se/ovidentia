@@ -349,13 +349,13 @@ class Func_PortalAuthentication_AuthOvidentia extends Func_PortalAuthentication
 
     public function login()
     {
-        bab_requireSaveMethod();
         $sLogin		= bab_pp('nickname', null);
         $sPassword	= bab_pp('password', null);
         $iLifeTime	= (int) bab_pp('lifetime', 0);
 
         if (!empty($sLogin) && !empty($sPassword))
         {
+            bab_requireSaveMethod();
             $iIdUser = $this->authenticateUser($sLogin, $sPassword);
             if ($this->userCanLogin($iIdUser))
             {

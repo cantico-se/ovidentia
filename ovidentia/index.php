@@ -394,12 +394,6 @@ switch(bab_rp('tg'))
         if( bab_isUserLogged() && (bab_isUserAdministrator() || bab_getCurrentAdmGroup() != 0))
             $incl = "admin/topcats";
         break;
-    case "apprflow":
-        $babLevelOne = bab_translate("Administration");
-        $babLevelTwo = bab_translate("Approbations");
-        if( bab_isUserLogged() && (bab_isUserAdministrator() || bab_getCurrentAdmGroup() != 0))
-            $incl = "admin/apprflow";
-        break;
     case "admfms":
         $babLevelOne = bab_translate("Administration");
         $babLevelTwo = bab_translate("File manager");
