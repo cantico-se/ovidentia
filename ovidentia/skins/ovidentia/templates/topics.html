@@ -97,11 +97,10 @@ function uploadDone()
 	
 			var aImg = sJSon.sMessage.split(',');
 			
-			var sOldImage = _$('topicCreateModify').sTempImgName.value;
 			_$('topicCreateModify').sTempImgName.value = aImg[0];
 			_$('topicCreateModify').sImgName.value = aImg[1];
 	
-			_$('tempImg').src = "{ babUrlScript }?tg=topcat&idx=getImage&iWidth=120&iHeight=90&sImage=" + aImg[0] + '&sOldImage=' + sOldImage;
+			_$('tempImg').src = "{ babUrlScript }?tg=topcat&idx=getImage&iWidth=120&iHeight=90&sImage=" + aImg[0];
 			
 			bab_hide('messageTR');
 		}
