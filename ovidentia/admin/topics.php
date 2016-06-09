@@ -971,6 +971,8 @@ $cat = intval(bab_rp('cat', 0));
 
 if(isset($_POST['add']))
 {
+    bab_requireSaveMethod();
+    
 	if(!saveCategory(
 	    bab_rp('category'), 
 	    bab_rp('ncat'), 
@@ -1025,11 +1027,11 @@ switch($idx)
 		exit;
 	
 	case 'uploadTopicImg': // called by ajax
-		uploadTopicImg();
+		bab_requireSaveMethod() && uploadTopicImg();
 		exit;	
 	
 	case 'deleteTempImage': // called by ajax
-		deleteTempImage();
+		bab_requireDeleteMethod() && deleteTempImage();
 		exit;
 
 	case "addtopic":
@@ -1065,5 +1067,3 @@ switch($idx)
 		exit;
 	}
 $babBody->setCurrentItemMenu($idx);
-
-?>

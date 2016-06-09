@@ -312,10 +312,6 @@ function getTopicImage()
 	$oImageResize = new bab_ImageResize();
 	$oImageResize->resizeImageAuto($sPath . $sImage, $iWidth, $iHeight);
 
-	if(file_exists($sPath . $sOldImage))
-	{
-		@unlink($sPath . $sOldImage);
-	}
 }
 
 	
@@ -354,10 +350,6 @@ function getCategoryImage()
 	$oImageResize = new bab_ImageResize();
 	$oImageResize->resizeImageAuto($sPath . $sImage, $iWidth, $iHeight);
 
-	if(file_exists($sPath . $sOldImage))
-	{
-		@unlink($sPath . $sOldImage);
-	}
 }
 
 
@@ -381,4 +373,3 @@ switch($idx)
 		listTopicCategory($cat);
 		break;
 }
-?>

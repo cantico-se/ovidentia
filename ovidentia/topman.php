@@ -1592,6 +1592,7 @@ function bab_removeDraft($art){
 	$babDB->db_query($req);
 
 	Header("Location: ". $GLOBALS['babUrlScript']."?tg=topman&idx=Articles&item=".bab_gp('item'));
+	exit;
 }
 
 /* main */
@@ -1620,54 +1621,64 @@ $refreshurl = bab_rp('refreshurl');
 
 if("articles" === bab_rp('upart') && $manager)
 	{
-	if (isset($_POST['action']))
+	if (isset($_POST['action'])) {
+	    
 		switch($_POST['action'])
 			{
 			case "homepage0":
-				if (isset($_POST['articles']))
-					addToHomePages($_POST['item'], 2, $_POST['articles']);
+				if (isset($_POST['articles'])) {
+					bab_requireSaveMethod() && addToHomePages($_POST['item'], 2, $_POST['articles']);
+				}
 				break;
 
 			case "homepage1":
-				if (isset($_POST['articles']))
-					addToHomePages($_POST['item'], 1, $_POST['articles']);
+				if (isset($_POST['articles'])) {
+					bab_requireSaveMethod() && addToHomePages($_POST['item'], 1, $_POST['articles']);
+				}
 				break;
 
 			case "homepage":
 				if (isset($_POST['articles'])) {
+				    bab_requireDeleteMethod();
 					removeFromHomePages(2, $_POST['articles']);
 					removeFromHomePages(1, $_POST['articles']);
 					}
 				break;
 
 			case "archive":
-				if (isset($_POST['articles']))
-					archiveArticles($_POST['item'], $_POST['articles']);
+				if (isset($_POST['articles'])) {
+					bab_requireSaveMethod() && archiveArticles($_POST['item'], $_POST['articles']);
+				}
 				break;
 
 			case "Deletea":
 				include_once $GLOBALS['babInstallPath']."utilit/delincl.php";
-				if (isset($_POST['comments']) && count($_POST['comments']) > 0)
-					foreach($_POST['comments'] as $idc) bab_deleteComment($idc);
-				if (isset($_POST['articles']))
-					bab_confirmDeleteArticles(implode(',',$_POST['articles']));
+				if (isset($_POST['comments']) && count($_POST['comments']) > 0) {
+					foreach($_POST['comments'] as $idc) {
+					    bab_requireDeleteMethod() && bab_deleteComment($idc);
+					}
+				}
+				if (isset($_POST['articles'])) {
+					bab_requireDeleteMethod() && bab_confirmDeleteArticles(implode(',',$_POST['articles']));
+				}
 				break;
 			}
+	    }
 
 	if ($_POST['idx'] == 'unarch') {
-		unarchiveArticles($_POST['item'], $_POST['aart']);
+		bab_requireSaveMethod() && unarchiveArticles($_POST['item'], $_POST['aart']);
 		}
 	}
 elseif("file" === bab_rp('delf') && $manager)
 	{
-	delDocumentArticle(bab_rp('idf'));
+	bab_requireDeleteMethod() && delDocumentArticle(bab_rp('idf'));
 	Header("Location: ". $GLOBALS['babUrlScript']."?tg=topman&idx=viewa&item=".$item."&art=".bab_rp('art'));
 	exit;
 	}
 elseif("com" === bab_rp('delc') && $manager)
 	{
 	include_once $GLOBALS['babInstallPath']."utilit/delincl.php";
-	bab_deleteComment($idc);
+	bab_requireDeleteMethod() && bab_deleteComment($idc);
 	Header("Location: ". $GLOBALS['babUrlScript']."?tg=topman&idx=viewa&item=".$item."&art=".bab_rp('art'));
 	exit;
 	}
@@ -1675,11 +1686,11 @@ elseif( bab_rp('update')  && $manager)
 	{
 	if("order" === bab_rp('update') )
 		{
-		saveOrderArticles($item, bab_rp('listarts'));
+		bab_requireSaveMethod() && saveOrderArticles($item, bab_rp('listarts'));
 		}
 	elseif("propa" === bab_rp('update') )
 		{
-		saveArticleProperties($item, bab_rp('idart'));
+		bab_requireSaveMethod() && saveArticleProperties($item, bab_rp('idart'));
 		$idx='unload';
 		$popupmessage = bab_translate("Update done");
 		$refreshurl = $GLOBALS['babUrlScript']."?tg=topman&idx=Articles&item=".$item;
@@ -1689,11 +1700,11 @@ elseif( bab_rp('updateh') && bab_isAccessValid(BAB_SITES_HPMAN_GROUPS_TBL, $babB
 	{
 	if( "homepage0" === bab_rp('updateh') )
 		{
-		siteUpdateHomePage0($item, bab_rp('listpage0', array()));
+		bab_requireSaveMethod() && siteUpdateHomePage0($item, bab_rp('listpage0', array()));
 		}
 	else if( "homepage1" === bab_rp('updateh') )
 		{
-		siteUpdateHomePage1($item, bab_rp('listpage1', array()));
+		bab_requireSaveMethod() && siteUpdateHomePage1($item, bab_rp('listpage1', array()));
 		}
 	Header("Location: ". $GLOBALS['babUrlScript']."?tg=topman&idx=list");
 	exit;
@@ -1705,7 +1716,7 @@ switch($idx)
 		$art = bab_gp('art', '');
 		if ( $manager && $art != '' )
 		{
-			bab_removeDraft($art);
+			bab_requireDeleteMethod() && bab_removeDraft($art);
 		}
 		else
 		{
