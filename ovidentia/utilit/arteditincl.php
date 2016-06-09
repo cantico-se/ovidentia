@@ -268,6 +268,10 @@ class bab_ArticleDraftEditor {
 		$babBody->setTitle(bab_translate('Article publication'));
 
 		$page = $W->BabPage();
+		
+		$J = bab_jQuery();
+		$J->includeUi();
+		
 		$page->addJavascriptFile($GLOBALS['babScriptPath'].'bab_article.js');
 		$page->addStyleSheet($GLOBALS['babInstallPath'].'styles/artedit.css');
 
