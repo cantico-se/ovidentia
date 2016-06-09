@@ -919,7 +919,6 @@ function getImage()
 	$iWidth		= (int) bab_rp('iWidth', 0);
 	$iHeight	= (int) bab_rp('iHeight', 0);
 	$sImage		= (string) bab_rp('sImage', '');
-	$sOldImage	= (string) bab_rp('sOldImage', '');
 	$oEnvObj	= bab_getInstance('bab_PublicationPathsEnv');
 
 	global $babBody;
@@ -928,11 +927,6 @@ function getImage()
 	
 	$oImageResize = new bab_ImageResize();
 	$oImageResize->resizeImageAuto($sPath . $sImage, $iWidth, $iHeight);
-
-	if(file_exists($sPath . $sOldImage))
-	{
-		@unlink($sPath . $sOldImage);
-	}
 }
 	
 function deleteTempImage()
