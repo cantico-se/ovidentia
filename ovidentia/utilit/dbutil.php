@@ -189,6 +189,7 @@ class babDatabase
      * sends multiple queries
      * @param string $queries
      * @return resource|false
+     * @since 8.4.91
      */
     public function db_multi_query($queries)
     {
@@ -200,6 +201,7 @@ class babDatabase
     /**
      * prepare next result from multi_query
      * @return boolean
+     * @since 8.4.91
      */
     public function db_next_result()
     {
@@ -211,6 +213,7 @@ class babDatabase
     /**
      * check if there are any more query results from a multi query
      * @return boolean
+     * @since 8.4.91
      */
     public function db_more_results()
     {
