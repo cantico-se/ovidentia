@@ -876,6 +876,8 @@ $idx = bab_rp('idx', 'pub');
 
 if( bab_rp('addc'))
 {
+    bab_requireSaveMethod();
+    
 	if( "addp" == bab_rp('addc') )
 	{
 		if( addPublicCalendar(bab_rp('calname'), bab_rp('caldesc'), bab_rp('calidsa')))
@@ -900,6 +902,7 @@ if( bab_rp('addc'))
 }
 elseif( bab_rp('sublist'))
 {
+    bab_requireSaveMethod();
 	if( $idx == "pub" )
 	{
 		$calids = bab_rp('calids', array());
@@ -912,6 +915,7 @@ elseif( bab_rp('sublist'))
 }
 elseif("Yes" == bab_rp('action'))
 {
+    bab_requireDeleteMethod();
 	if( $idx == "pub" )
 	{
 		bab_deleteCalendar(bab_rp('idcal'));
@@ -925,16 +929,17 @@ elseif("Yes" == bab_rp('action'))
 	}
 }
 elseif("saveDomain" == bab_pp('action')){
-	bab_saveDomain();
+	bab_requireSaveMethod() && bab_saveDomain();
 }
 elseif("rmDomain" == bab_gp('action')){
-	bab_rmDomain();
+	bab_requireDeleteMethod() && bab_rmDomain();
 }
 elseif("orderDomain" == bab_pp('action')){
-	bab_orderDomain();
+	bab_requireSaveMethod() && bab_orderDomain();
 }
 elseif( "addcat" == bab_rp('add') && bab_isUserAdministrator())
 {
+    bab_requireSaveMethod();
 	if( !addCategoryCalendar(bab_rp('catname'), bab_rp('catdesc'), bab_rp('bgcolor')))
 	{
 		$idx = "addc";

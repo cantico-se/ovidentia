@@ -2670,12 +2670,14 @@ $idx = isset($_REQUEST['idx']) ? $_REQUEST['idx'] : 'menusite';
 
 if( isset($_GET['action']) && $_GET['action'] == "Yes")
 	{
-	confirmDeleteSite($_GET['site']);
+	bab_requireDeleteMethod() && confirmDeleteSite($_GET['site']);
 	}
 
 
 if (isset($_POST['action']))
 {
+bab_requireSaveMethod();
+    
 switch ($_POST['action'])
 	{
 	case 'menu1':
@@ -2910,5 +2912,3 @@ switch($idx)
 	}
 
 $babBody->setCurrentItemMenu($idx);
-
-?>

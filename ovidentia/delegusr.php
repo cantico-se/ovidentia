@@ -139,7 +139,7 @@ $idx = bab_rp('idx', 'chgdg');
 
 if('moddg' == bab_rp('mod'))
 {
-	updateAdmGroup(bab_rp('grpdg'));
+	bab_requireSaveMethod() && updateAdmGroup(bab_rp('grpdg'));
 }
 
 switch($idx)

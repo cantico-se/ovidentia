@@ -532,7 +532,7 @@ switch(bab_rp('tg'))
         if( bab_isUserLogged())
             $incl = "options";
         break;
-    case "confcals":
+    case "confcals": // security done up to this file
         if( bab_isUserLogged())
             $incl = "confcals";
         break;
