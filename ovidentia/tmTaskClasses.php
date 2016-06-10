@@ -25,11 +25,11 @@
 	require_once($GLOBALS['babInstallPath'] . 'utilit/baseFormProcessingClass.php');
 	require_once $GLOBALS['babInstallPath'] . 'utilit/dateTime.php';
 
-	
+
 	/**
-	 * 
+	 *
 	 * @property int 		$id
-	 * @property int 		$iIdProject 
+	 * @property int 		$iIdProject
 	 * @property string 	$sTaskNumber		varchar 9
 	 * @property string 	$sDescription
 	 * @property string 	$sShortDescription
@@ -41,7 +41,7 @@
 	 * @property int		$iClass
 	 * @property int	 	$iParticipationStatus
 	 * @property int	 	$isLinked
-	 * @property int 		$iIdCalEvent			
+	 * @property int 		$iIdCalEvent
 	 * @property string 	$hashCalEvent		varchar 34
 	 * @property float	 	$iDuration
 	 * @property int	 	$iDurationUnit
@@ -55,13 +55,13 @@
 	 * @property string 	$sStartDate			Datetime
 	 * @property string 	$sEndDate			Datetime
 	 * @property int	 	$iIsNotified
-	 * @property float	 	$iPlannedTime			  
-	 * @property int	 	$iPlannedTimeDurationUnit			  
-	 * @property float	 	$iTime			  
-	 * @property int	 	$iTimeDurationUnit			  
-	 * @property float	 	$iPlannedCost			  
-	 * @property float	 	$iCost			  
-	 * @property int	 	$iPriority 
+	 * @property float	 	$iPlannedTime
+	 * @property int	 	$iPlannedTimeDurationUnit
+	 * @property float	 	$iTime
+	 * @property int	 	$iTimeDurationUnit
+	 * @property float	 	$iPlannedCost
+	 * @property float	 	$iCost
+	 * @property int	 	$iPriority
 	 * @property int 		$idOwner			in BAB_TSKMGR_TASKS_INFO_TBL
 	 *
 	 */
@@ -70,28 +70,28 @@
 		var $m_bIsStarted		= false;
 		var $m_bIsEnded			= false;
 		var	$m_bIsFirstTask		= false;
-		
+
 		var $m_iNextPosition	= 0;
-		
+
 		var $m_isPersonnal		= false;
 
 		var $m_iIdProjectSpace	= -1;
 		var $m_iIdProject		= -1;
 		var $m_iIdTask			= -1;
-		
+
 		var $m_aTask			= null;
 		var $m_aCfg				= null;
-		
-		
+
+
 		function BAB_TM_Task()
 		{
 			$oTmCtx 					=& getTskMgrContext();
 			$this->m_iIdProjectSpace	= $oTmCtx->getIdProjectSpace();
 			$this->m_iIdProject			= $oTmCtx->getIdProject();
 			$this->m_iIdTask 			= $oTmCtx->getIdTask();
-			
+
 			$this->m_isPersonnal = (0 === $this->m_iIdProjectSpace && 0 === $this->m_iIdProject);
-			
+
 			if($this->m_isPersonnal)
 			{
 				$bSuccess = bab_getPersonnalTaskConfiguration($GLOBALS['BAB_SESS_USERID'], $this->m_aCfg);
@@ -100,18 +100,18 @@
 					$this->m_aCfg = array('endTaskReminder' => 5, 'tasksNumerotation' => BAB_TM_SEQUENTIAL, 'iEmailNotice' => BAB_TM_YES);
 				}
 			}
-			
+
 			if(0 != $this->m_iIdTask)
 			{
 				$this->loadFromDataBase();
 			}
-			else if(0 == $this->m_iIdTask) 
+			else if(0 == $this->m_iIdTask)
 			{
 				bab_getNextTaskPosition($this->m_iIdProject, $this->m_iNextPosition);
 				$this->m_bIsFirstTask = ($this->m_iNextPosition == 1);
 			}
 		}
-		
+
 		function loadFromDataBase()
 		{
 			$success = bab_getTask($this->m_iIdTask, $this->m_aTask);
@@ -121,7 +121,7 @@
 				$this->m_bIsEnded 		= (BAB_TM_ENDED == $this->m_aTask['iParticipationStatus']);
 				$this->m_bIsFirstTask 	= ($this->m_aTask['iPosition'] == 1);
 			}
-			
+
 			return $success;
 		}
 
@@ -129,78 +129,78 @@
 		{
 			return $this->m_aCfg;
 		}
-		
-		
-		
+
+
+
 		public function __isset($p)
 		{
 			return isset($this->m_aTask[$p]);
 		}
-		
+
 		public function __get($p)
 		{
 			if (!isset($this->m_aTask[$p]))
 			{
 				return null;
 			}
-			
+
 			return $this->m_aTask[$p];
 		}
-		
-		
-		
+
+
+
 		public function selectCommentaries()
 		{
 			global $babDB;
 			require_once dirname(__FILE__).'/utilit/iterator/iterator.php';
 			$I = new bab_QueryIterator;
 			$I->setQuery('SELECT * FROM bab_tskmgr_tasks_comments WHERE idTask='.$babDB->quote($this->m_iIdTask).' ORDER BY created DESC');
-			
+
 			return $I;
 		}
-		
+
 	}
 
-	
+
 	class BAB_TaskFormBase extends BAB_BaseFormProcessing
 	{
 		var $m_iIdProjectSpace;
 		var $m_iIdProject;
 		var $m_iIdTask;
 		var $m_iUserProfil;
-					
+
 		var $m_iIdSessUser;
-		
+
 		var $m_aDurations;
 		var $m_aDurationUnit;
 		var $m_aProposable;
 		var $m_aCompletion;
 		var $m_aClasses;
 		var $m_aTaskPriority;
-		
+
 		var $m_iHour	= 0;
 		var $m_iMinut	= 0;
 
 		function BAB_TaskFormBase()
 		{
 			parent::BAB_BaseFormProcessing();
-			
+
 			$this->m_aClasses = array(
 				array('iClassType' => BAB_TM_TASK, 'sClassName' => bab_translate("Task")),
 				array('iClassType' => BAB_TM_CHECKPOINT, 'sClassName' => bab_translate("Checkpoint")),
 				array('iClassType' => BAB_TM_TODO, 'sClassName' => bab_translate("ToDo"))
 			);
-			
+
 			$this->m_aDurations = array(
 				array('iDurationType' => BAB_TM_DURATION, 'sDurationName' => bab_translate("Duration")),
 				array('iDurationType' => BAB_TM_DATE, 'sDurationName' => bab_translate("Date"))
 			);
-			
+
 			$this->m_aDurationUnit = array(
 				array('iUnit' => BAB_TM_DAY, 'sName' => bab_translate("Jour(s)")),
 				array('iUnit' => BAB_TM_HOUR, 'sName' => bab_translate("Heure(s)"))
 			);
-			
+
 			$this->m_aProposable = array(
 				array('iProposable' => BAB_TM_YES, 'sProposable' => bab_translate("Yes")),
 				array('iProposable' => BAB_TM_NO, 'sProposable' => bab_translate("No"))
@@ -209,14 +209,14 @@
 			$this->m_aCompletion = array(0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100);
 
 			$this->m_aTaskPriority = array(0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10);
-			
+
 			$oTmCtx 					=& getTskMgrContext();
 			$this->m_iIdProjectSpace	= $oTmCtx->getIdProjectSpace();
 			$this->m_iIdProject			= $oTmCtx->getIdProject();
 			$this->m_iIdTask			= $oTmCtx->getIdTask();
 			$this->m_iUserProfil		= $oTmCtx->getUserProfil();
 			$this->m_iIdSessUser		= $GLOBALS['BAB_SESS_USERID'];
-			
+
 			$this->initCaptions();
 			$this->initDatas();
 
@@ -311,14 +311,14 @@
 			$this->set_data('iIdSpField', -1);
 			$this->set_data('iMajorVersion', bab_rp('iMajorVersion', 1));
 			$this->set_data('iMinorVersion', bab_rp('iMinorVersion', 0));
-			
+
 			$sFromIdx = bab_rp('sFromIdx', BAB_TM_IDX_DISPLAY_MY_TASK_LIST);
 			if(!isFromIdxValid($sFromIdx))
 			{
 				$sFromIdx = BAB_TM_IDX_DISPLAY_MY_TASK_LIST;
 			}
 			$this->set_data('sFromIdx', $sFromIdx);
-			
+
 			$this->set_data('iAddSpfIdx', BAB_TM_IDX_DISPLAY_TASK_FORM);
 			$this->set_data('iAddSpfAction', BAB_TM_ACTION_CREATE_SPECIFIC_FIELD_INSTANCE);
 			$this->set_data('iAddIdx', $sFromIdx);
@@ -362,7 +362,7 @@
 			$this->set_data('sDuration', '');
 
 			$this->set_data('isTaskPriority', false);
-			
+
 			$this->set_data('isReadOnlyPlannedStartDate', false);
 			$this->set_data('sReadOnlyPlannedStartDate', '');
 			$this->set_data('sDisabledPlannedStartDateTime', '');
@@ -380,7 +380,7 @@
 			$this->set_data('iPlannedEndMinut', 0);
 			$this->set_data('sSelectedPlannedEndHour', '');
 			$this->set_data('sSelectedPlannedEndMinut', '');
-			
+
 			$this->set_data('isReadOnlyStartDate', false);
 			$this->set_data('sReadOnlyStartDate', '');
 			$this->set_data('sDisabledStartDateTime', '');
@@ -389,7 +389,7 @@
 			$this->set_data('iStartMinut', 0);
 			$this->set_data('sSelectedStartHour', '');
 			$this->set_data('sSelectedStartMinut', '');
-			
+
 			$this->set_data('isReadOnlyEndDate', false);
 			$this->set_data('sReadOnlyEndDate', '');
 			$this->set_data('sDisabledEndDateTime', '');
@@ -398,8 +398,8 @@
 			$this->set_data('iEndMinut', 0);
 			$this->set_data('sSelectedEndHour', '');
 			$this->set_data('sSelectedEndMinut', '');
-			
-			
+
+
 			$this->set_data('sPredecessorNumber', '');
 			$this->set_data('sStartToStart', '');
 			$this->set_data('sEndToStart', '');
@@ -425,43 +425,43 @@
 			if(false != $aCompletion)
 			{
 			    $iCompletion = null;
-			    
+
 				$this->get_data('iSelectedCompletion', $iCompletion);
-				$this->set_data('sSelectedCompletion', ((int)$aCompletion['value'] == (int)$iCompletion) ? 
+				$this->set_data('sSelectedCompletion', ((int)$aCompletion['value'] == (int)$iCompletion) ?
 					'selected="selected"' : '');
 				$this->set_data('iCompletion', $aCompletion['value']);
 				return true;
 			}
 			return false;
 		}
-		
+
 		function getNextTaskPriority()
 		{
 			$aTaskPriority = each($this->m_aTaskPriority);
 			if(false != $aTaskPriority)
 			{
 			    $iPriority = null;
-			    
+
 				$this->get_data('iSelectedTaskPriority', $iPriority);
-				$this->set_data('sSlectedTaskPriority', ((int)$aTaskPriority['value'] == (int)$iPriority) ? 
+				$this->set_data('sSlectedTaskPriority', ((int)$aTaskPriority['value'] == (int)$iPriority) ?
 					'selected="selected"' : '');
 				$this->set_data('iIdTaskPriority', $aTaskPriority['value']);
 				return true;
 			}
 			return false;
 		}
-		
+
 		function getNextProposable()
 		{
 			$aProposable = each($this->m_aProposable);
 			if(false != $aProposable)
 			{
 			    $iProposable = null;
-			    
+
 				$this->get_data('iSelectedProposable', $iProposable);
-				$this->set_data('sSelectedProposable', ((int)$aProposable['value']['iProposable'] == (int)$iProposable) ? 
+				$this->set_data('sSelectedProposable', ((int)$aProposable['value']['iProposable'] == (int)$iProposable) ?
 					'selected="selected"' : '');
-					
+
 				$this->set_data('iProposable', $aProposable['value']['iProposable']);
 				$this->set_data('sProposable', $aProposable['value']['sProposable']);
 				return true;
@@ -489,9 +489,9 @@
 			if(false != $class)
 			{
 			    $iClassType = null;
-			    
+
 				$this->get_data('iSelectedClass', $iClassType);
-				$this->set_data('sSelectedClass', ((int)$class['value']['iClassType'] == (int)$iClassType) ? 
+				$this->set_data('sSelectedClass', ((int)$class['value']['iClassType'] == (int)$iClassType) ?
 					'selected="selected"' : '');
 				$this->set_data('iClassType', $class['value']['iClassType']);
 				$this->set_data('sClassName', $class['value']['sClassName']);
@@ -499,36 +499,36 @@
 			}
 			return false;
 		}
-		
+
 		function getNextDurationType()
 		{
 			$duration = each($this->m_aDurations);
 			if(false != $duration)
 			{
 			    $oDurationType = null;
-			    
+
 				$this->get_data('oDurationType', $oDurationType);
-				$this->set_data('sSelectedDuration', ($duration['value']['iDurationType'] == $oDurationType) ? 
+				$this->set_data('sSelectedDuration', ($duration['value']['iDurationType'] == $oDurationType) ?
 					'selected="selected"' : '');
-	
+
 				$this->set_data('iDurationType', $duration['value']['iDurationType']);
 				$this->set_data('sDurationName', $duration['value']['sDurationName']);
 				return true;
 			}
 			return false;
 		}
-		
+
 		function getNextDurationUnit($sFieldName)
 		{
 			$aDurationUnit = each($this->m_aDurationUnit);
 			if(false != $aDurationUnit)
 			{
 			    $oDurationUnit = null;
-			    
+
 				$this->get_data($sFieldName, $oDurationUnit);
-				$this->set_data('sSelectedDurationUnit', ($aDurationUnit['value']['iUnit'] == $oDurationUnit) ? 
+				$this->set_data('sSelectedDurationUnit', ($aDurationUnit['value']['iUnit'] == $oDurationUnit) ?
 					'selected="selected"' : '');
-				
+
 				$this->set_data('iDurationUnit', $aDurationUnit['value']['iUnit']);
 				$this->set_data('sDurationUnitName', $aDurationUnit['value']['sName']);
 				return true;
@@ -554,13 +554,13 @@
 			$sFieldName = 'oTimeDurationUnit';
 			return $this->getNextDurationUnit($sFieldName);
 		}
-		
+
 		function getNextCategory()
 		{
 			return false;
 		}
 
-		
+
 		function getNextSpecificField()
 		{
 			return false;
@@ -570,7 +570,7 @@
 		{
 			return false;
 		}
-				
+
 		function getNextPrecessorRelation()
 		{
 			return false;
@@ -599,26 +599,26 @@
 			$sFieldPart = 'End';
 			return $this->getNextHour($sFieldPart);
 		}
-		
+
 		function getNextHour($sFieldPart)
 		{
 			static $iHour = -1;
-			
+
 			if($iHour < 23)
 			{
 				$this->set_data('iHour', ++$iHour);
 				$this->set_data('sHour', sprintf("%02d", $iHour));
-				
+
 				$iFieldValue = null;
-				
+
 				$this->get_data('i' . $sFieldPart . 'Hour', $iFieldValue);
-				$this->set_data('sSelected' . $sFieldPart . 'Hour', ($iHour == $iFieldValue) ? 
+				$this->set_data('sSelected' . $sFieldPart . 'Hour', ($iHour == $iFieldValue) ?
 					'selected="selected"' : '');
 				return true;
 			}
 			else
 			{
-				$iHour = - 1; 
+				$iHour = - 1;
 				return false;
 			}
 		}
@@ -650,25 +650,25 @@
 		function getNextMinut($sFieldPart)
 		{
 			static $iMinut = -1;
-			
+
 			if($iMinut < 59)
 			{
 				$this->set_data('iMinut', ++$iMinut);
 				$this->set_data('sMinut', sprintf("%02d", $iMinut));
 				$iFieldValue =null;
 				$this->get_data('i' . $sFieldPart . 'Minut', $iFieldValue);
-				$this->set_data('sSelected' . $sFieldPart . 'Minut', ($iMinut == $iFieldValue) ? 
+				$this->set_data('sSelected' . $sFieldPart . 'Minut', ($iMinut == $iFieldValue) ?
 					'selected="selected"' : '');
 				return true;
 			}
 			else
 			{
-				$iMinut = - 1; 
+				$iMinut = - 1;
 				return false;
 			}
 		}
 	}
-	
+
 	class BAB_TaskForm extends BAB_TaskFormBase
 	{
 		var $m_oTask;
@@ -689,7 +689,7 @@
 		var $m_linkableTaskResult;
 		var $m_iLinkedTaskCount;
 		var $m_iDependingTasksCount;
-		
+
 		var $m_bIsManager;
 
 		var $m_aRelation;
@@ -697,17 +697,17 @@
 		var $m_bDisplayEditorLink = false;
 		var $m_sEditTaskDescriptionUrl = '#';
 		var $m_iUseEditor = 0;
-		
+
 		/**
-		 * 
+		 *
 		 * @var array
 		 */
 		private $projects = array();
-		
+
 		function BAB_TaskForm()
 		{
 			parent::BAB_TaskFormBase();
-			
+
 			$this->m_catResult = false;
 //			$this->m_spfResult = false;
 			$this->m_linkableTaskResult = false;
@@ -716,23 +716,23 @@
 			$this->m_aAvailableTaskResponsible = array();
 			$this->getTaskInfo();
 
-			$this->m_bIsManager = ($this->m_iUserProfil == BAB_TM_PERSONNAL_TASK_OWNER || 
+			$this->m_bIsManager = ($this->m_iUserProfil == BAB_TM_PERSONNAL_TASK_OWNER ||
 				$this->m_iUserProfil == BAB_TM_PROJECT_MANAGER);
-			
+
 			$this->m_aRelation = array(BAB_TM_NONE => bab_translate("None"), BAB_TM_END_TO_START => bab_translate("End to start"), BAB_TM_START_TO_START => bab_translate("Start to start"));
 
 			$bIsModifiable = ($this->m_bIsManager ||  (is_array($this->m_aCfg) && BAB_TM_YES === (int) $this->m_aCfg['tskUpdateByMgr']));
 			$this->set_data('isModifiable', $bIsModifiable);
-			
+
 			$this->set_data('isDeletable', $this->m_bIsManager);
 			$this->set_data('isTaskPriority', $this->m_bIsManager);
-			
+
 			$this->m_iUseEditor = (int) bab_rp('iUseEditor', 0);
 			$isProject = (int) bab_rp('isProject', 0);
 			$this->m_bDisplayEditorLink = (0 === $this->m_iUseEditor && $this->m_bIsManager);
-			
-			$this->m_sEditTaskDescriptionUrl = $GLOBALS['babUrlScript'] . '?tg=' . urlencode('usrTskMgr') . 
-				'&idx=' . urlencode(BAB_TM_IDX_DISPLAY_TASK_FORM) . '&iIdProjectSpace=' . 
+
+			$this->m_sEditTaskDescriptionUrl = $GLOBALS['babUrlScript'] . '?tg=' . urlencode('usrTskMgr') .
+				'&idx=' . urlencode(BAB_TM_IDX_DISPLAY_TASK_FORM) . '&iIdProjectSpace=' .
 				urlencode($this->m_iIdProjectSpace) . '&iIdProject=' . urlencode($this->m_iIdProject) .
 				'&iIdTask=' . urlencode($this->m_iIdTask) . '&iUseEditor=1&isProject=' . $isProject;
 			$this->initCommentaries($this->m_iIdProjectSpace, $this->m_iIdProject, $this->m_iIdTask);
@@ -742,12 +742,12 @@
 		function getTaskInfo()
 		{
 			$this->m_oTask =new BAB_TM_Task();
-			
+
 			if($this->m_oTask->m_isPersonnal)
 			{
 				$this->set_data('bIsProjectSpace', false);
 				$this->set_data('sProject', bab_translate("Personnal task"));
-				
+
 				$this->m_aCfg =& $this->m_oTask->getConfiguration();
 			}
 			else
@@ -757,25 +757,25 @@
 				{
 					$this->set_data('sProjectSpace', $aProjectSpace['name']);
 				}
-				
+
 				$aProject = null;
 				if(bab_getProject($this->m_iIdProject, $aProject))
 				{
 					$this->set_data('sProject', $aProject['name']);
 				}
-				
+
 				$oTmCtx =& getTskMgrContext();
 				$this->m_aCfg =& $oTmCtx->getConfiguration();
 			}
-			
-			
+
+
 
 			bab_getLinkedTasks($this->m_iIdTask, $this->m_aLinkedTasks);
 			$this->m_iLinkedTaskCount = count($this->m_aLinkedTasks);
 
 			bab_getDependingTasks($this->m_iIdTask, $this->m_aDependingTasks);
 			$this->m_iDependingTasksCount = count($this->m_aDependingTasks);
-			
+
 			$this->set_data('isLinkable', false);
 			$this->m_linkableTaskResult = bab_selectLinkableTask($this->m_iIdProject, $this->m_iIdTask);
 			global $babDB;
@@ -784,20 +784,20 @@
 				$this->set_data('isLinkable', true);
 			}
 
-			
+
 			$iIdUser = (0 === $this->m_iIdProjectSpace && 0 === $this->m_iIdProject) ? $GLOBALS['BAB_SESS_USERID'] : 0;
-			
+
 			$this->m_catResult = bab_selectAvailableCategories($this->m_iIdProjectSpace, $this->m_iIdProject, $iIdUser);
 //			$this->m_spfResult = bab_selectAvailableSpecificFieldClassesByProject($this->m_iIdProjectSpace, $this->m_iIdProject);
 //			$this->m_spfInstResult = bab_selectAllSpecificFieldInstance($this->m_iIdTask);
-			
+
 			$this->aAdditionnalField = bab_getAdditionalTaskField($this->m_iIdProjectSpace, $this->m_iIdProject, $this->m_iIdTask);
-			
+
 			$this->set_caption('sProjectSpace', bab_translate("Project space"));
 			$this->set_caption('sProject', bab_translate("Project"));
 
 		}
-		
+
 		/**
 		 * Initialize projects where the task can be saved
 		 * @param int $id_project	current project
@@ -805,14 +805,14 @@
 		public function initProjects($id_project)
 		{
 			$this->projects = array();
-			
+
 			if (bab_isAccessValid(BAB_TSKMGR_PERSONNAL_TASK_CREATOR_GROUPS_TBL, 1))
 			{
 				$this->projects[0] = bab_translate('Personnal tasks'); // si l'on peut creer des taches perso
 			}
-			
+
 			global $babDB;
-			
+
 			$spaces = bab_selectProjectSpaceList();
 			while($s = $babDB->db_fetch_assoc($spaces))
 			{
@@ -827,7 +827,7 @@
 			}
 		}
 
-		
+
 		//Begin init form variables
 		function initTaskNumber($sTaskNumber)
 		{
@@ -839,14 +839,14 @@
 		function initTaskClass($iClassType)
 		{
 			$this->set_data('iSelectedClass', $iClassType);
-			
-			$this->set_data('sDisabledClass', 
+
+			$this->set_data('sDisabledClass',
 				(($this->m_bIsManager && 0 == $this->m_iLinkedTaskCount && 0 == $this->m_iDependingTasksCount) ? '' : 'disabled="disabled"'));
 			$this->set_data('sSelectedClass', '');
 		}
 
 		function initCategory($iIdCategory)
-		{	
+		{
 			$this->set_data('iIdSelectedCategory', $iIdCategory);
 			$this->set_data('sDisabledCategory', $this->m_bIsManager ? '' : 'disabled="disabled"');
 		}
@@ -857,16 +857,16 @@
 			$oEditor = new bab_contentEditor('bab_taskManagerDescription');
 			$oEditor->setParameters(array('height' => 300));
 			$oEditor->setContent($sDescription);
-			
-			if(1 === $this->m_iUseEditor)			
+
+			if(1 === $this->m_iUseEditor)
 			{
-				$this->set_data('sDescription', $oEditor->getEditor());	
+				$this->set_data('sDescription', $oEditor->getEditor());
 			}
-			else 
+			else
 			{
 				$this->set_data('sDescription', $oEditor->getHtml());
 			}
-			
+
 			$this->set_data('sReadonlyDescription', 'disabled="disabled"');
 		}
 
@@ -883,13 +883,13 @@
 			$this->set_data('isLinkable', $bIsLinkable);
 			$this->set_data('sDisabledLinkedTask', $bIsLinkable ? '' : 'disabled="disabled"');
 		}
-		
+
 		function initDurationType($iDurationType)
 		{
 			$this->set_data('oDurationType', $iDurationType);
 			$this->set_data('sDisabledDurationType', $this->m_bIsManager ? '' : 'disabled="disabled"');
 			$this->set_data('sSelectedDuration', '');
-			
+
 			if(BAB_TM_DURATION == $iDurationType)
 			{
 				$this->set_caption('sPlannedEndDate', bab_translate("Deadline"));
@@ -919,13 +919,13 @@
 			if('PlannedStart' == $sFieldNamePart || 'PlannedEnd' == $sFieldNamePart)
 			{
 				$isEnabled = $this->m_bIsManager;
-				 
+
 			}
 			else
 			{
 				$isEnabled = ($this->m_bIsManager || (BAB_TM_TASK_RESPONSIBLE == $this->m_iUserProfil && BAB_TM_YES == $this->m_aCfg['tskUpdateByMgr']));
 			}
-			
+
 			$this->set_data('isReadOnly' . $sFieldNamePart . 'Date', !$isEnabled);
 			$this->set_data('sReadOnly' . $sFieldNamePart . 'Date', (($isEnabled) ? '' : 'readonly="readonly"'));
 			$this->set_data('sDisabled' . $sFieldNamePart . 'DateTime', (($isEnabled) ? '' : 'disabled="disabled"'));
@@ -937,13 +937,13 @@
 			{
 				$iIdResponsible = bab_getUserId();
 			}
-			
+
 			$W = bab_Widgets();
 			$userPicker = $W->UserPicker('iIdTaskResponsible')->setName('iIdTaskResponsible')->setValue($iIdResponsible);
 			$this->userPicker = $userPicker->display($W->HtmlCanvas());
-			
+
 			$this->set_data('iIdSlectedTaskResponsible', $iIdResponsible);
-			$this->set_data('sReadOnlyTaskResponsible', 
+			$this->set_data('sReadOnlyTaskResponsible',
 				(BAB_TM_PROJECT_MANAGER == $this->m_iUserProfil) ? '' : 'disabled="disabled"');
 			$this->set_data('sSlectedTaskResponsible', '');
 			$this->set_data('isResourceAvailable', (0 != $this->m_iIdProject));
@@ -960,31 +960,31 @@
 		{
 			$this->set_data('iSelectedCompletion', $iCompletion);
 			$this->set_data('sSelectedCompletion', '');
-			
+
 			$bIsParticipationStatusOk = false;
 			if(0 != $this->m_iIdTask)
 			{
 				$iParticipationStatus =& $this->m_oTask->m_aTask['iParticipationStatus'];
 //				$bIsParticipationStatusOk = (BAB_TM_ACCEPTED == $iParticipationStatus || $iParticipationStatus == BAB_TM_IN_PROGRESS);
-				$bIsParticipationStatusOk = (BAB_TM_ACCEPTED == $iParticipationStatus || 
+				$bIsParticipationStatusOk = (BAB_TM_ACCEPTED == $iParticipationStatus ||
 					$iParticipationStatus == BAB_TM_IN_PROGRESS || $iParticipationStatus == BAB_TM_ENDED);
 			}
-			
-			$bIsToDoOrCheckpoint = ($this->m_oTask->m_aTask['iClass'] == BAB_TM_CHECKPOINT || 
+
+			$bIsToDoOrCheckpoint = ($this->m_oTask->m_aTask['iClass'] == BAB_TM_CHECKPOINT ||
 				$this->m_oTask->m_aTask['iClass'] == BAB_TM_TODO);
 
-			$this->set_data('isCompletionEnabled', 
-				((($this->m_bIsManager || (BAB_TM_TASK_RESPONSIBLE == $this->m_iUserProfil && BAB_TM_YES == $this->m_aCfg['tskUpdateByMgr']) 
+			$this->set_data('isCompletionEnabled',
+				((($this->m_bIsManager || (BAB_TM_TASK_RESPONSIBLE == $this->m_iUserProfil && BAB_TM_YES == $this->m_aCfg['tskUpdateByMgr'])
 					) && $bIsParticipationStatusOk) || $bIsToDoOrCheckpoint));
 		}
-		
+
 		function initPredecessor($iPredecessor, $iLinkType)
 		{
 			$this->set_data('iSelectedPredecessor', $iPredecessor);
 			$this->set_data('sSelectedPredecessor', (0 != $this->m_iLinkedTaskCount) ? '' : 'checked="checked"');
 			$this->set_data('iSelectedLinkType', $iLinkType);
 		}
-		
+
 		function initAnwser($bIsCreation)
 		{
 			$isAnswerEnable = false;
@@ -1002,7 +1002,7 @@
 		    $bIsCreation = null;
 		    $bIsEdition = null;
 		    $bIsResubmission = null;
-		    
+
 			$this->get_data('is_creation', $bIsCreation);
 			$this->get_data('is_edition', $bIsEdition);
 			$this->get_data('is_resubmission', $bIsResubmission);
@@ -1013,9 +1013,9 @@
 				bab_getNextTaskNumber($this->m_iIdProject, $this->m_aCfg['tasksNumerotation'], $sTaskNumber);
 				$iClassType 				= (int) bab_rp('iClass', BAB_TM_TASK);
 				$iIdCategory 				= (int) bab_rp('iIdCategory', 0);
-				
+
 				$sDescription = '';
-				
+
 				$iUseEditor = (int) bab_rp('iUseEditor', 0);
 				if(1 === $iUseEditor)
 				{
@@ -1023,13 +1023,13 @@
 					$oEditor = new bab_contentEditor('bab_taskManagerDescription');
 					$sDescription = $oEditor->getContent();
 				}
-				else 
+				else
 				{
 					$sDescription = bab_rp('sDescription', '');
 				}
-				
-				
-				
+
+
+
 				$sShortDescription 			= bab_rp('sShortDescription', '');
 				$iDurationType 				= (int) bab_rp('oDurationType', BAB_TM_DATE);
 				$iDurationUnit 				= (int) bab_rp('oDurationUnit', BAB_TM_DAY);
@@ -1041,7 +1041,7 @@
 				$iPlannedCost				= number_format(bab_rp('oPlannedCost', 0), 2, '.', '');
 				$iCost 						= number_format(bab_rp('oCost', 0), 2, '.', '');
 				$iPriority					= (int) bab_rp('oTaskPriority', 5);
-				
+
 				$sPlannedStartDate = null;
 				$iPlannedStartHour = null;
 				$iPlannedStartMinut = null;
@@ -1054,25 +1054,25 @@
 				$sEndDate = null;
 				$iEndHour = null;
 				$iEndMinut = null;
-				
-				
-				$this->extractDateTimePart('PlannedStart', $sPlannedStartDate, 
+
+
+				$this->extractDateTimePart('PlannedStart', $sPlannedStartDate,
 					$iPlannedStartHour, $iPlannedStartMinut);
-				
-				$this->extractDateTimePart('PlannedEnd', $sPlannedEndDate, 
+
+				$this->extractDateTimePart('PlannedEnd', $sPlannedEndDate,
 					$iPlannedEndHour, $iPlannedEndMinut);
-				
-				$this->extractDateTimePart('Start', $sStartDate, 
+
+				$this->extractDateTimePart('Start', $sStartDate,
 					$iStartHour, $iStartMinut);
-				
-				$this->extractDateTimePart('End', $sEndDate, 
+
+				$this->extractDateTimePart('End', $sEndDate,
 					$iEndHour, $iEndMinut);
-				
+
 				$iIdResponsible 	= (int) bab_rp('iIdTaskResponsible', 0);
 				$iProposable 		= (int) bab_rp('oProposable', BAB_TM_NO);
 				$iCompletion 		= (int) bab_rp('oCompletion', 0);
 				$iPredecessor 		= (int) bab_rp('iPredecessor', -1);
-				
+
 				$iIsLinked = -1;
 				$iLinkType = -1;
 				$aTask = null;
@@ -1106,25 +1106,25 @@
 				$iPlannedCost				= number_format(bab_rp('oPlannedCost', $aTask['iPlannedCost']), 2, '.', '');
 				$iCost 						= number_format(bab_rp('oCost', $aTask['iCost']), 2, '.', '');
 				$iPriority					= (int) bab_rp('oTaskPriority', $aTask['iPriority']);
-				
-				$this->extractDateTimePart('PlannedStart', $sPlannedStartDate, 
+
+				$this->extractDateTimePart('PlannedStart', $sPlannedStartDate,
 					$iPlannedStartHour, $iPlannedStartMinut);
-				
-				$this->extractDateTimePart('PlannedEnd', $sPlannedEndDate, 
+
+				$this->extractDateTimePart('PlannedEnd', $sPlannedEndDate,
 					$iPlannedEndHour, $iPlannedEndMinut);
-				
-				$this->extractDateTimePart('Start', $sStartDate, 
+
+				$this->extractDateTimePart('Start', $sStartDate,
 					$iStartHour, $iStartMinut);
-				
-				$this->extractDateTimePart('End', $sEndDate, 
+
+				$this->extractDateTimePart('End', $sEndDate,
 					$iEndHour, $iEndMinut);
-				
+
 				$iIdResponsible = -1;
 				if(isset($_POST['iIdTaskResponsible']))
 				{
 					$iIdResponsible = (int) bab_rp('iIdTaskResponsible', -1);
 				}
-				else 
+				else
 				{
 					if(is_array($this->m_aTaskResponsibles))
 					{
@@ -1147,7 +1147,7 @@
 					$iLinkType = $_POST['oLinkType'][$iPosition];
 					$iIsLinked = BAB_TM_YES;
 				}
-				else 
+				else
 				{
 					$iIsLinked = $aTask['iIsLinked'];
 					if(BAB_TM_YES == $iIsLinked)
@@ -1158,11 +1158,11 @@
 							$iLinkType = (int) $this->m_aLinkedTasks[0]['iLinkType'];
 						}
 					}
-					else 
+					else
 					{
 					}
 				}
-				
+
 			}
 
 			$this->initProjects($this->m_iIdProject);
@@ -1175,25 +1175,25 @@
 			$this->initDurationType($iDurationType);
 			$this->initDurationUnit($iDurationUnit);
 			$this->initDuration($iDuration);
-			
-			$this->initDateTime('PlannedStart', $sPlannedStartDate, 
+
+			$this->initDateTime('PlannedStart', $sPlannedStartDate,
 				$iPlannedStartHour, $iPlannedStartMinut);
-			
-			$this->initDateTime('PlannedEnd', $sPlannedEndDate, 
+
+			$this->initDateTime('PlannedEnd', $sPlannedEndDate,
 				$iPlannedEndHour, $iPlannedEndMinut);
-			
-			$this->initDateTime('Start', $sStartDate, 
+
+			$this->initDateTime('Start', $sStartDate,
 				$iStartHour, $iStartMinut);
-			
-			$this->initDateTime('End', $sEndDate, 
+
+			$this->initDateTime('End', $sEndDate,
 				$iEndHour, $iEndMinut);
-			
+
 			$this->initResponsible($iIdResponsible);
 			$this->initProposable($iProposable);
 			$this->initCompletion($iCompletion);
 			$this->initPredecessor($iPredecessor, $iLinkType);
 			$this->initAnwser($bIsCreation);
-			
+
 			$this->set_data('oPlannedTimeDurationUnit', $iPlannedTimeDurationUnit);
 			$this->set_data('iPlannedTime', $iPlannedTime);
 			$this->set_data('oTimeDurationUnit', $iTimeDurationUnit);
@@ -1202,18 +1202,18 @@
 			$this->set_data('iCost', $iCost);
 			$this->set_data('iSelectedTaskPriority', $iPriority);
 		}
-		
+
 		function extractDateTimePart($sFieldNamePart, &$sDate, &$iHour, &$iMinut)
 		{
 			$sDate 	= bab_rp('s' . $sFieldNamePart . 'Date', 'undefined');
 			$iHour 	= (int) bab_rp('o' . $sFieldNamePart . 'Hour', 0);
 			$iMinut	= (int) bab_rp('o' . $sFieldNamePart . 'Minut', 0);
-			
+
 			if('undefined' == $sDate)
 			{
 				$sDate = $this->m_oTask->m_aTask['s' . $sFieldNamePart . 'Date'];
 				$aExplodedDate = null;
-				
+
 				if('0000-00-00 00:00:00' !== $sDate && preg_match("/(^[0-9]{4}-[0-9]{2}-[0-9]{2}) ([0-9]{2}):([0-9]{2}).*$/", $sDate, $aExplodedDate))
 				{
 					$sDate	= $aExplodedDate[1];
@@ -1224,36 +1224,36 @@
 						$sDate = bab_formatDate('%j-%n-%Y', $oDate->getTimeStamp());
 						$sDate = str_replace('/', '-', $sDate);
 					}
-					$iHour	= $aExplodedDate[2];	
-					$iMinut	= $aExplodedDate[3];	
+					$iHour	= $aExplodedDate[2];
+					$iMinut	= $aExplodedDate[3];
 				}
 				else
 				{
 					$sDate	= '';
-					$iHour	= 0;	
-					$iMinut	= 0;	
+					$iHour	= 0;
+					$iMinut	= 0;
 				}
 			}
 		}
-		
+
 		function initCommentaries($iIdProjectSpace, $iIdProject, $iIdTask)
 		{
-			$result = bab_selectTaskCommentary($iIdTask);	
+			$result = bab_selectTaskCommentary($iIdTask);
 			$oList = new BAB_TM_ListBase($result);
-		
-			$url = $GLOBALS['babUrlScript'] . '?tg=usrTskMgr&idx=' . 
+
+			$url = $GLOBALS['babUrlScript'] . '?tg=usrTskMgr&idx=' .
 				BAB_TM_IDX_DISPLAY_COMMENTARY_FORM . '&isPopUp=1&iIdProjectSpace=' . $iIdProjectSpace .
 				'&iIdProject=' . $iIdProject . '&iIdTask=' . $iIdTask;
-			
+
 			$oList->set_caption('addCommentary', bab_translate("Add a commentary"));
 			$oList->set_data('addCommentaryUrl', $url);
 			$oList->set_data('iIdTask', $iIdTask);
-			
+
 			$oList->set_data('url', $url . '&iIdCommentary=');
 			$this->set_data('sTaskCommentaries', bab_printTemplate($oList, 'tmUser.html', 'taskCommentariesList'));
 		}
-		
-		
+
+
 		public function getnextproject()
 		{
 			if (list($id_project, $name) = each($this->projects))
@@ -1263,10 +1263,10 @@
 				$this->selected = ($this->m_iIdProject == $id_project) ? 'selected="selected"' : '';
 				return true;
 			}
-			
+
 			return false;
 		}
-		
+
 
 		//getNext function
 		function getNextCategory()
@@ -1279,7 +1279,7 @@
 				{
 				    $iIdCategory = null;
 					$this->get_data('iIdSelectedCategory', $iIdCategory);
-					$this->set_data('sSelectedCategory', ($iIdCategory == $datas['id']) ? 
+					$this->set_data('sSelectedCategory', ($iIdCategory == $datas['id']) ?
 						'selected="selected"' : '');
 
 					$this->set_data('iIdCategory', $datas['id']);
@@ -1289,8 +1289,8 @@
 			}
 			return false;
 		}
-		
-		
+
+
 /*
 		function getNextSpecificField()
 		{
@@ -1301,9 +1301,9 @@
 				if(false != $datas)
 				{
 					$this->get_data('oSpfField', $oSpfField);
-					$this->set_data('sSelectedSpfField', ($datas['id'] == $oSpfField) ? 
+					$this->set_data('sSelectedSpfField', ($datas['id'] == $oSpfField) ?
 						'selected="selected"' : '');
-	
+
 					$this->set_data('iIdSpField', $datas['id']);
 					$this->set_data('sSpFieldName', $datas['name']);
 					return true;
@@ -1335,7 +1335,7 @@
 			}
 			return false;
 		}
-				
+
 		function getNextRelation()
 		{
 			$aRelation = each($this->m_aRelation);
@@ -1344,20 +1344,20 @@
 			    $iLinkType = null;
 			    $datas = array();
 			    $sSelectedPredecessor = null;
-			    
+
 				$this->get_data('iSelectedLinkType', $iLinkType);
 				$this->get_data('iIsStarted', $datas['isStarted']);
 				$this->get_data('sSelectedPredecessor', $sSelectedPredecessor);
 
-				$this->set_data('iLink', $aRelation['key']);				
-				$this->set_data('sLink', $aRelation['value']);				
-				
+				$this->set_data('iLink', $aRelation['key']);
+				$this->set_data('sLink', $aRelation['value']);
+
 				if(BAB_TM_START_TO_START == $aRelation['key'] && '1' == $datas['isStarted'])
 				{
 					reset($this->m_aRelation);
 					return false;
 				}
-				
+
 				$this->set_data('sSelectedLinkType', '');
 				if('checked="checked"' == $sSelectedPredecessor && $iLinkType == $aRelation['key'])
 				{
@@ -1368,20 +1368,20 @@
 			reset($this->m_aRelation);
 			return false;
 		}
-		
+
 		function getNone()
 		{
 			static $i = 0;
 			return ($i++ == 0);
 		}
-		
+
 		function getNextSpecificFieldInstance()
 		{
 			global $babDB;
-			
+
 			$aItem = each($this->aAdditionnalField);
-			
-			
+
+
 			if(false !== $aItem)
 			{
 				$this->set_data('sSpFldInstanceName', $aItem['value']['sFieldName']);
@@ -1389,18 +1389,18 @@
 				$this->set_data('sSpFldInstanceValue', $aItem['value']['sValue']);
 				$this->set_data('iSpFldInstanceClass', $aItem['value']['iType']);
 $this->set_data('iSpFldInstanceId', $aItem['value']['iIdFieldClass']);
-				
+
 				$this->set_data('sSpFldInstanceSelected', '');
 				if(BAB_TM_RADIO_FIELD == $aItem['value']['iType'])
 				{
 					$this->m_spfValueResult = bab_selectSpecificFieldClassValues($aItem['value']['iIdFieldClass']);
 				}
-				
+
 				return true;
 			}
 			return false;
 		}
-		
+
 		function getNextSpecificFieldInstanceValue()
 		{
 			global $babDB;
@@ -1410,24 +1410,24 @@ $this->set_data('iSpFldInstanceId', $aItem['value']['iIdFieldClass']);
 				if(false != $datas)
 				{
 				    $sSpFldInstanceValue = null;
-				    
+
 					$this->get_data('sSpFldInstanceValue', $sSpFldInstanceValue);
 					$this->set_data('sSpFldInstanceSelected', ($datas['sValue'] == $sSpFldInstanceValue) ? 'selected="selected"' : '');
 					$this->set_data('sSpFldInstanceRdValue', $datas['sValue']);
-					
+
 					return true;
 				}
 			}
 			return false;
 		}
 	}
-	
-	
-	
-	
-	
-	
-	
+
+
+
+
+
+
+
 	class BAB_TM_TaskValidatorBase
 	{
 		var $m_iIdProjectSpace			= -1;
@@ -1448,65 +1448,65 @@ $this->set_data('iSpFldInstanceId', $aItem['value']['iIdFieldClass']);
 		var $m_iIsLinked				= null;
 		var $m_iIdCalEvent				= null;
 		var $m_sHashCalEvent			= null;
-		
+
 		var $m_iDuration				= null;
 		var $m_iDurationType			= null;
 		var $m_iDurationUnit			= null;
-		
+
 		var $m_iMajorVersion			= null;
 		var $m_iMinorVersion			= null;
 		var $m_sColor					= null;
 		var $m_iPosition				= 0;
 		var $m_iCompletion				= null;
-		
+
 		var $m_sPlannedStartDate		= null;
 		var $m_iPlannedStartHour		= null;
 		var $m_iPlannedStartMinut		= null;
-		
+
 		var $m_sPlannedEndDate			= null;
 		var $m_iPlannedEndHour			= null;
 		var $m_iPlannedEndMinut			= null;
-		
+
 		var $m_sStartDate				= null;
 		var $m_iStartHour				= null;
 		var $m_iStartMinut				= null;
-		
+
 		var $m_sEndDate					= null;
 		var $m_iEndHour					= null;
 		var $m_iEndMinut				= null;
-		
+
 		var $m_iIsNotified				= null;
 
-		var $m_iLinkType 				= null; 
+		var $m_iLinkType 				= null;
 		var $m_iIdPredecessor 			= null;
 		var $m_iIdTaskResponsible 		= null;
 		var $m_iAnswer					= null;
-		
+
 		var $m_aCfg						= null;
-		
+
 		var $m_oTask					= null;
-		
+
 		var $m_aAvailableResponsibles	= null;
 //		var $m_aLinkedTasks				= null;
 		var $m_aTaskResponsibles		= null;
 		var $m_aDependingTasks			= null;
-		
+
 		var $m_oSendMail				= null;
-		
+
 		var $m_iPlannedTimeDurationUnit = null;
 		var $m_iPlannedTime				= null;
 		var $m_iTimeDurationUnit		= null;
 		var $m_iTime					= null;
 		var $m_iPlannedCost				= null;
 		var $m_iCost					= null;
-		
+
 		var $m_iPriority				= null;
-		
+
 		function BAB_TM_TaskValidatorBase()
 		{
 			$this->init();
 		}
-		
+
 		function init()
 		{
 			$oTmCtx						=& getTskMgrContext();
@@ -1525,11 +1525,11 @@ $this->set_data('iSpFldInstanceId', $aItem['value']['iIdFieldClass']);
 				$oEditor = new bab_contentEditor('bab_taskManagerDescription');
 				$this->m_sDescription = $oEditor->getContent();
 			}
-			else 
+			else
 			{
 				$this->m_sDescription = $this->m_oTask->m_aTask['sDescription'];
 			}
-			
+
 			$this->m_sShortDescription			= trim(bab_rp('sShortDescription', ''));
 			$this->m_iIdCategory				= (int) bab_rp('iIdCategory', 0);
 			$this->m_sCreated					= date("Y-m-d H:i:s");
@@ -1540,24 +1540,24 @@ $this->set_data('iSpFldInstanceId', $aItem['value']['iIdFieldClass']);
 			$this->m_iParticipationStatus		= 0;
 			$this->m_iIdCalEvent				= 0;
 			$this->m_sHashCalEvent				= '';
-			
+
 			$this->m_iDurationType 				= (int) bab_rp('oDurationType', BAB_TM_DATE);
 			$this->m_iDuration					= (float) (BAB_TM_DATE != $this->m_iDurationType) ? number_format(bab_rp('sDuration', ''), 2, '.', '') : 0;
 			$this->m_iDurationUnit 				= (int) bab_rp('oDurationUnit', BAB_TM_DAY);
-			
+
 			$this->m_iMajorVersion				= (int) bab_rp('iMajorVersion', 1);
 			$this->m_iMinorVersion				= (int) bab_rp('iMinorVersion', 0);
 			$this->m_sColor						= '';
 			$this->m_iPosition					= (0 != $this->m_iIdTask) ? $this->m_oTask->m_aTask['iPosition'] : $this->m_oTask->m_iNextPosition;
 			$this->m_iCompletion				= (int) bab_rp('oCompletion', 0);
-			
+
 			$this->m_iIsNotified				= BAB_TM_NO;
 			$this->m_iAnswer					= (int) bab_rp('oAnswerEnable', -1);
-			
+
 			$this->m_iIsLinked					= (isset($_POST['oLinkedTask'])) ? BAB_TM_YES : BAB_TM_NO;
 			$this->m_iLinkType 					= -1;
 			$this->m_iIdPredecessor 			= (int) bab_rp('iPredecessor', -1);
-			
+
 			$this->m_iPlannedTimeDurationUnit	= (int) bab_rp('oPlannedTimeDurationUnit', BAB_TM_DAY);
 			$this->m_iPlannedTime				= number_format(bab_rp('oPlannedTime', 0), 2, '.', '');
 			$this->m_iTimeDurationUnit			= (int) bab_rp('oTimeDurationUnit', BAB_TM_DAY);
@@ -1566,7 +1566,7 @@ $this->set_data('iSpFldInstanceId', $aItem['value']['iIdFieldClass']);
 			$this->m_iCost						= number_format(bab_rp('oCost', 0), 2, '.', '');
 			$this->m_iPriority					= (int) bab_rp('oTaskPriority', 5);
 			$this->m_iIdTaskResponsible			= (int) bab_rp('iIdTaskResponsible', -1);
-			
+
 			/*
 			bab_debug($_POST);
 			bab_debug('oPlannedTimeDurationUnit ==> ' . $this->m_iPlannedTimeDurationUnit);
@@ -1575,8 +1575,8 @@ $this->set_data('iSpFldInstanceId', $aItem['value']['iIdFieldClass']);
 			bab_debug('iTime ==> ' . $this->m_iTime);
 			bab_debug('iPlannedCost ==> ' . $this->m_iPlannedCost);
 			bab_debug('iCost ==> ' . $this->m_iCost);
-			//*/			
-			
+			//*/
+
 			$aTask = null;
 			if(BAB_TM_YES === $this->m_iIsLinked && -1 != $this->m_iIdPredecessor && bab_getTask($this->m_iIdPredecessor, $aTask))
 			{
@@ -1585,7 +1585,7 @@ $this->set_data('iSpFldInstanceId', $aItem['value']['iIdFieldClass']);
 					$this->m_iLinkType = (int) $_POST['oLinkType'][$this->m_iIdPredecessor];
 				}
 			}
-			
+
 			$this->processPostedDate('PlannedStart');
 			$this->processPostedDate('PlannedEnd');
 			$this->processPostedDate('Start');
@@ -1593,13 +1593,13 @@ $this->set_data('iSpFldInstanceId', $aItem['value']['iIdFieldClass']);
 
 			bab_getTaskResponsibles($this->m_iIdTask, $this->m_aTaskResponsibles);
 			bab_getDependingTasks($this->m_iIdTask, $this->m_aDependingTasks);
-			
+
 			//Si il y a un predecesseur
 			if(!is_null($aTask))
 			{
 /*
 $sMsg = 'This task have a predecessor';
-bab_debug($sMsg);			
+bab_debug($sMsg);
 //echo $sMsg . '<br/>';
 //*/
 				if(BAB_TM_START_TO_START == $this->m_iLinkType)
@@ -1610,18 +1610,18 @@ bab_debug($sMsg);
 				{
 /*
 $sMsg = 'This task is linked : The link is END ==> START';
-bab_debug($sMsg);			
+bab_debug($sMsg);
 //echo $sMsg . '<br/>';
 //*/
 					$oStartDate = BAB_DateTime::fromIsoDateTime($aTask['sPlannedEndDate']);
 					$this->m_sPlannedStartDate = $oStartDate->getIsoDateTime();
 				}
-				else 
+				else
 				{
 					bab_debug(__CLASS__ . ' ' . __FUNCTION__ . ': LinkType error');
 				}
 			}
-			
+
 			//Lors de la mise � jour d'une t�che cette variable n'est pas
 			//post� si on est pas gestionnaire
 			if(-1 == $this->m_iIdTaskResponsible && !array_key_exists('iIdTaskResponsible', $_POST))
@@ -1633,24 +1633,24 @@ bab_debug($sMsg);
 					$this->m_iIdTaskResponsible = (int) $aResponsible['value']['id'];
 				}
 			}
-			
+
 			if(BAB_TM_DURATION === $this->m_iDurationType && 0 == mb_strlen(trim(bab_rp('sPlannedEndDate', ''))))
 			{
 				//$this->computeEndDate();
-				
+
 				require_once($GLOBALS['babInstallPath'] . 'tmTaskTime.class.php');
 				$oPlannedEndDate = null;
 				BAB_TM_TaskTime::computeEndDate($this->m_sPlannedStartDate, $this->m_iDuration, $this->m_iDurationUnit, $oPlannedEndDate);
 				$this->m_sPlannedEndDate = $oPlannedEndDate->getIsoDateTime();
 			}
 
-			/*			
+			/*
 			echo 'sPlannedStartDate ==> ' . $this->m_sPlannedStartDate . '<br/>';
 			echo 'sPlannedEndDate ==> ' . $this->m_sPlannedEndDate . '<br/>';
 			echo 'sStartDate ==> ' . $this->m_sStartDate . '<br/>';
 			echo 'sEndDate ==> ' . $this->m_sEndDate . '<br/>';
 			//*/
-			
+
 			if($this->m_oTask->m_isPersonnal)
 			{
 				$this->m_aCfg =& $this->m_oTask->getConfiguration();
@@ -1660,13 +1660,13 @@ bab_debug($sMsg);
 				$this->m_aCfg =& $oTmCtx->getConfiguration();
 			}
 		}
-		
+
 		function processPostedDate($sFieldPartName)
 		{
 			$sDateFieldName		= 's' . $sFieldPartName . 'Date';
 			$sHourFieldName 	= 'o' . $sFieldPartName . 'Hour';
 			$sMinutFieldName 	= 'o' . $sFieldPartName . 'Minut';
-			
+
 			$sDate	= trim(bab_rp($sDateFieldName, ''));
 			$iHour	= (int) bab_rp($sHourFieldName, 0);
 			$iMinut	= (int) bab_rp($sMinutFieldName, 0);
@@ -1676,15 +1676,15 @@ bab_debug($sMsg);
 			$sDateFieldName 	= 'm_s' . $sFieldPartName . 'Date';
 			$sHourFieldName 	= 'm_i' . $sFieldPartName . 'Hour';
 			$sMinutFieldName	= 'm_i' . $sFieldPartName . 'Minut';
-			
+
 			$this->$sDateFieldName	= $sDate;
 			$this->$sHourFieldName	= $iHour;
 			$this->$sMinutFieldName	= $iMinut;
-			
+
 			$oDate = BAB_DateTime::fromUserInput($sDate);
 			if(null !== $oDate)
 			{
-				$oDate->init($oDate->_iYear, $oDate->_iMonth, $oDate->_iDay, $iHour, $iMinut);
+				$oDate->init($oDate->getYear(), $oDate->getMonth(), $oDate->getDayOfMonth(), $iHour, $iMinut);
 				$this->$sDateFieldName = $oDate->getIsoDateTime();
 			}
 		}
@@ -1724,8 +1724,8 @@ bab_debug($sMsg);
 			}
 			return false;
 		}
-		
-		
+
+
 		function isDateValid($sDate)
 		{
 			if(0 != trim(mb_strlen($sDate)))
@@ -1755,49 +1755,49 @@ bab_debug($sMsg);
 			{
 				$sProjectName = $aProject['name'];
 			}
-			return $sProjectName;	
+			return $sProjectName;
 		}
 
 		function noticeCreateSuccess()
 		{
 			$iIdEvent = BAB_TM_EV_TASK_CREATED;
-			
+
 			$g_aEmailMsg =& $GLOBALS['g_aEmailMsg'];
 			$sBody = $g_aEmailMsg[$iIdEvent]['body'];
 			$sSubject = $g_aEmailMsg[$iIdEvent]['subject'];
-			
+
 			$sProjectSpaceName = $this->getProjectSpaceName();
 			$sProjectName = $this->getProjectName();
 			$sBody = sprintf($sBody, ((mb_strlen(trim($this->m_sShortDescription)) > 0) ? $this->m_sShortDescription : $this->m_sTaskNumber), $sProjectName, $sProjectSpaceName);
-			sendNotice($this->m_iIdProjectSpace, $this->m_iIdProject, $this->m_iIdTask, 
+			sendNotice($this->m_iIdProjectSpace, $this->m_iIdProject, $this->m_iIdTask,
 				$iIdEvent, $sSubject, $sBody);
 		}
-		
+
 		function noticeNewTaskResponsible($iIdUser)
 		{
 			$iIdEvent = BAB_TM_EV_NEW_TASK_RESPONSIBLE;
 			$g_aEmailMsg =& $GLOBALS['g_aEmailMsg'];
 			$sSubject = $g_aEmailMsg[$iIdEvent]['subject'];
 			$sBody = $g_aEmailMsg[$iIdEvent]['body'];
-			
+
 			$sProjectSpaceName = $this->getProjectSpaceName();
 			$sProjectName = $this->getProjectName();
 			$sBody = sprintf($sBody, ((mb_strlen(trim($this->m_sShortDescription)) > 0) ? $this->m_sShortDescription : $this->m_sTaskNumber), $sProjectName, $sProjectSpaceName);
-			
+
 			if(is_null($this->m_oSendMail))
 			{
 				$this->m_oSendMail = new BAB_TM_SendEmail();
 			}
 			$this->m_oSendMail->send_notification(bab_getUserEmail($iIdUser), $sSubject, $sBody);
 		}
-		
+
 		function noticeNotAnyMoreTaskResponsible($iIdUser)
 		{
 			$iIdEvent = BAB_TM_EV_NO_MORE_TASK_RESPONSIBLE;
 			$g_aEmailMsg =& $GLOBALS['g_aEmailMsg'];
 			$sSubject = $g_aEmailMsg[$iIdEvent]['subject'];
 			$sBody = $g_aEmailMsg[$iIdEvent]['body'];
-			
+
 			$sProjectSpaceName = $this->getProjectSpaceName();
 			$sProjectName = $this->getProjectName();
 			$sBody = sprintf($sBody, ((mb_strlen(trim($this->m_sShortDescription)) > 0) ? $this->m_sShortDescription : $this->m_sTaskNumber), $sProjectName, $sProjectSpaceName);
@@ -1807,18 +1807,18 @@ bab_debug($sMsg);
 			}
 			$this->m_oSendMail->send_notification(bab_getUserEmail($iIdUser), $sSubject, $sBody);
 		}
-		
+
 		function noticeTaskResponsibleProposed($iIdUser)
 		{
 			$iIdEvent = BAB_TM_EV_TASK_RESPONSIBLE_PROPOSED;
 			$g_aEmailMsg =& $GLOBALS['g_aEmailMsg'];
 			$sSubject = $g_aEmailMsg[$iIdEvent]['subject'];
 			$sBody = $g_aEmailMsg[$iIdEvent]['body'];
-			
+
 			$sProjectSpaceName = $this->getProjectSpaceName();
 			$sProjectName = $this->getProjectName();
 			$sBody = sprintf($sBody, ((mb_strlen(trim($this->m_sShortDescription)) > 0) ? $this->m_sShortDescription : $this->m_sTaskNumber), $sProjectName, $sProjectSpaceName);
-			
+
 			if(is_null($this->m_oSendMail))
 			{
 				$this->m_oSendMail = new BAB_TM_SendEmail();
@@ -1831,23 +1831,23 @@ bab_debug($sMsg);
 			$g_aEmailMsg =& $GLOBALS['g_aEmailMsg'];
 			$sSubject = $g_aEmailMsg[$iIdEvent]['subject'];
 			$sBody = $g_aEmailMsg[$iIdEvent]['body'];
-			
+
 			$sProjectSpaceName = $this->getProjectSpaceName();
 			$sProjectName = $this->getProjectName();
-			$sBody = sprintf($sBody, ((mb_strlen(trim($this->m_sShortDescription)) > 0) ? $this->m_sShortDescription : $this->m_sTaskNumber), $sProjectName, $sProjectSpaceName, 
+			$sBody = sprintf($sBody, ((mb_strlen(trim($this->m_sShortDescription)) > 0) ? $this->m_sShortDescription : $this->m_sTaskNumber), $sProjectName, $sProjectSpaceName,
 				bab_getUserName($GLOBALS['BAB_SESS_USERID']));
-			sendNotice($this->m_iIdProjectSpace, $this->m_iIdProject, $this->m_iIdTask, 
+			sendNotice($this->m_iIdProjectSpace, $this->m_iIdProject, $this->m_iIdTask,
 				$iIdEvent, $sSubject, $sBody);
 		}
 	}
-	
+
 	class BAB_TM_MgrTaskValidatorBase extends BAB_TM_TaskValidatorBase
 	{
 		function BAB_TM_MgrTaskValidatorBase()
 		{
 			parent::BAB_TM_TaskValidatorBase();
 		}
-		
+
 		function init()
 		{
 			parent::init();
@@ -1856,14 +1856,14 @@ bab_debug($sMsg);
 		function isTaskValid()
 		{
 			//bab_debug(__CLASS__ . ' ' . __FUNCTION__);
-/*		
+/*
 			if($this->m_oTask->m_bIsEnded)
 			{
 				bab_debug(__FUNCTION__ . ' the task is ended');
 				$GLOBALS['babBody']->msgerror = bab_translate("The task is ended");
 				return false;
 			}
-//*/			
+//*/
 			if($this->isTaskNumberValid())
 			{
 				$success = true;
@@ -1872,7 +1872,7 @@ bab_debug($sMsg);
 				if(BAB_TM_YES == $this->m_iIsLinked)
 				{
 					//bab_debug('class: ' . __CLASS__ . ' fn: ' . __FUNCTION__ . ' the task is linked');
-					
+
 				    $aTask = null;
 					$success = bab_getTask($this->m_iIdPredecessor, $aTask);
 					if($success)
@@ -1884,13 +1884,13 @@ bab_debug($sMsg);
 							return false;
 						}
 					}
-					else 
+					else
 					{
 						bab_debug('Error can get predecessor information');
 						$GLOBALS['babBody']->msgerror = bab_translate("Error can get predecessor information");
 					}
 				}
-				
+
 				if($success)
 				{
 					if(0 != $this->m_iDuration)
@@ -1908,14 +1908,14 @@ bab_debug($sMsg);
 					}
 				}
 			}
-			else 
+			else
 			{
 				bab_debug(__FUNCTION__ . ' sTaskNumber is invalid');
 				$GLOBALS['babBody']->msgerror = bab_translate("The task number is invalid");
 			}
 			return false;
 		}
-		
+
 		function isTaskValidByDuration()
 		{
 			if($this->isTaskValidByDate())
@@ -1925,20 +1925,20 @@ bab_debug($sMsg);
 				{
 					$oLimitEndDate = BAB_DateTime::fromIsoDateTime($this->m_sPlannedEndDate);
 					$oEndDate = BAB_DateTime::fromIsoDateTime($this->m_sPlannedStartDate);
-					
+
 					//3600 nombre de secondes dans une heure
 					$oEndDate->add(3600 * $this->m_iDuration, BAB_DATETIME_SECOND);
-					
+
 					/*
-					bab_debug(__FUNCTION__ . 
-						' sEndDate ==> ' . date('Y-m-d H:i:s', $oEndDate->getTimeStamp()) . 
+					bab_debug(__FUNCTION__ .
+						' sEndDate ==> ' . date('Y-m-d H:i:s', $oEndDate->getTimeStamp()) .
 						' sLimitEndDate ==> ' .date('Y-m-d H:i:s', $oLimitEndDate->getTimeStamp()));
 					//*/
-					
+
 					$iIsEqual	= 0;
 					$iIsBefore	= -1;
 					$iIsAfter	= 1;
-					
+
 					if($iIsAfter == BAB_DateTime::compare($oEndDate, $oLimitEndDate))
 					{
 						$GLOBALS['babBody']->msgerror = bab_translate("The end date is greater than the limit date");
@@ -1954,7 +1954,7 @@ bab_debug($sMsg);
 		function isTaskValidByDate()
 		{
 			global $babBody;
-			
+
 			$bPlannedStartDateValid = $this->isDateValid($this->m_sPlannedStartDate);
 			$bPlannedEndDateValid = $this->isDateValid($this->m_sPlannedEndDate);
 			if($bPlannedStartDateValid && $bPlannedEndDateValid)
@@ -1962,16 +1962,16 @@ bab_debug($sMsg);
 				$iIsEqual	= 0;
 				$iIsBefore	= -1;
 				$iIsAfter	= 1;
-				
+
 				//bab_debug('sStart ==> ' . $this->m_sStartDate . ' sEnd ==> ' . $this->m_sEndDate);
 				$oStart = BAB_DateTime::fromIsoDateTime($this->m_sPlannedStartDate);
 				$oEnd = BAB_DateTime::fromIsoDateTime($this->m_sPlannedEndDate);
-				
+
 				if($iIsBefore == BAB_DateTime::compare($oStart, $oEnd))
 				{
 					return true;
 				}
-				else 
+				else
 				{
 					bab_debug(__FUNCTION__ . ' sEndDate is lower than sStartDate');
 					$babBody->addError(bab_translate("The planned end date is lower than the planned start date"));
@@ -1979,14 +1979,14 @@ bab_debug($sMsg);
 					$babBody->addError(bab_translate("Planned end date") . ' ' . bab_shortDate($oEnd->getTimeStamp()));
 				}
 			}
-			else 
+			else
 			{
 				if(!$bPlannedStartDateValid)
 				{
 					$babBody->addError(bab_translate("The planned start date is not valid"));
 					bab_debug(__FUNCTION__ . ' The planned start date is not valid');
 				}
-				
+
 				if(!$bPlannedEndDateValid)
 				{
 					$babBody->addError(bab_translate("The planned end date is not valid"));
@@ -2007,7 +2007,7 @@ bab_debug($sMsg);
 			}
 			return false;
 		}
-		
+
 		function isToDoValid()
 		{
 			if($this->isTaskNumberValid())
@@ -2019,7 +2019,7 @@ bab_debug($sMsg);
 			}
 			return false;
 		}
-		
+
 		function save()
 		{
 			if($this->m_iUserProfil != BAB_TM_UNDEFINED)
@@ -2036,22 +2036,22 @@ bab_debug($sMsg);
 			}
 			return false;
 		}
-		
+
 		function saveTask()
 		{
 			return false;
 		}
-		
+
 		function saveCheckPoint()
 		{
 			return false;
 		}
-		
+
 		function saveToDo()
 		{
 			return false;
 		}
-		
+
 		function getIsoDatesFromEndDate(&$sStartDate, &$sEndDate)
 		{
 			$oStartDate = BAB_DateTime::fromIsoDateTime($this->m_sEndDate);
@@ -2060,14 +2060,14 @@ bab_debug($sMsg);
 			$sEndDate = $this->m_sEndDate;
 		}
 	}
-	
+
 	class BAB_TM_MgrTaskCreatorValidator extends BAB_TM_MgrTaskValidatorBase
 	{
 		function BAB_TM_MgrTaskCreatorValidator()
 		{
 			parent::BAB_TM_MgrTaskValidatorBase();
 		}
-		
+
 		function init()
 		{
 			parent::init();
@@ -2082,15 +2082,15 @@ bab_debug($sMsg);
 				{
 					$iProposable = (int) bab_rp('oProposable', BAB_TM_NO);
 				}
-				
+
 				$iParticipationStatus = (int) (BAB_TM_NO == $iProposable) ? BAB_TM_ACCEPTED : BAB_TM_TENTATIVE;
-				
-				$this->m_iIsLinked = (false === $this->m_oTask->m_bIsFirstTask && BAB_TM_YES === $this->m_iIsLinked) ? 
+
+				$this->m_iIsLinked = (false === $this->m_oTask->m_bIsFirstTask && BAB_TM_YES === $this->m_iIsLinked) ?
 					BAB_TM_YES : BAB_TM_NO;
-				
-					
+
+
 				$aTask =& $this->m_oTask->m_aTask;
-				
+
 				$aTask['iIdProject']				= $this->m_iIdProject;
 				$aTask['sTaskNumber']				= $this->m_sTaskNumber;
 				$aTask['sDescription']				= $this->m_sDescription;
@@ -2124,27 +2124,27 @@ bab_debug($sMsg);
 				$aTask['iPlannedCost']				= $this->m_iPlannedCost;
 				$aTask['iCost']						= $this->m_iCost;
 				$aTask['iPriority']					= $this->m_iPriority;
-				
-				
+
+
 				//bab_debug($aTask);
-//*				
+//*
 				$iIdTask = bab_createTask($aTask);
 				if(false !== $iIdTask)
 				{
 					$this->m_iIdTask = $iIdTask;
-					
+
 					bab_tskmgr_createTaskAdditionalFields($this->m_iIdProjectSpace, $this->m_iIdProject, $this->m_iIdTask);
-					
+
 					if(BAB_TM_PROJECT_MANAGER == $this->m_iUserProfil)
 					{
 						bab_deleteTaskResponsibles($iIdTask);
 						$aTaskResponsibles = array($this->m_iIdTaskResponsible);
-						
+
 						bab_setTaskResponsibles($iIdTask, $aTaskResponsibles);
 					}
-					
+
 					$iIdOwner = (BAB_TM_PROJECT_MANAGER == $this->m_iUserProfil) ? $this->m_iIdTaskResponsible : $GLOBALS['BAB_SESS_USERID'];
-					
+
 					$iIsPersonnal = $this->m_oTask->m_isPersonnal ? BAB_TM_YES : BAB_TM_NO;
 					bab_createTaskInfo($iIdTask, $iIdOwner, $iIsPersonnal);
 
@@ -2154,14 +2154,14 @@ bab_debug($sMsg);
 						$aPredecessors = array(
 							array('iIdPredecessorTask' => $this->m_iIdPredecessor, 'iLinkType' => $this->m_iLinkType)
 						);
-							
+
 						bab_setTaskLinks($iIdTask, $aPredecessors);
 					}
-					
+
 					require_once $GLOBALS['babInstallPath'] . 'tmSendMail.php';
 
 					$this->noticeCreateSuccess();
-					
+
 					$iIsNotified = BAB_TM_NO;
 					if(BAB_TM_YES == $iProposable)
 					{
@@ -2186,7 +2186,7 @@ bab_debug($sMsg);
 			if($this->isCheckPointValid())
 			{
 				$aTask =& $this->m_oTask->m_aTask;
-				
+
 				$aTask['iIdProject']				= $this->m_iIdProject;
 				$aTask['sTaskNumber']				= $this->m_sTaskNumber;
 				$aTask['sDescription']				= $this->m_sDescription;
@@ -2208,13 +2208,13 @@ bab_debug($sMsg);
 				$aTask['sColor']					= $this->m_sColor;
 				$aTask['iPosition']					= $this->m_iPosition;
 				$aTask['iCompletion']				= 0;
-				
-				
+
+
 				$sStartDate = null;
 				$sEndDate = null;
-				
+
 				$this->getIsoDatesFromEndDate($sStartDate, $sEndDate);
-				
+
 				$aTask['sStartDate']				= $sStartDate;
 				$aTask['sEndDate'] 					= $sEndDate;
 				$aTask['sPlannedStartDate']			= $sStartDate;
@@ -2227,13 +2227,13 @@ bab_debug($sMsg);
 				$aTask['iPlannedCost']				= 0.00;
 				$aTask['iCost']						= 0.00;
 				$aTask['iPriority']					= $this->m_iPriority;
-				
-				//*				
+
+				//*
 				$iIdTask = bab_createTask($aTask);
 				if(false !== $iIdTask)
 				{
 					$this->m_iIdTask = $iIdTask;
-					
+
 					$iIdOwner = $GLOBALS['BAB_SESS_USERID'];
 					$iIsPersonnal = $this->m_oTask->m_isPersonnal ? BAB_TM_YES : BAB_TM_NO;
 					bab_createTaskInfo($iIdTask, $iIdOwner, $iIsPersonnal);
@@ -2252,7 +2252,7 @@ bab_debug($sMsg);
 			if($this->isToDoValid())
 			{
 				$aTask =& $this->m_oTask->m_aTask;
-				
+
 				$aTask['iIdProject']				= $this->m_iIdProject;
 				$aTask['sTaskNumber']				= $this->m_sTaskNumber;
 				$aTask['sDescription']				= $this->m_sDescription;
@@ -2274,12 +2274,12 @@ bab_debug($sMsg);
 				$aTask['sColor']					= $this->m_sColor;
 				$aTask['iPosition']					= $this->m_iPosition;
 				$aTask['iCompletion']				= 0;
-				
+
 				$sStartDate = null;
 				$sEndDate = null;
-				
+
 				$this->getIsoDatesFromEndDate($sStartDate, $sEndDate);
-				
+
 				$aTask['sStartDate']				= $sStartDate;
 				$aTask['sEndDate'] 					= $sEndDate;
 				$aTask['sPlannedStartDate']			= $sStartDate;
@@ -2292,17 +2292,17 @@ bab_debug($sMsg);
 				$aTask['iPlannedCost']				= 0.00;
 				$aTask['iCost']						= 0.00;
 				$aTask['iPriority']					= $this->m_iPriority;
-				
-				//*				
+
+				//*
 				$iIdTask = bab_createTask($aTask);
 				if(false !== $iIdTask)
 				{
 					$this->m_iIdTask = $iIdTask;
-					
+
 					$iIdOwner = $GLOBALS['BAB_SESS_USERID'];
 					$iIsPersonnal = $this->m_oTask->m_isPersonnal ? BAB_TM_YES : BAB_TM_NO;
 					bab_createTaskInfo($iIdTask, $iIdOwner, $iIsPersonnal);
-					
+
 					require_once $GLOBALS['babInstallPath'] . 'tmSendMail.php';
 					$this->noticeCreateSuccess();
 				}
@@ -2312,29 +2312,29 @@ bab_debug($sMsg);
 			return false;
 		}
 	}
-	
+
 	class BAB_TM_TaskUpdaterValidator extends BAB_TM_MgrTaskValidatorBase
 	{
 		var $m_bIsClassChanged = false;
-		
+
 		function BAB_TM_TaskUpdaterValidator()
 		{
 			parent::BAB_TM_MgrTaskValidatorBase();
 		}
-		
+
 		function init()
 		{
 			parent::init();
-			
+
 			$aTask =& $this->m_oTask->m_aTask;
-			
+
 			//Si on a chang� de type
 			if($this->m_iClass != $aTask['iClass'])
 			{
 				//si c'�tait une t�che
-				if(BAB_TM_TASK == $aTask['iClass']) 
+				if(BAB_TM_TASK == $aTask['iClass'])
 				{
-					if( BAB_TM_PERSONNAL_TASK_OWNER == $this->m_iUserProfil || 
+					if( BAB_TM_PERSONNAL_TASK_OWNER == $this->m_iUserProfil ||
 						BAB_TM_PROJECT_MANAGER == $this->m_iUserProfil    		)
 					{
 						$aTask['iClass'] = $this->m_iClass;
@@ -2348,7 +2348,7 @@ bab_debug($sMsg);
 				}
 			}
 		}
-		
+
 		function saveTask()
 		{
 			if($this->isTaskValid())
@@ -2359,18 +2359,18 @@ bab_debug($sMsg);
 					$iProposable = (int) bab_rp('oProposable', BAB_TM_NO);
 				}
 
-				$this->m_iIsLinked = (false === $this->m_oTask->m_bIsFirstTask && BAB_TM_YES === $this->m_iIsLinked) ? 
+				$this->m_iIsLinked = (false === $this->m_oTask->m_bIsFirstTask && BAB_TM_YES === $this->m_iIsLinked) ?
 					BAB_TM_YES : BAB_TM_NO;
 
 				$aTask =& $this->m_oTask->m_aTask;
-				
+
 				/*
 				if((is_null($this->m_sStartDate) || 0 == mb_strlen($this->m_sStartDate)) && 0 === (int) $aTask['iCompletion'] && 0 < $this->m_iCompletion)
 				{
 					$this->m_sStartDate = date('Y-m-d H:i:s');
 				}
 				//*/
-				
+
 				$aTask['sTaskNumber']				= $this->m_sTaskNumber;
 				$aTask['sDescription']				= (BAB_TM_TASK_RESPONSIBLE !== $this->m_iUserProfil) ? $this->m_sDescription : $aTask['sShortDescription'];
 				$aTask['sShortDescription']			= (BAB_TM_TASK_RESPONSIBLE !== $this->m_iUserProfil) ? mb_substr($this->m_sShortDescription, 0, 255) : $aTask['sShortDescription'];
@@ -2395,12 +2395,12 @@ bab_debug($sMsg);
 				$aTask['iPlannedCost']				= $this->m_iPlannedCost;
 				$aTask['iCost']						= $this->m_iCost;
 				$aTask['iPriority']					= $this->m_iPriority;
-				
+
 				if(-1 != $this->m_iAnswer)
 				{
 					$aTask['iParticipationStatus'] = (BAB_TM_YES == $this->m_iAnswer) ? BAB_TM_ACCEPTED : BAB_TM_REFUSED;
 				}
-				
+
 				if(100 != (int) $aTask['iCompletion'] && ((int) $this->m_iCompletion >= 100 || BAB_TM_ENDED === (int) $aTask['iParticipationStatus']))
 				{
 					//$aTask['sEndDate'] = date("Y-m-d H:i:s");
@@ -2411,7 +2411,7 @@ bab_debug($sMsg);
 					//$aTask['sEndDate'] = '';
 					$aTask['iParticipationStatus'] = BAB_TM_IN_PROGRESS;
 				}
-				
+
 				$aTask['iCompletion'] = $this->m_iCompletion;
 				if(bab_updateTask($this->m_iIdTask, $aTask))
 				{
@@ -2419,10 +2419,10 @@ bab_debug($sMsg);
 
 					$this->processTaskResponsible($iProposable);
 					$iIsNotified = BAB_TM_NO;
-					
+
 					$this->processTaskLink();
-					
-					//bab_debug('iUserProfil ==> ' . $this->m_iUserProfil);	
+
+					//bab_debug('iUserProfil ==> ' . $this->m_iUserProfil);
 					if(BAB_TM_PROJECT_MANAGER == $this->m_iUserProfil)
 					{
 						$this->noticeTaskUpdatedBy(BAB_TM_EV_TASK_UPDATED_BY_MGR);
@@ -2431,30 +2431,30 @@ bab_debug($sMsg);
 					{
 						$this->noticeTaskUpdatedBy(BAB_TM_EV_TASK_UPDATED_BY_RESP);
 					}
-					
+
 					$this->updateAdditionalField();
 					$this->updateDependingTask($this->m_iIdTask, $aTask);
 				}
 				return true;
 			}
-			return false;			
+			return false;
 		}
-		
+
 		function updateDependingTask($iIdTask, $aTask)
 		{
 bab_debug('A terminer, PB avec la date butoir de fin');
-			return;	
+			return;
 			$aDependingTasks = array();
-			
+
 			bab_getDependingTasks($iIdTask, $aDependingTasks);
-			
+
 			if(count($aDependingTasks) > 0)
 			{
 				foreach($aDependingTasks as $key => $value)
 				{
 					//$value[iIdTask]
 					//$value[iIdResponsible]
-					
+
 					$aDependingTask = array();
 					if(true === bab_getTask($value['iIdTask'], $aDependingTask))
 					{
@@ -2466,18 +2466,18 @@ bab_debug('A terminer, PB avec la date butoir de fin');
 						}
 						else if(BAB_TM_END_TO_START === (int) $value['iLinkType'])
 						{
-							
+
 						}
 					}
 				}
 			}
 		}
-		
+
 		function processTaskResponsible($iProposable)
 		{
 			$bIsNewTaskResponsible = false;
 			$iIdOldTaskResponsible = 0;
-			
+
 			if(false === $this->m_bIsClassChanged)
 			{
 				if(false !== ($aResponsible = each($this->m_aTaskResponsibles)))
@@ -2485,7 +2485,7 @@ bab_debug('A terminer, PB avec la date butoir de fin');
 					reset($this->m_aTaskResponsibles);
 					$bIsNewTaskResponsible = ($this->m_iIdTaskResponsible != (int) $aResponsible['value']['id']);
 					$iIdOldTaskResponsible = (int) $aResponsible['value']['id'];
-					
+
 					if($bIsNewTaskResponsible)
 					{
 						if(0 != $iIdOldTaskResponsible)
@@ -2495,13 +2495,13 @@ bab_debug('A terminer, PB avec la date butoir de fin');
 					}
 				}
 			}
-			
+
 			if(BAB_TM_PROJECT_MANAGER == $this->m_iUserProfil)
 			{
 				bab_deleteTaskResponsibles($this->m_iIdTask);
 				$aTaskResponsibles = array($this->m_iIdTaskResponsible);
 				bab_setTaskResponsibles($this->m_iIdTask, $aTaskResponsibles);
-				
+
 				$iIdOwner = (BAB_TM_PROJECT_MANAGER == $this->m_iUserProfil) ? $this->m_iIdTaskResponsible : $GLOBALS['BAB_SESS_USERID'];
 				$iIsPersonnal = $this->m_oTask->m_isPersonnal ? BAB_TM_YES : BAB_TM_NO;
 				bab_updateTaskInfo($this->m_iIdTask, $iIdOwner, $iIsPersonnal);
@@ -2519,50 +2519,50 @@ bab_debug('A terminer, PB avec la date butoir de fin');
 				}
 			}
 		}
-		
+
 		function processTaskLink()
 		{
 			bab_deleteTaskLinks($this->m_iIdTask);
-				
+
 			if(BAB_TM_YES == $this->m_iIsLinked && (BAB_TM_PROJECT_MANAGER == $this->m_iUserProfil || BAB_TM_PERSONNAL_TASK_OWNER == $this->m_iUserProfil))
 			{
 				$aPredecessors = array(
 					array('iIdPredecessorTask' => $this->m_iIdPredecessor, 'iLinkType' => $this->m_iLinkType)
 				);
-					
+
 				bab_setTaskLinks($this->m_iIdTask, $aPredecessors);
 			}
 		}
 
-		
+
 		function updateAdditionalField()
 		{
 //			$aDeletableSpfObjects = isset($_POST['aDeletableSpfObjects']) ? $_POST['aDeletableSpfObjects'] : array();
 			$aSpFldInstanceValue = isset($_POST['aSpFldInstanceValue']) ? $_POST['aSpFldInstanceValue'] : array();
-			
+
 			$aDatas = array();
-			
+
 			foreach($aSpFldInstanceValue as $iIdFieldClass => $sValue)
 			{
 				$aDatas['sField' . $iIdFieldClass] = $sValue;
 			}
-			
+
 			if(count($aDatas) > 0)
 			{
-				bab_tskmgr_updateAdditionalField($this->m_iIdProjectSpace, $this->m_iIdProject, 
+				bab_tskmgr_updateAdditionalField($this->m_iIdProjectSpace, $this->m_iIdProject,
 					$this->m_iIdTask, $aDatas);
 			}
 		}
 
-		
+
 		function saveCheckPoint()
 		{
 			if($this->isCheckPointValid())
 			{
 				bab_debug(__CLASS__ . ' ' . __FUNCTION__ . ' is Valid');
-//*				
+//*
 				$aTask =& $this->m_oTask->m_aTask;
-				
+
 				$aTask['iIdProject']				= $this->m_iIdProject;
 				$aTask['sTaskNumber']				= $this->m_sTaskNumber;
 				$aTask['sDescription']				= $this->m_sDescription;
@@ -2581,12 +2581,12 @@ bab_debug('A terminer, PB avec la date butoir de fin');
 				$aTask['sColor']					= $this->m_sColor;
 				$aTask['iPosition']					= $this->m_iPosition;
 				$aTask['iCompletion']				= $this->m_iCompletion;
-				
+
 				$sStartDate = null;
 				$sEndDate = null;
-				
+
 				$this->getIsoDatesFromEndDate($sStartDate, $sEndDate);
-				
+
 				$aTask['sStartDate']				= $sStartDate;
 				$aTask['sEndDate'] 					= $sEndDate;
 				$aTask['sPlannedStartDate']			= $sStartDate;
@@ -2599,7 +2599,7 @@ bab_debug('A terminer, PB avec la date butoir de fin');
 				$aTask['iPlannedCost']				= 0.00;
 				$aTask['iCost']						= 0.00;
 				$aTask['iPriority']					= $this->m_iPriority;
-				
+
 				$bSuccess = bab_updateTask($this->m_iIdTask, $aTask);
 				if(true === $bSuccess && -1 !== $this->m_iIdTaskResponsible)
 				{
@@ -2614,15 +2614,15 @@ bab_debug('A terminer, PB avec la date butoir de fin');
 			}
 			return false;
 		}
-		
+
 		function saveToDo()
 		{
 			if($this->isToDoValid())
 			{
 				bab_debug(__CLASS__ . ' ' . __FUNCTION__ . ' is Valid');
-				
+
 				$aTask =& $this->m_oTask->m_aTask;
-				
+
 				$aTask['iIdProject']				= $this->m_iIdProject;
 				$aTask['sTaskNumber']				= $this->m_sTaskNumber;
 				$aTask['sDescription']				= $this->m_sDescription;
@@ -2641,12 +2641,12 @@ bab_debug('A terminer, PB avec la date butoir de fin');
 				$aTask['sColor']					= $this->m_sColor;
 				$aTask['iPosition']					= $this->m_iPosition;
 				$aTask['iCompletion']				= $this->m_iCompletion;
-				
+
 				$sStartDate = null;
 				$sEndDate = null;
-				
+
 				$this->getIsoDatesFromEndDate($sStartDate, $sEndDate);
-				
+
 				$aTask['sStartDate']				= $sStartDate;
 				$aTask['sEndDate'] 					= $sEndDate;
 				$aTask['sPlannedStartDate']			= $sStartDate;
@@ -2659,7 +2659,7 @@ bab_debug('A terminer, PB avec la date butoir de fin');
 				$aTask['iPlannedCost']				= 0.00;
 				$aTask['iCost']						= 0.00;
 				$aTask['iPriority']					= $this->m_iPriority;
-				
+
 				$bSuccess = bab_updateTask($this->m_iIdTask, $aTask);
 				if(true === $bSuccess && -1 !== $this->m_iIdTaskResponsible)
 				{
@@ -2674,8 +2674,8 @@ bab_debug('A terminer, PB avec la date butoir de fin');
 			return false;
 		}
 	}
-	
-	
+
+
 	class BAB_TM_TaskUpdateByTaskResponsible
 	{
 		var $m_sStartDate				= null;
@@ -2693,7 +2693,7 @@ bab_debug('A terminer, PB avec la date butoir de fin');
 		var $m_iIdTask					= null;
 		var $m_iUserProfil				= null;
 		var $m_oTask					= null;
-		
+
 		var $m_sTaskNumber				= null;
 		function BAB_TM_TaskUpdateByTaskResponsible()
 		{
@@ -2706,21 +2706,21 @@ bab_debug('A terminer, PB avec la date butoir de fin');
 
 			$this->processPostedDate('Start');
 			$this->processPostedDate('End');
-			
+
 			$this->m_sModified			= date("Y-m-d H:i:s");
 			$this->m_iIdUserModified	= $GLOBALS['BAB_SESS_USERID'];
 			$this->m_iCompletion		= (int) bab_rp('oCompletion', 0);
-			
+
 			$this->m_sTaskNumber		= $this->m_oTask->m_aTask['sTaskNumber'];
 			//$this->m_iParticipationStatus		= 0;
 		}
-		
+
 		function processPostedDate($sFieldPartName)
 		{
 			$sDateFieldName		= 's' . $sFieldPartName . 'Date';
 			$sHourFieldName 	= 'o' . $sFieldPartName . 'Hour';
 			$sMinutFieldName 	= 'o' . $sFieldPartName . 'Minut';
-			
+
 			$sDate	= trim(bab_rp($sDateFieldName, ''));
 			$iHour	= (int) bab_rp($sHourFieldName, 0);
 			$iMinut	= (int) bab_rp($sMinutFieldName, 0);
@@ -2730,29 +2730,29 @@ bab_debug('A terminer, PB avec la date butoir de fin');
 			$sDateFieldName 	= 'm_s' . $sFieldPartName . 'Date';
 			$sHourFieldName 	= 'm_i' . $sFieldPartName . 'Hour';
 			$sMinutFieldName	= 'm_i' . $sFieldPartName . 'Minut';
-			
+
 			$this->$sDateFieldName	= $sDate;
 			$this->$sHourFieldName	= $iHour;
 			$this->$sMinutFieldName	= $iMinut;
-			
+
 			$oDate = BAB_DateTime::fromUserInput($sDate);
 			if(null !== $oDate)
 			{
-				$oDate->init($oDate->_iYear, $oDate->_iMonth, $oDate->_iDay, $iHour, $iMinut);
+				$oDate->init($oDate->getYear(), $oDate->getMonth(), $oDate->getDayOfMonth(), $iHour, $iMinut);
 				$this->$sDateFieldName = $oDate->getIsoDateTime();
 			}
 		}
-		
+
 		function isTaskValid()
 		{
 			return $this->datesValid();
 		}
-				
+
 		function datesValid()
 		{
 			global $babBody;
 			$bSuccess = true;
-			
+
 			$bStartDateValid = $this->isoDateTimeDateValid($this->m_sStartDate);
 			$bEndDateValid = $this->isoDateTimeDateValid($this->m_sEndDate);
 
@@ -2761,7 +2761,7 @@ bab_debug('A terminer, PB avec la date butoir de fin');
 				$babBody->addError(bab_translate("You must enter a valid real start date when the completion rate is greater than 0%"));
 				$bSuccess = false;
 			}
-			
+
 			if($this->m_iCompletion >= 100 && !$bEndDateValid)
 			{
 				$babBody->addError(bab_translate("You must enter a valid real end date when the completion rate is equal to 100%"));
@@ -2779,19 +2779,19 @@ bab_debug('A terminer, PB avec la date butoir de fin');
 				$babBody->addError(bab_translate("You must select 100% for the completion rate when you enter a real end date"));
 				$bSuccess = false;
 			}
-			
-			
+
+
 			//bab_debug($this->m_sStartDate . ' ' . $this->m_sEndDate);
-			
+
 			if($bStartDateValid && $bEndDateValid)
 			{
 				$oStartDate = BAB_DateTime::fromIsoDateTime($this->m_sStartDate);
 				$oEndDate = BAB_DateTime::fromIsoDateTime($this->m_sEndDate);
-				
+
 				$iIsEqual	= 0;
 				$iIsBefore	= -1;
 				$iIsAfter	= 1;
-				
+
 				if($iIsAfter == BAB_DateTime::compare($oStartDate, $oEndDate))
 				{
 					$babBody->addError(bab_translate("The real start date is greater than the real end date"));
@@ -2800,11 +2800,11 @@ bab_debug('A terminer, PB avec la date butoir de fin');
 			}
 			return $bSuccess;
 		}
-		
+
 		function isoDateTimeDateValid($sIsoDateTime)
 		{
 		    $aMatch = null;
-		    
+
 			if(0 !== preg_match("/^([0-9]{4}).{1}([0-9]{2}).{1}([0-9]{2})[[:space:]]{1}([0-9]{2})\:([0-9]{2})\:([0-9]{2})/", $sIsoDateTime, $aMatch))
 			{
 				if(mb_strlen(trim($sIsoDateTime)) > 0)
@@ -2838,60 +2838,60 @@ bab_debug('A terminer, PB avec la date butoir de fin');
 			{
 				$sProjectName = $aProject['name'];
 			}
-			return $sProjectName;	
+			return $sProjectName;
 		}
 
 		function noticeTaskUpdatedBy($iIdEvent)
 		{
 			$aTask =& $this->m_oTask->m_aTask;
-			
+
 			$g_aEmailMsg =& $GLOBALS['g_aEmailMsg'];
 			$sSubject = $g_aEmailMsg[$iIdEvent]['subject'];
 			$sBody = $g_aEmailMsg[$iIdEvent]['body'];
-			
+
 			$sProjectSpaceName = $this->getProjectSpaceName();
 			$sProjectName = $this->getProjectName();
-			$sBody = sprintf($sBody, ((mb_strlen(trim($aTask['sShortDescription'])) > 0) ? $aTask['sShortDescription'] : $aTask['sTaskNumber']), $sProjectName, $sProjectSpaceName, 
+			$sBody = sprintf($sBody, ((mb_strlen(trim($aTask['sShortDescription'])) > 0) ? $aTask['sShortDescription'] : $aTask['sTaskNumber']), $sProjectName, $sProjectSpaceName,
 				bab_getUserName($GLOBALS['BAB_SESS_USERID']));
-			sendNotice($this->m_iIdProjectSpace, $this->m_iIdProject, $this->m_iIdTask, 
+			sendNotice($this->m_iIdProjectSpace, $this->m_iIdProject, $this->m_iIdTask,
 				$iIdEvent, $sSubject, $sBody);
 		}
-		
+
 		function updateAdditionalField()
 		{
 			$aSpFldInstanceValue = isset($_POST['aSpFldInstanceValue']) ? $_POST['aSpFldInstanceValue'] : array();
 			$aDatas = array();
-						
+
 			foreach($aSpFldInstanceValue as $iIdFieldClass => $sValue)
 			{
 				$aDatas['sField' . $iIdFieldClass] = $sValue;
 			}
-			
+
 			if(count($aDatas) > 0)
 			{
-				bab_tskmgr_updateAdditionalField($this->m_iIdProjectSpace, $this->m_iIdProject, 
+				bab_tskmgr_updateAdditionalField($this->m_iIdProjectSpace, $this->m_iIdProject,
 					$this->m_iIdTask, $aDatas);
 			}
 		}
-		
+
 		function save()
 		{
 			if($this->isTaskValid())
 			{
 				$aTask =& $this->m_oTask->m_aTask;
-				
+
 				$aTask['sModified']					= $this->m_sModified;
 				$aTask['iIdUserModified']			= $this->m_iIdUserModified;
 				$aTask['sStartDate']				= $this->m_sStartDate;
 				$aTask['sEndDate'] 					= $this->m_sEndDate;
-				
+
 				/*
 				if(-1 != $this->m_iAnswer)
 				{
 					$aTask['iParticipationStatus'] = (BAB_TM_YES == $this->m_iAnswer) ? BAB_TM_ACCEPTED : BAB_TM_REFUSED;
 				}
 				//*/
-				
+
 				if(100 != (int) $aTask['iCompletion'] && ((int) $this->m_iCompletion >= 100 || BAB_TM_ENDED === (int) $aTask['iParticipationStatus']))
 				{
 					//$aTask['sEndDate'] = date("Y-m-d H:i:s");
@@ -2908,14 +2908,14 @@ bab_debug('A terminer, PB avec la date butoir de fin');
 					$aTask['sStartDate'] = '';
 					$aTask['sEndDate'] = '';
 				}
-				
+
 				$aTask['iCompletion'] = $this->m_iCompletion;
-				
+
 				$bSuccess = bab_updateTask($this->m_iIdTask, $aTask);
-				if(true === $bSuccess)				
+				if(true === $bSuccess)
 				{
 					$this->updateAdditionalField();
-					
+
 					require_once $GLOBALS['babInstallPath'] . 'tmSendMail.php';
 					$this->noticeTaskUpdatedBy(BAB_TM_EV_TASK_UPDATED_BY_RESP);
 				}
