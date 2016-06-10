@@ -1637,7 +1637,7 @@ bab_debug($sMsg);
 			$oDate = BAB_DateTime::fromUserInput($sDate);
 			if(null !== $oDate)
 			{
-				$oDate->init($oDate->_iYear, $oDate->_iMonth, $oDate->_iDay, $iHour, $iMinut);
+				$oDate->init($oDate->getYear(), $oDate->getMonth(), $oDate->getDayOfMonth(), $iHour, $iMinut);
 				$this->$sDateFieldName = $oDate->getIsoDateTime();
 			}
 		}
@@ -2675,7 +2675,7 @@ bab_debug('A terminer, PB avec la date butoir de fin');
 			$oDate = BAB_DateTime::fromUserInput($sDate);
 			if(null !== $oDate)
 			{
-				$oDate->init($oDate->_iYear, $oDate->_iMonth, $oDate->_iDay, $iHour, $iMinut);
+				$oDate->init($oDate->getYear(), $oDate->getMonth(), $oDate->getDayOfMonth(), $iHour, $iMinut);
 				$this->$sDateFieldName = $oDate->getIsoDateTime();
 			}
 		}
