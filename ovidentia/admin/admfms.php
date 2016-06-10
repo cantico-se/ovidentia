@@ -794,6 +794,7 @@ if (bab_rp('add') == 'addfolder') {
     $bdownloadhistory = bab_rp('bdownloadhistory');
     $orderm = bab_rp('orderm');
     
+    bab_requireSaveMethod();
     
 	if (!saveFolder($fname, $active, $said, $notification, $version, $bhide, $bautoapp, $baddtags, $bdownloadscapping, $maxdownloads, $bdownloadhistory, $orderm)) {
 		$idx = 'addf';
@@ -809,22 +810,22 @@ if(bab_rp('update') == 'folders')
 	$versions = bab_rp('versions', array());
 	$bhides = bab_rp('bhides', array());
 	
-	updateFolders($notifies, $actives, $versions, $bhides);
+	bab_requireSaveMethod() && updateFolders($notifies, $actives, $versions, $bhides);
 }
 elseif(bab_rp('update') == 'displayfm')
 {
-	updateDisplayFileManager();
+	bab_requireSaveMethod() && updateDisplayFileManager();
 }
 
 $action = bab_gp('action', '');
 if($action == 'notify')
 {
-	bab_notifyPurgeTrashs();
+	bab_requireSaveMethod() && bab_notifyPurgeTrashs();
 	$babBody->msgerror = bab_translate("Notification done");
 }
 elseif($action == 'purge')
 {
-	bab_purgeTrashs();
+	bab_requireSaveMethod() && bab_purgeTrashs();
 	$babBody->msgerror = bab_translate("Purge done");
 }
 

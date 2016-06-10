@@ -145,13 +145,10 @@ if( !bab_isUserLogged() || !bab_isUserAdministrator())
 $idx = bab_rp('idx','list');
 
 	
-if (isset($_FILES['zipfile'])) {
-	if (unzipcore()) {
-		$idx = "zipupgrade_message";
-	}
-}
 
-if (isset($_POST['action']))
+
+if (isset($_POST['action'])) {
+
 	switch($_POST['action'])
 		{
 		case 'export_database':
@@ -169,7 +166,7 @@ if (isset($_POST['action']))
 				}
 			break;
 		}
-
+}
 
 $message = bab_rp('message');
 

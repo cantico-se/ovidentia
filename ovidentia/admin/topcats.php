@@ -749,7 +749,6 @@ function getImage()
 	$iWidth		= (int) bab_rp('iWidth', 0);
 	$iHeight	= (int) bab_rp('iHeight', 0);
 	$sImage		= (string) bab_rp('sImage', '');
-	$sOldImage	= (string) bab_rp('sOldImage', '');
 	$oEnvObj	= bab_getInstance('bab_PublicationPathsEnv');
 
 	global $babBody;
@@ -758,11 +757,6 @@ function getImage()
 	
 	$oImageResize = new bab_ImageResize();
 	$oImageResize->resizeImageAuto($sPath . $sImage, $iWidth, $iHeight);
-
-	if(file_exists($sPath . $sOldImage))
-	{
-		@unlink($sPath . $sOldImage);
-	}
 }
 	
 function uploadCategoryImg()
@@ -942,7 +936,7 @@ bab_PublicationImageUploader::deleteOutDatedTempImage($iNbSeconds);
 $idx = bab_rp('idx', "List");
 $idp = bab_rp('idp', 0);
 
-if( bab_pp('add'))
+if( bab_pp('add') && bab_requireSaveMethod())
 	{
 	$idp = bab_pp('topcatid');
 	if(false === addTopCat(
@@ -962,11 +956,11 @@ elseif( bab_pp('update'))
 	    
 	if( $update == 'disable' || $update == 'enable' )
 	{
-		disableEnableTopcat(bab_pp('iIdTopCat'), ($update == 'enable' ? 'Y' : 'N'));
+		bab_requireSaveMethod() && disableEnableTopcat(bab_pp('iIdTopCat'), ($update == 'enable' ? 'Y' : 'N'));
 	}
 	if( $update == "order" )
 		{
-		saveOrderTopcats($idp, bab_pp('listtopcats'));
+		bab_requireSaveMethod() && saveOrderTopcats($idp, bab_pp('listtopcats'));
 		}
 	}
 

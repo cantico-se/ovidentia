@@ -775,7 +775,7 @@ if( isset($create))
 	{
 	if (!isset($script))
 		$script = '';
-	sectionSave($title, $position, $description, $script, $js, $template, $lang, $opt);
+	bab_requireSaveMethod() && sectionSave($title, $position, $description, $script, $js, $template, $lang, $opt);
 	}
 
 if( isset($update))
@@ -784,13 +784,13 @@ if( isset($update))
 		{
 	    $listleft = bab_rp('listleft', array());
 	    $listright = bab_rp('listright', array());
-		saveSectionsOrder($listleft, $listright);
+		bab_requireSaveMethod() && saveSectionsOrder($listleft, $listright);
 		}
 	else if( $update == "disable" )
 		{
 		$sections = bab_rp('sections', array());
 		$sectopt = bab_rp('sectopt', array());
-		disableSections($sections, $sectopt);
+		bab_requireSaveMethod() && disableSections($sections, $sectopt);
 		}
 	}
 

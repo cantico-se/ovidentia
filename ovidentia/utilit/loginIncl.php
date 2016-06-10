@@ -355,6 +355,7 @@ class Func_PortalAuthentication_AuthOvidentia extends Func_PortalAuthentication
 
         if (!empty($sLogin) && !empty($sPassword))
         {
+            bab_requireSaveMethod();
             $iIdUser = $this->authenticateUser($sLogin, $sPassword);
             if ($this->userCanLogin($iIdUser))
             {
@@ -861,6 +862,7 @@ function bab_doRequireCredential($sLoginMessage, $sAuthType)
     }
 
     $oAuthObject = bab_functionality::get($sAuthPath);
+    /*@var $oAuthObject Func_PortalAuthentication_AuthOvidentia */
 
     if (false === $oAuthObject)
     {

@@ -1342,7 +1342,6 @@ function getImage()
 	$iWidth			= (int) bab_rp('iWidth', 0);
 	$iHeight		= (int) bab_rp('iHeight', 0);
 	$sImage			= (string) bab_rp('sImage', '');
-	$sOldImage		= (string) bab_rp('sOldImage', '');
 	$iIdTopic		= (int) bab_rp('iIdTopic', 0);
 
 	$oEnvObj		= bab_getInstance('bab_PublicationPathsEnv');
@@ -1368,10 +1367,6 @@ function getImage()
 	$oImageResize = new bab_ImageResize();
 	$oImageResize->resizeImageAuto($sPath . $sImage, $iWidth, $iHeight);
 
-	if(file_exists($sPath . $sOldImage))
-	{
-		@unlink($sPath . $sOldImage);
-	}
 }
 
 
@@ -1490,6 +1485,8 @@ if( bab_rp('add') )
 	{
 	if( bab_rp('submit'))
 	{
+	    bab_requireSaveMethod();
+	    
 		if(!updateCategory(
 		    $item, 
 		    bab_rp('category'), 
@@ -1539,10 +1536,10 @@ if( bab_rp('upart') == "articles")
 	switch($idx)
 		{
 		case "homepage0":
-			addToHomePages($item, 2, bab_rp('hart0'));
+			bab_requireSaveMethod() && addToHomePages($item, 2, bab_rp('hart0'));
 			break;
 		case "homepage1":
-			addToHomePages($item, 1, bab_rp('hart1'));
+			bab_requireSaveMethod() && addToHomePages($item, 1, bab_rp('hart1'));
 			break;
 		}
 	}
@@ -1553,7 +1550,7 @@ if( bab_rp('action') == "Yes")
 	if( $idx == "Delete" )
 		{
 		include_once $GLOBALS['babInstallPath']."utilit/delincl.php";
-		bab_confirmDeleteTopic(bab_rp('category'));
+		bab_requireDeleteMethod() && bab_confirmDeleteTopic(bab_rp('category'));
 		bab_siteMap::clearAll();
 		Header("Location: ". $GLOBALS['babUrlScript']."?tg=topcats");
 		exit;
@@ -1561,7 +1558,7 @@ if( bab_rp('action') == "Yes")
 	else if( $idx == "Deletea")
 		{
 		include_once $GLOBALS['babInstallPath']."utilit/delincl.php";
-		bab_confirmDeleteArticles(bab_rp('items'));
+		bab_requireDeleteMethod() && bab_confirmDeleteArticles(bab_rp('items'));
 		bab_siteMap::clearAll();
 		Header("Location: ". $GLOBALS['babUrlScript']."?tg=topcats");
 		exit;
@@ -1579,11 +1576,11 @@ switch($idx)
 		exit;
 
 	case 'uploadTopicImg': // called by ajax
-		uploadTopicImg();
+		bab_requireSaveMethod() && uploadTopicImg();
 		exit;
 
 	case 'deleteTempImage': // called by ajax
-		deleteTempImage();
+		bab_requireDeleteMethod() && deleteTempImage();
 		exit;
 
 	case "viewa":

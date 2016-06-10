@@ -919,7 +919,6 @@ function getImage()
 	$iWidth		= (int) bab_rp('iWidth', 0);
 	$iHeight	= (int) bab_rp('iHeight', 0);
 	$sImage		= (string) bab_rp('sImage', '');
-	$sOldImage	= (string) bab_rp('sOldImage', '');
 	$oEnvObj	= bab_getInstance('bab_PublicationPathsEnv');
 
 	global $babBody;
@@ -928,11 +927,6 @@ function getImage()
 	
 	$oImageResize = new bab_ImageResize();
 	$oImageResize->resizeImageAuto($sPath . $sImage, $iWidth, $iHeight);
-
-	if(file_exists($sPath . $sOldImage))
-	{
-		@unlink($sPath . $sOldImage);
-	}
 }
 	
 function deleteTempImage()
@@ -971,6 +965,8 @@ $cat = intval(bab_rp('cat', 0));
 
 if(isset($_POST['add']))
 {
+    bab_requireSaveMethod();
+    
 	if(!saveCategory(
 	    bab_rp('category'), 
 	    bab_rp('ncat'), 
@@ -1025,11 +1021,11 @@ switch($idx)
 		exit;
 	
 	case 'uploadTopicImg': // called by ajax
-		uploadTopicImg();
+		bab_requireSaveMethod() && uploadTopicImg();
 		exit;	
 	
 	case 'deleteTempImage': // called by ajax
-		deleteTempImage();
+		bab_requireDeleteMethod() && deleteTempImage();
 		exit;
 
 	case "addtopic":
@@ -1065,5 +1061,3 @@ switch($idx)
 		exit;
 	}
 $babBody->setCurrentItemMenu($idx);
-
-?>

@@ -68,7 +68,7 @@ function bab_addEventListener($event_class_name, $function_name, $require_file, 
     WHERE
         event_class_name='.$babDB->quote($event_class_name).'
         AND function_name='.$babDB->quote($function_name).'
-        AND require_file='.$babDB->quote($require_file).'
+        AND addon_name='.$babDB->quote($addon_name).'
     ');
 
     if (0 < $babDB->db_num_rows($res)) {

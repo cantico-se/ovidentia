@@ -242,6 +242,10 @@ function bab_writeConfig($replace)
 	}
 
 
+	
+	
+
+	
 
 
 /**
@@ -368,7 +372,8 @@ function bab_upgrade($core_dir, &$ret, $forceUpgrade = false)
 
 		// the core has been upgraded correctly
 		// update addons if necessary using the install/addons.ini file
-		bab_upgradeAddonsFromInstall(false, $ini->getVersion());
+		// DISABLED: this will be done in a second request
+		// bab_upgradeAddonsFromInstall(false, $ini->getVersion());
 		
 		
 
@@ -423,6 +428,27 @@ function bab_upgrade($core_dir, &$ret, $forceUpgrade = false)
 	}
 
 	return false;
+}
+
+
+
+/**
+ * @return bool
+ */
+function bab_upgradeAddons(&$ret)
+{
+    
+    $ini = new bab_inifile();
+    $ini->inifile($GLOBALS['babInstallPath'].'version.inc');
+    
+    try {
+        bab_upgradeAddonsFromInstall(false, $ini->getVersion());
+        $ret = bab_translate('Addons installed without errors');
+    } catch (Exception $e) {
+        $ret = $e->getMessage();
+    }
+    
+    return true;
 }
 
 
@@ -499,6 +525,8 @@ function bab_upgradeAddonsFromComposer() {
  *
  * @param	bool 			$install		test the install parameter of addons.ini file
  * @param	null | string	$upgrade		test the upgrade parameter of addons.ini file, contain the version number of ovidentia (after upgrade)
+ * 
+ * @return bool
  */
 function bab_upgradeAddonsFromInstall($install, $upgrade) {
 
@@ -654,7 +682,7 @@ function bab_newInstall() {
 	include_once $GLOBALS['babInstallPath'].'install.php';
 
 
-	if (bab_upgradeAddonsFromInstall(true, null) && bab_upgradeAddonsFromComposer())
+	if (bab_upgradeAddonsFromInstall(true, null)) //  && bab_upgradeAddonsFromComposer()
 	{
 		$iniVersion = $ini->getVersion();
 		$arr = explode('.', $iniVersion);

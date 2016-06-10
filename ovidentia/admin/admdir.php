@@ -1993,6 +1993,7 @@ $fxid = bab_rp('fxid');
 switch(bab_rp('add'))
 {
 	case 'ldap':
+	    bab_requireSaveMethod();
 		if( !addLdapDirectory($adname, $description, $servertype, $decodetype, $host, $basedn, $userdn, $password1, $password2))
 			{
 			$idx = 'new';
@@ -2006,7 +2007,7 @@ switch(bab_rp('add'))
 	    $req = bab_rp('req');
 	    $displayiu = bab_rp('displayiu');
 	    $fields = bab_rp('fields');
-	    
+	    bab_requireSaveMethod();
 		if( !addDbDirectory($adname, $description, $displayiu, $fields, $rw, $req, $ml, $dz))
 			{
 			$idx = 'new';
@@ -2022,6 +2023,7 @@ if( isset($modify))
 		switch($modify)
 		{
 			case 'ldap':
+			    bab_requireSaveMethod();
 				if( !modifyAdLdap($id, $adname, $description, $servertype, $decodetype, $host, $basedn, $userdn, $password1, $password2))
 				{
 				$idx = 'mldap';
@@ -2029,7 +2031,7 @@ if( isset($modify))
 				break;
 
 			case 'db':
-			    
+			    bab_requireSaveMethod();
 			    $id = bab_pp('id');
 			    $adname = bab_pp('adname');
 			    $description = bab_pp('description');
@@ -2068,12 +2070,12 @@ if( isset($modify))
 			case 'dbfval':
 				if( isset($_POST['adfdel']))
 					{
-					deleteFieldsExtra($id, bab_pp('fxid'));
+					bab_requireDeleteMethod() && deleteFieldsExtra($id, bab_pp('fxid'));
 					}
 				else
 					{
 					$fields_values = bab_pp('fields_values', array());
-
+                    bab_requireSaveMethod();
 					updateFieldsExtraValues($id, bab_pp('fxid'), $fields_values, bab_pp('fvdef', 0), bab_pp('value'), bab_pp('mvyn'), bab_pp('name'));
 					}
 				if( isset($_REQUEST['adfsav']) || isset($_REQUEST['adfdel']))
@@ -2084,6 +2086,7 @@ if( isset($modify))
 					}
 				break;
 			case 'addfield':
+			    bab_requireSaveMethod();
 				$message = '';
 				$fieldn = bab_rp('fieldn');
 				$fieldv = bab_rp('fieldv');
@@ -2104,7 +2107,8 @@ if( isset($modify))
 
 if(bab_rp('action') == 'Yes')
 	{
-	confirmDeleteDirectory($id, bab_rp('type'));
+	
+	bab_requireDeleteMethod() && confirmDeleteDirectory($id, bab_rp('type'));
 	}
 
 if( isset($_REQUEST['aclview']))
@@ -2125,11 +2129,13 @@ if( isset($update) )
 	{
 	if( $update == 'displaydb' )
 		{
+		    bab_requireSaveMethod();
 		if(!dbUpdateDiplay(bab_pp('id'), bab_pp('listfd'), bab_pp('sortfd')))
 			$idx = 'list';
 		}
 	elseif( $update == 'ovmldb' )
 		{
+		    bab_requireSaveMethod();
 		$ovmllist = bab_rp('ovmllist');
 		$ovmldetail = bab_rp('ovmldetail');
 		$disableemail = bab_rp('disableemail');
@@ -2138,12 +2144,14 @@ if( isset($update) )
 		}
 	elseif( $update == 'dblistord' )
 		{
+		    bab_requireSaveMethod();
 		$listfields = bab_rp('listfields');
 		if(!dbUpdateListOrder($id, $listfields))
 			$idx = 'list';
 		}
 	elseif( 'search' == $_POST['update'] && bab_isUserAdministrator())
 		{
+		    bab_requireSaveMethod();
 		if (!record_search_options())
 			{
 			$idx = 'search';
@@ -2151,6 +2159,7 @@ if( isset($update) )
 		}
 	elseif( $update == 'gdirs')
 		{
+		    bab_requireSaveMethod();
 		$dirgrpids = bab_rp('dirgrpids', array());
 		updateDirGroups($dirgrpids);
 		$idx = 'list';
@@ -2326,21 +2335,14 @@ switch($idx)
 			$babBody->msgerror = bab_translate("You must have LDAP enabled on the server");
 			break;
 			}
-		if( !isset($adname) ) { $adname ='';}
-		if( !isset($description) ) { $description ='';}
-		if( !isset($servertype) ) { $servertype =0;}
-		if( !isset($decodetype) ) { $decodetype =0;}
-		if( !isset($host) ) { $host ='';}
-		if( !isset($basedn) ) { $basedn ='';}
-		if( !isset($userdn) ) { $userdn ='';}
-		addAdLdap($adname, $description, $servertype, $decodetype, $host, $basedn, $userdn);
+			
+		addAdLdap(bab_rp('adname'), bab_rp('description'), bab_rp('servertype'), 
+		    bab_rp('decodetype'), bab_rp('host'), bab_rp('basedn'), bab_rp('userdn'));
 		break;
 
 	case 'db':
 		$babBody->title = bab_translate("Add new database directory");
-		if( !isset($adname) ) { $adname ='';}
-		if( !isset($description) ) { $description ='';}
-		addAdDb($adname, $description);
+		addAdDb(bab_rp('adname'), bab_rp('description'));
 		$babBody->addItemMenu('list', bab_translate("Directories"), $GLOBALS['babUrlScript'].'?tg=admdir&idx=list');
 		$babBody->addItemMenu('db', bab_translate("New"), $GLOBALS['babUrlScript'].'?tg=admdir&idx=db');
 		break;
@@ -2385,4 +2387,3 @@ switch($idx)
 
 $babBody->setCurrentItemMenu($idx);
 bab_siteMap::setPosition('bab','AdminDir');
-?>

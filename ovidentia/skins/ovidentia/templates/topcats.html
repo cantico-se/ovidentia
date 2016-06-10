@@ -72,12 +72,11 @@ function uploadDone()
 		{ //This part happens when the image gets uploaded.
 	
 			var aImg = sJSon.sMessage.split(',');
-			
-			var sOldImage = $('topCatCreate').sTempImgName.value;
+
 			$('topCatCreate').sTempImgName.value = aImg[0];
 			$('topCatCreate').sImgName.value = aImg[1];
 	
-			$('tempImg').src = "{ babUrlScript }?tg=topcats&idx=getImage&iWidth=120&iHeight=90&sImage=" + aImg[0] + '&sOldImage=' + sOldImage;
+			$('tempImg').src = "{ babUrlScript }?tg=topcats&idx=getImage&iWidth=120&iHeight=90&sImage=" + aImg[0];
 			
 			bab_hide('messageTR');
 		}
@@ -462,12 +461,11 @@ function uploadDone()
 		{ //This part happens when the image gets uploaded.
 	
 			var aImg = sJSon.sMessage.split(',');
-			
-			var sOldImage = $('topCatModify').sTempImgName.value;
+
 			$('topCatModify').sTempImgName.value = aImg[0];
 			$('topCatModify').sImgName.value = aImg[1];
 	
-			$('tempImg').src = "{ babUrlScript }?tg=topcat&idx=getImage&iWidth=120&iHeight=90&sImage=" + aImg[0] + '&sOldImage=' + sOldImage;
+			$('tempImg').src = "{ babUrlScript }?tg=topcat&idx=getImage&iWidth=120&iHeight=90&sImage=" + aImg[0];
 			
 			bab_hide('messageTR');
 		}

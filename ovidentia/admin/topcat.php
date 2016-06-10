@@ -432,7 +432,6 @@ function getImage()
 	$iWidth			= (int) bab_rp('iWidth', 0);
 	$iHeight		= (int) bab_rp('iHeight', 0);
 	$sImage			= (string) bab_rp('sImage', '');
-	$sOldImage		= (string) bab_rp('sOldImage', '');
 	$iIdCategory	= (int) bab_rp('iIdCategory', 0);
 	
 	$oEnvObj		= bab_getInstance('bab_PublicationPathsEnv');
@@ -452,11 +451,6 @@ function getImage()
 	
 	$oImageResize = new bab_ImageResize();
 	$oImageResize->resizeImageAuto($sPath . $sImage, $iWidth, $iHeight);
-
-	if(file_exists($sPath . $sOldImage))
-	{
-		@unlink($sPath . $sOldImage);
-	}
 }
 	
 function uploadCategoryImg()

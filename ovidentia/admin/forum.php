@@ -296,7 +296,7 @@ if( isset($update) && $update == "updateforum")
 		    $nbmsgdisplay = bab_rp('nbmsgdisplay');
 		    $active = bab_rp('active');
 		    
-		updateForum($item, $fname, $description, $moderation, $notification, $nbmsgdisplay, $active);
+		bab_requireSaveMethod() && updateForum($item, $fname, $description, $moderation, $notification, $nbmsgdisplay, $active);
 		}
 	elseif( isset($bdelete))
 		{
@@ -307,8 +307,9 @@ if( isset($update) && $update == "updateforum")
 if( isset($update) && $update == "displayfield")
 	{
 	    $listfd = bab_rp('listfd');
-	updateForumFields($item, $listfd);
+	bab_requireSaveMethod() && updateForumFields($item, $listfd);
 	Header("Location: ". $GLOBALS['babUrlScript']."?tg=forums&idx=List");
+	exit;
 	}
 	
 
@@ -321,7 +322,7 @@ if( isset($_REQUEST['aclview']))
 
 if( bab_rp('action') == "Yes")
 	{
-	confirmDeleteForum($category);
+	bab_requireDeleteMethod() && confirmDeleteForum($category);
 	Header("Location: ". $GLOBALS['babUrlScript']."?tg=forums&idx=List");
 	exit;
 	}

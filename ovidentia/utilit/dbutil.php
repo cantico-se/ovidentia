@@ -184,6 +184,43 @@ class babDatabase
         return $res;
 
         }
+        
+    /**
+     * sends multiple queries
+     * @param string $queries
+     * @return resource|false
+     * @since 8.4.91
+     */
+    public function db_multi_query($queries)
+    {
+        
+        return mysqli_multi_query($this->db_connect(),$queries);
+        
+    }
+    
+    /**
+     * prepare next result from multi_query
+     * @return boolean
+     * @since 8.4.91
+     */
+    public function db_next_result()
+    {
+        
+        return mysqli_next_result($this->db_connect());
+        
+    }
+    
+    /**
+     * check if there are any more query results from a multi query
+     * @return boolean
+     * @since 8.4.91
+     */
+    public function db_more_results()
+    {
+        
+        return mysqli_more_results($this->db_connect());
+        
+    }
 
     public function db_num_rows($result)
         {

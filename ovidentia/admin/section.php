@@ -320,7 +320,7 @@ if( isset($modify))
 	{
 	if( isset($submit))
 		{
-		sectionUpdate($item, $title, $description, $template, $lang, $opt);
+		bab_requireSaveMethod() && sectionUpdate($item, $title, $description, $template, $lang, $opt);
 		}
 	else if(isset($secdel))
 		$idx = "Delete";
@@ -328,7 +328,7 @@ if( isset($modify))
 
 if( isset($aclsec))
 	{
-	maclGroups();
+	bab_requireSaveMethod() && maclGroups();
 	Header("Location: ". $GLOBALS['babUrlScript']."?tg=sections&idx=List");
 	exit;
 	}
@@ -337,7 +337,7 @@ if( isset($aclsec))
 
 if( bab_rp('action') == "Yes")
 	{
-	confirmDeleteSection($section);
+	bab_requireDeleteMethod() && confirmDeleteSection($section);
 	}
 
 switch($idx)

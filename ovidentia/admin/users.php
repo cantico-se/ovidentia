@@ -645,14 +645,14 @@ function updateGroup( $grp, $users, $userst)
 
 function dir_view($id_user)
 {
-global $babDB;
-
-$arr = $babDB->db_fetch_array($babDB->db_query("SELECT dbt.id FROM ".BAB_DBDIR_ENTRIES_TBL." dbt WHERE '".$babDB->db_escape_string($id_user)."'=dbt.id_user and dbt.id_directory='0'"));
-
-list($iddir) = $babDB->db_fetch_row($babDB->db_query("select id from ".BAB_DB_DIRECTORIES_TBL." where id_group='1'"));
-
-Header("Location: ". $GLOBALS['babUrlScript']."?tg=directory&idx=ddb&id=".$iddir."&idu=".$arr['id']."&pos=&xf=");
-
+    global $babDB;
+    
+    $arr = $babDB->db_fetch_array($babDB->db_query("SELECT dbt.id FROM ".BAB_DBDIR_ENTRIES_TBL." dbt WHERE '".$babDB->db_escape_string($id_user)."'=dbt.id_user and dbt.id_directory='0'"));
+    
+    list($iddir) = $babDB->db_fetch_row($babDB->db_query("select id from ".BAB_DB_DIRECTORIES_TBL." where id_group='1'"));
+    
+    Header("Location: ". $GLOBALS['babUrlScript']."?tg=directory&idx=ddb&id=".$iddir."&idu=".$arr['id']."&pos=&xf=");
+    exit;
 }
 
 function confirmDeleteUsers($names)
@@ -737,7 +737,7 @@ if( $idx == "chg")
 if( bab_rp('Updateg') && (bab_isUserAdministrator() || bab_getCurrentAdmGroup() != 0 ))
 {
     $users = isset($_POST['users']) ? $_POST['users'] : array();
-    updateGroup($_POST['grp'], $users, $_POST['userst']);
+    bab_requireSaveMethod() && updateGroup($_POST['grp'], $users, $_POST['userst']);
     Header("Location: ". $GLOBALS['babUrlScript']."?tg=users&idx=List&pos=".$pos."&grp=".$grp."&bupd=".$_REQUEST['bupd']);
     exit;
 }
@@ -752,10 +752,10 @@ if( bab_rp('action') === 'Yes')
         {
         if ($idx == "Deleteu")
         {
-            confirmDeleteUsers(bab_rp('names'));
+            bab_requireDeleteMethod() && confirmDeleteUsers(bab_rp('names'));
         } else if ($idx == 'Disableu')
         {
-            confirmDisableUsers(bab_rp('names'));
+            bab_requireSaveMethod() && confirmDisableUsers(bab_rp('names'));
         }
         Header('Location: '. $GLOBALS['babUrlScript'].'?tg=users&idx=List&pos='.$pos.'&grp='.$grp);
         exit;
@@ -771,7 +771,7 @@ if( $idx == "Create" && !bab_isUserAdministrator() && !bab_isDelegated('users'))
 if( bab_rp('aclnotif'))
 {
     require_once $GLOBALS['babInstallPath']."admin/acl.php";
-    maclGroups();
+    bab_requireSaveMethod() && maclGroups();
 }
 
 switch($idx)
@@ -885,12 +885,12 @@ switch($idx)
             {
             if (isset($_POST['action']) && $_POST['action'] == 'delete_unconfirmed')
                 {
-                delete_unconfirmed();
+                bab_requireDeleteMethod() && delete_unconfirmed();
                 }
 
             if (isset($_POST['action']) && $_POST['action'] == 'delete_since')
                 {
-                delete_since();
+                bab_requireDeleteMethod() && delete_since();
                 }
 
             if ($displayMembersItemMenu)
@@ -909,4 +909,3 @@ switch($idx)
 
 $babBody->setCurrentItemMenu($idx);
 bab_siteMap::setPosition('bab','AdminUsers');
-?>

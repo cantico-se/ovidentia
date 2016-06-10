@@ -427,6 +427,8 @@ if( isset($addforum) && $addforum == "addforum" )
 	    $notification = bab_rp('notification');
 	    $active = bab_rp('active');
 	    
+	    bab_requireSaveMethod();
+	    
 	if( !saveForum($fname, $description, $moderation, $notification, $nbmsgdisplay, $active))
 		$idx = "addforum";
 	}
@@ -434,14 +436,15 @@ if( isset($addforum) && $addforum == "addforum" )
 if( isset($update) && $update == "order")
 	{
 	    $listforums = bab_rp('listforums');
-	saveOrderForums($listforums);
+	bab_requireSaveMethod() && saveOrderForums($listforums);
 	}
 
 if( isset($update) && $update == "forumnotices")
 	{
 	    $listfd = bab_rp('listfd');
-	updateForumFields($listfd);
+	bab_requireSaveMethod() && updateForumFields($listfd);
 	Header("Location: ". $GLOBALS['babUrlScript']."?tg=forums&idx=List");
+	exit;
 	}
 
 switch($idx)
@@ -491,4 +494,4 @@ switch($idx)
 	}
 $babBody->setCurrentItemMenu($idx);
 bab_siteMap::setPosition('bab','AdminForums');
-?>
+

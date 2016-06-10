@@ -379,6 +379,8 @@ $idcal = bab_rp('idcal');
 
 if( isset($_REQUEST['addc']))
 {
+    bab_requireSaveMethod();
+    
 	if( "modp" == bab_rp('addc') )
 	{
 		if( updatePublicCalendar(bab_rp('idcal'), bab_rp('calname'), bab_rp('caldesc'), bab_rp('calidsa')))
@@ -408,7 +410,7 @@ elseif("updcat" == bab_rp('add')  && bab_isUserAdministrator())
     $catdesc = bab_rp('catdesc');
     $bgcolor = bab_rp('bgcolor');
     
-	updateCalendarCategory($idcat, $catname, $catdesc, $bgcolor);
+	bab_requireSaveMethod() && updateCalendarCategory($idcat, $catname, $catdesc, $bgcolor);
 
 }elseif( isset($_REQUEST['aclpub']))
 	{

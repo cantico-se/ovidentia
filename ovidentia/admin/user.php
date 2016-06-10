@@ -530,6 +530,20 @@ function updatePassword($userId, $newpwd1, $newpwd2)
 }
 
 
+function bab_adm_userEditor()
+{
+    require_once $GLOBALS['babInstallPath'].'utilit/urlincl.php';
+    $list = bab_url::get_request('pos', 'grp');
+    $list->tg = 'users';
+
+
+    $usereditor = bab_functionality::get('UserEditor');
+    /*@var $usereditor Func_UserEditor */
+    $usereditor->getAsPage(bab_rp('item'), $list)->displayHtml();
+}
+
+
+
 /* main */
 
 if (!bab_isUserAdministrator() && !bab_isDelegated('users') && bab_getCurrentAdmGroup() == 0)
@@ -569,13 +583,18 @@ if (isset($modify)) {
         $force_pwd_change = bab_rp('force_pwd_change');
         $validityStart = bab_rp('validity_start');
         $validityEnd = bab_rp('validity_end');
-        updateUser($item, $changepwd, $isConfirmed, $disabled, $validityStart, $validityEnd, $authType, $group, $force_pwd_change);
+        bab_requireSaveMethod() && updateUser(
+            $item, $changepwd, $isConfirmed, $disabled, $validityStart, $validityEnd, $authType, $group, $force_pwd_change);
+        
     } else if(isset($bdelete)) {
         $idx = 'Delete';
     }
 }
 
+
+
 if (bab_rp('update') == 'password') {
+    bab_requireSaveMethod();
     if(!updatePassword($item, bab_rp('newpwd1'), bab_rp('newpwd2'))) {
         $idx = 'Modify';
     } else {
@@ -619,38 +638,22 @@ if (bab_rp('update') == 'password') {
 
         /* Return to the list of the users */
         header('Location: '.$GLOBALS['babUrlScript'].'?tg=users&idx=List&pos='.$pos.'&grp='.$grp);
-        return;
+        exit;
     }
 }
 
 
 
-function bab_adm_userEditor()
-{
-    require_once $GLOBALS['babInstallPath'].'utilit/urlincl.php';
-    $list = bab_url::get_request('pos', 'grp');
-    $list->tg = 'users';
 
-
-    $usereditor = bab_functionality::get('UserEditor');
-    /*@var $usereditor Func_UserEditor */
-    $usereditor->getAsPage(bab_rp('item'), $list)->displayHtml();
-}
-
-
-
-// main
-
-$idx = bab_rp('idx');
 
 if (bab_pp('action') == 'Yes') {
-    confirmDeleteUser(bab_pp('user'));
+    bab_requireDeleteMethod() && confirmDeleteUser(bab_pp('user'));
 }
 
 if (isset($_POST['action'])) {
     switch ($_POST['action']) {
         case 'updategroups':
-            updateGroups(bab_pp('item'));
+            bab_requireSaveMethod() && updateGroups(bab_pp('item'));
             break;
     }
 }

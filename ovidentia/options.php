@@ -1349,6 +1349,7 @@ if( '' != ($update = bab_pp('update')))
     switch ($update)
         {
         case 'password':
+            bab_requireSaveMethod();
 			$msgerror = updatePassword(bab_pp('oldpwd'), bab_pp('newpwd1'), bab_pp('newpwd2'));
         	if ($msgerror)
 			{
@@ -1361,14 +1362,17 @@ if( '' != ($update = bab_pp('update')))
 			}
             break;
         case 'lang':
+            bab_requireSaveMethod();
 			$lang = bab_pp('lang');
 			$langfilter = bab_pp('langfilter');
         	updateLanguage($lang, bab_getInstance('babLanguageFilter')->convertFilterToInt($langfilter));
             break;
         case 'skin':
+            bab_requireSaveMethod();
         	updateSkin(bab_pp('skin'), bab_pp('style'));
             break;
         case 'nickname':
+            bab_requireSaveMethod();
 			$password = bab_pp('password');
 			$nickname = bab_pp('nickname');
         	if(updateNickname($password, $nickname))
@@ -1380,10 +1384,12 @@ if( '' != ($update = bab_pp('update')))
 
             
         case 'profiles':
+            bab_requireSaveMethod();
         	updateProfiles();
 			$idx = 'global';
             break;
          case 'regsettings':
+             bab_requireSaveMethod();
 			$datelformat = bab_pp('datelformat');
 			$datesformat = bab_pp('datesformat');
 			$timeformat = bab_pp('timeformat');
@@ -1396,7 +1402,7 @@ if( '' != ($update = bab_pp('update')))
 			if( isset($_POST['bdelete']))
 			{
 				$iduser = bab_pp('iduser');
-				deleteUnavailability($iduser);
+				bab_requireDeleteMethod() && deleteUnavailability($iduser);
 				$fromdate ='';
 				$todate ='';
 				$id_substitute ='';
@@ -1408,7 +1414,7 @@ if( '' != ($update = bab_pp('update')))
 				$fromdate = bab_pp('fromdate');
 				$todate = bab_pp('todate');
 				$id_substitute = bab_pp('id_substitute');
-				updateUnavailability($iduser, $fromdate, $todate, $id_substitute);				
+				bab_requireSaveMethod() && updateUnavailability($iduser, $fromdate, $todate, $id_substitute);				
 				$idx = 'unav';
 				}
             break;

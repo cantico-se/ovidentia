@@ -777,43 +777,24 @@ function bab_export_tables($tables, $file = false)
  * @since	6.4.94
  */
 function bab_execSqlFile($file, $fileEncoding = null) {
-
+	
 	global $babDB;
-	$content = '';
 
-	$fp=fopen($file,"rb");
-	if ($fp) {
-		while (!feof($fp)) {
-			$content .= fread($fp, 8192);
-		}
+	$sql=file_get_contents($file);
+    if ($sql === false) {
+        return false;
+    }
 
-		fclose($fp);
+    if (isset($fileEncoding)) {
+		$sql = bab_getStringAccordingToDataBase($sql, $fileEncoding);
 	}
 
-
-	if (!$content) {
-		return false;
+	$babDB->db_multi_query($sql);
+	while($babDB->db_more_results()){
+		$babDB->db_next_result();
 	}
 
-	if (isset($fileEncoding)) {
-		$content = bab_getStringAccordingToDataBase($content, $fileEncoding);
-	}
-
-	// match sql query, split with ; but ignore ; in content strings
-	$reg = "/\w(?:[^';]*'(?:[^']|\\\\'|'')*')*[^';]*;/";
-	$m = null;
-	if (preg_match_all($reg, $content, $m)) {
-		for ($k = 0; $k < count($m[0]); $k++ ) {
-			$query = trim($m[0][$k]);
-			if (!empty($query)) {
-				if (!$babDB->db_query($query)) {
-					return false;
-				}
-			}
-		}
-		return true;
-	}
-	return false;
+	return true;
 }
 
 

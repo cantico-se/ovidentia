@@ -231,7 +231,6 @@ class bab_stats_modules extends bab_stats_base
 			case "admfaq":
 			case "topcat":
 			case "topcats":
-			case "apprflow":
 			case "admfms":
 			case "admfm":
 			case "topics":

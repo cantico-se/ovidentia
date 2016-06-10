@@ -324,7 +324,7 @@ $names = bab_rp('names');
 
 if( bab_rp('action') == "Yes")
 	{
-	if($idx == "Deletem")
+	if($idx == "Deletem" && bab_requireDeleteMethod())
 		{
 		if (confirmDeleteMembers($item, $names))
 			{
@@ -335,7 +335,7 @@ if( bab_rp('action') == "Yes")
 	}
 elseif(bab_rp('action')=="DeleteG")
 {
-	if( isset($_REQUEST['byes']))
+	if( isset($_REQUEST['byes']) && bab_requireDeleteMethod())
 	{
 		$dgwhat = bab_pp('dgwhat', 0);
 		$idgroup = bab_pp('idgroup', '');
@@ -364,9 +364,9 @@ elseif(bab_rp('action')=="DeleteG")
 	}
 	if( $bdelself)
 	{
-		confirmDeleteGroup($idgroup);
+		bab_requireDeleteMethod() && confirmDeleteGroup($idgroup);
 	}
-	if( isset($arrgrp['id']) && count($arrgrp['id']))
+	if( isset($arrgrp['id']) && count($arrgrp['id']) && bab_requireDeleteMethod())
 	{
 		//print_r($arrgrp);
 		for($k=0; $k < count($arrgrp['id']); $k++)
@@ -419,4 +419,4 @@ switch($idx)
 	}
 
 $babBody->setCurrentItemMenu($idx);
-?>
+

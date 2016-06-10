@@ -238,6 +238,13 @@ unset($BAB_SESS_LOGGED);
 ini_set('default_charset', bab_charset::getIso());
 
 if ('version' !== bab_rp('tg') || 'upgrade' !== bab_rp('idx')) {
+    
+    /**
+     * Context intialisation for all pages except the new 
+     * addon controller (addon=name.file) and tg=version (upgrades iframe)
+     */
+    
+    
     bab_updateSiteSettings(); /* Get the site settings */
     if ($GLOBALS['babCookieIdent'] === true) {
         include $GLOBALS['babInstallPath']."utilit/cookieident.php";
@@ -254,6 +261,11 @@ if ('version' !== bab_rp('tg') || 'upgrade' !== bab_rp('idx')) {
     bab_isUserLogged();
     bab_updateUserSettings();
 } else {
+    
+    /**
+     * Special context initialization for upgrades
+     */
+    
     if (!isset($babLanguage)) {
         $babLanguage = 'fr';
     }
@@ -274,14 +286,16 @@ $babOvmlPath = bab_Skin::getUserSkin()->getThemePath().'ovml/';
 
 
 
-
+/**
+ * URL rewriting
+ */
 if (isset($_GET['babrw']))
 {
     if (false !== $arr = bab_siteMap::extractNodeUrlFromRewrite($_GET['babrw'], true))
     {
         $_GET += $arr;
         $_REQUEST += $arr;
-        extract($arr, EXTR_SKIP);
+        
     } else {
         bab_pageNotFound();
     }
@@ -379,12 +393,6 @@ switch(bab_rp('tg'))
         $babLevelTwo = bab_translate("Topics categories");
         if( bab_isUserLogged() && (bab_isUserAdministrator() || bab_getCurrentAdmGroup() != 0))
             $incl = "admin/topcats";
-        break;
-    case "apprflow":
-        $babLevelOne = bab_translate("Administration");
-        $babLevelTwo = bab_translate("Approbations");
-        if( bab_isUserLogged() && (bab_isUserAdministrator() || bab_getCurrentAdmGroup() != 0))
-            $incl = "admin/apprflow";
         break;
     case "admfms":
         $babLevelOne = bab_translate("Administration");
@@ -524,7 +532,7 @@ switch(bab_rp('tg'))
         if( bab_isUserLogged())
             $incl = "options";
         break;
-    case "confcals":
+    case "confcals": // security done up to this file
         if( bab_isUserLogged())
             $incl = "confcals";
         break;
