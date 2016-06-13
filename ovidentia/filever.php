@@ -893,15 +893,16 @@ if(isset($_REQUEST['idf']))
 			switch($_POST['afile'])
 			{
 				case 'lock':
-					fm_lockFile($idf, $_POST['comment']); 
+					bab_requireSaveMethod() && fm_lockFile($idf, $_POST['comment']); 
 					break;
 					
 				case 'unlock':
-					fm_unlockFile($idf, $_POST['comment']);
+					bab_requireSaveMethod() && fm_unlockFile($idf, $_POST['comment']);
 					break;
 					
 				case 'commit':
-					if(false === fm_commitFile($idf, $_POST['comment'], $_POST['vermajor'], bab_fmFile::upload('uploadf')/*, $_POST['filename']*/)) 
+				    bab_requireSaveMethod();
+					if(false === fm_commitFile($idf, $_POST['comment'], $_POST['vermajor'], bab_fmFile::upload('uploadf'))) 
 					{
 							$idx = 'commit';
 					}
@@ -910,20 +911,20 @@ if(isset($_REQUEST['idf']))
 				case 'delv':
 					if(bab_isAccessValid(BAB_FMMANAGERS_GROUPS_TBL, $oFmFolder->getId())) 
 					{
-						deleteFileVersions($idf, bab_pp('versions', array())); 
+						bab_requireDeleteMethod() && deleteFileVersions($idf, bab_pp('versions', array())); 
 					}
 					break;
 					
 				case 'cleanlog':
 					if(bab_isAccessValid(BAB_FMMANAGERS_GROUPS_TBL, $oFmFolder->getId())) 
 					{
-						cleanFileLog($idf, bab_pp('date'));
+						bab_requireSaveMethod() && cleanFileLog($idf, bab_pp('date'));
 					}
 			}
 	
 			if($_POST['afile'] == 'confirm')
 			{
-				confirmFile($idf, bab_rp('bconfirm')); 
+				bab_requireSaveMethod() && confirmFile($idf, bab_rp('bconfirm')); 
 			}
 		}
 	}
@@ -1022,4 +1023,3 @@ switch($idx)
 		break;
 	}
 $babBody->setCurrentItemMenu($idx);
-?>

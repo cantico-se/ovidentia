@@ -540,12 +540,13 @@ if( '' != ($addf = bab_pp('addf')))
 {
 if( $addf == 'add')
 	{
-	saveImage($_FILES['uploadf']['name'], $_FILES['uploadf']['size'],$_FILES['uploadf']['tmp_name']);
+	bab_requireSaveMethod() && saveImage($_FILES['uploadf']['name'], $_FILES['uploadf']['size'],$_FILES['uploadf']['tmp_name']);
 	}
 }
 
 if ( '' != ($directory = bab_pp('directory')) && bab_imgLibWrite() )
 	{
+	bab_requireSaveMethod();
 	if ( mb_substr($path, -1) != "/" ) $p = $path."/";
 	else $p = $path;
 	if (!is_dir(BAB_IUD_COMMON.$p.$directory))
@@ -559,7 +560,7 @@ $new_name = bab_rp('new_name', '');
 
 if ($old_name != '' && $new_name != '')
 {
-	rename_item($path, $old_name, $new_name);
+	bab_requireSaveMethod() && rename_item($path, $old_name, $new_name);
 }
 
 
@@ -582,7 +583,7 @@ switch($idx)
 		}
 		$path = mb_substr( $path,0, mb_strpos($path,"/") );
 	case 'del':
-		$com = bab_gp('com', 0);
+		$com = bab_rp('com', 0);
 		if ($com != 0 ) 
 			{
 			$p = $path;
@@ -591,10 +592,10 @@ switch($idx)
 			{
 			$p = '';
 			}
-		$f = bab_gp('f');
+		$f = bab_rp('f');
 		if (!empty($f)) 
 			{
-			delImage($com, $p.$f);
+			bab_requireDeleteMethod() && delImage($com, $p.$f);
 			}
 		/* no break */
 	case 'iframe';
@@ -605,4 +606,3 @@ switch($idx)
 		listImages($path);
 		break;
 	}
-?>

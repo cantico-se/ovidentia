@@ -255,7 +255,7 @@ $pos = bab_rp('pos', '');
 
 if( 'Yes' == bab_gp('action'))
 	{
-	confirmDeleteContacts(bab_gp('items'));
+	bab_requireDeleteMethod() && confirmDeleteContacts(bab_gp('items'));
 	}
 
 switch($idx)
@@ -286,4 +286,3 @@ switch($idx)
 
 $babBody->setCurrentItemMenu($idx);
 bab_siteMap::setPosition('bab','UserContacts');
-?>

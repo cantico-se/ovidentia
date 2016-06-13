@@ -691,12 +691,6 @@ switch(bab_rp('tg'))
         if( bab_isUserLogged() && bab_notesAccess())
             $incl = "note";
         break;
-    case "inbox":
-        $babLevelOne = bab_translate("User's section");
-        $babLevelTwo = bab_translate("Mail");
-        if( bab_isUserLogged())
-            $incl = "inbox";
-        break;
     case "contacts":
         $babLevelOne = bab_translate("User's section");
         $babLevelTwo = bab_translate("Contacts");
@@ -734,7 +728,7 @@ switch(bab_rp('tg'))
         include $GLOBALS['babInstallPath']."images.php";
         exit;
         break;
-    case "version":
+    case "version": // security done up to this file
         include $GLOBALS['babInstallPath']."version.php";
         exit;
         break;

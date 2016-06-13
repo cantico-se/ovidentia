@@ -71,6 +71,7 @@ function deleteNotes($id)
 	$query = "delete from ".BAB_NOTES_TBL." where id = '".$babDB->db_escape_string($id)."' and id_user='".$babDB->db_escape_string($BAB_SESS_USERID)."'";
 	$babDB->db_query($query);
 	Header("Location: ". $GLOBALS['babUrlScript']."?tg=notes&idx=List");
+	exit;
 	}
 
 function updateNotes($id, $content)
@@ -107,7 +108,7 @@ list($iduser) = $babDB->db_fetch_row($babDB->db_query("select id_user from ".BAB
 
 if( isset($_POST['update']) && $iduser == bab_getUserId())
 	{
-	updateNotes($item, bab_pp('content'));
+	bab_requireSaveMethod() && updateNotes($item, bab_pp('content'));
 	}
 
 switch($idx)
@@ -119,7 +120,7 @@ switch($idx)
 			}
 		else
 			{
-			deleteNotes($item);
+			bab_requireDeleteMethod() && deleteNotes($item);
 			}
 		break;
 
@@ -141,5 +142,3 @@ switch($idx)
 	}
 
 $babBody->setCurrentItemMenu($idx);
-
-?>

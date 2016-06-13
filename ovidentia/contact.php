@@ -219,6 +219,8 @@ if( bab_isUserLogged() )
 {
 if( '' != ($addcontact = bab_pp('addcontact')))
 	{
+	bab_requireSaveMethod();
+	
 	if( $addcontact == 'add')
 		{
 		$firstname = bab_pp('firstname');
@@ -301,4 +303,3 @@ switch($idx)
 		contactCreate($id, $firstname, $lastname, $email, $compagny, $hometel, $mobiletel, $businesstel, $businessfax, $jobtitle, $baddress, $haddress, $_REQUEST['bliste']);
 		break;
 	}
-?>
