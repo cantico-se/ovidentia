@@ -567,6 +567,8 @@ $idx = bab_rp('idx', 'all');
 
 if( '' != ($conf = bab_rp('conf')))
 {
+    bab_requireSaveMethod();
+    
 	if( $conf == 'art')
 	{
 		$bconfirm = bab_pp('bconfirm', 'N');
@@ -620,7 +622,7 @@ switch($idx)
 		break;
 		
 	case 'confirm_checked':
-		bab_confirmCheckedItems();
+		bab_requireSaveMethod() && bab_confirmCheckedItems();
 		break;
 	
 

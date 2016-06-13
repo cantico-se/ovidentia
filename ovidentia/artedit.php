@@ -1385,6 +1385,7 @@ elseif( $updstep02 = bab_rp('updstep02') )
     }
     elseif( $updstep02 == 'next' )
     {
+        bab_requireSaveMethod();
         $articleid = bab_pp('articleid', 0);
         require_once dirname(__FILE__) . '/utilit/artdraft.class.php';
         $draft = new bab_ArtDraft;
@@ -1405,7 +1406,8 @@ elseif( $updstep02 = bab_rp('updstep02') )
 
 if( $idx == 'restore')
 {
-    $idart = bab_gp('idart', 0);
+    $idart = bab_rp('idart', 0);
+    bab_requireSaveMethod();
     if( $idart && !restoreArticleDraft($idart))
     {
         $idx = 'ltrash';
@@ -1417,7 +1419,8 @@ if( $idx == 'restore')
     }
 }elseif( $idx == 'rests')
 {
-    $idart = bab_gp('idart', 0);
+    $idart = bab_rp('idart', 0);
+    bab_requireSaveMethod();
     if($idart && !restoreRefusedArticleDraft($idart))
         {
         Header('Location: '. $GLOBALS['babUrlScript'].'?tg=artedit&idx=lsub');
@@ -1434,6 +1437,7 @@ switch($idx)
     {
 
     case 'empty':
+        bab_requireSaveMethod();
         emptyTrash();
         Header("Location: ". $GLOBALS['babUrlScript']."?tg=artedit&idx=list");
         exit;
@@ -1443,7 +1447,7 @@ switch($idx)
         $idart = bab_gp('idart', 0);
         if( $idart )
         {
-            deleteDraft($idart);
+            bab_requireDeleteMethod() && deleteDraft($idart);
         }
         Header('Location: '. $GLOBALS['babUrlScript'].'?tg=artedit');
         exit;
@@ -1492,6 +1496,7 @@ switch($idx)
         break;
 
     case "save":
+        bab_requireSaveMethod();
         if (bab_saveArticle())
         {
             break;
@@ -1537,10 +1542,9 @@ switch($idx)
 
     case "ltrash":
         $arrinit = artedit_init();
-        if( !$arrinit['trash'] )
-        {
-        Header("Location: ". $GLOBALS['babUrlScript']."?tg=artedit&idx=list");
-        exit;
+        if( !$arrinit['trash'] ) {
+            Header("Location: ". $GLOBALS['babUrlScript']."?tg=artedit&idx=list");
+            exit;
         }
         $babBody->title = bab_translate("List of articles");
         $babBody->addItemMenu("list", bab_translate("Drafts"), $GLOBALS['babUrlScript']."?tg=artedit&idx=list");
@@ -1575,7 +1579,7 @@ switch($idx)
 
     case "sub":
         $idart = bab_rp('idart', 0);
-        submitArticleDraft( $idart, $babBody->msgerror);
+        bab_requireSaveMethod() && submitArticleDraft( $idart, $babBody->msgerror);
         $idx = "list";
         /* break; */
 

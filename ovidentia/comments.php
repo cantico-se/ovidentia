@@ -204,6 +204,8 @@ if (!bab_requireAccess(BAB_TOPICSVIEW_GROUPS_TBL, $topics, '')) {
 	$articleRating = bab_pp('article_rating', '0');
 	$commentId = bab_pp('comment_id', null);
 	
+	bab_requireSaveMethod();
+	
 	if (!saveComment($topics, $article, $subject, $message, $com, $articleRating, $commentId, bab_pp('name'), $msgerror)) {
 		$babBody->addNextPageError($msgerror);
 	}

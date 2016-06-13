@@ -622,7 +622,7 @@ switch(bab_rp('tg'))
     case "articles":
         $incl = "articles";
         break;
-    case "artedit": // security up to this file
+    case "artedit":
         $incl = "artedit";
         break;
     case "approb":
@@ -631,6 +631,8 @@ switch(bab_rp('tg'))
     case "comments":
         $incl = "comments";
         break;
+        
+    /*
     case "charts":
         $babLevelOne = bab_translate("User's section");
         $babLevelTwo = bab_translate("Charts");
@@ -660,6 +662,8 @@ switch(bab_rp('tg'))
         include $GLOBALS['babInstallPath']."flbchart.php";
         exit;
         break;
+    */
+        
     case "faq":
         $babLevelOne = bab_translate("User's section");
         $babLevelTwo = bab_translate("Faqs");
