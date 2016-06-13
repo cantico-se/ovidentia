@@ -1163,7 +1163,7 @@ if (preg_match('/javascript:/', $urla))
 	
 if( bab_rp('modify') == "options" && bab_isUserLogged())
 {
-	if (bab_updateCalOptions())
+	if (bab_requireSaveMethod() && bab_updateCalOptions())
 	{
 		return;
 	}
@@ -1171,7 +1171,7 @@ if( bab_rp('modify') == "options" && bab_isUserLogged())
 
 if (bab_pp('calendar_backend') && bab_pp('confirm') && bab_isUserLogged())
 {
-	bab_changeCalendarBackendConfirm(bab_pp('calendar_backend'), (int) bab_pp('copy_source'), (int) bab_pp('delete_destination'), bab_pp('start_copy_from'));
+	bab_requireSaveMethod() && bab_changeCalendarBackendConfirm(bab_pp('calendar_backend'), (int) bab_pp('copy_source'), (int) bab_pp('delete_destination'), bab_pp('start_copy_from'));
 	return;
 }
 
@@ -1255,4 +1255,3 @@ switch($idx)
 	}
 
 $babBody->setCurrentItemMenu($idx);
-?>

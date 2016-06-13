@@ -532,7 +532,7 @@ switch(bab_rp('tg'))
         if( bab_isUserLogged())
             $incl = "options";
         break;
-    case "confcals": // security done up to this file
+    case "confcals":
         if( bab_isUserLogged())
             $incl = "confcals";
         break;
@@ -565,11 +565,6 @@ switch(bab_rp('tg'))
         $babLevelTwo = bab_translate("Calendar");
         if( bab_isUserLogged())
             $incl = "event";
-        break;
-    case "calview":
-        $babLevelOne = bab_translate("User's section");
-        $babLevelTwo = bab_translate("Summary");
-           $incl = "calview";
         break;
     case "calopt":
         $babLevelOne = bab_translate("User's section");
@@ -614,7 +609,7 @@ switch(bab_rp('tg'))
     case "forumsuser":
         $babLevelOne = bab_translate("Forums");
         $babLevelTwo = bab_translate("Forums");
-           $incl = "forumsuser";
+        $incl = "forumsuser";
         break;
     case "threads":
         $babLevelOne = bab_translate("Forums");
@@ -627,7 +622,7 @@ switch(bab_rp('tg'))
     case "articles":
         $incl = "articles";
         break;
-    case "artedit":
+    case "artedit": // security up to this file
         $incl = "artedit";
         break;
     case "approb":

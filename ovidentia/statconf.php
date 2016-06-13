@@ -844,9 +844,10 @@ if( isset($action))
 	switch( $action)
 	{
 		case 'dpages':
-		deletePages(bab_rp('pages'));
+		bab_requireDeleteMethod() && deletePages(bab_rp('pages'));
 			break;
 		case 'apage':
+		    bab_requireSaveMethod();
 		    if (addPage($url, $desc)) {
     			$url = '';
     			$desc = '';
@@ -854,32 +855,32 @@ if( isset($action))
 			break;
 			
 		case 'apref':
-		    updateStatPreferences(bab_rp('wsepar'), bab_rp('separ'));
+		    bab_requireSaveMethod() && updateStatPreferences(bab_rp('wsepar'), bab_rp('separ'));
 		    Header("Location: ". $GLOBALS['babUrlScript']."?tg=stat");
 		    exit;
 			break;
 			
 		case 'abask':
-			addStatBasket(bab_rp('baskname'), bab_rp('baskdesc'));
+			bab_requireSaveMethod() && addStatBasket(bab_rp('baskname'), bab_rp('baskdesc'));
 			Header("Location: ". $GLOBALS['babUrlScript']."?tg=statconf&idx=bask");
 			exit;
 			break;
 		case 'dbask':
-			deleteStatBasket(bab_rp('baskid'));
+			bab_requireDeleteMethod() && deleteStatBasket(bab_rp('baskid'));
 			break;
 		case 'mbask':
-			updateStatBasket(bab_rp('baskid'), bab_rp('baskname'), bab_rp('baskdesc'));
+			bab_requireSaveMethod() && updateStatBasket(bab_rp('baskid'), bab_rp('baskname'), bab_rp('baskdesc'));
 			break;
 		case 'bcdel':
-			deleteStatBasketContentItem();
+			bab_requireDeleteMethod() && deleteStatBasketContentItem();
 			break;
 		case 'acbask':
-			addStatBasketContentItem();
+			bab_requireSaveMethod() && addStatBasketContentItem();
 			$baskid = $_POST['baskid'];
 			$idx = 'baskcontent';
 			break;
 		case 'acubask':
-			updateStatBasketContentItem();
+			bab_requireSaveMethod() && updateStatBasketContentItem();
 			$baskid = $_POST['baskid'];
 			$idx = 'baskcontent';
 			break;

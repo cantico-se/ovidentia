@@ -1457,6 +1457,7 @@ if( isset($_REQUEST['conf']) )
 
 	if( $conf == "event" )
 		{
+		bab_requireSaveMethod();
 		$reload = confirmEvent(
 				bab_rp('evtid'),
 				bab_rp('dtstart'),
@@ -1468,6 +1469,7 @@ if( isset($_REQUEST['conf']) )
 		}
 	elseif( $conf == "note" )
 		{
+		bab_requireSaveMethod();
 		updateEventNotes(
 			bab_rp('evtid'),
 			bab_rp('note'),
@@ -1477,6 +1479,7 @@ if( isset($_REQUEST['conf']) )
 		}
 	elseif( $conf == "alert" )
 		{
+		bab_requireSaveMethod();
 		updateEventAlert();
 		$reload = true;
 		}

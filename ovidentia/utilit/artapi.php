@@ -2033,7 +2033,6 @@ function bab_TopicNotificationSubscription($id_topic, $id_user, $set = null)
     {
         if (false === $set)
         {
-            bab_debug('unsubscribe');
 
             $babDB->db_query("INSERT INTO bab_topics_unsubscribe (id_topic, id_user)
                 VALUES (".$babDB->quote($id_topic).", ".$babDB->quote($id_user).")");
@@ -2041,7 +2040,6 @@ function bab_TopicNotificationSubscription($id_topic, $id_user, $set = null)
             return 1;
 
         } else {
-            bab_debug('subscribe');
             $babDB->db_queryWem("DELETE FROM bab_topics_unsubscribe WHERE id_topic=".$babDB->quote($id_topic)." AND id_user=".$babDB->quote($id_user));
 
             return 0;

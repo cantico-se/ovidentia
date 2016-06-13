@@ -218,7 +218,7 @@ if( '' != ($update = bab_pp('update')))
 	if( $update == 'enable')
 		{
 		$sections = bab_pp('sections', array());
-		enableOptionalSections($sections);
+		bab_requireSaveMethod() && enableOptionalSections($sections);
 		}
 	}
 

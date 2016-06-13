@@ -1575,12 +1575,13 @@ if (isset($_REQUEST['action']))
 	switch($_REQUEST['action'])
 		{
 		case 'yes':
-			confirmDeleteEvent($calid, bab_rp('bupdrec'), bab_rp('notify', 1));
+			bab_requireDeleteMethod() && confirmDeleteEvent($calid, bab_rp('bupdrec'), bab_rp('notify', 1));
 			$idx="unload";
 			break;
 
 		case 'addevent':
 			$message = '';
+			bab_requireSaveMethod();
 			if (addEvent($message))
 				{
 				$idx = "unload";
@@ -1594,6 +1595,7 @@ if (isset($_REQUEST['action']))
 		case 'modifyevent':
 			if( isset($_POST['Submit']) || isset($_POST['test_conflicts']))
 				{
+				bab_requireSaveMethod();
 				$message = '';
 				$updateMethod = (int)bab_pp('bupdrec', BAB_CAL_EVT_CURRENT);
 				if (updateEvent($message, $updateMethod))
@@ -1611,7 +1613,7 @@ if (isset($_REQUEST['action']))
 				$message = '';
 				$babBodyPopup = new babBodyPopup();
 				$babBodyPopup->msgerror = $message;
-				deleteEvent();
+				bab_requireDeleteMethod() && deleteEvent();
 				printBabBodyPopup();
 				exit;
 				}

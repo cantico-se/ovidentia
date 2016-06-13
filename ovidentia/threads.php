@@ -596,6 +596,7 @@ if( !isset($pos))
 
 if('addthread' === bab_rp('add') && bab_isAccessValid(BAB_FORUMSPOST_GROUPS_TBL, $forum))
 	{
+	bab_requireSaveMethod();
 	if (!saveThread())
 		{
 		$idx = 'newthread';
@@ -654,4 +655,4 @@ switch($idx)
 	}
 $babBody->setCurrentItemMenu($idx);
 bab_siteMap::setPosition('bab', 'UserForum'.$forum);
-?>
+

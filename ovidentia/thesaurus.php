@@ -292,11 +292,11 @@ if( $updtags )
 	{
 		if( $updtags == 'updtags' )
 		{
-			updateTags();
+			bab_requireSaveMethod() && updateTags();
 		}
 		elseif( $updtags == 'imptags' )
 		{
-			processImportTagsFile();
+			bab_requireSaveMethod() && processImportTagsFile();
 		}
 	}
 
@@ -356,4 +356,3 @@ switch($idx)
 	}
 $babBody->setCurrentItemMenu($idx);
 bab_siteMap::setPosition('bab','UserThesaurus');
-?>

@@ -3202,6 +3202,7 @@ $idx = bab_rp('idx', 'list');
 
 if( ('' != bab_pp('pfile')) && bab_isAccessValid(BAB_DBDIRIMPORT_GROUPS_TBL, $id))
     {
+    bab_requireSaveMethod();
     if (!processImportDbFile(bab_pp('pfile'), $id, bab_pp('separ')))
         {
             $idx = 'dbmap';
@@ -3212,13 +3213,15 @@ if( ('' != bab_pp('pfile')) && bab_isAccessValid(BAB_DBDIRIMPORT_GROUPS_TBL, $id
 
 if( ('Yes' ==  bab_gp('action'))  && bab_isAccessValid(BAB_DBDIREMPTY_GROUPS_TBL, $id))
     {
-    confirmEmptyDb($id);
+    bab_requireSaveMethod() && confirmEmptyDb($id);
     }
 
     /*var_dump(bab_pp('expfile'));
     die;*/
 if( '' != ($modify = bab_pp('modify')))
 {
+    bab_requireSaveMethod();
+    
     if( $modify == 'dbc' )
         {
         $idx = 'dbmod';
@@ -3519,4 +3522,3 @@ switch($idx)
     }
 
 $babBody->setCurrentItemMenu($idx);
-?>

@@ -273,7 +273,7 @@
         <!--#if what "== N" -->
 <!--#if moderator --> 
 <img src="{ babSkinPath }images/Puces/PuceForumWaitConfirm.gif" border=0 alt="{ waiting_txt }" title="{ waiting_txt }" align="absmiddle"><img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="5" height="1" border="0"><a 
-class="BabForumTopicsNavContribution" href="{ confirmurl }">{ confirmname }</a><img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="5" height="1" border="0"><a class="BabForumTopicsNavContribution" href="{ deleteurl }">{ deletename }</a><img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="5" height="1" border="0">
+class="BabForumTopicsNavContribution" href="{ confirmurl }" onclick="return bab_postLinkConfirm(this);">{ confirmname }</a><img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="5" height="1" border="0"><a class="BabForumTopicsNavContribution" href="{ deleteurl }" onclick="return bab_postLinkConfirm(this);">{ deletename }</a><img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="5" height="1" border="0">
 <!--#else moderator --> 
 <!--#if moreurl --> 
 <img src="{ babSkinPath }images/Puces/PuceForumWaitConfirm.gif" border=0 alt="{ waiting_txt }" title="{ waiting_txt }" align="absmiddle">
@@ -579,8 +579,8 @@ class="BabForumTopicsNavContribution" href="{ confirmurl }">{ confirmname }</a><
 		<!--#if what "== N" --> 
 		<!--#if moderator --> 
 		<img src="{ babSkinPath }images/Puces/PuceForumWaitConfirm.gif" border=0 alt="{ waiting_txt }" title="{ waiting_txt }" align="absmiddle"><img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="5" height="1" border="0"><a 
-		 href="{ confirmurl }">{ confirmname }</a><img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="5" height="1" border="0"><a 
-		 href="{ deleteurl }">{ deletename }</a><img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="5" height="1" border="0">
+		 href="{ confirmurl }" onclick="return bab_postLinkConfirm(this);">{ confirmname }</a><img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="5" height="1" border="0"><a 
+		 href="{ deleteurl }" onclick="return bab_postLinkConfirm(this);">{ deletename }</a><img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="5" height="1" border="0">
 		<!--#endif moderator --> 
 		<!--#endif what -->
 

@@ -418,11 +418,11 @@ else
 	}
 
 if( bab_rp('addcat') == "add") {
-	addCalCategory($groups, $name, $description, $bgcolor);
+	bab_requireSaveMethod() && addCalCategory($groups, $name, $description, $bgcolor);
 } else if( bab_rp('addres') == "add") {
-	addCalResource($groups, $name, $description);
+	bab_requireSaveMethod() && addCalResource($groups, $name, $description);
 } else if( bab_rp('update') == "disable") {
-	disableCalResource($resids, $userid, $grpid);
+	bab_requireSaveMethod() && disableCalResource($resids, $userid, $grpid);
 }
 
 switch($idx)

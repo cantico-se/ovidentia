@@ -654,7 +654,7 @@ $action = bab_pp('action', '');
 
 if( $action == 'options')
 {
-	saveForumsOptions();
+	bab_requireSaveMethod() && saveForumsOptions();
 }
 
 switch($idx)
@@ -696,4 +696,3 @@ switch($idx)
 	}
 $babBody->setCurrentItemMenu($idx);
 
-?>

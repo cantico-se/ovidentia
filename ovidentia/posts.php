@@ -1315,45 +1315,45 @@ if( isset($add) && $add == 'addreply' && bab_isAccessValid(BAB_FORUMSREPLY_GROUP
 	$author = bab_pp('author', '');
 	$subject = bab_pp('subject', '');
 	$postid = bab_pp('postid', 0);
-	saveReply($forum, $thread, $postid, $author, $subject);
+	bab_requireSaveMethod() && saveReply($forum, $thread, $postid, $author, $subject);
 	$post = $postid;
 	}
 
 $update = bab_rp('update', '');
 if( $update == 'updatereply' )
 	{
-	updateReply($forum, $thread, $subject, $post);
+	bab_requireSaveMethod() && updateReply($forum, $thread, $subject, $post);
 	}
 
 $move = bab_rp('move', '');
 if( $move == 'movet' )
 	{
 	$newforum = bab_pp('newforum', 0);
-	confirmMoveThread($forum, $thread, $newforum, $flat);
+	bab_requireSaveMethod() && confirmMoveThread($forum, $thread, $newforum, $flat);
 	}
 
 if( $idx == 'Close' && $moderator)
 	{
-	bab_closeThread($thread);
+	bab_requireSaveMethod() && bab_closeThread($thread);
 	$idx = 'List';
 	}
 
 if( $idx == 'Open' && $moderator)
 	{
-	bab_openThread($thread);
+	bab_requireSaveMethod() && bab_openThread($thread);
 	$idx = 'List';
 	}
 
 if( $idx == 'DeleteP' && $moderator)
 	{
-	bab_deletePost($forum, $post);
+	bab_requireDeleteMethod() && bab_deletePost($forum, $post);
 	unset($post);
 	$idx = 'List';
 	}
 
 if( isset($action) && $action == 'Yes' && $moderator)
 	{
-	confirmDeleteThread($forum, $thread);
+	bab_requireDeleteMethod() && confirmDeleteThread($forum, $thread);
 	}
 
 
@@ -1472,7 +1472,7 @@ switch($idx)
 		break;
 
 	case 'Confirm':
-		bab_confirmPost($forum, $thread, $post);
+		bab_requireSaveMethod() && bab_confirmPost($forum, $thread, $post);
 		Header('Location: '. $GLOBALS['babUrlScript'].'?tg=threads&idx=List&forum='.$forum);
 		exit;
 		break;
