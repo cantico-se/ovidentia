@@ -395,7 +395,7 @@ function hideDelegationSubmitBtn()
 							<a href="{ sRightUrl }" title="{ sRight }"><img src="{ babSkinPath }images/Puces/access.png" border="0" alt="{ sRight }" align="middle"  /></a>
 						<!--#endif bCanSetRightOnFolder -->
 						<!--#if bCanCutFolder -->
-							<a href="{ sCutFolderUrl }" title="{ sCutFolder }"><img src="{ babSkinPath }images/Puces/cut.gif" alt="{ sCutFolder }" border="0" align="middle" /></a>
+							<a href="{ sCutFolderUrl }" onclick="return bab_postLinkConfirm(this);"><img src="{ babSkinPath }images/Puces/cut.gif" alt="{ sCutFolder }" border="0" align="middle" /></a>
 						<!--#endif bCanCutFolder -->
 							<a href="{ sFolderZipUrl }" title="{ sFolderZip }"><img src="{ babSkinPath }images/Puces/zip.gif" border="0" align="middle" alt="{ sFolderZip }"  /></a>&nbsp;
 							</td>
@@ -529,7 +529,7 @@ function hideDelegationSubmitBtn()
 								<img title="{ unziptxt }" src="{ babSkinPath }images/Puces/zip.gif" border="0" align="middle" />
 							<a/>
 							<!--#endif bUnZip -->
-							<!--#if bCanManageCurrentFolder --><a href="{ cuturl }" title="{ cuttxt }"><img src="{ babSkinPath }images/Puces/cut.gif" alt="{ cuttxt }" border="0" align="middle" /></a>&nbsp;<a href="{ delurl }" title="{ deltxt }"><img src="{ babSkinPath }images/Puces/del.gif" alt="{ deltxt }" border="0" align="middle" /></a><!--#endif bCanManageCurrentFolder -->
+							<!--#if bCanManageCurrentFolder --><a href="{ cuturl }" title="{ cuttxt }"><img src="{ babSkinPath }images/Puces/cut.gif" alt="{ cuttxt }" border="0" align="middle" /></a>&nbsp;<a href="{ delurl }" onclick="return bab_postLinkConfirm(this);" title="{ deltxt }"><img src="{ babSkinPath }images/Puces/del.gif" alt="{ deltxt }" border="0" align="middle" /></a><!--#endif bCanManageCurrentFolder -->
 							<!--#if bDownload --><span class="bab-file-{ fileid }"></span><!--#endif bDownload -->
 							</td>
 						</tr>

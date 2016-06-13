@@ -3497,4 +3497,5 @@ L'administrateur</string>
 <string id="Determine automatically">Déterminer automatiquement</string>
 <string id="Install or update the addons provided in this package (optional)">Installer ou mettre à jour les modules fournis dans cette archive (optionnel)</string>
 <string id="Addons installed without errors">Les modules ont été installés sans erreurs</string>
+<string id="Do you really want to delete?">Voulez-vous vraiment supprimer?</string>
 </fr>

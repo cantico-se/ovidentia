@@ -1455,7 +1455,7 @@ function listFiles()
             $this->cuttxt = bab_translate("Cut");
             $this->paste = bab_translate("Paste");
             $this->undo = bab_translate("Undo");
-            $this->deltxt = bab_translate("Delete");
+            $this->deltxt = bab_translate("Do you really want to delete?");
             $this->root = bab_translate("Home folder");
             $this->refresh = bab_translate("Refresh");
             $this->nametxt = bab_translate("Name");
@@ -4773,15 +4773,17 @@ $sAction = isset($_POST['sAction']) ? $_POST['sAction'] :
 switch($sAction)
 {
     case 'editOrder':
+        bab_requireSaveMethod();
         if (updateOrderFiles())
         {
             header("Location: ". $GLOBALS['babUrlScript'] . '?tg=fileman&idx=list&id=' .
             bab_pp('id_record') . '&gr=' . bab_pp('gr_record') . '&path=' . urlencode(bab_pp('path_record')));
+            exit;
         }
         break;
 
     case 'createFolder':
-        createFolder();
+        bab_requireSaveMethod() && createFolder();
         break;
 
     case 'editFolder':
@@ -4796,33 +4798,33 @@ switch($sAction)
         break;
 
     case 'cutFolder':
-        cutFolder();
+        bab_requireSaveMethod() && cutFolder();
         break;
 
     case 'zipFolder':
-        zipFolder();
+        bab_requireSaveMethod() && zipFolder();
         break;
 
     case 'pasteFolder':
-        pasteFolder();
+        bab_requireSaveMethod() && pasteFolder();
         break;
 
     case 'undopasteFolder':
-        undoPasteFolder();
+        bab_requireSaveMethod() && undoPasteFolder();
         break;
 
     case 'deleteFolder':
-        deleteFolder();
+        bab_requireDeleteMethod() && deleteFolder();
         break;
 
     case 'deleteRestoreFile':
         if(!empty($_REQUEST['delete']))
         {
-            deleteFiles(bab_rp('items'));
+            bab_requireSaveMethod() && deleteFiles(bab_rp('items'));
         }
         else
         {
-            restoreFiles(bab_rp('items'));
+            bab_requireSaveMethod() && restoreFiles(bab_rp('items'));
         }
         break;
 
@@ -4843,6 +4845,8 @@ switch($sAction)
                 $optionsReadonly[] = 'N';
             }
         }
+        
+        bab_requireSaveMethod();
 
         $bSuccess = saveFile($aFiles, $oFileManagerEnv->iId, $oFileManagerEnv->sGr,
                 $oFileManagerEnv->sPath, bab_pp('description'), bab_pp('keywords'),
@@ -4863,6 +4867,7 @@ switch($sAction)
         break;
 
     case 'updateFile':
+        bab_requireSaveMethod();
         $bSuccess = saveUpdateFile(bab_pp('idf'), bab_fmFile::upload('uploadf'),
             bab_pp('fname'), bab_pp('description'), bab_pp('keywords'),
             bab_pp('readonly', 'N'), bab_pp('confirm'), bab_pp('bnotify'),
@@ -4882,23 +4887,23 @@ switch($sAction)
         break;
 
     case 'cutFile':
-        cutFile();
+        bab_requireSaveMethod() && cutFile();
         break;
 
     case 'undopasteFile':
-        undoPasteFile();
+        bab_requireSaveMethod() && undoPasteFile();
         break;
 
     case 'pasteFile':
-        pasteFile();
+        bab_requireSaveMethod() && pasteFile();
         break;
 
     case 'delFile':
-        delFile();
+        bab_requireDeleteMethod() && delFile();
         break;
 
     case 'unzipFile':
-        unzipFile();
+        bab_requireSaveMethod() && unzipFile();
         break;
 
     case 'changeDelegation':
