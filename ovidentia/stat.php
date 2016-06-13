@@ -491,10 +491,6 @@ if ($idx != 'connection')
 	    parse_str($reqvars, $stat_params);
 	}
 	displayTimeInterval(bab_rp('itwhat'), $sd, $ed, $idx, isset($stat_params) ? $stat_params : bab_rp('stat_params', null));
-	if (isset($reqvars))
-	{
-		parse_str($reqvars);
-	}
 }
 
 switch($idx)
@@ -1028,4 +1024,3 @@ if( bab_statisticsAccess() == BAB_STAT_ACCESS_MANAGER )
 $babBody->addItemMenu("maj", bab_translate("Update"), $GLOBALS['babUrlScript']."?tg=statconf&idx=maj&statrows=12000");
 }
 $babBody->setCurrentItemMenu("stat");
-?>
