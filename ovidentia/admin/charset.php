@@ -645,14 +645,15 @@ function convertSite()
 
         $sFromCharset		= (string) bab_charset::getDatabase();
         $sToCharset			= ($sFromCharset == 'utf8') ? 'latin1' : 'utf8';
-        $iConvertFileSystem	= (int) bab_gp('convertFileSystem', 0);
+        $iConvertFileSystem	= (int) bab_rp('convertFileSystem', 0);
         $sUploadPath		= bab_getInstance('bab_Settings')->getUploadPath().'/';
         $aSearch			= array('%convertFrom%', '%convertTo%');
         $aReplace			= array($sFromCharset, $sToCharset);
         $sMessage			= str_replace($aSearch, $aReplace, bab_translate('The site may not be converted %convertFrom% in %convertTo% because of errors below'));
 
-        if(bab_gp('sFromCharset') == $sFromCharset && bab_gp('sToCharset') == $sToCharset)
+        if(bab_rp('sFromCharset') == $sFromCharset && bab_rp('sToCharset') == $sToCharset)
         {
+            
             // verify addons
             $addons = bab_addonsInfos::getDbRows();
             $addons_errors = array(bab_translate('Addons not compatibles'));
@@ -752,8 +753,8 @@ function convertFileManager()
     {
         $aError			= array();
         $aSearch		= array('%convertFrom%', '%convertTo%');
-        $sFromCharset	= (string) bab_gp('sFromCharset');
-        $sToCharset		= (string) bab_gp('sToCharset');
+        $sFromCharset	= (string) bab_rp('sFromCharset');
+        $sToCharset		= (string) bab_rp('sToCharset');
         $aReplace		= array($sFromCharset, $sToCharset);
         $sMessage		= str_replace($aSearch, $aReplace, bab_translate('The site may not be converted %convertFrom% in %convertTo% because of errors below'));
         $sUploadPath	= bab_getInstance('bab_Settings')->getUploadPath().'/';
@@ -932,10 +933,22 @@ function displayMessage($sTitle)
 }
 
 
+function confirmConvertFileManager()
+{
+    $W = bab_Widgets();
+    $page = $W->babPage();
+    $form = $W->Form();
+    $form->setSelfPageHiddenFields();
+    $form->addItem($W->Title(bab_translate('Continue to filesystem convertion')));
+    $form->addItem($W->SubmitButton()->setLabel(bab_translate('Convert')));
+    $page->addItem($form);
+    
+    $page->displayHtml();
+}
 
 
 
-$sIdx = (string) bab_gp('idx', 'displayWarning');
+$sIdx = (string) bab_rp('idx', 'displayWarning');
 bab_setTimeLimit(3600);
 
 
@@ -949,22 +962,16 @@ switch($sIdx)
         break;
 
     case 'convertSite':
-        convertSite();
+        bab_requireSaveMethod() && convertSite();
         break;
 
     case 'convertFileManager':
-        convertFileManager();
+        if (empty($_POST)) {
+            confirmConvertFileManager();
+            break;
+        }
+        bab_requireSaveMethod() && convertFileManager();
         break;
-
-    /*
-    case 'convertDataBaseToUtf8':
-        convertDataBaseToCharset('utf8');
-        break;
-
-    case 'convertDataBaseToLatin1':
-        convertDataBaseToCharset('latin1');
-        break;
-    //*/
 
     case 'displayErrorMessage':
         displayErrorMessage();
