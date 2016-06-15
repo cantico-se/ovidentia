@@ -1768,7 +1768,7 @@ function bab_getUserDelegationUrls($id_delegation, $deleg, $dg_prefix) {
             );
         }
 
-
+    /*
     require_once($GLOBALS['babInstallPath'] . 'tmContext.php');
 
     $context =& getTskMgrContext();
@@ -1816,7 +1816,7 @@ function bab_getUserDelegationUrls($id_delegation, $deleg, $dg_prefix) {
                 );
             }
         }
-
+    */
 
 
     include_once dirname(__FILE__).'/forumincl.php';

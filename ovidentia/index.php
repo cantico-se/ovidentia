@@ -786,12 +786,15 @@ switch(bab_rp('tg'))
         $babLevelTwo = '';
         $incl = "entry";
         break;
+    /*
     case 'admTskMgr':
         $incl = 'admin/tmtaskmanager';
         break;
     case 'usrTskMgr':
         $incl = 'tmtaskmanager';
         break;
+    */
+        
     case 'charset':
         $incl = 'admin/charset';
         break;

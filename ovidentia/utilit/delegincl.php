@@ -60,8 +60,8 @@ function bab_getDelegationsObjects()
 			array("directories"	, bab_translate("Directories")			, 'AdminDir'		, $babUrlScript.'?tg=admdir'					, null, Func_Icons::APPS_DIRECTORIES),
 			array("approbations", bab_translate("Approbation schemas")	, 'AdminApprob'		, null					                        , null, null),
 			array("filemanager"	, bab_translate("File manager")			, 'AdminFm'			, $babUrlScript.'?tg=admfms'					, null, Func_Icons::APPS_FILE_MANAGER),
-			array("orgchart"	, bab_translate("Charts")				, 'AdminCharts'		, $babUrlScript.'?tg=admocs'					, null, Func_Icons::APPS_ORGCHARTS),
-			array("taskmanager"	, bab_translate("Task Manager")			, 'AdminTm'			, $babUrlScript.'?tg=admTskMgr'					, null, Func_Icons::APPS_TASK_MANAGER)
+			array("orgchart"	, bab_translate("Charts")				, 'AdminCharts'		, $babUrlScript.'?tg=admocs'					, null, Func_Icons::APPS_ORGCHARTS)
+		//	array("taskmanager"	, bab_translate("Task Manager")			, 'AdminTm'			, $babUrlScript.'?tg=admTskMgr'					, null, Func_Icons::APPS_TASK_MANAGER)
 		);
 	}
 
