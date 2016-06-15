@@ -177,19 +177,21 @@ $idx = bab_rp('idx');
 
 if( $idx == 'dismiss')
 {
-	dismissEvent(bab_rp('evtid'));
+	bab_requireSaveMethod() && dismissEvent(bab_rp('evtid'));
 	$idx = 'popup';
 }
 
 switch($idx)
 {
 	case 'email':
+	    // Warning! GET URL
+	    // this require $babEmailReminder = true in configuration
 		sendReminders();
 		exit;
 		break;
+		
 	case 'popup':
 		updatePopupNotifier();
 		exit;
 		break;
 }
-?>

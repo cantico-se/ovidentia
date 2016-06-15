@@ -28,6 +28,11 @@
 require_once dirname(__FILE__).'/statprocincl.php';
 
 /* main */
+
+bab_requireSaveMethod();
+
+// deprecated: use LibTimer instead to update stats
+
 $idx = bab_rp('idx');
 $statlimit = bab_rp('statlimit', OVSTAT_LIMIT);
 $statrows = bab_rp('statrows', OVSTAT_ROWS);
@@ -53,4 +58,3 @@ if( $statecho )
 {
 	exit;
 }
-?>

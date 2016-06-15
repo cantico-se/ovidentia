@@ -732,11 +732,11 @@ switch(bab_rp('tg'))
         include $GLOBALS['babInstallPath']."version.php";
         exit;
         break;
-    case "statproc": // security done up to this file
-        include $GLOBALS['babInstallPath']."utilit/statproc.php";
+    case "statproc": // deprecated: use LibTimer instead to update stats
+        include $GLOBALS['babInstallPath']."statproc.php";
         break;
     case "calnotif":
-        include $GLOBALS['babInstallPath']."utilit/calnotif.php";
+        include $GLOBALS['babInstallPath']."calnotif.php";
         exit;
         break;
     case "editorarticle":
