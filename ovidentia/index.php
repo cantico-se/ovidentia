@@ -728,11 +728,11 @@ switch(bab_rp('tg'))
         include $GLOBALS['babInstallPath']."images.php";
         exit;
         break;
-    case "version": // security done up to this file
+    case "version":
         include $GLOBALS['babInstallPath']."version.php";
         exit;
         break;
-    case "statproc":
+    case "statproc": // security done up to this file
         include $GLOBALS['babInstallPath']."utilit/statproc.php";
         break;
     case "calnotif":

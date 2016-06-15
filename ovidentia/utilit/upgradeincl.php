@@ -155,9 +155,20 @@ function bab_cpaddons($from, $to, &$message)
 {
 	require_once dirname(__FILE__).'/path.class.php';
 
+	if (empty($from) || empty($to)) {
+	    throw new Exception('missing parameters');
+	}
+	
+	$from = str_replace(array('/', '\\'), '', $from);
+	$to = str_replace(array('/', '\\'), '', $to);
 
-	if (mb_substr($from,-1) != "/") $from.="/";
-	if (mb_substr($to,-1) != "/") $to.="/";
+	$from.="/";
+	$to.="/";
+	
+	if ($from === $to) {
+	    throw new Exception('origin and target must be differents');
+	}
+	
 	$loc = array(
 				"addons",
 				"lang/addons",
@@ -251,11 +262,12 @@ function bab_writeConfig($replace)
 /**
  * Ovidentia upgrade
  *
- * @param bool	$forceUpgrade		True to force upgrade process even if the database version is up-to-date.
+ * @param bool	$forceUpgrade		True to force upgrade process even if the database version 
+ *                                  is up-to-date. This work only for administrators
  *
  * @return boolean
  */
-function bab_upgrade($core_dir, &$ret, $forceUpgrade = false)
+function bab_upgrade($core_dir, &$ret, $forceUpgrade = true)
 {
 
 	global $babBody;

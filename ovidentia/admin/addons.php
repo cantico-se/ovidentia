@@ -1501,21 +1501,7 @@ function viewVersion()
 			$this->t_modified = bab_translate('Modified files');
 
 
-			$basedir = realpath('.').'/';
-			$dh = opendir($basedir);
-
-			$this->dirs = array();
-
-			if ($dh)
-			{
-				while (($file = readdir($dh)) !== false) {
-					if ($file !== '.' && $file !== '..'
-					 && is_dir($basedir.$file) && file_exists($basedir.$file.'/version.inc')) {
-						$this->dirs[] = $file;
-					}
-				}
-			}
-
+			$this->dirs = bab_getCoreFolders();
 			bab_sort::natcasesort($this->dirs);
 
 			$this->md5file = file_exists(realpath(dirname(__FILE__).'/../md5_file'));

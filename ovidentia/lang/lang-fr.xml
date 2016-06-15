@@ -3498,4 +3498,10 @@ L'administrateur</string>
 <string id="Install or update the addons provided in this package (optional)">Installer ou mettre à jour les modules fournis dans cette archive (optionnel)</string>
 <string id="Addons installed without errors">Les modules ont été installés sans erreurs</string>
 <string id="Do you really want to delete?">Voulez-vous vraiment supprimer?</string>
+<string id="Addon name">Nom du module</string>
+<string id="Copy addons from one folder to another">Copier les modules d'un dossier à un autre</string>
+<string id="Launch an addon upgrade program">Lancer le programme de mise à jour d'un module</string>
+<string id="Copy">Copier</string>
+<string id="Sources Version %s">Version du code source %s</string>
+<string id="Database Version %s">Version de la base de donnés %s</string>
 </fr>

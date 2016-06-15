@@ -3772,3 +3772,27 @@ function bab_requireDeleteMethod()
 {
     return bab_requireSaveMethod();
 }
+
+
+/**
+ * Get list of core folders
+ * @return array
+ */
+function bab_getCoreFolders()
+{
+    $basedir = realpath('.').'/';
+    $dh = opendir($basedir);
+    
+    $dirs = array();
+    
+    if ($dh) {
+        while (($file = readdir($dh)) !== false) {
+            if ($file !== '.' && $file !== '..'
+                    && is_dir($basedir.$file) && file_exists($basedir.$file.'/version.inc')) {
+                $dirs[] = $file;
+            }
+        }
+    }
+    
+    return $dirs;
+}
