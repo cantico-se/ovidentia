@@ -56,7 +56,7 @@ class bab_userModify {
             return false;
             }
 
-        if( empty($firstname) && empty($lastname))
+        if( empty($lastname) )
             {
             $error = bab_translate("Lastname is required");
             return false;

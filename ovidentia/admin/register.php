@@ -189,7 +189,7 @@ function registerUser( $firstname, $lastname, $middlename, $email, $nickname, $p
         return false;
         }
 
-    if( empty($firstname) && empty($lastname))
+    if( empty($lastname) )
         {
         $babBody->msgerror = bab_translate( "Lastname is required");
         return false;

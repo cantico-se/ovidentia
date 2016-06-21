@@ -530,20 +530,20 @@ class Func_UserEditor extends bab_functionality {
             $this->ownfields = array();
 
             $res = $babDB->db_query("select
-            			e.*,
+                        e.*,
                         e.id as idfx,
                         e.usermodifiable modifiable,
-            			v.field_value default_value_text
+                        v.field_value default_value_text
 
-            	from ".BAB_DBDIR_FIELDSEXTRA_TBL." e
-            		LEFT JOIN bab_dbdir_fieldsvalues v ON v.id=e.default_value
+                from ".BAB_DBDIR_FIELDSEXTRA_TBL." e
+                    LEFT JOIN bab_dbdir_fieldsvalues v ON v.id=e.default_value
 
-            	where
-            	   id_directory='0'
-            	   AND disabled='N'
+                where
+                   id_directory='0'
+                   AND disabled='N'
                    AND usermodifiable='Y'
 
-            	order by list_ordering asc, v.field_value asc
+                order by list_ordering asc, v.field_value asc
             ");
 
 
@@ -1402,8 +1402,13 @@ class Func_UserEditor extends bab_functionality {
 
         require_once $GLOBALS['babInstallPath'].'admin/register.php';
 
+        $middleName = '';
+        if (isset($user['mn'])) {
+            $middleName = $user['mn'];
+        }
         $error = null;
-        if (false === $id_user = bab_registerUser($user['sn'], $user['givenname'], '', $user['email'], $user['nickname'], $user['password1'], $user['password2'], $isconfirmed, $error))
+
+        if (false === $id_user = bab_registerUser($user['givenname'], $user['sn'], $middleName, $user['email'], $user['nickname'], $user['password1'], $user['password2'], $isconfirmed, $error))
         {
             throw new Exception($error);
         }
