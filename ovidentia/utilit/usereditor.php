@@ -1346,9 +1346,8 @@ class Func_UserEditor extends bab_functionality {
     {
         if ((null === $id_user && $this->canAddDirectoryEntry()) || $this->canEditDirectoryEntry($id_user))
         {
-
             foreach($fields as $fieldname => $f) {
-                if (!$this->register && (isset($f['modifiable']) && isset($f['required']) && true === $f['modifiable'] && true === $f['required']))
+                if (/*!$this->register &&*/ (isset($f['modifiable']) && isset($f['required']) && true === $f['modifiable'] && true === $f['required']))
                 {
                     if (!isset($user[$fieldname]) || '' === $user[$fieldname])
                     {
