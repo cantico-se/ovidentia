@@ -100,13 +100,15 @@ if (!isset($babUrl)) {
 }
 
 
-require_once $GLOBALS['babInstallPath'].'utilit/functionality.class.php';
-require_once $GLOBALS['babInstallPath'].'utilit/addonapi.php';
+require_once dirname(__FILE__).'/utilit/functionality.class.php';
+require_once dirname(__FILE__).'/utilit/addonapi.php';
+require_once dirname(__FILE__).'/utilit/csrfprotect.class.php';
 
 if(!bab_isAjaxRequest() && bab_getUserId()){
     if(isset($_SESSION['pwd_change_log']) && $_SESSION['pwd_change_log']){
         if(!isset($_REQUEST['tg']) || $_REQUEST['tg'] != 'login'){
             header('Location: ?tg=login&cmd=changePwd&user='.$_SESSION['BAB_SESS_USERID']);
+            exit;
         }else{
             $_GET['babHttpContext'] = false;
         }
@@ -126,6 +128,11 @@ if (!isset($_SERVER['HTTP_HOST']) && isset($_SERVER["argv"][1])) {
     parse_str($_SERVER["argv"][1], $_REQUEST);
 }
 
+
+if (!bab_getInstance('bab_CsrfProtect')->isRequestValid()) {
+    header($_SERVER["SERVER_PROTOCOL"].' 403 Forbidden');
+	exit("<h2>403 Access Forbidden</h2>");
+}
 
 // addon controller
 

@@ -24,7 +24,7 @@
  */
 
 
-require_once dirname(__FILE__).'/csrfprotect.class.php';
+
 
 
 

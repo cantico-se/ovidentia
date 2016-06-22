@@ -170,7 +170,6 @@ function bab_getInstallAddonsButton()
  */
 function bab_getActionsMenu()
 {
-    require_once dirname(__FILE__).'/utilit/csrfprotect.class.php';
     
     $html = bab_getInstallButton();
     $folders = bab_getCoreFolders();

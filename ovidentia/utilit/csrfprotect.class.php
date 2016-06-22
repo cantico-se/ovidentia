@@ -84,7 +84,7 @@ class bab_CsrfProtect
         
         // this unset force a new token for each post
         // prevent double submit
-        unset($session->bab_CsrfProtectToken);
+        // unset($session->bab_CsrfProtectToken);
         
         return true;
     }
