@@ -136,7 +136,10 @@ function bab_installAddon($name)
  */
 function bab_getInstallButton()
 {
+    $csrfToken = bab_getInstance('bab_CsrfProtect')->getToken();
+    
     return '<form method="post" action="'.bab_getSelf().'">
+    <input type="hidden" name="babCsrfProtect" value="'.bab_toHtml($csrfToken).'" />
     <input type="hidden" name="tg" value="version" />
     <input type="hidden" name="idx" value="upgrade" />
     <input type="hidden" name="iframe" value="1" />
@@ -150,7 +153,10 @@ function bab_getInstallButton()
  */
 function bab_getInstallAddonsButton()
 {
+    $csrfToken = bab_getInstance('bab_CsrfProtect')->getToken();
+    
     return '<form method="post" action="'.bab_getSelf().'">
+    <input type="hidden" name="babCsrfProtect" value="'.bab_toHtml($csrfToken).'" />
     <input type="hidden" name="tg" value="version" />
     <input type="hidden" name="idx" value="upgradeaddons" />
     <input type="hidden" name="iframe" value="1" />
@@ -164,6 +170,8 @@ function bab_getInstallAddonsButton()
  */
 function bab_getActionsMenu()
 {
+    require_once dirname(__FILE__).'/utilit/csrfprotect.class.php';
+    
     $html = bab_getInstallButton();
     $folders = bab_getCoreFolders();
     bab_sort::natcasesort($folders);
@@ -173,10 +181,13 @@ function bab_getActionsMenu()
         $options .= '<option value"'.bab_toHtml($name).'">'.bab_toHtml($name).'</option>';
     }
     
+    $csrfToken = bab_getInstance('bab_CsrfProtect')->getToken();
+    
     $html .= '
     <br />
     <h3>'.bab_translate('Copy addons from one folder to another').'</h3>
     <form method="post" action="'.bab_getSelf().'">
+    <input type="hidden" name="babCsrfProtect" value="'.bab_toHtml($csrfToken).'" />
     <input type="hidden" name="tg" value="version" />
     <input type="hidden" name="idx" value="addons" />
     <select name="from">'.$options.'</select>
@@ -190,6 +201,7 @@ function bab_getActionsMenu()
     <br />
     <h3>'.bab_translate('Launch an addon upgrade program').'</h3>
     <form method="post" action="'.bab_getSelf().'">
+    <input type="hidden" name="babCsrfProtect" value="'.bab_toHtml($csrfToken).'" />
     <input type="hidden" name="tg" value="version" />
     <input type="hidden" name="idx" value="addon" />
     <label>'.bab_translate('Addon name').': <input type="text" name="name" value="" /></label>
