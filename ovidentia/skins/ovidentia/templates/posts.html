@@ -33,6 +33,7 @@
 </table>
 <br>
 <form name="postcr" method="post" action="{ babPhpSelf }" enctype="multipart/form-data">
+<input type="hidden" name="babCsrfProtect" value="{ babCsrfProtect }" />
 <input type="hidden" name="tg" value="posts">
 <input type="hidden" name="idx" value="List">
 <input type="hidden" name="forum" value="{ forum }">
@@ -153,10 +154,12 @@
 <!--#begin postedit -->
 <!--#if allow_post_files -->
 <form name="postcr" method="post" action="{ babPhpSelf }" enctype="multipart/form-data">
+<input type="hidden" name="babCsrfProtect" value="{ babCsrfProtect }" />
 <input type="hidden" name="MAX_FILE_SIZE" value="{ maxfilesize }">
 <input type="hidden" name="files_fields" value="1">
 <!--#else allow_post_files -->
 <form name="postcr" method="post" action="{ babPhpSelf }">
+<input type="hidden" name="babCsrfProtect" value="{ babCsrfProtect }" />
 <!--#endif allow_post_files -->
 <input type="hidden" name="tg" value="posts">
 <input type="hidden" name="idx" value="Waiting">
@@ -454,6 +457,7 @@ class="BabForumTopicsNavContribution" href="{ confirmurl }" onclick="return bab_
 	<tr>
 	<td>
 	<form name="threadl" method="post" action="{ babPhpSelf }">
+<input type="hidden" name="babCsrfProtect" value="{ babCsrfProtect }" />
 	<input type="hidden" name="tg" value="threads">
 	<input type="hidden" name="idx" value="{ idx }">
 	{ jumpto_txt }&nbsp;&nbsp;<select class="BabForumBackground" name="forum">
@@ -623,6 +627,7 @@ class="BabForumTopicsNavContribution" href="{ confirmurl }" onclick="return bab_
 	<tr>
 	<td>
 	<form name="threadl" method="post" action="{ babPhpSelf }">
+<input type="hidden" name="babCsrfProtect" value="{ babCsrfProtect }" />
 	<input type="hidden" name="tg" value="threads">
 	<input type="hidden" name="idx" value="{ idx }">
 	{ jumpto_txt }&nbsp;&nbsp;<select class="BabForumBackground" name="forum">
@@ -649,6 +654,7 @@ class="BabForumTopicsNavContribution" href="{ confirmurl }" onclick="return bab_
 <!--#begin movethread -->
 <!--#if countforums -->
 <form name="movet" method="post" action="{ babPhpSelf }">
+<input type="hidden" name="babCsrfProtect" value="{ babCsrfProtect }" />
 <input type="hidden" name="tg" value="posts">
 <input type="hidden" name="idx" value="List">
 <input type="hidden" name="forum" value="{ forum }">

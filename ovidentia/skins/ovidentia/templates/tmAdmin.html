@@ -66,6 +66,7 @@ function submit_form()
 </script>
 
 <form name="projectSpaceForm" method="post" action="{ babPhpSelf }" onsubmit="return(submit_form())">
+<input type="hidden" name="babCsrfProtect" value="{ babCsrfProtect }" />
 	<input type="hidden" name="tg" value="{ m_datas[tg] }" />
 	<input type="hidden" name="idx" value="" />
 	<input type="hidden" name="action" value="" />

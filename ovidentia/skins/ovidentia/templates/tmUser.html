@@ -174,6 +174,7 @@ function submit_form()
 	@import url('{ babInstallPath }/styles/taskManager.css');
 </style>
 <form name ="displayCommentary" method="post" action="{ babPhpSelf }" onsubmit="return(submit_form())">
+<input type="hidden" name="babCsrfProtect" value="{ babCsrfProtect }" />
 	<input type="hidden" name="tg" value="{ m_datas[tg] }" />
 	<input type="hidden" name="idx" value="" />
 	<input type="hidden" name="action" value="" />
@@ -226,6 +227,7 @@ function submit_form()
 </script>
 
 <form name="projectForm" method="post" action="{ babPhpSelf }" onsubmit="return(submit_form())">
+<input type="hidden" name="babCsrfProtect" value="{ babCsrfProtect }" />
 	<input type="hidden" name="tg" value="{ m_datas[tg] }" />
 	<input type="hidden" name="idx" value="" />
 	<input type="hidden" name="action" value="" />
@@ -730,6 +732,7 @@ document.onmousemove = bab_tooltipPosition;
 </style>
 
 <form name="taskForm" id="taskForm" method="post" action="{ babPhpSelf }" onsubmit="return(submit_form())">
+<input type="hidden" name="babCsrfProtect" value="{ babCsrfProtect }" />
 	<input type="hidden" name="tg" value="{ m_datas[tg] }" />
 	<input type="hidden" name="idx" value="" />
 	<input type="hidden" name="action" value="" />
@@ -1644,6 +1647,7 @@ function submit_form()
 </script>
 
 <form name="PersonnalTaskConfiguration" method="post" action="{ babPhpSelf }" onsubmit="return(submit_form())">
+<input type="hidden" name="babCsrfProtect" value="{ babCsrfProtect }" />
 	<input type="hidden" name="tg" value="{ m_datas[tg] }" />
 	<input type="hidden" name="idx" value="" />
 	<input type="hidden" name="action" value="" />
@@ -1850,6 +1854,7 @@ function submit_form()
 </script>
 
 <form name="projectProperties" method="post" action="{ babPhpSelf }" onsubmit="return(submit_form())">
+<input type="hidden" name="babCsrfProtect" value="{ babCsrfProtect }" />
 	<input type="hidden" name="tg" value="{ m_datas[tg] }" />
 	<input type="hidden" name="idx" value="" />
 	<input type="hidden" name="action" value="" />
@@ -2259,6 +2264,7 @@ function bab_selectOption(sControlId, sAction)
 
 
 <form method="post" id="orderTaskFields" action="{ babPhpSelf }">
+<input type="hidden" name="babCsrfProtect" value="{ babCsrfProtect }" />
 	<input type="hidden" name="tg" value="{ m_datas[tg] }" />
 	<input type="hidden" name="idx" value="{ m_datas[idx] }" />
 	<input type="hidden" name="action" value="{ m_datas[action] }" />

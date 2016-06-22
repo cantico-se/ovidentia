@@ -1,5 +1,6 @@
 <!--#begin caloptions -->
 <form method="post" action="{ babPhpSelf }">
+<input type="hidden" name="babCsrfProtect" value="{ babCsrfProtect }" />
 <input type="hidden" name="tg" value="calopt" />
 <input type="hidden" name="idx" value="options" />
 <input type="hidden" name="urla" value="{ urla }" />
@@ -486,6 +487,7 @@
 <br />
 <br />
 <form name="accform" method="post" action="{ babPhpSelf }">
+<input type="hidden" name="babCsrfProtect" value="{ babCsrfProtect }" />
 <input type="hidden" name="tg" value="calopt" />
 <input type="hidden" name="idx" value="access" />
 <input type="hidden" name="idcal" value="{ calid }" />
@@ -558,6 +560,7 @@ function calview()
 </script>
 
 <form name="calendarchoice" method="post" action="{ babPhpSelf }" onsubmit="return(submitCtrl(this))">
+<input type="hidden" name="babCsrfProtect" value="{ babCsrfProtect }" />
 <input type="hidden" name="tg" value="calopt" />
 <input type="hidden" name="idx" value="unload" />
 <input type="hidden" name="database_record" value="1" />
@@ -638,6 +641,7 @@ bab_initFunctions.push(function() {
 </script>
 
 <form method="post" action="{ babPhpSelf }">
+<input type="hidden" name="babCsrfProtect" value="{ babCsrfProtect }" />
 	<input type="hidden" name="tg" value="calopt" />
 	<input type="hidden" name="idx" value="options" />
 	<input type="hidden" name="urla" value="{ urla }" />

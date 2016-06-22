@@ -111,6 +111,7 @@ window.focus();
 <!--#if upload -->
 
 <form name="fmadd" method="post" action="{ babPhpSelf }" enctype="multipart/form-data">
+<input type="hidden" name="babCsrfProtect" value="{ babCsrfProtect }" />
 <input type="hidden" name="MAX_FILE_SIZE" value="{ maximagessize }" />
 <input type="hidden" name="tg" value="images" />
 <input type="hidden" name="idx" value="list" />
@@ -381,6 +382,7 @@ bab_initFunctions.push(function() {
 </tr>
 </table>
 	<form name="add_directory" method="post" action="{ babPhpSelf }" enctype="multipart/form-data">
+<input type="hidden" name="babCsrfProtect" value="{ babCsrfProtect }" />
 	<input type="hidden" name="tg" value="images">
 	<input type="hidden" name="idx" value="iframe">
 	<input type="hidden" name="path" value="{ path }">
@@ -389,6 +391,7 @@ bab_initFunctions.push(function() {
 	</form>
 
 	<form name="rename" method="post" action="{ babPhpSelf }" enctype="multipart/form-data">
+<input type="hidden" name="babCsrfProtect" value="{ babCsrfProtect }" />
 	<input type="hidden" name="tg" value="images">
 	<input type="hidden" name="idx" value="iframe">
 	<input type="hidden" name="path" value="{ path }">

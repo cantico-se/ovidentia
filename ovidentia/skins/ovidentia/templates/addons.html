@@ -4,6 +4,7 @@
 <!--#if display_in_form -->
 
 <form method="post" action="{ babPhpSelf }" name="listform">
+<input type="hidden" name="babCsrfProtect" value="{ babCsrfProtect }" />
 <input type="hidden" name="tg" value="addons" />
 <input type="hidden" name="idx" value="list" />
 <input type="hidden" name="update" value="disable" />
@@ -115,6 +116,7 @@
 
 
 <form method="post" name="formupgrade" action="{ babPhpSelf }" enctype="multipart/form-data" onsubmit="wait_upload()">
+<input type="hidden" name="babCsrfProtect" value="{ babCsrfProtect }" />
 <input type="hidden" name="tg" value="addons" />
 <input type="hidden" name="idx" value="requirements" />
 <input type="hidden" name="MAX_FILE_SIZE" value="{ babMaxFileSize }" />
@@ -141,6 +143,7 @@
 
 
 <form method="post" action="{ babPhpSelf }">
+<input type="hidden" name="babCsrfProtect" value="{ babCsrfProtect }" />
 <input type="hidden" name="tg" value="addons" />
 <input type="hidden" name="idx" value="{ action }" />
 <input type="hidden" name="tmpfile" value="{ tmpfile }" />

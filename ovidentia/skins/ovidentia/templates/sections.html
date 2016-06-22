@@ -3,6 +3,7 @@
 
 <!--#begin sectionscreate -->
 <form name="seccreate" method="post" action="{ babPhpSelf }">
+<input type="hidden" name="babCsrfProtect" value="{ babCsrfProtect }" />
 <input type="hidden" name="tg" value="sections">
 <input type="hidden" name="idx" value="ch">
 <input type="hidden" name="js" value="{ jscript }">
@@ -80,6 +81,7 @@
 
 <!--#begin sectionslist --> 
 <form method="post" action="{ babPhpSelf }" name="listform">
+<input type="hidden" name="babCsrfProtect" value="{ babCsrfProtect }" />
 <input type="hidden" name="tg" value="sections" />
 <input type="hidden" name="idx" value="List" />
 <input type="hidden" name="update" value="disable" />
@@ -151,6 +153,7 @@
 
 <!--#begin sectionsmodify --> 
 <form name="secmod" method="post" action="{ babPhpSelf }">
+<input type="hidden" name="babCsrfProtect" value="{ babCsrfProtect }" />
 <input type="hidden" name="tg" value="section" />
 <input type="hidden" name="idx" value="modify" />
 <input type="hidden" name="item" value="{ id }" />
@@ -299,6 +302,7 @@ function selectAll(list)
 </script>
 
 <form method="post" name="secorderf" action="{ babPhpSelf }">
+<input type="hidden" name="babCsrfProtect" value="{ babCsrfProtect }" />
 <input type="hidden" name="tg" value="sections" />
 <input type="hidden" name="idx" value="List" />
 <input type="hidden" name="update" value="order" />

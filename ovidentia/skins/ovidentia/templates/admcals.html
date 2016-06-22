@@ -1,5 +1,6 @@
 <!--#begin calendargroups -->
 <form method="post" action="{ babPhpSelf }">
+<input type="hidden" name="babCsrfProtect" value="{ babCsrfProtect }" />
 <input type="hidden" name="tg" value="admcals">
 <input type="hidden" name="idx" value="groups">
 <input type="hidden" name="calgroups" value="update">
@@ -42,6 +43,7 @@
 
 <!--#begin calendarslist -->
 <form method="post" action="{ babPhpSelf }" name="listform">
+<input type="hidden" name="babCsrfProtect" value="{ babCsrfProtect }" />
 <input type="hidden" name="tg" value="admcals" />
 <input type="hidden" name="idx" value="{ idx }" />
 <table width="95%" border="0" cellspacing="0" cellpadding="2" align="center">
@@ -83,6 +85,7 @@
 
 <!--#begin calendaraddr -->
 <form name="calcreate" method="post" action="{ babPhpSelf }">
+<input type="hidden" name="babCsrfProtect" value="{ babCsrfProtect }" />
 <input type="hidden" name="tg" value="{ tgval }" />
 <input type="hidden" name="idcal" value="{ idcal }" />
 <input type="hidden" name="addc" value="{ add }" />
@@ -133,6 +136,7 @@
 
 <!--#begin calendaraddp -->
 <form name="calcreate" method="post" action="{ babPhpSelf }">
+<input type="hidden" name="babCsrfProtect" value="{ babCsrfProtect }" />
 <input type="hidden" name="tg" value="{ tgval }" />
 <input type="hidden" name="idcal" value="{ idcal }" />
 <input type="hidden" name="addc" value="{ add }" />
@@ -178,6 +182,7 @@
 <!--#begin categorieslist -->
 
 <form method="post" action="{ babPhpSelf }">
+<input type="hidden" name="babCsrfProtect" value="{ babCsrfProtect }" />
 <input type="hidden" name="tg" value="admcals" />
 <input type="hidden" name="idx" value="cats" />
 
@@ -229,6 +234,7 @@ function setColor(color)
 //-->
 </script>
 <form name="catcolor" method="post" action="{ babPhpSelf }">
+<input type="hidden" name="babCsrfProtect" value="{ babCsrfProtect }" />
 <input type="hidden" name="tg" value="{ tgval }">
 <input type="hidden" name="idx" value="cats">
 <input type="hidden" name="idcat" value="{ idcat }">
@@ -273,6 +279,7 @@ function setColor(color)
 
 <!--#begin personalcalendars -->
 <form method="post" action="{ babPhpSelf }" name="listform">
+<input type="hidden" name="babCsrfProtect" value="{ babCsrfProtect }" />
 <input type="hidden" name="tg" value="admcals" />
 <input type="hidden" name="idx" value="user" />
 <table border="0" width="70%" cellpadding="2" cellspacing="0" align="center">

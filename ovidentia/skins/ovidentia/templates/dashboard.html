@@ -285,7 +285,7 @@ function dashboardInit()
 					var undoImg = document.createElement('img');
 					undoImg.src = '{ babSkinPath }images/Dashboard/undo.png';
 					undoImg.className = 'dashboard_icon';
-					undoImg.alt = undoImg.title = 'Défaire';
+					undoImg.alt = undoImg.title = 'Dï¿½faire';
 					undoImg.onclick = undoHideColumn;
 					undoImg.dashboardContainer = div;
 					undoImg.style.visibility = 'hidden';
@@ -398,6 +398,7 @@ var bab_dashboard_filters = {
 	<!--#endif t_export_url -->
 	</span>
 	<form name="export" method="post" action="{ t_export_url }">
+<input type="hidden" name="babCsrfProtect" value="{ babCsrfProtect }" />
 	</form>
 </div>
 </div>

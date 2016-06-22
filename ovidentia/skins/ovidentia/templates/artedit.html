@@ -143,6 +143,7 @@ window.focus();
 { message }
 <!--#endif message -->
 <form name= "createart" method="post" action="{ babPhpSelf }">
+<input type="hidden" name="babCsrfProtect" value="{ babCsrfProtect }" />
 <input type="hidden" name="tg" value="artedit">
 <input type="hidden" name="idx" value="list">
 <input type="hidden" name="idart" value="{ idart }">
@@ -209,6 +210,7 @@ document.forms[fmname].updstep02.value = cmd;
 //-->
 </script>
 <form name="step02form" method="post" action="{ babPhpSelf }">
+<input type="hidden" name="babCsrfProtect" value="{ babCsrfProtect }" />
 <input type="hidden" name="tg" value="artedit">
 <input type="hidden" name="idx" value="s02">
 <input type="hidden" name="rfurl" value="{ rfurl }">
@@ -281,6 +283,7 @@ document.forms[fmname].updstep02.value = cmd;
 </script>
 
 <form id="step0form" name="step0form" method="post" action="{ babPhpSelf }">
+<input type="hidden" name="babCsrfProtect" value="{ babCsrfProtect }" />
 	 <input type="hidden" name="tg" value="artedit">
 	 <input type="hidden" name="idx" value="choosearticle">
 	 <input type="hidden" name="idart" value="{ idarticle }">

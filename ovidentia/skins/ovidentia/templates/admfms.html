@@ -1,5 +1,6 @@
 <!--#begin foldercreate -->
 <form name="fmcreate" method="post" action="{ babPhpSelf }">
+<input type="hidden" name="babCsrfProtect" value="{ babCsrfProtect }" />
 	<input type="hidden" name="tg" value="admfms" />
 	<input type="hidden" name="idx" value="list" />
 	<input type="hidden" name="add" value="addfolder" />
@@ -150,6 +151,7 @@
 
 <!--#begin folderlist -->
 <form method="post" action="{ babPhpSelf }" name="listform">
+<input type="hidden" name="babCsrfProtect" value="{ babCsrfProtect }" />
 	<input type="hidden" name="tg" value="admfms" />
 	<input type="hidden" name="idx" value="list" />
 	<input type="hidden" name="update" value="folders" />
@@ -201,6 +203,7 @@
 
 <!--#begin purgetrashs -->
 <form method="post" action="{ babPhpSelf }" name="listform">
+<input type="hidden" name="babCsrfProtect" value="{ babCsrfProtect }" />
 	<input type="hidden" name="tg" value="admfms" />
 	<input type="hidden" name="idx" value="actionpurgefm" />
 	<table border="0" width="90%" cellpadding="2" cellspacing="0" align="center">
@@ -252,6 +255,7 @@
 
 <!--#begin actionpurgetrashs -->
 <form method="post" action="{ babPhpSelf }" name="listform">
+<input type="hidden" name="babCsrfProtect" value="{ babCsrfProtect }" />
 	<input type="hidden" name="tg" value="admfms" />
 	<input type="hidden" name="idx" value="actionpurgefm" />
 	<table border="0" width="90%" cellpadding="2" cellspacing="0" align="center">
@@ -322,7 +326,8 @@ function submitCtr()
 //]]>
 </script>
 
-<form name="fmcreate" method="post" action="{ babPhpSelf }" <!--#if js_appflowlock -->onSubmit="return(submitCtr())"<!--#endif js_appflowlock -->>
+<form name="fmcreate" method="post" action="{ babPhpSelf }" <!--#if js_appflowlock -->
+<input type="hidden" name="babCsrfProtect" value="{ babCsrfProtect }" />onSubmit="return(submitCtr())"<!--#endif js_appflowlock -->>
 	<input type="hidden" name="tg" value="admfm" />
 	<input type="hidden" name="idx" value="list" />
 	<input type="hidden" name="fid" value="{ fid }" />
@@ -530,6 +535,7 @@ function sortListFiles(sortType, list)
 </script>
 
 <form method="post" name="ordfiles" action="{ babPhpSelf }">
+<input type="hidden" name="babCsrfProtect" value="{ babCsrfProtect }" />
 <input type="hidden" name="tg" value="{ tg }" />
 <input type="hidden" name="idx" value="modify" />
 <input type="hidden" name="action" value="order" />
@@ -587,6 +593,7 @@ onclick="selectAllFiles(document.ordfiles.elements[6]); document.ordfiles.submit
 
 <!--#begin fmfields -->
 <form name="fmfield" method="post" action="{ babPhpSelf }">
+<input type="hidden" name="babCsrfProtect" value="{ babCsrfProtect }" />
 	<input type="hidden" name="tg" value="admfm" />
 	<input type="hidden" name="idx" value="modify" />
 	<input type="hidden" name="fid" value="{ fid }" />
@@ -632,6 +639,7 @@ onclick="selectAllFiles(document.ordfiles.elements[6]); document.ordfiles.submit
 
 <!--#begin fmfieldadd -->
 <form name="addfield" method="post" action="{ babPhpSelf }">
+<input type="hidden" name="babCsrfProtect" value="{ babCsrfProtect }" />
 	<input type="hidden" name="tg" value="admfm" />
 	<input type="hidden" name="idx" value="fields" />
 	<input type="hidden" name="fid" value="{ fid }" />
@@ -751,6 +759,7 @@ function selectAll(list)
 //-->
 </script>
 <form method="post" name="dispdbf" action="{ babPhpSelf }">
+<input type="hidden" name="babCsrfProtect" value="{ babCsrfProtect }" />
 <input type="hidden" name="tg" value="admfms">
 <input type="hidden" name="idx" value="list">
 <input type="hidden" name="update" value="displayfm">

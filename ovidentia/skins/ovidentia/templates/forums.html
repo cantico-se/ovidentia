@@ -22,6 +22,7 @@ else
 </script>
 
 <form name="forcreate" method="post" action="{ babPhpSelf }">
+<input type="hidden" name="babCsrfProtect" value="{ babCsrfProtect }" />
 <input type="hidden" name="tg" value="forums">
 <input type="hidden" name="idx" value="List">
 <input type="hidden" name="addforum" value="addforum">
@@ -159,6 +160,7 @@ else
 //-->
 </script>
 <form name="formodify" method="post" action="{ babPhpSelf }">
+<input type="hidden" name="babCsrfProtect" value="{ babCsrfProtect }" />
 <input type="hidden" name="tg" value="forum">
 <input type="hidden" name="item" value="{ arr[id] }">
 <input type="hidden" name="update" value="updateforum">
@@ -365,6 +367,7 @@ else
 
 <!--#begin forumsorder -->
 <form method="post" name="ordform" action="{ babPhpSelf }">
+<input type="hidden" name="babCsrfProtect" value="{ babCsrfProtect }" />
 <input type="hidden" name="tg" value="forums">
 <input type="hidden" name="idx" value="List">
 <input type="hidden" name="update" value="order">
@@ -499,6 +502,7 @@ function selectAll(list)
 //-->
 </script>
 <form method="post" name="dispforumfield" action="{ babPhpSelf }">
+<input type="hidden" name="babCsrfProtect" value="{ babCsrfProtect }" />
 <input type="hidden" name="tg" value="forum">
 <input type="hidden" name="idx" value="dispfield">
 <input type="hidden" name="item" value="{ id }">
@@ -644,6 +648,7 @@ function selectAll(list)
 //-->
 </script>
 <form method="post" name="dispforumfield" action="{ babPhpSelf }">
+<input type="hidden" name="babCsrfProtect" value="{ babCsrfProtect }" />
 <input type="hidden" name="tg" value="forums">
 <input type="hidden" name="idx" value="forumnotices">
 <input type="hidden" name="item" value="{ id }">

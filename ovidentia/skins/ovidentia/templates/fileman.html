@@ -123,6 +123,7 @@ function remove_field()
 -->
 </script>
 <form name="ffileupload" id= "ffileupload" method="post" action="{ babPhpSelf }" enctype="multipart/form-data">
+<input type="hidden" name="babCsrfProtect" value="{ babCsrfProtect }" />
 	<input type="hidden" name="MAX_FILE_SIZE" value="{ maxfilesize }">
 	<input type="hidden" name="tg" value="fileman">
 	<input type="hidden" name="idx" value="list">
@@ -248,6 +249,7 @@ function hideDelegationSubmitBtn()
 </script>
 
 <form name="filesList" method="post" action="{ babPhpSelf }">
+<input type="hidden" name="babCsrfProtect" value="{ babCsrfProtect }" />
 	<input type="hidden" name="tg" value="fileman" />
 	<input type="hidden" name="idx" value="list" />
 	<input type="hidden" name="sAction" value="changeDelegation" />
@@ -671,6 +673,7 @@ function hideDelegationSubmitBtn()
 <!--#begin trashfiles -->
 
 <form method="post" action="{ babPhpSelf }" name="listform">
+<input type="hidden" name="babCsrfProtect" value="{ babCsrfProtect }" />
 <input type="hidden" name="tg" value="fileman">
 <input type="hidden" name="idx" value="list">
 <input type="hidden" name="id" value="{ id }">
@@ -842,6 +845,7 @@ window.focus();
 </table>
 <br>
 <form method="post" name="fupdate" action="{ babPhpSelf }" enctype="multipart/form-data">
+<input type="hidden" name="babCsrfProtect" value="{ babCsrfProtect }" />
 <input type="hidden" name="MAX_FILE_SIZE" value="{ babMaxFileSize }" />
 <input type="hidden" name="tg" value="fileman" />
 <input type="hidden" name="idx" value="list" />
@@ -956,6 +960,7 @@ window.focus();
 
 <!--#if index -->
 <form method="post" name="fupdate" action="{ babPhpSelf }">
+<input type="hidden" name="babCsrfProtect" value="{ babCsrfProtect }" />
 <input type="hidden" name="tg" value="fileman" />
 <input type="hidden" name="idx" value="viewFile" />
 <input type="hidden" name="updf" value="updindex" />
@@ -1117,6 +1122,7 @@ function ovidentia_fileman_hide()
 </script>
 
 <form name="displayFolderForm" method="post" action="{ babPhpSelf }">
+<input type="hidden" name="babCsrfProtect" value="{ babCsrfProtect }" />
 	<input type="hidden" name="tg" value="{ m_datas[sTg] }" />
 	<input type="hidden" name="idx" value="{ m_datas[sIdx] }" />
 	<input type="hidden" name="sAction" value="{ m_datas[sAction] }" />
@@ -1413,6 +1419,7 @@ function on_cancel()
 </script>
 
 <form name="warningyesno" method="post" action="{ babPhpSelf }">
+<input type="hidden" name="babCsrfProtect" value="{ babCsrfProtect }" />
 	<input type="hidden" name="tg" value="{ m_datas[sTg] }" />
 	<input type="hidden" name="idx" value="{ m_datas[sIdx] }" />
 	<input type="hidden" name="sAction" value="{ m_datas[sAction] }" />

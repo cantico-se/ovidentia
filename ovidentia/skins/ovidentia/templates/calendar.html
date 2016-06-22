@@ -99,6 +99,7 @@
 <!--#if countstatus -->
 <br />
 <form method="post" action="{ babPhpSelf }">
+<input type="hidden" name="babCsrfProtect" value="{ babCsrfProtect }" />
 <input type="hidden" name="tg" value="calendar">
 <input type="hidden" name="idx" value="unload">
 <input type="hidden" name="conf" value="event">
@@ -163,6 +164,7 @@
 
 
 <form method="post" action="{ babPhpSelf }">
+<input type="hidden" name="babCsrfProtect" value="{ babCsrfProtect }" />
 <input type="hidden" name="tg" value="calendar" />
 <input type="hidden" name="idx" value="approb" />
 <input type="hidden" name="evtid" value="{ evtid }" />
@@ -472,6 +474,7 @@ function dateEnd(day, month, year)
 //-->
 </script>
 <form name="calrform" method="post" action="{ babPhpSelf }">
+<input type="hidden" name="babCsrfProtect" value="{ babCsrfProtect }" />
 <input type="hidden" name="tg" value="{ tg }" />
 <input type="hidden" name="idx" value="rfree" />
 <input type="hidden" name="calid" value="{ calid }" />
@@ -645,6 +648,7 @@ function showhidebefore(id)
 <!--#if access -->
 <br />
 <form method="post" action="{ babPhpSelf }">
+<input type="hidden" name="babCsrfProtect" value="{ babCsrfProtect }" />
 <input type="hidden" name="tg" value="calendar">
 <input type="hidden" name="idx" value="unload">
 <input type="hidden" name="conf" value="note">
@@ -718,6 +722,7 @@ else
 //-->
 </SCRIPT>
 <form name="freminder" method="post" action="{ babPhpSelf }">
+<input type="hidden" name="babCsrfProtect" value="{ babCsrfProtect }" />
 <input type="hidden" name="tg" value="calendar">
 <input type="hidden" name="idx" value="unload">
 <input type="hidden" name="conf" value="alert">

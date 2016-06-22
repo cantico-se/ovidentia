@@ -13,6 +13,7 @@ if (obj.value == 'pop3')
 -->
 </script>
 <form method="post" name="domainmail" action="{ babPhpSelf }">
+<input type="hidden" name="babCsrfProtect" value="{ babCsrfProtect }" />
 <input type="hidden" name="tg" value="maildoms" />
 <input type="hidden" name="idx" value="list" />
 <input type="hidden" name="userid" value="{ userid }" />
@@ -165,6 +166,7 @@ if (obj.value == 'pop3')
 -->
 </script>
 <form method="post" name="domainmail" action="{ babPhpSelf }">
+<input type="hidden" name="babCsrfProtect" value="{ babCsrfProtect }" />
 <input type="hidden" name="idx" value="modify" />
 <input type="hidden" name="item" value="{ arr[id] }" />
 <input type="hidden" name="babname" value="{ arr[name] }" />

@@ -7,6 +7,7 @@
 	<td>
 <!--#if countforums -->
 	<form name="threadl" method="post" action="{ babPhpSelf }">
+<input type="hidden" name="babCsrfProtect" value="{ babCsrfProtect }" />
 	<input type="hidden" name="tg" value="threads">
 	<input type="hidden" name="idx" value="{ idx }">
 	{ jumpto_txt }&nbsp;&nbsp;<select class="BabForumBackground" name="forum">
@@ -209,6 +210,7 @@
 	<td>
 <!--#if countforums -->
 	<form name="threadl" method="post" action="{ babPhpSelf }">
+<input type="hidden" name="babCsrfProtect" value="{ babCsrfProtect }" />
 	<input type="hidden" name="tg" value="threads">
 	<input type="hidden" name="idx" value="{ idx }">
 	{ jumpto_txt }&nbsp;&nbsp;<select class="BabForumBackground" name="forum">
@@ -235,6 +237,7 @@
 <!--#begin threadcreate -->
 
 <form name="threadcr" method="post" action="{ babPhpSelf }"  enctype="multipart/form-data">
+<input type="hidden" name="babCsrfProtect" value="{ babCsrfProtect }" />
 <input type="hidden" name="tg" value="threads">
 <input type="hidden" name="idx" value="addthread">
 <input type="hidden" name="forum" value="{ forum }">
