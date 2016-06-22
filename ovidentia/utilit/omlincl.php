@@ -9237,9 +9237,29 @@ class Func_Ovml_Function_GetPath extends Func_Ovml_Function {
  */
 class Func_Ovml_Function_GetSelectedSkinPath extends Func_Ovml_Function {
 
-
+    /**
+     * @return string
+     */
     public function toString()
     {
         return bab_skin::getUserSkin()->getThemePath();
+    }
+}
+
+
+/**
+ * Get CSRF protect token
+ * <OFGetCsrfProtectToken>
+ *
+ * @since 8.4.91
+ */
+class Func_Ovml_Function_GetCsrfProtectToken extends Func_Ovml_Function {
+
+    /**
+     * @return string
+     */
+    public function toString()
+    {
+        return bab_getInstance('bab_CsrfProtect')->getToken();
     }
 }
