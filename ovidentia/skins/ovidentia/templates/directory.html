@@ -322,6 +322,7 @@ window.focus();
 <br>
 <!--#begin dbimpfile -->
 <form method="post" action="{ babPhpSelf }" enctype="multipart/form-data">
+<input type="hidden" name="babCsrfProtect" value="{ babCsrfProtect }" />
 <input type="hidden" name="MAX_FILE_SIZE" value="{ maxfilesize }">
 <input type="hidden" name="tg" value="directory">
 <input type="hidden" name="idx" value="dbmap">
@@ -497,6 +498,7 @@ bab_initFunctions.push(function() {
 //-->
 </script>
 <form name="dispdbf" method="post" action="{ babPhpSelf }">
+<input type="hidden" name="babCsrfProtect" value="{ babCsrfProtect }" />
 <input type="hidden" name="tg" value="directory">
 <input type="hidden" name="idx" value="sdb">
 <input type="hidden" name="id" value="{ id }">
@@ -597,6 +599,7 @@ bab_initFunctions.push(function() {
 <br>
 <!--#begin dbmapfile -->
 <form method="post" action="{ babPhpSelf }">
+<input type="hidden" name="babCsrfProtect" value="{ babCsrfProtect }" />
 <input type="hidden" name="tg" value="directory" />
 <input type="hidden" name="idx" value="list" />
 <input type="hidden" name="id" value="{ id }" />
@@ -768,6 +771,7 @@ this.close();
 //-->
 </script>
 <form name="ocstart" method="post" action="{ babPhpSelf }">
+<input type="hidden" name="babCsrfProtect" value="{ babCsrfProtect }" />
 <table width="95%" border="0" cellspacing="0" cellpadding="2" align="center">
 <tr>
 	<td class="BabLoginCadreBackground"> 
@@ -859,6 +863,7 @@ window.focus();
 //-->
 </script>
 <form name="admodify" method="post" action="{ babPhpSelf }" enctype="multipart/form-data">
+<input type="hidden" name="babCsrfProtect" value="{ babCsrfProtect }" />
 <input type="hidden" name="tg" value="directory">
 <input type="hidden" name="idx" value="list">
 <input type="hidden" name="id" value="{ id }">
@@ -1047,6 +1052,7 @@ close }</a> </td>
 
 <!--#begin assignlist -->
 <form method="post" action="{ babPhpSelf }" name="listform">
+<input type="hidden" name="babCsrfProtect" value="{ babCsrfProtect }" />
 <input type="hidden" name="tg" value="directory">
 <input type="hidden" name="idx" value="list">
 <input type="hidden" name="id" value="{ id }">
@@ -1119,6 +1125,7 @@ close }</a> </td>
 <br />
 <br />
 <form method="post" action="{ babPhpSelf }" name="listform">
+<input type="hidden" name="babCsrfProtect" value="{ babCsrfProtect }" />
 <input type="hidden" name="tg" value="directory">
 <input type="hidden" name="idx" value="list">
 <input type="hidden" name="id" value="{ id }">

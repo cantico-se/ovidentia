@@ -30,6 +30,7 @@ function checkmax(obj)
 //-->
 </script>
 <form method="post" action="{ babPhpSelf }" name="listform" onSubmit="return checkmax(this)">
+<input type="hidden" name="babCsrfProtect" value="{ babCsrfProtect }" />
 <input type="hidden" name="tg" value="sectopt">
 <input type="hidden" name="idx" value="list">
 <input type="hidden" name="update" value="enable">

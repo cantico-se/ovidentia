@@ -63,6 +63,7 @@
 
 <!--#begin ldapadd -->
 <form name="adcreate" method="post" action="{ babPhpSelf }">
+<input type="hidden" name="babCsrfProtect" value="{ babCsrfProtect }" />
 <input type="hidden" name="tg" value="admdir">
 <input type="hidden" name="idx" value="list">
 <input type="hidden" name="add" value="ldap">
@@ -149,6 +150,7 @@
 
 <!--#begin ldapmodify -->
 <form name="admodify" method="post" action="{ babPhpSelf }">
+<input type="hidden" name="babCsrfProtect" value="{ babCsrfProtect }" />
 <input type="hidden" name="tg" value="admdir">
 <input type="hidden" name="idx" value="list">
 <input type="hidden" name="id" value="{ id }">
@@ -235,6 +237,7 @@
 
 <!--#begin dbadd -->
 <form name="adcreate" method="post" action="{ babPhpSelf }">
+<input type="hidden" name="babCsrfProtect" value="{ babCsrfProtect }" />
 <input type="hidden" name="tg" value="admdir">
 <input type="hidden" name="idx" value="list">
 <input type="hidden" name="add" value="db">
@@ -313,6 +316,7 @@
 
 <!--#begin dbmodify -->
 <form name="admodify" method="post" action="{ babPhpSelf }">
+<input type="hidden" name="babCsrfProtect" value="{ babCsrfProtect }" />
 <input type="hidden" name="tg" value="admdir">
 <input type="hidden" name="idx" value="list">
 <input type="hidden" name="id" value="{ id }">
@@ -635,6 +639,7 @@ document.forms.ovmldbf.ovmllist.value = txt;
 
 <!--#begin dbdisplay -->
 <form method="post" name="dispdbf" action="{ babPhpSelf }">
+<input type="hidden" name="babCsrfProtect" value="{ babCsrfProtect }" />
 <input type="hidden" name="tg" value="admdir">
 <input type="hidden" name="idx" value="dispdb">
 <input type="hidden" name="id" value="{ id }">
@@ -744,6 +749,7 @@ document.forms.ovmldbf.ovmllist.value = txt;
 </form>
 <br>
 <form method="post" name="ovmldbf" action="{ babPhpSelf }">
+<input type="hidden" name="babCsrfProtect" value="{ babCsrfProtect }" />
 <input type="hidden" name="tg" value="admdir">
 <input type="hidden" name="idx" value="dispdb">
 <input type="hidden" name="id" value="{ id }">
@@ -866,6 +872,7 @@ function submitCtr()
 </script>
 <br />
 <form name="addfval" method="post" action="{ babPhpSelf }" onSubmit="return(submitCtr())">
+<input type="hidden" name="babCsrfProtect" value="{ babCsrfProtect }" />
 <input type="hidden" name="tg" value="admdir" />
 <input type="hidden" name="idx" value="addval" />
 <input type="hidden" name="id" value="{ id }" />
@@ -964,6 +971,7 @@ mvyn_onchange();
 
 <!--#begin dbaddfield -->
 <form name="addfield" method="post" action="{ babPhpSelf }">
+<input type="hidden" name="babCsrfProtect" value="{ babCsrfProtect }" />
 <input type="hidden" name="tg" value="admdir">
 <input type="hidden" name="idx" value="addval">
 <input type="hidden" name="id" value="{ id }">
@@ -995,6 +1003,7 @@ mvyn_onchange();
 
 <!--#begin dblistorder -->
 <form method="post" name="ordform" action="{ babPhpSelf }">
+<input type="hidden" name="babCsrfProtect" value="{ babCsrfProtect }" />
 <input type="hidden" name="tg" value="admdir">
 <input type="hidden" name="idx" value="dispdb">
 <input type="hidden" name="id" value="{ id }">
@@ -1040,6 +1049,7 @@ onclick="selectAll(document.ordform.elements[4]); document.ordform.submit()">
 
 <!--#begin search -->
 <form method="post" name="dispdbf" action="{ babPhpSelf }">
+<input type="hidden" name="babCsrfProtect" value="{ babCsrfProtect }" />
 <input type="hidden" name="tg" value="admdir">
 <input type="hidden" name="update" value="search" />
 
@@ -1156,6 +1166,7 @@ onclick="selectAll(document.ordform.elements[4]); document.ordform.submit()">
 
 <!--#begin dirgroups -->
 <form method="post" action="{ babPhpSelf }" name="listform">
+<input type="hidden" name="babCsrfProtect" value="{ babCsrfProtect }" />
 <input type="hidden" name="tg" value="admdir">
 <input type="hidden" name="idx" value="groupdirs">
 <input type="hidden" name="update" value="gdirs">

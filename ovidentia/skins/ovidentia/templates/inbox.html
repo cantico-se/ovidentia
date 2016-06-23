@@ -16,6 +16,7 @@
 			<td>
 			
 				<form method="post" action="{ babPhpSelf }">
+<input type="hidden" name="babCsrfProtect" value="{ babCsrfProtect }" />
 				<input type="hidden" name="tg" value="inbox">
 				<input type="hidden" name="idx" value="list">
 				<input type="hidden" name="criteria" value="{ criteria }">
@@ -44,6 +45,7 @@
 
 
 <form method="post" action="{ babPhpSelf }" name="listform">
+<input type="hidden" name="babCsrfProtect" value="{ babCsrfProtect }" />
 <input type="hidden" name="tg" value="inbox">
 <input type="hidden" name="idx" value="delete">
 <input type="hidden" name="accid" value="{ accid }">

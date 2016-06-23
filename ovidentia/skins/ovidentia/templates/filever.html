@@ -30,6 +30,7 @@ function checkMaxLength(obj)
 <!--#else bunlocklock -->
 
 <form method="post" action="{ babPhpSelf }">
+<input type="hidden" name="babCsrfProtect" value="{ babCsrfProtect }" />
 <input type="hidden" name="tg" value="filever" />
 <input type="hidden" name="idx" value="unload" />
 <input type="hidden" name="afile" value="{ what }" />
@@ -174,6 +175,7 @@ window.focus();
 
 
 <form method="post" action="{ babPhpSelf }">
+<input type="hidden" name="babCsrfProtect" value="{ babCsrfProtect }" />
 <input type="hidden" name="tg" value="filever" />
 <input type="hidden" name="idx" value="hist" />
 <input type="hidden" name="afile" value="cleanlog" />
@@ -222,6 +224,7 @@ function checkMaxLength(obj)
 <!--#else bunlocklock -->
 
 <form method="post" action="{ babPhpSelf }" enctype="multipart/form-data">
+<input type="hidden" name="babCsrfProtect" value="{ babCsrfProtect }" />
 <input type="hidden" name="MAX_FILE_SIZE" value="{ babMaxFileSize }" />
 <input type="hidden" name="tg" value="filever" />
 <input type="hidden" name="idx" value="unload" />
@@ -277,6 +280,7 @@ function checkMaxLength(obj)
 <!--#begin confirmfile -->
 
 <form method="post" action="{ babPhpSelf }">
+<input type="hidden" name="babCsrfProtect" value="{ babCsrfProtect }" />
 <input type="hidden" name="tg" value="filever" />
 <input type="hidden" name="idx" value="unload" />
 <input type="hidden" name="afile" value="confirm" />
@@ -323,6 +327,7 @@ function checkMaxLength(obj)
 
 <!--#if bmanager -->
 <form method="post" action="{ babPhpSelf }" name="listform">
+<input type="hidden" name="babCsrfProtect" value="{ babCsrfProtect }" />
 <input type="hidden" name="tg" value="filever" />
 <input type="hidden" name="idx" value="lvers" />
 <input type="hidden" name="afile" value="delv" />

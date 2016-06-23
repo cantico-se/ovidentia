@@ -165,6 +165,7 @@ function bab_enableForm()
 </script>
 
 <form method="post" id="topCatCreate" name="topCatCreate" enctype="multipart/form-data" action="{ babPhpSelf }">
+<input type="hidden" name="babCsrfProtect" value="{ babCsrfProtect }" />
 	<input type="hidden" name="MAX_FILE_SIZE" value="{ iMaxImgFileSize }" />
 	<input type="hidden" name="tg" value="topcats" />
 	<input type="hidden" name="idx" value="List" />
@@ -336,6 +337,7 @@ if('undefined' != typeof document.observe)
 <br />
 <!--#endif countparents -->
 <form method="post" action="{ babPhpSelf }" name="listform">
+<input type="hidden" name="babCsrfProtect" value="{ babCsrfProtect }" />
 <input type="hidden" name="tg" value="topcats">
 <input type="hidden" name="idx" value="List">
 <input type="hidden" name="idp" value="{ idp }">
@@ -611,6 +613,7 @@ function ovidentia_popuptreeviewselectparentcategory() {
 
 
 <form method="post" id="topCatModify" name="topCatModify" enctype="multipart/form-data" action="{ babPhpSelf }">
+<input type="hidden" name="babCsrfProtect" value="{ babCsrfProtect }" />
 	<input type="hidden" name="MAX_FILE_SIZE" value="{ iMaxImgFileSize }" />
 	<input type="hidden" name="tg" value="topcat" />
 	<input type="hidden" name="idx" value="Modify" />
@@ -818,6 +821,7 @@ if('undefined' != typeof document.observe)
 <br /><br /><br /><br />
 <!--#begin topcatorder -->
 <form method="post" name="ordform" action="{ babPhpSelf }">
+<input type="hidden" name="babCsrfProtect" value="{ babCsrfProtect }" />
 <input type="hidden" name="tg" value="topcats">
 <input type="hidden" name="idx" value="List">
 <input type="hidden" name="idp" value="{ idp }">
@@ -871,6 +875,7 @@ onClick="selectAll(document.ordform.elements[4]); document.ordform.submit()">
 
 <!--#begin howtousedefaultrights -->
 <form method="post" action="{ babPhpSelf }" name="listform">
+<input type="hidden" name="babCsrfProtect" value="{ babCsrfProtect }" />
 	<input type="hidden" name="tg" value="topcat" />
 	<input type="hidden" name="idx" value="Modify" />
 	<input type="hidden" name="item" value="{ item }" />

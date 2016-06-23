@@ -2,6 +2,7 @@
 <!--#begin accountcreate -->
 
 <form method="post" action="{ babPhpSelf }">
+<input type="hidden" name="babCsrfProtect" value="{ babCsrfProtect }" />
 <input type="hidden" name="tg" value="mailopt">
 <input type="hidden" name="idx" value="listacc">
 <input type="hidden" name="addacc" value="add">
@@ -105,6 +106,7 @@
 <!--#begin accountmodify -->
 
 <form method="post" action="{ babPhpSelf }">
+<input type="hidden" name="babCsrfProtect" value="{ babCsrfProtect }" />
 <input type="hidden" name="tg" value="mailopt">
 <input type="hidden" name="idx" value="listacc">
 <input type="hidden" name="item" value="{ item }">
@@ -289,6 +291,7 @@ function mm()
 
 
 <form name="sigform" method="post" action="{ babPhpSelf }">
+<input type="hidden" name="babCsrfProtect" value="{ babCsrfProtect }" />
 <input type="hidden" name="tg" value="mailopt">
 <input type="hidden" name="idx" value="listsig">
 <input type="hidden" name="addsig" value="add">
@@ -354,6 +357,7 @@ function mm()
 </script>
 
 <form method="post" name="sigform" action="{ babPhpSelf }">
+<input type="hidden" name="babCsrfProtect" value="{ babCsrfProtect }" />
 <input type="hidden" name="tg" value="mailopt" />
 <input type="hidden" name="idx" value="listsig" />
 <input type="hidden" name="sigid" value="{ id }" />

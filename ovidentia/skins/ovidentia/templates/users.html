@@ -24,6 +24,7 @@ function bab_userListShowHideFilter()
 
 <!--#if bshowform -->
 <form method="post" action="{ babPhpSelf }" name="listform">
+<input type="hidden" name="babCsrfProtect" value="{ babCsrfProtect }" />
 <input type="hidden" name="tg" value="users" />
 <input type="hidden" name="idx" value="List" />
 <input type="hidden" name="pos" value="" />
@@ -168,6 +169,7 @@ function setEndDateValue(date)
 </script>
 
 <form method="post" action="{ babPhpSelf }">
+<input type="hidden" name="babCsrfProtect" value="{ babCsrfProtect }" />
 <input type="hidden" name="tg" value="user">
 <input type="hidden" name="idx" value="Modify">
 <input type="hidden" name="item" value="{ arr[id] }">
@@ -283,6 +285,7 @@ function setEndDateValue(date)
 
 <!--#if bshowform -->
 <form method="post" action="{ babPhpSelf }">
+<input type="hidden" name="babCsrfProtect" value="{ babCsrfProtect }" />
 <input type="hidden" name="tg" value="user">
 <input type="hidden" name="idx" value="Modify">
 <input type="hidden" name="item" value="{ item }">
@@ -370,6 +373,7 @@ function submitCtrl() {
         <td colspan="2" align="center">
 
             <form name="utilit" method="post" action="{ babPhpSelf }" onSubmit="return(submitCtrl())">
+<input type="hidden" name="babCsrfProtect" value="{ babCsrfProtect }" />
             <input type="hidden" name="tg" value="users" />
             <input type="hidden" name="idx" value="utilit" />
             <input type="hidden" name="action" value="delete_unconfirmed" />
@@ -380,6 +384,7 @@ function submitCtrl() {
             <br />
 
             <form name="utilit" method="post" action="{ babPhpSelf }">
+<input type="hidden" name="babCsrfProtect" value="{ babCsrfProtect }" />
             <input type="hidden" name="tg" value="users" />
             <input type="hidden" name="idx" value="utilit" />
             <input type="hidden" name="action" value="delete_since" />

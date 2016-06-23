@@ -21,6 +21,7 @@ function submitCtrl() {
 }
 </script>
 <form method="post" action="{ babPhpSelf }" name="listform" onsubmit="return submitCtrl()">
+<input type="hidden" name="babCsrfProtect" value="{ babCsrfProtect }" />
 <input type="hidden" name="tg" value="topman" />
 <input type="hidden" name="idx" value="Articles" />
 <input type="hidden" name="item" value="{ item }" />
@@ -254,6 +255,7 @@ window.focus();
 
 <!--#begin oldarticleslist -->
 <form method="post" action="{ babPhpSelf }" name="listform">
+<input type="hidden" name="babCsrfProtect" value="{ babCsrfProtect }" />
 <input type="hidden" name="tg" value="topman">
 <input type="hidden" name="idx" value="list">
 <input type="hidden" name="item" value="{ item }">
@@ -299,6 +301,7 @@ window.focus();
 
 <!--#begin articlesorder -->
 <form method="post" name="ordform" action="{ babPhpSelf }">
+<input type="hidden" name="babCsrfProtect" value="{ babCsrfProtect }" />
 <input type="hidden" name="tg" value="topman">
 <input type="hidden" name="idx" value="Articles">
 <input type="hidden" name="item" value="{ topicid }">
@@ -459,6 +462,7 @@ function ovidentia_popuptreeviewselectparenttopic() {
 //-->
 </script>
 <form name="propform" method="post" action="{ babPhpSelf }" >
+<input type="hidden" name="babCsrfProtect" value="{ babCsrfProtect }" />
 	<input type="hidden" name="tg" value="topman">
 	<input type="hidden" name="idx" value="unload">
 	<input type="hidden" name="item" value="{ item }">
@@ -623,6 +627,7 @@ function ovidentia_popuptreeviewselectparenttopic() {
 
 <!--#begin sitehomepage0 -->
 <form method="post" name="homeform" action="{ babPhpSelf }">
+<input type="hidden" name="babCsrfProtect" value="{ babCsrfProtect }" />
 <input type="hidden" name="tg" value="topman" />
 <input type="hidden" name="idx" value="modify" />
 <input type="hidden" name="item" value="{ id }" />
@@ -686,6 +691,7 @@ function ovidentia_popuptreeviewselectparenttopic() {
 
 <!--#begin sitehomepage1 -->
 <form method="post" name="homeform1" action="{ babPhpSelf }">
+<input type="hidden" name="babCsrfProtect" value="{ babCsrfProtect }" />
 <input type="hidden" name="tg" value="topman" />
 <input type="hidden" name="idx" value="modify" />
 <input type="hidden" name="item" value="{ id }" />

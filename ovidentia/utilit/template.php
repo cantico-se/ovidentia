@@ -105,6 +105,7 @@ function getGlobalVariable($var)
 		case 'babAddonFolder' : return bab_toHtml($GLOBALS['babAddonFolder']);
 		case 'tg': return bab_toHtml(bab_rp('tg'));
 		case 'idx': if(is_array(bab_rp('idx'))){return '';} return bab_toHtml((string) bab_rp('idx'));
+		case bab_CsrfProtect::FIELDNAME: return bab_toHtml(bab_getInstance('bab_CsrfProtect')->getToken());
 	}
 	return NULL;
 }

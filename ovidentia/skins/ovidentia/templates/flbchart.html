@@ -1,6 +1,7 @@
 <!--#begin flbchartpage -->
 
 <form name="left_refresh" method="post" action="{ babPhpSelf }">
+<input type="hidden" name="babCsrfProtect" value="{ babCsrfProtect }" />
 <input type="hidden" name="left_refresh_disabled" value="0">
 </form>
 <table width="100%" border="0" cellspacing="0" cellpadding="0" align="center">
@@ -93,6 +94,7 @@ function fulltext(el)
 </script>
 <!--#endif count -->
 <form name="ocecreate" method="post" action="{ babPhpSelf }">
+<input type="hidden" name="babCsrfProtect" value="{ babCsrfProtect }" />
 <input type="hidden" name="tg" value="flbchart">
 <input type="hidden" name="idx" value="adde">
 <input type="hidden" name="addoce" value="addoce">
@@ -155,6 +157,7 @@ valign="middle">{  name }:<br>
 
 <!--#begin ocemodify -->
 <form name="ocemodify" method="post" action="{ babPhpSelf }">
+<input type="hidden" name="babCsrfProtect" value="{ babCsrfProtect }" />
 <input type="hidden" name="tg" value="flbchart">
 <input type="hidden" name="idx" value="adde">
 <input type="hidden" name="addoce" value="modoce">
@@ -204,6 +207,7 @@ valign="middle">{ name }:<br>
 
 <!--#begin ocedelete -->
 <form name="ocemodify" method="post" action="{ babPhpSelf }">
+<input type="hidden" name="babCsrfProtect" value="{ babCsrfProtect }" />
 <input type="hidden" name="tg" value="flbchart">
 <input type="hidden" name="idx" value="adde">
 <input type="hidden" name="deloce" value="deloce">
@@ -260,6 +264,7 @@ function fulltext(el)
 //-->
 </script>
 <form name="ocemove" method="post" action="{ babPhpSelf }">
+<input type="hidden" name="babCsrfProtect" value="{ babCsrfProtect }" />
 <input type="hidden" name="tg" value="flbchart">
 <input type="hidden" name="idx" value="adde">
 <input type="hidden" name="movoce" value="movoce">
@@ -315,6 +320,7 @@ fulltext(document.forms.ocemove.parentid);
 //-->
 </script>
 <form name="ocemove2" method="post" action="{ babPhpSelf }">
+<input type="hidden" name="babCsrfProtect" value="{ babCsrfProtect }" />
 <input type="hidden" name="tg" value="flbchart">
 <input type="hidden" name="idx" value="adde">
 <input type="hidden" name="movoce" value="peroce">
@@ -397,6 +403,7 @@ FUNCTIONS LIST
 </table>
 <br>
 <form method="post" action="{ babPhpSelf }" name="listform">
+<input type="hidden" name="babCsrfProtect" value="{ babCsrfProtect }" />
 <input type="hidden" name="tg" value="flbchart">
 <input type="hidden" name="idx" value="delf">
 <input type="hidden" name="ocid" value="{ ocid }">
@@ -444,6 +451,7 @@ FUNCTIONS ORDER
 <!--#begin functionsorder -->
 
 <form method="post" name="ordform" action="{ babPhpSelf }">
+<input type="hidden" name="babCsrfProtect" value="{ babCsrfProtect }" />
 <input type="hidden" name="tg" value="flbchart">
 <input type="hidden" name="idx" value="orderr">
 <input type="hidden" name="ocid" value="{ ocid }">
@@ -532,6 +540,7 @@ function closepop()
 <td class="BabLoginMenuBackground" align="center" >{ roletitle }</td>
 </tr></table><br>
 <form method="post" action="{ babPhpSelf }" name="listform">
+<input type="hidden" name="babCsrfProtect" value="{ babCsrfProtect }" />
 <input type="hidden" name="tg" value="flbchart">
 <input type="hidden" name="idx" value="delu">
 <input type="hidden" name="ocid" value="{ ocid }">
@@ -579,6 +588,7 @@ function closepop()
 
 <!--#begin ocrcreate -->
 <form name="ocrcreate" method="post" action="{ babPhpSelf }">
+<input type="hidden" name="babCsrfProtect" value="{ babCsrfProtect }" />
 <input type="hidden" name="tg" value="flbchart">
 <input type="hidden" name="idx" value="addr">
 <input type="hidden" name="addocr" value="addocr">
@@ -631,6 +641,7 @@ valign="middle">{  name }:
 <td class="BabLoginMenuBackground" align="center" >{ roletitle }</td>
 </tr></table><br>
 <form name="ocrcreate" method="post" action="{ babPhpSelf }">
+<input type="hidden" name="babCsrfProtect" value="{ babCsrfProtect }" />
 <input type="hidden" name="tg" value="flbchart">
 <input type="hidden" name="idx" value="addr">
 <input type="hidden" name="modocr" value="modocr">
@@ -683,6 +694,7 @@ valign="middle">{  name }:
 <!--#begin userupdate -->
 <br>
 <form method="post" action="{ babPhpSelf }" name="listform">
+<input type="hidden" name="babCsrfProtect" value="{ babCsrfProtect }" />
 <input type="hidden" name="tg" value="flbchart">
 <input type="hidden" name="idx" value="updru">
 <input type="hidden" name="ocid" value="{ ocid }">
