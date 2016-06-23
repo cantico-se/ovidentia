@@ -259,7 +259,11 @@ class bab_InstallRepositoryFile
 
 		if ($install->install($ini)) {
 			if (!unlink($install->getArchive())) {
-				throw new Exception(sprintf(bab_translate('Failed to delete the temporary package %s'), $install->getArchive()));
+				bab_installWindow::message(
+				    bab_toHtml(
+				        sprintf(bab_translate('Failed to delete the temporary package %s'), $install->getArchive())
+				    )
+				);
 			}
 		}
 		
