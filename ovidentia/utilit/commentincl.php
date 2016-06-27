@@ -42,7 +42,7 @@ class bab_AddCommentTemplate
     public	$rate_articles = true;
     public	$useCaptcha;
 
-    public function __construct($topics, $article, $subject, $message, $com, $messageFormat)
+    public function __construct($topics, $article, $subject, $message, $com, $popup = false)
     {
         global $BAB_SESS_USER, $babDB;
         $this->subject = bab_translate('comments-Title');
@@ -54,6 +54,8 @@ class bab_AddCommentTemplate
         $this->article = bab_toHtml($article);
         $this->topics = bab_toHtml($topics);
         $this->subjectval = bab_toHtml($subject);
+        
+        $this->popup = $popup ? '1' : '0';
 
         $this->t_rate_this_article = bab_translate('Rate this article:');
 
@@ -125,7 +127,7 @@ class bab_EditCommentTemplate
     public	$rate_articles = true;
     public	$useCaptcha;
 
-    public function __construct($topics, $article, $commentId)
+    public function __construct($topics, $article, $commentId, $popup = false)
     {
         global $BAB_SESS_USER, $babDB;
         $this->comment_id = bab_toHtml($commentId);
@@ -142,5 +144,7 @@ class bab_EditCommentTemplate
         $this->topics = bab_toHtml($topics);
         $this->subject = bab_toHtml($comment['subject']);
         $this->messageval = bab_toHtml($comment['message']);
+        
+        $this->popup = $popup ? '1' : '0';
     }
 }

@@ -421,7 +421,7 @@ function listArticles($topics)
 					{
 					$GLOBALS['babWebStat']->addArticle($this->arr['id']);
 					}
-
+					
 				list($totalc) = $babDB->db_fetch_row($babDB->db_query("select count(id) as total from ".BAB_COMMENTS_TBL." where id_article='".$babDB->db_escape_string($this->arr['id'])."' and confirmed='Y'"));
 
 				if( $totalc > 0 || $this->bcomment)
@@ -972,7 +972,11 @@ function readMore($topics, $article)
 		    
 		    $addCommentTemplate = new bab_AddCommentTemplate(
 		            $this->topics, 
-		            $this->babtpl_articleid, bab_pp('subject'), bab_pp('message'), null, 'text');
+		            $this->babtpl_articleid, 
+		            bab_pp('subject'), 
+		            bab_pp('message'), 
+		            null
+		        );
 		    $this->addcommenteditor = bab_printTemplate($addCommentTemplate, 'comments.html', 'commentcreate');
             
 		}

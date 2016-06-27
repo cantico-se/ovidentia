@@ -1297,12 +1297,7 @@ function bab_saveArticle(){
     }
 
     if(bab_pp('babpopup',false)){//come from an other window wich open a bab_popup, it close the current window and refresh the parent
-        echo '
-        <script type="text/javascript">
-            window.opener.location.reload();
-            window.close();
-        </script>';
-        die;
+        bab_closePopup();
     }
 
     Header("Location: ". $url);

@@ -116,7 +116,7 @@ function editComment($topics, $article, $commentId)
 	
 	global $babBodyPopup;
 	
-	$editCommentTemplate = new bab_EditCommentTemplate($topics, $article, $commentId);
+	$editCommentTemplate = new bab_EditCommentTemplate($topics, $article, $commentId, true);
 	$babBodyPopup->babecho(bab_printTemplate($editCommentTemplate, 'comments.html', 'commentedit'));
 }
 
@@ -126,7 +126,7 @@ function editComment($topics, $article, $commentId)
 
 
 
-function addComment($topics, $article, $subject, $message, $com = '', $messageFormat = null)
+function addComment($topics, $article, $subject, $message, $com = '')
 {
 	
 
@@ -136,7 +136,7 @@ function addComment($topics, $article, $subject, $message, $com = '', $messageFo
 	
 	global $babBodyPopup;
 	
-	$addCommentTemplate = new bab_AddCommentTemplate($topics, $article, $subject, $message, $com, $messageFormat);
+	$addCommentTemplate = new bab_AddCommentTemplate($topics, $article, $subject, $message, $com, true);
 	$babBodyPopup->babecho(bab_printTemplate($addCommentTemplate, 'comments.html', 'commentcreate'));
 }
 
@@ -157,7 +157,7 @@ function saveComment($topics, $article, $subject, $message, $com, $articleRating
 	global $babDB, $BAB_SESS_USER, $BAB_SESS_EMAIL, $BAB_SESS_USERID;
 
 	// We first check that the user entered the correct captcha.
-	if (!$GLOBALS['BAB_SESS_LOGGED']) {
+	if (!bab_isUserLogged()) {
 		$captcha = bab_functionality::get('Captcha');
 		if (false !== $captcha) {
 			$captchaSecurityCode = bab_pp('captchaSecurityCode', '');
@@ -186,6 +186,8 @@ function saveComment($topics, $article, $subject, $message, $com, $articleRating
 
 
 /* main */
+
+$idx = bab_rp('idx', 'List');
 $topics = bab_rp('topics', 0);
 $article = bab_rp('article', 0);
 
@@ -208,11 +210,16 @@ if (!bab_requireAccess(BAB_TOPICSVIEW_GROUPS_TBL, $topics, '')) {
 		$babBody->addNextPageError($msgerror);
 	}
 	
+	if (bab_pp('popup')) {
+	    bab_closePopup();
+	    
+	} else {
 
-	$articleUrl = bab_sitemap::url('babArticle_'.$article, $GLOBALS['babUrlScript']."?tg=articles&idx=More&topics=".$topics."&article=".$article);
-	
-	$articlesUrl = new bab_url($articleUrl);
-	$articlesUrl->location();
+    	$articleUrl = bab_sitemap::url('babArticle_'.$article, $GLOBALS['babUrlScript']."?tg=articles&idx=More&topics=".$topics."&article=".$article);
+    	
+    	$articlesUrl = new bab_url($articleUrl);
+    	$articlesUrl->location();
+	}
 }
 
 switch ($idx)
@@ -246,7 +253,7 @@ switch ($idx)
 		}
 		$subject = bab_pp('subject');
 
-		addComment($topics, $article, $subject, $message, '', $messageFormat);
+		addComment($topics, $article, $subject, $message, '');
 		printBabBodyPopup();
 		exit;
 		break;
