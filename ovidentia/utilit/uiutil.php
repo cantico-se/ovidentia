@@ -23,6 +23,23 @@
 ************************************************************************/
 
 
+/**
+ * Close popup and reload parent page (unknown url)
+ */
+function bab_closePopup()
+{
+    echo '
+        <script type="text/javascript">
+            window.opener.location.reload();
+            window.close();
+        </script>';
+    die;
+}
+
+
+/**
+ * Close popup and reload a known url
+ */
 function popupUnload($message, $redirecturl, $openerreload=false, $autoclose=true)
 	{
 	global $babBody;
