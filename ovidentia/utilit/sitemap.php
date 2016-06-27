@@ -1421,9 +1421,12 @@ class bab_siteMapItem {
                 break;
             }
 
-            if (!$sitemapItem->rewriteIgnore && $pos > 1) {
-                array_unshift($arr, $sitemapItem->getRewriteName());
+            if ($sitemapItem->rewriteIgnore && $pos > 1) {
+                continue;
             }
+            
+            array_unshift($arr, $sitemapItem->getRewriteName());
+            
         } while ($node = $node->parentNode());
 
 
@@ -1502,6 +1505,7 @@ class bab_siteMapItem {
         }
 
         $url = $this->getRwUrl();
+        
 
         if ($url) {
 
