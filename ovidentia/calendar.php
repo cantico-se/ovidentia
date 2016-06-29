@@ -567,8 +567,8 @@ class displayEventDetailCls extends displayEventCls
 			$this->location = '';
 			$this->category = '';
 		} else {
-			$this->title = bab_toHtml($calendarPeriod->getProperty('SUMMARY'));
-			$this->description	= bab_toHtml($calendarPeriod->getProperty('DESCRIPTION'));
+			$this->title = bab_toHtml($calendarPeriod->getValue('SUMMARY'));
+			$this->description	= bab_toHtml($calendarPeriod->getValue('DESCRIPTION'));
 
 			if ($organizer = $calendarPeriod->getOrganizer()) {
 				if (isset($organizer['name'])) {
@@ -592,8 +592,8 @@ class displayEventDetailCls extends displayEventCls
 				$this->description = $editor->getHtml();
 			}
 
-			$this->location= bab_toHtml($calendarPeriod->getProperty('LOCATION'));
-			$this->category = bab_toHtml($calendarPeriod->getProperty('CATEGORIES'));
+			$this->location= bab_toHtml($calendarPeriod->getValue('LOCATION'));
+			$this->category = bab_toHtml($calendarPeriod->getValue('CATEGORIES'));
 		}
 
 
