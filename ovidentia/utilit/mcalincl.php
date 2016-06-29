@@ -939,7 +939,7 @@ class cal_wmdbaseCls
 
 		// $this->status		= isset($arr['status'])		? $arr['status'] 		: 0;
 
-		$cat = bab_getCalendarCategory($calPeriod->getProperty('CATEGORIES'));
+		$cat = bab_getCalendarCategory($calPeriod->getValue('CATEGORIES'));
 		$this->id_cat		= $cat['id'];
 		$this->id_creator	= isset($arr['id_creator']) ? $arr['id_creator'] 	: 0;
 		$this->hash			= isset($arr['hash'])		? $arr['hash'] 			: '';
@@ -957,8 +957,7 @@ class cal_wmdbaseCls
 
 		$this->updateAccess($calPeriod);
 
-		$this->category = bab_toHtml($calPeriod->getProperty('CATEGORIES'));
-		$cat = bab_getCalendarCategory($calPeriod->getProperty('CATEGORIES'));
+		$this->category = bab_toHtml($calPeriod->getValue('CATEGORIES'));
 
 		if ($cat) {
 			$this->bgcolor = $cat['bgcolor'];
@@ -992,10 +991,10 @@ class cal_wmdbaseCls
 			$this->description	= "";
 			$this->location		= "";
 		} else {
-			$this->title		= bab_toHtml($calPeriod->getProperty('SUMMARY'));
-			$this->titleten		= $this->calstr($calPeriod->getProperty('SUMMARY'));
-			$this->location		= bab_toHtml($calPeriod->getProperty('LOCATION'));
-			$this->description	= bab_toHtml($calPeriod->getProperty('DESCRIPTION'));
+			$this->title		= bab_toHtml($calPeriod->getValue('SUMMARY'));
+			$this->titleten		= $this->calstr($calPeriod->getValue('SUMMARY'));
+			$this->location		= bab_toHtml($calPeriod->getValue('LOCATION'));
+			$this->description	= bab_toHtml($calPeriod->getValue('DESCRIPTION'));
 
 			// display html from WYSIWYG if any :
 
