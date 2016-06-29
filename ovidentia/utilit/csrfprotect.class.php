@@ -59,6 +59,10 @@ class bab_CsrfProtect
      */
     public function isRequestValid()
     {
+        if (php_sapi_name() === 'cli') {
+            return true;
+        }
+        
         if ('GET' === $_SERVER['REQUEST_METHOD']) {
             return true;
         }

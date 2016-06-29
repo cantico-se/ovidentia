@@ -123,7 +123,7 @@ if (isset($_GET['babHttpContext'])) {
 }
 
 
-if (!isset($_SERVER['HTTP_HOST']) && isset($_SERVER["argv"][1])) {
+if (php_sapi_name() === 'cli' && isset($_SERVER["argv"][1])) {
     parse_str($_SERVER["argv"][1], $_GET);
     parse_str($_SERVER["argv"][1], $_REQUEST);
 }
