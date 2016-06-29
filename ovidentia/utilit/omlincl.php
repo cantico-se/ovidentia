@@ -5460,10 +5460,10 @@ class Func_Ovml_Container_CalendarEvents extends Func_Ovml_Container
             }
 
             $calid_param = !empty($arr['id_cal']) ? '&idcal='.$arr['id_cal'] : '';
-            $summary = $p->getProperty('SUMMARY');
-            $description = bab_toHtml($p->getProperty('DESCRIPTION'));
-            $location = $p->getProperty('LOCATION');
-            $categories = $p->getProperty('CATEGORIES');
+            $summary = $p->getValue('SUMMARY');
+            $description = bab_toHtml($p->getValue('DESCRIPTION')); // default value if wysiwyg api not present
+            $location = $p->getValue('LOCATION');
+            $categories = $p->getValue('CATEGORIES');
             $date = date('Y,m,d',$p->ts_begin);
 
             // with filter

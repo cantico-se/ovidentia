@@ -788,10 +788,9 @@ class bab_UserPeriods implements Countable, seekableIterator {
                     continue;
                 }
 
-
                 $u_key = $calendar_uid.'/'.$uid;
                 //Ajout de $u_key a cause de doublon sur deux agendas differents
-                $d_key = md5($u_key . $event->ts_begin . $event->ts_end. $event->getProperty('SUMMARY').$event->getProperty('LOCATION').$event->getProperty('CATEGORIES').$event->getProperty('DESCRIPTION'));
+                $d_key = md5($u_key . $event->ts_begin . $event->ts_end. $event->getValue('SUMMARY').$event->getValue('LOCATION').$event->getValue('CATEGORIES').$event->getValue('DESCRIPTION'));
 
 
                 if ('CANCELLED' !== $event->getProperty('STATUS'))
