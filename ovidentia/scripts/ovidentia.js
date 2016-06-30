@@ -312,24 +312,56 @@ function bab_postLinkConfirm(a)
 	if (title && !confirm(title)) {
 		return false;
 	}
-
-	var pathItems = a.pathname.split('/');
-	var f = document.createElement('form');
-	f.action=pathItems[pathItems.length-1];
-	f.method='POST';
 	
-	var vars = a.search.substr(1).split('&');
-    for (var i = 0; i < vars.length; i++) {
-        var pair = vars[i].split('=');
-        var input=document.createElement('input');
+	if (window.XMLHttpRequest) { // Mozilla, Safari, ...
+		httpRequest = new XMLHttpRequest();
+	}
+	else if (window.ActiveXObject) { // IE
+	    httpRequest = new ActiveXObject("Microsoft.XMLHTTP");
+	}
+	
+	function createHiddenField(name, value) {
+		var input=document.createElement('input');
 		input.type='hidden';
-		input.name=decodeURIComponent(pair[0]);
-		input.value=decodeURIComponent(pair[1]);
-		f.appendChild(input);
-    }
+		input.name=decodeURIComponent(name);
+		input.value=decodeURIComponent(value);
+		return input;
+	}
 	
-	document.body.appendChild(f);
-	f.submit();
+	
+	httpRequest = new XMLHttpRequest();
+	
+	httpRequest.onreadystatechange = function() {
+		
+		if (httpRequest.readyState == 4) {
+            if (httpRequest.status == 200) {
+                var pathItems = a.pathname.split('/');
+				var f = document.createElement('form');
+				f.action=pathItems[pathItems.length-1];
+				f.method='POST';
+				
+				f.appendChild(createHiddenField('babCsrfProtect', httpRequest.responseText));
+				
+				var vars = a.search.substr(1).split('&');
+			    for (var i = 0; i < vars.length; i++) {
+			        var pair = vars[i].split('=');
+					f.appendChild(createHiddenField(pair[0], pair[1]));
+			    }
+				
+				document.body.appendChild(f);
+				f.submit();
+
+            } else {
+                alert('Failed to retreive the CSRF token');
+            }
+        }
+		
+		
+	    
+	};
+
+	httpRequest.open('GET', '?tg=csrfprotect', true);
+	httpRequest.send();
 	
 	return false;
 }

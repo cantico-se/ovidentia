@@ -808,6 +808,10 @@ switch(bab_rp('tg'))
     case "menu":
         include $GLOBALS['babInstallPath']."menu.php";
         break;
+    case 'csrfprotect':
+        die(bab_getInstance('bab_CsrfProtect')->getToken());
+        break;
+        
     case 'search':
         /**
          * forward to search addon for backward compatibility
