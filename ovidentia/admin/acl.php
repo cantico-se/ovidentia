@@ -345,6 +345,11 @@ function _maclGroups()
 function maclGroups()
 {
 	global $babDB;
+	
+	if (!isset($_POST['item'])) {
+	    return;
+	}
+	
 	bab_requireSaveMethod();
 	$id_object = &$_POST['item'];
 
