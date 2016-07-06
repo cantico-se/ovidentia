@@ -131,7 +131,7 @@ if (php_sapi_name() === 'cli' && isset($_SERVER["argv"][1])) {
 
 if (!bab_getInstance('bab_CsrfProtect')->isRequestValid()) {
     header($_SERVER["SERVER_PROTOCOL"].' 403 Forbidden');
-	exit("<h2>403 Access Forbidden</h2>");
+	exit("403 Access Forbidden");
 }
 
 // addon controller
