@@ -702,6 +702,7 @@ CREATE TABLE bab_users (
    email text,
    `date` datetime DEFAULT '0000-00-00 00:00:00',
    password text,
+   password_hash_function varchar(60) DEFAULT 'md5' NOT NULL,
    changepwd tinyint(1) DEFAULT '0' NOT NULL,
    remote_addr text,
    confirm_hash text,

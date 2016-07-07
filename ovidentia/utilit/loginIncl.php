@@ -23,6 +23,7 @@
 
 include_once $GLOBALS['babInstallPath'].'admin/register.php';
 require_once dirname(__FILE__).'/userinfosincl.php';
+require_once dirname(__FILE__).'/password.class.php';
 
 require_once $GLOBALS['babInstallPath'].'utilit/functionalityincl.php';
 
@@ -930,88 +931,70 @@ function bab_doRequireCredential($sLoginMessage, $sAuthType)
     return true;
 }
 
+
+
+function bab_getUserByIdPassword($iIdUser, $sPassword)
+{
+    $user = bab_userInfos::getRow($iIdUser);
+
+    if (!bab_Password::verify($sPassword, $user['password'], $user['password_hash_function'])) {
+        return null;
+    }
+
+    return $user;
+}
+
+
+
 /**
  * get user by email and password
- * return false if more than one user with this email and password
+ * 
  *
  * @param string $email
  * @param string $sPassword
- * @return multitype:|boolean|NULL
+ * @return array|NULL
  */
 function bab_getUserByEmailPassword($email, $sPassword)
 {
     global $babDB;
 
     $sQuery = '
-    SELECT *
+    SELECT id
     FROM ' . BAB_USERS_TBL . '
-    WHERE email = ' . $babDB->quote($email) . '
-    AND password = ' . $babDB->quote(md5(mb_strtolower($sPassword)));
+    WHERE email = ' . $babDB->quote($email) . ' LIMIT 0,10'; // 10 match max are tested
 
     $oResult = $babDB->db_query($sQuery);
     if(false !== $oResult)
     {
-        $iRows = $babDB->db_num_rows($oResult);
-        if($iRows === 1 && false !== ($aDatas = $babDB->db_fetch_array($oResult)))
-        {
-            return $aDatas;
-        }
-
-        if ($iRows > 1)
-        {
-            return false;
+        while ($arr = $babDB->db_fetch_assoc($oResult)) {
+            $user = bab_getUserByIdPassword($arr['id'], $sPassword);
+            if (false !== $user) {
+                return $user;
+            }
         }
     }
     return null;
 }
+
+
 
 
 
 function bab_getUserByLoginPassword($sLogin, $sPassword)
 {
-    global $babDB;
-
-    $sQuery = '
-        SELECT *
-        FROM ' . BAB_USERS_TBL . '
-        WHERE nickname = ' . $babDB->quote($sLogin) . '
-          AND password = ' . $babDB->quote(md5(mb_strtolower($sPassword)));
-
-    $oResult = $babDB->db_query($sQuery);
-    if(false !== $oResult)
-    {
-        $iRows = $babDB->db_num_rows($oResult);
-        if($iRows > 0 && false !== ($aDatas = $babDB->db_fetch_array($oResult)))
-        {
-            return $aDatas;
-        }
+    
+    $user = bab_getUserByNickname($sLogin);
+    
+    if (!bab_Password::verify($sPassword, $user['password'], $user['password_hash_function'])) {
+        return null;
     }
-    return null;
+
+    return $user;
 }
 
 
 
-function bab_getUserByIdPassword($iIdUser, $sPassword)
-{
-    global $babDB;
 
-    $sQuery = '
-        SELECT *
-        FROM ' . BAB_USERS_TBL . '
-        WHERE id = ' . $babDB->quote($iIdUser) . '
-        AND password = ' . $babDB->quote(md5(mb_strtolower($sPassword)));
-
-    $oResult = $babDB->db_query($sQuery);
-    if(false !== $oResult)
-    {
-        $iRows = $babDB->db_num_rows($oResult);
-        if($iRows > 0 && false !== ($aDatas = $babDB->db_fetch_array($oResult)))
-        {
-            return $aDatas;
-        }
-    }
-    return null;
-}
 
 
 /**
