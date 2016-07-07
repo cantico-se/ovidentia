@@ -3504,4 +3504,5 @@ L'administrateur</string>
 <string id="Copy">Copier</string>
 <string id="Sources Version %s">Version du code source %s</string>
 <string id="Database Version %s">Version de la base de donnés %s</string>
+<string id="Switch to https">Basculer vers https</string>
 </fr>

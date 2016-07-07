@@ -369,8 +369,32 @@ class Func_PortalAuthentication_AuthOvidentia extends Func_PortalAuthentication
         {
             $this->addError(bab_translate("You must complete all fields !!"));
         }
-        header('location:'.$GLOBALS['babUrlScript'] . '?tg=login&cmd=authform&msg=' . urlencode($this->loginMessage) . '&err=' . urlencode(implode("\n", $this->errorMessages)));
+        header('location:'.$this->getLoginFormUrl());
         return false;
+    }
+    
+    /**
+     * Get login form url, change protocol if required
+     * @return string
+     */
+    public function getLoginFormUrl()
+    {
+        require_once dirname(__FILE__).'/settings.class.php';
+        
+        $url = $GLOBALS['babUrlScript'] . '?tg=login&cmd=authform&msg=' . urlencode($this->loginMessage) . '&err=' . urlencode(implode("\n", $this->errorMessages));
+        
+        $settings = bab_getInstance('bab_Settings');
+        /*@var $settings bab_Settings */
+        $site = $settings->getSiteSettings();
+        
+        if ($site['auth_https']) {
+            $protocol = mb_substr($url, 0, 5);
+            if ('http:' === $protocol) {
+                $url = 'https:'.mb_substr($url, 5);
+            }
+        }
+        
+        return $url;
     }
 
 
@@ -827,6 +851,7 @@ function bab_getAuthType()
 
 
 
+
 /**
  * Ensures that the user is logged in.
  * If the user is not logged the "PortalAutentication" functionality
@@ -895,17 +920,8 @@ function bab_doRequireCredential($sLoginMessage, $sAuthType)
         }
 
 
-        if ($oAuthObject->errorMessages)
-        {
-            require_once dirname(__FILE__).'/urlincl.php';
-
-            $url = new bab_url($GLOBALS['babUrlScript']);
-            $url->tg = 'login';
-            $url->cmd = 'denied';
-            $url->errors = $oAuthObject->errorMessages;
-
-            loginRedirect($url->toString());
-
+        if ($oAuthObject->errorMessages) {
+            loginRedirect($oAuthObject->getLoginFormUrl());
         }
 
         // failed authentication without error message
@@ -1342,10 +1358,13 @@ function displayForceChangePwdForm($idUser)
 
 
 
-//--------------------------------------------------------------------------
-
+/**
+ * Redirect to url using javascript on option
+ * @param string $url
+ */
 function loginRedirect($url)
 {
+    
     if(isset($GLOBALS['babLoginRedirect']) && $GLOBALS['babLoginRedirect'] == false)
     {
         class loginRedirectCls

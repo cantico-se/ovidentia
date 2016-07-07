@@ -1184,10 +1184,13 @@ function hideShowCnx()
 <td> 
 	<table class="BabLoginMenuBackground" width="100%" border="0" cellspacing="0" cellpadding="10" align="center">
 	<tr> 
-		<td align="center" colspan="2"><label><input type="checkbox" name="auth_multi_session" <!--#if auth_multi_session --> checked="checked"<!--#endif auth_multi_session --> value="1" style="vertical-align:middle" />&nbsp;{ t_auth_multi_session }</label></td>
+        <td colspan="2"><label><input type="checkbox" name="auth_https" <!--#if auth_https --> checked="checked"<!--#endif auth_https --> value="1" style="vertical-align:middle" />&nbsp;{ t_auth_https }</label></td>
+    </tr>
+	<tr> 
+		<td colspan="2"><label><input type="checkbox" name="auth_multi_session" <!--#if auth_multi_session --> checked="checked"<!--#endif auth_multi_session --> value="1" style="vertical-align:middle" />&nbsp;{ t_auth_multi_session }</label></td>
 	</tr>
 	<tr>
-		<td align="right" width="50%">{ remember_login_title }</td>
+		<td width="50%">{ remember_login_title }</td>
            <td> 
 			<select name="remember_login">
 			<!--#if remember_login "== Y" -->
@@ -1209,7 +1212,7 @@ function hideShowCnx()
 		</td>
 	</tr>
 	<tr>
-		<td align="right">{ email_password_title }</td>
+		<td>{ email_password_title }</td>
            <td> 
 			<select name="email_password">
 			<!--#if email_password "== Y" -->
@@ -1224,7 +1227,7 @@ function hideShowCnx()
 	</tr>
 	
 	<tr>
-		<td align="right">{ ask_nickname_title }</td>
+		<td>{ ask_nickname_title }</td>
            <td> 
 			<select name="ask_nickname">
 			<!--#if ask_nickname -->
@@ -1239,7 +1242,7 @@ function hideShowCnx()
 	</tr>
 	
 	<tr> 
-		<td align="right">{ authentificationtxt }</td>
+		<td>{ authentificationtxt }</td>
 		<td>
 		<select name="authtype" onchange="javascript:hideShowCnx();">
 		<!--#in getnextauth -->
