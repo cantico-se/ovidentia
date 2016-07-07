@@ -2762,7 +2762,15 @@ function bab_updateUserPasswordById($userId, $newPassword, $newPassword2, $ignor
     }
 
     /* Update the user's password */
-    $sql = 'UPDATE ' . BAB_USERS_TBL . ' SET force_pwd_change = 0, pwd_change_date = CURDATE(), password=' . $babDB->quote(md5(mb_strtolower($newPassword))) . ' WHERE id=' . $babDB->quote($userId);
+    
+    require_once dirname(__FILE__).'/password.class.php';
+    $encPassword = bab_Password::hash($newPassword);
+    $sql = 'UPDATE ' . BAB_USERS_TBL . ' SET 
+            force_pwd_change = 0, 
+            pwd_change_date = CURDATE(), 
+            password=' . $babDB->quote($encPassword->value) . ', 
+            password_hash_function='.$babDB->quote($encPassword->hashfunc).' 
+            WHERE id=' . $babDB->quote($userId);
     $babDB->db_query($sql);
 
     $_SESSION['pwd_change_log'] = false;
