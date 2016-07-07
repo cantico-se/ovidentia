@@ -38,3 +38,8 @@ $babFileNameTranslation = array('\\' => '_', '/' => '_', ':' => '_', '*' => '_',
  */
 ini_set('display_errors', 0);
 error_reporting(E_ALL & ~E_STRICT);
+
+/**
+ * Allow administrators to upload addons and versions or download database
+ */
+define('BAB_SYSTEM_ACCESS', false);
