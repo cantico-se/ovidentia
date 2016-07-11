@@ -3199,6 +3199,7 @@ else
     }
 
 $idx = bab_rp('idx', 'list');
+$msg = bab_rp('msg');
 
 if( ('' != bab_pp('pfile')) && bab_isAccessValid(BAB_DBDIRIMPORT_GROUPS_TBL, $id))
     {
@@ -3284,9 +3285,9 @@ else if (  ('' !=  bab_pp('expfile'))  && bab_isAccessValid(BAB_DBDIREXPORT_GROU
 switch($idx)
     {
     case 'deldbc':
-        $id = $id;
-        $idu = bab_gp('idu');
-        if( bab_isAccessValid(BAB_DBDIRDEL_GROUPS_TBL, $id))
+        $id = bab_rp('id');
+        $idu = bab_rp('idu');
+        if( bab_isAccessValid(BAB_DBDIRDEL_GROUPS_TBL, $id) && bab_requireDeleteMethod())
             {
             $msg = bab_translate("Your contact has been deleted");
             deleteDbContact($id, $idu);
