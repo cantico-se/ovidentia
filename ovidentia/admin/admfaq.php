@@ -205,7 +205,7 @@ if( isset($_REQUEST['add']))
 	if( isset($_REQUEST['submit']))
 		{
 		    bab_requireSaveMethod();
-		    $category = babrp('category');
+		    $category = bab_rp('category');
 		    $lang = bab_rp('lang');
 		if(!updateCategory($item, $category, $lang))
 			$idx = "Modify";
