@@ -702,6 +702,7 @@ CREATE TABLE bab_users (
    email text,
    `date` datetime DEFAULT '0000-00-00 00:00:00',
    password text,
+   password_hash_function varchar(60) DEFAULT 'md5' NOT NULL,
    changepwd tinyint(1) DEFAULT '0' NOT NULL,
    remote_addr text,
    confirm_hash text,
@@ -1035,6 +1036,7 @@ CREATE TABLE `bab_sites` (
   `staticurl` varchar(255) NOT NULL default '',
   `ask_nickname` tinyint(1) unsigned NOT NULL default '1' COMMENT 'ask for nickname is the email password functionality',
   `calendar_notif_author` ENUM('N','Y') DEFAULT 'N' NOT NULL,
+  `auth_https` tinyint(1) unsigned NOT NULL default '0',
   PRIMARY KEY  (`id`),
   KEY `name` (`name`)
 );

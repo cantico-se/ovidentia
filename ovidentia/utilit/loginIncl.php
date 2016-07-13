@@ -23,6 +23,7 @@
 
 include_once $GLOBALS['babInstallPath'].'admin/register.php';
 require_once dirname(__FILE__).'/userinfosincl.php';
+require_once dirname(__FILE__).'/password.class.php';
 
 require_once $GLOBALS['babInstallPath'].'utilit/functionalityincl.php';
 
@@ -369,8 +370,32 @@ class Func_PortalAuthentication_AuthOvidentia extends Func_PortalAuthentication
         {
             $this->addError(bab_translate("You must complete all fields !!"));
         }
-        header('location:'.$GLOBALS['babUrlScript'] . '?tg=login&cmd=authform&msg=' . urlencode($this->loginMessage) . '&err=' . urlencode(implode("\n", $this->errorMessages)));
+        header('location:'.$this->getLoginFormUrl());
         return false;
+    }
+    
+    /**
+     * Get login form url, change protocol if required
+     * @return string
+     */
+    public function getLoginFormUrl()
+    {
+        require_once dirname(__FILE__).'/settings.class.php';
+        
+        $url = $GLOBALS['babUrlScript'] . '?tg=login&cmd=authform&msg=' . urlencode($this->loginMessage) . '&err=' . urlencode(implode("\n", $this->errorMessages));
+        
+        $settings = bab_getInstance('bab_Settings');
+        /*@var $settings bab_Settings */
+        $site = $settings->getSiteSettings();
+        
+        if ($site['auth_https']) {
+            $protocol = mb_substr($url, 0, 5);
+            if ('http:' === $protocol) {
+                $url = 'https:'.mb_substr($url, 5);
+            }
+        }
+        
+        return $url;
     }
 
 
@@ -827,6 +852,7 @@ function bab_getAuthType()
 
 
 
+
 /**
  * Ensures that the user is logged in.
  * If the user is not logged the "PortalAutentication" functionality
@@ -895,17 +921,8 @@ function bab_doRequireCredential($sLoginMessage, $sAuthType)
         }
 
 
-        if ($oAuthObject->errorMessages)
-        {
-            require_once dirname(__FILE__).'/urlincl.php';
-
-            $url = new bab_url($GLOBALS['babUrlScript']);
-            $url->tg = 'login';
-            $url->cmd = 'denied';
-            $url->errors = $oAuthObject->errorMessages;
-
-            loginRedirect($url->toString());
-
+        if ($oAuthObject->errorMessages) {
+            loginRedirect($oAuthObject->getLoginFormUrl());
         }
 
         // failed authentication without error message
@@ -914,88 +931,70 @@ function bab_doRequireCredential($sLoginMessage, $sAuthType)
     return true;
 }
 
+
+
+function bab_getUserByIdPassword($iIdUser, $sPassword)
+{
+    $user = bab_userInfos::getRow($iIdUser);
+
+    if (!bab_Password::verify($sPassword, $user['password'], $user['password_hash_function'])) {
+        return null;
+    }
+
+    return $user;
+}
+
+
+
 /**
  * get user by email and password
- * return false if more than one user with this email and password
+ * 
  *
  * @param string $email
  * @param string $sPassword
- * @return multitype:|boolean|NULL
+ * @return array|NULL
  */
 function bab_getUserByEmailPassword($email, $sPassword)
 {
     global $babDB;
 
     $sQuery = '
-    SELECT *
+    SELECT id
     FROM ' . BAB_USERS_TBL . '
-    WHERE email = ' . $babDB->quote($email) . '
-    AND password = ' . $babDB->quote(md5(mb_strtolower($sPassword)));
+    WHERE email = ' . $babDB->quote($email) . ' LIMIT 0,10'; // 10 match max are tested
 
     $oResult = $babDB->db_query($sQuery);
     if(false !== $oResult)
     {
-        $iRows = $babDB->db_num_rows($oResult);
-        if($iRows === 1 && false !== ($aDatas = $babDB->db_fetch_array($oResult)))
-        {
-            return $aDatas;
-        }
-
-        if ($iRows > 1)
-        {
-            return false;
+        while ($arr = $babDB->db_fetch_assoc($oResult)) {
+            $user = bab_getUserByIdPassword($arr['id'], $sPassword);
+            if (false !== $user) {
+                return $user;
+            }
         }
     }
     return null;
 }
+
+
 
 
 
 function bab_getUserByLoginPassword($sLogin, $sPassword)
 {
-    global $babDB;
-
-    $sQuery = '
-        SELECT *
-        FROM ' . BAB_USERS_TBL . '
-        WHERE nickname = ' . $babDB->quote($sLogin) . '
-          AND password = ' . $babDB->quote(md5(mb_strtolower($sPassword)));
-
-    $oResult = $babDB->db_query($sQuery);
-    if(false !== $oResult)
-    {
-        $iRows = $babDB->db_num_rows($oResult);
-        if($iRows > 0 && false !== ($aDatas = $babDB->db_fetch_array($oResult)))
-        {
-            return $aDatas;
-        }
+    
+    $user = bab_getUserByNickname($sLogin);
+    
+    if (!bab_Password::verify($sPassword, $user['password'], $user['password_hash_function'])) {
+        return null;
     }
-    return null;
+
+    return $user;
 }
 
 
 
-function bab_getUserByIdPassword($iIdUser, $sPassword)
-{
-    global $babDB;
 
-    $sQuery = '
-        SELECT *
-        FROM ' . BAB_USERS_TBL . '
-        WHERE id = ' . $babDB->quote($iIdUser) . '
-        AND password = ' . $babDB->quote(md5(mb_strtolower($sPassword)));
-
-    $oResult = $babDB->db_query($sQuery);
-    if(false !== $oResult)
-    {
-        $iRows = $babDB->db_num_rows($oResult);
-        if($iRows > 0 && false !== ($aDatas = $babDB->db_fetch_array($oResult)))
-        {
-            return $aDatas;
-        }
-    }
-    return null;
-}
 
 
 /**
@@ -1342,10 +1341,13 @@ function displayForceChangePwdForm($idUser)
 
 
 
-//--------------------------------------------------------------------------
-
+/**
+ * Redirect to url using javascript on option
+ * @param string $url
+ */
 function loginRedirect($url)
 {
+    
     if(isset($GLOBALS['babLoginRedirect']) && $GLOBALS['babLoginRedirect'] == false)
     {
         class loginRedirectCls

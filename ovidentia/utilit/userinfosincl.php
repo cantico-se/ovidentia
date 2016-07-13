@@ -43,24 +43,8 @@ class bab_userInfos {
 
         global $babDB;
         $res = $babDB->db_query('
-            SELECT
-                id,
-                nickname,
-                firstname,
-                lastname,
-                email,
-                disabled,
-                password,
-                changepwd,
-                is_confirmed,
-                date,
-                validity_start,
-                validity_end,
-                confirm_hash,
-                force_pwd_change,
-                pwd_change_date
-            FROM
-                '.BAB_USERS_TBL.'
+            SELECT * FROM 
+                '.BAB_USERS_TBL.' 
             WHERE id='.$babDB->quote($id_user)
         );
 
@@ -106,7 +90,8 @@ class bab_userInfos {
         return array(
             'nickname'		=> $row['nickname'],
             'disabled' 		=> $row['disabled'],
-            'password_md5'	=> $row['password'],
+            'password_md5'	=> $row['password'], // deprecated, password can be a string encoded with password_hash
+            'password'	    => $row['password'],
             'changepwd'		=> $row['changepwd'],
             'is_confirmed'	=> $row['is_confirmed']
         );

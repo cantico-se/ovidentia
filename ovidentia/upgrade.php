@@ -7249,6 +7249,22 @@ function ovidentia_upgrade($version_base,$version_ini) {
             )
         ");
     }
+    
+    
+    /**
+     * Upgrade to 8.4.92
+     */
+    
+    
+    if (!bab_isTableField('bab_sites', 'auth_https')) {
+        $babDB->db_query("ALTER TABLE `bab_sites` ADD `auth_https` tinyint(1) unsigned NOT NULL default '0'");
+    }
+    
+    if (!bab_isTableField('bab_users', 'password_hash_function')) {
+        $babDB->db_query("ALTER TABLE `bab_users` ADD `password_hash_function` varchar(60) NOT NULL default 'md5'");
+    }
+    
+    
 
     return true;
 

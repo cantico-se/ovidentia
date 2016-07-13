@@ -778,6 +778,11 @@ function upload()
 function upload_tmpfile() {
 	global $babBody;
 	include_once $GLOBALS['babInstallPath'].'utilit/uploadincl.php';
+	
+	if (defined('BAB_SYSTEM_ACCESS') && BAB_SYSTEM_ACCESS === false) {
+	    $babBody->addError(bab_translate('System access is not allowed'));
+	    return false;
+	}
 
 	$upload = bab_fileHandler::upload('uploadf');
 
@@ -1544,10 +1549,12 @@ function viewVersion()
 
 	$sImgPath = $GLOBALS['babInstallPath'] . 'skins/ovidentia/images/Puces/';
 
-	$oToolbar->addToolbarItem(
-		new BAB_ToolbarItem( bab_translate('Ovidentia upgrade'), $GLOBALS['babUrlScript'].'?tg=addons&idx=zipupgrade',
-			$sImgPath . 'package_settings.png', '', '', '')
-	);
+	if (!defined('BAB_SYSTEM_ACCESS') || BAB_SYSTEM_ACCESS === true) {
+    	$oToolbar->addToolbarItem(
+    		new BAB_ToolbarItem( bab_translate('Ovidentia upgrade'), $GLOBALS['babUrlScript'].'?tg=addons&idx=zipupgrade',
+    			$sImgPath . 'package_settings.png', '', '', '')
+    	);
+	}
 
 	$babBody->addStyleSheet('toolbar.css');
 	$babBody->babEcho($oToolbar->printTemplate());
@@ -1620,10 +1627,12 @@ function bab_addonUploadToolbar($message, $func = null) {
 
 	$sImgPath = $GLOBALS['babInstallPath'] . 'skins/ovidentia/images/Puces/';
 
-	$oToolbar->addToolbarItem(
-		new BAB_ToolbarItem($message, $GLOBALS['babUrlScript'].'?tg=addons&idx=upload',
-			$sImgPath . 'package_settings.png', '', '', '')
-	);
+	if (!defined('BAB_SYSTEM_ACCESS') || BAB_SYSTEM_ACCESS === true) {
+    	$oToolbar->addToolbarItem(
+    		new BAB_ToolbarItem($message, $GLOBALS['babUrlScript'].'?tg=addons&idx=upload',
+    			$sImgPath . 'package_settings.png', '', '', '')
+    	);
+	}
 
 	if (null !== $func) {
 		$oToolbar->addToolbarItem(

@@ -132,6 +132,28 @@ function database()
 
 
 
+function bab_exportDatabase()
+{
+    include_once $GLOBALS['babInstallPath']."utilit/sqlincl.php";
+    
+    if (defined('BAB_SYSTEM_ACCESS') && BAB_SYSTEM_ACCESS === false) {
+        header($_SERVER["SERVER_PROTOCOL"].' 403 Forbidden');
+	    exit("403 Access Forbidden");
+    }
+    
+    
+    if (count($_POST['tables']) > 0)
+    {
+        $structure = !empty($_POST['structure']) ? 1 : 0;
+        $drop_table = !empty($_POST['drop_table']) ? 1 : 0;
+        $data = !empty($_POST['data']) ? 1 : 0;
+    
+        $bab_sqlExport = new bab_sqlExport($_POST['tables'], $structure, $drop_table, $data);
+        $bab_sqlExport->exportFile();
+    }
+}
+
+
 	
 
 
@@ -152,18 +174,7 @@ if (isset($_POST['action'])) {
 	switch($_POST['action'])
 		{
 		case 'export_database':
-
-			include_once $GLOBALS['babInstallPath']."utilit/sqlincl.php";
-
-			if (count($_POST['tables']) > 0)
-				{
-				$structure = !empty($_POST['structure']) ? 1 : 0;
-				$drop_table = !empty($_POST['drop_table']) ? 1 : 0;
-				$data = !empty($_POST['data']) ? 1 : 0;
-
-				$bab_sqlExport = new bab_sqlExport($_POST['tables'], $structure, $drop_table, $data);
-				$bab_sqlExport->exportFile();
-				}
+		    bab_exportDatabase();
 			break;
 		}
 }
@@ -196,7 +207,10 @@ switch($idx)
 		}
 
 		$babBody->addItemMenu("create", bab_translate("Create"),$GLOBALS['babUrlScript'].'?tg=site&idx=create');
-		$babBody->addItemMenu("database", bab_translate("Database"),$GLOBALS['babUrlScript'].'?tg=sites&idx=database');
+		
+		if (!defined('BAB_SYSTEM_ACCESS') || BAB_SYSTEM_ACCESS === true) {
+		    $babBody->addItemMenu("database", bab_translate("Database"),$GLOBALS['babUrlScript'].'?tg=sites&idx=database');
+		}
 		break;
 }
 

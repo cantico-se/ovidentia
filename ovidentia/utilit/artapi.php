@@ -162,7 +162,7 @@ function bab_getTopicArray($identifier)
     } else if (36 === strlen($identifier)) {
         $query .= "uuid=".$babDB->quote($identifier);
     } else {
-        throw new Exception('Wrong identifier');
+        throw new Exception('Wrong identifier '.$identifier);
     }
     $res = $babDB->db_query($query);
     if( $res && $babDB->db_num_rows($res) > 0)

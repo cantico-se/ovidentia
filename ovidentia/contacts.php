@@ -253,9 +253,9 @@ if( !bab_isUserLogged() || !bab_contactsAccess())
 $idx = bab_rp('idx', 'list');
 $pos = bab_rp('pos', '');
 
-if( 'Yes' == bab_gp('action'))
+if( 'Yes' == bab_rp('action'))
 	{
-	bab_requireDeleteMethod() && confirmDeleteContacts(bab_gp('items'));
+	bab_requireDeleteMethod() && confirmDeleteContacts(bab_rp('items'));
 	}
 
 switch($idx)
