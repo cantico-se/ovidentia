@@ -44,7 +44,7 @@ class bab_functionality {
         return realpath('.').'/'.BAB_FUNCTIONALITY_ROOT_DIRNAME;
     }
 
-    
+
     /**
      * Include php file with the functionality class
      * @param string $pathname
@@ -53,20 +53,20 @@ class bab_functionality {
     private static function includeFileIfExists($path, $filename)
     {
         $pathname = self::getRootPath().'/'.$path.'/'.$filename;
-    
+
         $include_result = false;
         if (file_exists($pathname))  {
             $include_result = include $pathname;
         }
-    
+
         if (false === $include_result) {
             bab_debug(sprintf('The functionality %s is not available', $path), DBG_ERROR, __CLASS__);
         }
-    
+
         return $include_result;
     }
-    
-    
+
+
     /**
      * Include php file with the functionality class
      * @see bab_functionality::get()
@@ -75,10 +75,11 @@ class bab_functionality {
      */
     public static function includefile($path)
     {
+        require_once dirname(__FILE__).'/defines.php';
         return self::includeFileIfExists($path, BAB_FUNCTIONALITY_LINK_FILENAME);
     }
-    
-    
+
+
     /**
      * Include original php file with the functionality class
      *
@@ -91,9 +92,9 @@ class bab_functionality {
     {
         return self::includeFileIfExists($path, BAB_FUNCTIONALITY_LINK_ORIGINAL_FILENAME);
     }
-    
-    
-    
+
+
+
 
 
     /**
