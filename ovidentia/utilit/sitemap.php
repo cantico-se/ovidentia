@@ -189,7 +189,7 @@ class bab_siteMapOrphanRootNode extends bab_OrphanRootNode {
         if (!isset($this->rewriteIndex_id[$id_parent])) {
             return $id_parent;
         }
-        
+
         $parentIndex = $this->rewriteIndex_id[$id_parent];
         if (isset($parentIndex[3]) && $parentIndex[3]) { // ignore
             return $this->getNonIgnoredParent($parentIndex[0]);
@@ -373,7 +373,7 @@ class bab_siteMapOrphanRootNode extends bab_OrphanRootNode {
         if ($sitemapItem->funcname) {
             $node->addIndex('funcname', $sitemapItem->funcname);
         }
-        
+
         if ($sitemapItem->langId) {
             $node->addIndex('lang-'.$sitemapItem->langId[0], $sitemapItem->langId[1]);
         }
@@ -479,15 +479,15 @@ class bab_siteMapOrphanRootNode extends bab_OrphanRootNode {
         return $this->getDynamicNodeById($id);
     }
 
-    
+
     /**
      * Get the node in sitemap from the lang id
-     * 
+     *
      * @see bab_SitemapItem::$langId
-     * 
+     *
      * @param string $language
      * @param string $id
-     * 
+     *
      * @return bab_Node
      */
     public function getNodeByLangId($language, $id)
@@ -497,7 +497,7 @@ class bab_siteMapOrphanRootNode extends bab_OrphanRootNode {
             // node not found
             return null;
         }
-        
+
         if (1 < count($nodes)) {
             $errors = array();
             foreach ($nodes as $n) {
@@ -505,11 +505,11 @@ class bab_siteMapOrphanRootNode extends bab_OrphanRootNode {
             }
             throw new Exception(sprintf('Error, found mutiple nodes with id %s for language %s (%s)', $id, $language, implode(', ', $errors)));
         }
-        
+
         return reset($nodes);
     }
-    
-    
+
+
     /**
      * Get list of nodes indexed by language or null if not exists for a language
      * @return array
@@ -517,16 +517,16 @@ class bab_siteMapOrphanRootNode extends bab_OrphanRootNode {
     public function getLanguageNodes($id)
     {
         $languages = bab_getAvailableLanguages();
-        
+
         $list = array();
         foreach ($languages as $langCode) {
             $list[$langCode] = $this->getNodeByLangId($langCode, $id);
         }
-        
+
         return $list;
     }
-    
-    
+
+
     /**
      * Get all nodes found under $baseNodeId with a target to $targetId
      * @param	string	$baseNodeId
@@ -541,19 +541,19 @@ class bab_siteMapOrphanRootNode extends bab_OrphanRootNode {
         foreach ($customNodes as $customNode)
         {
             /*@var $customNode bab_Node */
-    
+
             // get the first custom node under baseNode
             $testNode = $customNode->parentNode();
             /*@var $testNode bab_Node */
             do {
-    
+
                 if ($baseNodeId === $testNode->getId()) {
                     $nodes[] = $customNode;
                 }
-    
+
             } while ($testNode = $testNode->parentNode());
         }
-    
+
         return $nodes;
     }
 
@@ -588,10 +588,10 @@ class bab_siteMapOrphanRootNode extends bab_OrphanRootNode {
 
         return null;
     }
-    
-    
-    
-    
+
+
+
+
     /**
      * Get filtered node list
      * @param string $baseNodeId
@@ -604,25 +604,25 @@ class bab_siteMapOrphanRootNode extends bab_OrphanRootNode {
         foreach ($customNodes as $customNode)
         {
             /*@var $customNode bab_Node */
-        
+
             // get the first custom node under baseNode
             $testNode = $customNode->parentNode();
             /*@var $testNode bab_Node */
             do {
-        
+
                 if ($baseNodeId === $testNode->getId()) {
                     $return[] = $customNode;
                 }
-        
+
             } while ($testNode = $testNode->parentNode());
         }
-        
+
         return $return;
     }
-    
-    
-    
-    
+
+
+
+
 
 
 
@@ -648,92 +648,92 @@ class bab_siteMapOrphanRootNode extends bab_OrphanRootNode {
      */
     public function getNodesByIdPattern($baseNodeId, $pattern)
     {
-    
+
         $return = new stdClass();
         $return->matches = array();
         $return->nodes = array();
-        
+
         $baseNode = $this->getNodeById($baseNodeId);
-    
+
         $I = new bab_NodeIterator($baseNode);
         while($childNode = $I->nextNode()) {
             /*@var $childNode \bab_Node */
             $m = null;
             if (preg_match($pattern, $childNode->getId(), $m)) {
-    
+
                 $return->nodes[] = $childNode;
-    
+
                 unset($m[0]);
-    
+
                 foreach ($m as $position => $value) {
                     if (!isset($return->matches[$position])) {
                         $return->matches[$position] = array();
                     }
-    
+
                     $return->matches[$position][] = $value;
                 }
             }
         }
-    
+
         return $return;
     }
-    
-    
-    
+
+
+
     /**
      * Get a list of nodes under $baseNodeId witch match target pattern
      * Usefull method to get list of accessibles nodes
-     * 
-     * @example to get list of accessible applications id 
+     *
+     * @example to get list of accessible applications id
      *          $r = $this->getNodesByTargetPattern('Custom', '/appApplication_(\d+)/');
      *          the list of id will be in
      *          $r->matchs[1]
-     *          
-     * 
+     *
+     *
      * return value will contain 2 properties
      * matches: the combined preg_match results
      * nodes: the matching custom nodes
-     * 
+     *
      * @param string $baseNodeId        ex: Custom
      * @param string $pattern           Pattern for preg_match
-     * 
+     *
      * @return stdClass[]
      */
     public function getNodesByTargetPattern($baseNodeId, $pattern)
     {
-        
+
         $targetIndex = $this->getIndex('target');
-        
+
         $return = new stdClass();
         $return->matches = array();
         $return->nodes = array();
-        
+
         foreach ($targetIndex as $targetId => $customNodes) {
 
             $m = null;
             if (preg_match($pattern, $targetId, $m)) {
-                
+
                 $customNodes = $this->filterByBaseNodeId($baseNodeId, $customNodes);
-                
+
                 if (empty($customNodes)) {
                     // no match under baseNodeId, continue to next target
                     continue;
                 }
-                
+
                 $return->nodes = array_merge($return->nodes, $customNodes);
-                
+
                 unset($m[0]);
-                
+
                 foreach ($m as $position => $value) {
                     if (!isset($return->matches[$position])) {
                         $return->matches[$position] = array();
                     }
-                    
+
                     $return->matches[$position][] = $value;
                 }
             }
         }
-        
+
         return $return;
     }
 
@@ -881,7 +881,7 @@ class bab_siteMapItem {
      * @var bool
      */
     public $breadCrumbIgnore = false;
-    
+
     /**
      * Specify if a node should be ignored in a rewrite path
      * @var bool
@@ -981,19 +981,19 @@ class bab_siteMapItem {
      * @var string
      */
     public $setlanguage = null;
-    
-    
+
+
     /**
      * Unique node identifier for one language
      * array(languageCode, nodeId)
-     * The nodeId must be unique for the same language and a list of 
+     * The nodeId must be unique for the same language and a list of
      * translated items should have the same langId with a different language code
-     * 
+     *
      * @var array
      */
     public $langId = null;
-    
-    
+
+
     /**
      * Array of rights
      * keys can be 'create', 'read', 'update', 'delete'
@@ -1025,12 +1025,12 @@ class bab_siteMapItem {
 
         return $this;
     }
-    
-    
 
-    
-    
-    
+
+
+
+
+
     /**
      * Test if a sub-node can be created
      * @return bool
@@ -1043,12 +1043,12 @@ class bab_siteMapItem {
 
         return bab_isAccessValid('bab_sitemap_node_create_groups', $this->id_function);
     }
-    
+
     /**
      * Test if the node is readable
-     * this method should not be used for all nodes, only the nodes with a right form 
+     * this method should not be used for all nodes, only the nodes with a right form
      * in sitemap_editor
-     * 
+     *
      * @return bool
      */
     public function canRead()
@@ -1056,10 +1056,10 @@ class bab_siteMapItem {
         if (isset($this->target)) {
             return $this->target->canRead();
         }
-        
+
         return bab_isAccessValid('bab_sitemap_node_read_groups', $this->id_function);
     }
-    
+
     /**
      * @return bool
      */
@@ -1068,10 +1068,10 @@ class bab_siteMapItem {
         if (isset($this->target)) {
             return $this->target->canUpdate();
         }
-        
+
         return bab_isAccessValid('bab_sitemap_node_update_groups', $this->id_function);
     }
-    
+
     /**
      * @return bool
      */
@@ -1080,67 +1080,67 @@ class bab_siteMapItem {
         if (isset($this->target)) {
             return $this->target->canDelete();
         }
-        
+
         return bab_isAccessValid('bab_sitemap_node_delete_groups', $this->id_function);
     }
-    
-    
-    
-    
-    
+
+
+
+
+
     private function getRightString($table)
     {
         require_once $GLOBALS['babInstallPath'].'admin/acl.php';
         return aclGetRightsString($table, $this->id_function);
     }
-    
+
     private function setRightString($table, $value)
     {
         require_once $GLOBALS['babInstallPath'].'admin/acl.php';
         return aclSetRightsString($table, $this->id_function, $value);
     }
-    
+
     public function getCreate()
     {
         return $this->getRightString('bab_sitemap_node_create_groups');
     }
-    
+
     public function setCreate($value)
     {
         return $this->setRightString('bab_sitemap_node_create_groups', $value);
     }
-    
+
     public function getRead()
     {
         return $this->getRightString('bab_sitemap_node_read_groups');
     }
-    
+
     public function setRead($value)
     {
         return $this->setRightString('bab_sitemap_node_read_groups', $value);
     }
-    
+
     public function getUpdate()
     {
         return $this->getRightString('bab_sitemap_node_update_groups');
     }
-    
+
     public function setUpdate($value)
     {
         return $this->setRightString('bab_sitemap_node_update_groups', $value);
     }
-    
-    
+
+
     public function getDelete()
     {
         return $this->getRightString('bab_sitemap_node_delete_groups');
     }
-    
+
     public function setDelete($value)
     {
         return $this->setRightString('bab_sitemap_node_delete_groups', $value);
     }
-    
+
     /**
      * Get an array with acess rights as boolean
      * @return array
@@ -1154,12 +1154,12 @@ class bab_siteMapItem {
             'delete' => $this->canDelete()
         );
     }
-    
+
     /**
      * Get rights as an array of string suitable for widget acl
      * keys can be 'create', 'read', 'update', 'delete'
      * if there is a target, rights of target is used
-     * 
+     *
      * @return array
      */
     public function getRights()
@@ -1171,7 +1171,7 @@ class bab_siteMapItem {
                 'delete' => $this->getDelete()
         );
     }
-    
+
     /**
      * Set rights strings from an array provided by a form with widget acl
      * @param array $rights
@@ -1181,26 +1181,26 @@ class bab_siteMapItem {
         if (isset($rights['create'])) {
             $this->setCreate($rights['create']);
         }
-    
+
         if (isset($rights['read'])) {
             $this->setRead($rights['read']);
         }
-    
+
         if (isset($rights['update'])) {
             $this->setUpdate($rights['update']);
         }
-    
+
         if (isset($rights['delete'])) {
             $this->setDelete($rights['delete']);
         }
     }
-    
-    
-    
 
-    
-    
-    
+
+
+
+
+
+
 
     /**
      * return rewrite name of node
@@ -1424,9 +1424,9 @@ class bab_siteMapItem {
             if ($sitemapItem->rewriteIgnore && $pos > 1) {
                 continue;
             }
-            
+
             array_unshift($arr, $sitemapItem->getRewriteName());
-            
+
         } while ($node = $node->parentNode());
 
 
@@ -1505,7 +1505,7 @@ class bab_siteMapItem {
         }
 
         $url = $this->getRwUrl();
-        
+
 
         if ($url) {
 
@@ -2036,11 +2036,11 @@ class bab_siteMap {
         $res = $babDB->db_query($query);
 
         if (0 === $babDB->db_num_rows($res)) {
-            
+
             if (!$build) {
                 return null;
             }
-            
+
             // no sitemap for user, build it
 
             self::build($path, $levels);
@@ -2051,12 +2051,12 @@ class bab_siteMap {
         $firstnode = $babDB->db_fetch_assoc($res);
 
         if (null === $firstnode['profile_version']) {
-            
+
             if (!$build) {
                 return null;
             }
-            
-            
+
+
             // the profile version is missing, add version to profile
             // the user have a correct profile and a correct sitemap but the sitemap is incomplete
             // additional nodes need to be created in sitemap without deleting the profile
