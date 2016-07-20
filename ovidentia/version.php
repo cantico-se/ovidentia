@@ -161,7 +161,8 @@ function bab_getInstallAddonsButton()
     <input type="hidden" name="idx" value="upgradeaddons" />
     <input type="hidden" name="iframe" value="1" />
     <input type="submit" value="'.bab_translate("Install or update the addons provided in this package (optional)").'" />
-    </form>';
+    </form>
+    <p><a href="?">'.bab_translate('Continue to home page').'</a></p>';
 }
 
 /**

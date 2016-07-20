@@ -376,11 +376,16 @@ function bab_upgrade($core_dir, &$ret, $forceUpgrade = true)
 	if (true === ovidentia_upgrade($ver_from, $ini->getVersion())) {
 	    
 	    // upgrade for all active addons 
-	    foreach(bab_addonsInfos::getDbAddonsByName() as $addon) {
+	    // DISABLED: after install of addons are moved to the second request
+	    // do not create addons upgrade bug in ovidentia upgrade
+	    /*
+	    foreach (bab_addonsInfos::getDbAddonsByName() as $addon) {
 	        if ($addon->isInstalled() && !$addon->isDisabled()) {
 	            $addon->upgrade();
 	        }
 	    }
+	    */
+	    
 
 		// the core has been upgraded correctly
 		// update addons if necessary using the install/addons.ini file
