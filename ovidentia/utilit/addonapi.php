@@ -589,11 +589,7 @@ class bab_charset
         return self::$sCharset;
     }
 
-    private static function resetCharset()
-    {
-        self::$sCharset = null;
-        bab_charset::getDatabase();
-    }
+
 
 
     /**
@@ -630,15 +626,7 @@ class bab_charset
                 return '';
         }
     }
-    
-    /**
-     * @param string $charset
-     */
-    public static function setDbCharset($charset)
-    {
-        self::$sCharset = $charset;
-        self::$sIsoCharset = self::getIsoCharsetFromDataBaseCharset($charset);
-    }
+
 }
 
 
