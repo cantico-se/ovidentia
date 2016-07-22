@@ -584,19 +584,7 @@ class bab_charset
         if(!isset(self::$sCharset))
         {
             global $babDB;
-            $oResult = $babDB->db_query("SHOW VARIABLES LIKE 'character_set_database'");
-            if(false === $oResult)
-            {
-                self::$sCharset = 'latin1';
-            }
-
-            $aDbCharset = $babDB->db_fetch_assoc($oResult);
-            if(false === $aDbCharset)
-            {
-                self::$sCharset = 'latin1';
-            }
-
-            self::$sCharset = $aDbCharset['Value'];
+            self::$sCharset = $babDB->db_character_set_name();
         }
         return self::$sCharset;
     }
