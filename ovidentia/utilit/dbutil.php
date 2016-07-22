@@ -130,12 +130,14 @@ class babDatabase
                 $aDbCharset = $this->db_fetch_assoc($oResult);
                 if(false !== $aDbCharset && 'utf8' == $aDbCharset['Value'])
                 {
-                    $this->db_query("SET NAMES utf8");
+                    //$this->db_query("SET NAMES utf8");
+                    mysqli_set_charset($this->db_connect(), 'utf8');
                     return;
                 }
             }
 
-            $this->db_query("SET NAMES latin1");
+            //$this->db_query("SET NAMES latin1");
+            mysqli_set_charset($this->db_connect(), 'latin1');
         }
 
     public function db_create_db($dbname)
