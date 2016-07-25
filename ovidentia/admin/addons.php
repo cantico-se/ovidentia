@@ -1650,13 +1650,13 @@ function bab_addonUploadToolbar($message, $func = null) {
 
 
 
-function display_addons_menu() {
-	global $babBody;
+function display_addons_menu($currentMenu) {
+	$babBody = bab_getBody();
+	// create menu based on sitemap
+	$babBody->addMenu('babAdminInstall');
+	$babBody->setCurrentItemMenu($currentMenu);
 
-	$babBody->addItemMenu("version", bab_translate('Version'), $GLOBALS['babUrlScript']."?tg=addons&idx=version");
-	$babBody->addItemMenu("list", bab_translate('Add-ons'), $GLOBALS['babUrlScript']."?tg=addons&idx=list");
-	$babBody->addItemMenu("theme", bab_translate('Skins'), $GLOBALS['babUrlScript']."?tg=addons&idx=theme");
-	$babBody->addItemMenu("library", bab_translate('Shared Libraries'), $GLOBALS['babUrlScript']."?tg=addons&idx=library");
+	bab_siteMap::setPosition($currentMenu);
 }
 
 
@@ -1727,7 +1727,7 @@ if (isset($_POST['action']) && bab_requireSaveMethod()) {
 switch($idx)
 	{
 	case 'version':
-		display_addons_menu();
+		display_addons_menu('babAdminInstallVersion');
 		$babBody->title = bab_translate("Ovidentia informations");
 		viewVersion();
 		break;
@@ -1822,7 +1822,7 @@ switch($idx)
 
 	case 'library':
 		$babBody->title = bab_translate('Shared Libraries');
-		display_addons_menu();
+		display_addons_menu('babAdminInstallLibraries');
 		bab_addonUploadToolbar(bab_translate('Upload a new library'), true);
 		libraryList();
 
@@ -1832,7 +1832,7 @@ switch($idx)
 
 	case 'theme':
 		$babBody->title = bab_translate('Skins');
-		display_addons_menu();
+		display_addons_menu('babAdminInstallThemes');
 		bab_addonUploadToolbar(bab_translate('Upload a new skin'));
 
 		themeList();
@@ -1848,7 +1848,7 @@ switch($idx)
 	default:
 		$babBody->setTitle(bab_translate("Add-ons list"));
 
-		display_addons_menu();
+		display_addons_menu('babAdminInstallAddons');
 		bab_addonUploadToolbar(bab_translate('Upload a new add-on'));
 
 		addonsList();
