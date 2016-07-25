@@ -20,13 +20,13 @@
 		"ovidentia/editlink" : ">=0.8",
 		"ovidentia/rssfeed" : ">=5.8.3",
 		"ovidentia/captcha" : ">=0.8",
-		"ovidentia/absences" : ">=2.58",
 		"ovidentia/theme_ovidentia_sw" : ">=0.3.5",
 		"ovidentia/approbnotify" : ">=0.3",
 		"ovidentia/applications" : ">=4.4",
 		"ovidentia/portlets" : ">=0.16",
 		"ovidentia/ovmlportlets" : ">=1.6",
-		"ovidentia/sitemap_editor" : ">=0.6.4",
-		"ovidentia/orgchart" : ">=0.11.1"
+		"ovidentia/sitemap_editor" : ">=0.7.9",
+		"ovidentia/orgchart" : ">=0.11.1",
+		"ovidentia/approbation_schema" : ">=0.2.2"
 	}
 }
