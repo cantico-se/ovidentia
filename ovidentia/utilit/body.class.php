@@ -522,6 +522,12 @@ class babBody
         }
     }
 
+    /**
+     * Add a contextual item menu
+     * @param string $title     Menu name to use in setCurrentItemMenu method, ex: $idx
+     * @param string $txt       Displayed text
+     * @param string $url
+     */
     public function addItemMenu($title, $txt, $url, $enabled = true)
     {
         $this->menu->addItem($title, $txt, $url, $enabled);
@@ -536,6 +542,32 @@ class babBody
     {
         $this->menu->setCurrent($title, $enabled);
     }
+    
+    /**
+     * Add multiple contextual menu items based on a sitemap node
+     * if a custom sitemap exists it will be used for rewriting
+     * 
+     * @since 8.4.93
+     * 
+     * @param string $nodeId node id from the core sitemap 
+     */
+    public function addMenu($nodeId)
+    {
+        $sitemap = bab_sitemap::getFromSite();
+        $node = $sitemap->getNodeById('babAdminInstall');
+        
+        if ($node->hasChildNodes()) {
+            $node = $node->firstChild();
+            do {
+                $sitemapItem = $node->getData();
+                if (!$sitemapItem->menuIgnore) {
+                    $this->addItemMenu($sitemapItem->id_function, $sitemapItem->name, $sitemapItem->url);
+                }
+            } while ($node = $node->nextSibling());
+        }
+    }
+    
+    
 
     /**
      * Add a stylesheet to the page
