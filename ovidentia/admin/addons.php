@@ -1650,13 +1650,15 @@ function bab_addonUploadToolbar($message, $func = null) {
 
 
 
-function display_addons_menu($currentMenu) {
+function display_addons_menu($currentMenu = null) {
 	$babBody = bab_getBody();
 	// create menu based on sitemap
 	$babBody->addMenu('babAdminInstall');
-	$babBody->setCurrentItemMenu($currentMenu);
-
-	bab_siteMap::setPosition($currentMenu);
+	
+	if (isset($currentMenu)) {
+	   $babBody->setCurrentItemMenu($currentMenu);
+	   bab_siteMap::setPosition($currentMenu);
+	}
 }
 
 
