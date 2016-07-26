@@ -59,7 +59,8 @@ function emailPassword()
         }
 
     $temp = new temp();
-    $babBody->babecho(	bab_printTemplate($temp,"login.html", "emailpassword"));
+    $html = bab_printTemplate($temp,"login.html", "emailpassword");
+    bab_displayLoginPage($html, 'emailpwd.html');
     }
 
 
@@ -270,6 +271,7 @@ switch($cmd)
             $babBody->addItemMenu("register", bab_translate("Register"), $GLOBALS['babUrlScript']."?tg=login&cmd=register");
         if (bab_isEmailPassword() )  {
             $babBody->addItemMenu("emailpwd", bab_translate("Lost Password"), $GLOBALS['babUrlScript']."?tg=login&cmd=emailpwd");
+            $babBody->setCurrentItemMenu("emailpwd");
             emailPassword();
         } else {
             $babBody->msgerror = bab_translate("Access denied");

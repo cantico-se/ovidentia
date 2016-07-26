@@ -24,6 +24,7 @@
 include_once $GLOBALS['babInstallPath'].'admin/register.php';
 require_once dirname(__FILE__).'/userinfosincl.php';
 require_once dirname(__FILE__).'/password.class.php';
+require_once dirname(__FILE__).'/settings.class.php';
 
 require_once $GLOBALS['babInstallPath'].'utilit/functionalityincl.php';
 
@@ -212,7 +213,6 @@ class Func_PortalAuthentication extends bab_functionality
      */
     public function authenticateUser($sLogin, $sPassword)
     {
-        require_once dirname(__FILE__).'/settings.class.php';
 
         $settings = bab_getInstance('bab_Settings');
         /*@var $settings bab_Settings */
@@ -380,8 +380,6 @@ class Func_PortalAuthentication_AuthOvidentia extends Func_PortalAuthentication
      */
     public function getLoginFormUrl()
     {
-        require_once dirname(__FILE__).'/settings.class.php';
-        
         $url = $GLOBALS['babUrlScript'] . '?tg=login&cmd=authform&msg=' . urlencode($this->loginMessage) . '&err=' . urlencode(implode("\n", $this->errorMessages));
         
         $settings = bab_getInstance('bab_Settings');
@@ -1195,13 +1193,38 @@ class displayLogin_Template
 }
 
 
+
+/**
+ * Display a html form for in the login context
+ * 
+ * @param string $htmlform      Authentication form, registration form, lost password form
+ * @param string $ovmlTemplate  File name of an optional ovml file
+ */
+function bab_displayLoginPage($htmlform, $ovmlTemplate)
+{
+    $settings = bab_getInstance('bab_Settings');
+    $site = $settings->getSiteSettings();
+    
+    $babBody = bab_getBody();
+    $method = $site['auth_fullscreen'] ? 'babpopup' : 'babecho';
+    
+    try {
+        $babBody->$method(bab_getHtmlFromOvml($ovmlTemplate, array('Form' => $htmlform)));
+    } catch (Exception $e) {
+        $babBody->$method($htmlform);
+    }
+}
+
+
+
+
 /**
  * @param string	$title				The title displayed for the login form.
  * @param string	$errorMessages		A string of "\n" separated error messages.
  */
 function displayAuthenticationForm($title, $errorMessages)
 {
-    require_once dirname(__FILE__).'/settings.class.php';
+    
     
     $settings = bab_getInstance('bab_Settings');
     $site = $settings->getSiteSettings();
@@ -1238,13 +1261,7 @@ function displayAuthenticationForm($title, $errorMessages)
     $temp = new displayLogin_Template($referer);
     $html =	bab_printTemplate($temp, 'login.html', 'login');
     
-    $method = $site['auth_fullscreen'] ? 'babpopup' : 'babecho';
-    
-    try {
-        $babBody->$method(bab_getHtmlFromOvml('authenticate.html', array('Form' => $html)));
-    } catch (Exception $e) {
-        $babBody->$method($html);
-    }
+    bab_displayLoginPage($html, 'signon.html');
 }
 
 /**
@@ -1685,8 +1702,6 @@ function bab_getLdapExtraFieldIdAndUpdateAttributes(&$aAttributes, &$aUpdateAttr
 
 function bab_logUserConnectionToStat($iIdUser)
 {
-    require_once dirname(__FILE__).'/settings.class.php';
-
     $settings = bab_getInstance('bab_Settings');
     /*@var $settings bab_Settings */
 
