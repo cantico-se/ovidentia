@@ -70,45 +70,37 @@
 </head>
 <body class="babbodypopup BabContentBackground <!--#if tg -->{ tg }<!--#endif tg -->">
 	<!--#if menuitems -->
-	<table class="BabSiteAdminFontBackground" width="100%" border="0" cellspacing="0" cellpadding="0" align="center">
-	<tr> 
-	<td align="center" valign="middle"> 
-		<table width="100%" cellspacing="0" cellpadding="0" align="center" border="0">
+
+	<div class="contextmenu">
+		<table class="BabSiteAdminFontBackground" cellspacing="0" cellpadding="5" border="0">
 			<tr> 
 			<!--#in getNextMenu -->
 			<!--#if enabled "== 0" -->
-			<td align="center" width="20%" class="BabMenuActiveBackground"> 
+			<td align="center" class="BabMenuActiveBackground"> 
 			&nbsp;&nbsp;{ menutext }&nbsp;&nbsp;</td>
 			<!--#else enabled -->
-			<td width="20%" align="center" class="BabLoginMenuBackground">
+			<td  align="center" class="BabLoginMenuBackground">
 			&nbsp;&nbsp;<a class="BabMenuLink" href="{ menuurl }" { menuattribute }>{ menutext }</a>&nbsp;&nbsp;</td>
 			<!--#endif enabled -->
 			<!--#endin getNextMenu -->
 			<td>&nbsp;</td>
 			</tr>
 		</table>
-	</td>
-	</tr>
-	</table>
+    </div>
+    
 	<!--#endif menuitems -->
+	
+	
 	<div class="BabContentBackground"> 
-		<!--#if msgerror -->
-		<br />
-		<table border="0" width="100%" cellpadding="1" cellspacing="0" align="center">
-			<tr>
-			<td class="BabErrorMessage" align="center">{ msgerror }</td>
-			</tr>
-		</table>
-		<!--#endif msgerror -->
 		
 		<!--#if title -->
-		<br />
-		<table border="0" width="100%" cellpadding="1" cellspacing="0" align="center">
-			<tr>
-			<td class="BabLoginMenuBackground" align="center">{ title }</td>
-			</tr>
-		</table>
+		<h1 class="pagetitle">{ title }</h1>
 		<!--#endif title -->
+		
+		<!--#if msgerror -->
+        <h2 class="BabErrorMessage">{ msgerror }</h2> 
+        <!--#endif msgerror -->
+
 		{ content }
 	</div>
 </body>

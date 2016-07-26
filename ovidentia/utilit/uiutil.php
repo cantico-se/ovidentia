@@ -190,7 +190,7 @@ function printBabBodyPopup()
 						{
 						$this->menuattribute = "";
 						}
-					$this->menuurl = $this->menuvals[$i]["url"];
+					$this->menuurl = bab_toHtml($this->menuvals[$i]["url"]);
 					}
 				$i++;
 				return true;
