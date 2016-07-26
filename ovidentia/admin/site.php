@@ -1026,6 +1026,7 @@ function siteAuthentification($id)
                 $this->vdecodetype = $arr['ldap_decoding_type'];
                 $this->auth_multi_session = $arr['auth_multi_session'];
                 $this->auth_https = $arr['auth_https'];
+                $this->auth_fullscreen = $arr['auth_fullscreen'];
                 $this->remember_login = $arr['remember_login'];
                 $this->email_password = $arr['email_password'];
                 $this->ask_nickname = $arr['ask_nickname'];
@@ -1060,6 +1061,7 @@ function siteAuthentification($id)
                 $this->groups_remove = bab_translate('Remove user from other groups');
                 $this->groups_help = bab_translate('The group field can be a simple string field or a link to group ldap entry. External groups will be used by ovidentia only if they match the configured search base');
 
+                $this->t_auth_fullscreen = bab_translate("Fullscreen authentication");
                 $this->t_auth_https = bab_translate("Switch to https");
                 $this->t_auth_multi_session = bab_translate("Allow multiple connexions for all accounts");
 
@@ -2413,6 +2415,7 @@ function siteUpdate_authentification($id, $authtype, $host, $hostname, $ldpapchk
     $ldpapchknotif = bab_pp('ldpapchknotif', 'N');
     $auth_multi_session = (int) bab_pp('auth_multi_session', 0);
     $auth_https = (int) bab_pp('auth_https', 0);
+    $auth_fullscreen = (int) bab_pp('auth_fullscreen', 0);
     $remember_login = bab_pp('remember_login', 'N');
     $email_password = bab_pp('email_password', 'N');
     $ask_nickname = (int) bab_pp('ask_nickname', 0);
@@ -2492,6 +2495,7 @@ function siteUpdate_authentification($id, $authtype, $host, $hostname, $ldpapchk
             remember_login=".$babDB->quote($remember_login).",
             auth_multi_session=".$babDB->quote($auth_multi_session).",
             auth_https=".$babDB->quote($auth_https).",
+            auth_fullscreen=".$babDB->quote($auth_fullscreen).",
             authentification='".$babDB->db_escape_string($authtype)."',
             ldap_host='".$babDB->db_escape_string($host)."',
             ldap_domainname='".$babDB->db_escape_string($hostname)."',
@@ -2553,7 +2557,8 @@ function siteUpdate_authentification($id, $authtype, $host, $hostname, $ldpapchk
             remember_login=".$babDB->quote($remember_login).",
             authentification='".$babDB->db_escape_string($authtype)."',
             auth_multi_session=".$babDB->quote($auth_multi_session).",
-            auth_https=".$babDB->quote($auth_https)." 
+            auth_https=".$babDB->quote($auth_https).", 
+            auth_fullscreen=".$babDB->quote($auth_fullscreen)." 
             where id='".$babDB->db_escape_string($id)."'
         ");
     }

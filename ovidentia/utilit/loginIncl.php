@@ -1201,14 +1201,12 @@ class displayLogin_Template
  */
 function displayAuthenticationForm($title, $errorMessages)
 {
-    global $babBody;
-
-    /*
-    if(!empty($_SERVER['HTTP_HOST']) && !isset($_GET['redirected']) && mb_substr_count($GLOBALS['babUrl'], $_SERVER['HTTP_HOST']) == 0 && !$GLOBALS['BAB_SESS_LOGGED'])
-    {
-        header('location:'.$GLOBALS['babUrlScript'].'?tg=login&cmd=signon&redirected=1');
-    }
-    */
+    require_once dirname(__FILE__).'/settings.class.php';
+    
+    $settings = bab_getInstance('bab_Settings');
+    $site = $settings->getSiteSettings();
+    
+    $babBody = bab_getBody();
 
     $babBody->setTitle($title);
     $errors = explode("\n", $errorMessages);
@@ -1216,8 +1214,10 @@ function displayAuthenticationForm($title, $errorMessages)
         $babBody->addError($errorMessage);
     }
     $babBody->addItemMenu('signon', bab_translate("Login"), $GLOBALS['babUrlScript'].'?tg=login&cmd=signon');
-//	bab_debug($babBody->babsite);
-    if($babBody->babsite['registration'] == 'Y') {
+    
+    $babBody->setCurrentItemMenu('signon');
+
+    if($site['registration'] == 'Y') {
         $babBody->addItemMenu('register', bab_translate("Register"), $GLOBALS['babUrlScript'].'?tg=login&cmd=register');
     }
 
@@ -1236,7 +1236,15 @@ function displayAuthenticationForm($title, $errorMessages)
     }
 
     $temp = new displayLogin_Template($referer);
-    $babBody->babecho(	bab_printTemplate($temp, 'login.html', 'login'));
+    $html =	bab_printTemplate($temp, 'login.html', 'login');
+    
+    $method = $site['auth_fullscreen'] ? 'babpopup' : 'babecho';
+    
+    try {
+        $babBody->$method(bab_getHtmlFromOvml('authenticate.html', array('Form' => $html)));
+    } catch (Exception $e) {
+        $babBody->$method($html);
+    }
 }
 
 /**

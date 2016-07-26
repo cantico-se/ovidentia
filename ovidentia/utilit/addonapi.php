@@ -3133,31 +3133,30 @@ function bab_printCachedOvmlTemplate($file, $args = array())
 }
 
 
-
 /**
  * Convert ovml to html
+ * @throws Exception
  * @param	string	$file
  * @param	array	$args
  * @return	string	html
  */
-function bab_printOvmlTemplate($file, $args=array())
+function bab_getHtmlFromOvml($file, $args)
 {
     global $babSkinPath, $babOvmlPath;
-
+    
     /* Skin local path */
     $filepath = $babOvmlPath.$file; /* Ex. : skins/ovidentia_sw/ovml/test.ovml */
-
+    
     if ($file == '') {
-        bab_debug(bab_translate("Error: The name of the OVML file is not specified"));
-        return '<!-- '.bab_translate("Error: The name of the OVML file is not specified").' : '.bab_toHtml($filepath).' -->';
+        throw new Exception(bab_translate("Error: The name of the OVML file is not specified"));
     }
-
+    
     if ((false !== mb_strpos($file, '..')) || mb_strtolower(mb_substr($file, 0, 4)) == 'http') {
-
-        return '<!-- ERROR filename: '.bab_toHtml($file).' -->';
+    
+        throw new Exception('ERROR filename: '.$file);
     }
-
-
+    
+    
     if ('addons/' === mb_substr($file, 0, 7)) {
         list(, $addonName) = explode('/', $file);
         $addonRealivePath = mb_substr($file, 8+mb_strlen($addonName));
@@ -3165,23 +3164,40 @@ function bab_printOvmlTemplate($file, $args=array())
             $filepath = "vendor/ovidentia/$addonName/skins/ovidentia/ovml/$addonRealivePath";
         }
     }
-
-
+    
+    
     if (!file_exists($filepath)) {
         $filepath = $babSkinPath.'ovml/'.$file; /* Ex. : ovidentiainstall/skins/ovidentia/ovml/test.ovml */
-
+    
         if (!file_exists($filepath)) {
-            bab_debug(bab_translate("Error: OVML file does not exist").' : '.bab_toHtml($file));
-            return '<!-- '.bab_translate("Error: OVML file does not exist").' : '.bab_toHtml($file).' -->';
+            throw new Exception(bab_translate("Error: OVML file does not exist").' : '.$file);
         }
     }
-
+    
     $GLOBALS['babWebStat']->addOvmlFile($filepath);
-
+    
     include_once $GLOBALS['babInstallPath'].'utilit/omlincl.php';
     $tpl = new babOvTemplate($args);
     $template = $tpl->printout(file_get_contents($filepath), $filepath);
     return $template;
+}
+
+
+/**
+ * Convert ovml to html
+ * @param	string	$file
+ * @param	array	$args
+ * @return	string	html
+ */
+function bab_printOvmlTemplate($file, $args = array())
+{
+    try {
+        return bab_getHtmlFromOvml($file, $args);
+
+    } catch (Exception $e) {
+        bab_debug($e->getMessage());
+        return '<!-- '.bab_toHtml($e->getMessage()).' -->';
+    }
 }
 
 

@@ -1031,6 +1031,7 @@ CREATE TABLE `bab_sites` (
   `mass_mailing` enum('Y','N') NOT NULL default 'N',
   `sitemap` varchar(255) NOT NULL default 'core',
   `auth_multi_session` tinyint(1) unsigned NOT NULL default '0',
+  `auth_fullscreen` tinyint(1) unsigned NOT NULL default '0',
   `quota_total` int(11) unsigned NOT NULL default '0',
   `quota_folder` int(11) unsigned NOT NULL default '0',
   `staticurl` varchar(255) NOT NULL default '',
