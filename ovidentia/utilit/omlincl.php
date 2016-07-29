@@ -257,6 +257,8 @@ class Func_Ovml_Function extends Func_Ovml
 class Func_Ovml_Container_IfIsSet extends Func_Ovml_Container
 {
     var $count;
+    
+    public $attributesInVariables = false;
 
     public function setOvmlContext(babOvTemplate $ctx)
     {
@@ -290,6 +292,8 @@ class Func_Ovml_Container_IfIsSet extends Func_Ovml_Container
 class Func_Ovml_Container_IfNotIsSet extends Func_Ovml_Container
 {
     var $count;
+    
+    public $attributesInVariables = false;
 
     public function setOvmlContext(babOvTemplate $ctx)
     {
@@ -325,6 +329,8 @@ class bab_Ovml_Container_Operator extends Func_Ovml_Container
     var $count;
 
     protected $operator = null;
+    
+    public $attributesInVariables = false;
 
     public function setOvmlContext(babOvTemplate $ctx)
     {
@@ -500,6 +506,8 @@ class Func_Ovml_Container_ObjectsInfo extends Func_Ovml_Container
     var $ovmlfields = array();
     var $index;
     var $count;
+    
+    public $attributesInVariables = false;
 
     public function setOvmlContext(babOvTemplate $ctx)
     {
@@ -619,6 +627,7 @@ class Func_Ovml_Container_ArticlesHomePages extends Func_Ovml_Container
 
     var $imageheightmax;
     var $imagewidthmax;
+    
 
     public function setOvmlContext(babOvTemplate $ctx)
     {
