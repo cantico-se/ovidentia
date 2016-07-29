@@ -67,6 +67,9 @@ class Func_Ovml_Container extends Func_Ovml
     /**
      * Set this variable to false for a container witch use getAttribute method on the current context
      * To prevent names conflicts between attributes and variables
+     * 
+     * When this variable is set to TRUE, attributes of a container may overwrite variables from a parent container
+     * 
      * @var bool
      */
     public $attributesInVariables = true;
@@ -6975,7 +6978,24 @@ class babOvTemplate
 
         foreach ($args as $key => $val) {
             $this->curctx->addAttribute($key, $val);
+            
+            
             if ($cls->attributesInVariables) {
+                
+                $currentValue = $this->get_value($key);
+                if ($currentValue && $currentValue !== $val) {
+                    bab_debug(
+                        sprintf(
+                            'The attribute %s from container %s will overwrite a previously defined variable in %s',
+                            $key,
+                            BAB_TAG_CONTAINER.$handler,
+                            $this->debug_location
+                        ),
+                        DBG_WARNING,
+                        'ovml'
+                    );
+                }
+                
                 $this->curctx->push($key, $val);
             }
         }
@@ -7063,7 +7083,7 @@ class babOvTemplate
 
         if( $saveas )
         {
-            // allways apply saveas as the last attribute
+            // always apply saveas as the last attribute
             $val = $attributes->saveas($val, $saveas);
         }
 
