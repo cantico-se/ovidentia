@@ -627,37 +627,3 @@ function bab_getAddonFilePathFromTg($tg, $babWebStat = null)
     return $addon->getPhpPath().$module.'.php';
 
 }
-
-/**
- * Path corespondance for addon location in vendor
- * @see bab_AddonInCoreLocation
- *
- * @return array
- */
-function bab_getVendorFilePath() {
-
-
-    return array(
-
-        'loc_in' => array(
-            'vendor/ovidentia',
-            'vendor/ovidentia',
-            'vendor/ovidentia',
-            'vendor/ovidentia',
-            'vendor/ovidentia',
-            'vendor/ovidentia',
-            'vendor/ovidentia'
-        ),
-
-        'loc_out' => array(
-            "programs",
-            "langfiles",
-            "styles",
-            "skins/ovidentia/templates",
-            "skins/ovidentia/ovml",
-            "skins/ovidentia/images",
-            'theme'
-        )
-    );
-
-}
