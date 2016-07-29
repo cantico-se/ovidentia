@@ -63,6 +63,17 @@ class Func_Ovml_Container extends Func_Ovml
 {
     public $ctx;
     public $idx;
+    
+    /**
+     * Set this variable to false for a container witch use getAttribute method on the current context
+     * To prevent names conflicts between attributes and variables
+     * 
+     * When this variable is set to TRUE, attributes of a container may overwrite variables from a parent container
+     * 
+     * @var bool
+     */
+    public $attributesInVariables = true;
+    
 
     public function setOvmlContext(babOvTemplate $ctx)
     {
@@ -246,12 +257,14 @@ class Func_Ovml_Function extends Func_Ovml
 class Func_Ovml_Container_IfIsSet extends Func_Ovml_Container
 {
     var $count;
+    
+    public $attributesInVariables = false;
 
     public function setOvmlContext(babOvTemplate $ctx)
     {
         $this->count = 0;
         parent::setOvmlContext($ctx);
-        $name = $ctx->get_value('name');
+        $name = $ctx->curctx->getAttribute('name');
         if( $name !== false && !empty($name))
             {
             if( $ctx->get_value($name) !== false )
@@ -279,12 +292,14 @@ class Func_Ovml_Container_IfIsSet extends Func_Ovml_Container
 class Func_Ovml_Container_IfNotIsSet extends Func_Ovml_Container
 {
     var $count;
+    
+    public $attributesInVariables = false;
 
     public function setOvmlContext(babOvTemplate $ctx)
     {
         $this->count = 0;
         parent::setOvmlContext($ctx);
-        $name = $ctx->get_value('name');
+        $name = $ctx->curctx->getAttribute('name');
         if( $name !== false && !empty($name))
             {
             if( $ctx->get_value($name) === false )
@@ -314,13 +329,15 @@ class bab_Ovml_Container_Operator extends Func_Ovml_Container
     var $count;
 
     protected $operator = null;
+    
+    public $attributesInVariables = false;
 
     public function setOvmlContext(babOvTemplate $ctx)
     {
         $this->count = 0;
         parent::setOvmlContext($ctx);
-        $expr1 = $ctx->get_value('expr1');
-        $expr2 = $ctx->get_value('expr2');
+        $expr1 = $ctx->curctx->getAttribute('expr1');
+        $expr2 = $ctx->curctx->getAttribute('expr2');
         if( $expr1 !== false && $expr2 !== false)
         {
             switch($this->operator)
@@ -422,9 +439,8 @@ class Func_Ovml_Container_Addon extends Func_Ovml_Container
 
     public function setOvmlContext(babOvTemplate $ctx)
     {
-        global $babBody, $babDB;
         parent::setOvmlContext($ctx);
-        $name = $ctx->get_value('name');
+        $name = $ctx->curctx->getAttribute('name');
         $addon = bab_getAddonInfosInstance($name);
 
         if($addon && $addon->isAccessValid())
@@ -443,10 +459,8 @@ class Func_Ovml_Container_Addon extends Func_Ovml_Container
                 require_once( $addon->getPhpPath()."ovml.php" );
 
                 $call = $addon->getName()."_ovml";
-                if( !empty($call)  && function_exists($call) )
-                    {
-                    $args = $ctx->get_variables('Addon');
-                    $this->IdEntries = $call($args);
+                if( !empty($call)  && function_exists($call) ) {
+                    $this->IdEntries = $call($ctx->curctx->attributes);
                     }
                 }
             }
@@ -456,7 +470,6 @@ class Func_Ovml_Container_Addon extends Func_Ovml_Container
 
     public function getnext()
     {
-        global $babDB;
         if( $this->idx < $this->count)
         {
             $this->ctx->curctx->push('CIndex', $this->idx);
@@ -493,20 +506,22 @@ class Func_Ovml_Container_ObjectsInfo extends Func_Ovml_Container
     var $ovmlfields = array();
     var $index;
     var $count;
+    
+    public $attributesInVariables = false;
 
     public function setOvmlContext(babOvTemplate $ctx)
     {
-        global $babBody, $babDB;
+        global $babDB;
         parent::setOvmlContext($ctx);
         $this->count = 0;
-        $type = $ctx->get_value('type');
+        $type = $ctx->curctx->getAttribute('type');
         if( $type !== false && $type !== '' )
         {
             $type = mb_strtolower(trim($type));
             switch( $type )
             {
                 case 'folder':
-                    $folder = $ctx->get_value('folder');
+                    $folder = $ctx->curctx->getAttribute('folder');
                     if( $folder !== false && $folder !== '' )
                     {
                     $this->fields = array('id', 'folder');
@@ -515,10 +530,10 @@ class Func_Ovml_Container_ObjectsInfo extends Func_Ovml_Container
                     $this->count = $babDB->db_num_rows($this->res);
                     }
                 case 'articlecategories':
-                    $category = $ctx->get_value('category');
+                    $category = $ctx->curctx->getAttribute('category');
                     if( $category !== false && $category !== '' )
                     {
-                        $parent = $ctx->get_value('parent');
+                        $parent = $ctx->curctx->getAttribute('parent');
                         $parents = array();
                         if( $parent !== false && $parent !== '' )
                         {
@@ -539,10 +554,10 @@ class Func_Ovml_Container_ObjectsInfo extends Func_Ovml_Container
                     }
                     break;
                 case 'articletopics':
-                    $topic = $ctx->get_value('topic');
+                    $topic = $ctx->curctx->getAttribute('topic');
                     if( $topic !== false && $topic !== '' )
                     {
-                        $parent = $ctx->get_value('parent');
+                        $parent = $ctx->curctx->getAttribute('parent');
                         $parents = array();
                         if( $parent !== false && $parent !== '' )
                         {
@@ -563,7 +578,7 @@ class Func_Ovml_Container_ObjectsInfo extends Func_Ovml_Container
                     }
                     break;
                 case 'user':
-                    $nickname = $ctx->get_value('nickname');
+                    $nickname = $ctx->curctx->getAttribute('nickname');
                     if( $nickname !== false && $nickname !== '' )
                     {
                     $this->fields = array('id', 'nickname', 'firstname', 'lastname', 'mn');
@@ -581,7 +596,7 @@ class Func_Ovml_Container_ObjectsInfo extends Func_Ovml_Container
 
     public function getnext()
     {
-        global $babBody,$babDB;
+        global $babDB;
         if( $this->idx < $this->count)
         {
             $arr = $babDB->db_fetch_array($this->res);
@@ -612,6 +627,7 @@ class Func_Ovml_Container_ArticlesHomePages extends Func_Ovml_Container
 
     var $imageheightmax;
     var $imagewidthmax;
+    
 
     public function setOvmlContext(babOvTemplate $ctx)
     {
@@ -624,13 +640,13 @@ class Func_Ovml_Container_ArticlesHomePages extends Func_Ovml_Container
         /*@var $settings bab_Settings */
         $site = $settings->getSiteSettings();
         
-        $this->idgroup = $ctx->get_value('type');
-        $order = $ctx->get_value('order');
+        $this->idgroup = $ctx->curctx->getAttribute('type');
+        $order = $ctx->curctx->getAttribute('order');
         if( $order === false || $order === '' )
             $order = "asc";
 
-        $this->imageheightmax	= (int) $ctx->get_value('imageheightmax');
-        $this->imagewidthmax	= (int) $ctx->get_value('imagewidthmax');
+        $this->imageheightmax	= (int) $ctx->curctx->getAttribute('imageheightmax');
+        $this->imagewidthmax	= (int) $ctx->curctx->getAttribute('imagewidthmax');
 
         switch(mb_strtoupper($order))
         {
@@ -787,12 +803,12 @@ class Func_Ovml_Container_ArticleCategories extends Func_Ovml_Container
 
     public function setOvmlContext(babOvTemplate $ctx)
     {
-        global $babBody, $babDB;
+        global $babDB;
         parent::setOvmlContext($ctx);
-        $parentid = $ctx->get_value('parentid');
+        $parentid = $ctx->curctx->getAttribute('parentid');
 
-        $this->imageheightmax	= (int) $ctx->get_value('imageheightmax');
-        $this->imagewidthmax	= (int) $ctx->get_value('imagewidthmax');
+        $this->imageheightmax	= (int) $ctx->curctx->getAttribute('imageheightmax');
+        $this->imagewidthmax	= (int) $ctx->curctx->getAttribute('imagewidthmax');
 
         if( $parentid === false || $parentid === '' )
         {
@@ -805,7 +821,7 @@ class Func_Ovml_Container_ArticleCategories extends Func_Ovml_Container
             $parentid = array_intersect(array_keys($topcatview), explode(',', $parentid));
         }
 
-        $delegationid = (int) $ctx->get_value('delegationid');
+        $delegationid = (int) $ctx->curctx->getAttribute('delegationid');
 
         include_once $GLOBALS['babInstallPath'].'utilit/artapi.php';
         $this->res = bab_getArticleCategoriesRes($parentid, $delegationid);
@@ -862,10 +878,10 @@ class Func_Ovml_Container_ParentsArticleCategory extends Func_Ovml_Container
     {
         global $babDB;
         parent::setOvmlContext($ctx);
-        $categoryid = $ctx->get_value('categoryid');
+        $categoryid = $ctx->curctx->getAttribute('categoryid');
 
-        $this->imageheightmax	= (int) $ctx->get_value('imageheightmax');
-        $this->imagewidthmax	= (int) $ctx->get_value('imagewidthmax');
+        $this->imageheightmax	= (int) $ctx->curctx->getAttribute('imageheightmax');
+        $this->imagewidthmax	= (int) $ctx->curctx->getAttribute('imagewidthmax');
 
         if( $categoryid === false || $categoryid === '' )
             $this->count = 0;
@@ -882,7 +898,7 @@ class Func_Ovml_Container_ParentsArticleCategory extends Func_Ovml_Container
             $this->count = count($this->IdEntries);
             if( $this->count > 0 )
                 {
-                $reverse = $ctx->get_value('reverse');
+                $reverse = $ctx->curctx->getAttribute('reverse');
                 if( $reverse === false || $reverse !== '1' )
                     $this->IdEntries = array_reverse($this->IdEntries);
                 $this->res = $babDB->db_query("select * from ".BAB_TOPICS_CATEGORIES_TBL." where id IN (".$babDB->quote($this->IdEntries).")");
@@ -932,13 +948,13 @@ class Func_Ovml_Container_ArticleCategory extends Func_Ovml_Container
 
     public function setOvmlContext(babOvTemplate $ctx)
     {
-        global $babBody, $babDB;
+        global $babDB;
         $this->count = 0;
         parent::setOvmlContext($ctx);
-        $catid = $ctx->get_value('categoryid');
+        $catid = $ctx->curctx->getAttribute('categoryid');
 
-        $this->imageheightmax	= (int) $ctx->get_value('imageheightmax');
-        $this->imagewidthmax	= (int) $ctx->get_value('imagewidthmax');
+        $this->imageheightmax	= (int) $ctx->curctx->getAttribute('imageheightmax');
+        $this->imagewidthmax	= (int) $ctx->curctx->getAttribute('imagewidthmax');
 
         require_once dirname(__FILE__).'/artapi.php';
         $topcatview = bab_getReadableArticleCategories();
@@ -1048,13 +1064,13 @@ class Func_Ovml_Container_ArticleTopics extends Func_Ovml_Container
 
     public function setOvmlContext(babOvTemplate $ctx)
     {
-        global $babBody, $babDB;
+        global $babDB;
         parent::setOvmlContext($ctx);
-        $catid = $ctx->get_value('categoryid');
-        $delegationid = (int) $ctx->get_value('delegationid');
+        $catid = $ctx->curctx->getAttribute('categoryid');
+        $delegationid = (int) $ctx->curctx->getAttribute('delegationid');
 
-        $this->imageheightmax	= (int) $ctx->get_value('imageheightmax');
-        $this->imagewidthmax	= (int) $ctx->get_value('imagewidthmax');
+        $this->imageheightmax	= (int) $ctx->curctx->getAttribute('imageheightmax');
+        $this->imagewidthmax	= (int) $ctx->curctx->getAttribute('imagewidthmax');
 
         require_once dirname(__FILE__).'/artapi.php';
         $topcatview = bab_getReadableArticleCategories();
@@ -1154,13 +1170,13 @@ class Func_Ovml_Container_ArticleTopic extends Func_Ovml_Container
 
     public function setOvmlContext(babOvTemplate $ctx)
     {
-        global $babBody, $babDB;
+        global $babDB;
         parent::setOvmlContext($ctx);
-        $this->topicid = $ctx->get_value('topicid');
-        $this->topicname = $ctx->get_value('topicname');
+        $this->topicid = $ctx->curctx->getAttribute('topicid');
+        $this->topicname = $ctx->curctx->getAttribute('topicname');
 
-        $this->imageheightmax	= (int) $ctx->get_value('imageheightmax');
-        $this->imagewidthmax	= (int) $ctx->get_value('imagewidthmax');
+        $this->imageheightmax	= (int) $ctx->curctx->getAttribute('imageheightmax');
+        $this->imagewidthmax	= (int) $ctx->curctx->getAttribute('imagewidthmax');
 
         if( $this->topicid === false || $this->topicid === '' ){
             $this->IdEntries = bab_getUserIdObjects(BAB_TOPICSVIEW_GROUPS_TBL);
@@ -1330,13 +1346,13 @@ class Func_Ovml_Container_Articles extends Func_Ovml_Container
 
     public function setOvmlContext(babOvTemplate $ctx)
     {
-        global $babDB, $babBody;
+        global $babDB;
         parent::setOvmlContext($ctx);
-        $topicid = $ctx->get_value('topicid');
-        $delegationid = (int) $ctx->get_value('delegationid');
+        $topicid = $ctx->curctx->getAttribute('topicid');
+        $delegationid = (int) $ctx->curctx->getAttribute('delegationid');
 
-        $this->imageheightmax	= (int) $ctx->get_value('imageheightmax');
-        $this->imagewidthmax	= (int) $ctx->get_value('imagewidthmax');
+        $this->imageheightmax	= (int) $ctx->curctx->getAttribute('imageheightmax');
+        $this->imagewidthmax	= (int) $ctx->curctx->getAttribute('imagewidthmax');
 
         $sDelegation = ' ';
         $sLeftJoin = ' ';
@@ -1358,13 +1374,13 @@ class Func_Ovml_Container_Articles extends Func_Ovml_Container
 
         if( count($topicid) > 0)
         {
-            $this->excludetopicid = $ctx->get_value('excludetopicid');
+            $this->excludetopicid = $ctx->curctx->getAttribute('excludetopicid');
             if ( $this->excludetopicid !== false && $this->excludetopicid !== '' )
                 {
                 $topicid = array_diff($topicid, explode(',', $this->excludetopicid));
                 }
 
-            $archive = $ctx->get_value('archive');
+            $archive = $ctx->curctx->getAttribute('archive');
             if( $archive === false || $archive === '')
                 $archive = "no";
 
@@ -1377,7 +1393,7 @@ class Func_Ovml_Container_Articles extends Func_Ovml_Container
             }
 
 
-            $minRating = $ctx->get_value('minrating');
+            $minRating = $ctx->curctx->getAttribute('minrating');
             if (!is_numeric($minRating)) {
                  $minRating = 0;
                  $ratingGroupBy = ' GROUP BY at.id ';
@@ -1397,13 +1413,13 @@ class Func_Ovml_Container_Articles extends Func_Ovml_Container
                     . $ratingGroupBy
                     ;
 
-            $order = $ctx->get_value('order');
+            $order = $ctx->curctx->getAttribute('order');
             if( $order === false || $order === '' ) {
                 $order = 'asc';
             }
 
              /* topicorder=yes : order defined by managers */
-            $forder = $ctx->get_value('topicorder');
+            $forder = $ctx->curctx->getAttribute('topicorder');
             switch(mb_strtoupper($forder))
             {
                 case 'YES':
@@ -1415,7 +1431,7 @@ class Func_Ovml_Container_Articles extends Func_Ovml_Container
                     break;
             }
 
-            $orderby = $ctx->get_value('orderby');
+            $orderby = $ctx->curctx->getAttribute('orderby');
             if( $orderby === false || $orderby === '' )
                 $orderby = "at.date";
             else
@@ -1456,8 +1472,8 @@ class Func_Ovml_Container_Articles extends Func_Ovml_Container
 
             $req .=  'ORDER BY '.$order;
 
-            $rows = $ctx->get_value('rows');
-            $offset = $ctx->get_value('offset');
+            $rows = $ctx->curctx->getAttribute('rows');
+            $offset = $ctx->curctx->getAttribute('offset');
             if( $rows === false || $rows === '')
                 $rows = "-1";
 
@@ -1514,7 +1530,7 @@ class Func_Ovml_Container_Articles extends Func_Ovml_Container
             else
                 $this->ctx->curctx->push('ArticleReadMore', 1);
             $this->ctx->curctx->push('ArticleId', $arr['id']);
-            $this->ctx->curctx->push('ArticleUrl', bab_sitemap::url('babArticle_'.$arr['id'], $GLOBALS['babUrl'].bab_getSelf()."?tg=articles&idx=More&topics=".$arr['id_topic']."&article=".$arr['id']));
+            $this->ctx->curctx->push('ArticleUrl', bab_siteMap::url('babArticle_'.$arr['id'], $GLOBALS['babUrl'].bab_getSelf()."?tg=articles&idx=More&topics=".$arr['id_topic']."&article=".$arr['id']));
             $this->ctx->curctx->push('ArticlePopupUrl', $GLOBALS['babUrl'].bab_getSelf()."?tg=articles&idx=viewa&topics=".$arr['id_topic']."&article=".$arr['id']);
             $this->ctx->curctx->push('ArticleAuthor', $arr['id_author']);
             if ($arr['date'] == $arr['date_modification'])
@@ -1564,10 +1580,10 @@ class Func_Ovml_Container_Article extends Func_Ovml_Container
     {
         global $babDB;
         parent::setOvmlContext($ctx);
-        $articleid = $ctx->get_value('articleid');
+        $articleid = $ctx->curctx->getAttribute('articleid');
 
-        $this->imageheightmax	= (int) $ctx->get_value('imageheightmax');
-        $this->imagewidthmax	= (int) $ctx->get_value('imagewidthmax');
+        $this->imageheightmax	= (int) $ctx->curctx->getAttribute('imageheightmax');
+        $this->imagewidthmax	= (int) $ctx->curctx->getAttribute('imagewidthmax');
 
         if( $articleid === false || $articleid === '' )
             $this->count = 0;
@@ -1610,7 +1626,7 @@ class Func_Ovml_Container_Article extends Func_Ovml_Container
             else
                 $this->ctx->curctx->push('ArticleReadMore', 1);
             $this->ctx->curctx->push('ArticleId', $arr['id']);
-            $this->ctx->curctx->push('ArticleUrl', bab_sitemap::url('babArticle_'.$arr['id'], $GLOBALS['babUrl'].bab_getSelf()."?tg=articles&idx=More&topics=".$arr['id_topic']."&article=".$arr['id']));
+            $this->ctx->curctx->push('ArticleUrl', bab_siteMap::url('babArticle_'.$arr['id'], $GLOBALS['babUrl'].bab_getSelf()."?tg=articles&idx=More&topics=".$arr['id_topic']."&article=".$arr['id']));
             $this->ctx->curctx->push('ArticlePopupUrl', $GLOBALS['babUrl'].bab_getSelf()."?tg=articles&idx=viewa&topics=".$arr['id_topic']."&article=".$arr['id']);
             $this->ctx->curctx->push('ArticleAuthor', $arr['id_author']);
             if ($arr['date'] == $arr['date_modification'])
@@ -1659,7 +1675,7 @@ class Func_Ovml_Container_ArticleFiles extends Func_Ovml_Container
         global $babDB;
         require_once dirname(__FILE__).'/artincl.php';
         parent::setOvmlContext($ctx);
-        $articleid = $ctx->get_value('articleid');
+        $articleid = $ctx->curctx->getAttribute('articleid');
         if( $articleid === false || $articleid === '' )
             $this->count = 0;
         else
@@ -1758,8 +1774,8 @@ class Func_Ovml_Container_Forums extends Func_Ovml_Container
     {
         global $babDB;
         parent::setOvmlContext($ctx);
-        $forumid = $ctx->get_value('forumid');
-        $delegationid = (int) $ctx->get_value('delegationid');
+        $forumid = $ctx->curctx->getAttribute('forumid');
+        $delegationid = (int) $ctx->curctx->getAttribute('delegationid');
 
         if (0 === $delegationid)
             {
@@ -1824,11 +1840,11 @@ class Func_Ovml_Container_Forum extends Func_Ovml_Container
 
     public function setOvmlContext(babOvTemplate $ctx)
     {
-        global $babBody, $babDB;
+        global $babDB;
         parent::setOvmlContext($ctx);
         /* Valid access rights */
-        if( bab_isAccessValid(BAB_FORUMSVIEW_GROUPS_TBL, $ctx->get_value('forumid'))) {
-            $this->res = $babDB->db_query("select * from ".BAB_FORUMS_TBL." where id='".$babDB->db_escape_string($ctx->get_value('forumid'))."' and active='Y'");
+        if( bab_isAccessValid(BAB_FORUMSVIEW_GROUPS_TBL, $ctx->curctx->getAttribute('forumid'))) {
+            $this->res = $babDB->db_query("select * from ".BAB_FORUMS_TBL." where id='".$babDB->db_escape_string($ctx->curctx->getAttribute('forumid'))."' and active='Y'");
             if( $this->res && $babDB->db_num_rows($this->res) == 1 ) {
                 $this->count = 1;
             } else {
@@ -1925,16 +1941,16 @@ class Func_Ovml_Container_Post extends Func_Ovml_Container
 
     public function setOvmlContext(babOvTemplate $ctx)
         {
-        global $babBody, $babDB;
+        global $babDB;
         include_once $GLOBALS['babInstallPath'] . 'utilit/forumincl.php';
         parent::setOvmlContext($ctx);
-        $this->postid = $ctx->get_value('postid');
+        $this->postid = $ctx->curctx->getAttribute('postid');
         if( $this->postid === false || $this->postid === '' )
             $arr = array();
         else
             $arr = explode(',', $this->postid);
 
-        $this->confirmed = $ctx->get_value('confirmed');
+        $this->confirmed = $ctx->curctx->getAttribute('confirmed');
         if( $this->confirmed === false )
             $this->confirmed = "yes";
 
@@ -1952,7 +1968,7 @@ class Func_Ovml_Container_Post extends Func_Ovml_Container
             {
                 $req .= " AND p.confirmed =  '".$this->confirmed."'";
             }
-            $order = $ctx->get_value('order');
+            $order = $ctx->curctx->getAttribute('order');
             if( $order === false || $order === '' )
                 {
                 $order = "asc";
@@ -1992,7 +2008,7 @@ class Func_Ovml_Container_Post extends Func_Ovml_Container
 
     public function getnext()
         {
-        global $babBody, $babDB, $BAB_SESS_USERID;
+        global $babDB, $BAB_SESS_USERID;
         if( $this->idx < $this->count)
             {
             $arr = $babDB->db_fetch_array($this->res);
@@ -2058,7 +2074,7 @@ class Func_Ovml_Container_PostFiles extends Func_Ovml_Container
     {
         global $babDB;
         parent::setOvmlContext($ctx);
-        $postid = $ctx->get_value('postid');
+        $postid = $ctx->curctx->getAttribute('postid');
         if( $postid === false || $postid === '' )
             $this->count = 0;
         else
@@ -2119,10 +2135,10 @@ class Func_Ovml_Container_Thread extends Func_Ovml_Container
 
     public function setOvmlContext(babOvTemplate $ctx)
         {
-        global $babBody, $babDB;
+        global $babDB;
         include_once $GLOBALS['babInstallPath'] . 'utilit/forumincl.php';
         parent::setOvmlContext($ctx);
-        $this->threadid = $ctx->get_value('threadid');
+        $this->threadid = $ctx->curctx->getAttribute('threadid');
         if( $this->threadid === false || $this->threadid === '' )
             $arr = array();
         else
@@ -2132,7 +2148,7 @@ class Func_Ovml_Container_Thread extends Func_Ovml_Container
             {
             $req = "select tt.id, tt.forum from ".BAB_THREADS_TBL." tt left join ".BAB_FORUMS_TBL." ft on ft.id=tt.forum WHERE ft.active='Y' and tt.id IN (".$babDB->quote($arr).") and tt.active='Y'";
 
-            $order = $ctx->get_value('order');
+            $order = $ctx->curctx->getAttribute('order');
             if( $order === false || $order === '' )
                 $order = "asc";
 
@@ -2168,7 +2184,7 @@ class Func_Ovml_Container_Thread extends Func_Ovml_Container
 
     public function getnext()
         {
-        global $babBody, $babDB;
+        global $babDB;
         if( $this->idx < $this->count)
             {
             $arr = $babDB->db_fetch_array($this->res);
@@ -2204,10 +2220,9 @@ class Func_Ovml_Container_Folders extends Func_Ovml_Container
 
     public function setOvmlContext(babOvTemplate $ctx)
     {
-        global $babDB;
         parent::setOvmlContext($ctx);
-        $folderid = $ctx->get_value('folderid');
-        $iIdDelegation = (int) $ctx->get_value('delegationid');
+        $folderid = $ctx->curctx->getAttribute('folderid');
+        $iIdDelegation = (int) $ctx->curctx->getAttribute('delegationid');
 
         require_once $GLOBALS['babInstallPath'].'utilit/fileincl.php';
         $this->oFmFolderSet = new BAB_FmFolderSet();
@@ -2285,9 +2300,8 @@ class Func_Ovml_Container_Folder extends Func_Ovml_Container
 
     public function setOvmlContext(babOvTemplate $ctx)
     {
-        global $babBody, $babDB;
         parent::setOvmlContext($ctx);
-        $folderid = (int) $ctx->get_value('folderid');
+        $folderid = (int) $ctx->curctx->getAttribute('folderid');
         $this->count = 0;
 
         require_once $GLOBALS['babInstallPath'].'utilit/fileincl.php';
@@ -2397,16 +2411,15 @@ class Func_Ovml_Container_SubFolders extends Func_Ovml_Container
 
     public function setOvmlContext(babOvTemplate $ctx)
     {
-        global $babBody, $babDB;
         parent::setOvmlContext($ctx);
-        $folderid = (int) $ctx->get_value('folderid');
+        $folderid = (int) $ctx->curctx->getAttribute('folderid');
         $this->folderId = $folderid;
         $this->count = 0;
 
 
         require_once $GLOBALS['babInstallPath'] . 'utilit/fileincl.php';
 
-        $sPath = (string) $path = $ctx->get_value('path');
+        $sPath = (string) $ctx->curctx->getAttribute('path');
         $this->path = $sPath;
 
         $this->oFmFolderSet = new BAB_FmFolderSet();
@@ -2439,7 +2452,7 @@ class Func_Ovml_Container_SubFolders extends Func_Ovml_Container
                     $this->walkDirectory($sFullPathName);
 
                     $this->count = count($this->IdEntries);
-                    $order = $ctx->get_value('order');
+                    $order = $ctx->curctx->getAttribute('order');
                     if($order === false || $order === '')
                     {
                         $order = 'asc';
@@ -2448,11 +2461,11 @@ class Func_Ovml_Container_SubFolders extends Func_Ovml_Container
                     switch(mb_strtolower($order))
                     {
                         case 'desc':
-                            bab_sort::sort($this->IdEntries, bab_sort::CASE_INSENSITIVE);
+                            bab_Sort::sort($this->IdEntries, bab_sort::CASE_INSENSITIVE);
                             $this->IdEntries = array_reverse($this->IdEntries);
                             break;
                         default:
-                            bab_sort::sort($this->IdEntries, bab_sort::CASE_INSENSITIVE);
+                            bab_Sort::sort($this->IdEntries, bab_sort::CASE_INSENSITIVE);
                             break;
                     }
                 }
@@ -2463,7 +2476,6 @@ class Func_Ovml_Container_SubFolders extends Func_Ovml_Container
 
     public function getnext()
     {
-        global $babDB;
         if( $this->idx < $this->count)
         {
             $this->ctx->curctx->push('CIndex', $this->idx);
@@ -2552,18 +2564,17 @@ class Func_Ovml_Container_Files extends Func_Ovml_Container
 
     public function setOvmlContext(babOvTemplate $ctx)
     {
-        global $babBody, $babDB;
         include_once $GLOBALS['babInstallPath'] . 'utilit/fileincl.php';
         parent::setOvmlContext($ctx);
         $this->count	= 0;
-        $folderid		= (int) $ctx->get_value('folderid');
-        $this->sPath	= (string) $ctx->get_value('path');
+        $folderid		= (int) $ctx->curctx->getAttribute('folderid');
+        $this->sPath	= (string) $ctx->curctx->getAttribute('path');
         $iLength		= mb_strlen(trim($this->sPath));
 
-        $this->imageheightmax	= (int) $ctx->get_value('imageheightmax');
-        $this->imagewidthmax	= (int) $ctx->get_value('imagewidthmax');
+        $this->imageheightmax	= (int) $ctx->curctx->getAttribute('imageheightmax');
+        $this->imagewidthmax	= (int) $ctx->curctx->getAttribute('imagewidthmax');
 
-        $order = (string) $ctx->get_value('order');
+        $order = (string) $ctx->curctx->getAttribute('order');
         switch (strtoupper(trim($order))) {
             case 'ASC':
             case 'DESC':
@@ -2575,7 +2586,7 @@ class Func_Ovml_Container_Files extends Func_Ovml_Container
         }
 
 
-        $orderBy = (string) $ctx->get_value('orderby');
+        $orderBy = (string) $ctx->curctx->getAttribute('orderby');
         switch ($orderBy) {
             case 'modification':
                 $orderField = 'sModified';
@@ -2631,8 +2642,8 @@ class Func_Ovml_Container_Files extends Func_Ovml_Container
 
                 $this->initRootFolderId($sRootFolderName);
 
-                $rows	= (int) $ctx->get_value('rows');
-                $offset	= (int) $ctx->get_value('offset');
+                $rows	= (int) $ctx->curctx->getAttribute('rows');
+                $offset	= (int) $ctx->curctx->getAttribute('offset');
 
                 $oGroup		= $this->oFolderFileSet->aField['sGroup'];
                 $oState		= $this->oFolderFileSet->aField['sState'];
@@ -2696,7 +2707,6 @@ class Func_Ovml_Container_Files extends Func_Ovml_Container
 
     public function getnext()
     {
-        global $babDB;
         if(0 !== $this->oFolderFileSet->count())
         {
             if(null !== ($oFolderFile = $this->oFolderFileSet->next()))
@@ -2785,7 +2795,6 @@ class Func_Ovml_Container_File extends Func_Ovml_Container
 
     public function setOvmlContext(babOvTemplate $ctx)
     {
-        global $babBody, $babDB;
         require_once $GLOBALS['babInstallPath'] . 'utilit/fileincl.php';
 
         $this->oFolderFileSet = new BAB_FolderFileSet();
@@ -2793,7 +2802,7 @@ class Func_Ovml_Container_File extends Func_Ovml_Container
 
         parent::setOvmlContext($ctx);
         $this->count = 0;
-        $sFileId = (string) $ctx->get_value('fileid');
+        $sFileId = (string) $ctx->curctx->getAttribute('fileid');
         if(0 !== mb_strlen(trim($sFileId)))
         {
             $aFileId = explode(',', $sFileId);
@@ -2826,8 +2835,6 @@ class Func_Ovml_Container_File extends Func_Ovml_Container
 
             if(true === $bHaveFileAcess)
             {
-                global $babBody, $babDB;
-
                 require_once dirname(__FILE__) . '/tagApi.php';
 
                 $oReferenceMgr = bab_getInstance('bab_ReferenceMgr');
@@ -2920,12 +2927,11 @@ class Func_Ovml_Container_Tags extends Func_Ovml_Container
 
     public function setOvmlContext(babOvTemplate $ctx)
     {
-        global $babBody, $babDB;
         parent::setOvmlContext($ctx);
         $this->count = 0;
-        $module 	= $ctx->get_value('module');
-        $type 		= $ctx->get_value('type');
-        $objectid	= $ctx->get_value('objectid');
+        $module 	= $ctx->curctx->getAttribute('module');
+        $type 		= $ctx->curctx->getAttribute('type');
+        $objectid	= $ctx->curctx->getAttribute('objectid');
 
         require_once dirname(__FILE__) . '/tagApi.php';
 
@@ -2942,7 +2948,6 @@ class Func_Ovml_Container_Tags extends Func_Ovml_Container
 
     public function getnext()
     {
-        global $babDB;
         if( $this->iterator->valid())
         {
 
@@ -2986,10 +2991,10 @@ class Func_Ovml_Container_FileFields extends Func_Ovml_Container
 
     public function setOvmlContext(babOvTemplate $ctx)
     {
-        global $babBody, $babDB;
+        global $babDB;
         parent::setOvmlContext($ctx);
         $this->count = 0;
-        $this->fileid = $ctx->get_value('fileid');
+        $this->fileid = $ctx->curctx->getAttribute('fileid');
         if($this->fileid !== false && $this->fileid !== '')
         {
             $res = $babDB->db_query("select * from ".BAB_FILES_TBL." where id='".$babDB->db_escape_string($this->fileid)."'");
@@ -3090,17 +3095,17 @@ class Func_Ovml_Container_RecentArticles extends Func_Ovml_Container
 
     public function setOvmlContext(babOvTemplate $ctx)
         {
-        global $babBody, $babDB;
+        global $babDB;
         parent::setOvmlContext($ctx);
-        $this->nbdays = $ctx->get_value('from_lastlog');
-        $this->last = $ctx->get_value('last');
-        $this->topicid = $ctx->get_value('topicid');
-        $this->topcatid = $ctx->get_value('categoryid');
-        $lang = $ctx->get_value('lang');
-        $delegationid = (int) $ctx->get_value('delegationid');
+        $this->nbdays = $ctx->curctx->getAttribute('from_lastlog');
+        $this->last = $ctx->curctx->getAttribute('last');
+        $this->topicid = $ctx->curctx->getAttribute('topicid');
+        $this->topcatid = $ctx->curctx->getAttribute('categoryid');
+        $lang = $ctx->curctx->getAttribute('lang');
+        $delegationid = (int) $ctx->curctx->getAttribute('delegationid');
 
-        $this->imageheightmax	= (int) $ctx->get_value('imageheightmax');
-        $this->imagewidthmax	= (int) $ctx->get_value('imagewidthmax');
+        $this->imageheightmax	= (int) $ctx->curctx->getAttribute('imageheightmax');
+        $this->imagewidthmax	= (int) $ctx->curctx->getAttribute('imagewidthmax');
 
         if ( $this->topcatid === false || $this->topcatid === '' )
             {
@@ -3117,13 +3122,13 @@ class Func_Ovml_Container_RecentArticles extends Func_Ovml_Container
 
         if( count($this->topicid) > 0 )
             {
-            $this->excludetopicid = $ctx->get_value('excludetopicid');
+            $this->excludetopicid = $ctx->curctx->getAttribute('excludetopicid');
             if ( $this->excludetopicid !== false && $this->excludetopicid !== '' )
                 {
                 $this->topicid = array_diff($this->topicid, explode(',', $this->excludetopicid));
                 }
 
-            $archive = $ctx->get_value('archive');
+            $archive = $ctx->curctx->getAttribute('archive');
             if( $archive === false || $archive === '')
                 $archive = "no";
 
@@ -3135,7 +3140,7 @@ class Func_Ovml_Container_RecentArticles extends Func_Ovml_Container
 
             }
 
-            $minRating = $ctx->get_value('minrating');
+            $minRating = $ctx->curctx->getAttribute('minrating');
             if (!is_numeric($minRating)) {
                  $minRating = 0;
                  $ratingGroupBy = ' GROUP BY at.id ';
@@ -3188,13 +3193,13 @@ class Func_Ovml_Container_RecentArticles extends Func_Ovml_Container
 
             $req .= $ratingGroupBy;
 
-            $order = $ctx->get_value('order');
+            $order = $ctx->curctx->getAttribute('order');
             if ( $order === false || $order === '' ) {
                 $order = 'desc';
             }
 
              /* topicorder=yes : order defined by managers */
-            $forder = $ctx->get_value('topicorder');
+            $forder = $ctx->curctx->getAttribute('topicorder');
             switch(mb_strtoupper($forder))
             {
                 case 'YES':
@@ -3206,7 +3211,7 @@ class Func_Ovml_Container_RecentArticles extends Func_Ovml_Container
                     break;
             }
 
-            $orderby = $ctx->get_value('orderby');
+            $orderby = $ctx->curctx->getAttribute('orderby');
             if( $orderby === false || $orderby === '' ) {
                 $orderby = 'at.date_modification';
             } else {
@@ -3305,7 +3310,7 @@ class Func_Ovml_Container_RecentArticles extends Func_Ovml_Container
 
     public function getnext()
         {
-        global $babBody, $babDB;
+        global $babDB;
         if( $this->idx < $this->count)
             {
             $arr = $babDB->db_fetch_array($this->res);
@@ -3330,7 +3335,7 @@ class Func_Ovml_Container_RecentArticles extends Func_Ovml_Container
             $this->ctx->curctx->push('ArticleDateModification', bab_mktime($arr['date_modification']));
             $this->ctx->curctx->push('ArticleDatePublication', bab_mktime($arr['date_publication']));
             $this->ctx->curctx->push('ArticleDateCreation', bab_mktime($arr['date']));
-            $this->ctx->curctx->push('ArticleUrl', bab_sitemap::url('babArticle_'.$arr['id'], $GLOBALS['babUrl'].bab_getSelf()."?tg=articles&idx=More&topics=".$arr['id_topic']."&article=".$arr['id']));
+            $this->ctx->curctx->push('ArticleUrl', bab_siteMap::url('babArticle_'.$arr['id'], $GLOBALS['babUrl'].bab_getSelf()."?tg=articles&idx=More&topics=".$arr['id_topic']."&article=".$arr['id']));
             $this->ctx->curctx->push('ArticlePopupUrl', $GLOBALS['babUrl'].bab_getSelf()."?tg=articles&idx=viewa&topics=".$arr['id_topic']."&article=".$arr['id']);
             $this->ctx->curctx->push('ArticleTopicId', $arr['id_topic']);
             $this->ctx->curctx->push('ArticleLanguage', $arr['lang']);
@@ -3371,12 +3376,12 @@ class Func_Ovml_Container_RecentComments extends Func_Ovml_Container
 
     public function setOvmlContext(babOvTemplate $ctx)
         {
-        global $babBody, $babDB;
+        global $babDB;
         parent::setOvmlContext($ctx);
-        $this->nbdays = $ctx->get_value('from_lastlog');
-        $this->last = $ctx->get_value('last');
-        $this->articleid = $ctx->get_value('articleid');
-        $delegationid = (int) $ctx->get_value('delegationid');
+        $this->nbdays = $ctx->curctx->getAttribute('from_lastlog');
+        $this->last = $ctx->curctx->getAttribute('last');
+        $this->articleid = $ctx->curctx->getAttribute('articleid');
+        $delegationid = (int) $ctx->curctx->getAttribute('delegationid');
 
         if( $this->articleid === false || $this->articleid === '' )
             $arrid = array();
@@ -3429,7 +3434,7 @@ class Func_Ovml_Container_RecentComments extends Func_Ovml_Container
                 $this->nbdays = (int) $this->nbdays;
                 $req .= " and date >= DATE_ADD(\"".$babDB->db_escape_string($usersettings['lastlog'])."\", INTERVAL -".$babDB->db_escape_string($this->nbdays)." DAY)";
             }
-            $order = $ctx->get_value('order');
+            $order = $ctx->curctx->getAttribute('order');
             if( $order === false || $order === '' )
                 $order = "desc";
 
@@ -3455,7 +3460,7 @@ class Func_Ovml_Container_RecentComments extends Func_Ovml_Container
 
     public function getnext()
         {
-        global $babBody, $babDB;
+        global $babDB;
         if( $this->idx < $this->count)
             {
             $arr = $babDB->db_fetch_array($this->rescomments);
@@ -3506,14 +3511,14 @@ class Func_Ovml_Container_RecentPosts extends Func_Ovml_Container
 
     public function setOvmlContext(babOvTemplate $ctx)
         {
-        global $babBody, $babDB;
+        global $babDB;
         parent::setOvmlContext($ctx);
-        $this->nbdays = $ctx->get_value('from_lastlog');
-        $this->last = $ctx->get_value('last');
-        $this->forumid = $ctx->get_value('forumid');
-        $this->threadid = $ctx->get_value('threadid');
+        $this->nbdays = $ctx->curctx->getAttribute('from_lastlog');
+        $this->last = $ctx->curctx->getAttribute('last');
+        $this->forumid = $ctx->curctx->getAttribute('forumid');
+        $this->threadid = $ctx->curctx->getAttribute('threadid');
         $access = array_keys(bab_getUserIdObjects(BAB_FORUMSVIEW_GROUPS_TBL));
-        $delegationid = (int) $ctx->get_value('delegationid');
+        $delegationid = (int) $ctx->curctx->getAttribute('delegationid');
 
         if( $this->forumid === false || $this->forumid === '' )
             {
@@ -3548,7 +3553,7 @@ class Func_Ovml_Container_RecentPosts extends Func_Ovml_Container
                 }
 
 
-            $order = $ctx->get_value('order');
+            $order = $ctx->curctx->getAttribute('order');
             if( $order === false || $order === '' )
                 $order = "desc";
 
@@ -3578,7 +3583,7 @@ class Func_Ovml_Container_RecentPosts extends Func_Ovml_Container
 
     public function getnext()
         {
-        global $babBody, $babDB;
+        global $babDB;
         if( $this->idx < $this->count)
             {
             $arr = $babDB->db_fetch_array($this->res);
@@ -3620,12 +3625,12 @@ class Func_Ovml_Container_RecentThreads extends Func_Ovml_Container
 
     public function setOvmlContext(babOvTemplate $ctx)
         {
-        global $babBody, $babDB;
+        global $babDB;
         parent::setOvmlContext($ctx);
-        $this->nbdays = $ctx->get_value('from_lastlog');
-        $this->last = $ctx->get_value('last');
-        $this->forumid = $ctx->get_value('forumid');
-        $delegationid = (int) $ctx->get_value('delegationid');
+        $this->nbdays = $ctx->curctx->getAttribute('from_lastlog');
+        $this->last = $ctx->curctx->getAttribute('last');
+        $this->forumid = $ctx->curctx->getAttribute('forumid');
+        $delegationid = (int) $ctx->curctx->getAttribute('delegationid');
 
         $sDelegation = ' ';
         if(0 != $delegationid)
@@ -3668,7 +3673,7 @@ class Func_Ovml_Container_RecentThreads extends Func_Ovml_Container
             $req .= " and p.date >= DATE_ADD(\"".$babDB->db_escape_string($usersettings['lastlog'])."\", INTERVAL -".$babDB->db_escape_string($this->nbdays)." DAY)";
         }
 
-        $order = $ctx->get_value('order');
+        $order = $ctx->curctx->getAttribute('order');
 
         if( $order === false || $order === '' ) {
             $order = "desc";
@@ -3721,7 +3726,7 @@ class Func_Ovml_Container_RecentThreads extends Func_Ovml_Container
 
     public function getnext()
         {
-        global $babBody, $babDB;
+        global $babDB;
         if( $this->idx < $this->count)
             {
             $arr = $babDB->db_fetch_array($this->res);
@@ -3764,16 +3769,16 @@ class Func_Ovml_Container_RecentFiles extends Func_Ovml_Container
 
     public function setOvmlContext(babOvTemplate $ctx)
         {
-        global $babBody, $BAB_SESS_USERID, $babDB;
+        global $babDB;
         require_once $GLOBALS['babInstallPath'] . 'utilit/fileincl.php';
 
         parent::setOvmlContext($ctx);
-        $this->nbdays = $ctx->get_value('from_lastlog');
-        $this->last = $ctx->get_value('last');
-        $this->folderid = $ctx->get_value('folderid');
-        $delegationid = (int) $ctx->get_value('delegationid');
-        $path = $ctx->get_value('path');
-        $fullpath = $ctx->get_value('fullpath');
+        $this->nbdays = $ctx->curctx->getAttribute('from_lastlog');
+        $this->last = $ctx->curctx->getAttribute('last');
+        $this->folderid = $ctx->curctx->getAttribute('folderid');
+        $delegationid = (int) $ctx->curctx->getAttribute('delegationid');
+        $path = $ctx->curctx->getAttribute('path');
+        $fullpath = $ctx->curctx->getAttribute('fullpath');
 
         $this->oFmFolderSet = new BAB_FmFolderSet();
 
@@ -3846,7 +3851,7 @@ class Func_Ovml_Container_RecentFiles extends Func_Ovml_Container
                 $req .= " and f.modified >= DATE_ADD(\"".$babDB->db_escape_string($usersettings['lastlog'])."\", INTERVAL -".$babDB->db_escape_string($this->nbdays)." DAY)";
             }
 
-            $order = $ctx->get_value('order');
+            $order = $ctx->curctx->getAttribute('order');
             if( $order === false || $order === '' )
             {
                 $order = "desc";
@@ -3883,11 +3888,8 @@ class Func_Ovml_Container_RecentFiles extends Func_Ovml_Container
             $arr = $babDB->db_fetch_array($this->res);
 
             $sPath = removeEndSlah($arr['path']);
-            $iid = $arr['id_owner'];
 
             $sName = getFirstPath($arr['path']);
-            $sRelativePath = '';
-            $iIdDgOwner = 0;
 
             $oName =& $this->oFmFolderSet->aField['sName'];
             $oRelativePath =& $this->oFmFolderSet->aField['sRelativePath'];
@@ -3972,13 +3974,13 @@ class Func_Ovml_Container_WaitingArticles extends Func_Ovml_Container
 
     public function setOvmlContext(babOvTemplate $ctx)
         {
-        global $babBody, $babDB;
+        global $babDB;
         parent::setOvmlContext($ctx);
 
-        $this->imageheightmax	= (int) $ctx->get_value('imageheightmax');
-        $this->imagewidthmax	= (int) $ctx->get_value('imagewidthmax');
+        $this->imageheightmax	= (int) $ctx->curctx->getAttribute('imageheightmax');
+        $this->imagewidthmax	= (int) $ctx->curctx->getAttribute('imagewidthmax');
 
-        $userid = $ctx->get_value('userid');
+        $userid = $ctx->curctx->getAttribute('userid');
         if( $userid === false || $userid === '' )
             {
             $userid = $GLOBALS['BAB_SESS_USERID'];
@@ -3986,8 +3988,8 @@ class Func_Ovml_Container_WaitingArticles extends Func_Ovml_Container
 
         if( $userid != '')
             {
-            $this->topicid = $ctx->get_value('topicid');
-            $delegationid = (int) $ctx->get_value('delegationid');
+            $this->topicid = $ctx->curctx->getAttribute('topicid');
+            $delegationid = (int) $ctx->curctx->getAttribute('delegationid');
 
             $req =
                 'select ' .
@@ -4044,7 +4046,7 @@ class Func_Ovml_Container_WaitingArticles extends Func_Ovml_Container
 
     public function getnext()
         {
-        global $babBody, $babDB;
+        global $babDB;
         if( $this->idx < $this->count)
             {
             $arr = $babDB->db_fetch_array($this->res);
@@ -4102,17 +4104,17 @@ class Func_Ovml_Container_WaitingComments extends Func_Ovml_Container
 
     public function setOvmlContext(babOvTemplate $ctx)
         {
-        global $babBody, $babDB;
+        global $babDB;
         parent::setOvmlContext($ctx);
 
-        $userid = $ctx->get_value('userid');
+        $userid = $ctx->curctx->getAttribute('userid');
         if( $userid === false || $userid === '' )
             $userid = $GLOBALS['BAB_SESS_USERID'];
 
         if( $userid != '')
             {
-            $this->articleid = $ctx->get_value('articleid');
-            $delegationid = (int) $ctx->get_value('delegationid');
+            $this->articleid = $ctx->curctx->getAttribute('articleid');
+            $delegationid = (int) $ctx->curctx->getAttribute('delegationid');
 
             $req = "select c.id, c.id_topic from ".BAB_COMMENTS_TBL." c ";
 
@@ -4160,7 +4162,7 @@ class Func_Ovml_Container_WaitingComments extends Func_Ovml_Container
 
     public function getnext()
         {
-        global $babBody, $babDB;
+        global $babDB;
         if( $this->idx < $this->count)
             {
             $arr = $babDB->db_fetch_array($this->res);
@@ -4206,9 +4208,9 @@ class Func_Ovml_Container_WaitingFiles extends Func_Ovml_Container
 
     public function setOvmlContext(babOvTemplate $ctx)
         {
-        global $babBody, $babDB;
+        global $babDB;
         parent::setOvmlContext($ctx);
-        $delegationid = (int) $ctx->get_value('delegationid');
+        $delegationid = (int) $ctx->curctx->getAttribute('delegationid');
 
         $sDelegation = ' ';
         $sLeftJoin = ' ';
@@ -4219,7 +4221,7 @@ class Func_Ovml_Container_WaitingFiles extends Func_Ovml_Container
             $sDelegation = ' AND fld.id_dgowner = \'' . $babDB->db_escape_string($delegationid) . '\' ';
         }
 
-        $userid = $ctx->get_value('userid');
+        $userid = $ctx->curctx->getAttribute('userid');
         if( $userid === false || $userid === '' )
             {
             $userid = $GLOBALS['BAB_SESS_USERID'];
@@ -4227,7 +4229,7 @@ class Func_Ovml_Container_WaitingFiles extends Func_Ovml_Container
 
         if( $userid != '')
             {
-            $this->folderid = $ctx->get_value('folderid');
+            $this->folderid = $ctx->curctx->getAttribute('folderid');
             $req = "select f.id, f.idfai from ".BAB_FILES_TBL . " f " . $sLeftJoin . "where f.bgroup='Y' and f.confirmed='N'" . $sDelegation;
             if( $this->folderid !== false && $this->folderid !== '' )
                 {
@@ -4264,7 +4266,7 @@ class Func_Ovml_Container_WaitingFiles extends Func_Ovml_Container
 
     public function getnext()
         {
-        global $babBody, $babDB;
+        global $babDB;
         if( $this->idx < $this->count)
             {
             $arr = $babDB->db_fetch_array($this->res);
@@ -4301,24 +4303,24 @@ class Func_Ovml_Container_WaitingPosts extends Func_Ovml_Container
 
     public function setOvmlContext(babOvTemplate $ctx)
         {
-        global $babBody, $babDB;
+        global $babDB;
         parent::setOvmlContext($ctx);
 
-        $userid = $ctx->get_value('userid');
+        $userid = $ctx->curctx->getAttribute('userid');
         if( $userid === false || $userid === '' )
             {
             $userid = 0;
             }
 
         $req = "select id from ".BAB_FORUMS_TBL." where active='Y'";
-        $this->forumid = $ctx->get_value('forumid');
+        $this->forumid = $ctx->curctx->getAttribute('forumid');
         if( $this->forumid !== false && $this->forumid !== '' )
             {
             $req .= " and id IN (".$babDB->quote(explode(',', $this->forumid)).")";
             }
 
-        $delegationid = (int) $ctx->get_value('delegationid');
-        $sDelegation = ' ';
+        $delegationid = (int) $ctx->curctx->getAttribute('delegationid');
+
         if(0 != $delegationid)
         {
             $req .= ' AND id_dgowner = \'' . $babDB->db_escape_string($delegationid) . '\' ';
@@ -4354,7 +4356,7 @@ class Func_Ovml_Container_WaitingPosts extends Func_Ovml_Container
 
     public function getnext()
         {
-        global $babBody, $babDB;
+        global $babDB;
         if( $this->idx < $this->count)
             {
             $this->ctx->curctx->push('CIndex', $this->idx);
@@ -4390,10 +4392,10 @@ class Func_Ovml_Container_Faqs extends Func_Ovml_Container
 
     public function setOvmlContext(babOvTemplate $ctx)
     {
-        global $babBody, $babDB;
+        global $babDB;
         parent::setOvmlContext($ctx);
-        $faqid = $ctx->get_value('faqid');
-        $delegationid = (int) $ctx->get_value('delegationid');
+        $faqid = $ctx->curctx->getAttribute('faqid');
+        $delegationid = (int) $ctx->curctx->getAttribute('delegationid');
 
         if (empty($faqid)) {
             $faqid = false;
@@ -4445,9 +4447,9 @@ class Func_Ovml_Container_Faq extends Func_Ovml_Container
 
     public function setOvmlContext(babOvTemplate $ctx)
     {
-        global $babBody, $babDB;
+        global $babDB;
         parent::setOvmlContext($ctx);
-        $this->res = $babDB->db_query("select * from ".BAB_FAQCAT_TBL." where id='".$babDB->db_escape_string($ctx->get_value('faqid'))."'");
+        $this->res = $babDB->db_query("select * from ".BAB_FAQCAT_TBL." where id='".$babDB->db_escape_string($ctx->curctx->getAttribute('faqid'))."'");
         if( $this->res && $babDB->db_num_rows($this->res) == 1 )
             $this->count = 1;
         else
@@ -4532,10 +4534,10 @@ class Func_Ovml_Container_FaqSubCategories extends Func_Ovml_Container
 
     public function setOvmlContext(babOvTemplate $ctx)
     {
-        global $babBody, $babDB;
+        global $babDB;
         parent::setOvmlContext($ctx);
         $this->count = 0;
-        $faqid = $ctx->get_value('faqid');
+        $faqid = $ctx->curctx->getAttribute('faqid');
         if( $faqid != '')
             {
             if(bab_isAccessValid(BAB_FAQCAT_GROUPS_TBL, $faqid))
@@ -4589,10 +4591,10 @@ class Func_Ovml_Container_FaqSubCategory extends Func_Ovml_Container
 
     public function setOvmlContext(babOvTemplate $ctx)
     {
-        global $babBody, $babDB;
+        global $babDB;
         parent::setOvmlContext($ctx);
         $this->count = 0;
-        $faqsubcatid = $ctx->get_value('faqsubcatid');
+        $faqsubcatid = $ctx->curctx->getAttribute('faqsubcatid');
         if( $faqsubcatid !== false && $faqsubcatid !== '' )
         {
             $res = $babDB->db_query("select * from ".BAB_FAQ_SUBCAT_TBL." where id_cat IN (".$babDB->quote(explode(',', $faqsubcatid)).")");
@@ -4655,10 +4657,10 @@ class Func_Ovml_Container_FaqQuestions extends Func_Ovml_Container
 
     public function setOvmlContext(babOvTemplate $ctx)
     {
-        global $babBody, $babDB;
+        global $babDB;
         parent::setOvmlContext($ctx);
-        $faqid = $ctx->get_value('faqid');
-        $faqsubcatid = $ctx->get_value('faqsubcatid');
+        $faqid = $ctx->curctx->getAttribute('faqid');
+        $faqsubcatid = $ctx->curctx->getAttribute('faqsubcatid');
         $req = "select id, idcat from ".BAB_FAQQR_TBL;
         if( $faqid !== false && $faqid !== '' )
             {
@@ -4734,9 +4736,9 @@ class Func_Ovml_Container_FaqQuestion extends Func_Ovml_Container
 
     public function setOvmlContext(babOvTemplate $ctx)
     {
-        global $babBody, $babDB;
+        global $babDB;
         parent::setOvmlContext($ctx);
-        $this->res = $babDB->db_query("select * from ".BAB_FAQQR_TBL." where id='".$babDB->db_escape_string($ctx->get_value('questionid'))."'");
+        $this->res = $babDB->db_query("select * from ".BAB_FAQQR_TBL." where id='".$babDB->db_escape_string($ctx->curctx->getAttribute('questionid'))."'");
         if( $this->res && $babDB->db_num_rows($this->res) == 1 )
             $this->count = 1;
         else
@@ -4830,13 +4832,13 @@ class Func_Ovml_Container_RecentFaqQuestions extends Func_Ovml_Container
 
     public function setOvmlContext(babOvTemplate $ctx)
     {
-        global $babBody, $babDB;
+        global $babDB;
         parent::setOvmlContext($ctx);
-        $this->nbdays = $ctx->get_value('from_lastlog');
-        $this->last = $ctx->get_value('last');
-        $faqid = $ctx->get_value('faqid');
-        $faqsubcatid = $ctx->get_value('faqsubcatid');
-        $delegationid = (int) $ctx->get_value('delegationid');
+        $this->nbdays = $ctx->curctx->getAttribute('from_lastlog');
+        $this->last = $ctx->curctx->getAttribute('last');
+        $faqid = $ctx->curctx->getAttribute('faqid');
+        $faqsubcatid = $ctx->curctx->getAttribute('faqsubcatid');
+        $delegationid = (int) $ctx->curctx->getAttribute('delegationid');
 
         $req = "select ft.id, ft.idcat from ".BAB_FAQQR_TBL." ft";
         $where = array();
@@ -4885,7 +4887,7 @@ class Func_Ovml_Container_RecentFaqQuestions extends Func_Ovml_Container
         $this->count = count($this->IdEntries);
         if( $this->count > 0 )
             {
-            $order = $ctx->get_value('order');
+            $order = $ctx->curctx->getAttribute('order');
             if( $order === false || $order === '' )
                 {
                 $order = 'asc';
@@ -4939,10 +4941,9 @@ class Func_Ovml_Container_Calendars extends Func_Ovml_Container
 
     public function setOvmlContext(babOvTemplate $ctx)
     {
-        global $babBody, $babDB;
         parent::setOvmlContext($ctx);
-        $type = $ctx->get_value('type');
-        $delegationid = (int) $ctx->get_value('delegationid');
+        $type = $ctx->curctx->getAttribute('type');
+        $delegationid = (int) $ctx->curctx->getAttribute('delegationid');
 
 
         switch(bab_getICalendars()->defaultview)
@@ -4964,7 +4965,7 @@ class Func_Ovml_Container_Calendars extends Func_Ovml_Container
             default: 			$class = 'bab_EventCalendar'; 	break;
         }
 
-        $calendarid = $ctx->get_value('calendarid');
+        $calendarid = $ctx->curctx->getAttribute('calendarid');
         if( $calendarid !== false && $calendarid !== '' )
         {
             $calendarid = array_flip(explode(',',$calendarid));
@@ -5004,7 +5005,6 @@ class Func_Ovml_Container_Calendars extends Func_Ovml_Container
 
     public function getnext()
     {
-        global $babBody,$babDB;
         if( $this->idx < $this->count)
         {
             $calendar = current($this->Entries);
@@ -5057,7 +5057,7 @@ class Func_Ovml_Container_CalendarCategories extends Func_Ovml_Container
 
     public function setOvmlContext(babOvTemplate $ctx)
     {
-        global $babBody, $babDB;
+        global $babDB;
         parent::setOvmlContext($ctx);
         $req = "select * from ".BAB_CAL_CATEGORIES_TBL." order by name asc";
 
@@ -5068,7 +5068,7 @@ class Func_Ovml_Container_CalendarCategories extends Func_Ovml_Container
 
     public function getnext()
     {
-        global $babBody,$babDB;
+        global $babDB;
         if( $this->idx < $this->count)
         {
             $arr = $babDB->db_fetch_array($this->res);
@@ -5151,16 +5151,15 @@ class Func_Ovml_Container_CalendarEvents extends Func_Ovml_Container
 
     public function setOvmlContext(babOvTemplate $ctx)
     {
-        global $babBody, $babDB;
         parent::setOvmlContext($ctx);
 
-        $calendarid = $ctx->get_value('calendarid');
-        $delegationid = (int) $ctx->get_value('delegationid');
-        $this->maxEvent = (int) $ctx->get_value('maxevents');
-        $filter = mb_strtoupper($ctx->get_value('filter')) !== "NO";
-        $holiday = mb_strtoupper($ctx->get_value('holiday')) !== "NO";
-        $this->private = mb_strtoupper($ctx->get_value('private')) === "YES" || !$ctx->get_value('private');
-        $this->awaiting_approval = mb_strtoupper($ctx->get_value('awaiting_approval')) === "YES";
+        $calendarid = $ctx->curctx->getAttribute('calendarid');
+        $delegationid = (int) $ctx->curctx->getAttribute('delegationid');
+        $this->maxEvent = (int) $ctx->curctx->getAttribute('maxevents');
+        $filter = mb_strtoupper($ctx->curctx->getAttribute('filter')) !== "NO";
+        $holiday = mb_strtoupper($ctx->curctx->getAttribute('holiday')) !== "NO";
+        $this->private = mb_strtoupper($ctx->curctx->getAttribute('private')) === "YES" || !$ctx->curctx->getAttribute('private');
+        $this->awaiting_approval = mb_strtoupper($ctx->curctx->getAttribute('awaiting_approval')) === "YES";
 
         switch(bab_getICalendars()->defaultview)
             {
@@ -5172,17 +5171,17 @@ class Func_Ovml_Container_CalendarEvents extends Func_Ovml_Container
         include_once $GLOBALS['babInstallPath']."utilit/workinghoursincl.php";
         include_once $GLOBALS['babInstallPath']."utilit/dateTime.php";
 
-        $startdate = $ctx->get_value('date');
+        $startdate = $ctx->curctx->getAttribute('date');
         if( $startdate === false || $startdate === '' )
             {
-            $startdate = BAB_dateTime::now();
+            $startdate = BAB_DateTime::now();
             }
         else
             {
-            $startdate = BAB_dateTime::fromIsoDateTime($startdate);
+            $startdate = BAB_DateTime::fromIsoDateTime($startdate);
             }
 
-        $limit = $ctx->get_value('limit');
+        $limit = $ctx->curctx->getAttribute('limit');
         $lf = $lr = 0;
 
         if( $limit !== false && $limit !== '' )
@@ -5220,7 +5219,7 @@ class Func_Ovml_Container_CalendarEvents extends Func_Ovml_Container
 
         $criteria = $factory->Calendar($calendars);
 
-        $categoryid = $ctx->get_value('categoryid');
+        $categoryid = $ctx->curctx->getAttribute('categoryid');
         if( $categoryid !== false && $categoryid !== '' )
             {
             $catnames = array();
@@ -5287,7 +5286,6 @@ class Func_Ovml_Container_CalendarEvents extends Func_Ovml_Container
       * Get available calendar without filter
      */
     public function getCalendars($calendarid) {
-        global $babDB;
 
         if (empty($calendarid)) {
             trigger_error('filter=NO must be used with calendarid');
@@ -5421,7 +5419,6 @@ class Func_Ovml_Container_CalendarEvents extends Func_Ovml_Container
 
     public function getnext()
     {
-        global $babBody,$babDB;
         if( $this->idx < $this->count && ($this->maxEvent == 0 || $this->idx < $this->maxEvent))
         {
             list(, $p) = each($this->events);
@@ -5566,18 +5563,15 @@ class Func_Ovml_Container_CalendarEventDomains extends Func_Ovml_Container
 
     public function setOvmlContext(babOvTemplate $ctx)
     {
-        global $babBody, $babDB;
         parent::setOvmlContext($ctx);
 
-        $calendarid = $ctx->get_value('calendarid');
-        $eventid = $ctx->get_value('eventid');
-        $dtstart = $ctx->get_value('dtstart');
+        $calendarid = $ctx->curctx->getAttribute('calendarid');
+        $eventid = $ctx->curctx->getAttribute('eventid');
+        $dtstart = $ctx->curctx->getAttribute('dtstart');
 
         $calendar = bab_getICalendars()->getEventCalendar($calendarid);
 
         $backend = $calendar->getBackend();
-
-        $collection = $backend->CalendarEventCollection($calendar);
 
         $period = $backend->getPeriod($backend->CalendarEventCollection($calendar), $eventid, $dtstart);
 
@@ -5595,7 +5589,6 @@ class Func_Ovml_Container_CalendarEventDomains extends Func_Ovml_Container
 
     public function getnext()
     {
-        global $babBody,$babDB;
         if(!empty($this->doms) && $dom = array_shift($this->doms))
         {
             $this->ctx->curctx->push('DomainName'	, $dom['domain']);
@@ -5621,7 +5614,7 @@ class Func_Ovml_Container_CalendarUserEvents extends Func_Ovml_Container_Calenda
         $this->cal_resources		= 0;
         $this->cal_default_users	= 0;
 
-        $userid = $ctx->get_value('userid');
+        $userid = $ctx->curctx->getAttribute('userid');
 
         if (false !== $userid && '' !== $userid) {
             $this->getCalendarsFromOwner($ctx, explode(',',$userid));
@@ -5640,7 +5633,7 @@ class Func_Ovml_Container_CalendarGroupEvents extends Func_Ovml_Container_Calend
         $this->cal_groups		= 1;
         $this->cal_resources	= 0;
 
-        $groupid = $ctx->get_value('groupid');
+        $groupid = $ctx->curctx->getAttribute('groupid');
 
         if (false !== $groupid && '' !== $groupid) {
             $this->getCalendarsFromOwner($ctx, explode(',',$groupid));
@@ -5659,7 +5652,7 @@ class Func_Ovml_Container_CalendarResourceEvents extends Func_Ovml_Container_Cal
         $this->cal_groups		= 0;
         $this->cal_resources	= 1;
 
-        $resourceid = $ctx->get_value('resourceid');
+        $resourceid = $ctx->curctx->getAttribute('resourceid');
 
         if (false !== $resourceid && '' !== $resourceid) {
             $this->getCalendarsFromOwner($ctx, explode(',',$resourceid));
@@ -5679,11 +5672,11 @@ class Func_Ovml_Container_IfUserMemberOfGroups extends Func_Ovml_Container
 
     public function setOvmlContext(babOvTemplate $ctx)
     {
-        global $babBody, $babDB;
+        global $babDB;
         parent::setOvmlContext($ctx);
         $this->count = 0;
 
-        $userid = $ctx->get_value('userid');
+        $userid = $ctx->curctx->getAttribute('userid');
         if( $userid === false  )
         {
             $userid = $GLOBALS['BAB_SESS_USERID'];
@@ -5692,14 +5685,14 @@ class Func_Ovml_Container_IfUserMemberOfGroups extends Func_Ovml_Container
 
         if( $userid != "" )
             {
-            $all = $ctx->get_value('all');
+            $all = $ctx->curctx->getAttribute('all');
 
             if ( $all !== false && mb_strtoupper($all) == "YES")
                 $all = true;
             else
                 $all = false;
 
-            $groupid = $ctx->get_value('groupid');
+            $groupid = $ctx->curctx->getAttribute('groupid');
             if( $groupid !== false && $groupid !== '' )
                 {
                 $groupid = explode(',', $groupid);
@@ -5709,7 +5702,7 @@ class Func_Ovml_Container_IfUserMemberOfGroups extends Func_Ovml_Container
                 $groupid = array();
                 }
 
-            $childs = $ctx->get_value('childs');
+            $childs = $ctx->curctx->getAttribute('childs');
             if ( $childs !== false && mb_strtoupper($childs) == "YES")
                 {
                 include_once $GLOBALS['babInstallPath']."utilit/grptreeincl.php";
@@ -5779,8 +5772,8 @@ class Func_Ovml_Container_OvmlArray extends Func_Ovml_Container
     {
         $this->count = 0;
         parent::setOvmlContext($ctx);
-        $this->name = $ctx->get_value('name');
-        $value = $ctx->get_value('value');
+        $this->name = $ctx->curctx->getAttribute('name');
+        $value = $ctx->curctx->getAttribute('value');
         $m2 = null;
         if( preg_match_all("/(.*?)\[([^\]]+)\]/", $value, $m2) > 0)
         {
@@ -5844,8 +5837,8 @@ class Func_Ovml_Container_OvmlArrayFields extends Func_Ovml_Container
     {
         $this->count = 0;
         parent::setOvmlContext($ctx);
-        $this->name = $ctx->get_value('name');
-        $value = $ctx->get_value('value');
+        $this->name = $ctx->curctx->getAttribute('name');
+        $value = $ctx->curctx->getAttribute('value');
         $m2 = null;
         if( preg_match_all("/(.*?)\[([^\]]+)\]/", $value, $m2) > 0)
         {
@@ -6199,11 +6192,11 @@ class Func_Ovml_Container_Multipages extends Func_Ovml_Container
     {
         $this->count = 0;
         parent::setOvmlContext($ctx);
-        $total = $ctx->get_value('total');
+        $total = $ctx->curctx->getAttribute('total');
 
-        $maxpages = $ctx->get_value('maxpages');
-        $perpage = $ctx->get_value('perpage');
-        $currentpage = $ctx->get_value('currentpage');
+        $maxpages = $ctx->curctx->getAttribute('maxpages');
+        $perpage = $ctx->curctx->getAttribute('perpage');
+        $currentpage = $ctx->curctx->getAttribute('currentpage');
         if (false === $currentpage || !is_numeric($currentpage))
         {
             $currentpage = 1;
@@ -6296,14 +6289,39 @@ class bab_context
     const TEXT = 0;
     const HTML = 1;
 
-    var $name;
-    var $variables = array();
+    
+    /**
+     * Name of context
+     * This will contain bab_main or the container name without OC
+     * @var string
+     */
+    public $name;
+    
+    /**
+     * List of variable inside a context
+     * attributes values are also added to variables list for historical reason
+     * 
+     * @var array
+     */
+    public $variables = array();
+    
+    
+    /**
+     * List of attributes in the current context
+     * This is for one container only and should be used by container classes instead of the 
+     * variable to prevent names conflicts
+     * 
+     * @var array
+     */
+    public $attributes = array();
+    
 
     /**
      *
      * @var string
      */
-    var $content;
+    public $content;
+
 
     /**
      * storage for variable content format
@@ -6311,15 +6329,55 @@ class bab_context
      */
     private $format = array();
 
+    
+    
     public function bab_context($name)
     {
         $this->name = $name;
     }
 
-    public function push( $var, $value )
+    /**
+     * Push a new variable in the context
+     * @param string $var
+     * @param string $value
+     */
+    public function push($var, $value)
     {
         $this->variables[$var] = $value;
     }
+    
+    /**
+     * Push a new attribute to context
+     * in ovidentia before 8.4.93, attributes where pushed to the variables array
+     * 
+     * @since 8.4.93
+     * 
+     * @param string $var
+     * @param string $value
+     */
+    public function addAttribute($var, $value)
+    {
+        $this->attributes[$var] = $value;
+    }
+    
+    
+    /**
+     * Method to use in containers classes to get a safe attribute value
+     * 
+     * @since 8.4.93
+     * 
+     * @return string
+     */
+    public function getAttribute($var)
+    {
+        if (!isset($this->attributes[$var])) {
+            return false; // false is returned for compatiblity with get() method
+                          // the get method is used in containers to get attributes value before 8.4.93
+        }
+        
+        return $this->attributes[$var];
+    }
+    
 
     /**
      * Set optional format of content on a variable (optional)
@@ -6353,14 +6411,11 @@ class bab_context
      */
     public function get($var)
     {
-        if( isset($this->variables[$var]))
-            {
+        if( isset($this->variables[$var])) {
             return $this->variables[$var];
-            }
-        else
-            {
-            return false;
-            }
+        }
+        
+        return false;
     }
 
     /**
@@ -6370,13 +6425,11 @@ class bab_context
      */
     public function getFormat($var)
     {
-        if (!isset($this->variables[$var]))
-        {
+        if (!isset($this->variables[$var])) {
             return null;
         }
 
-        if (!isset($this->format[$var]))
-        {
+        if (!isset($this->format[$var])) {
             return self::TEXT;
         }
 
@@ -6727,11 +6780,26 @@ function setImageInfo($oCtx, $iMaxImageHeight, $iMaxImageWidth, $path)
     }
 }
 
-
+/**
+ * OVML template
+ * 
+ */
 class babOvTemplate
 {
+    
+    /**
+     * Stack of used contexts
+     * @var array
+     */
     public $contexts = array();
+    
+    
     public $handlers = array();
+    
+    /**
+     * The current processed context, updated when we enter in a container and when we get out
+     * @var bab_context
+     */
     public $curctx;
 
     /**
@@ -6765,7 +6833,7 @@ class babOvTemplate
         {
         $this->gctx->push("babUserName", 0);
         }
-//	$this->gctx->push("babCurrentDate", mktime());
+
     $this->gctx->push("babCurrentDate", time());
 
     foreach($args as $variable => $contents)
@@ -6786,12 +6854,16 @@ class babOvTemplate
     {
     if( count($this->contexts) > 1 )
         {
-        $tmp = array_pop($this->contexts);
+        array_pop($this->contexts);
         $this->curctx =& $this->contexts[count($this->contexts)-1];
         return $this->curctx;
         }
     }
 
+    /**
+     * Get variable value with context inheritance
+     * @return mixed | false
+     */
     public function get_value($var)
     {
     for( $i = count($this->contexts)-1; $i >= 0; $i--)
@@ -6805,6 +6877,10 @@ class babOvTemplate
     return false;
     }
 
+    /**
+     * Get format with context inheritance
+     * @return mixed | false
+     */
     public function get_format($var)
     {
     for( $i = count($this->contexts)-1; $i >= 0; $i--)
@@ -6819,6 +6895,10 @@ class babOvTemplate
     }
 
 
+    /**
+     * Get variables with context inheritance
+     * @return array
+     */
     public function get_variables($contextname)
     {
     for( $i = count($this->contexts)-1; $i >= 0; $i--)
@@ -6833,19 +6913,19 @@ class babOvTemplate
 
     public function get_currentContextname()
     {
-    return $this->curctx->name;
+        return $this->curctx->name;
     }
 
     public function push_handler(&$handler)
     {
-    $this->handlers[] = &$handler;
+        $this->handlers[] = &$handler;
     }
 
     public function pop_handler()
     {
     if( count($this->handlers) > 0 )
         {
-        $tmp = array_pop($this->handlers);
+        array_pop($this->handlers);
         }
     }
 
@@ -6878,11 +6958,19 @@ class babOvTemplate
     return $args;
     }
 
+    /**
+     * Process a container
+     * 
+     * @param $handler          Container name without OC, this is the functionality name
+     * @param string $txt       Container content
+     * @param array $args       Container arguments
+     */
     public function handle_tag( $handler, $txt, $args, $fprint = 'printout' )
     {
         $out = '';
 
         $cls = bab_functionality::get('Ovml/Container/'.$handler, false);
+        /*@var $cls Func_Ovml_Container */
 
         if (false === $cls) {
             if( $fprint == 'object' )
@@ -6897,16 +6985,34 @@ class babOvTemplate
         $ctx->setContent($txt);
         $this->push_ctx($ctx);
 
-        foreach( $args as $key => $val )
-            {
-            $this->curctx->push($key, $val);
+        foreach ($args as $key => $val) {
+            $this->curctx->addAttribute($key, $val);
+            
+            
+            if ($cls->attributesInVariables) {
+                
+                $currentValue = $this->get_value($key);
+                if ($currentValue && $currentValue !== $val) {
+                    bab_debug(
+                        sprintf(
+                            'The attribute %s from container %s will overwrite a previously defined variable in %s',
+                            $key,
+                            BAB_TAG_CONTAINER.$handler,
+                            $this->debug_location
+                        ),
+                        DBG_WARNING,
+                        'ovml'
+                    );
+                }
+                
+                $this->curctx->push($key, $val);
             }
+        }
 
         $cls->setOvmlContext($this);
-        if( $fprint == 'object' )
-            {
+        if ($fprint == 'object') {
             return $cls;
-            }
+        }
 
         $out = $cls->$fprint($txt);
         $this->pop_ctx();
@@ -6986,7 +7092,7 @@ class babOvTemplate
 
         if( $saveas )
         {
-            // allways apply saveas as the last attribute
+            // always apply saveas as the last attribute
             $val = $attributes->saveas($val, $saveas);
         }
 
@@ -7003,7 +7109,7 @@ class babOvTemplate
         return $txt;
         }
     $m = null;
-    if(preg_match_all("/<(".BAB_TAG_FUNCTION."|".BAB_TAG_VARIABLE.")([^\s>]*)\s*(\w+\s*=\s*[\"].*?\")*\s*\/?>/s", $txt, $m))
+    if(preg_match_all("/[<{](".BAB_TAG_FUNCTION."|".BAB_TAG_VARIABLE.")([^\s>]*)\s*(\w+\s*=\s*[\"].*?\")*\s*\/?[>}]/s", $txt, $m))
         {
         for( $i = 0; $i< count($m[1]); $i++)
             {
@@ -7543,7 +7649,6 @@ class Func_Ovml_Function_SetCookie extends Func_Ovml_Function {
 
     public function toString()
     {
-    global $babBody;
     $name = "";
     $value = "";
     $args = $this->args;
@@ -7649,10 +7754,8 @@ class Func_Ovml_Function_GetSessionVar extends Func_Ovml_Function {
 
     public function toString()
     {
-    global $babBody;
     $args = $this->args;
     $name = '';
-    $value = '';
 
     if(count($args))
         {
@@ -7769,7 +7872,6 @@ class Func_Ovml_Function_GetVar extends Func_Ovml_Function {
 
     public function toString()
     {
-    global $babBody;
     $name = '';
     $args = $this->args;
 
@@ -8313,7 +8415,6 @@ class Func_Ovml_Function_Addon extends Func_Ovml_Function {
     {
         $args = $this->args;
 
-        global $babBody;
         $output = '';
         if(count($args))
             {
@@ -8573,7 +8674,7 @@ class Func_Ovml_Function_FileTree extends Func_Ovml_Function {
             $req = "select * from ".BAB_FM_FOLDERS_TBL." where sRelativePath = '' AND id IN (".$babDB->quote($this->arrid).") AND active='Y' AND id_dgowner = 0";
 
             $res = $babDB->db_query($req);
-            $return = '';
+
             while($arr = $babDB->db_fetch_assoc($res)){
                 $this->path = $arr['folder'];
                 $core[]= $this->getChildTree();
@@ -8651,7 +8752,7 @@ class Func_Ovml_Function_ArticleTree extends Func_Ovml_Function {
 
     private function getChild($id, $depth = 1)
     {
-        global $babDB, $babBody;
+        global $babDB;
         $return = '';
 
         $req = "SELECT bab_topics_categories.id as id, bab_topics_categories.title as title
@@ -8727,7 +8828,7 @@ class Func_Ovml_Function_ArticleTree extends Func_Ovml_Function {
                         }
                         $child[] = array(
                             'type' => 'article '.$classNew,
-                            'url'=> bab_toHtml(bab_sitemap::url($arrArticles['id'], $GLOBALS['babUrl'].bab_getSelf()."?tg=articles&idx=More&topics=".$arrArticles['id_topic']."&article=".$arrArticles['id'])),
+                            'url'=> bab_toHtml(bab_siteMap::url($arrArticles['id'], $GLOBALS['babUrl'].bab_getSelf()."?tg=articles&idx=More&topics=".$arrArticles['id_topic']."&article=".$arrArticles['id'])),
                             'name' => $arrArticles['title'],
                             'child' => '',
                             'date' => $date

@@ -37,9 +37,9 @@ class Func_Ovml_Container_DbDirectories extends Func_Ovml_Container
 	{
 		global $babDB;
 		parent::setOvmlContext($ctx);
-		$directoryid = $ctx->get_value('directoryid');
-		$directorytype = mb_strtolower($ctx->get_value('type'));
-		$delegationid = (int) $ctx->get_value('delegationid');
+		$directoryid = $ctx->curctx->getAttribute('directoryid');
+		$directorytype = mb_strtolower($ctx->curctx->getAttribute('type'));
+		$delegationid = (int) $ctx->curctx->getAttribute('delegationid');
 
 		$sDelegation = ' ';	
 		if(0 != $delegationid)	
@@ -121,7 +121,7 @@ class Func_Ovml_Container_DbDirectory extends Func_Ovml_Container_DbDirectories
 
 	public function setOvmlContext(babOvTemplate $ctx)
 	{
-		$directoryid = $ctx->get_value('directoryid');
+		$directoryid = $ctx->curctx->getAttribute('directoryid');
 		if( $directoryid !== false && !empty($directoryid) )
 			{
 			parent::setOvmlContext($ctx);
@@ -148,10 +148,10 @@ class Func_Ovml_Container_DbDirectoryFields extends Func_Ovml_Container
 	{
 		global $babDB;
 		parent::setOvmlContext($ctx);
-		$directoryid = $ctx->get_value('directoryid');
+		$directoryid = $ctx->curctx->getAttribute('directoryid');
 		if( $directoryid !== false && !empty($directoryid) && bab_isAccessValid(BAB_DBDIRVIEW_GROUPS_TBL, $directoryid) )
 			{
-			$ball = $ctx->get_value('all');
+			$ball = $ctx->curctx->getAttribute('all');
 			$res = $babDB->db_query("select id_group from ".BAB_DB_DIRECTORIES_TBL." where id='".$babDB->db_escape_string($directoryid)."'");
 			if( $res && $babDB->db_num_rows($res ) > 0 )
 				{
@@ -229,15 +229,15 @@ class Func_Ovml_Container_DbDirectoryMembers extends Func_Ovml_Container
 	{
 		global $babDB;
 		parent::setOvmlContext($ctx);
-		$this->directoryid = $ctx->get_value('directoryid');
+		$this->directoryid = $ctx->curctx->getAttribute('directoryid');
 		if( $this->directoryid !== false && !empty($this->directoryid) && bab_isAccessValid(BAB_DBDIRVIEW_GROUPS_TBL, $this->directoryid) ) {
 			$res = $babDB->db_query("select id_group from ".BAB_DB_DIRECTORIES_TBL." where id='".$babDB->db_escape_string($this->directoryid)."'");
 			if( $res && $babDB->db_num_rows($res ) > 0 ) {
 				$arr = $babDB->db_fetch_array($res);
 				$idgroup = $arr['id_group'];
-				$idfields = $ctx->get_value('fields');
+				$idfields = $ctx->curctx->getAttribute('fields');
 				if( $idfields === false || empty($idfields) ) {
-					$ball = $ctx->get_value('all');
+					$ball = $ctx->curctx->getAttribute('all');
 					if( !$ball ) {
 						$res = $babDB->db_query("select * from ".BAB_DBDIR_FIELDSEXTRA_TBL." where id_directory='".($idgroup != 0? 0: $babDB->db_escape_string($this->directoryid))."' and ordering!='0' order by ordering asc");
 						$idfields = array();
@@ -295,19 +295,19 @@ class Func_Ovml_Container_DbDirectoryMembers extends Func_Ovml_Container
 						$select[] = 'e.email';
 					}
 
-					$orderby = $ctx->get_value('orderby');
+					$orderby = $ctx->curctx->getAttribute('orderby');
 
 					if( $orderby === false || empty($orderby) ) {
 						$orderby = $nfields[0];
 					}
 
-					$order = $ctx->get_value('order');
+					$order = $ctx->curctx->getAttribute('order');
 
 					if( $order === false || empty($order) ) {
 						$order = 'asc';
 					}
 
-					$like = $ctx->get_value('like');
+					$like = $ctx->curctx->getAttribute('like');
 
 					if( $like === false || empty($like) ) {
 						$like = '';
@@ -471,13 +471,13 @@ class Func_Ovml_Container_DbDirectoryEntry extends Func_Ovml_Container
 	{
 		global $babDB;
 		parent::setOvmlContext($ctx);
-		$this->directoryid = $ctx->get_value('directoryid');
+		$this->directoryid = $ctx->curctx->getAttribute('directoryid');
 		$this->count = 0;
 
 		if( $this->directoryid !== false && !empty($this->directoryid) && bab_isAccessValid(BAB_DBDIRVIEW_GROUPS_TBL, $this->directoryid) )
 			{
-			$this->userid = $ctx->get_value('userid');
-			$this->memberid = $ctx->get_value('memberid');
+			$this->userid = $ctx->curctx->getAttribute('userid');
+			$this->memberid = $ctx->curctx->getAttribute('memberid');
 			if( ($this->userid !== false && !empty($this->userid)) ||  ($this->memberid !== false && !empty($this->memberid)) )
 				{
 				list($idgroup) = $babDB->db_fetch_array($babDB->db_query("select id_group from ".BAB_DB_DIRECTORIES_TBL." where id='".$babDB->db_escape_string($this->directoryid)."'"));
@@ -667,11 +667,11 @@ class Func_Ovml_Container_DbDirectoryAcl extends Func_Ovml_Container
 	{
 		global $babBody, $babDB;
 		parent::setOvmlContext($ctx);
-		$directoryid = $ctx->get_value('directoryid');
+		$directoryid = $ctx->curctx->getAttribute('directoryid');
 
 		if( $directoryid !== false && $directoryid !== '' )
 		{
-			$type = $ctx->get_value('type');
+			$type = $ctx->curctx->getAttribute('type');
 			if( $type !== false && $type !== '' )
 			{
 				switch(mb_strtolower($type))
