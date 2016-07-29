@@ -740,15 +740,26 @@ class bab_InstallSource {
 		$path 	= $this->getFolder().'/';
 		//if addon is compatible with vendor
 		if ((file_exists($path.'composer.json')) && (file_exists('vendor/ovidentia'))) {
-		  return($this->installToVendorFolder($ini));
+		  $unzipAddon = $this->installToVendorFolder($ini);
 		}
 		//addon is not compatible with vendor
 		else{
-		  return($this->installToAddonsFolder($ini));
+		  $unzipAddon = $this->installToAddonsFolder($ini);
 		}
 		
+		bab_addonsInfos::insertMissingAddonsInTable();
+		bab_addonsInfos::clear();
+		
+		$addon = bab_getAddonInfosInstance($addon_name);
+		if ($addon) {
+		    if (!$addon->upgrade()) {
+		        $babBody->addError(bab_sprintf(bab_translate('Upgrade of addon %s failed'), $ini->getName()));
+		        return false;
+		    }
+		}
 
 		return true;
+		
 	}
 	
 	
@@ -769,35 +780,13 @@ class bab_InstallSource {
         
         $babBody = bab_getInstance('babBody');
         /*@var $babBody babBody */
-        
-        $addon_name = $ini->getName();
-        $map = bab_getVendorFilePath();
         $path 	= $this->getFolder().'/';
-        // browse source path
-        foreach ($map['loc_out'] as $key => $source) {
-        
-            if (is_dir($path.$source)) {
-                $destination = $map['loc_in'][$key].'/';
-                if(!file_exists($destination.$ini->getName())){
-                    bab_mkdir($destination.$ini->getName(), '', true);
-                }
-                if (true !== $result = bab_recursive_cp($path.$source, $destination.$ini->getName().'/'.$source, true)) {
+
+                if (true !== $result = bab_recursive_cp($path.$source, 'vendor/ovidentia/'.$ini->getName(), true)) {
                     $babBody->addError($result);
                     return false;
                 }
-            }
-        }
-        
-        bab_addonsInfos::insertMissingAddonsInTable();
-        bab_addonsInfos::clear();
-        
-        $addon = bab_getAddonInfosInstance($addon_name);
-        if ($addon) {
-            if (!$addon->upgrade()) {
-                $babBody->addError(bab_sprintf(bab_translate('Upgrade of addon %s failed'), $ini->getName()));
-                return false;
-            }
-        }
+        return true;
     }
     
     
@@ -835,16 +824,7 @@ class bab_InstallSource {
             }
         }
         
-        bab_addonsInfos::insertMissingAddonsInTable();
-        bab_addonsInfos::clear();
-        
-        $addon = bab_getAddonInfosInstance($addon_name);
-        if ($addon) {
-            if (!$addon->upgrade()) {
-                $babBody->addError(bab_sprintf(bab_translate('Upgrade of addon %s failed'), $ini->getName()));
-                return false;
-            }
-        }
+        return true;
     }
     
     
