@@ -61,7 +61,7 @@ abstract class Ovml_Container_Sitemap extends Func_Ovml_Container
     {
         $this->count = 0;
         parent::setOvmlContext($ctx);
-        $limit = $ctx->get_value('limit');
+        $limit = $ctx->curctx->getAttribute('limit');
         if (is_string($limit)) {
             $limits = explode(',', $limit);
             if (count($limits) === 1) {
@@ -76,7 +76,7 @@ abstract class Ovml_Container_Sitemap extends Func_Ovml_Container
             $this->idx += $this->limitOffset;
         }
 
-        $sitemap = $ctx->get_value('sitemap');
+        $sitemap = $ctx->curctx->getAttribute('sitemap');
 
         if (false === $sitemap) {
             global $babBody;
@@ -370,7 +370,7 @@ class Func_Ovml_Container_SitemapCustomNode extends Ovml_Container_Sitemap
 
         if (isset($this->sitemap)) {
 
-            $targetId = $ctx->get_value('target');
+            $targetId = $ctx->curctx->getAttribute('target');
 
 
             if (!$targetId) {
@@ -481,7 +481,7 @@ class Func_Ovml_Container_SitemapPath extends Ovml_Container_Sitemap
 
 
             if (empty($nodeId)) {
-                $keepLastKnown = $ctx->get_value('keeplastknown');
+                $keepLastKnown = $ctx->curctx->getAttribute('keeplastknown');
                 if ($keepLastKnown === false) {
                     // If keeplastknown is not specified, active by default
                     $keepLastKnown = 1;

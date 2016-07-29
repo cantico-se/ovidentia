@@ -49,9 +49,9 @@ class Func_Ovml_Container_OrgUserEntities extends Func_Ovml_Container
 	{
 		parent::setOvmlContext($ctx);
 		
-		$iIdOrgChart	= (int) $ctx->get_value('orgChartId');
-		$iIdUser		= (int) $ctx->get_value('userId');
-		$sRoleType		= (string) $ctx->get_value('roleType');
+		$iIdOrgChart	= (int) $ctx->curctx->getAttribute('orgChartId');
+		$iIdUser		= (int) $ctx->curctx->getAttribute('userId');
+		$sRoleType		= (string) $ctx->curctx->getAttribute('roleType');
 		
 		if(0 === $iIdOrgChart)
 		{
@@ -136,9 +136,9 @@ class Func_Ovml_Container_OrgPathToEntity extends Func_Ovml_Container
 	{
 		parent::setOvmlContext($ctx);
 		
-		$iIdEntity		= (int) $ctx->get_value('entityId');
-		$bIncludeEntity	= ('1' == (int) $ctx->get_value('includeEntity'));
-		$sOrder			= (string) $ctx->get_value('order');
+		$iIdEntity		= (int) $ctx->curctx->getAttribute('entityId');
+		$bIncludeEntity	= ('1' == (int) $ctx->curctx->getAttribute('includeEntity'));
+		$sOrder			= (string) $ctx->curctx->getAttribute('order');
 
 		$sQuery = bab_OCGetPathToNodeQuery($iIdEntity, $bIncludeEntity, $sOrder);		
 		//bab_debug($sQuery);

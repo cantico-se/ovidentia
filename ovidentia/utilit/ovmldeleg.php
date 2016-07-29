@@ -173,11 +173,11 @@ class Func_Ovml_Container_Delegations extends Func_Ovml_Container
 
 		$this->oCategoryCache = new bab_CategoryCache();
 
-		$delegationid = $ctx->get_value('delegationid');
-		$userid = $ctx->get_value('userid');
-		$filter = $ctx->get_value('filter');
-		$this->imageheightmax	= (int) $ctx->get_value('imageheightmax');
-		$this->imagewidthmax	= (int) $ctx->get_value('imagewidthmax');
+		$delegationid = $ctx->curctx->getAttribute('delegationid');
+		$userid = $ctx->curctx->getAttribute('userid');
+		$filter = $ctx->curctx->getAttribute('filter');
+		$this->imageheightmax	= (int) $ctx->curctx->getAttribute('imageheightmax');
+		$this->imagewidthmax	= (int) $ctx->curctx->getAttribute('imagewidthmax');
 		if( mb_strtoupper($filter) == "NO" )
 			{
 			$filter = false;
@@ -279,9 +279,9 @@ class Func_Ovml_Container_Delegation extends Func_Ovml_Container_Delegations
 
 	public function setOvmlContext(babOvTemplate $ctx)
 	{
-		$this->imageheightmax	= (int) $ctx->get_value('imageheightmax');
-		$this->imagewidthmax	= (int) $ctx->get_value('imagewidthmax');
-		$delegationid = $ctx->get_value('delegationid');
+		$this->imageheightmax	= (int) $ctx->curctx->getAttribute('imageheightmax');
+		$this->imagewidthmax	= (int) $ctx->curctx->getAttribute('imagewidthmax');
+		$delegationid = $ctx->curctx->getAttribute('delegationid');
 		if( $delegationid !== false && !empty($delegationid) )
 			{
 			parent::setOvmlContext($ctx);
@@ -314,10 +314,10 @@ class Func_Ovml_Container_DelegationsManaged extends Func_Ovml_Container
 
 		$this->oCategoryCache = new bab_CategoryCache();
 
-		$delegationid = $ctx->get_value('delegationid');
-		$userid = $ctx->get_value('userid');
-		$this->imageheightmax	= (int) $ctx->get_value('imageheightmax');
-		$this->imagewidthmax	= (int) $ctx->get_value('imagewidthmax');
+		$delegationid = $ctx->curctx->getAttribute('delegationid');
+		$userid = $ctx->curctx->getAttribute('userid');
+		$this->imageheightmax	= (int) $ctx->curctx->getAttribute('imageheightmax');
+		$this->imagewidthmax	= (int) $ctx->curctx->getAttribute('imagewidthmax');
 
 		if( $userid === false || $userid === '' )
 			{
@@ -392,9 +392,9 @@ class Func_Ovml_Container_DelegationManaged extends Func_Ovml_Container_Delegati
 
 	public function setOvmlContext(babOvTemplate $ctx)
 	{
-		$delegationid = $ctx->get_value('delegationid');
-		$this->imageheightmax	= (int) $ctx->get_value('imageheightmax');
-		$this->imagewidthmax	= (int) $ctx->get_value('imagewidthmax');
+		$delegationid = $ctx->curctx->getAttribute('delegationid');
+		$this->imageheightmax	= (int) $ctx->curctx->getAttribute('imageheightmax');
+		$this->imagewidthmax	= (int) $ctx->curctx->getAttribute('imagewidthmax');
 		if( $delegationid !== false && !empty($delegationid) )
 			{
 			parent::setOvmlContext($ctx);
@@ -427,7 +427,7 @@ class Func_Ovml_Container_DelegationItems extends Func_Ovml_Container
 		
 		$babDG = bab_getDelegationsObjects();
 		
-		$delegationid = $ctx->get_value('delegationid');
+		$delegationid = $ctx->curctx->getAttribute('delegationid');
 
 		if( $delegationid !== false && $delegationid !== '' )
 			{
@@ -485,7 +485,7 @@ class Func_Ovml_Container_DelegationAdministrators extends Func_Ovml_Container
 	{
 		global $babDB;
 		parent::setOvmlContext($ctx);
-		$delegationid = $ctx->get_value('delegationid');
+		$delegationid = $ctx->curctx->getAttribute('delegationid');
 
 		if( $delegationid !== false && $delegationid !== '' )
 			{
@@ -534,7 +534,7 @@ class Func_Ovml_Container_DelegationsCategories extends Func_Ovml_Container
 		global $babDB;
 		parent::setOvmlContext($ctx);
 		$this->iCount	= 0;
-		$categoryid		= $ctx->get_value('categoryid');
+		$categoryid		= $ctx->curctx->getAttribute('categoryid');
 
 		if($categoryid === false || $categoryid === '')
 		{
@@ -598,7 +598,7 @@ class Func_Ovml_Container_DelegationsCategory extends Func_Ovml_Container_Delega
 
 	public function setOvmlContext(babOvTemplate $ctx)
 	{
-		$categoryid = $ctx->get_value('categoryid');
+		$categoryid = $ctx->curctx->getAttribute('categoryid');
 		if($categoryid !== false && !empty($categoryid) )
 		{
 			parent::setOvmlContext($ctx);
