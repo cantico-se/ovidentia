@@ -106,7 +106,7 @@ abstract class Ovml_Container_Sitemap extends Func_Ovml_Container
      */
     public function getBaseNode()
     {
-        $baseNodeId = $this->ctx->get_value('basenode');
+        $baseNodeId = $this->ctx->getAttribute('basenode');
         $baseNodeId = str_replace(' ', '', $baseNodeId);
         if (empty($baseNodeId))
         {
@@ -126,8 +126,8 @@ abstract class Ovml_Container_Sitemap extends Func_Ovml_Container
      */
     protected function getNodeByIdOrLangId($nodeIdAttributeName, $langIdAttributeName)
     {
-        $nodeId = $this->ctx->get_value($nodeIdAttributeName);
-        $langId = $this->ctx->get_value($langIdAttributeName);
+        $nodeId = $this->ctx->getAttribute($nodeIdAttributeName);
+        $langId = $this->ctx->getAttribute($langIdAttributeName);
 
         if ($langId) {
             $node = $this->sitemap->getNodeByLangId(bab_getLanguage(), $langId);
