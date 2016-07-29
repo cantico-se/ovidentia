@@ -737,10 +737,9 @@ class bab_InstallSource {
 		
 
 		$babDB->db_query("UPDATE ".BAB_ADDONS_TBL." SET installed='N' WHERE title=".$babDB->quote($addon_name));
-
-        
+		$path 	= $this->getFolder().'/';
 		//if addon is compatible with vendor
-		if (file_exists($path.'composer.json') && file_exists('vendor/ovidentia')) {
+		if ((file_exists($path.'composer.json')) && (file_exists('vendor/ovidentia'))) {
 		  return($this->installToVendorFolder($ini));
 		}
 		//addon is not compatible with vendor
