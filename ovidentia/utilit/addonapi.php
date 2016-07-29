@@ -1871,8 +1871,12 @@ function bab_calendarPopup($callback, $month='', $year='', $low='', $high='')
 
 /**
  * Create a directory
+ * @param	string    $path       The directory path
+ * @param	int       $mode       The mode to apply on the created directory
+ * @param   bool      $recursive  Allows the creation of nested directories specified in $path
+ * @return 	bool
  */
-function bab_mkdir($path, $mode = '')
+function bab_mkdir($path, $mode = '', $recursive = false)
 {
     if (mb_substr($path, - 1) == '/') {
         $path = mb_substr($path, 0, - 1);
@@ -1888,7 +1892,7 @@ function bab_mkdir($path, $mode = '')
             $mode = 0770;
         }
     }
-    $res = mkdir($path, $mode);
+    $res = mkdir($path, $mode, $recursive);
     if (! $res) {
         include_once $GLOBALS['babInstallPath'] . 'utilit/devtools.php';
         bab_debug_print_backtrace();

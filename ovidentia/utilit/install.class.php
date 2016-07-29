@@ -704,6 +704,7 @@ class bab_InstallSource {
 
 
 
+	
 	/**
 	 * Copy files for addons
 	 * @param	bab_AddonIniFile $ini
@@ -736,39 +737,118 @@ class bab_InstallSource {
 		
 
 		$babDB->db_query("UPDATE ".BAB_ADDONS_TBL." SET installed='N' WHERE title=".$babDB->quote($addon_name));
-
 		$path 	= $this->getFolder().'/';
-		$map 	= bab_getAddonsFilePath();
-
-		// browse source path
-		foreach ($map['loc_out'] as $key => $source) {
-
-			if (is_dir($path.$source)) {
-				$destination = $map['loc_in'][$key].'/';
-
-				if (true !== $result = bab_recursive_cp($path.$source, $destination.$ini->getName())) {
-					$babBody->addError($result);
-					return false;
-				}
-			}
+		//if addon is compatible with vendor
+		if ((file_exists($path.'composer.json')) && (file_exists('vendor/ovidentia'))) {
+		  return($this->installToVendorFolder($ini));
 		}
-
-		bab_addonsInfos::insertMissingAddonsInTable();
-		bab_addonsInfos::clear();
-
-		$addon = bab_getAddonInfosInstance($addon_name);
-		if ($addon) {
-			if (!$addon->upgrade()) {
-				$babBody->addError(bab_sprintf(bab_translate('Upgrade of addon %s failed'), $ini->getName()));
-				return false;
-			}
+		//addon is not compatible with vendor
+		else{
+		  return($this->installToAddonsFolder($ini));
 		}
+		
 
 		return true;
 	}
-
-
-
+	
+	
+	
+	
+	/**
+	 * Copy files for addons in the vendor folder
+	 * @param	bab_AddonIniFile $ini
+	 * @see bab_getAddonsFilePath()
+	 * @return 	bool
+	 */
+    private function installToVendorFolder(bab_AddonIniFile $ini) {
+        include_once dirname(__FILE__).'/upgradeincl.php';
+        include_once dirname(__FILE__).'/addonsincl.php';
+        include_once dirname(__FILE__).'/utilit.php';
+        
+        global $babDB;
+        
+        $babBody = bab_getInstance('babBody');
+        /*@var $babBody babBody */
+        
+        $addon_name = $ini->getName();
+        $map = bab_getVendorFilePath();
+        $path 	= $this->getFolder().'/';
+        // browse source path
+        foreach ($map['loc_out'] as $key => $source) {
+        
+            if (is_dir($path.$source)) {
+                $destination = $map['loc_in'][$key].'/';
+                if(!file_exists($destination.$ini->getName())){
+                    bab_mkdir($destination.$ini->getName(), '', true);
+                }
+                if (true !== $result = bab_recursive_cp($path.$source, $destination.$ini->getName().'/'.$source, true)) {
+                    $babBody->addError($result);
+                    return false;
+                }
+            }
+        }
+        
+        bab_addonsInfos::insertMissingAddonsInTable();
+        bab_addonsInfos::clear();
+        
+        $addon = bab_getAddonInfosInstance($addon_name);
+        if ($addon) {
+            if (!$addon->upgrade()) {
+                $babBody->addError(bab_sprintf(bab_translate('Upgrade of addon %s failed'), $ini->getName()));
+                return false;
+            }
+        }
+    }
+    
+    
+    
+    
+    /**
+     * Copy files for addons in the addons folder
+     * @param	bab_AddonIniFile $ini
+     * @see bab_getAddonsFilePath()
+     * @return 	bool
+     */
+    private function installToAddonsFolder(bab_AddonIniFile $ini) {
+        include_once dirname(__FILE__).'/upgradeincl.php';
+        include_once dirname(__FILE__).'/addonsincl.php';
+        include_once dirname(__FILE__).'/utilit.php';
+        
+        global $babDB;
+        
+        $babBody = bab_getInstance('babBody');
+        /*@var $babBody babBody */
+        
+        $addon_name = $ini->getName();
+        $map = bab_getAddonsFilePath();
+        $path 	= $this->getFolder().'/';
+        // browse source path
+        foreach ($map['loc_out'] as $key => $source) {
+        
+            if (is_dir($path.$source)) {
+                $destination = $map['loc_in'][$key].'/';
+        
+                if (true !== $result = bab_recursive_cp($path.$source, $destination.$ini->getName())) {
+                    $babBody->addError($result);
+                    return false;
+                }
+            }
+        }
+        
+        bab_addonsInfos::insertMissingAddonsInTable();
+        bab_addonsInfos::clear();
+        
+        $addon = bab_getAddonInfosInstance($addon_name);
+        if ($addon) {
+            if (!$addon->upgrade()) {
+                $babBody->addError(bab_sprintf(bab_translate('Upgrade of addon %s failed'), $ini->getName()));
+                return false;
+            }
+        }
+    }
+    
+    
+    
 
 	/**
 	 * Fix addons folders

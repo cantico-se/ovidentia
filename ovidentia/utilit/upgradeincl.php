@@ -102,14 +102,15 @@ function bab_recursive_cp_ls_a($wh){
 /**
  * Recursive copy of a folder
  *
- * @param	string	$wf		origin folder
- * @param	string	$wto	destination folder
- *
+ * @param	string	$wf		      origin folder
+ * @param	string	$wto	      destination folder
+ * @param   bool    $recursive    allows the creation of nested directories
+ * 
  * @return	true | string	if the function return a string, this is the error message
  */
-function bab_recursive_cp($wf, $wto) {
+function bab_recursive_cp($wf, $wto, $recursive = false) {
 	  if (!is_dir($wto)) {
-		  if (!bab_mkdir($wto)) {
+		  if (!bab_mkdir($wto, '', $recursive)) {
 			return sprintf(bab_translate("Error : can't create directory : %s"), $wto);
 		  }
 		}
@@ -119,7 +120,7 @@ function bab_recursive_cp($wf, $wto) {
 			  $fl="$wf/$fn";
 			 $flto="$wto/$fn";
 			  if(is_dir($fl)) {
-					$return = bab_recursive_cp($fl,$flto);
+					$return = bab_recursive_cp($fl,$flto,$recursive);
 					if (true !== $return) {
 						return $return;
 					}
