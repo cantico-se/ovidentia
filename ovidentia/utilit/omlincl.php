@@ -63,6 +63,14 @@ class Func_Ovml_Container extends Func_Ovml
 {
     public $ctx;
     public $idx;
+    
+    /**
+     * Set this variable to false for a container witch use getAttribute method on the current context
+     * To prevent names conflicts between attributes and variables
+     * @var bool
+     */
+    public $attributesInVariables = true;
+    
 
     public function setOvmlContext(babOvTemplate $ctx)
     {
@@ -6271,6 +6279,12 @@ class bab_context
     const TEXT = 0;
     const HTML = 1;
 
+    
+    /**
+     * Name of context
+     * This will contain bab_main or the container name without OC
+     * @var string
+     */
     public $name;
     
     /**
@@ -6298,12 +6312,15 @@ class bab_context
      */
     public $content;
 
+
     /**
      * storage for variable content format
      * @var array
      */
     private $format = array();
 
+    
+    
     public function bab_context($name)
     {
         $this->name = $name;
@@ -6320,24 +6337,32 @@ class bab_context
     }
     
     /**
-     * Push a new variable
+     * Push a new attribute to context
+     * in ovidentia before 8.4.93, attributes where pushed to the variables array
+     * 
+     * @since 8.4.93
+     * 
      * @param string $var
      * @param string $value
      */
     public function addAttribute($var, $value)
     {
         $this->attributes[$var] = $value;
-        $this->push($var, $value);
     }
     
     
     /**
+     * Method to use in containers classes to get a safe attribute value
+     * 
+     * @since 8.4.93
+     * 
      * @return string
      */
     public function getAttribute($var)
     {
         if (!isset($this->attributes[$var])) {
-            return null;
+            return false; // false is returned for compatiblity with get() method
+                          // the get method is used in containers to get attributes value before 8.4.93
         }
         
         return $this->attributes[$var];
@@ -6376,14 +6401,11 @@ class bab_context
      */
     public function get($var)
     {
-        if( isset($this->variables[$var]))
-            {
+        if( isset($this->variables[$var])) {
             return $this->variables[$var];
-            }
-        else
-            {
-            return false;
-            }
+        }
+        
+        return false;
     }
 
     /**
@@ -6393,13 +6415,11 @@ class bab_context
      */
     public function getFormat($var)
     {
-        if (!isset($this->variables[$var]))
-        {
+        if (!isset($this->variables[$var])) {
             return null;
         }
 
-        if (!isset($this->format[$var]))
-        {
+        if (!isset($this->format[$var])) {
             return self::TEXT;
         }
 
@@ -6928,6 +6948,7 @@ class babOvTemplate
         $out = '';
 
         $cls = bab_functionality::get('Ovml/Container/'.$handler, false);
+        /*@var $cls Func_Ovml_Container */
 
         if (false === $cls) {
             if( $fprint == 'object' )
@@ -6942,12 +6963,12 @@ class babOvTemplate
         $ctx->setContent($txt);
         $this->push_ctx($ctx);
 
-        // Do not push argument to variables context
-        
         foreach ($args as $key => $val) {
-            $this->curctx->push($key, $val);
+            $this->curctx->addAttribute($key, $val);
+            if ($cls->attributesInVariables) {
+                $this->curctx->push($key, $val);
+            }
         }
-        
 
         $cls->setOvmlContext($this);
         if ($fprint == 'object') {
