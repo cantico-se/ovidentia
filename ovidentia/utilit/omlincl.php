@@ -61,20 +61,26 @@ class Func_Ovml extends bab_functionality
  */
 class Func_Ovml_Container extends Func_Ovml
 {
-    public $ctx;
-    public $idx;
     
     /**
-     * Set this variable to false for a container witch use getAttribute method on the current context
-     * To prevent names conflicts between attributes and variables
-     * 
-     * When this variable is set to TRUE, attributes of a container may overwrite variables from a parent container
-     * 
-     * @var bool
+     * The ovml template object
+     * Warning, this is not a context
+     * @var babOvTemplate
      */
-    public $attributesInVariables = true;
+    public $ctx;
     
+    /**
+     * index of the loop
+     * @var int
+     */
+    public $idx;
 
+    
+    /**
+     * Method called on context initialization
+     * @param babOvTemplate $ctx The ovml template object
+     * 
+     */
     public function setOvmlContext(babOvTemplate $ctx)
     {
         $this->ctx = $ctx;
@@ -257,8 +263,6 @@ class Func_Ovml_Function extends Func_Ovml
 class Func_Ovml_Container_IfIsSet extends Func_Ovml_Container
 {
     var $count;
-    
-    public $attributesInVariables = false;
 
     public function setOvmlContext(babOvTemplate $ctx)
     {
@@ -267,7 +271,7 @@ class Func_Ovml_Container_IfIsSet extends Func_Ovml_Container
         $name = $ctx->curctx->getAttribute('name');
         if( $name !== false && !empty($name))
             {
-            if( $ctx->get_value($name) !== false )
+            if( $ctx->getVariable($name) !== false )
                 {
                 $this->count = 1;
                 }
@@ -292,8 +296,6 @@ class Func_Ovml_Container_IfIsSet extends Func_Ovml_Container
 class Func_Ovml_Container_IfNotIsSet extends Func_Ovml_Container
 {
     var $count;
-    
-    public $attributesInVariables = false;
 
     public function setOvmlContext(babOvTemplate $ctx)
     {
@@ -302,7 +304,7 @@ class Func_Ovml_Container_IfNotIsSet extends Func_Ovml_Container
         $name = $ctx->curctx->getAttribute('name');
         if( $name !== false && !empty($name))
             {
-            if( $ctx->get_value($name) === false )
+            if( $ctx->getVariable($name) === false )
                 {
                 $this->count = 1;
                 }
@@ -329,8 +331,6 @@ class bab_Ovml_Container_Operator extends Func_Ovml_Container
     var $count;
 
     protected $operator = null;
-    
-    public $attributesInVariables = false;
 
     public function setOvmlContext(babOvTemplate $ctx)
     {
@@ -506,8 +506,6 @@ class Func_Ovml_Container_ObjectsInfo extends Func_Ovml_Container
     var $ovmlfields = array();
     var $index;
     var $count;
-    
-    public $attributesInVariables = false;
 
     public function setOvmlContext(babOvTemplate $ctx)
     {
@@ -6297,9 +6295,21 @@ class bab_context
      */
     public $name;
     
+    
+    /**
+     * List of variables and attributes merged
+     * 
+     * @since 8.4.93
+     * 
+     * @var array
+     */
+    public $values = array();
+    
     /**
      * List of variable inside a context
      * attributes values are also added to variables list for historical reason
+     * 
+     * @since 8.4.93
      * 
      * @var array
      */
@@ -6344,6 +6354,7 @@ class bab_context
     public function push($var, $value)
     {
         $this->variables[$var] = $value;
+        $this->values[$var] = $value;
     }
     
     /**
@@ -6358,6 +6369,24 @@ class bab_context
     public function addAttribute($var, $value)
     {
         $this->attributes[$var] = $value;
+        $this->values[$var] = $value;
+    }
+    
+    
+    /**
+     * Method to get a safe variable value
+     * 
+     * @since 8.4.93
+     *
+     * @return mixed | false
+     */
+    public function getVariable($var)
+    {
+        if (!isset($this->variables[$var])) {
+            return false;
+        }
+    
+        return $this->variables[$var];
     }
     
     
@@ -6366,13 +6395,12 @@ class bab_context
      * 
      * @since 8.4.93
      * 
-     * @return string
+     * @return string | false
      */
     public function getAttribute($var)
     {
         if (!isset($this->attributes[$var])) {
-            return false; // false is returned for compatiblity with get() method
-                          // the get method is used in containers to get attributes value before 8.4.93
+            return false;
         }
         
         return $this->attributes[$var];
@@ -6406,13 +6434,16 @@ class bab_context
 
     /**
      * Get value in context
+     * 
+     * @deprecated use getVariable or getAttribute instead
+     * 
      * @param string $var
-     * @return string
+     * @return mixed | false
      */
     public function get($var)
     {
-        if( isset($this->variables[$var])) {
-            return $this->variables[$var];
+        if( isset($this->values[$var])) {
+            return $this->values[$var];
         }
         
         return false;
@@ -6421,12 +6452,12 @@ class bab_context
     /**
      * get string format of value
      * @param	string	$var
-     * @return int		bab_context::TEXT | bab_context::HTML
+     * @return int | false		bab_context::TEXT | bab_context::HTML
      */
     public function getFormat($var)
     {
         if (!isset($this->variables[$var])) {
-            return null;
+            return false;
         }
 
         if (!isset($this->format[$var])) {
@@ -6803,12 +6834,13 @@ class babOvTemplate
     public $curctx;
 
     /**
-     * global context
+     * global context (root context)
      * @var bab_context
      */
     public $gctx;
 
     /**
+     * Contain the ovml file path if we are in a file
      * @var string
      */
     public $debug_location;
@@ -6817,86 +6849,120 @@ class babOvTemplate
     public function __construct($args = array())
     {
 
-    global $babBody;
-    $this->gctx = new bab_context('bab_main');
-    $this->gctx->push("babSiteName", $GLOBALS['babSiteName']);
-    if (isset($babBody->babsite))
-    {
-        $this->gctx->push("babSiteSlogan", $babBody->babsite['babslogan']);
-    }
-
-    if( bab_isUserLogged())
+        global $babBody;
+        $this->gctx = new bab_context('bab_main');
+        $this->gctx->push("babSiteName", $GLOBALS['babSiteName']);
+        if (isset($babBody->babsite))
         {
-        $this->gctx->push("babUserName", bab_getUserName(bab_getUserId()));
+            $this->gctx->push("babSiteSlogan", $babBody->babsite['babslogan']);
         }
-    else
-        {
-        $this->gctx->push("babUserName", 0);
-        }
-
-    $this->gctx->push("babCurrentDate", time());
-
-    foreach($args as $variable => $contents)
-        {
-        $this->gctx->push($variable, $contents);
-        }
-    $this->push_ctx($this->gctx);
+    
+        if( bab_isUserLogged())
+            {
+            $this->gctx->push("babUserName", bab_getUserName(bab_getUserId()));
+            }
+        else
+            {
+            $this->gctx->push("babUserName", '');
+            }
+    
+        $this->gctx->push("babCurrentDate", time());
+    
+        foreach($args as $variable => $contents)
+            {
+            $this->gctx->push($variable, $contents);
+            }
+        $this->push_ctx($this->gctx);
     }
 
     public function push_ctx(&$ctx)
     {
-    $this->contexts[] = &$ctx;
-    $this->curctx = &$ctx;
-    return $this->curctx;
+        $this->contexts[] = &$ctx;
+        $this->curctx = &$ctx;
+        return $this->curctx;
     }
 
     public function pop_ctx()
     {
-    if( count($this->contexts) > 1 )
-        {
-        array_pop($this->contexts);
-        $this->curctx =& $this->contexts[count($this->contexts)-1];
-        return $this->curctx;
+        if( count($this->contexts) > 1 ) {
+            array_pop($this->contexts);
+            $this->curctx =& $this->contexts[count($this->contexts)-1];
+            return $this->curctx;
         }
     }
-
-    /**
-     * Get variable value with context inheritance
-     * @return mixed | false
-     */
-    public function get_value($var)
+    
+    
+    protected function callInAllContexts($methodName, $parameters)
     {
-    for( $i = count($this->contexts)-1; $i >= 0; $i--)
-        {
-        $val = $this->contexts[$i]->get($var);
-        if( $val !== false)
-            {
-            return $val;
+        for( $i = count($this->contexts)-1; $i >= 0; $i--) {
+            $context = $this->contexts[$i];
+            /*@var $context bab_context */
+            
+            $val = call_user_func_array(array($context, $methodName) , $parameters);
+            
+            if( $val !== false) {
+                return $val;
             }
         }
-    return false;
+        
+        return false;
+    }
+    
+    
+    /**
+     * Get variable value with context inheritance
+     * 
+     * @return mixed | false
+     */
+    public function getVariable($name)
+    {
+        return $this->callInAllContexts(__FUNCTION__, array($name));
+        
+    }
+    
+    
+    /**
+     * Get attribute value with context inheritance
+     * @param string $name
+     * @return string
+     */
+    public function getAttribute($name)
+    {
+        return $this->callInAllContexts(__FUNCTION__, array($name));
+    }
+    
+    
+
+    /**
+     * Get variable or attribute value with context inheritance
+     * @deprecated Use getVariable or getAttribute instead
+     * @return mixed | false
+     */
+    public function get_value($name)
+    {
+        $message = 'get_value is deprecated, use ->curctx->getAttribute('.$name.') or ->getVariable('.$name.') instead, ovidentia 8.4.93 is required for the new methods';
+        $trace = debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS, 1);
+        $context = BAB_TAG_CONTAINER.$this->curctx->name.' in '.$trace[0]['file'].' ('.$trace[0]['line'].')';
+        bab_debug(bab_toHtml($message."\n".$context, BAB_HTML_ALL), DBG_INFO, 'ovml');
+        
+        return $this->callInAllContexts('get', array($name));
     }
 
     /**
      * Get format with context inheritance
+     * The first format set on ancestors contexts
+     * 
      * @return mixed | false
      */
-    public function get_format($var)
+    public function get_format($name)
     {
-    for( $i = count($this->contexts)-1; $i >= 0; $i--)
-        {
-        $val = $this->contexts[$i]->getFormat($var);
-        if( $val !== null)
-            {
-            return $val;
-            }
-        }
-    return null;
+        return $this->callInAllContexts('getFormat', array($name));
+        
     }
 
 
     /**
-     * Get variables with context inheritance
+     * Get variables from a context specific context
      * @return array
      */
     public function get_variables($contextname)
@@ -6910,6 +6976,8 @@ class babOvTemplate
         }
     return array();
     }
+    
+    
 
     public function get_currentContextname()
     {
@@ -6987,26 +7055,6 @@ class babOvTemplate
 
         foreach ($args as $key => $val) {
             $this->curctx->addAttribute($key, $val);
-            
-            
-            if ($cls->attributesInVariables) {
-                
-                $currentValue = $this->get_value($key);
-                if ($currentValue && $currentValue !== $val) {
-                    bab_debug(
-                        sprintf(
-                            'The attribute %s from container %s will overwrite a previously defined variable in %s',
-                            $key,
-                            BAB_TAG_CONTAINER.$handler,
-                            $this->debug_location
-                        ),
-                        DBG_WARNING,
-                        'ovml'
-                    );
-                }
-                
-                $this->curctx->push($key, $val);
-            }
         }
 
         $cls->setOvmlContext($this);
@@ -7047,7 +7095,7 @@ class babOvTemplate
                         break;
                     case 'var':
                     case 'variable':
-                        return $this->get_value($m[2]);
+                        return $this->getVariable($m[2]);
                         break;
                     }
                 }
@@ -7083,7 +7131,7 @@ class babOvTemplate
             $attributes->history[$method] = $v;
         }
 
-        $ghtmlentities = $this->get_value('babHtmlEntities');
+        $ghtmlentities = $this->getVariable('babHtmlEntities');
         if( $ghtmlentities !== false && 0 !== intval($ghtmlentities))
         {
             // apply global htmlentities
@@ -7154,7 +7202,7 @@ class babOvTemplate
                     if( preg_match_all("/(.*?)\[([^\]]+)\]/", $m[2][$i], $m2) > 0)
                     {
                         //print_r($m2);
-                        $val = $this->get_value($m2[1][0]);
+                        $val = $this->getVariable($m2[1][0]);
                         $format = $this->get_format($m2[1][0]);
                         for( $t=0; $t < count($m2[2]); $t++)
                             {
@@ -7171,7 +7219,7 @@ class babOvTemplate
                     }
                     else
                     {
-                    $val = $this->get_value($m[2][$i]);
+                    $val = $this->getVariable($m[2][$i]);
                     $format = $this->get_format($m[2][$i]);
                     }
 
@@ -7254,7 +7302,8 @@ class bab_OvmlAttributes
 {
 
     /**
-     *
+     * OVML template object
+     * Warning, this is not a context!
      * @var babOvTemplate
      */
     private $ctx;
@@ -7282,9 +7331,9 @@ class bab_OvmlAttributes
 
     /**
      *
-     * @param bab_context $gctx
-     * @param int $format
-     *            bab_context::HTML
+     * @param babOvTemplate     $ctx          Ovml template 
+     * @param int               $format       bab_context::HTML
+     *            
      */
     public function __construct(babOvTemplate $ctx, $format)
     {
@@ -7889,7 +7938,7 @@ class Func_Ovml_Function_GetVar extends Func_Ovml_Function {
 
         if( !empty($name))
             {
-            $value = $this->get_value($name);
+            $value = $this->getVariable($name);
             if( $value !== false )
                 {
                 return $value;
