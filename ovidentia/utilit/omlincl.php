@@ -450,10 +450,8 @@ class Func_Ovml_Container_Addon extends Func_Ovml_Container
                 require_once( $addon->getPhpPath()."ovml.php" );
 
                 $call = $addon->getName()."_ovml";
-                if( !empty($call)  && function_exists($call) )
-                    {
-                    $args = $ctx->get_variables('Addon');
-                    $this->IdEntries = $call($args);
+                if( !empty($call)  && function_exists($call) ) {
+                    $this->IdEntries = $call($ctx->curctx->attributes);
                     }
                 }
             }
