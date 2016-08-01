@@ -26,6 +26,168 @@
 
 
 
+
+
+
+class bab_processImportEmailUsers
+{
+    /**
+     *
+     * @var int
+     */
+    private $id_directory;
+
+    /**
+     * A file in tmp where all the created users are stored
+     * the file will be used to send notification email
+     * 
+     * One user per row: id_user, password
+     * 
+     * @var bab_Path
+     */
+    private $file;
+
+    /**
+     *
+     * @param int $id_directory
+     */
+    public function __construct($id_directory)
+    {
+        require_once dirname(__FILE__).'/utilit/path.class.php';
+
+        $this->id_directory = $id_directory;
+
+        // create a temporary file to store the created users
+
+        $this->file = new bab_Path($GLOBALS['babUploadPath'], 'tmp');
+        $this->file->createDir();
+        $this->file->push(session_id().'_created_users.csv');
+
+        if ($this->file->fileExists())
+        {
+            $this->file->delete();
+        }
+    }
+
+    /**
+     * Add a user to the temporary CSV file
+     * @param int $id_user
+     * @param string | null $password
+     */
+    public function addUser($id_user, $password)
+    {
+        if (null !== $password)
+        {
+            $password = str_replace('"', '""', $password);
+        }
+
+        $csvline = '"'.$id_user.'","'.((string) $password).'"'."\n";
+        return file_put_contents($this->file->tostring(), $csvline , FILE_APPEND);
+    }
+
+
+    /**
+     * Display HTML page with progress
+     */
+    public function displayProgress()
+    {
+        require_once dirname(__FILE__).'/utilit/install.class.php';
+        require_once dirname(__FILE__).'/utilit/session.class.php';
+
+        $session = bab_getInstance('bab_Session');
+        $session->bab_directory_import_email_tmp_file = $this->file->getBasename();
+
+        $t_upgrade = bab_translate('Send email notifications to the imported users');
+        $t_continue = bab_translate('Back to directory');
+        $frameurl = $GLOBALS['babUrlScript'].'?tg=directory&idx=monitorimport';
+        $nextpageurl = $GLOBALS['babUrlScript'].'?tg=directory&idx=sdbovml&directoryid='.$this->id_directory;
+
+        bab_installWindow::getPage($t_upgrade, $frameurl, $t_continue, $nextpageurl);
+
+        return true;
+    }
+
+
+
+    public static function iframe()
+    {
+        require_once dirname(__FILE__).'/utilit/install.class.php';
+
+        $frame = new bab_installWindow;
+        $frame->setStartMessage(bab_translate('Send an email for each created or updated account'));
+        $frame->setStopMessage(
+            bab_translate('Task done'),
+            bab_translate('No mail to send or all mail allready sent')
+            );
+
+        $frame->startInstall(array(__CLASS__, 'iframe_process'));
+        die();
+    }
+
+
+    /**
+     * iframe progress
+     */
+    public static function iframe_process()
+    {
+        require_once dirname(__FILE__).'/utilit/path.class.php';
+        require_once dirname(__FILE__).'/utilit/session.class.php';
+        require_once dirname(__FILE__).'/utilit/userinfosincl.php';
+        require_once dirname(__FILE__).'/admin/register.php';
+
+        $session = bab_getInstance('bab_Session');
+
+        if (!isset($session->bab_directory_import_email_tmp_file))
+        {
+            return false;
+        }
+
+        $file = new bab_Path($GLOBALS['babUploadPath'], 'tmp', $session->bab_directory_import_email_tmp_file);
+        if (!$file->fileExists())
+        {
+            return false;
+        }
+
+        $fd = fopen($file->tostring(), "r");
+        if( $fd )
+        {
+            while ($arr = fgetcsv($fd, 1024))
+            {
+                if ($user = bab_userInfos::getRow($arr[0]))
+                {
+                    $name = bab_composeUserName($user['firstname'], $user['lastname']);
+                    $email = trim($user['email']);
+                    if (empty($email))
+                    {
+                        bab_installWindow::message(sprintf(bab_translate('Error, empty email address for %s'), $name));
+                        continue;
+                    }
+
+
+                    if (notifyAdminUserRegistration($name, $email, $user['nickname'], $arr[1]))
+                    {
+                        bab_installWindow::message(sprintf(bab_translate('Notification sent to %s'), $name));
+                    } else {
+                        bab_installWindow::message(sprintf(bab_translate('Error : failed to notify %s (%s)'), $name, $email));
+                    }
+                }
+
+
+            }
+        }
+
+        $file->delete();
+        unset($session->bab_directory_import_email_tmp_file);
+        return true;
+
+    }
+}
+
+
+
+
+
+
 /***
  * Import CSV file to database
  * This work only in a POST request
