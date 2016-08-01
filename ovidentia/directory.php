@@ -2673,12 +2673,15 @@ $msg = bab_rp('msg');
 
 if( ('' != bab_pp('pfile')) && bab_isAccessValid(BAB_DBDIRIMPORT_GROUPS_TBL, $id))
     {
-    bab_requireSaveMethod();
-    if (!processImportDbFile(bab_pp('pfile'), $id, bab_pp('separ')))
-        {
+        bab_requireSaveMethod();
+        
+        try {
+            processImportDbFile($_POST, false); // simulation, verify mapping
+            $monitor = new bab_processImportUsers($id);
+            $monitor->displayProgress();
+        } catch (bab_DirImportMappingException $e) {
+            $babBody->addError($e->getMessage());
             $idx = 'dbmap';
-        } else {
-            return;
         }
     }
 
@@ -2979,7 +2982,7 @@ switch($idx)
         break;
 
     case 'monitorimport':
-        bab_processImportEmailUsers::iframe();
+        bab_processImportUsers::iframe();
         exit;
         break;
 
