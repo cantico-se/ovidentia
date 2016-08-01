@@ -128,7 +128,7 @@ class bab_processImportUsers
             $session->bab_directory_import_email_tmp_file = $this->file->getBasename();
         }
         
-        $t_upgrade = bab_translate('Import users');
+        $t_upgrade = bab_translate('Import into a directory');
         $t_continue = bab_translate('Back to directory');
         $frameurl = $GLOBALS['babUrlScript'] . '?tg=directory&idx=monitorimport';
         $nextpageurl = $GLOBALS['babUrlScript'] . '?tg=directory&idx=sdbovml&directoryid=' . $this->id_directory;

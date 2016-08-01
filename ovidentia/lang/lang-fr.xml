@@ -3507,4 +3507,16 @@ L'administrateur</string>
 <string id="Switch to https">Basculer vers https</string>
 <string id="Continue to home page">Continuer vers la page d'accueil</string>
 <string id="Fullscreen authentication">Authentification en plein écran</string>
+
+<string id="Import into a directory">Import dans un annuaire</string>
+<string id="Start CSV file import">Import du fichier CSV</string>
+<string id="Import fail">Echec de l'import</string>
+<string id="The firstname is missing">Le prénom est manquant</string>
+<string id="The lastname is missing">Le nom est manquant</string>
+<string id="The nickname is missing">L'identifiant est manquant</string>
+<string id="The directory entry %s has been ignored because of nickname or lastname/firstname duplication">La fiche d'annuaire %s à été ignorée à cause d'une duplication de l'identifiant ou du nom/prénom</string>
+<string id="The directory entry %s has been updated">La fiche d'annuaire %s à été mise à jour</string>
+<string id="The directory entry %s has been ignored because of lastname/firstname duplication">La fiche d'annuaire %s à été ignorée à cause d'une duplication du nom/prénom</string>
+<string id="The directory entry %s has been created">La fiche d'annuaire %s à été crée</string>
+<string id="Line %d:">Ligne %d :</string>
 </fr>
