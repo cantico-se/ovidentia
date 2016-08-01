@@ -502,6 +502,8 @@ function processImportDbFile($post, $import = true)
     }
     
     list ($idgroup) = $babDB->db_fetch_array($babDB->db_query("select id_group from " . BAB_DB_DIRECTORIES_TBL . " where id='" . $babDB->db_escape_string($id) . "'"));
+    
+    $pcalendar = null;
     if($idgroup > 0)
     {
         list($pcalendar) = $babDB->db_fetch_row($babDB->db_query("select pcalendar as pcal from ".BAB_GROUPS_TBL." where id='".$idgroup."'"));

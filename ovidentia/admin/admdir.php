@@ -1459,19 +1459,19 @@ function addDbDirectory($name, $description, $displayiu, $fields, $rw, $rq, $ml,
 		$k = 0;
 		while( $arr = $db->db_fetch_array($res))
 			{
-			if( count($rw) > 0 && in_array($arr['id'], $rw))
+			if( count($rw) > 0 && in_array($arr['id'], (array) $rw))
 				$modifiable = 'Y';
 			else
 				$modifiable = 'N';
-			if( count($rq) > 0 && in_array($arr['id'], $rq))
+			if( count($rq) > 0 && in_array($arr['id'], (array) $rq))
 				$required = 'Y';
 			else
 				$required = 'N';
-			if( count($ml) > 0 && in_array($arr['id'], $ml))
+			if( count($ml) > 0 && in_array($arr['id'], (array) $ml))
 				$multilignes = 'Y';
 			else
 				$multilignes = 'N';
-			if( count($dz) > 0 && in_array($arr['id'], $dz))
+			if( count($dz) > 0 && in_array($arr['id'], (array) $dz))
 				$disabled = 'Y';
 			else
 				$disabled = 'N';
