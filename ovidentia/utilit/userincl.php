@@ -33,11 +33,18 @@ define("BAB_ART_STATUS_WAIT", 1); /* Used with BAB_ART_DRAFTS_TBL table in colum
 define("BAB_ART_STATUS_OK"	, 2); /* Used with BAB_ART_DRAFTS_TBL table in column result : article draft is approved (Remark : this status is not used because a draft approved in converted to an article) */
 define("BAB_ART_STATUS_NOK"	, 3); /* Used with BAB_ART_DRAFTS_TBL table in column result : article draft is non-approved */
 
-function bab_printOvml($content, $args)
+
+/**
+ * @param string    $content            OVML string
+ * @param array     $args               arguments for global context
+ * @param string    $debug_location     String to use in error message (file location)
+ * @return string HTML
+ */
+function bab_printOvml($content, $args, $debug_location = null)
 {
     include_once $GLOBALS['babInstallPath']."utilit/omlincl.php";
     $tpl = new babOvTemplate($args);
-    return $tpl->printout($content);
+    return $tpl->printout($content, $debug_location);
 }
 
 function bab_printCachedOvml($name, $content, $args = array())
