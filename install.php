@@ -236,39 +236,7 @@ class bab_dumpToDb
 			}
 		}
 
-
-	function getFileContent()
-		{
-		$this->fileContent = '';
-		$f = fopen(BABINSTALL,'r');
-		if ($f === false)
-			{
-			$this->error->add($this->trans->str('There is an error into configuration, can\'t read sql dump file'));
-			return false;
-			}
-		while (!feof($f))
-			{
-			$this->fileContent .= fread($f, 1024);
-			}
-		return true;
-		}
-
-	function workOnQuery()
-		{
-		$error=false;
-		$this->db_multiQuery($this->fileContent);
-		do {
-	        if (!$this->db_nextResult()) {
-		      $this->error->add($this->trans->str('There is an error in sql dump file at query : ')."\n".mysqli_error($this->db));
-		      $error=true;
-		      break;
-		    }
-	    } while ($mysqli->next_result());
-	    if(!$error){
-			$this->succes->add($this->trans->str('Database initialisation done'));
-	    }
-		return true;
-		}
+	
 
     function executeSqlFile($file)
     {
@@ -278,9 +246,17 @@ class bab_dumpToDb
             return false;
         }
 
-		$this->db_multiQuery($sql);
+        
+		if (!$this->db_multiQuery($sql)) {
+		    $this->error->add(mysqli_error($this->db));
+		    return false;
+		}
+		
 		while ($this->db_moreResults()){
-			$this->db_nextResult();
+			if (!$this->db_nextResult()) {
+			    $this->error->add(mysqli_error($this->db));
+			    return false;
+			}
 		}
 
 		$this->succes->add($this->trans->str('Database initialisation done'));
