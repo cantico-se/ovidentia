@@ -171,8 +171,7 @@ class Func_Ovml_Container extends Func_Ovml
 
         $this->ctx->curctx->push($var, $txt);
 
-        if ('html' === strtolower($txtFormat))
-        {
+        if ('html' === strtolower($txtFormat)) {
             $this->ctx->curctx->setFormat($var, bab_context::HTML);
         }
     }
@@ -243,9 +242,9 @@ class Func_Ovml_Function extends Func_Ovml
         return $this;
     }
 
-    protected function format_output($val, $matches)
+    protected function format_output($val, $matches, $format = bab_context::TEXT)
     {
-        return $this->template->format_output($val, $matches);
+        return $this->template->format_output($val, $matches, $format, $this->getDescription());
     }
 
 
@@ -7108,10 +7107,11 @@ class babOvTemplate
      * @param	string	$val		variable content
      * @param	array	$matches	keys are attributes names, values are attribute value
      * @param	int		$format		Format of string bab_context::TEXT | bab_context::HTML
+     * @param   string  $debugInfo  variable or function name
      *
      * @return string	the modified variable content
      */
-    public function format_output($val, $matches, $format = bab_context::TEXT)
+    public function format_output($val, $matches, $format = bab_context::TEXT, $debugInfo = null)
     {
         $saveas = null;
         $attributes = new bab_OvmlAttributes($this, $format);
@@ -7121,8 +7121,7 @@ class babOvTemplate
         {
             $method = mb_strtolower(trim($p));
 
-            if ('saveas' === $method)
-            {
+            if ('saveas' === $method) {
                 $saveas = $v;
                 continue;
             }
@@ -7134,12 +7133,15 @@ class babOvTemplate
         $ghtmlentities = $this->getVariable('babHtmlEntities');
         if( $ghtmlentities !== false && 0 !== intval($ghtmlentities))
         {
-            // apply global htmlentities
-            $val = $attributes->htmlentities($val, $ghtmlentities);
+            if ($format === bab_context::TEXT) {
+                // apply global htmlentities only for text variables
+                $val = $attributes->htmlentities($val, $ghtmlentities);
+            }
+        } else {
+            bab_debug('Warning: no htmlentites on '.$debugInfo.' in '.$this->debug_location, DBG_WARNING, 'ovml');
         }
 
-        if( $saveas )
-        {
+        if( $saveas ) {
             // always apply saveas as the last attribute
             $val = $attributes->saveas($val, $saveas);
         }
@@ -7238,7 +7240,7 @@ class babOvTemplate
                                     }
                                 }
                             }
-                        $val = $this->format_output($val, $params, $format);
+                        $val = $this->format_output($val, $params, $format, BAB_TAG_VARIABLE.$m[2][$i]);
                         $txt = preg_replace("/".preg_quote($m[0][$i], "/")."/", preg_replace("/\\$[0-9]/", "\\\\$0", $val), $txt);
                         }
                     break;
