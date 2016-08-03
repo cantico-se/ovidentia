@@ -226,7 +226,7 @@ switch($idx)
 	{
 	case "upgrade":
 		if (empty($_POST)) {
-		    $str = sprintf(bab_translate('Do you really whant to update Ovidentia from %s to %s?'), 
+		    $str = sprintf(bab_translate('Do you really want to update Ovidentia from %s to %s?'), 
 		            bab_getDbVersion(), 
 		            bab_getIniVersion());
 		    $html = bab_getInstallButton();

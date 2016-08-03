@@ -3519,4 +3519,5 @@ L'administrateur</string>
 <string id="The directory entry %s has been ignored because of lastname/firstname duplication">La fiche d'annuaire %s à été ignorée à cause d'une duplication du nom/prénom</string>
 <string id="The directory entry %s has been created">La fiche d'annuaire %s à été crée</string>
 <string id="Line %d:">Ligne %d :</string>
+<string id="Do you really want to update Ovidentia from %s to %s?">Voulez-vous vraiment mettre à jour Ovidentia de %s à %s?</string>
 </fr>
