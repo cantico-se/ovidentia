@@ -1209,7 +1209,11 @@ function bab_displayLoginPage($htmlform, $ovmlTemplate)
     $method = $site['auth_fullscreen'] ? 'babpopup' : 'babecho';
     
     try {
-        $babBody->$method(bab_getHtmlFromOvml($ovmlTemplate, array('Form' => $htmlform)));
+        $babBody->$method(bab_getHtmlFromOvml(
+            $ovmlTemplate,
+            array('Form' => $htmlform),
+            array('Form' => 1) // bab_context::HTML
+        ));
     } catch (Exception $e) {
         $babBody->$method($htmlform);
     }

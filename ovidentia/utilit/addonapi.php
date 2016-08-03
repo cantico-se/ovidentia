@@ -3142,9 +3142,10 @@ function bab_printCachedOvmlTemplate($file, $args = array())
  * @throws Exception
  * @param	string	$file
  * @param	array	$args
+ * @param   array   $formats
  * @return	string	html
  */
-function bab_getHtmlFromOvml($file, $args)
+function bab_getHtmlFromOvml($file, $args, $formats = null)
 {
     global $babSkinPath, $babOvmlPath;
     
@@ -3182,6 +3183,13 @@ function bab_getHtmlFromOvml($file, $args)
     
     include_once $GLOBALS['babInstallPath'].'utilit/omlincl.php';
     $tpl = new babOvTemplate($args);
+    
+    if (isset($formats)) {
+        foreach($formats as $var => $format) {
+            $tpl->gctx->setFormat($var, $format);
+        }
+    }
+    
     $template = $tpl->printout(file_get_contents($filepath), $filepath);
     return $template;
 }
