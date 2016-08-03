@@ -1215,6 +1215,7 @@ function bab_displayLoginPage($htmlform, $ovmlTemplate)
             array('Form' => 1) // bab_context::HTML
         ));
     } catch (Exception $e) {
+        // Ovml not found
         $babBody->$method($htmlform);
     }
 }
