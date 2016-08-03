@@ -7134,17 +7134,14 @@ class babOvTemplate
             $attributes->history[$method] = $v;
         }
 
-        //$ghtmlentities = $this->getVariable('babHtmlEntities');
-        //if( $ghtmlentities !== false && 0 !== intval($ghtmlentities))
-        //{
-            if ($format === bab_context::TEXT) {
-                // apply global htmlentities only for text variables
-                $val = $attributes->htmlentities($val, 1);
-            }
-        //} else {
-        //    bab_debug('Warning: no htmlentites on '.$debugInfo.' in '.$this->debug_location, DBG_WARNING, 'ovml');
-        //}
-
+        $ghtmlentities = $this->getVariable('babHtmlEntities');
+        $escapedisabled = ($ghtmlentities !== false && 0 === intval($ghtmlentities));
+        
+        if ($format === bab_context::TEXT && !$escapedisabled) {
+            // apply global htmlentities only for text variables
+            $val = $attributes->htmlentities($val, 1);
+        }
+        
         if( $saveas ) {
             // always apply saveas as the last attribute
             $val = $attributes->saveas($val, $saveas);
