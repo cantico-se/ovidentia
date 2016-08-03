@@ -472,10 +472,14 @@ class Func_Ovml_Container_Addon extends Func_Ovml_Container
         if( $this->idx < $this->count)
         {
             $this->ctx->curctx->push('CIndex', $this->idx);
-            foreach($this->IdEntries[$this->idx] as $name => $val)
-                {
-                $this->ctx->curctx->push($name, $val);
+            foreach($this->IdEntries[$this->idx] as $name => $val) {
+                if (is_object($val) && isset($val->format)) {
+                    $this->ctx->curctx->push($name, $val->value);
+                    $this->ctx->curctx->setFormat($name, $val->format);
+                } else {
+                    $this->ctx->curctx->push($name, $val);
                 }
+            }
             $this->idx++;
             $this->index = $this->idx;
             return true;
@@ -7130,16 +7134,16 @@ class babOvTemplate
             $attributes->history[$method] = $v;
         }
 
-        $ghtmlentities = $this->getVariable('babHtmlEntities');
-        if( $ghtmlentities !== false && 0 !== intval($ghtmlentities))
-        {
+        //$ghtmlentities = $this->getVariable('babHtmlEntities');
+        //if( $ghtmlentities !== false && 0 !== intval($ghtmlentities))
+        //{
             if ($format === bab_context::TEXT) {
                 // apply global htmlentities only for text variables
-                $val = $attributes->htmlentities($val, $ghtmlentities);
+                $val = $attributes->htmlentities($val, 1);
             }
-        } else {
-            bab_debug('Warning: no htmlentites on '.$debugInfo.' in '.$this->debug_location, DBG_WARNING, 'ovml');
-        }
+        //} else {
+        //    bab_debug('Warning: no htmlentites on '.$debugInfo.' in '.$this->debug_location, DBG_WARNING, 'ovml');
+        //}
 
         if( $saveas ) {
             // always apply saveas as the last attribute
