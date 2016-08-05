@@ -376,7 +376,7 @@ class bab_SMTP extends SMTP
      * protected specifically for ovidentia
      * @param string $str
      */
-    protected function edebug($str) {
+    protected function edebug($str, $level = 0) {
         
         if ('<br />' === substr($str, -6)) {
             $str = substr($str, 0, -6);
