@@ -256,6 +256,16 @@ class bab_InstallRepositoryFile
 		$install = new bab_InstallSource;
 		$install->setArchive($tmpfile);
 		$ini = $install->getIni();
+		
+		if (!$ini->isValid()) {
+		    bab_installWindow::message(
+	           bab_toHtml(
+	               sprintf(bab_translate('Package %s is not valid, please check dependencies'), $install->getArchive())
+	           )
+	        );
+		    
+		    return false;
+		}
 
 		if ($install->install($ini)) {
 			if (!unlink($install->getArchive())) {
