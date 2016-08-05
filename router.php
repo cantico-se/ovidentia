@@ -1,6 +1,10 @@
 <?php
 
-if (file_exists($_SERVER["DOCUMENT_ROOT"] . $_SERVER["REQUEST_URI"])) {
+// router file for rewriting with the internal php server
+// $php -S localhost:8080 router.php
+
+
+if (file_exists($_SERVER["DOCUMENT_ROOT"] . urldecode($_SERVER["SCRIPT_NAME"]))) {
     return false;
 }
 
