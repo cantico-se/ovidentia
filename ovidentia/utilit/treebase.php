@@ -625,7 +625,7 @@ class bab_RootNode extends bab_Node
 	 * @param string $name
 	 * @return array
 	 */
-	public function getIndex($name)
+	public function getRootIndex($name)
 	{
 	    return $this->_index[$name];
 	}

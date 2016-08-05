@@ -702,7 +702,7 @@ class bab_siteMapOrphanRootNode extends bab_OrphanRootNode {
     public function getNodesByTargetPattern($baseNodeId, $pattern)
     {
 
-        $targetIndex = $this->getIndex('target');
+        $targetIndex = $this->getRootIndex('target');
 
         $return = new stdClass();
         $return->matches = array();
