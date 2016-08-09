@@ -25,7 +25,7 @@
 		"ovidentia/applications" : ">=4.6.0",
 		"ovidentia/portlets" : ">=0.20",
 		"ovidentia/ovmlportlets" : ">=1.6",
-		"ovidentia/sitemap_editor" : ">=0.8.1",
+		"ovidentia/sitemap_editor" : ">=0.8.3",
 		"ovidentia/orgchart" : ">=0.13.1",
 		"ovidentia/approbation_schema" : ">=0.2.2",
 		"ovidentia/storeclient" : ">=0.4.3"
