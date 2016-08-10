@@ -34,21 +34,34 @@ class Func_ContextActions_ArticleTopic extends Func_ContextActions
 	 * Get a pattern or string to match a CSS class
 	 * @return string
 	 */
-	public function getClassPattern()
+	public function getClassSelector()
 	{
-		return 'bab-articletopic-(\d+)';
+		return '[class*=bab-articletopic-]';
+	}
+	
+	protected function getTopicFromClasses(Array $classes)
+	{
+		foreach ($classes as $className) {
+			$m = null;
+			if (preg_match('/bab-articletopic-(\d+)/', $className, $m)) {
+				return (int) $m[1];
+			}
+		}
+		
+		return null;
 	}
 	
 	/**
-	 *
+	 * @param array $classes all css classes found on the element
 	 * @return Widget_Action[]
 	 */
-	public function getActions()
+	public function getActions(Array $classes)
 	{
-		$W = bab_Widgets();
-		$id_topic = (int) $this->matches[1];
-		$actions = array();
 		
+		$W = bab_Widgets();
+		$id_topic = $this->getTopicFromClasses($classes);
+		$actions = array();
+	
 		if (bab_isAccessValid(BAB_TOPICSMAN_GROUPS_TBL, $id_topic)) {
 			$actions[] = $W->Action()
 				->setMethod('topman', 'Articles', array('item' => $id_topic))
@@ -79,19 +92,33 @@ class Func_ContextActions_Article extends Func_ContextActions
 	 * Get a pattern or string to match a CSS class
 	 * @return string
 	 */
-	public function getClassPattern()
+	public function getClassSelector()
 	{
-		return 'bab-article-(\d+)';
+		return '[class*=bab-article-]';
+	}
+	
+	
+	protected function getArticleFromClasses(Array $classes)
+	{
+		foreach ($classes as $className) {
+			$m = null;
+			if (preg_match('/bab-article-(\d+)/', $className, $m)) {
+				return (int) $m[1];
+			}
+		}
+	
+		return null;
 	}
 	
 	/**
-	 * 
+	 * @param array $classes all css classes found on the element
 	 * @return Widget_Action[]
 	 */
-	public function getActions()
+	public function getActions(Array $classes)
 	{
+		require_once dirname(__FILE__).'/artapi.php';
 		$W = bab_Widgets();
-		$id_article = (int) $this->matches[1];
+		$id_article = $this->getArticleFromClasses($classes);
 		$article = bab_getArticleArray($id_article);
 		
 		$actions = array();

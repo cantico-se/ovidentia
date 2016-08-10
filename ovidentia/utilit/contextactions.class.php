@@ -23,11 +23,7 @@
 
 class Func_ContextActions extends bab_functionality
 {
-	/**
-	 * 
-	 * @var array
-	 */
-	protected $matches;
+
 	
 	public function getDescription()
 	{
@@ -36,28 +32,20 @@ class Func_ContextActions extends bab_functionality
 	
 	
 	/**
-	 * Get a pattern or string to match a CSS class
+	 * Get a CSS selector to match a CSS class
 	 * @return string
 	 */
-	public function getClassPattern()
+	public function getClassSelector()
 	{
 		throw new Exception('Must be implemented by sub-class');
 	}
 	
 	/**
-	 * This call is made by editlinks to set the matchs in the button object
-	 * @param array $matches
-	 */
-	public function setPatternMatches(Array $matches)
-	{
-		$this->matches = $matches;
-	}
-	
-	/**
 	 * Get the list of actions to display for this pattern
+	 * @param array $classes all css classes found on the element
 	 * @return Widget_Action[]
 	 */
-	public function getActions()
+	public function getActions(Array $classes)
 	{
 		return array();
 	}
