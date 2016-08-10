@@ -52,10 +52,12 @@ class Func_ContextActions_ArticleTopic extends Func_ContextActions
 	}
 	
 	/**
+	 * Get the list of actions
 	 * @param array $classes all css classes found on the element
+	 * @param bab_url $url Page url where the actions will be added
 	 * @return Widget_Action[]
 	 */
-	public function getActions(Array $classes)
+	public function getActions(Array $classes, bab_url $url)
 	{
 		
 		$W = bab_Widgets();
@@ -111,10 +113,12 @@ class Func_ContextActions_Article extends Func_ContextActions
 	}
 	
 	/**
+	 * Get the list of actions
 	 * @param array $classes all css classes found on the element
+	 * @param bab_url $url Page url where the actions will be added
 	 * @return Widget_Action[]
 	 */
-	public function getActions(Array $classes)
+	public function getActions(Array $classes, bab_url $url)
 	{
 		require_once dirname(__FILE__).'/artapi.php';
 		$W = bab_Widgets();

@@ -27,12 +27,12 @@ class Func_ContextActions extends bab_functionality
 	
 	public function getDescription()
 	{
-		return bab_translate('Base class for a contextual button, used by the editlinks addons');
+		return bab_translate('Base class to provide a list of actions, used by the editlinks addons');
 	}
 	
 	
 	/**
-	 * Get a CSS selector to match a CSS class
+	 * Get a CSS selector to match element in page
 	 * @return string
 	 */
 	public function getClassSelector()
@@ -41,11 +41,12 @@ class Func_ContextActions extends bab_functionality
 	}
 	
 	/**
-	 * Get the list of actions to display for this pattern
+	 * Get the list of actions
 	 * @param array $classes all css classes found on the element
+	 * @param bab_url $url Page url where the actions will be added
 	 * @return Widget_Action[]
 	 */
-	public function getActions(Array $classes)
+	public function getActions(Array $classes, bab_url $url)
 	{
 		return array();
 	}

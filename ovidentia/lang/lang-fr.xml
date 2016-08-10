@@ -3521,4 +3521,7 @@ L'administrateur</string>
 <string id="Line %d:">Ligne %d :</string>
 <string id="Do you really want to update Ovidentia from %s to %s?">Voulez-vous vraiment mettre à jour Ovidentia de %s à %s?</string>
 <string id="Package %s is not valid, please check dependencies">L'archive %s n'est pas valide, veuillez vérifier les dépendances</string>
+<string id="Edit article">Modifier l'article</string>
+<string id="Create article">Créer un article</string>
+<string id="Manage topic">Gérer le thème</string>
 </fr>
