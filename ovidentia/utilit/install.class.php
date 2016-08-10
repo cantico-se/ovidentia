@@ -24,18 +24,18 @@
 
 
 class bab_InstallRepository {
-	
+
 	private $list_url;
-	
+
 	private $files = null;
-	
+
 	public function __construct()
 	{
 		$registry = bab_getRegistry();
 		$registry->changeDirectory('/bab/install_repository/');
 		$this->list_url = $registry->getValue('list_url');
 	}
-	
+
 	/**
 	 * Test if the repository exists
 	 * @return bool
@@ -46,68 +46,71 @@ class bab_InstallRepository {
 		{
 			return true;
 		}
-		
+
 		return false;
 	}
-	
-	private function getRows()
-	{
-		if (null === $this->files)
-		{
-			// load list
-			
-			$this->files = array();
-			
-			if (null !== $this->list_url)
-			{
-				$json = file_get_contents($this->list_url);
-				if (false === $json)
-				{
-					throw new Exception(sprintf('Failed to download the configured url %s', $this->list_url));
-				}
-				
-				// warning, json_decode need php 5.2
-				$modules = json_decode($json);
-				
-				foreach ($modules as $name => $variations) {
-                    
-				    $name 			= bab_getStringAccordingToDataBase($name, 'UTF-8');
-				    
-				    foreach($variations as $data)
-				    {
-    					$description 	= bab_getStringAccordingToDataBase($data->description, 'UTF-8');
-    					
-    					$this->files[$name][$data->version] = new bab_InstallRepositoryFile($name, $data->relativePath, $data->version, $description, $data->dependencies);
-				    }
-				}
-				
-			}
-		}
-		
-		return $this->files;
-	}
-	
+
+
+    /**
+     * @throws Exception
+     * @return array
+     */
+    private function getRows()
+    {
+        if (null === $this->files) {
+            // load list
+
+            $this->files = array();
+
+            if (null !== $this->list_url) {
+                $json = file_get_contents($this->list_url);
+                if (false === $json) {
+                    throw new Exception(sprintf('Failed to download the configured url %s', $this->list_url));
+                }
+
+                // warning, json_decode need php 5.2
+                $modules = json_decode($json);
+
+                foreach ($modules as $name => $variations) {
+
+                    $name = bab_getStringAccordingToDataBase($name, 'UTF-8');
+
+                    foreach ($variations as $data) {
+                        $description = bab_getStringAccordingToDataBase($data->description, 'UTF-8');
+
+                        $installRepositoryFile = new bab_InstallRepositoryFile($name, $data->relativePath, $data->version, $description, $data->dependencies);
+                        $installRepositoryFile->icon = $data->icon;
+                        $installRepositoryFile->image = $data->image;
+                        $this->files[$name][$data->version] = $installRepositoryFile;
+                    }
+                }
+            }
+        }
+
+        return $this->files;
+    }
+
 	/**
 	 * Get lastest version for each file
-	 * @return array
+	 * @return bab_InstallRepositoryFile[]
 	 */
 	public function getFiles()
 	{
 		$arr = $this->getRows();
 		$return = array();
-		
+
 		foreach($arr as $name => $d)
 		{
 			$return[] = $this->getLastest($name);
 		}
-		
+
 		bab_Sort::sortObjects($return);
-		
+
 		return $return;
 	}
-	
-	
-	
+
+
+
 	/**
 	 * Get a specific version
 	 * @param string $name	Name of addon (filename without version and extension)
@@ -116,18 +119,18 @@ class bab_InstallRepository {
 	public function getFile($name, $version)
 	{
 		$arr = $this->getRows();
-		
+
 		if (!isset($arr[$name][$version]))
 		{
 			return null;
 		}
-		
+
 		return $arr[$name][$version];
 	}
-	
-	
+
+
 	/**
-	 * 
+	 *
 	 * @param string $name
 	 * @return NULL|multitype:string
 	 */
@@ -141,12 +144,12 @@ class bab_InstallRepository {
 		}
 
 		uksort($arr[$name] , 'version_compare');
-		
+
 		return array_keys($arr[$name]);
 	}
-	
-	
-	
+
+
+
 	/**
 	 * Get lastest file (higher version)
 	 * @param string $name
@@ -155,19 +158,19 @@ class bab_InstallRepository {
 	public function getLastest($name)
 	{
 		$arr = $this->getRows();
-		
+
 		if (!isset($arr[$name]))
 		{
 			return null;
 		}
-		
+
 		uksort($arr[$name] , 'version_compare');
-		
+
 		return end($arr[$name]);
 	}
-	
+
 	/**
-	 * 
+	 *
 	 * @return strin
 	 */
 	public function getRootUrl()
@@ -182,56 +185,87 @@ class bab_InstallRepository {
 
 class bab_InstallRepositoryFile
 {
-	public $name;
-	public $filepath;
-	public $version;
-	public $description;
-	public $dependencies = array();
-	
-	public function __construct($name, $filepath, $version, $description, $dependencies)
-	{
-		$this->name = $name;
-		$this->filepath = $filepath;
-		$this->version = $version;
-		$this->description = $description;
+    public $name;
+    public $filepath;
+    public $version;
+    public $description;
+    public $dependencies = array();
 
-		foreach($dependencies as $addonname => $d )
-		{
-		    $m = null;
-			if (!empty($d) && preg_match('/([<>]*=)([\w\d\.]+)/', $d, $m))
-			{
-				$operator = $m[1];
-				$version = $m[2];
-				
-				$this->dependencies[$addonname] = array($operator, $version);
-			} 
-		}
-		
-		
-	}
-	
-	
-	/**
-	 * @return string
-	 */
-	public function getUrl()
-	{
-		$registry = bab_getRegistry();
-		$registry->changeDirectory('/bab/install_repository/');
-		$url = $registry->getValue('root_url');
-		
-		if (!isset($url))
-		{
-			throw new Exception('Missing configuration for root_url');
-		}
-		
-		
-		$url .= $this->filepath;
-		
-		
-		return $url;
-	}
-	
+    public $icon = null;
+    public $image = null;
+
+
+
+    public function __construct($name, $filepath, $version, $description, $dependencies, $icon, $image)
+    {
+        $this->name = $name;
+        $this->filepath = $filepath;
+        $this->version = $version;
+        $this->description = $description;
+
+        foreach ($dependencies as $addonname => $d) {
+            $m = null;
+            if (!empty($d) && preg_match('/([<>]*=)([\w\d\.]+)/', $d, $m)) {
+                $operator = $m[1];
+                $version = $m[2];
+
+                $this->dependencies[$addonname] = array($operator, $version);
+            }
+        }
+    }
+
+    /**
+     * @throws Exception
+     * @return string
+     */
+    private static function getRootUrl()
+    {
+        static $rootUrl = null;
+        if (!isset($rootUrl)) {
+            $registry = bab_getRegistry();
+            $registry->changeDirectory('/bab/install_repository/');
+            $rootUrl = $registry->getValue('root_url');
+            if (!isset($rootUrl)) {
+                throw new Exception('Missing configuration for root_url');
+            }
+        }
+        return $rootUrl;
+    }
+
+
+    /**
+     * @return string|null
+     */
+    public function getIconUrl()
+    {
+        if (isset($this->icon)) {
+            return self::getRootUrl() . $this->icon;
+        }
+        return null;
+    }
+
+
+    /**
+     * @return string|null
+     */
+    public function getImageUrl()
+    {
+        if (isset($this->image)) {
+            return self::getRootUrl() . $this->image;
+        }
+        return null;
+    }
+
+
+    /**
+     * @return string
+     */
+    public function getUrl()
+    {
+        return self::getRootUrl() . $this->filepath;
+    }
+
+
 	/**
 	 * @return string
 	 */
@@ -239,31 +273,31 @@ class bab_InstallRepositoryFile
 	{
 		return basename($this->filepath);
 	}
-	
-	
+
+
 	/**
 	 * Download the file and install package
-	 * 
+	 *
 	 * @throws Exception
-	 * 
+	 *
 	 * @return bool
 	 */
 	public function install($updateProgess = false)
 	{
-		
+
 		$tmpfile = $this->downloadTmpFile($updateProgess);
 
 		$install = new bab_InstallSource;
 		$install->setArchive($tmpfile);
 		$ini = $install->getIni();
-		
+
 		if (!$ini->isValid()) {
 		    bab_installWindow::message(
 	           bab_toHtml(
 	               sprintf(bab_translate('Package %s is not valid, please check dependencies'), $install->getArchive())
 	           )
 	        );
-		    
+
 		    return false;
 		}
 
@@ -276,10 +310,10 @@ class bab_InstallRepositoryFile
 				);
 			}
 		}
-		
+
 		return true;
 	}
-	
+
 	/**
 	 * @return string
 	 */
@@ -290,31 +324,31 @@ class bab_InstallRepositoryFile
 		/*@var $settings bab_Settings */
 		return $settings->getUploadPath().'/tmp';
 	}
-	
-	
+
+
 	/**
 	 * Create a temporary local copy of the archive
-	 * 
+	 *
 	 * @throws Exception
-	 * 
+	 *
 	 * @param	bool	$updateProgess 	Set to TRUE to update the progress bar
 	 * @return string	Full path to downloaded temporary file
 	 */
 	public function downloadTmpFile($updateProgess = false)
 	{
-		
+
 		$url = $this->getUrl();
 		if (!$rfp = fopen($url, 'r')) {
 			throw new Exception(sprintf(bab_translate("Failed to open URL (%s)"), $url));
 		}
-		
+
 		$filename = $this->getFileName();
-		
+
 		$tmpfile = $this-> getTmpPath().'/'.$filename;
 		if (!$wfp = fopen($tmpfile, 'w')) {
 			throw new Exception(sprintf(bab_translate("Failed to write temporary file (%s)"), $tmpfile));
 		}
-		
+
 		if ($updateProgess)
 		{
 			$progress = new bab_installProgressBar;
@@ -322,36 +356,36 @@ class bab_InstallRepositoryFile
 		} else {
 			$progress = null;
 		}
-		
+
 		$this->downloadProgress($rfp, $wfp, $progress);
-		
+
 		return $tmpfile;
 	}
-	
-	
+
+
 	/**
 	 * Download the file
 	 * @param	ressource 				$rfp		file pointer resource, readable source file
 	 * @param	ressource 				$wfp 		file pointer resource, writable destination
 	 * @param	bab_installProgressBar	$progress	Optional progess bar
-	 * 
+	 *
 	 */
 	private function downloadProgress($rfp, $wfp, bab_installProgressBar $progress = null)
 	{
-	
+
 		$packetsize = 2048;
-		
-		
+
+
 		if (isset($progress))
 		{
 			$readlength = 0;
 			$totallength = $this->getLength($rfp);
 		}
-	
+
 		while (!feof($rfp)) {
 			$data = fread($rfp, $packetsize);
 			fwrite($wfp, $data);
-			
+
 			if (isset($progress))
 			{
 				$readlength += strlen($data);
@@ -359,15 +393,15 @@ class bab_InstallRepositoryFile
 				$progress->setProgression($p);
 			}
 		}
-	
+
 		if (isset($progress))
 		{
 			$progress->setProgression(100);
 		}
 	}
-	
-	
-	
+
+
+
 	/**
 	 * Length of file from url
 	 * @param	ressource $fp
@@ -385,11 +419,11 @@ class bab_InstallRepositoryFile
 				$length = (int) trim($h[1]);
 			}
 		}
-	
+
 		return $length;
 	}
-	
-	
+
+
 	/**
 	 * @return bool
 	 */
@@ -399,18 +433,18 @@ class bab_InstallRepositoryFile
 		{
 			return true;
 		}
-		
+
 		if (false === bab_getAddonInfosInstance($this->name))
 		{
 			return false;
 		}
-		
+
 		return true;
 	}
-	
-	
+
+
 	/**
-	 * 
+	 *
 	 * @return bool
 	 */
 	public function isUpgradable()
@@ -422,7 +456,7 @@ class bab_InstallRepositoryFile
 		}
 		return version_compare($this->version, $current_version, '>');
 	}
-	
+
 	/**
 	 * Get current version from ini file
 	 * @return string|null
@@ -433,18 +467,18 @@ class bab_InstallRepositoryFile
 		{
 			return bab_getIniVersion();
 		}
-		
+
 		$addon = bab_getAddonInfosInstance($this->name);
-		
+
 		if (false === $addon)
 		{
 			return null;
 		}
-		
+
 		return $addon->getIniVersion();
 	}
-	
-	
+
+
 	public function __toString()
 	{
 		return $this->name;
@@ -462,8 +496,8 @@ class bab_InstallSource {
 
 	private $archive = null;
 	private $folderpath = null;
-	
-	
+
+
 	/**
 	 * @return string
 	 */
@@ -474,7 +508,7 @@ class bab_InstallSource {
 		/*@var $settings bab_Settings */
 		return $settings->getUploadPath().'/tmp';
 	}
-	
+
 
 
 	/**
@@ -544,25 +578,25 @@ class bab_InstallSource {
 
 	/**
 	 * Extract the archive into a temporary folder
-	 * 
+	 *
 	 * @throws Exception
-	 * 
+	 *
 	 * @return string full path to a temporary folder
 	 */
 	private function temporaryExtractArchive() {
 
-		
+
 		global $babBody;
 
 		if (null === $this->archive) {
 			return null;
 		}
-		
+
 		require_once dirname(__FILE__).'/path.class.php';
 		require_once dirname(__FILE__).'/session.class.php';
 		$session = bab_getInstance('bab_Session');
 		/*@var $session bab_Session */
-		
+
 		$temp = new bab_Path($this->getTmpPath());
 
 		if (!$temp->isDir()) {
@@ -576,7 +610,7 @@ class bab_InstallSource {
 		}
 
 		$temp->createDir();
-		
+
 		chmod($temp->tostring(), 0777);
 
 		$zip = bab_functionality::get('Archive/Zip');
@@ -694,27 +728,27 @@ class bab_InstallSource {
 			return $this->installCore($ini);
 		}
 	}
-	
-	
+
+
 	private function isIncluded($addon, $file)
 	{
 		global $babBody;
-		
+
 		$target = realpath('./'.$GLOBALS['babInstallPath'].'addons/'.$addon.'/'.$file);
-		
+
 		if (false === $target)
 		{
 			// if realpath failed, the file does not exist
 			return false;
 		}
-		
+
 		return in_array($target, get_included_files());
-		
+
 	}
 
 
 
-	
+
 	/**
 	 * Copy files for addons
 	 * @param	bab_AddonIniFile $ini
@@ -727,7 +761,7 @@ class bab_InstallSource {
 		include_once dirname(__FILE__).'/utilit.php';
 
 		global $babDB;
-		
+
 		$babBody = bab_getInstance('babBody');
 		/*@var $babBody babBody */
 
@@ -737,14 +771,14 @@ class bab_InstallSource {
 			$babBody->addError(bab_translate('The name of the addon is missing in the addonini file'));
 			return false;
 		}
-		
-		
+
+
 		if ($this->isIncluded($addon_name, 'init.php'))
 		{
 			$babBody->addError(bab_translate('The file init.php is allready included for this addon'));
 			return false;
 		}
-		
+
 
 		$babDB->db_query("UPDATE ".BAB_ADDONS_TBL." SET installed='N' WHERE title=".$babDB->quote($addon_name));
 		$path 	= $this->getFolder().'/';
@@ -756,10 +790,10 @@ class bab_InstallSource {
 		else{
 		  $unzipAddon = $this->installToAddonsFolder($ini);
 		}
-		
+
 		bab_addonsInfos::insertMissingAddonsInTable();
 		bab_addonsInfos::clear();
-		
+
 		$addon = bab_getAddonInfosInstance($addon_name);
 		if ($addon) {
 		    if (!$addon->upgrade()) {
@@ -769,12 +803,12 @@ class bab_InstallSource {
 		}
 
 		return true;
-		
+
 	}
-	
-	
-	
-	
+
+
+
+
 	/**
 	 * Copy files for addons in the vendor folder
 	 * @param	bab_AddonIniFile $ini
@@ -785,9 +819,9 @@ class bab_InstallSource {
         include_once dirname(__FILE__).'/upgradeincl.php';
         include_once dirname(__FILE__).'/addonsincl.php';
         include_once dirname(__FILE__).'/utilit.php';
-        
+
         global $babDB;
-        
+
         $babBody = bab_getInstance('babBody');
         /*@var $babBody babBody */
         $path 	= $this->getFolder().'/';
@@ -798,10 +832,10 @@ class bab_InstallSource {
                 }
         return true;
     }
-    
-    
-    
-    
+
+
+
+
     /**
      * Copy files for addons in the addons folder
      * @param	bab_AddonIniFile $ini
@@ -812,33 +846,33 @@ class bab_InstallSource {
         include_once dirname(__FILE__).'/upgradeincl.php';
         include_once dirname(__FILE__).'/addonsincl.php';
         include_once dirname(__FILE__).'/utilit.php';
-        
+
         global $babDB;
-        
+
         $babBody = bab_getInstance('babBody');
         /*@var $babBody babBody */
-        
+
         $addon_name = $ini->getName();
         $map = bab_getAddonsFilePath();
         $path 	= $this->getFolder().'/';
         // browse source path
         foreach ($map['loc_out'] as $key => $source) {
-        
+
             if (is_dir($path.$source)) {
                 $destination = $map['loc_in'][$key].'/';
-        
+
                 if (true !== $result = bab_recursive_cp($path.$source, $destination.$ini->getName())) {
                     $babBody->addError($result);
                     return false;
                 }
             }
         }
-        
+
         return true;
     }
-    
-    
-    
+
+
+
 
 	/**
 	 * Fix addons folders
@@ -878,7 +912,7 @@ class bab_InstallSource {
 	private function installAddonCollection(bab_AddonCollectionIniFile $ini) {
 
 	    global $babBody;
-	    
+
 		$collection = $ini->getPackageCollection();
 
 		if (null === $collection) {
@@ -1090,8 +1124,8 @@ class bab_InstallSource {
 			return false;
 		}
 
-		
-		
+
+
 		// redirect to upgrade page
 
 		$upgrade_page = $GLOBALS['babUrlScript'].'?tg=version&idx=upgrade&iframe=1';
@@ -1104,17 +1138,17 @@ class bab_InstallSource {
 
 			<a href="%s">Install</a>
 		', $upgrade_page, bab_toHtml($upgrade_page)));
-		
-		
-		
-		
-		
-		
+
+
+
+
+
+
 		/*
 		// call upgrade code
 		// force new install path
 		$GLOBALS['babInstallPath'] = basename($destination).'/';
-		
+
 		$str = '';
 		bab_upgrade(basename($destination).'/', $str);
 		if (!empty($str))
@@ -1266,7 +1300,7 @@ class bab_installWindow {
 	 * @param	mixed	$callback		array or string			the function must return a boolean
 	 */
 	public function startInstall($callback) {
-		
+
 		require_once dirname(__FILE__).'/utilit.php';
 		$babBody = bab_getInstance('babBody');
 
@@ -1308,7 +1342,7 @@ class bab_installWindow {
 		echo '<br id="BAB_ADDON_INSTALL_END" />'."\n";
 		echo '</body></html>';
 	}
-	
+
 
 
 	/**
@@ -1322,7 +1356,7 @@ class bab_installWindow {
 		if (defined('BAB_INSTALL_SCRIPT_BEGIN')) {
 			echo '<div class="bab_install_message">'.$html.'</div>'."\n";
 		}
-		
+
 		if (defined('BAB_INSTALL_TEXT_UTF8')) { // output install message to console
 			echo bab_convertStringFromDatabase(bab_unhtmlentities(strip_tags($html)), 'UTF-8')."\n";
 		}
