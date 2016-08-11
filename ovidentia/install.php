@@ -49,6 +49,9 @@ $functionalities->register('WorkingHours/Ovidentia'		, $GLOBALS['babInstallPath'
 $functionalities->register('SearchUi'		            , $GLOBALS['babInstallPath'].'utilit/searchui.class.php');
 $functionalities->register('PwdComplexity'				, $GLOBALS['babInstallPath'].'utilit/pwdcomplexity.class.php');
 $functionalities->register('PwdComplexity/DefaultPortal', $GLOBALS['babInstallPath'].'utilit/pwdcomplexity.class.php');
+$functionalities->register('ContextActions'				, $GLOBALS['babInstallPath'].'utilit/contextactions.class.php');
+$functionalities->register('ContextActions/Article'		, $GLOBALS['babInstallPath'].'utilit/contextactions.article.class.php');
+$functionalities->register('ContextActions/ArticleTopic', $GLOBALS['babInstallPath'].'utilit/contextactions.article.class.php');
 
 
 $func_to_register = $functionalities->parseFile(dirname(__FILE__).'/utilit/omlincl.php');

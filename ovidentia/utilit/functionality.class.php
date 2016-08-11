@@ -21,7 +21,7 @@
  * @copyright Copyright (c) 2008 by CANTICO ({@link http://www.cantico.fr})
  */
 
-
+require_once dirname(__FILE__).'/defines.php';
 
 
 /**

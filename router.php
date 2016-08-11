@@ -43,7 +43,10 @@ function __processHtaccess()
     if ($htaccess) {
         if (preg_match_all('/^\s+RewriteRule\s+([^\s]+)\s+([^\s]+)(?:\s+\[([^\s]+)\]$|$)/m', $htaccess, $match, PREG_SET_ORDER)) {
             foreach ($match as $rule) {
-                $flags = explode(',', $rule[3]);
+                $flags = array();
+                if (isset($rule[3])) {
+                    $flags = explode(',', $rule[3]);
+                }
                 if (__processRule($rule[1], $rule[2]) && in_array('L', $flags)) {
                     break;
                 }

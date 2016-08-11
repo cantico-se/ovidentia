@@ -39,7 +39,10 @@ function cleanStatsTables()
 
 		function temp()
 			{
-			$this->t_delete_statitems_before = bab_translate("Delete logs before (dd/mm/yyyy)");
+			$this->t_delete_statitems_before = bab_translate("Delete logs before");
+			
+			$W = bab_Widgets();
+			$this->datepicker = $W->DatePicker()->setName('remove_before')->display($W->HtmlCanvas());
 			$this->t_save = bab_translate("Ok");
 			}
 		}
@@ -208,9 +211,9 @@ switch($idx)
 
 		if (!empty($removeBefore)) {
 			require_once $GLOBALS['babInstallPath'] . 'utilit/dateTime.php';
-			$removeBefore = BAB_DateTime::fromDateStr($removeBefore);
+			$removeBefore = BAB_DateTime::fromIsoDateTime(bab_Widgets()->DatePicker()->getISODate($removeBefore));
 			bab_requireSaveMethod() && confirmCleanStatTables($removeBefore);
-			$babBody->msgerror = bab_translate("Done");
+			$babBody->addMessage(bab_translate("Done"));
 		}
 		else
 		{

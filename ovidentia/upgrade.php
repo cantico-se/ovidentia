@@ -7274,7 +7274,17 @@ function ovidentia_upgrade($version_base,$version_ini) {
     if (!bab_isTableField('bab_sites', 'auth_fullscreen')) {
         $babDB->db_query("ALTER TABLE `bab_sites` ADD `auth_fullscreen` tinyint(1) unsigned NOT NULL default '0'");
     }
-
+    
+    
+    
+    /**
+     * Upgrade to 8.4.94
+     */
+    
+	$functionalities->register('ContextActions'				, $GLOBALS['babInstallPath'].'utilit/contextactions.class.php');
+	$functionalities->register('ContextActions/Article'		, $GLOBALS['babInstallPath'].'utilit/contextactions.article.class.php');
+	$functionalities->register('ContextActions/ArticleTopic', $GLOBALS['babInstallPath'].'utilit/contextactions.article.class.php');
+	    
     return true;
 
 }
