@@ -79,8 +79,12 @@ class bab_InstallRepository {
                         $description = bab_getStringAccordingToDataBase($data->description, 'UTF-8');
 
                         $installRepositoryFile = new bab_InstallRepositoryFile($name, $data->relativePath, $data->version, $description, $data->dependencies);
-                        $installRepositoryFile->icon = $data->icon;
-                        $installRepositoryFile->image = $data->image;
+                        if (isset($data->icon)) {
+                            $installRepositoryFile->icon = $data->icon;
+                        }
+                        if (isset($data->image)) {
+                            $installRepositoryFile->image = $data->image;
+                        }
                         $this->files[$name][$data->version] = $installRepositoryFile;
                     }
                 }
@@ -196,7 +200,7 @@ class bab_InstallRepositoryFile
 
 
 
-    public function __construct($name, $filepath, $version, $description, $dependencies, $icon, $image)
+    public function __construct($name, $filepath, $version, $description, $dependencies)
     {
         $this->name = $name;
         $this->filepath = $filepath;
