@@ -4891,7 +4891,7 @@ switch($sAction)
         break;
 
     case 'undopasteFile':
-        bab_requireSaveMethod() && undoPasteFile();
+        undoPasteFile();
         break;
 
     case 'pasteFile':
