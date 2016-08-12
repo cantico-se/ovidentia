@@ -3929,27 +3929,27 @@ function pasteCollectiveDir()
     global $babBody;
     $oFileManagerEnv =& getEnvObject();
 
-    $iIdSrcRootFolder		= (int) bab_gp('iIdSrcRootFolder', 0);
-    $sSrcPath				= (string) bab_gp('sSrcPath', '');
+    $iIdSrcRootFolder		= (int) bab_rp('iIdSrcRootFolder', 0);
+    $sSrcPath				= (string) bab_rp('sSrcPath', '');
     $bSrcPathIsCollective	= true;
     $iIdTrgRootFolder		= $oFileManagerEnv->iId;
-    $sTrgPath				= (string) bab_gp('path', '');
+    $sTrgPath				= (string) bab_rp('path', '');
 
     $oFmFolder				= null;
 
     if(canPasteFolder($iIdSrcRootFolder, $sSrcPath, $bSrcPathIsCollective, $iIdTrgRootFolder, $sTrgPath))
     {
-        //Nom du r�pertoire � coller
+        //Nom du repertoire a coller
         $sName = getLastPath($sSrcPath);
 
-        //Emplacement du r�pertoire � coller
+        //Emplacement du repertoire a coller
         $sSrcPathRelativePath = addEndSlash(removeLastPath($sSrcPath . '/'));
 
         $bSrcPathHaveVersioning = false;
         $bTrgPathHaveVersioning = false;
         $bSrcPathCollective		= false;
 
-        //R�cup�ration des informations concernant le r�pertoire source (i.e le r�pertoire � d�placer)
+        //Recuperation des informations concernant le repertoire source (i.e le repertoire a deplacer)
         {
             $iIdRootFolder	= 0;
             $oSrcFmFolder	= null;
@@ -3963,7 +3963,7 @@ function pasteCollectiveDir()
         $oFmFolderSet = new BAB_FmFolderSet();
         if($oFileManagerEnv->userIsInCollectiveFolder())
         {
-            //R�cup�ration des informations concernant le r�pertoire cible (i.e le r�pertoire dans lequel le source est d�plac�)
+            //Recuperation des informations concernant le repertoire cible (i.e le repertoire dans lequel le source est deplace)
             $oTrgFmFolder = null;
             BAB_FmFolderHelper::getInfoFromCollectivePath($sTrgPath, $iIdRootFolder, $oTrgFmFolder);
             $iTrgIdOwner = $oTrgFmFolder->getId();
@@ -3985,15 +3985,15 @@ function pasteCollectiveDir()
             $oFmFolder = $oFmFolderSet->get($oCriteria);
             if(!is_null($oFmFolder))
             {
-                //Le r�pertoire � coller est collectif
+                //Le repertoire a coller est collectif
 
                 $bTrgPathHaveVersioning = ('Y' === $oFmFolder->getVersioning());
             }
             else
             {
-                //Le r�pertoire � coller n'est pas collectif
+                //Le repertoire a coller n'est pas collectif
                 //comme on colle dans la racine il faut le faire
-                //devenir un r�pertoire collectif
+                //devenir un repertoire collectif
 
                 $oFmFolder = new BAB_FmFolder();
                 $oFmFolder->setName($sName);
@@ -4068,21 +4068,21 @@ function pasteCollectiveDir()
                      {
                         global $babDB;
 
-                        //Suppression des versions des fichiers pour les r�pertoires qui ne sont pas contenus dans des
-                        //r�pertoires collectifs
+                        //Suppression des versions des fichiers pour les repertoires qui ne sont pas contenus dans des
+                        //repertoires collectifs
                         {
-                            //S�lection de tous les fichiers qui contiennent dans leurs chemins le r�pertoire � d�placer
+                            //Selection de tous les fichiers qui contiennent dans leurs chemins le repertoire a deplacer
                             $oCriteriaFile = $oPathName->like($babDB->db_escape_like($sLastRelativePath) . '%');
                             $oCriteriaFile = $oCriteriaFile->_and($oGroup->in('Y'));
                             $oCriteriaFile = $oCriteriaFile->_and($oIdDgOwnerFile->in(bab_getCurrentUserDelegation()));
 
-                            //S�lection des r�pertoires collectifs
+                            //Selection des repertoires collectifs
                             $oCriteriaFolder = $oRelativePath->like($babDB->db_escape_like($sLastRelativePath) . '%');
                             $oCriteriaFolder = $oCriteriaFolder->_and($oIdDgOwnerFolder->in(bab_getCurrentUserDelegation()));
                             $oFmFolderSet->select($oCriteriaFolder);
                             while(null !== ($oFmFolder = $oFmFolderSet->next()))
                             {
-                                //exclusion des r�pertoires collectif (on ne touche pas � leurs versions)
+                                //exclusion des repertoires collectif (on ne touche pas a leurs versions)
                                 $oCriteriaFile = $oCriteriaFile->_and($oPathName->notLike(
                                     $babDB->db_escape_like($oFmFolder->getRelativePath() . $oFmFolder->getName() . '/') . '%'));
                             }
@@ -4810,7 +4810,7 @@ switch($sAction)
         break;
 
     case 'undopasteFolder':
-        bab_requireSaveMethod() && undoPasteFolder();
+        undoPasteFolder();
         break;
 
     case 'deleteFolder':

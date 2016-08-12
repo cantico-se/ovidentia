@@ -817,7 +817,7 @@ elseif(bab_rp('update') == 'displayfm')
 	bab_requireSaveMethod() && updateDisplayFileManager();
 }
 
-$action = bab_gp('action', '');
+$action = bab_rp('action', '');
 if($action == 'notify')
 {
 	bab_requireSaveMethod() && bab_notifyPurgeTrashs();
