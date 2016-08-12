@@ -448,7 +448,7 @@ function hideDelegationSubmitBtn()
 						<!--#if bCanEditFolder -->
 							<a href="{ sFolderFormUrl }" title="{ sFolderFormEdit }"><img src="{ babSkinPath }images/Puces/edit.png" border="0" align="middle" alt="{ sFolderFormEdit }"  /></a>
 						<!--#endif bCanEditFolder -->
-							<a href="{ pasteurl }"><img src="{ babSkinPath }images/Puces/paste.gif" alt="{ paste }" title="{ paste }" border="0" align="middle" /></a>
+							<a href="{ pasteurl }" onclick="return bab_postLinkConfirm(this);"><img src="{ babSkinPath }images/Puces/paste.gif" alt="{ paste }" title="{ paste }" border="0" align="middle" /></a>
 							<a href="{ undopasteurl }"><img src="{ babSkinPath }images/Puces/backarrow.gif" alt="{ undo }" title="{ undo }" border="0" align="middle" /></a>
 							</td>
 						</tr>
@@ -531,7 +531,12 @@ function hideDelegationSubmitBtn()
 								<img title="{ unziptxt }" src="{ babSkinPath }images/Puces/zip.gif" border="0" align="middle" />
 							<a/>
 							<!--#endif bUnZip -->
-							<!--#if bCanManageCurrentFolder --><a href="{ cuturl }" title="{ cuttxt }"><img src="{ babSkinPath }images/Puces/cut.gif" alt="{ cuttxt }" border="0" align="middle" /></a>&nbsp;<a href="{ delurl }" onclick="return bab_postLinkConfirm(this);" title="{ deltxt }"><img src="{ babSkinPath }images/Puces/del.gif" alt="{ deltxt }" border="0" align="middle" /></a><!--#endif bCanManageCurrentFolder -->
+							
+							<!--#if bCanManageCurrentFolder -->
+							<a href="{ cuturl }" onclick="return bab_postLinkConfirm(this);"><img src="{ babSkinPath }images/Puces/cut.gif" title="{ cuttxt }" alt="{ cuttxt }" border="0" align="middle" /></a>&nbsp;
+							<a href="{ delurl }" onclick="return bab_postLinkConfirm(this);" title="{ deltxt }"><img src="{ babSkinPath }images/Puces/del.gif" alt="{ deltxt }" border="0" align="middle" /></a>
+							<!--#endif bCanManageCurrentFolder -->
+							
 							<!--#if bDownload --><span class="bab-file-{ fileid }"></span><!--#endif bDownload -->
 							</td>
 						</tr>
@@ -568,8 +573,8 @@ function hideDelegationSubmitBtn()
 							<td nowrap="nowrap">
 								<a href="{ urlget }"><img src="{ babSkinPath }images/Puces/download.gif" alt="{ download }" border="0" align="middle" /></a>
 							<!--#if bCanManageCurrentFolder -->
-								<a href="{ cuturl }"><img src="{ babSkinPath }images/Puces/cut.gif" alt="{ cuttxt }" border="0" align="middle" /></a>
-								<a href="{ delurl }"><img src="{ babSkinPath }images/Puces/del.gif" alt="{ deltxt }" border="0" align="middle" /></a>
+								<a href="{ cuturl }" onclick="return bab_postLinkConfirm(this);"><img src="{ babSkinPath }images/Puces/cut.gif" alt="{ cuttxt }" border="0" align="middle" /></a>
+								<a href="{ delurl }" onclick="return bab_postLinkConfirm(this);"><img src="{ babSkinPath }images/Puces/del.gif" alt="{ deltxt }" border="0" align="middle" /></a>
 							<!--#endif bCanManageCurrentFolder -->
 							</td>
 						</tr>
@@ -607,7 +612,7 @@ function hideDelegationSubmitBtn()
 							<a href="{ urlget }"><img src="{ babSkinPath }images/Puces/download.gif" alt="{ download }" border="0" align="middle" /></a>
 						<!--#endif bDownload -->
 						<!--#if bCanManageCurrentFolder -->
-							<a href="{ pasteurl }"><img src="{ babSkinPath }images/Puces/paste.gif" alt="{ paste }" title="{ paste }" border="0" align="middle" /></a>
+							<a href="{ pasteurl }" onclick="return bab_postLinkConfirm(this);"><img src="{ babSkinPath }images/Puces/paste.gif" alt="{ paste }" title="{ paste }" border="0" align="middle" /></a>
 							<a href="{ undopasteurl }"><img src="{ babSkinPath }images/Puces/backarrow.gif" alt="{ undo }" title="{ undo }" border="0" align="middle" /></a>
 						<!--#endif bCanManageCurrentFolder -->
 							</td>

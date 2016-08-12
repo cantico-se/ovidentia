@@ -1022,20 +1022,20 @@ function listTrashFiles()
 
     $babBody->addItemMenu("list", bab_translate("Folders"), $GLOBALS['babUrlScript'] .
         '?idx=list&id=' . $oFileManagerEnv->iId .
-        '&gr=' . $oFileManagerEnv->sGr . '&path=' . urlencode($oFileManagerEnv->sPath)).'&tg=fileman';
+        '&gr=' . $oFileManagerEnv->sGr . '&path=' . urlencode($oFileManagerEnv->sPath).'&tg=fileman');
 
     if(canUpload($oFileManagerEnv->sRelativePath))
     {
         $babBody->addItemMenu("add", bab_translate("Upload"), $GLOBALS['babUrlScript'] .
             '?idx=displayAddFileForm&id=' . $oFileManagerEnv->iId .
-            '&gr=' . $oFileManagerEnv->sGr . '&path=' . urlencode($oFileManagerEnv->sPath)).'&tg=fileman';
+            '&gr=' . $oFileManagerEnv->sGr . '&path=' . urlencode($oFileManagerEnv->sPath).'&tg=fileman');
     }
 
     if(canManage($oFileManagerEnv->sRelativePath))
     {
         $babBody->addItemMenu("trash", bab_translate("Trash"), $GLOBALS['babUrlScript'] .
             '?idx=trash&id=' . $oFileManagerEnv->iId .
-            '&gr=' . $oFileManagerEnv->sGr . '&path=' . urlencode($oFileManagerEnv->sPath)).'&tg=fileman';
+            '&gr=' . $oFileManagerEnv->sGr . '&path=' . urlencode($oFileManagerEnv->sPath).'&tg=fileman');
     }
 
 
@@ -2337,7 +2337,7 @@ function cutFile()
         return false;
     }
 
-    $file = bab_gp('file');
+    $file = bab_rp('file');
 
     $oFolderFileSet = new BAB_FolderFileSet();
 
@@ -2379,7 +2379,7 @@ function delFile()
         return false;
     }
 
-    $sFilename = (string) bab_gp('file', '');
+    $sFilename = (string) bab_rp('file', '');
 
     $oFolderFileSet = new BAB_FolderFileSet();
 
@@ -2547,11 +2547,11 @@ function pasteFile()
 
     $oFileManagerEnv =& getEnvObject();
 
-    $iIdSrcRootFolder	= (int) bab_gp('iIdSrcRootFolder', 0);
+    $iIdSrcRootFolder	= (int) bab_rp('iIdSrcRootFolder', 0);
     $iIdTrgRootFolder	= $oFileManagerEnv->iId;
-    $sSrcPath			= (string) bab_gp('sSrcPath', '');
+    $sSrcPath			= (string) bab_rp('sSrcPath', '');
     $sTrgPath			= $oFileManagerEnv->sPath;
-    $sFileName			=  (string) bab_gp('file', '');
+    $sFileName			=  (string) bab_rp('file', '');
     $sUpLoadPath		= $oFileManagerEnv->getRootFmPath();
 
     if(canPasteFile($iIdSrcRootFolder, $sSrcPath, $iIdTrgRootFolder, $sTrgPath, $sFileName))
@@ -2676,11 +2676,11 @@ function undopasteFile()
 
     $oFileManagerEnv =& getEnvObject();
 
-    $iIdSrcRootFolder	= (int) bab_gp('iIdSrcRootFolder', 0);
+    $iIdSrcRootFolder	= (int) bab_rp('iIdSrcRootFolder', 0);
     $iIdTrgRootFolder	= $iIdSrcRootFolder;
-    $sSrcPath			= (string) bab_gp('sSrcPath', '');
+    $sSrcPath			= (string) bab_rp('sSrcPath', '');
     $sTrgPath			= $sSrcPath;
-    $sFileName			=  (string) bab_gp('file', '');
+    $sFileName			=  (string) bab_rp('file', '');
     $sUpLoadPath		= $oFileManagerEnv->getRootFmPath();
 
     if(canPasteFile($iIdSrcRootFolder, $sSrcPath, $iIdTrgRootFolder, $sTrgPath, $sFileName))
@@ -3759,7 +3759,7 @@ function cutCollectiveDir()
     global $babBody;
     $oFileManagerEnv =& getEnvObject();
 
-    $sDirName = (string) bab_gp('sDirName', '');
+    $sDirName = (string) bab_rp('sDirName', '');
 
     if(mb_strlen(trim($sDirName)) > 0)
     {
@@ -3828,7 +3828,7 @@ function cutUserFolder()
     global $babBody;
     $oFileManagerEnv =& getEnvObject();
 
-    $sDirName = (string) bab_gp('sDirName', '');
+    $sDirName = (string) bab_rp('sDirName', '');
 
     if(!canCutFolder($oFileManagerEnv->sRelativePath . $sDirName . '/'))
     {
