@@ -326,8 +326,8 @@ function submitCtr()
 //]]>
 </script>
 
-<form name="fmcreate" method="post" action="{ babPhpSelf }" <!--#if js_appflowlock -->
-<input type="hidden" name="babCsrfProtect" value="{ babCsrfProtect }" />onSubmit="return(submitCtr())"<!--#endif js_appflowlock -->>
+<form name="fmcreate" method="post" action="{ babPhpSelf }" <!--#if js_appflowlock -->onSubmit="return(submitCtr())"<!--#endif js_appflowlock -->>
+    <input type="hidden" name="babCsrfProtect" value="{ babCsrfProtect }" />
 	<input type="hidden" name="tg" value="admfm" />
 	<input type="hidden" name="idx" value="list" />
 	<input type="hidden" name="fid" value="{ fid }" />
