@@ -718,7 +718,11 @@ class Func_Ovml_Function_CurrentNode extends Func_Ovml_Function
 /**
  * Return the sitemap menu tree in a html UL LI
  *
- * <OFSitemapMenu [sitemap="sitemapName"] [baselangid="parentnode"] [basenode="parentNode"] [selectednode=""] [keeplastknown="0|1"] [maxdepth="depth"] [outerul="1"] [admindelegation="0"]>
+ * <OFSitemapMenu 
+ *      [sitemap="sitemapName"] [baselangid="parentnode"] [basenode="parentNode"] 
+ *      [selectednode=""] [keeplastknown="0|1"] [maxdepth="depth"] [outerul="1"] [admindelegation="0"]
+ *      [editlinkslevel="0"]
+ *      >
  *
  * - The sitemap attribute is optional.
  * 		The default value is the sitemap selected in Administration > Sites > Site configuration.
@@ -734,7 +738,8 @@ class Func_Ovml_Function_CurrentNode extends Func_Ovml_Function
  * 		The default value is '1'.
  * - The admindelegation attribute is optional, if set to "1" the display of ovidentia administration node will only display if the user can manage this property
  * 		The default value is '0'.
- *
+ * - The editlinkslevel attribute is optional, if set, the classes used by the editlinks addon are added up to the level specified in the parameter,
+ *      The default value is '0', no editlinks support.
  *
  * Example:
  *
@@ -801,6 +806,10 @@ class Func_Ovml_Function_SitemapMenu extends Func_Ovml_Function {
         if ($this->selectedNodeId === $siteMapItem->id_function) {
             // the current node has the "selected" class.
             $additional_classes[] = $this->selectedClass;
+        }
+        
+        if (isset($this->args['editlinkslevel']) && $this->args['editlinkslevel'] >= $depth) {
+            $additional_classes[] = 'smed-sitemapnode-'.$siteMapItem->id_function;
         }
 
 

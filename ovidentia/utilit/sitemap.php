@@ -25,7 +25,7 @@
 include_once $GLOBALS['babInstallPath'].'utilit/defines.php';
 include_once $GLOBALS['babInstallPath'].'utilit/treebase.php';
 include_once $GLOBALS['babInstallPath'].'utilit/eventincl.php';
-
+include_once $GLOBALS['babInstallPath'].'utilit/userincl.php';
 
 /**
  * Sitemap rootNode
@@ -1056,7 +1056,8 @@ class bab_siteMapItem {
         if (isset($this->target)) {
             return $this->target->canRead();
         }
-
+        
+        
         return bab_isAccessValid('bab_sitemap_node_read_groups', $this->id_function);
     }
 
