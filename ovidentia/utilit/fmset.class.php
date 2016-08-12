@@ -115,10 +115,17 @@ class BAB_BaseSet extends BAB_MySqlResultIterator
                 $sKey = $aItem['key'];
                 $sValue = null;
                 $oObject->_get($sKey, $sValue);
+                
+                if ('`path`' === $sColName && !empty($sValue) && '/' !== mb_substr($sValue,-1)) {
+                    // throw new Exception('Saving a file without endslash in path is not allowed');
+                    $sValue .= '/';
+                }
 
                 $sValue = '\'' . $babDB->db_escape_string($sValue) . '\'';
                 $aValue[] = $sValue;
                 $aOnDuplicateKey[] = $sColName . '= ' . $sValue;
+                
+                
             }
             reset($this->aField);
 
@@ -1128,6 +1135,8 @@ class BAB_FolderFileSet extends BAB_BaseSet
         $oFolderFileSet->select($oCriteria);
         while(null !== ($oFolderFile = $oFolderFileSet->next()))
         {
+            /*@var $oFolderFile BAB_FolderFile */
+            
             $sOldPathName = $oFolderFile->getPathName();
             $sNewPathName = $sNewRelativePath . mb_substr($sOldPathName, mb_strlen($sOldRelativePath));
 
