@@ -3524,4 +3524,8 @@ L'administrateur</string>
 <string id="Edit article">Modifier l'article</string>
 <string id="Create article">Créer un article</string>
 <string id="Manage topic">Gérer le thème</string>
+
+<string id="Certificate validation">Validation des certificats</string>
+<string id="Validate certificates">Valider les certificats</string>
+<string id="Suppress certificate validation">Supprimer la validation des certificats</string>
 </fr>

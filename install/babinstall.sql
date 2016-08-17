@@ -968,6 +968,7 @@ CREATE TABLE `bab_sites` (
   `smtpserver` varchar(255) NOT NULL default '',
   `smtpport` varchar(20) NOT NULL default '25',
   `smtpsecurity` VARCHAR(10) NOT NULL default '',
+  `smtpnovalidation` tinyint(1) unsigned NOT NULL default '0',
   `imgsize` int(11) unsigned NOT NULL default '0',
   `idgroup` int(11) unsigned NOT NULL default '0',
   `smtpuser` varchar(255) NOT NULL default '',

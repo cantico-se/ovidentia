@@ -316,6 +316,9 @@ function site_menu2($id)
             $this->mailfunction = bab_translate("Mail function");
             $this->server = bab_translate("Smtp server");
             $this->serverport = bab_translate("Server port");
+            $this->validation = bab_translate("Certificate validation");
+            $this->certificate_validation = bab_translate("Validate certificates");
+            $this->no_certificate_validation = bab_translate("Suppress certificate validation");
             $this->security = bab_translate("Connection security");
             $this->security_none = bab_translate("No security");
             $this->security_ssl = bab_translate("SSL");
@@ -2031,6 +2034,7 @@ function siteUpdate_menu2()
             smtpserver = '".$babDB->db_escape_string($_POST['smtpserver'])."',
             smtpport = '".$babDB->db_escape_string($_POST['smtpport'])."',
             smtpsecurity = '".$babDB->db_escape_string($_POST['smtpsecurity'])."',
+            smtpnovalidation = '".$babDB->db_escape_string($_POST['smtpnovalidation'])."',
             smtpuser = '".$babDB->db_escape_string($_POST['smtpuser'])."',
             smtppassword=ENCODE(\"".$babDB->db_escape_string($_POST['smtppass'])."\",\"".$babDB->db_escape_string($GLOBALS['BAB_HASH_VAR'])."\")
         where id='".$babDB->db_escape_string($_POST['item'])."'";
@@ -2557,8 +2561,8 @@ function siteUpdate_authentification($id, $authtype, $host, $hostname, $ldpapchk
             remember_login=".$babDB->quote($remember_login).",
             authentification='".$babDB->db_escape_string($authtype)."',
             auth_multi_session=".$babDB->quote($auth_multi_session).",
-            auth_https=".$babDB->quote($auth_https).", 
-            auth_fullscreen=".$babDB->quote($auth_fullscreen)." 
+            auth_https=".$babDB->quote($auth_https).",
+            auth_fullscreen=".$babDB->quote($auth_fullscreen)."
             where id='".$babDB->db_escape_string($id)."'
         ");
     }

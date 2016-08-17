@@ -26,14 +26,14 @@ require_once dirname(__FILE__).'/eventincl.php';
 require_once dirname(__FILE__).'/settings.class.php';
 
 function bab_getMimeType($type, $subtype)
-	{ 
+	{
 	$primary_mime_type = array("TEXT", "MULTIPART", "MESSAGE", "APPLICATION", "AUDIO", "IMAGE", "VIDEO", "OTHER");
-	if($subtype) 
-		{ 
-		return $primary_mime_type[(int) $type] . '/' . $subtype; 
+	if($subtype)
+		{
+		return $primary_mime_type[(int) $type] . '/' . $subtype;
 		}
 	return "TEXT/PLAIN";
-	} 
+	}
 
 /**
  * get mime part, decode content to ovidentia charset
@@ -44,20 +44,20 @@ function bab_getMimeType($type, $subtype)
  * @param string $part_number
  * @return string
  */
-function bab_getMimePart($mbox, $msg_number, $mime_type, $structure = false, $part_number = false) 
+function bab_getMimePart($mbox, $msg_number, $mime_type, $structure = false, $part_number = false)
 {
-	if(!$structure) 
+	if(!$structure)
 		{
-		$structure = imap_fetchstructure($mbox, $msg_number); 
+		$structure = imap_fetchstructure($mbox, $msg_number);
 		}
 
-	if($structure) 
-		{ 
-		if($mime_type == bab_getMimeType($structure->type, $structure->subtype)) 
+	if($structure)
+		{
+		if($mime_type == bab_getMimeType($structure->type, $structure->subtype))
 			{
-			if(!$part_number) 
-				{ 
-				$part_number = "1"; 
+			if(!$part_number)
+				{
+				$part_number = "1";
 				}
 
 
@@ -69,18 +69,18 @@ function bab_getMimePart($mbox, $msg_number, $mime_type, $structure = false, $pa
 					}
 				}
 
-			$text = imap_fetchbody($mbox, $msg_number, $part_number); 
-			if($structure->encoding == 3) 
-				{ 
-				$text = imap_base64($text); 
-				} 
-			else if($structure->encoding == 4) 
-				{ 
-				$text = imap_qprint($text); 
+			$text = imap_fetchbody($mbox, $msg_number, $part_number);
+			if($structure->encoding == 3)
+				{
+				$text = imap_base64($text);
 				}
-				
+			else if($structure->encoding == 4)
+				{
+				$text = imap_qprint($text);
+				}
+
 			// get encoding from structure
-			
+
 			foreach($structure->parameters as $param)
 				{
 					if ('CHARSET' === $param->attribute)
@@ -88,35 +88,35 @@ function bab_getMimePart($mbox, $msg_number, $mime_type, $structure = false, $pa
 						return bab_getStringAccordingToDataBase($text, mb_strtoupper($param->value));
 					}
 				}
-			
+
 			return $text;
 			}
-			
-		if($structure->type == 1) /* multipart */ 
-			{ 
-			while(list($index, $sub_structure) = each($structure->parts)) 
-				{ 
-				if($part_number) 
-					{ 
+
+		if($structure->type == 1) /* multipart */
+			{
+			while(list($index, $sub_structure) = each($structure->parts))
+				{
+				if($part_number)
+					{
 					$prefix = $part_number . '.';
 					}
 				else $prefix = '';
-				$data = bab_getMimePart($mbox, $msg_number, $mime_type, $sub_structure, $prefix . ($index + 1)); 
-				if($data) 
+				$data = bab_getMimePart($mbox, $msg_number, $mime_type, $sub_structure, $prefix . ($index + 1));
+				if($data)
 					{
-					return $data; 
-					} 
-				} 
-			} 
-		} 
-	return false; 
-} 
+					return $data;
+					}
+				}
+			}
+		}
+	return false;
+}
 
 class babMailTemplate
 	{
 	var $mailcontent;
 	var $sContent;
-	
+
 	function babMailTemplate($msg)
 		{
 		$this->mailcontent	= $msg;
@@ -129,110 +129,110 @@ class babMailTemplate
 /**
  * Mail event
  * Main mail event object to transport mail informations
- * 
- * 
+ *
+ *
  * @see bab_eventBeforeMailSent
  * @see bab_eventAfterMailSent
- */ 
+ */
 class bab_eventMail extends bab_event {
-	
-	
-	
+
+
+
 	/**
-	 * 
+	 *
 	 * @var array
-	 */ 
+	 */
 	public $from = null;		// array($this->mail->From, $this->mail->FromName),
-	
+
 	/**
-	 * 
+	 *
 	 * @var string
-	 */ 
+	 */
 	public $sender = null;
-	
+
 	/**
 	 * List of recipient for TO field
 	 * @var array
-	 */ 
+	 */
 	public $to = null;
-	
-	
+
+
 	/**
 	 * List of recipient for CC field
 	 * @var array
-	 */ 
+	 */
 	public $cc = null;
-	
-	
-	
+
+
+
 	/**
 	 * List of recipient for BCC field
 	 * @var array
-	 */ 
+	 */
 	public $bcc = null;
-	
-	
-	
+
+
+
 	/**
 	 * List of mail attachements
 	 * @var array
-	 */ 
+	 */
 	public $attachements = null;
-	
-	
-	
+
+
+
 	/**
 	 * List of mail image inline attachements
 	 * @var array
-	 */ 
+	 */
 	public $imageattachements = null;
-	
-	
+
+
 	/**
 	 * @var string
-	 */ 
+	 */
 	public $subject = null;
-	
+
 	/**
 	 * @var string
-	 */ 
+	 */
 	public $body = null;
-	
-	
+
+
 	/**
 	 * @var string
 	 */
 	public $altBody = null;
-	
+
 	/**
 	 * @var string
 	 */
 	public $format = null;
-	
+
 	/**
 	 * Unique identifier of email used in mailspooler
 	 * @var string
 	 */
 	public $hash = null;
-	
-	
+
+
 	public function setMailInfos(babMail $babMail) {
-		
+
 		$this->from 		= array($babMail->mail->From, $babMail->mail->FromName);
 		$this->sender 		= $babMail->mail->Sender;
-		
+
 		$this->to 			= $babMail->mailTo;
 		$this->cc 			= $babMail->mailCc;
 		$this->bcc 			= $babMail->mailBcc;
 		$this->attachements = $babMail->attachements;
 		$this->imageattachements = $babMail->imageattachements;
-		
+
 		$this->subject		= $babMail->mail->Subject;
 		$this->body			= $babMail->mail->Body;
-		
+
 		$this->altBody		= $babMail->mail->AltBody;
 		$this->format		= $babMail->format;
-		
+
 		$this->hash			= $babMail->hash;
 	}
 
@@ -242,42 +242,42 @@ class bab_eventMail extends bab_event {
 /**
  * Event fired before mail sent
  * this event allow to cancel an email
- */ 
+ */
 class bab_eventBeforeMailSent extends bab_eventMail {
-	
+
 	/**
 	 * continue to next operation
 	 * @var bool
-	 */ 
+	 */
 	private $propagation_status = true;
-	
+
 	/**
 	 * @see bab_eventBeforeMailSent::cancel()
 	 * @var bool
-	 */ 
+	 */
 	public $return_value = null;
-	
+
 	/**
-	 * Cancel the sending 
+	 * Cancel the sending
 	 * The message will not be sent and will not be recorded as a mail not sent in the list
-	 * 
+	 *
 	 * @see babMail::send()
-	 * 
-	 * @param	bool	$returnvalue	when the message is canceled, 
+	 *
+	 * @param	bool	$returnvalue	when the message is canceled,
 	 * 									the send method of the babMail object will return false by default
 	 * 									this parameter can be set to true to "simulate" a correct mailing
-	 * 
+	 *
 	 * @return bab_eventBeforeMailSent
-	 */ 
+	 */
 	public function cancel($returnvalue = false) {
 		$this->propagation_status = false;
 		$this->return_value = $returnvalue;
 		return $this;
 	}
-	
+
 	/**
 	 * @return bool
-	 */ 
+	 */
 	public function sendAllowed() {
 		return $this->propagation_status;
 	}
@@ -287,21 +287,21 @@ class bab_eventBeforeMailSent extends bab_eventMail {
 /**
  * Event fired after mail sent
  * this event allow to get the sent status
- */ 
+ */
 class bab_eventAfterMailSent extends bab_eventMail {
-	
+
 	/**
-	 * 
+	 *
 	 * @var bool
 	 */
 	public $sent_status	= null;
-	
+
 	/**
 	 * error message from server or null if no error or no message
 	 * @var string
 	 */
 	public $ErrorInfo = null;
-	
+
 	/**
 	 * Commplete SMTP trace if available
 	 * @var string
@@ -326,12 +326,12 @@ class bab_PHPMailer extends PHPMailer
 	 * @var string
 	 */
 	public $uniq_id = null;
-	
-	
+
+
 	public function __construct() {
-	    
+
 	    $this->smtp = new bab_SMTP();
-	    
+
 	    parent::__construct();
 	}
 
@@ -348,10 +348,10 @@ class bab_PHPMailer extends PHPMailer
 
 		return $result;
 	}
-	
-	
+
+
 	public function getSmtpTrace() {
-	    
+
 	    return $this->smtp->smtp_trace;
 	}
 }
@@ -368,8 +368,8 @@ class bab_SMTP extends SMTP
      * @var string
      */
     public $smtp_trace = '';
-    
-    
+
+
     /**
      * Outputs debugging info via user-defined method
      * This method is NOT protected in the default SMTP class, the method has been made
@@ -377,22 +377,22 @@ class bab_SMTP extends SMTP
      * @param string $str
      */
     protected function edebug($str, $level = 0) {
-        
+
         if ('<br />' === substr($str, -6)) {
             $str = substr($str, 0, -6);
         }
-        
+
         $this->smtp_trace .= $str;
     }
-    
+
     /**
      * Force debug mode for SMTP class
      * necessary to get the smtp trace
      */
      public function Connected() {
-         
+
          $this->do_debug = 2;
-         
+
          return parent::Connected();
      }
 }
@@ -401,15 +401,15 @@ class bab_SMTP extends SMTP
 
 /**
  * Class API used to send mail via php mailer and ovidentia configuration
- * 
- */ 
+ *
+ */
 class babMail
 {
     /**
      * @var bab_PHPMailer
      */
 	public $mail;
-	
+
 	public $mailTo = array();
 	public $mailCc = array();
 	public $mailBcc = array();
@@ -429,7 +429,7 @@ class babMail
         $settings = bab_getInstance('bab_Settings');
     	/* @var $settings bab_Settings */
     	$site = $settings->getSiteSettings();
-		
+
 		$this->mail = new bab_PHPMailer();
 		$this->mail->Timeout = 60; // Timout modification for slower SMTP servers
 		$this->mail->CharSet = bab_charset::getIso();
@@ -439,9 +439,9 @@ class babMail
 		$this->mail->SetLanguage('en', $GLOBALS['babInstallPath'].'utilit/');
 
 	}
-	
 
-	
+
+
 
 	public function mailFrom($email, $name = '')
 	{
@@ -451,7 +451,7 @@ class babMail
 
 	/**
 	 * Adds a recipient (TO) to the email message.
-	 * 
+	 *
 	 * @param string	$email			The email address of the recipient.
 	 * @param string	$name			The (optional) name of the recipient.
 	 */
@@ -475,7 +475,7 @@ class babMail
 
 	/**
 	 * Adds a recipient (CC) to the email message.
-	 * 
+	 *
 	 * @param string	$email			The email address of the recipient.
 	 * @param string	$name			The (optional) name of the recipient.
 	 */
@@ -501,7 +501,7 @@ class babMail
 
 	/**
 	 * Adds a recipient (BCC) to the email message.
-	 * 
+	 *
 	 * @param string	$email			The email address of the recipient.
 	 * @param string	$name			The (optional) name of the recipient.
 	 */
@@ -537,7 +537,7 @@ class babMail
 
 
     /**
-     * Adds a "Reply-to" address.  
+     * Adds a "Reply-to" address.
      * @param string	$email			The reply-to address.
      * @param string	$name			Optional name of reply-to.
      */
@@ -574,7 +574,7 @@ class babMail
 	/**
 	 * Requests a read receipt for the email (i.e if the recipient has a compliant email reader,
 	 * he will be prompted to acknowledge the receipt of the message).
-	 * 
+	 *
 	 * @param string $email		The email address where the reading confirmation will be sent.
 	 */
 	public function confirmReadingTo($email)
@@ -585,7 +585,7 @@ class babMail
 
 	/**
 	 * Sets the subject of the message.
-	 * 
+	 *
 	 * @param string $subject
 	 */
 	public function mailSubject($subject)
@@ -596,7 +596,7 @@ class babMail
 
 	/**
 	 * Sets the email priority (1 = High, 3 = Normal, 5 = low).
-	 * 
+	 *
 	 * @param int	$priority
 	 */
 	public function setPriority($priority)
@@ -614,7 +614,7 @@ class babMail
 
 	/**
 	 * Sets the Body of the message.  This can be either an HTML or text body.
-	 * 
+	 *
 	 * @param string	$body
 	 * @param string	$format
 	 */
@@ -634,7 +634,7 @@ class babMail
      * email to multipart/alternative.  This body can be read by mail
      * clients that do not have HTML email capability such as mutt. Clients
      * that can read HTML will view the normal Body.
-     * 
+     *
      * @param string	$altBody
      */
 	public function mailAltBody($altBody)
@@ -651,7 +651,7 @@ class babMail
 	 * @param string	$path		Path to the attachment.
 	 * @param string	$realname	Overrides the attachment name.
 	 * @param string	$type		File extension (MIME) type.
-	 * 
+	 *
 	 * @return bool
 	 */
 	public function mailFileAttach($path, $realname, $type)
@@ -679,8 +679,8 @@ class babMail
 	/**
 	 *  Add an embedded attachment from a file.
 	 *
-	 * @param string	$path	
-	 * @param string	$cid	
+	 * @param string	$path
+	 * @param string	$cid
 	 * @param string	$name
 	 * @param string	$encoding
 	 * @param string	$type
@@ -696,10 +696,10 @@ class babMail
 	{
 		$this->mail->ClearAttachments();
 	}
-	
+
 	/**
 	 * Add custom header
-	 * 
+	 *
 	 * @param	string	$name
 	 * @param	string	$value
 	 */
@@ -707,44 +707,44 @@ class babMail
 	{
 		$this->mail->AddCustomHeader($name, $value);
 	}
-	
-	
+
+
 
 	/**
 	 * Send message
 	 * @return	bool
-	 */ 
+	 */
 	public function send()
 	{
 		$this->mail->ErrorInfo = '';
 
 		$event = new bab_eventBeforeMailSent;
 		$event->setMailInfos($this);
-		
+
 		bab_fireEvent($event);
-		
+
 		if (!$event->sendAllowed()) {
 			return $event->return_value;
 		}
-		
+
 		$this->sent_status = $this->mail->Send();
-		
+
 		$event = new bab_eventAfterMailSent;
 		$event->setMailInfos($this);
 		$event->sent_status = $this->sent_status;
 		$event->ErrorInfo = empty($this->mail->ErrorInfo) ? null : $this->mail->ErrorInfo;
 		$event->smtp_trace = $this->mail->getSmtpTrace();
-		
-		
-		
+
+
+
 		bab_fireEvent($event);
-		
+
 		$this->hash = null;
 
-		return $this->sent_status; 
+		return $this->sent_status;
 	}
-	
-	
+
+
 	/**
 	 * Get the Message-ID header value after mail sent
 	 * @return string
@@ -758,7 +758,7 @@ class babMail
     	} else {
 			$hostname = 'localhost.localdomain';
     	}
-    	
+
     	return sprintf("<%s@%s>", $this->mail->uniq_id, $hostname);
 	}
 
@@ -794,20 +794,20 @@ class babMail
 
 
 /**
- * 
+ *
  *
  */
 class babMailSmtp extends babMail
 {
 	private $smtp_conn;
-	
-	
+
+
 	public function __construct()
 	{
 		parent::__construct();
 		$this->mail->IsSMTP();
 	}
-	
+
 	/**
 	 * Authenticate SMTP connexion
 	 * @param string $smtpuser
@@ -818,15 +818,15 @@ class babMailSmtp extends babMail
 		$this->mail->SMTPAuth = true;
 		$this->mail->Username = $smtpuser;
 		$this->mail->Password = $smtppass;
-		
+
 		$host = $this->mail->Host;
 		$port = $this->mail->Port;
 		$ssl = ($this->mail->SMTPSecure == 'ssl') ? '1' : '0';
-		
+
 		require_once dirname(__FILE__).'/session.class.php';
 		$session = bab_getInstance('bab_Session');
 		/*@var $session bab_Session */
-		
+
 		$property = 'bab_smtp_auth_type_'.md5($host.$port.$ssl);
 		if (!isset($session->$property))
 		{
@@ -836,59 +836,59 @@ class babMailSmtp extends babMail
 				$session->$property = $arr;
 			}
 		}
-		
+
 		$server_allowed = isset($session->$property) ? $session->$property : array('LOGIN');
 		$client_allowed = array('LOGIN', 'PLAIN', 'CRAM-MD5');
-		
+
 		$allowed = array_intersect($server_allowed, $client_allowed);
 
 		$this->mail->AuthType = reset($allowed);
 	}
-	
-	
-	
+
+
+
 	/**
 	 * Fetch supported auth types from SMTP server
 	 * return null if connexion failed or if timed out
 	 * return false if auth types cant be found
-	 * 
+	 *
 	 * @param string $server
 	 * @param int $port
-	 * 
+	 *
 	 * @return array
 	 */
 	private function getSmtpAuthTypes($server, $port)
 	{
 		$CRLF = "\r\n";
 		$ssl = ($this->mail->SMTPSecure == 'ssl');
-		
+
 		if (empty($port))
 		{
 			$port = $ssl ? 465  : 25;
 		}
-		
+
 		$errno = null;
 		$errstr = null;
-		
+
 		$this->smtp_conn = fsockopen(
 				($ssl ? 'ssl://':'').$server,  // the host of the server
 				$port,    // the port to use
 				$errno,   // error number if any
 				$errstr,  // error message if any
 				10);   	  // give up on connexion after 10 secs
-		
+
 		if(empty($this->smtp_conn)) {
 			return null;
 		}
-		
+
 		stream_set_timeout($this->smtp_conn, 10); // give up on read after 10 sec
-		
+
 		if (isset($_SERVER['SERVER_NAME'])) {
 			$from = $_SERVER['SERVER_NAME'];
 		} else {
 			$from = 'localhost.localdomain';
 		}
-		
+
 		$this->write('EHLO ' . $from . $CRLF);
 		$data = $this->read();
 		$code = substr($data, 0, 3);
@@ -909,58 +909,58 @@ class babMailSmtp extends babMail
 		{
 			return explode(' ', trim($m[1]));
 		}
-		
+
 		return false;
 	}
-	
-	
+
+
 	private function write($data)
 	{
 		// echo ">". $data."<br />";
-		
+
 		return fwrite($this->smtp_conn, $data);
 	}
-	
+
 	private function read()
 	{
-		
+
 		$data = '';
 		while(is_resource($this->smtp_conn) && !feof($this->smtp_conn)) {
 			$str = fgets($this->smtp_conn, 515);
 			$data .= $str;
-			
+
 			// if 4th character is a space, we are done reading, break the loop
 			if(substr($str, 3, 1) == ' ') {
 				break;
 			}
-		
+
 			// Timed-out
 			$info = stream_get_meta_data($this->smtp_conn);
 			if ($info['timed_out']) {
 				break;
 			}
 		}
-		
+
 		// echo "<". $data."<br />";
-		
+
 		return $data;
 	}
-	
+
 }
 
 /**
  * Instanciate a new babMail object initialized accordingly to the site
  * configuration.
- * 
+ *
  * @return babMail
  */
 function bab_mail()
 {
-	
+
 	$settings = bab_getInstance('bab_Settings');
 	/* @var $settings bab_Settings */
 	$site = $settings->getSiteSettings();
-	
+
 
 	if( empty($site['mailfunc']))
 		return false;
@@ -979,11 +979,17 @@ function bab_mail()
 			break;
 		case 'smtp':
 			$mail = new babMailSmtp();
-			
+
 			$mail->mail->Host = $site['smtpserver'];
 			$mail->mail->Port = $site['smtpport'];
 			$mail->mail->SMTPSecure = $site['smtpsecurity'];
-
+			if ($site['smtpnovalidation'] == 1) {
+			    $mail->mail->SMTPOptions['ssl'] = array(
+                    'verify_peer' => false,
+                    'verify_peer_name' => false,
+                    'allow_self_signed' => true
+                );
+			}
 			if( $site['smtpuser'] != '' ||  $site['smtppass'] != '')
 				{
 				$mail->setAuthenticated($site['smtpuser'], $site['smtppass']);

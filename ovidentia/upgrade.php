@@ -6961,7 +6961,6 @@ function ovidentia_upgrade($version_base,$version_ini) {
     }
 
 
-
     /**
      * Upgrade to 7.9.92
      */
@@ -7169,35 +7168,35 @@ function ovidentia_upgrade($version_base,$version_ini) {
 
     $functionalities->register('PwdComplexity'					, $GLOBALS['babInstallPath'].'utilit/pwdcomplexity.class.php');
     $functionalities->register('PwdComplexity/DefaultPortal'	, $GLOBALS['babInstallPath'].'utilit/pwdcomplexity.class.php');
-    
-    
+
+
     if(!bab_isTableField('bab_dbdir_fieldsextra', 'usermodifiable'))
     {
         $babDB->db_query("ALTER TABLE bab_dbdir_fieldsextra ADD usermodifiable enum('N','Y') NOT NULL default 'N'");
         $babDB->db_query('UPDATE bab_dbdir_fieldsextra SET usermodifiable=modifiable');
     }
-    
 
-    
+
+
     /**
      * Upgrade to 8.3.90
      * from her, we use php 5.3.0
      */
-    
+
     $zip = bab_functionality::get('Archive/Zip');
     if ($zip instanceof Func_Archive_Zip_Zlib) {
         $functionalities->copyToParent('Archive/Zip/ZipArchive');
     }
-    
-    
-    
-    
+
+
+
+
     /**
      * Upgrade to 8.4.91
      */
-    
-    
-    
+
+
+
     if (!bab_isTable('bab_sitemap_node_create_groups')) {
         $babDB->db_query("
             CREATE TABLE `bab_sitemap_node_create_groups` (
@@ -7210,7 +7209,7 @@ function ovidentia_upgrade($version_base,$version_ini) {
             )
         ");
     }
-    
+
     if (!bab_isTable('bab_sitemap_node_read_groups')) {
         $babDB->db_query("
             CREATE TABLE `bab_sitemap_node_read_groups` (
@@ -7223,7 +7222,7 @@ function ovidentia_upgrade($version_base,$version_ini) {
             )
         ");
     }
-    
+
     if (!bab_isTable('bab_sitemap_node_update_groups')) {
         $babDB->db_query("
             CREATE TABLE `bab_sitemap_node_update_groups` (
@@ -7236,7 +7235,7 @@ function ovidentia_upgrade($version_base,$version_ini) {
             )
         ");
     }
-    
+
     if (!bab_isTable('bab_sitemap_node_delete_groups')) {
         $babDB->db_query("
             CREATE TABLE `bab_sitemap_node_delete_groups` (
@@ -7249,43 +7248,53 @@ function ovidentia_upgrade($version_base,$version_ini) {
             )
         ");
     }
-    
-    
+
+
     /**
      * Upgrade to 8.4.92
      */
-    
-    
+
+
     if (!bab_isTableField('bab_sites', 'auth_https')) {
         $babDB->db_query("ALTER TABLE `bab_sites` ADD `auth_https` tinyint(1) unsigned NOT NULL default '0'");
     }
-    
+
     if (!bab_isTableField('bab_users', 'password_hash_function')) {
         $babDB->db_query("ALTER TABLE `bab_users` ADD `password_hash_function` varchar(60) NOT NULL default 'md5'");
     }
-    
-    
+
+
     /**
      * Upgrade to 8.4.93
      */
-    
-    
-    
+
+
+
     if (!bab_isTableField('bab_sites', 'auth_fullscreen')) {
         $babDB->db_query("ALTER TABLE `bab_sites` ADD `auth_fullscreen` tinyint(1) unsigned NOT NULL default '0'");
     }
-    
-    
-    
+
+
+
     /**
      * Upgrade to 8.4.94
      */
-    
+
 	$functionalities->register('ContextActions'				, $GLOBALS['babInstallPath'].'utilit/contextactions.class.php');
 	$functionalities->register('ContextActions/Article'		, $GLOBALS['babInstallPath'].'utilit/contextactions.article.class.php');
 	$functionalities->register('ContextActions/ArticleTopic', $GLOBALS['babInstallPath'].'utilit/contextactions.article.class.php');
-	    
+
+	/**
+	 * Upgrade to 8.4.95
+	 */
+
+	if (!bab_isTableField('bab_sites', 'smtpnovalidation')) {
+	    $babDB->db_query("ALTER TABLE `bab_sites` ADD `smtpnovalidation` tinyint(1) unsigned NOT NULL default '0' AFTER smtpsecurity");
+	}
+
+
     return true;
+
 
 }
 

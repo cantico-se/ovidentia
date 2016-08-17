@@ -359,6 +359,15 @@ mm(sksel);
 				              </select>
 							</td>
 							</tr>
+                          <tr> 
+                            <td>{ validation }</td>
+                            <td> 
+                              <select name="smtpnovalidation">
+                                 <option value="0" <!--#if arr[smtpnovalidation] "== 0" -->selected="selected"<!--#endif arr[smtpnovalidation] -->>{ certificate_validation }</option>
+                                 <option value="1" <!--#if arr[smtpnovalidation] "== 1" -->selected="selected"<!--#endif arr[smtpnovalidation] -->>{ no_certificate_validation }</option>
+                              </select>
+                            </td>
+                            </tr>
 				          <tr> 
 				            <td>{ smtpuser }</td>
 				            <td> 
