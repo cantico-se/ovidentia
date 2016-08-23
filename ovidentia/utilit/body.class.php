@@ -233,7 +233,7 @@ class babBody
 
     /**
      * Add error to display in next page
-     * 
+     *
      * @param string $message
      */
     public function addNextPageError($message)
@@ -334,7 +334,7 @@ class babBody
 
         $type = 1;
         $arrdbinfo = array();
-        
+
         if (! empty($arrsectionsbytype[$type]) && ($babSectionsType & BAB_SECTIONS_CORE)) {
             $res2 = $babDB->db_query("select * from " . BAB_PRIVATE_SECTIONS_TBL . " where id IN(" . $babDB->quote(array_keys($arrsectionsbytype[$type])) . ")");
             while ($arr2 = $babDB->db_fetch_array($res2)) {
@@ -542,20 +542,20 @@ class babBody
     {
         $this->menu->setCurrent($title, $enabled);
     }
-    
+
     /**
      * Add multiple contextual menu items based on a sitemap node
      * if a custom sitemap exists it will be used for rewriting
-     * 
+     *
      * @since 8.4.93
-     * 
-     * @param string $nodeId node id from the core sitemap 
+     *
+     * @param string $nodeId node id from the core sitemap
      */
     public function addMenu($nodeId)
     {
         $sitemap = bab_sitemap::getFromSite();
         $node = $sitemap->getNodeById('babAdminInstall');
-        
+
         if ($node->hasChildNodes()) {
             $node = $node->firstChild();
             do {
@@ -566,8 +566,8 @@ class babBody
             } while ($node = $node->nextSibling());
         }
     }
-    
-    
+
+
 
     /**
      * Add a stylesheet to the page
@@ -594,7 +594,8 @@ class babBody
     {
         $allowedprefix = array(
             $GLOBALS['babInstallPath'] . 'styles/',
-            'vendor/ovidentia'
+            'vendor/ovidentia',
+            'images'
         );
 
         foreach ($allowedprefix as $test) {
