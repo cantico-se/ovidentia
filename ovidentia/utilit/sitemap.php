@@ -465,7 +465,7 @@ class bab_siteMapOrphanRootNode extends bab_OrphanRootNode {
      * if not found search in dynamic nodes
      *
      * @param string $id
-     * @return bab_Node | null
+     * @return bab_Node
      */
     public function getNodeById($id)
     {
@@ -746,7 +746,7 @@ class bab_siteMapOrphanRootNode extends bab_OrphanRootNode {
      *
      * @param	string	$nodeId
      *
-     * @return bab_Node | null
+     * @return bab_Node
      */
     protected function getDynamicNodeById($nodeId)
     {
