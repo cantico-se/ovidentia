@@ -516,7 +516,7 @@ function bab_upgradeVendorAddons() {
     
     bab_addonsInfos::insertMissingAddonsInTable();
     
-    $rows = bab_addonsInfos::getRows();
+    $rows = bab_addonsInfos::getDbRows();
     
     foreach ($rows as $arr) {
         $addonName = $arr['title'];
