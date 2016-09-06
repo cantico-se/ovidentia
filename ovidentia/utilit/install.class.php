@@ -118,6 +118,7 @@ class bab_InstallRepository {
 	/**
 	 * Get a specific version
 	 * @param string $name	Name of addon (filename without version and extension)
+	 * @param string $version
 	 * @return bab_InstallRepositoryFile
 	 */
 	public function getFile($name, $version)
