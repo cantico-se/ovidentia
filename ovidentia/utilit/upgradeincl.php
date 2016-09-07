@@ -145,10 +145,10 @@ function bab_recursive_cp($wf, $wto, $recursive = false) {
 
 
 /**
- * Copy addons forlders from one core to another
+ * Copy addons folders from one core to another
  *
- * @param	string		$from	source core folder
- * @param	string		$to		destination core folder
+ * @param	string		$from	source core folder name
+ * @param	string		$to		destination core folder name
  *
  * @return boolean
  */

@@ -1105,7 +1105,7 @@ class bab_InstallSource {
 
 		// copy addons from old core to new core
 
-		if (!bab_cpaddons($GLOBALS['babInstallPath'], $destination, $babBody->msgerror)) {
+		if (!bab_cpaddons($GLOBALS['babInstallPath'], basename($destination), $babBody->msgerror)) {
 			return false;
 		}
 
