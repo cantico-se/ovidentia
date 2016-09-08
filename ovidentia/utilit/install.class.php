@@ -309,6 +309,25 @@ class bab_InstallRepositoryFile
         return null;
     }
 
+
+    /**
+     * Gets the content of the long description url.
+     *
+     * @return string|null
+     */
+    public function getLongDescription($lang = null)
+    {
+        $longDescription = null;
+        $longDescriptionUrl = $this->getLongDescriptionUrl($lang);
+        if (isset($longDescriptionUrl)) {
+            $longDescription = file_get_contents($longDescriptionUrl);
+            $longDescription = bab_getStringAccordingToDataBase($longDescription, 'UTF-8');
+        }
+
+        return $longDescription;
+    }
+
+
     /**
      * @return string|null
      */
