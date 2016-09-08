@@ -90,10 +90,8 @@ class bab_InstallRepository {
 
                     foreach ($variations as $data) {
                         self::convertArrayAccordingToDatabase($data);
-//                        $description = bab_getStringAccordingToDataBase($data['description'], 'UTF-8');
-
                         $installRepositoryFile = new bab_InstallRepositoryFile($name, $data['relativePath'], $data['version'], $data['description'], $data['dependencies']);
-
+                        $installRepositoryFile->license = $data['license'];
                         $installRepositoryFile->descriptions = $data['descriptions'];
                         $installRepositoryFile->longDescription = $data['longDescription'];
                         $installRepositoryFile->longDescriptions = $data['longDescriptions'];
@@ -104,7 +102,7 @@ class bab_InstallRepository {
                         if (isset($data['image'])) {
                             $installRepositoryFile->image = $data['image'];
                         }
-                        $this->files[$name][$data->version] = $installRepositoryFile;
+                        $this->files[$name][$data['version']] = $installRepositoryFile;
                     }
                 }
             }
@@ -221,6 +219,7 @@ class bab_InstallRepositoryFile
     public $name;
     public $filepath;
     public $version;
+    public $license;
     public $description;
     public $dependencies = array();
     public $descriptions = array();
