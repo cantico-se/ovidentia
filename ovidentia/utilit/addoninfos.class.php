@@ -850,6 +850,16 @@ class bab_addonInfos {
 
         return $imgpath;
     }
+    
+    
+    protected function upgradeDependencies()
+    {
+        $ini = new bab_inifile();
+        $ini->inifile($this->getIniFilePath());
+        
+        // this method do upgrade() if addon is upgradable
+        $ini->getAddonsRequirements();
+    }
 
 
     /**
@@ -865,6 +875,9 @@ class bab_addonInfos {
             trigger_error(sprintf('init.php file not found for addon %s in %s', $this->getName(), $this->getPhpPath()));
             return false;
         }
+        
+        
+        $this->upgradeDependencies();
 
 
         if (!bab_setAddonGlobals($this->id_addon)) {

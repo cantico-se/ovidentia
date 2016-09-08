@@ -617,12 +617,14 @@ class bab_functionalities {
 
 		$children = $this->getChildren($path);
 		foreach ($children as $child) {
-			$this->cleanTree($path.$child.'/');
+			
 			$file = $this->treeRootPath.$path.$child.'/'.$this->filename;
 			if (false === (include_once $file)) {
 				// la destination du lien n'existe pas
 				$this->unregister($path.$child);
 			}
+			
+			$this->cleanTree($path.$child.'/');
 		}
 	}
 

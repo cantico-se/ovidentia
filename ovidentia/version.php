@@ -178,7 +178,7 @@ function bab_getActionsMenu()
     
     $options = '';
     foreach($folders as $name) {
-        $options .= '<option value"'.bab_toHtml($name).'">'.bab_toHtml($name).'</option>';
+        $options .= '<option value="'.bab_toHtml($name).'">'.bab_toHtml($name).'</option>';
     }
     
     $csrfToken = bab_getInstance('bab_CsrfProtect')->getToken();

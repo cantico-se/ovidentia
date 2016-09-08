@@ -135,6 +135,7 @@ class bab_InstallRepository {
 	/**
 	 * Get a specific version
 	 * @param string $name	Name of addon (filename without version and extension)
+	 * @param string $version
 	 * @return bab_InstallRepositoryFile
 	 */
 	public function getFile($name, $version)
@@ -1168,7 +1169,7 @@ class bab_InstallSource {
 
 		// copy addons from old core to new core
 
-		if (!bab_cpaddons($GLOBALS['babInstallPath'], $destination, $babBody->msgerror)) {
+		if (!bab_cpaddons($GLOBALS['babInstallPath'], basename($destination), $babBody->msgerror)) {
 			return false;
 		}
 

@@ -145,10 +145,10 @@ function bab_recursive_cp($wf, $wto, $recursive = false) {
 
 
 /**
- * Copy addons forlders from one core to another
+ * Copy addons folders from one core to another
  *
- * @param	string		$from	source core folder
- * @param	string		$to		destination core folder
+ * @param	string		$from	source core folder name
+ * @param	string		$to		destination core folder name
  *
  * @return boolean
  */
@@ -508,28 +508,22 @@ function bab_deleteOldCore($version, &$msgerror)
 }
 
 
-function bab_upgradeAddonsFromComposer() {
-    
-    if (!function_exists('json_decode')) {
-        // json_decode need php 5.2.0
-        // on older version, upgrades will be done manually
-        return true;
-    }
+/**
+ * Upgrade all addons in vendor/ovidentia
+ * 
+ */
+function bab_upgradeVendorAddons() {
     
     bab_addonsInfos::insertMissingAddonsInTable();
     
-    $composerFile = realpath('.').'/composer.json';
-    $json = file_get_contents($composerFile);
-    $composer = json_decode($json);
+    $rows = bab_addonsInfos::getDbRows();
     
-    foreach($composer->require as $name => $version) {
-        if (0 === mb_strpos($name, 'ovidentia/')) {
-            $addonName = mb_substr($name, 10);
-            
-            if ($addon = bab_getAddonInfosInstance($addonName)) {
-                if ($addon->getLocation() instanceof bab_AddonStandardLocation) {
-                    $addon->upgrade();
-                }
+    foreach ($rows as $arr) {
+        $addonName = $arr['title'];
+    
+        if ($addon = bab_getAddonInfosInstance($addonName)) {
+            if ($addon->getLocation() instanceof bab_AddonStandardLocation) {
+                $addon->upgrade();
             }
         }
     };
@@ -700,7 +694,7 @@ function bab_newInstall() {
 	include_once $GLOBALS['babInstallPath'].'install.php';
 
 
-	if (bab_upgradeAddonsFromInstall(true, null)) //  && bab_upgradeAddonsFromComposer()
+	if (bab_upgradeAddonsFromInstall(true, null)  && bab_upgradeVendorAddons()) 
 	{
 		$iniVersion = $ini->getVersion();
 		$arr = explode('.', $iniVersion);

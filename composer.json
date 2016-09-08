@@ -4,6 +4,7 @@
 	"homepage" : "http://www.ovidentia.org",
 	"license" : "GPL-2.0+",
 	"minimum-stability" : "dev",
+	"prefer-stable" : true,
 	"require" : {
 		"php" : ">=5.3.0",
 		"ovidentia/widgets" : ">=1.0.96",
@@ -28,6 +29,6 @@
 		"ovidentia/sitemap_editor" : ">=0.8.3",
 		"ovidentia/orgchart" : ">=0.13.1",
 		"ovidentia/approbation_schema" : ">=0.2.2",
-		"ovidentia/storeclient" : ">=0.4.3"
+		"ovidentia/storeclient" : ">=0.4.5"
 	}
 }
