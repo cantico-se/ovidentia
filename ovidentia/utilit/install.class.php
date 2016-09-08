@@ -51,6 +51,19 @@ class bab_InstallRepository {
 	}
 
 
+
+    private static function convertArrayAccordingToDatabase(&$data)
+    {
+        if (is_string($data)) {
+            $data = bab_getStringAccordingToDataBase($data, 'UTF-8');
+        }
+        if (is_array($data)) {
+            foreach ($data as &$value) {
+                self::convertArrayAccordingToDatabase($value);
+            }
+        }
+    }
+
     /**
      * @throws Exception
      * @return array
@@ -69,21 +82,25 @@ class bab_InstallRepository {
                 }
 
                 // warning, json_decode need php 5.2
-                $modules = json_decode($json);
+                $modules = json_decode($json, true);
 
                 foreach ($modules as $name => $variations) {
 
                     $name = bab_getStringAccordingToDataBase($name, 'UTF-8');
 
                     foreach ($variations as $data) {
-                        $description = bab_getStringAccordingToDataBase($data->description, 'UTF-8');
+                        self::convertArrayAccordingToDatabase($data);
+//                        $description = bab_getStringAccordingToDataBase($data['description'], 'UTF-8');
 
-                        $installRepositoryFile = new bab_InstallRepositoryFile($name, $data->relativePath, $data->version, $description, $data->dependencies);
-                        if (isset($data->icon)) {
-                            $installRepositoryFile->icon = $data->icon;
+                        $installRepositoryFile = new bab_InstallRepositoryFile($name, $data['relativePath'], $data['version'], $data['description'], $data['dependencies']);
+
+                        $installRepositoryFile->descriptions = $data['descriptions'];
+
+                        if (isset($data['icon'])) {
+                            $installRepositoryFile->icon = $data['icon'];
                         }
-                        if (isset($data->image)) {
-                            $installRepositoryFile->image = $data->image;
+                        if (isset($data['image'])) {
+                            $installRepositoryFile->image = $data['image'];
                         }
                         $this->files[$name][$data->version] = $installRepositoryFile;
                     }
@@ -203,6 +220,9 @@ class bab_InstallRepositoryFile
     public $version;
     public $description;
     public $dependencies = array();
+    public $descriptions = array();
+    public $longDescription;
+    public $longDescriptions = array();
 
     public $icon = null;
     public $image = null;
@@ -265,6 +285,41 @@ class bab_InstallRepositoryFile
     {
         if (isset($this->image)) {
             return self::getRootUrl() . $this->image;
+        }
+        return null;
+    }
+
+
+    /**
+     * @return string|null
+     */
+    public function getLongDescriptionUrl($lang = null)
+    {
+        if (!isset($lang)) {
+            $lang = bab_getLanguage();
+        }
+        if (isset($this->longDescriptions[$lang])) {
+            return self::getRootUrl() . $this->longDescriptions[$lang];
+        }
+        if (!empty($this->longDescriptions)) {
+            return self::getRootUrl() . reset($this->longDescriptions);
+        }
+        return null;
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getDescription($lang = null)
+    {
+        if (!isset($lang)) {
+            $lang = bab_getLanguage();
+        }
+        if (isset($this->descriptions[$lang])) {
+            return $this->descriptions[$lang];
+        }
+        if (!empty($this->descriptions)) {
+            return reset($this->descriptions);
         }
         return null;
     }
