@@ -175,7 +175,7 @@ class bab_InstallRepository {
 
 	/**
 	 *
-	 * @return strin
+	 * @return string
 	 */
 	public function getRootUrl()
 	{
