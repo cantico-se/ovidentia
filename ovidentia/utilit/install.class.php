@@ -95,6 +95,8 @@ class bab_InstallRepository {
                         $installRepositoryFile = new bab_InstallRepositoryFile($name, $data['relativePath'], $data['version'], $data['description'], $data['dependencies']);
 
                         $installRepositoryFile->descriptions = $data['descriptions'];
+                        $installRepositoryFile->longDescription = $data['longDescription'];
+                        $installRepositoryFile->longDescriptions = $data['longDescriptions'];
 
                         if (isset($data['icon'])) {
                             $installRepositoryFile->icon = $data['icon'];
