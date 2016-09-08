@@ -95,7 +95,7 @@ class bab_InstallRepository {
     }
 
 	/**
-	 * Get lastest version for each file
+	 * Get latest version for each file
 	 * @return bab_InstallRepositoryFile[]
 	 */
 	public function getFiles()
@@ -155,11 +155,11 @@ class bab_InstallRepository {
 
 
 	/**
-	 * Get lastest file (higher version)
+	 * Get latest file (higher version)
 	 * @param string $name
 	 * @return bab_InstallRepositoryFile
 	 */
-	public function getLastest($name)
+	public function getLatest($name)
 	{
 		$arr = $this->getRows();
 
@@ -171,6 +171,15 @@ class bab_InstallRepository {
 		uksort($arr[$name] , 'version_compare');
 
 		return end($arr[$name]);
+	}
+
+	/**
+	 * @deprecated Replaced by bab_InstallRepositoryFile::getLatest()
+	 * @param string $name
+	 */
+	public function getLastest($name)
+	{
+	    return $this->getLatest($name);
 	}
 
 	/**
