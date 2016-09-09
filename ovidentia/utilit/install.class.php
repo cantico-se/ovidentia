@@ -27,7 +27,17 @@ class bab_InstallRepository {
 
 	private $list_url;
 
+	/**
+	 * Files by names
+	 * @var array
+	 */
 	private $files = null;
+	
+	/**
+	 * Files by tag
+	 * @var array
+	 */
+	private $tagIndex = null;
 
 	public function __construct()
 	{
@@ -42,8 +52,7 @@ class bab_InstallRepository {
 	 */
 	public function exists()
 	{
-		if (isset($this->list_url))
-		{
+		if (isset($this->list_url)) {
 			return true;
 		}
 
@@ -74,6 +83,7 @@ class bab_InstallRepository {
             // load list
 
             $this->files = array();
+            $this->tagIndex = array();
 
             if (null !== $this->list_url) {
                 $json = file_get_contents($this->list_url);
@@ -95,13 +105,27 @@ class bab_InstallRepository {
                         $installRepositoryFile->descriptions = $data['descriptions'];
                         $installRepositoryFile->longDescription = $data['longDescription'];
                         $installRepositoryFile->longDescriptions = $data['longDescriptions'];
-
+                        
                         if (isset($data['icon'])) {
                             $installRepositoryFile->icon = $data['icon'];
                         }
+                        
                         if (isset($data['image'])) {
                             $installRepositoryFile->image = $data['image'];
                         }
+                        
+                        if (isset($data['tags'])) {
+                            $installRepositoryFile->tags = $data['tags'];
+                            
+                            foreach ($data['tags'] as $tag) {
+                                if (!isset($this->tagIndex[$tag])) {
+                                    $this->tagIndex[$tag] = array();
+                                }
+                                
+                                $this->tagIndex[$tag][] = $installRepositoryFile;
+                            }
+                        }
+                        
                         $this->files[$name][$data['version']] = $installRepositoryFile;
                     }
                 }
@@ -229,6 +253,10 @@ class bab_InstallRepositoryFile
     public $icon = null;
     public $image = null;
 
+    /**
+     * @var array
+     */
+    public $tags;
 
 
     public function __construct($name, $filepath, $version, $description, $dependencies)
@@ -344,7 +372,7 @@ class bab_InstallRepositoryFile
         }
         return null;
     }
-
+    
 
     /**
      * @return string
@@ -674,9 +702,6 @@ class bab_InstallSource {
 	 */
 	private function temporaryExtractArchive() {
 
-
-		global $babBody;
-
 		if (null === $this->archive) {
 			return null;
 		}
@@ -821,8 +846,6 @@ class bab_InstallSource {
 
 	private function isIncluded($addon, $file)
 	{
-		global $babBody;
-
 		$target = realpath('./'.$GLOBALS['babInstallPath'].'addons/'.$addon.'/'.$file);
 
 		if (false === $target)
@@ -873,11 +896,11 @@ class bab_InstallSource {
 		$path 	= $this->getFolder().'/';
 		//if addon is compatible with vendor
 		if ((file_exists($path.'composer.json')) && (file_exists('vendor/ovidentia'))) {
-		  $unzipAddon = $this->installToVendorFolder($ini);
+		    $this->installToVendorFolder($ini);
 		}
 		//addon is not compatible with vendor
 		else{
-		  $unzipAddon = $this->installToAddonsFolder($ini);
+		    $this->installToAddonsFolder($ini);
 		}
 
 		bab_addonsInfos::insertMissingAddonsInTable();
@@ -909,16 +932,15 @@ class bab_InstallSource {
         include_once dirname(__FILE__).'/addonsincl.php';
         include_once dirname(__FILE__).'/utilit.php';
 
-        global $babDB;
-
         $babBody = bab_getInstance('babBody');
         /*@var $babBody babBody */
         $path 	= $this->getFolder().'/';
 
-                if (true !== $result = bab_recursive_cp($path.$source, 'vendor/ovidentia/'.$ini->getName(), true)) {
-                    $babBody->addError($result);
-                    return false;
-                }
+        if (true !== $result = bab_recursive_cp($path, 'vendor/ovidentia/'.$ini->getName(), true)) {
+            $babBody->addError($result);
+            return false;
+        }
+        
         return true;
     }
 
@@ -936,12 +958,9 @@ class bab_InstallSource {
         include_once dirname(__FILE__).'/addonsincl.php';
         include_once dirname(__FILE__).'/utilit.php';
 
-        global $babDB;
-
         $babBody = bab_getInstance('babBody');
         /*@var $babBody babBody */
 
-        $addon_name = $ini->getName();
         $map = bab_getAddonsFilePath();
         $path 	= $this->getFolder().'/';
         // browse source path
@@ -1064,7 +1083,6 @@ class bab_InstallSource {
 		global $babBody;
 
 		$path 	= $this->getFolder().'/';
-		$map 	= bab_getAddonsFilePath();
 		$core 	= 'ovidentia';
 
 		$destination = realpath('.');
