@@ -134,6 +134,22 @@ class bab_InstallRepository {
 
         return $this->files;
     }
+    
+    
+    /**
+     * Get all used tags and the associated repository files
+     * @return array
+     */
+    public function getTags()
+    {
+        if (null === $this->files) {
+            $this->getRows();
+        }
+        
+        return $this->tagIndex;
+    }
+    
+    
 
 	/**
 	 * Get latest version for each file
