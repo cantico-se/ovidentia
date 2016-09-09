@@ -103,8 +103,11 @@ class bab_InstallRepository {
                         $installRepositoryFile = new bab_InstallRepositoryFile($name, $data['relativePath'], $data['version'], $data['description'], $data['dependencies']);
                         $installRepositoryFile->license = $data['license'];
                         $installRepositoryFile->descriptions = $data['descriptions'];
-                        $installRepositoryFile->longDescription = $data['longDescription'];
-                        $installRepositoryFile->longDescriptions = $data['longDescriptions'];
+                        
+
+                        if (isset($data['longDescriptions'])) {
+                            $installRepositoryFile->longDescriptions = $data['longDescriptions'];
+                        }
                         
                         if (isset($data['icon'])) {
                             $installRepositoryFile->icon = $data['icon'];
@@ -263,7 +266,6 @@ class bab_InstallRepositoryFile
     public $description;
     public $dependencies = array();
     public $descriptions = array();
-    public $longDescription;
     public $longDescriptions = array();
 
     public $icon = null;
