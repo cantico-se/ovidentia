@@ -94,6 +94,10 @@ class babDatabase
         if (E_USER_ERROR === ($error_reporting & E_USER_ERROR) && $display_errors) {
             echo $str;
         }
+        
+        if (!$display_errors) {
+            trigger_error($str);
+        }
 
         if ($this->db_die_on_fail)
             {
