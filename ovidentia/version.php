@@ -149,6 +149,8 @@ function bab_getInstallButton()
 
 /**
  * Button to launch tg=version&idx=upgradeaddons in POST query
+ * 
+ * @deprecated storeclient shoud be used instead
  * @return string
  */
 function bab_getInstallAddonsButton()
@@ -161,9 +163,38 @@ function bab_getInstallAddonsButton()
     <input type="hidden" name="idx" value="upgradeaddons" />
     <input type="hidden" name="iframe" value="1" />
     <input type="submit" value="'.bab_translate("Install or update the addons provided in this package (optional)").'" />
-    </form>
-    <p><a href="?">'.bab_translate('Continue to home page').'</a></p>';
+    </form>';
 }
+
+/**
+ * End upgrade
+ * Propose to go back to homepage or to check addon upgrades in storeclient
+ * @return string
+ */
+function bab_endUpgrade()
+{
+	$html = '';
+	$linkTemplate = '<p><a target="_parent" href="%s">%s</a></p>';
+	
+	$addon = bab_getAddonInfosInstance('storeclient');
+	if ($addon && $addon->isAccessValid()) {
+		$html .= sprintf(
+			$linkTemplate,
+			bab_toHtml($addon->getUrl().'main&idx=admin.displaylist'),
+			bab_translate('Upgrade addons')
+		);
+	}
+	
+	$html .= sprintf(
+		$linkTemplate,
+		'?',
+		bab_translate('Go back to home page')
+	);
+	
+	return $html;
+}
+
+
 
 /**
  * Menu to display possibles action and do the POST queries
@@ -233,13 +264,16 @@ switch($idx)
 		} else {
 		    bab_requireSaveMethod();
 		    if (true === bab_upgrade($GLOBALS['babInstallPath'], $str)) {
-		        $html = bab_getInstallAddonsButton();
+		        $html = bab_endUpgrade();
 		    }
 		}
 		break;
-		
+	
+	/**
+	 * upgrade addons found in the install folder
+	 * @deprecated storeclient shoud be used instead
+	 */
 	case 'upgradeaddons':
-	    // upgrade addons found in the install folder
 	    bab_requireSaveMethod() && bab_upgradeAddons($str);
 	    break;
 
