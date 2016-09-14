@@ -125,7 +125,7 @@ class bab_InstallRepository {
                                     $this->tagIndex[$tag] = array();
                                 }
                                 
-                                $this->tagIndex[$tag][] = $installRepositoryFile;
+                                $this->tagIndex[$tag][$name][$data['version']] = $installRepositoryFile;
                             }
                         }
                         
@@ -156,22 +156,31 @@ class bab_InstallRepository {
 
 	/**
 	 * Get latest version for each file
+	 * 
+	 * @since tag parameter added in 8.4.96 
+	 * 
+	 * @param string [$tag] Optional filter tag
 	 * @return bab_InstallRepositoryFile[]
 	 */
-	public function getFiles()
+	public function getFiles($tag = null)
 	{
-		$arr = $this->getRows();
+		if (isset($tag)) {
+			$all = $this->getTags();
+			$arr = isset($all[$tag]) ? $all[$tag] : array();
+		} else {
+			$arr = $this->getRows();
+		}
 		$return = array();
 
-		foreach($arr as $name => $d)
-		{
-			$return[] = $this->getLastest($name);
+		foreach ($arr as $name => $d) {
+			$return[] = $this->getLatest($name);
 		}
 
 		bab_Sort::sortObjects($return);
 
 		return $return;
 	}
+	
 
 
 
