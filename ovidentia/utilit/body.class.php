@@ -593,7 +593,7 @@ class babBody
     public function addStyleSheet($filename)
     {
         $allowedprefix = array(
-            $GLOBALS['babInstallPath'] . 'styles/',
+            $GLOBALS['babInstallPath'],
             'vendor/ovidentia',
             'images'
         );
