@@ -7160,7 +7160,7 @@ class babOvTemplate
         return $txt;
         }
     $m = null;
-    if(preg_match_all("/[<{](".BAB_TAG_FUNCTION."|".BAB_TAG_VARIABLE.")([^\s>]*)\s*(\w+\s*=\s*[\"].*?\")*\s*\/?[>}]/s", $txt, $m))
+    if(preg_match_all("/[<{](".BAB_TAG_FUNCTION."|".BAB_TAG_VARIABLE.")([^\s>}]*)\s*(\w+\s*=\s*[\"].*?\")*\s*\/?[>}]/s", $txt, $m))
         {
         for( $i = 0; $i< count($m[1]); $i++)
             {
