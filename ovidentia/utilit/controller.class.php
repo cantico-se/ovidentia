@@ -169,13 +169,27 @@ abstract class bab_Controller
 	        $parameters = $method->getParameters();
 	        $parametersStr = array();
 	        foreach ($parameters as $parameter) {
+	        	
+	        	/* @var $parameter ReflectionParameter */
 
 	            $parameterString = '$' . $parameter->name;
 
 	            // If the parameter is typed adds the classname.
-	            $parameterClass = $parameter->getClass();
-	            if (isset($parameterClass)) {
-	                $parameterString = $parameterClass->name . ' ' . $parameterString;
+	            $prefix = null;
+	            if (method_exists($parameter, 'getType')) { // PHP 7 only
+	            	$reflectionType = $parameter->getType();
+	            	if (isset($reflectionType)) {
+	            		$prefix = $reflectionType->__toString();
+	            	}
+	            } else {
+	            	$reflectionClass = $parameter->getClass(); // only class prefix (no type like Array)
+	            	if (isset($reflectionClass)) {
+	            		$prefix = $reflectionClass->name;
+	            	}
+	            }
+	            
+	            if (isset($prefix)) {
+	                $parameterString =  $prefix. ' ' . $parameterString;
 	            }
 
 	            // Adds default value.
@@ -191,7 +205,6 @@ abstract class bab_Controller
 	        $classStr .= '	}' . "\n";
 	    }
 	    $classStr .= '}' . "\n";
-
 	    return $classStr;
 	}
 
