@@ -26,6 +26,8 @@ function __processRule($pattern, $target)
             return $match[$m[1]];
         }, parse_url($target, PHP_URL_QUERY));
 
+	
+
         parse_str($query, $arr);
         
         $_GET = array_merge($_GET, $arr);
@@ -41,7 +43,7 @@ function __processHtaccess()
 {
     $htaccess = file_get_contents('.htaccess');
     if ($htaccess) {
-        if (preg_match_all('/^\s+RewriteRule\s+([^\s]+)\s+([^\s]+)(?:\s+\[([^\s]+)\]$|$)/m', $htaccess, $match, PREG_SET_ORDER)) {
+        if (preg_match_all('/^\s*RewriteRule\s+([^\s]+)\s+([^\s]+)(?:\s+\[([^\s]+)\]$|$)/m', $htaccess, $match, PREG_SET_ORDER)) {
             foreach ($match as $rule) {
                 $flags = array();
                 if (isset($rule[3])) {
