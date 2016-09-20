@@ -313,6 +313,7 @@ function bab_fireEvent(bab_Event $event_obj)
                             file unreachable
                             event : '.get_class($event_obj).'
                             file : '.$arr['require_file'].'
+                            addon_name : '.$arr['addon_name'].'
                             ');
                         }
                     }
