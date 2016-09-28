@@ -164,6 +164,29 @@ function login_signon()
 
 
 
+/**
+ * Display confirm form
+ * @param string $hash
+ * @param string $name
+ */
+function displayConfirmForm($hash, $name)
+{
+    if (!empty($_POST)) {
+        bab_requireSaveMethod() && confirmUser($hash, $name );
+        login_signon();
+    }
+    
+    $template = new stdClass();
+    $template->hash = bab_toHtml($hash);
+    $template->name = bab_toHtml($name);
+    $template->confirmMessage = bab_toHtml(sprintf(bab_translate('Please confirm your account %s'), $name));
+    $template->confirmButton = bab_toHtml(bab_translate('Confirm'));
+    
+    $babBody = bab_getBody();
+    $babBody->babecho(bab_printTemplate($template, "login.html", "confirmForm"));
+}
+
+
 
 
 /* main */
@@ -287,8 +310,7 @@ switch($cmd)
         break;
 
     case "confirm":
-        bab_requireSaveMethod() && confirmUser( bab_rp('hash'), bab_rp('name') );
-        login_signon();
+        displayConfirmForm(bab_rp('hash'), bab_rp('name'));
         break;
 
     case 'detect': // This is deprecated, bab_requireCredential should be used instead
