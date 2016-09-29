@@ -105,6 +105,8 @@ function bab_addEventListener($event_class_name, $function_name, $require_file, 
  * @param	string	$event_class_name
  * @param	string	$function_name
  * @param	string	$require_file
+ * 
+ * @return bool
  */
 function bab_removeEventListener($event_class_name, $function_name, $require_file)
 {
@@ -115,6 +117,8 @@ function bab_removeEventListener($event_class_name, $function_name, $require_fil
         AND function_name 	= '.$babDB->quote($function_name).'
         AND require_file	= '.$babDB->quote($require_file).'
     ');
+    
+    return ($babDB->db_affected_rows() > 0);
 }
 
 
