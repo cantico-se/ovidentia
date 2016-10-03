@@ -841,11 +841,12 @@ switch(bab_rp('tg'))
                 bab_pageNotFound();
             }
             
-            $home = bab_functionality::get('Home');
-            /*@var $home Func_Home */
-            
-            $home->setSitemapPosition();
-            $home->includePage();
+            if ($home = bab_functionality::get('Home')) {
+                /*@var $home Func_Home */
+                
+                $home->setSitemapPosition();
+                $home->includePage();
+            }
         }
         break;
     }
