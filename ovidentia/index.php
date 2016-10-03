@@ -827,8 +827,8 @@ switch(bab_rp('tg'))
     default:
         $babLevelOne = "";
         $babLevelTwo = "";
-        $incl = "entry";
-        $babWebStat->module($incl);
+
+        $babWebStat->module("entry");
 
         if ($module = bab_getAddonFilePathFromTg(bab_rp('tg'), $babWebStat)) {
             $incl = null;
@@ -843,17 +843,7 @@ switch(bab_rp('tg'))
             }
             
             bab_siteMap::setPosition(bab_siteMap::getSitemapRootNode());
-            if(bab_isUserLogged()) {
-                $file = "private.html";
-            } else {
-                $file = "public.html";
-            }
-
-            if( file_exists($GLOBALS['babOvmlPath'].$file)) {
-                $incl = "oml";
-            } else {
-                $incl = "entry";
-            }
+            bab_functionality::get('Home')->includePage();
         }
         break;
     }

@@ -7292,6 +7292,14 @@ function ovidentia_upgrade($version_base,$version_ini) {
 	    $babDB->db_query("ALTER TABLE `bab_sites` ADD `smtpnovalidation` tinyint(1) unsigned NOT NULL default '0' AFTER smtpsecurity");
 	}
 
+	
+
+	/**
+	 * Upgrade to 8.4.99
+	 */
+	$functionalities->register('Home'				, $GLOBALS['babInstallPath'].'utilit/home.class.php');
+	$functionalities->register('Home/Ovidentia'		, $GLOBALS['babInstallPath'].'utilit/home.ovidentia.class.php');
+	
 
     return true;
 
