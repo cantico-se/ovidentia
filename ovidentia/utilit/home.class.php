@@ -34,7 +34,18 @@ class Func_Home extends bab_functionality
         return bab_translate('Home page manager');
     }
     
+    /**
+     * Set sitemap position for home page
+     * This can be used to set a different sitemap entry for each language
+     */
+    public function setSitemapPosition()
+    {
+        bab_siteMap::setPosition(bab_siteMap::getSitemapRootNode());
+    }
     
+    /**
+     * Include home page
+     */
     public function includePage()
     {
         throw new Exception('This method must be implemented');

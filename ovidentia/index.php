@@ -831,7 +831,6 @@ switch(bab_rp('tg'))
         $babWebStat->module("entry");
 
         if ($module = bab_getAddonFilePathFromTg(bab_rp('tg'), $babWebStat)) {
-            $incl = null;
             if (!file_exists($module)) {
                 bab_pageNotFound();
             }
@@ -842,8 +841,11 @@ switch(bab_rp('tg'))
                 bab_pageNotFound();
             }
             
-            bab_siteMap::setPosition(bab_siteMap::getSitemapRootNode());
-            bab_functionality::get('Home')->includePage();
+            $home = bab_functionality::get('Home');
+            /*@var $home Func_Home */
+            
+            $home->setSitemapPosition();
+            $home->includePage();
         }
         break;
     }
