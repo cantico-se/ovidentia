@@ -889,65 +889,60 @@ class bab_InstallSource {
 
 
 
-	/**
-	 * Copy files for addons
-	 * @param	bab_AddonIniFile $ini
-	 * @see bab_getAddonsFilePath()
-	 * @return 	bool
-	 */
-	private function installAddon(bab_AddonIniFile $ini) {
-		include_once dirname(__FILE__).'/upgradeincl.php';
-		include_once dirname(__FILE__).'/addonsincl.php';
-		include_once dirname(__FILE__).'/utilit.php';
+    /**
+     * Copy files for addons
+     * @param	bab_AddonIniFile $ini
+     * @see bab_getAddonsFilePath()
+     * @return 	bool
+     */
+    private function installAddon(bab_AddonIniFile $ini)
+    {
+        include_once dirname(__FILE__).'/upgradeincl.php';
+        include_once dirname(__FILE__).'/addonsincl.php';
+        include_once dirname(__FILE__).'/utilit.php';
+        require_once dirname(__FILE__).'/addonsincl.php';
 
-		global $babDB;
+        global $babDB;
 
-		$babBody = bab_getInstance('babBody');
-		/*@var $babBody babBody */
+        $babBody = bab_getBody();
 
-		$addon_name = $ini->getName();
+        $addon_name = $ini->getName();
 
-		if (empty($addon_name)) {
-			$babBody->addError(bab_translate('The name of the addon is missing in the addonini file'));
-			return false;
-		}
+        if (empty($addon_name)) {
+            $babBody->addError(bab_translate('The name of the addon is missing in the addonini file'));
+            return false;
+        }
 
+        if ($this->isIncluded($addon_name, 'init.php')) {
+            $babBody->addError(bab_translate('The file init.php is allready included for this addon'));
+            return false;
+        }
 
-		if ($this->isIncluded($addon_name, 'init.php'))
-		{
-			$babBody->addError(bab_translate('The file init.php is allready included for this addon'));
-			return false;
-		}
+        $babDB->db_query("UPDATE ".BAB_ADDONS_TBL." SET installed='N' WHERE title=".$babDB->quote($addon_name));
+        $path 	= $this->getFolder().'/';
 
+        if ((file_exists($path.'composer.json')) && (file_exists('vendor/ovidentia'))) {
+            // The addon is compatible with vendor.
+            $this->installToVendorFolder($ini);
+        } else {
+            // The addon is not compatible with vendor.
+            $this->installToAddonsFolder($ini);
+        }
 
-		$babDB->db_query("UPDATE ".BAB_ADDONS_TBL." SET installed='N' WHERE title=".$babDB->quote($addon_name));
-		$path 	= $this->getFolder().'/';
-		//if addon is compatible with vendor
-		if ((file_exists($path.'composer.json')) && (file_exists('vendor/ovidentia'))) {
-		    $this->installToVendorFolder($ini);
-		}
-		//addon is not compatible with vendor
-		else{
-		    $this->installToAddonsFolder($ini);
-		}
-
-		bab_addonsInfos::insertMissingAddonsInTable();
-		bab_addonsInfos::clear();
-
-		require_once $GLOBALS['babInstallPath'].'utilit/addonsincl.php';
+        bab_addonsInfos::insertMissingAddonsInTable();
+        bab_addonsInfos::clear();
 
         $addon = new bab_addonInfos();
 
-		if ($addon->setAddonName(mb_strtolower($addon_name), false)) {
-		    if (!$addon->upgrade()) {
-		        $babBody->addError(bab_sprintf(bab_translate('Upgrade of addon %s failed'), $ini->getName()));
-		        return false;
-		    }
-		}
+        if ($addon->setAddonName(mb_strtolower($addon_name), false)) {
+            if (!$addon->upgrade()) {
+                $babBody->addError(bab_sprintf(bab_translate('Upgrade of addon %s failed'), $ini->getName()));
+                return false;
+            }
+        }
 
-		return true;
-
-	}
+        return true;
+    }
 
 
 
