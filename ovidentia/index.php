@@ -827,11 +827,10 @@ switch(bab_rp('tg'))
     default:
         $babLevelOne = "";
         $babLevelTwo = "";
-        $incl = "entry";
-        $babWebStat->module($incl);
+
+        $babWebStat->module("entry");
 
         if ($module = bab_getAddonFilePathFromTg(bab_rp('tg'), $babWebStat)) {
-            $incl = null;
             if (!file_exists($module)) {
                 bab_pageNotFound();
             }
@@ -842,17 +841,11 @@ switch(bab_rp('tg'))
                 bab_pageNotFound();
             }
             
-            bab_siteMap::setPosition(bab_siteMap::getSitemapRootNode());
-            if(bab_isUserLogged()) {
-                $file = "private.html";
-            } else {
-                $file = "public.html";
-            }
-
-            if( file_exists($GLOBALS['babOvmlPath'].$file)) {
-                $incl = "oml";
-            } else {
-                $incl = "entry";
+            if ($home = bab_functionality::get('Home')) {
+                /*@var $home Func_Home */
+                
+                $home->setSitemapPosition();
+                $home->includePage();
             }
         }
         break;
