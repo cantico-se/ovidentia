@@ -32,7 +32,7 @@ class bab_InstallRepository {
 	 * @var array
 	 */
 	private $files = null;
-	
+
 	/**
 	 * Files by tag
 	 * @var array
@@ -103,32 +103,32 @@ class bab_InstallRepository {
                         $installRepositoryFile = new bab_InstallRepositoryFile($name, $data['relativePath'], $data['version'], $data['description'], $data['dependencies']);
                         $installRepositoryFile->license = $data['license'];
                         $installRepositoryFile->descriptions = $data['descriptions'];
-                        
+
 
                         if (isset($data['longDescriptions'])) {
                             $installRepositoryFile->longDescriptions = $data['longDescriptions'];
                         }
-                        
+
                         if (isset($data['icon'])) {
                             $installRepositoryFile->icon = $data['icon'];
                         }
-                        
+
                         if (isset($data['image'])) {
                             $installRepositoryFile->image = $data['image'];
                         }
-                        
+
                         if (isset($data['tags'])) {
                             $installRepositoryFile->tags = $data['tags'];
-                            
+
                             foreach ($data['tags'] as $tag) {
                                 if (!isset($this->tagIndex[$tag])) {
                                     $this->tagIndex[$tag] = array();
                                 }
-                                
+
                                 $this->tagIndex[$tag][$name][$data['version']] = $installRepositoryFile;
                             }
                         }
-                        
+
                         $this->files[$name][$data['version']] = $installRepositoryFile;
                     }
                 }
@@ -137,8 +137,8 @@ class bab_InstallRepository {
 
         return $this->files;
     }
-    
-    
+
+
     /**
      * Get all used tags and the associated repository files
      * @return array
@@ -148,17 +148,17 @@ class bab_InstallRepository {
         if (null === $this->files) {
             $this->getRows();
         }
-        
+
         return $this->tagIndex;
     }
-    
-    
+
+
 
 	/**
 	 * Get latest version for each file
-	 * 
-	 * @since tag parameter added in 8.4.96 
-	 * 
+	 *
+	 * @since tag parameter added in 8.4.96
+	 *
 	 * @param string [$tag] Optional filter tag
 	 * @return bab_InstallRepositoryFile[]
 	 */
@@ -180,7 +180,7 @@ class bab_InstallRepository {
 
 		return $return;
 	}
-	
+
 
 
 
@@ -226,6 +226,7 @@ class bab_InstallRepository {
 
 	/**
 	 * Get latest file (higher version)
+	 * @since 8.4.96
 	 * @param string $name
 	 * @return bab_InstallRepositoryFile
 	 */
@@ -399,7 +400,7 @@ class bab_InstallRepositoryFile
         }
         return null;
     }
-    
+
 
     /**
      * @return string
@@ -933,8 +934,11 @@ class bab_InstallSource {
 		bab_addonsInfos::insertMissingAddonsInTable();
 		bab_addonsInfos::clear();
 
-		$addon = bab_getAddonInfosInstance($addon_name);
-		if ($addon) {
+		require_once $GLOBALS['babInstallPath'].'utilit/addonsincl.php';
+
+        $addon = new bab_addonInfos();
+
+		if ($addon->setAddonName(mb_strtolower($addon_name), false)) {
 		    if (!$addon->upgrade()) {
 		        $babBody->addError(bab_sprintf(bab_translate('Upgrade of addon %s failed'), $ini->getName()));
 		        return false;
@@ -967,7 +971,7 @@ class bab_InstallSource {
             $babBody->addError($result);
             return false;
         }
-        
+
         return true;
     }
 
