@@ -1116,7 +1116,7 @@ function bab_browserVersion()
 
     $tab = explode(";", $_SERVER['HTTP_USER_AGENT']);
     $res = null;
-    
+
     if( preg_match("/([^(]*)([0-9]\.[0-9]{1,2})/",$tab[1],$res))
         {
         return trim($res[2]);
@@ -1210,26 +1210,26 @@ function bab_isUserGroupManager($grpid="")
 */
 function bab_getUserName($iIdUser, $bComposeUserName = true)
 {
-    
-    
+
+
     include_once dirname(__FILE__).'/userinfosincl.php';
 
     if (true === $bComposeUserName) {
-        
+
         if (!$iIdUser) {
             return '';
         }
-        
+
         return bab_userInfos::composeName($iIdUser);
     } else {
-        
+
         if (!$iIdUser) {
             return array(
                 'firstname' => '',
                 'lastname' => ''
             );
         }
-        
+
         return bab_userInfos::arrName($iIdUser);
     }
 }
@@ -1989,9 +1989,9 @@ function bab_printTemplate($class, $file, $section = '')
         $html = $tpl->printTemplate($class, $GLOBALS['babInstallPath'].'skins/ovidentia/templates/'.$file, $section);
     }
     //VENDOR
-    //if (!$html) {
-    //    $html = $tpl->printTemplate($class, $file, $section);
-    //}
+    if (!$html) {
+        $html = $tpl->printTemplate($class, $file, $section);
+    }
 
     return $html;
 }
@@ -2742,14 +2742,14 @@ function bab_updateUserPasswordById($userId, $newPassword, $newPassword2, $ignor
     }
 
     /* Update the user's password */
-    
+
     require_once dirname(__FILE__).'/password.class.php';
     $encPassword = bab_Password::hash($newPassword);
-    $sql = 'UPDATE ' . BAB_USERS_TBL . ' SET 
-            force_pwd_change = 0, 
-            pwd_change_date = CURDATE(), 
-            password=' . $babDB->quote($encPassword->value) . ', 
-            password_hash_function='.$babDB->quote($encPassword->hashfunc).' 
+    $sql = 'UPDATE ' . BAB_USERS_TBL . ' SET
+            force_pwd_change = 0,
+            pwd_change_date = CURDATE(),
+            password=' . $babDB->quote($encPassword->value) . ',
+            password_hash_function='.$babDB->quote($encPassword->hashfunc).'
             WHERE id=' . $babDB->quote($userId);
     $babDB->db_query($sql);
 
@@ -3148,20 +3148,20 @@ function bab_printCachedOvmlTemplate($file, $args = array())
 function bab_getHtmlFromOvml($file, $args, $formats = null)
 {
     global $babSkinPath, $babOvmlPath;
-    
+
     /* Skin local path */
     $filepath = $babOvmlPath.$file; /* Ex. : skins/ovidentia_sw/ovml/test.ovml */
-    
+
     if ($file == '') {
         throw new Exception(bab_translate("Error: The name of the OVML file is not specified"));
     }
-    
+
     if ((false !== mb_strpos($file, '..')) || mb_strtolower(mb_substr($file, 0, 4)) == 'http') {
-    
+
         throw new Exception('ERROR filename: '.$file);
     }
-    
-    
+
+
     if ('addons/' === mb_substr($file, 0, 7)) {
         list(, $addonName) = explode('/', $file);
         $addonRealivePath = mb_substr($file, 8+mb_strlen($addonName));
@@ -3169,27 +3169,27 @@ function bab_getHtmlFromOvml($file, $args, $formats = null)
             $filepath = "vendor/ovidentia/$addonName/skins/ovidentia/ovml/$addonRealivePath";
         }
     }
-    
-    
+
+
     if (!file_exists($filepath)) {
         $filepath = $babSkinPath.'ovml/'.$file; /* Ex. : ovidentiainstall/skins/ovidentia/ovml/test.ovml */
-    
+
         if (!file_exists($filepath)) {
             throw new Exception(bab_translate("Error: OVML file does not exist").' : '.$file);
         }
     }
-    
+
     $GLOBALS['babWebStat']->addOvmlFile($filepath);
-    
+
     include_once $GLOBALS['babInstallPath'].'utilit/omlincl.php';
     $tpl = new babOvTemplate($args);
-    
+
     if (isset($formats)) {
         foreach($formats as $var => $format) {
             $tpl->gctx->setFormat($var, $format);
         }
     }
-    
+
     $template = $tpl->printout(file_get_contents($filepath), $filepath);
     return $template;
 }
@@ -3770,7 +3770,7 @@ function bab_requireSaveMethod()
         $babBody->addError('Method not allowed');
         $babBody->babpopup('');
     }
-    
+
     return true;
 }
 
@@ -3778,7 +3778,7 @@ function bab_requireSaveMethod()
 /**
  * function to call before deleting
  * @since 8.4.91
- * 
+ *
  */
 function bab_requireDeleteMethod()
 {
@@ -3794,9 +3794,9 @@ function bab_getCoreFolders()
 {
     $basedir = realpath('.').'/';
     $dh = opendir($basedir);
-    
+
     $dirs = array();
-    
+
     if ($dh) {
         while (($file = readdir($dh)) !== false) {
             if ($file !== '.' && $file !== '..'
@@ -3805,6 +3805,6 @@ function bab_getCoreFolders()
             }
         }
     }
-    
+
     return $dirs;
 }
