@@ -308,6 +308,30 @@ class bab_addonInfos {
     }
     
     
+    
+    /**
+     * Get path for events managment
+     * 
+     * 
+     * @param	string	$requireFile			file path relative to addon php path, the file where $function_name is declared, this can be an empty string if function exists in global scope
+     * @return string
+     */
+    private function getRequireFile($requireFile)
+    {
+        // filepath from ovidentia root folder
+        $filepath = $this->getPhpPath().$requireFile;
+        
+        if ($this->getLocation() instanceof bab_AddonInCoreLocation) {
+            // if addon is in core do not include the core folder name in the database
+            // because it may be changed
+        
+            $filepath = $this->getRelativePath().$requireFile;
+        }
+        
+        return $filepath;
+    }
+    
+    
     /**
      * Add event listener
      * Register an addon function on an event listener
@@ -329,21 +353,13 @@ class bab_addonInfos {
     {
         require_once dirname(__FILE__).'/eventincl.php';
         
-        // filepath from ovidentia root folder
-        $filepath = $this->getPhpPath().$requireFile;
         
-        if ($this->getLocation() instanceof bab_AddonInCoreLocation) {
-            // if addon is in core do not include the core folder name in the database
-            // because it may be changed
-            
-            $filepath = $this->getRelativePath().$requireFile;
-        }
         
         
         return bab_addEventListener(
             $eventClassName,
             $functionName,
-            $filepath,
+            $this->getRequireFile($requireFile),
             $this->getName(),
             $priority
         );
@@ -357,6 +373,9 @@ class bab_addonInfos {
      * @param	string	$requireFile          file path relative to addon php path
      *
      * @since 8.1.98
+     * @since 8.4.98 fixed and with a return value
+     * 
+     * @return bool
      */
     public function removeEventListener($eventClassName, $functionName, $requireFile)
     {
@@ -365,7 +384,7 @@ class bab_addonInfos {
         return bab_removeEventListener(
             $eventClassName,
             $functionName,
-            $this->getPhpPath().$requireFile
+            $this->getRequireFile($requireFile)
         );
     }
     

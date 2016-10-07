@@ -25,8 +25,8 @@ include_once 'base.php';
 
 include_once $GLOBALS['babInstallPath'].'admin/register.php';
 include_once $GLOBALS['babInstallPath'].'utilit/loginIncl.php';
-
-
+include_once $GLOBALS['babInstallPath'].'utilit/urlincl.php';
+include_once dirname(__FILE__).'/utilit/settings.class.php';
 
 
 
@@ -44,7 +44,7 @@ function emailPassword()
         function temp()
             {
 
-            include_once dirname(__FILE__).'/utilit/settings.class.php';
+            
 
             $this->intro = bab_translate("Before we can reset your password, you need to enter the information below to help identify your account:");
             $this->nickname = bab_translate("Your login ID");
@@ -102,29 +102,35 @@ function displayDisclaimer()
 
 function confirmUser($hash, $nickname)
     {
-    global $BAB_HASH_VAR, $babBody, $babDB;
-    $new_hash=md5($nickname.$BAB_HASH_VAR);
+    global $babDB;
+    
+    $hashVar = bab_getHashVar();
+    
+    $new_hash=md5($nickname.$hashVar);
     if ($new_hash && ($new_hash==$hash))
         {
         $sql="select * from ".BAB_USERS_TBL." where confirm_hash='".$babDB->db_escape_string($hash)."'";
         $result=$babDB->db_query($sql);
         if( $babDB->db_num_rows($result) < 1)
             {
-            $babBody->msgerror = bab_translate("User Not Found") ." !";
-            return false;
+                throw new Exception(bab_translate("User Not Found"));
             }
         else
             {
+            $settings = bab_getInstance('bab_Settings');
+            /*@var $settings bab_Settings */
+            $site = $settings->getSiteSettings();
+                
             $arr = $babDB->db_fetch_array($result);
-            $babBody->msgerror = bab_translate("User Account Updated - You can now log to our site");
+
             $sql="update ".BAB_USERS_TBL." set is_confirmed='1', datelog=now(), lastlog=now()  WHERE id='".$babDB->db_escape_string($arr['id'])."'";
             $babDB->db_query($sql);
-            if( $babBody->babsite['idgroup'] != 0)
+            if( $site['idgroup'] != 0)
                 {
                 $res = $babDB->db_query("select * from ".BAB_USERS_GROUPS_TBL." where id_object='".$babDB->db_escape_string($arr['id'])."' and id_group='".$babDB->db_escape_string($babBody->babsite['idgroup'])."'");
                 if( !$res || $babDB->db_num_rows($res) < 1)
                     {
-                    bab_addUserToGroup($arr['id'], $babBody->babsite['idgroup']);
+                    bab_addUserToGroup($arr['id'], $site['idgroup']);
                     }
                 }
 
@@ -137,8 +143,7 @@ function confirmUser($hash, $nickname)
         }
     else
         {
-        $babBody->msgerror = bab_translate("Update failed");
-        return false;
+        throw new Exception(bab_translate("Update failed"));
         }
 
     }
@@ -162,6 +167,61 @@ function login_signon()
 }
 
 
+
+
+/**
+ * Display confirm form
+ * @param string $hash
+ * @param string $name
+ */
+function displayConfirmForm($hash, $name)
+{
+    global $babDB;
+    $babBody = bab_getBody();
+    
+    if (bab_isUserLogged()) {
+        $url = new bab_url();
+        $url->location();
+    }
+    
+    $sql = "select is_confirmed from ".BAB_USERS_TBL." where confirm_hash='".$babDB->db_escape_string($hash)."'";
+    $res = $babDB->db_query($sql);
+    $user = $babDB->db_fetch_assoc($res);
+    
+    if ($user['is_confirmed']) {
+        $url = new bab_url();
+        $url->tg = 'login';
+        $url->cmd = 'authform';
+        $url->msg = bab_translate('Your account is allready confirmed');
+        $url->location();
+    }
+    
+    
+    if (!empty($_POST)) {
+        bab_requireSaveMethod();
+        
+        try {
+            if (confirmUser($hash, $name )) {
+                $url = new bab_url();
+                $url->tg = 'login';
+                $url->cmd = 'authform';
+                $url->msg = bab_translate("User Account Updated - You can now log to our site");
+                $url->location();
+            }
+        } catch (Exception $e) {
+            $babBody->addError($e->getMessage());
+        }
+    }
+    
+    $template = new stdClass();
+    $template->hash = bab_toHtml($hash);
+    $template->name = bab_toHtml($name);
+    $template->confirmMessage = bab_toHtml(sprintf(bab_translate('Please confirm your account %s'), $name));
+    $template->confirmButton = bab_toHtml(bab_translate('Confirm'));
+    
+    
+    $babBody->babecho(bab_printTemplate($template, "login.html", "confirmForm"));
+}
 
 
 
@@ -287,8 +347,7 @@ switch($cmd)
         break;
 
     case "confirm":
-        bab_requireSaveMethod() && confirmUser( bab_rp('hash'), bab_rp('name') );
-        login_signon();
+        displayConfirmForm(bab_rp('hash'), bab_rp('name'));
         break;
 
     case 'detect': // This is deprecated, bab_requireCredential should be used instead

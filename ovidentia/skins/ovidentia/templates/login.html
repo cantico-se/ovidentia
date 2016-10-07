@@ -415,3 +415,28 @@
 	</table>
 </form>
 <!--#end displayMessage -->
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!--#begin confirmForm -->
+<form method="post" action="{ babPhpSelf }">
+<input type="hidden" name="babCsrfProtect" value="{ babCsrfProtect }" />
+
+<input type="hidden" name="tg" value="login" />
+<input type="hidden" name="cmd" value="confirm" />
+<input type="hidden" name="hash" value="{ hash }" />
+<input type="hidden" name="name" value="{ name }" />
+  <p>{ confirmMessage }</p>
+  <input type="submit" value="{ confirmButton }">
+</form>
+<!--#end confirmForm -->

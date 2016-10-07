@@ -5,12 +5,12 @@
 // it under the terms of the GNU General Public License as published by
 // the Free Software Foundation; either version 2, or (at your option)
 // any later version.
-// 
+//
 // This program is distributed in the hope that it will be useful, but
 // WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 // See the GNU General Public License for more details.
-// 
+//
 // You should have received a copy of the GNU General Public License
 // along with this program; if not, write to the Free Software
 // Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307,
@@ -40,7 +40,7 @@ class Func_Icons extends bab_Functionality
 
 	/**
 	 * Includes all necessary CSS files to the current page.
-	 * 
+	 *
 	 * @return bool		false in case of error
 	 */
 	public function includeCss()
@@ -49,8 +49,8 @@ class Func_Icons extends bab_Functionality
 	}
 
 	/**
-	 * Returns the css file relative url corresponding to the icon theme. 
-	 * 
+	 * Returns the css file relative url corresponding to the icon theme.
+	 *
 	 * @return string
 	 */
 	public function getCss()
@@ -66,57 +66,57 @@ class Func_Icons extends bab_Functionality
 	//-----------------------------------------------------------------------
 	const ACTIONS_HELP							= 'actions-help';
 	/**
-	 * The icon for creating a new folder. 
+	 * The icon for creating a new folder.
 	 */
 	const ACTIONS_FOLDER_NEW					= 'actions-folder-new';
 	/**
-	 * The icon for creating a new document. 
+	 * The icon for creating a new document.
 	 */
 	const ACTIONS_DOCUMENT_NEW					= 'actions-document-new';
 	/**
-	 * The icon for printing a document. 
+	 * The icon for printing a document.
 	 */
 	const ACTIONS_DOCUMENT_PRINT				= 'actions-document-print';
 	/**
-	 * The icon for editing a document. 
+	 * The icon for editing a document.
 	 */
 	const ACTIONS_DOCUMENT_EDIT					= 'actions-document-edit';
 	/**
-	 * The icon for accessing document properties. 
+	 * The icon for accessing document properties.
 	 */
 	const ACTIONS_DOCUMENT_PROPERTIES			= 'actions-document-properties';
 	/**
-	 * The icon for saving a document. 
+	 * The icon for saving a document.
 	 */
 	const ACTIONS_DOCUMENT_SAVE					= 'actions-document-save';
 	const ACTIONS_DOCUMENT_DOWNLOAD				= 'actions-document-download';
 	const ACTIONS_DOCUMENT_UPLOAD				= 'actions-document-upload';
 	/**
-	 * The icon for creating a new article category. 
+	 * The icon for creating a new article category.
 	 */
 	const ACTIONS_ARTICLE_CATEGORY_NEW			= 'actions-article-category-new';
 	/**
-	 * The icon for creating a new article topic. 
+	 * The icon for creating a new article topic.
 	 */
 	const ACTIONS_ARTICLE_TOPIC_NEW				= 'actions-article-topic-new';
 	/**
-	 * The icon for creating a new article. 
+	 * The icon for creating a new article.
 	 */
 	const ACTIONS_ARTICLE_NEW					= 'actions-article-new';
 	/**
-	 * The icon for creating a new event. 
+	 * The icon for creating a new event.
 	 */
 	const ACTIONS_EVENT_NEW						= 'actions-event-new';
 	/**
-	 * The icon for creating a new note. 
+	 * The icon for creating a new note.
 	 */
 	const ACTIONS_NOTE_NEW						= 'actions-note-new';
 	/**
-	 * The icon for creating a new user. 
+	 * The icon for creating a new user.
 	 */
 	const ACTIONS_USER_NEW						= 'actions-user-new';
 	/**
-	 * The icon for creating a new user group. 
+	 * The icon for creating a new user group.
 	 */
 	const ACTIONS_USER_GROUP_NEW				= 'actions-user-group-new';
 	/**
@@ -151,12 +151,12 @@ class Func_Icons extends bab_Functionality
 	 * The icon for accessing user group properties.
 	 */
 	const ACTIONS_USER_GROUP_PROPERTIES			= 'actions-user-group-properties';
-	
+
 	const ACTIONS_USER_GROUP_DELETE				= 'actions-user-group-delete';
-	
+
 	const ACTIONS_MAIL_SEND						= 'actions-mail-send';
 	const ACTIONS_SET_ACCESS_RIGHTS				= 'actions-set-access-rights';
-	
+
 	const ACTIONS_LIST_ADD						= 'actions-list-add';
 	const ACTIONS_LIST_ADD_USER					= 'actions-list-add-user';
 	const ACTIONS_LIST_REMOVE					= 'actions-list-remove';
@@ -218,6 +218,8 @@ class Func_Icons extends bab_Functionality
 	const ACTIONS_LOGIN							= 'actions-login';
 	const ACTIONS_LOGOUT						= 'actions-logout';
 
+	const ACTIONS_SHARE                         = 'actions-share';
+
 
 	//-----------------------------------------------------------------------
 	// Applications
@@ -241,14 +243,14 @@ class Func_Icons extends bab_Functionality
 	const APPS_THESAURUS						= 'apps-thesaurus';
 	const APPS_SECTIONS							= 'apps-sections';
 	const APPS_DELEGATIONS						= 'apps-delegations';
-	
+
 	const APPS_CALCULATOR						= 'apps-calculator';
 	const APPS_EDITOR							= 'apps-editor';
 	const APPS_PHOTO							= 'apps-photo';
-	
+
 	const APPS_USERS							= 'apps-users';
 	const APPS_GROUPS							= 'apps-groups';
-	
+
 	const APPS_SITEMAP							= 'apps-sitemap';
 	const APPS_FORM								= 'apps-form';
 	const APPS_SHOP								= 'apps-shop';
@@ -256,9 +258,9 @@ class Func_Icons extends bab_Functionality
 	const APPS_CRM								= 'apps-crm';
 	const APPS_MULTIMEDIA						= 'apps-multimedia';
 	const APPS_PORTLET							= 'apps-portlet';
-	
-	
-	
+
+
+
 
 	const APPS_PREFERENCES_SITE					= 'apps-preferences-site';
 	const APPS_PREFERENCES_USER					= 'apps-preferences-user';
@@ -270,14 +272,18 @@ class Func_Icons extends bab_Functionality
 	const APPS_PREFERENCES_MAIL_SERVER			= 'apps-preferences-mail-server';
 	const APPS_PREFERENCES_WYSIWYG_EDITOR		= 'apps-preferences-wysiwyg-editor';
 	const APPS_PREFERENCES_UPLOAD				= 'apps-preferences-upload';
-	
+
 	const APPS_FACEBOOK							= 'apps-facebook';
 	const APPS_FLICKR							= 'apps-flickr';
 	const APPS_TWITTER							= 'apps-twitter';
+	const APPS_GOOGLEPLUS						= 'apps-googleplus';
+	const APPS_PINTEREST						= 'apps-pinterest';
+	const APPS_LINKEDIN							= 'apps-linkedin';
+	const APPS_VIADEO							= 'apps-viadeo';
 	const APPS_RSS								= 'apps-rss';
-	
+
 	//-----------------------------------------------------------------------
-	// Mimetypes	
+	// Mimetypes
 	//-----------------------------------------------------------------------
 	/**
 	 * The icon for a pdf document.
@@ -320,7 +326,7 @@ class Func_Icons extends bab_Functionality
 
 
 	//-----------------------------------------------------------------------
-	// Places	
+	// Places
 	//-----------------------------------------------------------------------
 	/**
 	 * The icon for a generic folder.
@@ -334,8 +340,8 @@ class Func_Icons extends bab_Functionality
 	const PLACES_ADMINISTRATOR_HOME				= 'places-administrator-home';
 	const PLACES_ADMINISTRATOR_APPLICATIONS		= 'places-administrator-applications';
 	const PLACES_MAIL_FOLDER_INBOX				= 'places-mail-folder-inbox';
-	
-	
+
+
 	//-----------------------------------------------------------------------
 	// Categories
 	//-----------------------------------------------------------------------
@@ -352,11 +358,11 @@ class Func_Icons extends bab_Functionality
 	const STATUS_DIALOG_QUESTION				= 'status-dialog-question';
 	const STATUS_DIALOG_WARNING					= 'status-dialog-warning';
 	const STATUS_CONTENT_LOADING				= 'status-content-loading';
-	
-	
+
+
 
 	// CSS classes to apply to an html element containing icons
-	// to set their format. 
+	// to set their format.
 	/**
 	 * Icon on left 16x16 pixels
 	 */
@@ -398,7 +404,7 @@ class Func_Icons extends bab_Functionality
 	 * Icon above of the label, 64x64 pixels
 	 */
 	const ICON_TOP_64	= 'icon-top-64 icon-top icon-64x64';
-	
+
 	/**
 	 * Icon on left symbolic (black and white)
 	 */
@@ -424,7 +430,7 @@ class Func_Icons_Default extends Func_Icons
 
 	/**
 	 * Includes all necessary CSS files to the current page.
-	 * 
+	 *
 	 * @return bool		false in case of error
 	 */
 	public function includeCss()
@@ -436,7 +442,7 @@ class Func_Icons_Default extends Func_Icons
 
 	/**
 	 * Returns the css file relative url corresponding to the icon theme.
-	 * 
+	 *
 	 * @return string
 	 */
 	public function getCss()

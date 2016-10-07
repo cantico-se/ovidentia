@@ -3528,4 +3528,6 @@ L'administrateur</string>
 <string id="Certificate validation">Validation des certificats</string>
 <string id="Validate certificates">Valider les certificats</string>
 <string id="Suppress certificate validation">Supprimer la validation des certificats</string>
+
+<string id="Please confirm your account %s">Veuillez confirmer votre compte %s</string>
 </fr>

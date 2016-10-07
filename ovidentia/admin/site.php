@@ -2538,16 +2538,16 @@ function siteUpdate_authentification($id, $authtype, $host, $hostname, $ldpapchk
                 $fieldname = "babdirf".$arr['id_field'];
                 }
 
-            if( isset($GLOBALS[$fieldname]) && !empty($GLOBALS[$fieldname]))
+            if( isset($_POST[$fieldname]) && !empty($_POST[$fieldname]))
                 {
-                $val = $GLOBALS[$fieldname];
+                $val = $_POST[$fieldname];
                 }
             else
                 {
                 $var = "i_".$fieldname;
-                if( isset($GLOBALS[$var]) && !empty($GLOBALS[$var]))
+                if( isset($_POST[$var]) && !empty($_POST[$var]))
                     {
-                    $val = $GLOBALS[$var];
+                    $val = $_POST[$var];
                     }
                 }
             $babDB->db_query("update ".BAB_LDAP_SITES_FIELDS_TBL." set x_name='".$babDB->db_escape_string($val)."' where id_field='".$babDB->db_escape_string($arr['id_field'])."' and id_site='".$babDB->db_escape_string($id)."'");

@@ -554,6 +554,11 @@ class babBody
     public function addMenu($nodeId)
     {
         $sitemap = bab_sitemap::getFromSite();
+        
+        if (!isset($sitemap)) {
+            return null;
+        }
+        
         $node = $sitemap->getNodeById('babAdminInstall');
 
         if ($node->hasChildNodes()) {
