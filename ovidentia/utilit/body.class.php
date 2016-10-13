@@ -561,7 +561,7 @@ class babBody
         
         $node = $sitemap->getNodeById('babAdminInstall');
 
-        if ($node->hasChildNodes()) {
+        if (isset($node) && $node->hasChildNodes()) {
             $node = $node->firstChild();
             do {
                 $sitemapItem = $node->getData();
