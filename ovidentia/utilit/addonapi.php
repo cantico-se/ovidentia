@@ -1975,6 +1975,7 @@ function bab_getAvailableLanguages()
  */
 function bab_printTemplate($class, $file, $section = '')
 {
+    require_once dirname(__FILE__).'/skinincl.php';
     //bab_debug('Template file : '.$file.'<br />'.'Section in template file : '.$section);
 
     global $babSkinPath, $babSkin;
