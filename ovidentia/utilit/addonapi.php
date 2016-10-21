@@ -3442,14 +3442,6 @@ function bab_requireCredential($sLoginMessage = '', $sAuthType = '')
 {
     require_once $GLOBALS['babInstallPath'].'utilit/loginIncl.php';
 
-    if ($sAuthType === '') {
-        // If a requireCredential is triggerd during an ajax request
-        // we force AuthBasic to avoid silently failing requests.
-        if (bab_isAjaxRequest()) {
-            $sAuthType = 'Basic';
-        }
-    }
-
     return bab_doRequireCredential($sLoginMessage, $sAuthType);
 }
 
