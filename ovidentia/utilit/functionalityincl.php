@@ -617,6 +617,10 @@ class bab_functionalities {
 
 		$children = $this->getChildren($path);
 		foreach ($children as $child) {
+		    
+		    bab_functionality::includeOriginal($path.$child);
+		    
+		    $this->cleanTree($path.$child.'/');
 			
 			$file = $this->treeRootPath.$path.$child.'/'.$this->filename;
 			if (false === (include_once $file)) {
@@ -624,7 +628,7 @@ class bab_functionalities {
 				$this->unregister($path.$child);
 			}
 			
-			$this->cleanTree($path.$child.'/');
+			
 		}
 	}
 
