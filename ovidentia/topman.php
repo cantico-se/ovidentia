@@ -1591,7 +1591,7 @@ function bab_removeDraft($art){
 	$req = "UPDATE ".BAB_ART_DRAFTS_TBL." SET id_article = 0, id_topic = 0 where id='".$babDB->db_escape_string($art)."'";
 	$babDB->db_query($req);
 
-	Header("Location: ". $GLOBALS['babUrlScript']."?tg=topman&idx=Articles&item=".bab_gp('item'));
+	Header("Location: ". $GLOBALS['babUrlScript']."?tg=topman&idx=Articles&item=".bab_rp('item'));
 	exit;
 }
 
@@ -1713,7 +1713,7 @@ elseif( bab_rp('updateh') && bab_isAccessValid(BAB_SITES_HPMAN_GROUPS_TBL, $babB
 switch($idx)
 	{
 	case "rmdraft":
-		$art = bab_gp('art', '');
+		$art = bab_rp('art', '');
 		if ( $manager && $art != '' )
 		{
 			bab_requireDeleteMethod() && bab_removeDraft($art);
