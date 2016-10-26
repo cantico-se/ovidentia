@@ -3757,6 +3757,10 @@ function bab_setLanguage($code)
  */
 function bab_requireSaveMethod()
 {
+    if (defined('BAB_CSRF_PROTECT') && false === BAB_CSRF_PROTECT) {
+        return true;
+    }
+    
     if ('GET' === $_SERVER['REQUEST_METHOD']) {
         header($_SERVER["SERVER_PROTOCOL"]." 405 Method Not Allowed", true, 405);
         $babBody = bab_getBody();
