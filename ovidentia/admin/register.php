@@ -438,7 +438,7 @@ function sendPassword($nickname, $email)
         }
 
 
-    $req="select id, nickname, email, changepwd from ".BAB_USERS_TBL." where  email=".$babDB->quote($email);
+    $req="select id, nickname, email, changepwd from ".BAB_USERS_TBL." where  email LIKE '".$babDB->db_escape_like($email)."'";
 
     if ($site['ask_nickname'])
     {
