@@ -56,24 +56,19 @@ function bab_adminMenuAddons()
 	{
 		if($row['access'])
 		{
-			
-			$addonpath = $GLOBALS['babInstallPath'].'addons/'.$row['title'];
-			if( is_dir($addonpath))
+			$arr = bab_getAddonsMenus($row, "getAdminSectionMenus");
+			reset ($arr);
+			while (list ($txt, $url) = each($arr))
 			{
-				$arr = bab_getAddonsMenus($row, "getAdminSectionMenus");
-				reset ($arr);
-				while (list ($txt, $url) = each($arr))
-				{
-					if (0 === mb_strpos($url, $GLOBALS['babUrl'].$babPhpSelf)) {
-						$url = mb_substr($url, mb_strlen($GLOBALS['babUrl'].$babPhpSelf));
-					}
-	
-					$addon_urls[] = array(
-							'label' => $txt,
-							'url' => $url,
-							'uid' => $row['title'].sprintf('_%u',crc32($url))
-					);
+				if (0 === mb_strpos($url, $GLOBALS['babUrl'].$babPhpSelf)) {
+					$url = mb_substr($url, mb_strlen($GLOBALS['babUrl'].$babPhpSelf));
 				}
+
+				$addon_urls[] = array(
+						'label' => $txt,
+						'url' => $url,
+						'uid' => $row['title'].sprintf('_%u',crc32($url))
+				);
 			}
 		}
 	}
@@ -89,7 +84,7 @@ function bab_adminMenuAddons()
  * @param	bab_eventBeforeSiteMapCreated &$event
  */
 function bab_sitemap_adminSection(bab_eventBeforeSiteMapCreated $event) {
-	global $babBody, $babDB;
+	global $babDB;
 
 
 
