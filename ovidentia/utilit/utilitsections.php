@@ -29,13 +29,14 @@ include_once $GLOBALS['babInstallPath'].'utilit/delegincl.php';
 function bab_getAddonsMenus($row, $what)
 {
 	global $babDB;
+	$addon = bab_getAddonInfosInstance($row['title']);
 	$addon_urls = array();
-	$addonpath = $GLOBALS['babInstallPath'].'addons/'.$row['title'];
-	if( is_file($addonpath."/init.php" ))
+	$addonpath = $addon->getPhpPath();
+	if( is_file($addonpath."init.php" ))
 		{
 		bab_setAddonGlobals($row['id']);
 		
-		require_once( $addonpath."/init.php" );
+		require_once( $addonpath."init.php" );
 		$func = $row['title']."_".$what;
 		if( !empty($func) && function_exists($func))
 			{

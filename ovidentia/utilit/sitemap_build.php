@@ -1541,22 +1541,20 @@ function bab_getUserAddonsUrls() {
     foreach( $addons as $row )
         {
         if($row['access']) {
-            $addonpath = $GLOBALS['babInstallPath'].'addons/'.$row['title'];
-            if( is_dir($addonpath)) {
-                $arr = bab_getAddonsMenus($row, 'getUserSectionMenus');
-                reset ($arr);
-                while (list ($txt, $url) = each($arr)) {
 
-                    if (0 === mb_strpos($url, $GLOBALS['babUrl'].bab_getSelf())) {
-                        $url = mb_substr($url, mb_strlen($GLOBALS['babUrl'].bab_getSelf()));
-                    }
+            $arr = bab_getAddonsMenus($row, 'getUserSectionMenus');
+            reset ($arr);
+            while (list ($txt, $url) = each($arr)) {
 
-                    $addon_urls[] = array(
-                        'label' => $txt,
-                        'url' => $url,
-                        'uid' => $row['title'].sprintf('_%u',crc32($url))
-                        );
-                    }
+                if (0 === mb_strpos($url, $GLOBALS['babUrl'].bab_getSelf())) {
+                    $url = mb_substr($url, mb_strlen($GLOBALS['babUrl'].bab_getSelf()));
+                }
+
+                $addon_urls[] = array(
+                    'label' => $txt,
+                    'url' => $url,
+                    'uid' => $row['title'].sprintf('_%u',crc32($url))
+                    );
                 }
             }
         }
