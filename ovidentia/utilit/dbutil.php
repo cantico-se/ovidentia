@@ -75,8 +75,8 @@ class babDatabase
 
         return $dblink;
         }
-        
-    
+
+
     public function db_print_error($text) {
         if (session_id() && function_exists('bab_isUserAdministrator') && bab_isUserAdministrator()) {
             include_once dirname(__FILE__).'/devtools.php';
@@ -94,7 +94,7 @@ class babDatabase
         if (E_USER_ERROR === ($error_reporting & E_USER_ERROR) && $display_errors) {
             echo $str;
         }
-        
+
         if (!$display_errors) {
             trigger_error($str);
         }
@@ -143,15 +143,15 @@ class babDatabase
         //$this->db_query("SET NAMES latin1");
         mysqli_set_charset($this->db_connect(), 'latin1');
     }
-        
+
     /**
      * @return string
      */
     public function db_character_set_name() {
         return mysqli_character_set_name($this->db_connect());
     }
-    
-    
+
+
 
     public function db_create_db($dbname)
         {
@@ -199,7 +199,7 @@ class babDatabase
         return $res;
 
         }
-        
+
     /**
      * sends multiple queries
      * @param string $queries
@@ -208,11 +208,11 @@ class babDatabase
      */
     public function db_multi_query($queries)
     {
-        
+
         return mysqli_multi_query($this->db_connect(),$queries);
-        
+
     }
-    
+
     /**
      * prepare next result from multi_query
      * @return boolean
@@ -220,11 +220,11 @@ class babDatabase
      */
     public function db_next_result()
     {
-        
+
         return mysqli_next_result($this->db_connect());
-        
+
     }
-    
+
     /**
      * check if there are any more query results from a multi query
      * @return boolean
@@ -232,9 +232,9 @@ class babDatabase
      */
     public function db_more_results()
     {
-        
+
         return mysqli_more_results($this->db_connect());
-        
+
     }
 
     public function db_num_rows($result)

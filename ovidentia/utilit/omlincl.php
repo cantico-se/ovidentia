@@ -61,25 +61,25 @@ class Func_Ovml extends bab_functionality
  */
 class Func_Ovml_Container extends Func_Ovml
 {
-    
+
     /**
      * The ovml template object
      * Warning, this is not a context
      * @var babOvTemplate
      */
     public $ctx;
-    
+
     /**
      * index of the loop
      * @var int
      */
     public $idx;
 
-    
+
     /**
      * Method called on context initialization
      * @param babOvTemplate $ctx The ovml template object
-     * 
+     *
      */
     public function setOvmlContext(babOvTemplate $ctx)
     {
@@ -628,19 +628,19 @@ class Func_Ovml_Container_ArticlesHomePages extends Func_Ovml_Container
 
     var $imageheightmax;
     var $imagewidthmax;
-    
+
 
     public function setOvmlContext(babOvTemplate $ctx)
     {
         global $babDB;
 
         parent::setOvmlContext($ctx);
-        
+
         require_once dirname(__FILE__).'/settings.class.php';
         $settings = bab_getInstance('bab_Settings');
         /*@var $settings bab_Settings */
         $site = $settings->getSiteSettings();
-        
+
         $this->idgroup = $ctx->curctx->getAttribute('type');
         $order = $ctx->curctx->getAttribute('order');
         if( $order === false || $order === '' )
@@ -678,15 +678,15 @@ class Func_Ovml_Container_ArticlesHomePages extends Func_Ovml_Container
 
         $topview = bab_getUserIdObjects(BAB_TOPICSVIEW_GROUPS_TBL);
 
-        $res = $babDB->db_query("select ht.id, at.id_topic, at.restriction from ".BAB_ARTICLES_TBL." at 
-            LEFT JOIN ".BAB_HOMEPAGES_TBL." ht on ht.id_article=at.id 
-            where 
-                ht.id_group='".$babDB->db_escape_string($this->idgroup)."' 
-                and ht.id_site='".$site['id']."' and ht.ordering!='0' 
-                and (at.date_publication='0000-00-00 00:00:00' or at.date_publication <= now()) 
-                and (date_archiving='0000-00-00 00:00:00' or date_archiving >= now()) 
+        $res = $babDB->db_query("select ht.id, at.id_topic, at.restriction from ".BAB_ARTICLES_TBL." at
+            LEFT JOIN ".BAB_HOMEPAGES_TBL." ht on ht.id_article=at.id
+            where
+                ht.id_group='".$babDB->db_escape_string($this->idgroup)."'
+                and ht.id_site='".$site['id']."' and ht.ordering!='0'
+                and (at.date_publication='0000-00-00 00:00:00' or at.date_publication <= now())
+                and (date_archiving='0000-00-00 00:00:00' or date_archiving >= now())
             GROUP BY at.id order by ".$babDB->db_escape_string($order));
-        
+
         while($arr = $babDB->db_fetch_array($res))
         {
             if( $arr['restriction'] == '' || bab_articleAccessByRestriction($arr['restriction']) )
@@ -6290,44 +6290,44 @@ class bab_context
     const TEXT = 0;
     const HTML = 1;
 
-    
+
     /**
      * Name of context
      * This will contain bab_main or the container name without OC
      * @var string
      */
     public $name;
-    
-    
+
+
     /**
      * List of variables and attributes merged
-     * 
+     *
      * @since 8.4.93
-     * 
+     *
      * @var array
      */
     public $values = array();
-    
+
     /**
      * List of variable inside a context
      * attributes values are also added to variables list for historical reason
-     * 
+     *
      * @since 8.4.93
-     * 
+     *
      * @var array
      */
     public $variables = array();
-    
-    
+
+
     /**
      * List of attributes in the current context
-     * This is for one container only and should be used by container classes instead of the 
+     * This is for one container only and should be used by container classes instead of the
      * variable to prevent names conflicts
-     * 
+     *
      * @var array
      */
     public $attributes = array();
-    
+
 
     /**
      *
@@ -6342,8 +6342,8 @@ class bab_context
      */
     private $format = array();
 
-    
-    
+
+
     public function bab_context($name)
     {
         $this->name = $name;
@@ -6359,13 +6359,13 @@ class bab_context
         $this->variables[$var] = $value;
         $this->values[$var] = $value;
     }
-    
+
     /**
      * Push a new attribute to context
      * in ovidentia before 8.4.93, attributes where pushed to the variables array
-     * 
+     *
      * @since 8.4.93
-     * 
+     *
      * @param string $var
      * @param string $value
      */
@@ -6374,11 +6374,11 @@ class bab_context
         $this->attributes[$var] = $value;
         $this->values[$var] = $value;
     }
-    
-    
+
+
     /**
      * Method to get a safe variable value
-     * 
+     *
      * @since 8.4.93
      *
      * @return mixed | false
@@ -6388,16 +6388,16 @@ class bab_context
         if (!isset($this->variables[$var])) {
             return false;
         }
-    
+
         return $this->variables[$var];
     }
-    
-    
+
+
     /**
      * Method to use in containers classes to get a safe attribute value
-     * 
+     *
      * @since 8.4.93
-     * 
+     *
      * @return string | false
      */
     public function getAttribute($var)
@@ -6405,10 +6405,10 @@ class bab_context
         if (!isset($this->attributes[$var])) {
             return false;
         }
-        
+
         return $this->attributes[$var];
     }
-    
+
 
     /**
      * Set optional format of content on a variable (optional)
@@ -6437,9 +6437,9 @@ class bab_context
 
     /**
      * Get value in context
-     * 
+     *
      * @deprecated use getVariable or getAttribute instead
-     * 
+     *
      * @param string $var
      * @return mixed | false
      */
@@ -6448,7 +6448,7 @@ class bab_context
         if( isset($this->values[$var])) {
             return $this->values[$var];
         }
-        
+
         return false;
     }
 
@@ -6816,20 +6816,20 @@ function setImageInfo($oCtx, $iMaxImageHeight, $iMaxImageWidth, $path)
 
 /**
  * OVML template
- * 
+ *
  */
 class babOvTemplate
 {
-    
+
     /**
      * Stack of used contexts
      * @var array
      */
     public $contexts = array();
-    
-    
+
+
     public $handlers = array();
-    
+
     /**
      * The current processed context, updated when we enter in a container and when we get out
      * @var bab_context
@@ -6859,7 +6859,7 @@ class babOvTemplate
         {
             $this->gctx->push("babSiteSlogan", $babBody->babsite['babslogan']);
         }
-    
+
         if( bab_isUserLogged())
             {
             $this->gctx->push("babUserName", bab_getUserName(bab_getUserId()));
@@ -6868,9 +6868,9 @@ class babOvTemplate
             {
             $this->gctx->push("babUserName", '');
             }
-    
+
         $this->gctx->push("babCurrentDate", time());
-    
+
         foreach($args as $variable => $contents)
             {
             $this->gctx->push($variable, $contents);
@@ -6893,37 +6893,37 @@ class babOvTemplate
             return $this->curctx;
         }
     }
-    
-    
+
+
     protected function callInAllContexts($methodName, $parameters)
     {
         for( $i = count($this->contexts)-1; $i >= 0; $i--) {
             $context = $this->contexts[$i];
             /*@var $context bab_context */
-            
+
             $val = call_user_func_array(array($context, $methodName) , $parameters);
-            
+
             if( $val !== false) {
                 return $val;
             }
         }
-        
+
         return false;
     }
-    
-    
+
+
     /**
      * Get variable value with context inheritance
-     * 
+     *
      * @return mixed | false
      */
     public function getVariable($name)
     {
         return $this->callInAllContexts(__FUNCTION__, array($name));
-        
+
     }
-    
-    
+
+
     /**
      * Get attribute value with context inheritance
      * @param string $name
@@ -6933,8 +6933,8 @@ class babOvTemplate
     {
         return $this->callInAllContexts(__FUNCTION__, array($name));
     }
-    
-    
+
+
 
     /**
      * Get variable or attribute value with context inheritance
@@ -6947,20 +6947,20 @@ class babOvTemplate
         $trace = debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS, 1);
         $context = BAB_TAG_CONTAINER.$this->curctx->name.' in '.$trace[0]['file'].' ('.$trace[0]['line'].')';
         bab_debug(bab_toHtml($message."\n".$context, BAB_HTML_ALL), DBG_INFO, 'ovml');
-        
+
         return $this->callInAllContexts('get', array($name));
     }
 
     /**
      * Get format with context inheritance
      * The first format set on ancestors contexts
-     * 
+     *
      * @return mixed | false
      */
     public function get_format($name)
     {
         return $this->callInAllContexts('getFormat', array($name));
-        
+
     }
 
 
@@ -6979,8 +6979,8 @@ class babOvTemplate
         }
     return array();
     }
-    
-    
+
+
 
     public function get_currentContextname()
     {
@@ -7031,7 +7031,7 @@ class babOvTemplate
 
     /**
      * Process a container
-     * 
+     *
      * @param $handler          Container name without OC, this is the functionality name
      * @param string $txt       Container content
      * @param array $args       Container arguments
@@ -7136,12 +7136,12 @@ class babOvTemplate
 
         $ghtmlentities = $this->getVariable('babHtmlEntities');
         $escapedisabled = ($ghtmlentities !== false && 0 === intval($ghtmlentities));
-        
+
         if ($format === bab_context::TEXT && !$escapedisabled) {
             // apply global htmlentities only for text variables
             $val = $attributes->htmlentities($val, 1);
         }
-        
+
         if( $saveas ) {
             // always apply saveas as the last attribute
             $val = $attributes->saveas($val, $saveas);
@@ -7334,9 +7334,9 @@ class bab_OvmlAttributes
 
     /**
      *
-     * @param babOvTemplate     $ctx          Ovml template 
+     * @param babOvTemplate     $ctx          Ovml template
      * @param int               $format       bab_context::HTML
-     *            
+     *
      */
     public function __construct(babOvTemplate $ctx, $format)
     {
@@ -8590,7 +8590,7 @@ class Func_Ovml_Function_FileTree extends Func_Ovml_Function {
 
         $return = '';
         $child = '';
-        
+
         $iIdRootFolder = null;
         $oFmFolder = null;
 
@@ -9414,5 +9414,24 @@ class Func_Ovml_Function_GetCsrfProtectToken extends Func_Ovml_Function {
     public function toString()
     {
         return bab_getInstance('bab_CsrfProtect')->getToken();
+    }
+}
+
+
+
+
+
+
+/**
+ * Get Current Administration Group
+ * <OFGetCurrentAdmGroup>
+ *
+ * @since 8.5.90
+ */
+class Func_Ovml_Function_GetCurrentAdmGroup extends Func_Ovml_Function {
+
+    public function toString()
+    {
+        return bab_getCurrentAdmGroup();
     }
 }
