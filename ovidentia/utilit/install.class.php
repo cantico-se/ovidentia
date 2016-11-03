@@ -962,7 +962,7 @@ class bab_InstallSource {
         /*@var $babBody babBody */
         $path 	= $this->getFolder().'/';
 
-        if (true !== $result = bab_recursive_cp($path, 'vendor/ovidentia/'.$ini->getName(), true)) {
+        if (true !== $result = bab_recursive_cp($path, 'vendor/ovidentia/'.mb_strtolower($ini->getName()), true)) {
             $babBody->addError($result);
             return false;
         }
