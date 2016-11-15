@@ -712,10 +712,7 @@ function addAdDb($adname, $description)
                 $this->reqchecked = '';
                 $this->rwchecked = '';
                 $this->mlchecked = '';
-                if (in_array( $this->fieldid, array(2, 4)) )
-                    $this->disabled = true;
-                else
-                    $this->disabled = false;
+                $this->disabled = false;
                 $i++;
                 return true;
                 }
