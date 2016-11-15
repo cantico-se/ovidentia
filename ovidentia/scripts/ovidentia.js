@@ -308,60 +308,66 @@ function bab_getInstallPath()
  */
 function bab_postLinkConfirm(a)
 {
-	var title = a.getAttribute('title');
-	if (title && !confirm(title)) {
-		return false;
-	}
-	
-	if (window.XMLHttpRequest) { // Mozilla, Safari, ...
-		httpRequest = new XMLHttpRequest();
-	}
-	else if (window.ActiveXObject) { // IE
-	    httpRequest = new ActiveXObject("Microsoft.XMLHTTP");
-	}
-	
-	function createHiddenField(name, value) {
-		var input=document.createElement('input');
-		input.type='hidden';
-		input.name=decodeURIComponent(name);
-		input.value=decodeURIComponent(value);
-		return input;
-	}
-	
-	
-	httpRequest = new XMLHttpRequest();
-	
-	httpRequest.onreadystatechange = function() {
-		
-		if (httpRequest.readyState == 4) {
+    var title = a.getAttribute('title');
+    if (title && !confirm(title)) {
+        return false;
+    }
+
+    if (window.XMLHttpRequest) { // Mozilla, Safari, ...
+        httpRequest = new XMLHttpRequest();
+    }
+    else if (window.ActiveXObject) { // IE
+        httpRequest = new ActiveXObject("Microsoft.XMLHTTP");
+    }
+
+    function createHiddenField(name, value) {
+        var input=document.createElement('input');
+        input.type='hidden';
+        input.name=decodeURIComponent(name);
+        value = value.replace(/\+/g, '%20');
+        try {
+            decodeURIComponent(value);
+        } catch (e) {
+            value = unescape(value);
+        }
+        input.value=decodeURIComponent(value);
+        return input;
+    }
+
+
+    httpRequest = new XMLHttpRequest();
+
+    httpRequest.onreadystatechange = function() {
+
+        if (httpRequest.readyState == 4) {
             if (httpRequest.status == 200) {
                 var pathItems = a.pathname.split('/');
-				var f = document.createElement('form');
-				f.action=pathItems[pathItems.length-1];
-				f.method='POST';
-				
-				f.appendChild(createHiddenField('babCsrfProtect', httpRequest.responseText));
-				
-				var vars = a.search.substr(1).split('&');
-			    for (var i = 0; i < vars.length; i++) {
-			        var pair = vars[i].split('=');
-					f.appendChild(createHiddenField(pair[0], pair[1]));
-			    }
-				
-				document.body.appendChild(f);
-				f.submit();
+                var f = document.createElement('form');
+                f.action=pathItems[pathItems.length-1];
+                f.method='POST';
+
+                f.appendChild(createHiddenField('babCsrfProtect', httpRequest.responseText));
+
+                var vars = a.search.substr(1).split('&');
+                for (var i = 0; i < vars.length; i++) {
+                    var pair = vars[i].split('=');
+                    f.appendChild(createHiddenField(pair[0], pair[1]));
+                }
+
+                document.body.appendChild(f);
+                f.submit();
 
             } else {
                 alert('Failed to retreive the CSRF token');
             }
         }
-		
-		
-	    
-	};
 
-	httpRequest.open('GET', '?tg=csrfprotect', true);
-	httpRequest.send();
-	
-	return false;
+
+
+    };
+
+    httpRequest.open('GET', '?tg=csrfprotect', true);
+    httpRequest.send();
+
+    return false;
 }
