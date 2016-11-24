@@ -607,21 +607,23 @@ function validateNum(field)
 				<input type="text" name="uploadpath" size="30" maxlength="255" value="{ arr[uploadpath] }" />
 			</td>
 		</tr>
-		<tr>
-			<td>{ maxfilesize_title }</td>
-            <td> 
-				<input type="text" name="maxfilesize" size="20" maxlength="10" value="{ arr[maxfilesize] }" onKeyUp="validateNum(this)" /> { t_mb }
-			</td>
-		</tr>
-		<tr>
-			<td>{ maxzipsize_title }</td>
-            <td> 
-				<input type="text" name="maxzipsize" size="20" maxlength="10" value="{ arr[maxzipsize] }" onKeyUp="validateNum(this)" /> { t_mb }
-			</td>
-		</tr>
+		
+		
 		<tr>
 			<td colspan="2"><br /><br /><h4>{ t_filemanager } :</h4></td>
 		</tr>
+		<tr>
+            <td>{ maxfilesize_title }</td>
+            <td> 
+                <input type="text" name="maxfilesize" size="20" maxlength="10" value="{ arr[maxfilesize] }" onKeyUp="validateNum(this)" /> { t_mb }
+            </td>
+        </tr>
+        <tr>
+            <td>{ maxzipsize_title }</td>
+            <td> 
+                <input type="text" name="maxzipsize" size="20" maxlength="10" value="{ arr[maxzipsize] }" onKeyUp="validateNum(this)" /> { t_mb }
+            </td>
+        </tr>
 		<tr>
 			<td>{ folder_diskspace_title }</td>
             <td> 
