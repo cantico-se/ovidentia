@@ -1023,9 +1023,10 @@ function updateLanguage($lang, $langfilter)
 			id='".$babDB->db_escape_string($BAB_SESS_USERID)."'";
         $res = $babDB->db_query($req);
 
+        bab_setLanguage($lang);
 
         if (0 < $babDB->db_affected_rows($res)) {
-			bab_siteMap::clearAll();
+			bab_siteMap::clear();
 			}
 
 		}
