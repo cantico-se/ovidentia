@@ -172,21 +172,21 @@ function changeNickname($nickname)
 				$W = bab_Widgets();
 				$userEditor = bab_functionality::get('UserEditor');
 				/*@var $userEditor Func_UserEditor */
-				
+
 				if (isset($_POST['user'])) {
 				    try {
-    				
+
     				    if ($userEditor->saveOwnEntry($_POST['user'])) {
         				    $babBody->addNextPageMessage(bab_translate('Your changes are saved'));
         				    bab_url::get_request('tg')->location();
     				    }
-    				    
+
     				} catch(Exception $e) {
-    				    
+
     				    $babBody->addError($e->getMessage());
     				}
 				}
-				
+
 				$form = $userEditor->getOwnEntryForm(bab_getUserId());
 				$form->setSelfPageHiddenFields();
 				$this->userform = $form->display($W->HtmlCanvas());
@@ -219,9 +219,9 @@ function changeNickname($nickname)
 		}
 
 	$temp = new temp($nickname);
-	
+
 	/*@var $babBody babBody */
-	
+
 	$babBody->addStyleSheet('usereditor.css');
 	$babBody->babecho(	bab_printTemplate($temp,"options.html", "changenickname"));
 	}
@@ -376,7 +376,7 @@ function changeLanguage()
 				{
                 $this->userlang = '';
 				}
-           
+
 
             $this->title .= " : ".$this->userlang;
 
@@ -415,7 +415,7 @@ function changeLanguage()
 			static $i = 0;
 			if($i < bab_getInstance('babLanguageFilter')->countFilters())
 			{
-				$this->langfilterval = 
+				$this->langfilterval =
 					bab_toHtml(bab_getInstance('babLanguageFilter')->getFilterStr($i));
 				if($this->userlangfilter == $i)
 					{$this->langfilterselected = 'selected';}
@@ -425,7 +425,7 @@ function changeLanguage()
 				return true;
 		}
 			else return false;
-		} //getnextlangfilter	
+		} //getnextlangfilter
 
 		} //class tempa
 
@@ -480,7 +480,7 @@ function changeSkin()
 				$this->userskin = '';
 				$this->userstyle = '';
 				}
-		   
+
 			if( $this->userskin == '')
 				{
 				$this->userskin = $GLOBALS['babSkin'];
@@ -490,7 +490,7 @@ function changeSkin()
 				{
 				$this->userstyle = $GLOBALS['babStyle'];
 				}
-				
+
 			$this->skin_in_bdd = $arr['skin'];
 
 			$this->title .= ' : '.bab_toHtml($this->userskin);
@@ -517,7 +517,7 @@ function changeSkin()
 				} else {
                     $this->skinselected = "";
 				}
-                
+
 				$this->arrstyles = array_values($obj->getStyles());
 				$this->cntstyles = count($this->arrstyles);
 				$i++;
@@ -544,7 +544,7 @@ function changeSkin()
 				return false;
 			}
 		}
-		
+
 	}
 
     $tempc = new tempc();
@@ -620,7 +620,7 @@ function changeProfiles()
 		function getnextgrp()
 			{
 			global $babBody, $babDB;
-			static $i = 0;	
+			static $i = 0;
 			if( $i < $this->countgrp)
 				{
 				$arr = $babDB->db_fetch_array($this->resgrp);
@@ -692,7 +692,7 @@ function showUnavailability($iduser, $fromdate, $todate, $id_substitute)
 			if( $res && $babDB->db_num_rows($res) > 0 )
 				{
 				$arr = $babDB->db_fetch_array($res);
-			
+
 				$rr = explode('-', $arr['end_date']);
 				$this->enddate_val = bab_toHtml(sprintf("%02s/%02s/%04s", $rr[2], $rr[1], $rr[0]));
 				}
@@ -839,14 +839,14 @@ function userChangePassword($oldpwd, $newpwd)
 						return false;
 						}
 
-					// create the unicode password 
-					$len = mb_strlen($newpwd); 
-					$newPass = '"'; 
-					for ($i = 0; $i < $len; $i++) 
-					{ 
-						$newPass .= "{$newpwd{$i}}\000"; 
-					} 
-					$newPass .= '"'; 
+					// create the unicode password
+					$len = mb_strlen($newpwd);
+					$newPass = '"';
+					for ($i = 0; $i < $len; $i++)
+					{
+						$newPass .= "{$newpwd{$i}}\000";
+					}
+					$newPass .= '"';
 
 					$ret = $ldap->modify($entries[0]['dn'], array('unicodePwd'=>$newPass));
 					$ldap->close();
@@ -955,16 +955,16 @@ function userChangePassword($oldpwd, $newpwd)
 		{
 		include_once $GLOBALS['babInstallPath']."utilit/eventdirectory.php";
 		include_once $GLOBALS['babInstallPath'].'utilit/addonsincl.php';
-		
+
 		$event = new bab_eventUserModified($BAB_SESS_USERID);
 		bab_fireEvent($event);
-		
-		
+
+
 		$babBody->msgerror = bab_translate("Password Changed");
 		$error = '';
-		
+
 		bab_callAddonsFunctionArray('onUserChangePassword', array('id'=>$BAB_SESS_USERID, 'nickname'=>$GLOBALS['BAB_SESS_NICKNAME'], 'password'=>$newpwd, 'error'=>&$error));
-		
+
 		if( !empty($error))
 			{
 			$babBody->msgerror = $error;
@@ -992,7 +992,7 @@ function updatePassword($oldpwd, $newpwd1, $newpwd2)
 		$babBody->msgerror =  bab_translate("Passwords not match !!");
 		return false;
 		}
-	
+
 	$minPasswordLengh = 6;
 	if(ISSET($GLOBALS['babMinPasswordLength']) && is_numeric($GLOBALS['babMinPasswordLength'])){
 		$minPasswordLengh = $GLOBALS['babMinPasswordLength'];
@@ -1015,17 +1015,17 @@ function updateLanguage($lang, $langfilter)
     global $babDB, $BAB_SESS_USERID;
 	if( !empty($BAB_SESS_USERID))
 		{
-		$req = "update ".BAB_USERS_TBL." 
-		set 
-			lang='".$babDB->db_escape_string($lang)."', 
-			langfilter='" .$babDB->db_escape_string($langfilter). "' 
-		where 
+		$req = "update ".BAB_USERS_TBL."
+		set
+			lang='".$babDB->db_escape_string($lang)."',
+			langfilter='" .$babDB->db_escape_string($langfilter). "'
+		where
 			id='".$babDB->db_escape_string($BAB_SESS_USERID)."'";
         $res = $babDB->db_query($req);
-        
-        
+
+
         if (0 < $babDB->db_affected_rows($res)) {
-			bab_siteMap::clear();
+			bab_siteMap::clearAll();
 			}
 
 		}
@@ -1035,7 +1035,7 @@ function updateLanguage($lang, $langfilter)
 /*
  * Update the skin to a user's options
  * Remark : $skin can be empty : it's the skin of the site
- * 
+ *
  * @param $skin string
  * @param $style string
  */
@@ -1044,11 +1044,11 @@ function updateSkin($skin, $style) {
     if(empty($skin)) {
     	$style = ''; /* style of skin of the site */
     }
-    
+
 	if(!empty($BAB_SESS_USERID)) {
         $req = "update ".BAB_USERS_TBL." set skin='".$babDB->db_escape_string($skin)."', style='".$babDB->db_escape_string($style)."' where id='".$babDB->db_escape_string($BAB_SESS_USERID)."'";
         $res = $babDB->db_query($req);
-        
+
         if (0 < $babDB->db_affected_rows($res)) {
 			bab_siteMap::clear();
 		}
@@ -1082,10 +1082,10 @@ function updateNickname($password, $nickname)
 			return false;
 			}
 
-	
+
 		if( $BAB_SESS_NICKNAME != $nickname )
 			{
-			$req = "select id from ".BAB_USERS_TBL." where nickname='".$babDB->db_escape_string($nickname)."'";	
+			$req = "select id from ".BAB_USERS_TBL." where nickname='".$babDB->db_escape_string($nickname)."'";
 			$res = $babDB->db_query($req);
 			if( $babDB->db_num_rows($res) > 0)
 				{
@@ -1097,7 +1097,7 @@ function updateNickname($password, $nickname)
 		$hash=md5($nickname.$BAB_HASH_VAR);
 		$req = "update ".BAB_USERS_TBL." set nickname='".$babDB->db_escape_string($nickname)."', hashname='".$hash."', confirm_hash='".$hash."' where id='".$babDB->db_escape_string($BAB_SESS_USERID)."'";
 		$res = $babDB->db_query($req);
-		
+
 		if( $babDB->db_num_rows($res) > 0)
 			{
 			include_once $GLOBALS['babInstallPath']."utilit/eventdirectory.php";
@@ -1115,7 +1115,7 @@ function updateRegionalSettings($datelformat, $datesformat, $timeformat)
 {
 	global $babBody, $BAB_SESS_USERID, $babDB;
 	$res = $babDB->db_query("update ".BAB_USERS_TBL." set date_shortformat='".$babDB->db_escape_string($datesformat)."', date_longformat='".$babDB->db_escape_string($datelformat)."', time_format='".$babDB->db_escape_string($timeformat)."' where id='".$babDB->db_escape_string($BAB_SESS_USERID)."'");
-		
+
 	return true;
 }
 
@@ -1245,17 +1245,17 @@ function updateUnavailability($iduser, $fromdate, $todate, $id_substitute)
 		return false;
 		}
 
-		
+
 	if ($id_substitute)
 	{
 		// verifier que le suppleant n'est pas absent
-	
-		$res = $babDB->db_query("select * from ".BAB_USERS_UNAVAILABILITY_TBL." 
-				where 
-					id_user='".$babDB->db_escape_string($id_substitute)."' 
+
+		$res = $babDB->db_query("select * from ".BAB_USERS_UNAVAILABILITY_TBL."
+				where
+					id_user='".$babDB->db_escape_string($id_substitute)."'
 					AND (start_date<".$babDB->quote($sqlenddate)." AND end_date>".$babDB->quote($sqlstartdate).")
 			");
-		
+
 		if ($babDB->db_num_rows($res) > 0)
 		{
 			$babBody->addError(bab_translate("This substitute is not available for this period"));
@@ -1264,18 +1264,18 @@ function updateUnavailability($iduser, $fromdate, $todate, $id_substitute)
 	}
 
 	// verifier que je ne suis pas le supplenant de quelqu'un
-	
+
 	$res = $babDB->db_query("select id_user, start_date, end_date from ".BAB_USERS_UNAVAILABILITY_TBL."
 		where
 			id_substitute='".$babDB->db_escape_string($iduser)."'
 			AND (start_date<".$babDB->quote($sqlenddate)." AND end_date>".$babDB->quote($sqlstartdate).")
 	");
-	
+
 	if ($babDB->db_num_rows($res) > 0)
 	{
 		$arr = $babDB->db_fetch_assoc($res);
-		$babBody->addError(sprintf(bab_translate("%s is unavailable from %s to %s with %s as substitute"), 
-				bab_getUserName($arr['id_user']), 
+		$babBody->addError(sprintf(bab_translate("%s is unavailable from %s to %s with %s as substitute"),
+				bab_getUserName($arr['id_user']),
 				bab_shortDate(bab_mktime($arr['start_date']), false),
 				bab_shortDate(bab_mktime($arr['end_date']), false),
 				bab_getUserName($iduser)
@@ -1283,7 +1283,7 @@ function updateUnavailability($iduser, $fromdate, $todate, $id_substitute)
 		);
 		return false;
 	}
-	
+
 
 	$res = $babDB->db_query("select * from ".BAB_USERS_UNAVAILABILITY_TBL." where id_user='".$babDB->db_escape_string($iduser)."'");
 	if( $res && $babDB->db_num_rows($res) > 0 )
@@ -1305,33 +1305,33 @@ function deleteUnavailability($iduser)
 	$babDB->db_query("delete from ".BAB_USERS_UNAVAILABILITY_TBL." where id_user='".$babDB->db_escape_string($iduser)."'");
 	}
 
-	
+
 function bab_haveOptionalSections()
 {
 	global $babDB;
-	
+
 	$res = $babDB->db_query("SELECT * FROM bab_sections WHERE optional='Y'");
 	if (0 !== $babDB->db_num_rows($res))
 	{
 		return true;
 	}
-	
+
 	$res = $babDB->db_query("SELECT * FROM bab_topics_categories WHERE optional='Y'");
 	if (0 !== $babDB->db_num_rows($res))
 	{
 		return true;
 	}
-	
+
 	$res = $babDB->db_query("SELECT * FROM bab_private_sections WHERE optional='Y'");
 	if (0 !== $babDB->db_num_rows($res))
 	{
 		return true;
 	}
-	
+
 	return false;
 }
-	
-	
+
+
 
 /* main */
 if( !bab_isUserLogged())
@@ -1380,9 +1380,9 @@ if( '' != ($update = bab_pp('update')))
 				unset($nickname);
 				}
             break;
-            
 
-            
+
+
         case 'profiles':
             bab_requireSaveMethod();
         	updateProfiles();
@@ -1414,7 +1414,7 @@ if( '' != ($update = bab_pp('update')))
 				$fromdate = bab_pp('fromdate');
 				$todate = bab_pp('todate');
 				$id_substitute = bab_pp('id_substitute');
-				bab_requireSaveMethod() && updateUnavailability($iduser, $fromdate, $todate, $id_substitute);				
+				bab_requireSaveMethod() && updateUnavailability($iduser, $fromdate, $todate, $id_substitute);
 				$idx = 'unav';
 				}
             break;
@@ -1422,7 +1422,7 @@ if( '' != ($update = bab_pp('update')))
 	}
 
 
-	
+
 switch($idx)
 	{
 	case 'unav':
@@ -1485,12 +1485,12 @@ switch($idx)
 			{
 			$babBody->addItemMenu('options', bab_translate("Mail"), $GLOBALS['babUrlScript'].'?tg=mailopt&idx=listacc');
 			}
-		
+
 		if ( bab_haveOptionalSections())
 			{
 			$babBody->addItemMenu('list', bab_translate("Sections"), $GLOBALS['babUrlScript'].'?tg=sectopt&idx=list');
 			}
-		
+
 		$iduser = isset($iduser)? $iduser: bab_getUserId();
 		if( ('Y' == $babBody->babsite['change_unavailability'] && $iduser == $GLOBALS['BAB_SESS_USERID']) || bab_isUserAdministrator() || (bab_getCurrentAdmGroup() && bab_isDelegated('users')))
 			{
