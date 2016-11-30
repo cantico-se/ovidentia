@@ -97,14 +97,14 @@ function modifyCalendarCategory()
 	}
 
 
-function modifyCalendarResource($idcal, $name, $desc, $idsa)
+function modifyCalendarResource($idcal, $name, $desc, $idsa, $bgcolor)
 	{
 	global $babBody;
 
 	class modifyCalendarResourceCls
 		{
 
-		function modifyCalendarResourceCls($idcal, $name, $desc, $idsa)
+		function modifyCalendarResourceCls($idcal, $name, $desc, $idsa, $bgcolor)
 			{
 			global $babBody, $babDB;
 			$this->nametxt = bab_translate("Name");
@@ -113,6 +113,7 @@ function modifyCalendarResource($idcal, $name, $desc, $idsa)
 			$this->approbationtxt = bab_translate("Approbation schema");
 			$this->t_availability_lock = bab_translate("The availability of the resource is mandatory to create an event");
 			$this->nonetxt = bab_translate("None");
+			$this->bgcolortxt = bab_translate("Agenda color");
 			$arr = $babDB->db_fetch_array($babDB->db_query("SELECT cpt.* from ".BAB_CAL_RESOURCES_TBL." cpt left join ".BAB_CALENDAR_TBL." ct on ct.owner=cpt.id where ct.id=".$babDB->quote($idcal)));
 			if( !empty($name))
 				{
@@ -138,8 +139,17 @@ function modifyCalendarResource($idcal, $name, $desc, $idsa)
 				{
 				$this->calidsa = bab_toHtml($arr['idsa']);
 				}
+		    if( !empty($bgcolor))
+    		    {
+    		    $this->bgcolor = bab_toHtml($bgcolor);
+    		    }
+    		else
+        		{
+        		$this->bgcolor = bab_toHtml('none');
+        		}
 				
 			$this->availability_lock = false;
+			$this->selctorurl = bab_toHtml($GLOBALS['babUrlScript']."?tg=selectcolor&idx=popup&callback=setColor");
 			
 			if (1 === (int) $arr['availability_lock']) {
 				$this->availability_lock = true;
@@ -182,7 +192,7 @@ function modifyCalendarResource($idcal, $name, $desc, $idsa)
 			}
 		}
 
-	$temp = new modifyCalendarResourceCls($idcal, $name, $desc, $idsa);
+	$temp = new modifyCalendarResourceCls($idcal, $name, $desc, $idsa, $bgcolor);
 	$babBody->babecho( bab_printTemplate($temp, "admcals.html", "calendaraddr"));
 	}
 
@@ -481,7 +491,8 @@ switch($idx)
 		$calname = bab_rp('calname');
 		$caldesc = bab_rp('caldesc');
 		$calidsa = bab_rp('calidsa');
-		modifyCalendarResource($idcal, $calname, $caldesc, $calidsa);
+		$calbgcolor = bab_rp('calbgcolor');
+		modifyCalendarResource($idcal, $calname, $caldesc, $calidsa, $calbgcolor);
 		$babBody->setTitle(bab_translate("Resource calendar").": ".bab_getCalendarOwnerName($idcal, BAB_CAL_RES_TYPE));
 		$babBody->addItemMenu("pub", bab_translate("PublicCalendar"), $GLOBALS['babUrlScript']."?tg=admcals&idx=pub");
 		$babBody->addItemMenu("res", bab_translate("Resources"), $GLOBALS['babUrlScript']."?tg=admcals&idx=res");
