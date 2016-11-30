@@ -619,14 +619,14 @@ function calendarsAddPublic($name, $desc, $idsa)
 	$babBody->babecho( bab_printTemplate($temp, "admcals.html", "calendaraddp"));
 	}
 
-function calendarsAddResource($name, $desc, $idsa)
+function calendarsAddResource($name, $desc, $idsa, $bgcolor)
 	{
 	global $babBody;
 
 	class calendarsAddResourceCls
 		{
 
-		function calendarsAddResourceCls($name, $desc, $idsa)
+		function calendarsAddResourceCls($name, $desc, $idsa, $bgcolor)
 			{
 			global $babBody, $babDB;
 			$this->nametxt = bab_translate("Name");
@@ -642,6 +642,9 @@ function calendarsAddResource($name, $desc, $idsa)
 			$this->idcal = '';
 			$this->tgval = 'admcals';
 			$this->sares = $babDB->db_query("select * from ".BAB_FLOW_APPROVERS_TBL." where id_dgowner='".$babDB->db_escape_string(bab_getCurrentAdmGroup())."' order by name asc");
+			$this->bgcolortxt = bab_translate("Agenda color");
+			$this->selctorurl = bab_toHtml($GLOBALS['babUrlScript']."?tg=selectcolor&idx=popup&callback=setColor");
+			$this->bgcolor = bab_toHtml($bgcolor);
 			if( !$this->sares )
 				$this->sacount = 0;
 			else
@@ -675,7 +678,7 @@ function calendarsAddResource($name, $desc, $idsa)
 			}
 		}
 
-	$temp = new calendarsAddResourceCls($name, $desc, $idsa);
+	$temp = new calendarsAddResourceCls($name, $desc, $idsa, $bgcolor);
 	$babBody->babecho( bab_printTemplate($temp, "admcals.html", "calendaraddr"));
 	}
 
@@ -1000,7 +1003,7 @@ switch($idx)
 		break;
 
 	case "addr":
-		calendarsAddResource(bab_rp('calname'), bab_rp('caldesc'), bab_rp('calidsa'));
+		calendarsAddResource(bab_rp('calname'), bab_rp('caldesc'), bab_rp('calidsa'), bab_rp('bgcolor'));
 		$babBody->title = bab_translate("Add resource calendar");
 		$babBody->addItemMenu("pub", bab_translate("PublicCalendar"), $GLOBALS['babUrlScript']."?tg=admcals&idx=pub");
 		$babBody->addItemMenu("res", bab_translate("Resources"), $GLOBALS['babUrlScript']."?tg=admcals&idx=res");
