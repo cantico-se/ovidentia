@@ -562,14 +562,14 @@ function calendarsResource()
 	$babBody->babecho( bab_printTemplate($temp, "admcals.html", "calendarslist"));
 	}
 
-function calendarsAddPublic($name, $desc, $idsa)
+function calendarsAddPublic($name, $desc, $idsa, $bgcolor)
 	{
 	global $babBody;
 
 	class calendarsAddPublicCls
 		{
 
-		function calendarsAddPublicCls($name, $desc, $idsa)
+		function calendarsAddPublicCls($name, $desc, $idsa, $bgcolor)
 			{
 			global $babBody, $babDB;
 			$this->nametxt = bab_translate("Name");
@@ -584,6 +584,9 @@ function calendarsAddPublic($name, $desc, $idsa)
 			$this->idcal = '';
 			$this->tgval = 'admcals';
 			$this->sares = $babDB->db_query("select * from ".BAB_FLOW_APPROVERS_TBL." where id_dgowner='".$babDB->db_escape_string(bab_getCurrentAdmGroup())."' order by name asc");
+			$this->bgcolortxt = bab_translate("Agenda color");
+			$this->selctorurl = bab_toHtml($GLOBALS['babUrlScript']."?tg=selectcolor&idx=popup&callback=setColor");
+			$this->bgcolor = bab_toHtml($bgcolor);
 			if( !$this->sares )
 				$this->sacount = 0;
 			else
@@ -617,7 +620,7 @@ function calendarsAddPublic($name, $desc, $idsa)
 			}
 		}
 
-	$temp = new calendarsAddPublicCls($name, $desc, $idsa);
+	$temp = new calendarsAddPublicCls($name, $desc, $idsa, $bgcolor);
 	$babBody->babecho( bab_printTemplate($temp, "admcals.html", "calendaraddp"));
 	}
 
@@ -748,7 +751,7 @@ function calendarsDelPublic($idcal)
 	$babBody->babecho(	bab_printTemplate($temp,"warning.html", "warningyesno"));
 	}
 
-function addPublicCalendar($calname, $caldesc, $calidsa)
+function addPublicCalendar($calname, $caldesc, $calidsa, $bgcolor)
 {
 	global $babDB, $babBody;
 
@@ -759,7 +762,17 @@ function addPublicCalendar($calname, $caldesc, $calidsa)
 		}
 
 
-	$babDB->db_query("insert into ".BAB_CAL_PUBLIC_TBL." (name, description, id_dgowner, idsa) values ('" .$babDB->db_escape_string($calname). "', '".$babDB->db_escape_string($caldesc)."', '".$babDB->db_escape_string(bab_getCurrentAdmGroup())."', '".$babDB->db_escape_string($calidsa)."')");
+	$babDB->db_query("
+	    insert into ".BAB_CAL_PUBLIC_TBL." 
+	       (name, description, id_dgowner, idsa, bgcolor) 
+	    values (
+	       '" .$babDB->db_escape_string($calname). "', 
+	       '".$babDB->db_escape_string($caldesc)."', 
+	       '".$babDB->db_escape_string(bab_getCurrentAdmGroup())."', 
+	       '".$babDB->db_escape_string($calidsa)."',
+	       ".$babDB->quote($bgcolor)."
+	    )"
+	);
 	$idowner = $babDB->db_insert_id();
 	$babDB->db_query("insert into ".BAB_CALENDAR_TBL." (owner, type) values ('" .$babDB->db_escape_string($idowner). "', '".BAB_CAL_PUB_TYPE."')");
 	Header("Location: ". $GLOBALS['babUrlScript']."?tg=admcals&idx=pub");
@@ -886,7 +899,7 @@ if( bab_rp('addc'))
     
 	if( "addp" == bab_rp('addc') )
 	{
-		if( addPublicCalendar(bab_rp('calname'), bab_rp('caldesc'), bab_rp('calidsa')))
+		if( addPublicCalendar(bab_rp('calname'), bab_rp('caldesc'), bab_rp('calidsa'), bab_rp('bgcolor')))
 		{
 			$idx = "pub";
 		}
@@ -1018,7 +1031,7 @@ switch($idx)
 		}
 		break;
 	case "addp":
-		calendarsAddPublic(bab_rp('calname'), bab_rp('caldesc'), bab_rp('calidsa'));
+		calendarsAddPublic(bab_rp('calname'), bab_rp('caldesc'), bab_rp('calidsa'), bab_rp('bgcolor'));
 		$babBody->title = bab_translate("Add public calendar");
 		$babBody->addItemMenu("pub", bab_translate("PublicCalendar"), $GLOBALS['babUrlScript']."?tg=admcals&idx=pub");
 		$babBody->addItemMenu("addp", bab_translate("Add"), $GLOBALS['babUrlScript']."?tg=admcals&idx=addp");

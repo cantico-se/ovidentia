@@ -196,14 +196,14 @@ function modifyCalendarResource($idcal, $name, $desc, $idsa, $bgcolor)
 	$babBody->babecho( bab_printTemplate($temp, "admcals.html", "calendaraddr"));
 	}
 
-function modifyCalendarPublic($idcal, $name, $desc, $idsa)
+function modifyCalendarPublic($idcal, $name, $desc, $idsa, $bgcolor)
 	{
 	global $babBody;
 
 	class modifyCalendarPublicCls
 		{
 
-		function modifyCalendarPublicCls($idcal, $name, $desc, $idsa)
+		function modifyCalendarPublicCls($idcal, $name, $desc, $idsa, $bgcolor)
 			{
 			global $babBody, $babDB;
 			$this->nametxt = bab_translate("Name");
@@ -211,6 +211,9 @@ function modifyCalendarPublic($idcal, $name, $desc, $idsa)
 			$this->addtxt = bab_translate("Modify");
 			$this->approbationtxt = bab_translate("Approbation schema");
 			$this->nonetxt = bab_translate("None");
+			$this->bgcolortxt = bab_translate("Agenda color");
+			$this->selctorurl = bab_toHtml($GLOBALS['babUrlScript']."?tg=selectcolor&idx=popup&callback=setColor");
+			$this->bgcolor = bab_toHtml($bgcolor);
 			$arr = $babDB->db_fetch_array($babDB->db_query("select cpt.* from ".BAB_CAL_PUBLIC_TBL." cpt left join ".BAB_CALENDAR_TBL." ct on ct.owner=cpt.id where ct.id=".$babDB->quote($idcal)));
 			if( !empty($name))
 				{
@@ -236,6 +239,14 @@ function modifyCalendarPublic($idcal, $name, $desc, $idsa)
 				{
 				$this->calidsa = bab_toHtml($arr['idsa']);
 				}
+			if( !empty($bgcolor))
+			{
+			    $this->bgcolor = bab_toHtml($bgcolor);
+			}
+			else
+			{
+			    $this->bgcolor = bab_toHtml($arr['bgcolor']);
+			}
 			$this->add = "modp";
 			$this->idcal = $arr['id'];
 			$this->tgval = 'admcal';
@@ -273,7 +284,7 @@ function modifyCalendarPublic($idcal, $name, $desc, $idsa)
 			}
 		}
 
-	$temp = new modifyCalendarPublicCls($idcal, $name, $desc, $idsa);
+	$temp = new modifyCalendarPublicCls($idcal, $name, $desc, $idsa, $bgcolor);
 	$babBody->babecho( bab_printTemplate($temp, "admcals.html", "calendaraddp"));
 	}
 
@@ -327,7 +338,7 @@ function updateResourceCalendar($idcal, $calname, $caldesc, $calidsa, $bgcolor)
 	exit;
 }
 
-function updatePublicCalendar($idcal, $calname, $caldesc, $calidsa)
+function updatePublicCalendar($idcal, $calname, $caldesc, $calidsa, $bgcolor)
 {
 	global $babDB, $babBody;
 
@@ -356,7 +367,7 @@ function updatePublicCalendar($idcal, $calname, $caldesc, $calidsa)
 		}		
 	}
 
-	$babDB->db_query("update ".BAB_CAL_PUBLIC_TBL." set name='".$babDB->db_escape_string($calname)."', description='".$babDB->db_escape_string($caldesc)."', idsa='".$babDB->db_escape_string($calidsa)."'  where id='".$babDB->db_escape_string($idcal)."'");
+	$babDB->db_query("update ".BAB_CAL_PUBLIC_TBL." set name='".$babDB->db_escape_string($calname)."', description='".$babDB->db_escape_string($caldesc)."', idsa='".$babDB->db_escape_string($calidsa)."', bgcolor=".$babDB->quote($bgcolor)."  where id='".$babDB->db_escape_string($idcal)."'");
 	Header("Location: ". $GLOBALS['babUrlScript']."?tg=admcals&idx=pub");
 	exit;
 }
@@ -392,7 +403,7 @@ if( isset($_REQUEST['addc']))
     
 	if( "modp" == bab_rp('addc') )
 	{
-		if( updatePublicCalendar(bab_rp('idcal'), bab_rp('calname'), bab_rp('caldesc'), bab_rp('calidsa')))
+		if( updatePublicCalendar(bab_rp('idcal'), bab_rp('calname'), bab_rp('caldesc'), bab_rp('calidsa'), bab_rp('bgcolor')))
 		{
 			$idx = "pub";
 		}
@@ -503,7 +514,8 @@ switch($idx)
 		$calname = bab_rp('calname');
 		$caldesc = bab_rp('caldesc');
 		$calidsa = bab_rp('caldesc');
-		modifyCalendarPublic($idcal, $calname, $caldesc, $calidsa);
+		$bgcolor = bab_rp('bgcolor');
+		modifyCalendarPublic($idcal, $calname, $caldesc, $calidsa, $bgcolor);
 		$babBody->setTitle(bab_translate("Public calendar").": ".bab_getCalendarOwnerName($idcal, BAB_CAL_PUB_TYPE));
 		$babBody->addItemMenu("pub", bab_translate("PublicCalendar"), $GLOBALS['babUrlScript']."?tg=admcals&idx=pub");
 		$babBody->addItemMenu("modp", bab_translate("Modify"), $GLOBALS['babUrlScript']."?tg=admcal&idx=modp");
