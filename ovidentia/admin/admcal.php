@@ -145,7 +145,7 @@ function modifyCalendarResource($idcal, $name, $desc, $idsa, $bgcolor)
     		    }
     		else
         		{
-        		$this->bgcolor = bab_toHtml('none');
+        		$this->bgcolor = bab_toHtml($arr['bgcolor']);
         		}
 				
 			$this->availability_lock = false;
@@ -278,7 +278,7 @@ function modifyCalendarPublic($idcal, $name, $desc, $idsa)
 	}
 
 
-function updateResourceCalendar($idcal, $calname, $caldesc, $calidsa)
+function updateResourceCalendar($idcal, $calname, $caldesc, $calidsa, $bgcolor)
 {
 	global $babDB, $babBody;
 
@@ -311,15 +311,14 @@ function updateResourceCalendar($idcal, $calname, $caldesc, $calidsa)
 	
 	$availability_lock = isset($_POST['availability_lock']) ? '1' : '0';
 	
-	
-
 	$babDB->db_query("
 		UPDATE ".BAB_CAL_RESOURCES_TBL." 
 		SET 
 			name='".$babDB->db_escape_string($calname)."', 
 			description='".$babDB->db_escape_string($caldesc)."', 
 			idsa='".$babDB->db_escape_string($calidsa)."',
-			availability_lock=".$babDB->quote($availability_lock)."
+			availability_lock=".$babDB->quote($availability_lock).",
+	        bgcolor=".$babDB->quote($bgcolor)."
 		WHERE 
 			id='".$babDB->db_escape_string($idcal)."'
 	");
@@ -403,7 +402,7 @@ if( isset($_REQUEST['addc']))
 		}
 	}elseif( "modr" == bab_rp('addc') )
 	{
-		if( updateResourceCalendar(bab_rp('idcal'), bab_rp('calname'), bab_rp('caldesc'), bab_rp('calidsa')))
+		if( updateResourceCalendar(bab_rp('idcal'), bab_rp('calname'), bab_rp('caldesc'), bab_rp('calidsa'), bab_rp('bgcolor')))
 		{
 			$idx = "res";
 		}
