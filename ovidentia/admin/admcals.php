@@ -764,7 +764,7 @@ function addPublicCalendar($calname, $caldesc, $calidsa)
 	exit;
 }
 
-function addResourceCalendar($calname, $caldesc, $calidsa)
+function addResourceCalendar($calname, $caldesc, $calidsa, $bgcolor)
 {
 	global $babDB, $babBody;
 
@@ -780,14 +780,15 @@ function addResourceCalendar($calname, $caldesc, $calidsa)
 
 	$babDB->db_query("
 		insert into ".BAB_CAL_RESOURCES_TBL." 
-			(name, description, id_dgowner, idsa, availability_lock) 
+			(name, description, id_dgowner, idsa, availability_lock, bgcolor) 
 		VALUES 
 			(
 				'" .$babDB->db_escape_string($calname). "', 
 				'".$babDB->db_escape_string($caldesc)."', 
 				'".$babDB->db_escape_string(bab_getCurrentAdmGroup())."', 
 				'".$babDB->db_escape_string($calidsa)."',
-				".$babDB->quote($availability_lock)."
+				".$babDB->quote($availability_lock).",
+	            ".$babDB->quote($bgcolor)."
 			)
 	");
 	
@@ -893,7 +894,7 @@ if( bab_rp('addc'))
 		}
 	}elseif( "addr" == bab_rp('addc') )
 	{
-		if( addResourceCalendar(bab_rp('calname'), bab_rp('caldesc'), bab_rp('calidsa')))
+		if( addResourceCalendar(bab_rp('calname'), bab_rp('caldesc'), bab_rp('calidsa'), bab_rp('bgcolor')))
 		{
 			$idx = "res";
 		}
