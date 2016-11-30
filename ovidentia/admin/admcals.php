@@ -166,6 +166,7 @@ function calendarsPublic()
 			$this->uncheckall = bab_translate("Uncheck all");
 			$this->checkall = bab_translate("Check all");
 			$this->update = bab_translate("Update");
+			$this->bgcolortxt = bab_translate("Color");
 
 			$this->res = $babDB->db_query("select cpt.*, ct.actif, ct.id as idcal from ".BAB_CAL_PUBLIC_TBL." cpt left join ".BAB_CALENDAR_TBL." ct on ct.owner=cpt.id where ct.type='".BAB_CAL_PUB_TYPE."' and id_dgowner='".$babDB->db_escape_string(bab_getCurrentAdmGroup())."' ORDER BY cpt.name");
 			$this->count = $babDB->db_num_rows($this->res);
@@ -183,6 +184,7 @@ function calendarsPublic()
 				$this->name = bab_toHtml($arr['name']);
 				$this->description = bab_toHtml($arr['description']);
 				$this->idcal = bab_toHtml($arr['idcal']);
+				$this->bgcolor = bab_toHtml($arr['bgcolor']);
 				$this->nameurl = bab_toHtml($GLOBALS['babUrlScript']."?tg=admcal&idx=modp&grpid=".$arr['id']."&idcal=".$arr['idcal']);
 				$this->rightsurl = bab_toHtml($GLOBALS['babUrlScript']."?tg=admcal&idx=rigthsp&idcal=".$arr['idcal']);
 				$this->delurl = bab_toHtml($GLOBALS['babUrlScript']."?tg=admcals&idx=delp&idcal=".$arr['idcal']);
@@ -517,7 +519,7 @@ function calendarsResource()
 			$this->uncheckall = bab_translate("Uncheck all");
 			$this->checkall = bab_translate("Check all");
 			$this->update = bab_translate("Update");
-			$this->bgcolortxt = bab_translate("Agenda color");
+			$this->bgcolortxt = bab_translate("Color");
 
 			$this->res = $babDB->db_query("select cpt.*, ct.actif, ct.id as idcal from ".BAB_CAL_RESOURCES_TBL." cpt left join ".BAB_CALENDAR_TBL." ct on ct.owner=cpt.id where ct.type='".BAB_CAL_RES_TYPE."' and id_dgowner='".$babDB->db_escape_string(bab_getCurrentAdmGroup())."' ORDER BY cpt.name");
 			$this->count = $babDB->db_num_rows($this->res);
