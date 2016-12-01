@@ -591,7 +591,7 @@ abstract class bab_Controller
 		}
 
 
-
+		$returnedValue = null;
 		try {
 			$returnedValue = $objectController->execAction($action);
 		} catch (bab_AccessException $e) {
