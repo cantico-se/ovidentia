@@ -169,7 +169,7 @@ abstract class bab_Controller
 	        $parameters = $method->getParameters();
 	        $parametersStr = array();
 	        foreach ($parameters as $parameter) {
-	        	
+
 	        	/* @var $parameter ReflectionParameter */
 
 	            $parameterString = '$' . $parameter->name;
@@ -187,7 +187,7 @@ abstract class bab_Controller
 	            		$prefix = $reflectionClass->name;
 	            	}
 	            }
-	            
+
 	            if (isset($prefix)) {
 	                $parameterString =  $prefix. ' ' . $parameterString;
 	            }
@@ -371,7 +371,7 @@ abstract class bab_Controller
 	{
 		$methodStr = $action->getMethod();
 
-		list($objectName, $methodName) = explode('.', $methodStr);
+		list(, $methodName) = explode('.', $methodStr);
 
 		if (!method_exists($this, $methodName)) {
 			header('HTTP/1.0 400 Bad Request');
@@ -524,11 +524,11 @@ abstract class bab_Controller
 	        header($_SERVER["SERVER_PROTOCOL"]." 405 Method Not Allowed", true, 405);
 	        throw new bab_SaveErrorException('Method not allowed');
 	    }
-	    
+
 	    return $this;
 	}
-	
-	
+
+
 	/**
 	 * Method to call before deleting
 	 * @since 8.4.91
@@ -538,7 +538,7 @@ abstract class bab_Controller
 	{
 	    return $this->requireSaveMethod();
 	}
-	
+
 
 
 	/**
@@ -582,7 +582,7 @@ abstract class bab_Controller
 		}
 
 
-		list($objectName, $methodName) = explode('.', $method);
+		list($objectName, ) = explode('.', $method);
 
 		$objectController = $this->{$objectName}(false);
 
@@ -607,7 +607,7 @@ abstract class bab_Controller
 		} catch (bab_SaveException $e) {
 
 		    $failedAction = self::getRedirectAction('failed', $method);
-		    
+
 		    if (bab_isAjaxRequest()) {
 		        header($_SERVER['SERVER_PROTOCOL'] . ' 403 Forbidden', true, 403);
 		        header('Cache-Control: no-cache, must-revalidate');
@@ -619,7 +619,7 @@ abstract class bab_Controller
 		        )));
 		    }
 
-		    
+
 		    if ($e instanceof bab_SaveErrorException) {
 		        $this->addError($e->getMessage());
 		    } else {
