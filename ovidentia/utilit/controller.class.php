@@ -689,7 +689,7 @@ abstract class bab_Controller
 			header('Cache-Control: no-cache, must-revalidate');
 			header('Expires: Mon, 26 Jul 1997 05:00:00 GMT');
 			header('Content-type: application/json');
-			die(bab_json_encode($returnedArray));
+			die(bab_convertStringFromDatabase(bab_json_encode($returnedArray), bab_charset::UTF_8));
 
 		} else if (true === $returnedValue) {
 			// If the method returns true, we redirect to the 'success' location defined in the button
