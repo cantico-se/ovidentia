@@ -695,13 +695,19 @@ abstract class bab_Controller
 
 		} else if (true === $returnedValue) {
 			// If the method returns true, we redirect to the 'success' location defined in the button
+		    if (bab_isAjaxRequest()) {
+		        die;
+		    }
 
 		    $successAction = self::getRedirectAction('success', $method);
-			if (!isset($successAction)) {
+		    if (isset($successAction)) {
+		        $this->redirect($successAction);
+		    } else {
+
 				throw new Exception(sprintf('Missing the success action to redirect from %s', $method));
 			}
 
-			$this->redirect($successAction);
+
 		}
 
 		return $returnedValue;
