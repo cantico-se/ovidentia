@@ -681,10 +681,12 @@ abstract class bab_Controller
 
 			$htmlCanvas = $W->HtmlCanvas();
 			$returnedArray = array();
-			foreach ($returnedValue as $id => &$item) {
+			foreach ($returnedValue as $key => &$item) {
 				if ($item instanceof Widget_Displayable_Interface) {
 					$returnedArray[$item->getId()] = $item->display($htmlCanvas);
-				}
+				} else {
+                    $returnedArray[$key] = $item;
+                }
 			}
 			header('Cache-Control: no-cache, must-revalidate');
 			header('Expires: Mon, 26 Jul 1997 05:00:00 GMT');
