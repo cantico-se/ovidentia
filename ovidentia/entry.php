@@ -352,6 +352,8 @@ if(bab_isUserLogged()) {
     $idg = 1; // registered users
 }
 
+$babBody = bab_getBody();
+
 switch($idx)
     {
     case "getf":
@@ -415,4 +417,3 @@ switch($idx)
     }
 $babBody->setCurrentItemMenu($idx);
 
-?>
