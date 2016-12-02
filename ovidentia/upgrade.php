@@ -7300,6 +7300,21 @@ function ovidentia_upgrade($version_base,$version_ini) {
 	$functionalities->register('Home'				, $GLOBALS['babInstallPath'].'utilit/home.class.php');
 	$functionalities->register('Home/Ovidentia'		, $GLOBALS['babInstallPath'].'utilit/home.ovidentia.class.php');
 	
+	/**
+	 * Upgrade to 8.5.0
+	 */
+	if (!bab_isTableField('bab_sites', 'usecatcolor')){
+	    $babDB->db_query("ALTER TABLE `bab_sites` ADD `usecatcolor` ENUM( 'Y', 'N' ) NOT NULL default 'Y'");
+	}
+    if (!bab_isTableField('bab_cal_user_options', 'usecatcolor')){
+	    $babDB->db_query("ALTER TABLE `bab_cal_user_options` ADD `usecatcolor` ENUM( 'Y', 'N', 'D' ) NOT NULL default 'D'");
+	}
+	if (!bab_isTableField('bab_cal_resources', 'bgcolor')){
+	    $babDB->db_query("ALTER TABLE `bab_cal_resources` ADD `bgcolor` varchar(6) NOT NULL default ''");
+	}
+	if (!bab_isTableField('bab_cal_public', 'bgcolor')){
+	    $babDB->db_query("ALTER TABLE `bab_cal_public` ADD `bgcolor` varchar(6) NOT NULL default ''");
+	}
 
     return true;
 

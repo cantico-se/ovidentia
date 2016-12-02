@@ -801,6 +801,8 @@ CREATE TABLE bab_cal_resources (
   `id_dgowner` int(11) unsigned NOT NULL default '0',
   `idsa` int(11) unsigned NOT NULL default '0',
   `availability_lock` tinyint(1) unsigned default NULL,
+  bgcolor VARCHAR (6) NOT NULL default '',
+  
   PRIMARY KEY  (`id`),
   KEY `id_dgowner` (`id_dgowner`)
 );
@@ -1039,6 +1041,7 @@ CREATE TABLE `bab_sites` (
   `ask_nickname` tinyint(1) unsigned NOT NULL default '1' COMMENT 'ask for nickname is the email password functionality',
   `calendar_notif_author` ENUM('N','Y') DEFAULT 'N' NOT NULL,
   `auth_https` tinyint(1) unsigned NOT NULL default '0',
+  `usecatcolor` enum('Y','N') NOT NULL default 'Y',
   PRIMARY KEY  (`id`),
   KEY `name` (`name`)
 );
@@ -2368,6 +2371,7 @@ CREATE TABLE bab_cal_public (
   description varchar(255) NOT NULL default '',
   id_dgowner int(11) unsigned NOT NULL default '0',
   idsa int(11) unsigned NOT NULL default '0',
+  bgcolor VARCHAR (6) NOT NULL default '',
   PRIMARY KEY  (id),
   KEY id_dgowner (id_dgowner)
 );
@@ -2506,6 +2510,7 @@ CREATE TABLE bab_cal_user_options (
   show_onlydays_of_month enum('N','Y') NOT NULL default 'N',
   iDefaultCalendarAccess SMALLINT( 2 ) DEFAULT NULL,
   calendar_backend varchar(100) NOT NULL default '',
+  usecatcolor enum('Y','N','D') NOT NULL default 'D',
   PRIMARY KEY  (id),
   KEY id_user (id_user)
 );
