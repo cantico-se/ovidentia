@@ -320,7 +320,6 @@ class bab_icalendars
 				    }
 				}
 			}
-		var_dump($this);
 	}
 	
 	/**
