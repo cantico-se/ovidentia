@@ -387,6 +387,16 @@
 		</td>
 	</tr>
 	<tr> 
+        <td align="right">{ usecatcolor }</td>
+        <td> 
+            <select name="usecatcolor">
+                <option value="Y" <!--#if arr[usecatcolor] "== Y" -->selected<!--#endif arr[usebgcolor] -->>{ yes }</option>
+                <option value="N" <!--#if arr[usecatcolor] "== N" -->selected<!--#endif arr[usebgcolor] -->>{ no }</option>
+                <option value="D" <!--#if arr[usecatcolor] "== D" -->selected<!--#endif arr[usebgcolor] -->>{ defaultoption }</option>
+            </select>
+        </td>
+    </tr>
+	<tr> 
 		<td align="right">{ showupdateinfo }</td>
 		<td> 
 			<select name="showupdateinfo">
