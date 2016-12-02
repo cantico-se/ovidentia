@@ -970,6 +970,7 @@ class cal_wmdbaseCls
 		} else {
 			$this->bgcolor = '';
 		}
+		var_dump($calendar);
 		$doms = $calPeriod->getProperty('X-CTO-DOMAIN');
 		if($doms){
 			$doms = bab_getDomains($doms);

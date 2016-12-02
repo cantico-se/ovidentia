@@ -255,7 +255,7 @@ class bab_icalendars
 		$settings = bab_getInstance('bab_Settings');
 		/*@var $settings bab_Settings */
 		$site = $settings->getSiteSettings();
-
+		
 		$this->allday 			= $site['allday'];
 		$this->usebgcolor 		= $site['usebgcolor'];
 		$this->elapstime 		= $site['elapstime'];
@@ -268,6 +268,7 @@ class bab_icalendars
 		$this->calendar_backend = 'Ovi';
 		$this->bshowonlydaysofmonth = $site['show_onlydays_of_month'];
 		$this->user_calendarids = '';
+		$this->usecatcolor      = $site['usecatcolor'];
 		if( empty($iduser) && bab_getUserId())
 			{
 			$this->iduser = bab_getUserId();
@@ -312,9 +313,14 @@ class bab_icalendars
 					$this->calendar_backend = $arr['calendar_backend'];
 					}
 				$this->show_update_info = $arr['show_update_info'];
+				
+				if($arr['usecatcolor'] != 'D')
+				    {
+				    $this->usecatcolor = $arr['usecatcolor'];
+				    }
 				}
 			}
-		
+		var_dump($this);
 	}
 	
 	/**
