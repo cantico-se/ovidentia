@@ -962,11 +962,14 @@ class cal_wmdbaseCls
 		if ($cat) {
 			$this->bgcolor = $cat['bgcolor'];
 		} else if (bab_getICalendars()->usebgcolor == 'Y') {
-			$this->bgcolor = $calPeriod->getProperty('X-CTO-COLOR');
+			$backgroundColor = $calPeriod->getProperty('X-CTO-COLOR');
+			if(empty($backgroundColor)){
+			    $backgroundColor = $calendar->getBgcolor();
+			}
+            $this->bgcolor = $backgroundColor;
 		} else {
-			$this->bgcolor = '';
+			$this->bgcolor = $calendar->bgcolor;
 		}
-		
 		$doms = $calPeriod->getProperty('X-CTO-DOMAIN');
 		if($doms){
 			$doms = bab_getDomains($doms);
