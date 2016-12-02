@@ -537,6 +537,7 @@ function site_menu6($id)
             $this->t_endtimetxt = bab_translate("End time");
             $this->allday = bab_translate("On create new event, check all day");
             $this->usebgcolor = bab_translate("Use background color for events");
+            $this->usecatcolor = bab_translate("Use category color for events");
             $this->weeknumberstxt = bab_translate("Show week numbers");
             $this->elapstime = bab_translate("Time scale");
             $this->defaultview = bab_translate("Calendar default view");
@@ -611,7 +612,18 @@ function site_menu6($id)
                 $this->nusebgcolor = 'selected';
                 $this->yusebgcolor = '';
                 }
-
+            
+            if( $site['usecatcolor'] == 'Y')
+                {
+                $this->yusecatcolor = 'selected';
+                $this->nusecatcolor = '';
+                }
+            else 
+                {
+                $this->nusecatcolor = 'selected';
+                $this->yusecatcolor = '';
+                }
+                
             if( $site['show_update_info'] ==  'Y')
                 {
                 $this->yshowupdateinfo = 'selected';
@@ -2292,6 +2304,11 @@ function siteUpdate_menu6($item)
         $reqarr[] = "usebgcolor='".$babDB->db_escape_string($_POST['usebgcolor'])."'";
         }
 
+    if (isset($_POST['usecatcolor']) )
+        {
+        $reqarr[] = "usecatcolor='".$babDB->db_escape_string($_POST['usecatcolor'])."'";  
+        }
+        
     if (isset($_POST['elapstime']) )
         {
         $reqarr[] = "elapstime='".$babDB->db_escape_string($_POST['elapstime'])."'";
