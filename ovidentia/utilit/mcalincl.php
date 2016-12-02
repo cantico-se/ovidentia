@@ -968,7 +968,7 @@ class cal_wmdbaseCls
 			}
             $this->bgcolor = $backgroundColor;
 		} else {
-			$this->bgcolor = $calendar->bgcolor;
+			$this->bgcolor = '';
 		}
 		$doms = $calPeriod->getProperty('X-CTO-DOMAIN');
 		if($doms){
