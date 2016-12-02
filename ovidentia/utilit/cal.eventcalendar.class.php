@@ -85,6 +85,11 @@ abstract class bab_EventCalendar
 	 * Delegation
 	 */
 	protected $id_dgowner = null;
+	
+	/**
+	 * Background color
+	 */
+	protected $bgcolor = '';
 
 
 
@@ -225,6 +230,13 @@ abstract class bab_EventCalendar
 		$d = reset($arr);
 		
 		return $d['name'];
+	}
+	
+	/**
+	 * Get the background color
+	 */
+	public function getBgcolor(){
+	    return $this->bgcolor;
 	}
 	
 
@@ -736,6 +748,10 @@ abstract class bab_OviEventCalendar extends bab_EventCalendar
 
 		if (isset($data['id_dgowner'])) {
 			$this->id_dgowner = $data['id_dgowner'];
+		}
+		
+		if (isset($data['bgcolor'])) {
+		    $this->bgcolor    = $data['bgcolor'];
 		}
 	}
 
