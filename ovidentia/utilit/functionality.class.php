@@ -90,6 +90,12 @@ class bab_functionality {
      */
     public static function includeOriginal($path)
     {
+        $parentPath = dirname($path);
+        
+        if ('.' !== $parentPath && '/' !== $parentPath && !empty($parentPath)) {
+            self::includeOriginal($parentPath);
+        }
+        
         return self::includeFileIfExists($path, BAB_FUNCTIONALITY_LINK_ORIGINAL_FILENAME);
     }
 

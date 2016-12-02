@@ -44,7 +44,7 @@ class babBody
      * Messages to display on page
      *
      * @see babBody::addMessage();
-     * @var unknown_type
+     * @var string[]
      */
     public $messages = array();
 
@@ -59,7 +59,7 @@ class babBody
      * List of errors as text
      *
      * @see babBody::addError()
-     * @access public
+     * @var string[]
      */
     public $errors = array();
 
@@ -554,11 +554,11 @@ class babBody
     public function addMenu($nodeId)
     {
         $sitemap = bab_sitemap::getFromSite();
-        
+
         if (!isset($sitemap)) {
             return null;
         }
-        
+
         $node = $sitemap->getNodeById('babAdminInstall');
 
         if (isset($node) && $node->hasChildNodes()) {
