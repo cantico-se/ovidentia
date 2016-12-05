@@ -47,7 +47,7 @@ class cal_dayCls extends cal_wmdbaseCls
 
 		$time1 = mktime( 0,0,0, $this->month, $this->day, $this->year);
 		$time2 = mktime( 0,0,0, $this->month, $this->day + 1, $this->year);
-		
+
 		$this->cdate = sprintf("%04s-%02s-%02s", date("Y", $time1), date("n", $time1), date("j", $time1));
 		$this->dayname = bab_toHtml(bab_longDate($time1, false));
 		$this->week = bab_toHtml(bab_translate("week").' '.date('W',$time1));
@@ -57,23 +57,23 @@ class cal_dayCls extends cal_wmdbaseCls
 
 		$this->eventlisturl = bab_toHtml( $GLOBALS['babUrlScript']."?tg=calendar&idx=eventlist&calid=".$this->currentidcals."&from=".date('Y,n,j',$time1)."&to=".date('Y,n,j',$time2));
 		$this->neweventurl = bab_toHtml($GLOBALS['babUrlScript']."?tg=event&idx=newevent&date=".$this->year.",".$this->month.",".$this->day."&calid=".implode(',',$this->idcals)."&view=viewd");
-		
+
 		$this->alternate = false;
 		$this->cindex = 0;
 
 
-		
+
 		$this->bfirstevents = array();
-		
+
 		}
 
 
 		function prepare_events() {
 			$this->mcals = new bab_mcalendars($this->iso_time1, $this->iso_time2, $this->idcals);
 			$this->harray = array();
-			
+
 			$this->mcals->getHtmlArea('bab_NonWorkingDaysCollection', $this->cdate." 00:00:00", $this->cdate." 23:59:59", $this->harray['bab_NonWorkingDaysCollection']);
-			
+
 			foreach($this->idcals as $calendarId )
 				{
 				$this->mcals->getHtmlArea($calendarId, $this->cdate." 00:00:00", $this->cdate." 23:59:59", $this->harray[$calendarId]);
@@ -82,7 +82,7 @@ class cal_dayCls extends cal_wmdbaseCls
 
 		function prepare_free_events() {
 			$this->prepare_events();
-			
+
 			$this->whObj = bab_mcalendars::create_events($this->iso_time1, $this->iso_time2, $this->idcals);
 		}
 
@@ -132,8 +132,8 @@ class cal_dayCls extends cal_wmdbaseCls
 				return false;
 				}
 			}
-			
-			
+
+
 	function getnextcollection()
 		{
 		if(list(,$this->calendarId) = each($this->collections))
@@ -141,14 +141,14 @@ class cal_dayCls extends cal_wmdbaseCls
 			$this->cols = count($this->harray[$this->calendarId]);
 
 			$this->icols = 0;
-			
+
 			if ($this->cols) {
 				$this->cindex++;
 			}
-			
+
 			return true;
 			}
-			
+
 		reset($this->collections);
 		reset($this->idcals);
 		return false;
@@ -160,11 +160,12 @@ class cal_dayCls extends cal_wmdbaseCls
 		if(list(,$this->calendarId) = each($this->idcals))
 			{
 			$calname = $this->mcals->getCalendarName($this->calendarId);
+			$this->currentCalendar = $this->mcals->getCalendar($this->calendarId);
 
 			$this->fullname = bab_toHtml($calname);
 			$this->fullnameten = bab_toHtml($this->calstr($calname,BAB_CAL_NAME_LENGTH));
 			$this->cols = count($this->harray[$this->calendarId]);
-			
+
 			if (0 == $this->cols) {
 				// display the column if no event in it
 				$this->cols = 1;
@@ -181,8 +182,8 @@ class cal_dayCls extends cal_wmdbaseCls
 			return false;
 			}
 		}
-		
-	
+
+
 
 	function getnexteventcol()
 		{
@@ -197,7 +198,7 @@ class cal_dayCls extends cal_wmdbaseCls
 					{
 					$calPeriod = & $this->harray[$this->calendarId][$this->icols][$i];
 
-					if( $calPeriod->ts_end > bab_mktime($this->startdt) && 
+					if( $calPeriod->ts_end > bab_mktime($this->startdt) &&
 						$calPeriod->ts_begin < bab_mktime($this->enddt) )
 						{
 						$this->createCommonEventVars($calPeriod);
@@ -211,7 +212,7 @@ class cal_dayCls extends cal_wmdbaseCls
 							$this->first=0;
 							}
 						$this->bevent = true;
-						
+
 						}
 					$i++;
 					}
@@ -259,7 +260,7 @@ class cal_dayCls extends cal_wmdbaseCls
 			return false;
 			}
 		}
-	}	
+	}
 
 
 function cal_day($calids, $date, $starttime)
@@ -286,7 +287,7 @@ function searchAvailability($calid, $date, $date0, $date1, $gap, $bopt)
 	if( empty($date0) || empty($date1))
 	{
 		$rr = explode(',', $date);
-		$time = 
+		$time =
 
 		$date0 = date("Y,n,j", mktime(0,0,0, $rr[1], 1, $rr[0]));
 		$date1 = date("Y,n,j", mktime(0,0,0, (int)($rr[1])+1, 0, $rr[0]));
@@ -313,14 +314,14 @@ switch($idx)
 		$babBody->title = bab_translate("Search free events");
 		$babBody->addItemMenu("view", bab_translate("Calendar"), $GLOBALS['babUrlScript']."?tg=calday&calid=".$calid."&date=".$date);
 		$babBody->addItemMenu("free", bab_translate("Availability"), $GLOBALS['babUrlScript']."?tg=calday&idx=free&calid=".$calid."&date=".$date);
-		$babBody->addItemMenu("rfree", bab_translate("Search"), $GLOBALS['babUrlScript']."?tg=calday&idx=rfree&calid=".$calid."&date=".$date);	
+		$babBody->addItemMenu("rfree", bab_translate("Search"), $GLOBALS['babUrlScript']."?tg=calday&idx=rfree&calid=".$calid."&date=".$date);
 
 		searchAvailability(
-			$calid, 
-			$date, 
-			bab_rp('date0'), 
-			bab_rp('date1'), 
-			bab_rp('gap',0), 
+			$calid,
+			$date,
+			bab_rp('date0'),
+			bab_rp('date1'),
+			bab_rp('gap',0),
 			bab_rp('bopt','Y')
 		);
 		break;
