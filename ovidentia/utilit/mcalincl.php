@@ -663,6 +663,7 @@ class cal_wmdbaseCls
 	public $idcals;
 
 	/**
+	 * The calendar being currently displayed.
 	 * @var bab_EventCalendar
 	 */
 	public $currentCalendar = null;
@@ -979,85 +980,22 @@ class cal_wmdbaseCls
 
 		$this->category = bab_toHtml($calPeriod->getValue('CATEGORIES'));
 
-		$calendarProperties = bab_getICalendars();
-		if($calendarProperties->usebgcolor == 'Y'){//We want to show the color of events
-		    $backgroundColor = $calPeriod->getProperty('X-CTO-COLOR'); //Get the custom color of the event
-		    if(!empty($backgroundColor)){//The event has a custom color
-		        $this->bgcolor = $backgroundColor;
-		    }
-		    else{
-		        if($calendarProperties->usecatcolor == 'Y'){//We want to show the category color instead of the agenda color
-		            if($cat){//The event has a category
-		                $this->bgcolor = $cat['bgcolor'];
-		            }
-		            else{
-		                $backgroundColor = $calendar->getBgcolor();//Get the agenda color
-		                if(!empty($backgroundColor)){//The agenda has a color
-		                    $this->bgcolor = $backgroundColor;
-		                }
-		                else{
-		                    $this->bgcolor = '';
-		                }
-		            }
-		        }
-		        else{//We want to show the agenda color
-		            $backgroundColor = $calendar->getBgcolor();//Get the agenda color
-		            if(!empty($backgroundColor)){//The agenda has a color
-		                $this->bgcolor = $backgroundColor;
-		            }
-		            else{
-		                if($cat){//The event has a category
-		                    $this->bgcolor = $cat['bgcolor'];
-		                }
-		                else{
-		                    $this->bgcolor = '';
-		                }
-		            }
-		        }
-		    }
-		}
-		else{//We do not want to show the color of events
-		    if($calendarProperties->usecatcolor == 'Y'){//We want to show the category color instead of the agenda color
-		        if($cat){//The event has a category
-		            $this->bgcolor = $cat['bgcolor'];
-		        }
-		        else{
-		            $backgroundColor = $calendar->getBgcolor();//Get the agenda color
-		            if(!empty($backgroundColor)){//The agenda has a color
-		                $this->bgcolor = $backgroundColor;
-		            }
-		            else{
-		                $this->bgcolor = '';
-		            }
-		        }
-		    }
-		    else{//We want to show the agenda color
-		        $backgroundColor = $calendar->getBgcolor();//Get the agenda color
-		        if(!empty($backgroundColor)){//The agenda has a color
-		            $this->bgcolor = $backgroundColor;
-		        }
-		        else{
-		            if($cat){//The event has a category
-		                $this->bgcolor = $cat['bgcolor'];
-		            }
-		            else{
-		                $this->bgcolor = '';
-		            }
-		        }
-		    }
-		}
+        $calendarProperties = bab_getICalendars();
 
-// 		if ($cat) {
-// 			$this->bgcolor = $cat['bgcolor'];
-// 		} else if (bab_getICalendars()->usebgcolor == 'Y') {
-// 			$backgroundColor = $calPeriod->getProperty('X-CTO-COLOR');
-// 			if(empty($backgroundColor)){
-// 			    $backgroundColor = $calendar->getBgcolor();
-// 			}
-//             $this->bgcolor = $backgroundColor;
-// 		} else {
-// 			$this->bgcolor = '';
-// 		}
+        $this->bgcolor = '';
+        $eventBackgroundColor = $calPeriod->getProperty('X-CTO-COLOR');
+        $calendarBackgroundColor = $this->currentCalendar->getBgcolor();
+
+        if ($calendarProperties->usebgcolor == 'Y' && !empty($eventBackgroundColor)) {
+            // We want to show the event specific color and the event has a specific color
+            $this->bgcolor = $eventBackgroundColor;
+        } elseif ($calendarProperties->usecatcolor == 'Y' && isset($cat['bgcolor']) && !empty($cat['bgcolor'])) {
+            // We want to show the event category color and the event has a category
+            $this->bgcolor = $cat['bgcolor'];
+        } else {
+            // Use the calendar color
+            $this->bgcolor = $calendarBackgroundColor;
+        }
 
 		$doms = $calPeriod->getProperty('X-CTO-DOMAIN');
 		if($doms){
