@@ -27,17 +27,17 @@ require_once dirname(__FILE__).'/session.class.php';
 /**
  * CSRF protection for all requests other than GET
  * isRequestValid() need to be called on each request
- * 
+ * @since 8.4.91
  */
 class bab_CsrfProtect
 {
-    
+
     /**
-     * 
+     *
      * @var string
      */
     const FIELDNAME = 'babCsrfProtect';
-    
+
     /**
      * Get token to put in forms hidden fields
      * @return string
@@ -48,11 +48,11 @@ class bab_CsrfProtect
         if (!isset($session->bab_CsrfProtectToken)) {
             $session->bab_CsrfProtectToken = uniqid('bab', true);
         }
-        
+
         return $session->bab_CsrfProtectToken;
     }
-    
-    
+
+
     /**
      * Validate CSRF token on all requests other than GET
      * @return boolean
@@ -62,34 +62,34 @@ class bab_CsrfProtect
         if (php_sapi_name() === 'cli') {
             return true;
         }
-        
+
         if ('GET' === $_SERVER['REQUEST_METHOD']) {
             return true;
         }
-        
+
         if (defined('BAB_CSRF_PROTECT') && false === BAB_CSRF_PROTECT) {
             return true;
         }
-        
+
         $token = bab_pp(self::FIELDNAME, null);
-        
+
         if (!isset($token)) {
             return false;
         }
-        
+
         $session = bab_getInstance('bab_Session');
         if (!isset($session->bab_CsrfProtectToken)) {
             return false;
         }
-        
+
         if ($session->bab_CsrfProtectToken !== $token) {
             return false;
         }
-        
+
         // this unset force a new token for each post
         // prevent double submit
         // unset($session->bab_CsrfProtectToken);
-        
+
         return true;
     }
 }
