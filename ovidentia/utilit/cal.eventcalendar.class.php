@@ -85,9 +85,10 @@ abstract class bab_EventCalendar
 	 * Delegation
 	 */
 	protected $id_dgowner = null;
-	
+
 	/**
 	 * Background color
+	 * @since 8.5.92
 	 */
 	protected $bgcolor = '';
 
@@ -207,7 +208,7 @@ abstract class bab_EventCalendar
 	{
 		return $this->id_dgowner;
 	}
-	
+
 	/**
 	 * Get delegation name or null if no delegation
 	 * @return string
@@ -218,27 +219,29 @@ abstract class bab_EventCalendar
 		{
 			return null;
 		}
-		
+
 		require_once dirname(__FILE__).'/delegincl.php';
 		$arr = bab_getDelegationById($this->id_dgowner);
-		
+
 		if (count($arr) != 1)
 		{
 			return null;
 		}
-		
+
 		$d = reset($arr);
-		
+
 		return $d['name'];
 	}
-	
+
 	/**
 	 * Get the background color
+	 *
+	 *  @since 8.5.92
 	 */
 	public function getBgcolor(){
 	    return $this->bgcolor;
 	}
-	
+
 
 	/**
 	 * Test if the calendar is visisble in a delegation
@@ -340,7 +343,7 @@ abstract class bab_EventCalendar
 			// no author, consider the calendar owner as the event author
 			$author = $this->getIdUser();
 		}
-		
+
 		// if in a waiting state
 		if (!$event->WfInstanceAccess($this->access_user))
 		{
@@ -621,22 +624,22 @@ abstract class bab_EventCalendar
 		if ($calendar instanceof bab_PersonalCalendar)
 		{
 			$attendees = $event->getAttendees();
-			
+
 			if (!isset($attendees[$mainCalendar]) && $mainCalendar === $placeholderCalendar) {
 			    // the main calendar of event is not in attendees
 			    return true;
 			}
-			
-			
+
+
 			foreach($attendees as $attendee) {
 				if ($attendee['calendar']->getUrlIdentifier() === $placeholderCalendar && $attendee['AttendeeBackend']->getRealPartstat() !== 'DECLINED')
 				{
 					return true;
 				}
 			}
-			
+
 		} else {
-		    
+
 			$relations = $event->getRelations();
 			foreach($relations as $relation)
 			{
@@ -749,7 +752,7 @@ abstract class bab_OviEventCalendar extends bab_EventCalendar
 		if (isset($data['id_dgowner'])) {
 			$this->id_dgowner = $data['id_dgowner'];
 		}
-		
+
 		if (isset($data['bgcolor'])) {
 		    $this->bgcolor    = $data['bgcolor'];
 		}
@@ -828,20 +831,20 @@ class bab_OviPersonalCalendar extends bab_OviEventCalendar implements bab_Person
 			$this->init($access_user, $data);
 			return true;
 		}
-		
+
 		static $cache = array();
 
 		if (!isset($cache[$access_user]))
 		{
 
 			$query = "
-				select 
+				select
 					u.id id_user,
 					cut.id_cal,
 					cut.bwrite,
 					u.firstname,
 					u.lastname
-	
+
 				from ".BAB_CALACCESS_USERS_TBL." cut
 					,".BAB_CALENDAR_TBL." ct
 					,".BAB_USERS_TBL." u
@@ -849,19 +852,19 @@ class bab_OviPersonalCalendar extends bab_OviEventCalendar implements bab_Person
 					ct.id=cut.id_cal
 					and u.id=ct.owner
 					and ct.actif='Y'
-					and ".bab_userInfos::queryAllowedUsers('u')." 
+					and ".bab_userInfos::queryAllowedUsers('u')."
 					and cut.id_user=".$babDB->quote($access_user);
-			
+
 			$res = $babDB->db_query($query);
-			
+
 			while ($arr = $babDB->db_fetch_assoc($res))
 			{
 				$cache[$access_user][$arr['id_user']] = $arr;
 			}
-		
-		} 
-			
-		
+
+		}
+
+
 
 
 		if (isset($cache[$access_user][$id_user]))
@@ -884,7 +887,7 @@ class bab_OviPersonalCalendar extends bab_OviEventCalendar implements bab_Person
 
 			return true;
 		}
-		
+
 
 		// the calendar is not accessible
 
@@ -1117,7 +1120,7 @@ class bab_OviPersonalCalendar extends bab_OviEventCalendar implements bab_Person
 		return 'NEEDS-ACTION';
 	}
 
-	
+
 
 
 
@@ -1319,7 +1322,7 @@ class bab_OviPublicCalendar extends bab_OviRelationCalendar implements bab_Publi
 	 * @return bool
 	 */
 	public function canAddEvent() {
-		
+
 		return bab_isAccessValid(BAB_CAL_PUB_MAN_GROUPS_TBL, $this->uid, $this->access_user);
 	}
 
@@ -1405,13 +1408,13 @@ class bab_OviResourceCalendar extends bab_OviRelationCalendar implements bab_Res
 			return true;
 		}
 
-		
+
 		if (null !== $event->getWfInstance($this))
 		{
 			// prevent modification if there is an ongoing approbation instance on event
 			return false;
 		}
-		
+
 		return bab_isAccessValid(BAB_CAL_RES_MAN_GROUPS_TBL, $this->uid, $this->access_user);
 	}
 
