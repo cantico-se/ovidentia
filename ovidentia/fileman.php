@@ -759,7 +759,7 @@ class DisplayFolderFormBase extends BAB_BaseFormProcessing
     function handleEdition()
     {
         $sDirName = null;
-        
+
         $this->get_data('sDirName', $sDirName);
         $this->set_data('sOldDirName', $sDirName);
     }
@@ -946,8 +946,8 @@ class DisplayCollectiveFolderForm extends DisplayFolderFormBase
             $sAddTags				= (string) $oFmFolder->getAddTags();
             $sDownloadsCapping		= (string) $oFmFolder->getDownloadsCapping();
             $sDownloadHistory		= (string) $oFmFolder->getDownloadHistory();
-			
-			
+
+
             $this->iApprobationSchemeId = $iIdApprobationScheme;
             $this->set_data('isCollective', true);
             $this->set_data('isActive', ('Y' === $sActive) ? true : false);
@@ -4241,7 +4241,8 @@ function createFolderForCollectiveDir()
     if(canCreateFolder($oFileManagerEnv->sRelativePath))
     {
         $sDirName = (string) bab_pp('sDirName', '');
-        if(mb_strlen(trim($sDirName)) > 0)
+        $sDirName = trim($sDirName);
+        if(mb_strlen($sDirName) > 0)
         {
             $sType					= (string) bab_pp('sType', 'collective');
             $sActive				= (string) bab_pp('sActive', 'Y');
@@ -4324,7 +4325,8 @@ function createFolderForUserDir()
     if(canCreateFolder($oFileManagerEnv->sRelativePath))
     {
         $sDirName = (string) bab_pp('sDirName', '');
-        if(mb_strlen(trim($sDirName)) > 0)
+        $sDirName = trim($sDirName);
+        if(mb_strlen($sDirName) > 0)
         {
 //			bab_debug('sFullPathName ==> ' .  $sFullPathName);
 //			bab_debug('sRelativePath ==> ' . $oFileManagerEnv->sRelativePath);
@@ -4845,7 +4847,7 @@ switch($sAction)
                 $optionsReadonly[] = 'N';
             }
         }
-        
+
         bab_requireSaveMethod();
 
         $bSuccess = saveFile($aFiles, $oFileManagerEnv->iId, $oFileManagerEnv->sGr,
