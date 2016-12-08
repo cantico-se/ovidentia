@@ -4389,7 +4389,8 @@ function editFolderForCollectiveDir()
     {
 //bab_debug('Rajouter un test qui permet d\'etre que c\'est repertoire collectif ou pas');
         $sDirName = (string) bab_pp('sDirName', '');
-        if(mb_strlen(trim($sDirName)) > 0)
+        $sDirName = trim($sDirName);
+        if(mb_strlen($sDirName) > 0)
         {
             $sType				= (string) bab_pp('sType', 'collective');
             $iIdFld				= (int) bab_pp('iIdFolder', 0);
@@ -4562,9 +4563,11 @@ function editFolderForUserDir()
     if(canCreateFolder($oFileManagerEnv->sRelativePath))
     {
         $sDirName = (string) bab_pp('sDirName', '');
+        $sDirName = trim($sDirName);
         $sOldDirName = (string) bab_pp('sOldDirName', '');
+        $sOldDirName = trim($sOldDirName);
 
-        if(mb_strlen(trim($sDirName)) > 0 && mb_strlen(trim($sOldDirName)) > 0)
+        if(mb_strlen($sDirName) > 0 && mb_strlen($sOldDirName) > 0)
         {
             $sPathName = $sRelativePath . $sOldDirName . '/';
             $sRootFmPath = $oFileManagerEnv->getRootFmPath();
