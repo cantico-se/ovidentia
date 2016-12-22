@@ -461,7 +461,7 @@ function bab_listWaitingArticles(bab_eventBeforeWaitingItemsDisplayed $event)
     while( $arr = $babDB->db_fetch_assoc($res) )
     {
 
-        $artdate = $arr['date_submission'] == '0000-00-00 00:00:00' ? '' : $W->Label(bab_shortDate(bab_mktime($arr['date_submission']), true));
+        $artdate = $arr['date_submission'] == '0000-00-00 00:00:00' ? $W->Label('') : $W->Label(bab_shortDate(bab_mktime($arr['date_submission']), true));
         $artpath = $W->Html(viewCategoriesHierarchy_txt($arr['id_topic']));
         $author = $W->Label(bab_getUserName($arr['id_author']));
         $confirmurl = $GLOBALS['babUrlScript']."?tg=approb&idx=confart&idart=".$arr['id'];
