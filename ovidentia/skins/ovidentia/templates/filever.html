@@ -3,27 +3,27 @@
 <script type="text/javascript">
 <!--
 function checkMaxLength(obj)
-	{
-	if ( obj.value.length > 255 )
-		obj.value = obj.value.substring(0,255);
-	return true;
-	}
+    {
+    if ( obj.value.length > 255 )
+        obj.value = obj.value.substring(0,255);
+    return true;
+    }
 //-->
 </script>
 
 <!--#if bunlocklock -->
 
 <table class="BabLoginMenuBackground" width="50%" border="0" cellspacing="0" cellpadding="2" align="center">
-<tr> 
-<td> 
-	<table class="" width="100%" border="0" cellspacing="0" cellpadding="5" align="center">
-	<tr> 
-		<td class="BabErrorMessage" colspan="2" align="center">{ warningmsg } </td>
-	</tr>
-	<tr align="left" valign="middle">
-		<td class="BabWarningBodyBackground" colspan="2" align="center"><a href="javascript:this.close()">{ close }</a> </td>
-	</tr>
-	</table>
+<tr>
+<td>
+    <table class="" width="100%" border="0" cellspacing="0" cellpadding="5" align="center">
+    <tr>
+        <td class="BabErrorMessage" colspan="2" align="center">{ warningmsg } </td>
+    </tr>
+    <tr align="left" valign="middle">
+        <td class="BabWarningBodyBackground" colspan="2" align="center"><a href="javascript:this.close()">{ close }</a> </td>
+    </tr>
+    </table>
 </td>
 </tr>
 </table>
@@ -44,27 +44,27 @@ function checkMaxLength(obj)
 
 <table width="95%" border="0" cellspacing="0" cellpadding="2" align="center">
 <tr>
-<td class="BabLoginCadreBackground"> 
-	<table class="BabLoginMenuBackground" width="100%" border="0" cellspacing="0" cellpadding="5" align="center">
-	<tr>
-		<td align="right" width="30%">{ foldertxt }:</td>
-		<td>{ foldername }</td>
-	</tr>
-	<tr>
-		<td align="right">{ pathtxt }:</td>
-		<td>{ pathname }</td>
-	</tr>
-	<tr>
-		<td align="right">{ commenttxt }:</td>
-		<td><textarea cols="40" rows="10" name="comment" onkeyup="checkMaxLength(this);"></textarea>
-	</td>
-	</tr>
-	<tr>
-		<td>&nbsp;</td>
-		<td><input type="submit" name="block" value="{ lock }" />
-	</td>
-	</tr>
-	</table>
+<td class="BabLoginCadreBackground">
+    <table class="BabLoginMenuBackground" width="100%" border="0" cellspacing="0" cellpadding="5" align="center">
+    <tr>
+        <td align="right" width="30%">{ foldertxt }:</td>
+        <td>{ foldername }</td>
+    </tr>
+    <tr>
+        <td align="right">{ pathtxt }:</td>
+        <td>{ pathname }</td>
+    </tr>
+    <tr>
+        <td align="right">{ commenttxt }:</td>
+        <td><textarea cols="40" rows="10" name="comment" onkeyup="checkMaxLength(this);"></textarea>
+    </td>
+    </tr>
+    <tr>
+        <td>&nbsp;</td>
+        <td><input type="submit" name="block" value="{ lock }" />
+    </td>
+    </tr>
+    </table>
 </td>
 </tr>
 </table>
@@ -84,18 +84,24 @@ function checkMaxLength(obj)
 <script type="text/javascript">
 <!--
 window.focus();
+
+function bab_unload(){
+    window.opener.document.location.href='{ redirecturl }';
+};
+
+window.onunload = bab_unload();
 //-->
 </script>
 
 </HEAD>
-<body onunload="javascript:this.opener.location.href='{ redirecturl }';">
+<body>
 <br><br><br><br>
 
 <table class="BabLoginMenuBackground" width="50%" border="0" cellspacing="0" cellpadding="2" align="center">
-<tr> 
-<td> 
+<tr>
+<td>
 <table class="" width="100%" border="0" cellspacing="0" cellpadding="5" align="center">
-<tr> 
+<tr>
 <td class="BabErrorMessage" colspan="2" align="center">{ message } </td>
 </tr>
 <tr align="left" valign="middle">
@@ -108,7 +114,7 @@ window.focus();
 <br>
 
 <script type="text/javascript">
-	setTimeout("this.close()","1000");
+    setTimeout("this.close()","1000");
 </script>
 
 </body>
@@ -118,51 +124,51 @@ window.focus();
 <!--#begin filehistoric -->
 
 <table width="95%" border="0" cellspacing="0" cellpadding="2" align="center">
-<tr> 
-<td class="BabLoginCadreBackground"> 
-	<table width="100%" border="0" cellspacing="0" cellpadding="5" align="center">
-	<tr class="BabSiteAdminTitleFontBackground"> 
-		<td>&nbsp;</td>
-		<td>{ versiontxt }</td>
-		<td>{ datetxt }</td>
-		<td>{ hourtxt }</td>
-		<td>{ authortxt }</td>
-		<td>{ commenttxt }</td>
-	</tr> 
-	<!--#in getnextlog -->
-	<!--#if altbg --><tr class="BabSiteAdminFontBackground"><!--#else altbg --><tr class="BabForumBackground1"><!--#endif altbg -->
-		<td>
-		<!--#if action "== 1" -->
-		<img src="{ babSkinPath }images/Puces/FileLock.gif" alt="" border="0" />
-		<!--#endif action -->
-		<!--#if action "== 2" -->
-		<img src="{ babSkinPath }images/Puces/FileUnlock.gif" alt="" border="0" />
-		<!--#endif action -->
-		</td>
-		<td>{ version }</td>
-		<td>{ date }</td>
-		<td>{ hour }</td>
-		<td>{ author }</td>
-		<td>{ comment }</td>
-		<!--#if index -->
-		<td>{ index_status }</td>
-		<!--#endif index -->
-	</tr>
-	<!--#endin getnextlog -->
-	<tr > 
-	<td colspan="6" class="BabSiteAdminTitleFontBackground">
-		<table border="0" width="100%" cellpadding="0" cellspacing="0" align="center">
-			<tr> 
-			<td width="1%"><a href="{ topurl }">{ topname }</a> &nbsp; </td>
-			<td width="1%"><a href="{ prevurl }">{ prevname }</a> &nbsp; </td>
-			<td width="1%"><a href="{ nexturl }">{ nextname }</a> &nbsp; </td>
-			<td width="1%"><a href="{ bottomurl }">{ bottomname }</a> &nbsp; </td>
-			<td width="96%">&nbsp;</td>
-			</tr>
-		</table>
-	</td>
-	</tr> 
-	</table>
+<tr>
+<td class="BabLoginCadreBackground">
+    <table width="100%" border="0" cellspacing="0" cellpadding="5" align="center">
+    <tr class="BabSiteAdminTitleFontBackground">
+        <td>&nbsp;</td>
+        <td>{ versiontxt }</td>
+        <td>{ datetxt }</td>
+        <td>{ hourtxt }</td>
+        <td>{ authortxt }</td>
+        <td>{ commenttxt }</td>
+    </tr>
+    <!--#in getnextlog -->
+    <!--#if altbg --><tr class="BabSiteAdminFontBackground"><!--#else altbg --><tr class="BabForumBackground1"><!--#endif altbg -->
+        <td>
+        <!--#if action "== 1" -->
+        <img src="{ babSkinPath }images/Puces/FileLock.gif" alt="" border="0" />
+        <!--#endif action -->
+        <!--#if action "== 2" -->
+        <img src="{ babSkinPath }images/Puces/FileUnlock.gif" alt="" border="0" />
+        <!--#endif action -->
+        </td>
+        <td>{ version }</td>
+        <td>{ date }</td>
+        <td>{ hour }</td>
+        <td>{ author }</td>
+        <td>{ comment }</td>
+        <!--#if index -->
+        <td>{ index_status }</td>
+        <!--#endif index -->
+    </tr>
+    <!--#endin getnextlog -->
+    <tr >
+    <td colspan="6" class="BabSiteAdminTitleFontBackground">
+        <table border="0" width="100%" cellpadding="0" cellspacing="0" align="center">
+            <tr>
+            <td width="1%"><a href="{ topurl }">{ topname }</a> &nbsp; </td>
+            <td width="1%"><a href="{ prevurl }">{ prevname }</a> &nbsp; </td>
+            <td width="1%"><a href="{ nexturl }">{ nextname }</a> &nbsp; </td>
+            <td width="1%"><a href="{ bottomurl }">{ bottomname }</a> &nbsp; </td>
+            <td width="96%">&nbsp;</td>
+            </tr>
+        </table>
+    </td>
+    </tr>
+    </table>
 </td>
 </tr>
 </table>
@@ -181,11 +187,11 @@ window.focus();
 <input type="hidden" name="afile" value="cleanlog" />
 <input type="hidden" name="idf" value="{ idf }" />
 <table class="BabLoginMenuBackground"  border="0" cellspacing="0" cellpadding="5" align="center">
-	<tr>
-		<td  align="right">{ datetxt2 }</td>
-		<td><input type="text" name="date" size="10" maxlength="10" value="" /></td>
-		<td><input type="submit" name="cleanl" value="{ cleantxt }" /></td>
-	</tr>
+    <tr>
+        <td  align="right">{ datetxt2 }</td>
+        <td><input type="text" name="date" size="10" maxlength="10" value="" /></td>
+        <td><input type="submit" name="cleanl" value="{ cleantxt }" /></td>
+    </tr>
 </table>
 </form>
 <!--#endif bmanager -->
@@ -197,27 +203,27 @@ window.focus();
 <script type="text/javascript">
 <!--
 function checkMaxLength(obj)
-	{
-	if ( obj.value.length > 255 )
-		obj.value = obj.value.substring(0,255);
-	return true;
-	}
+    {
+    if ( obj.value.length > 255 )
+        obj.value = obj.value.substring(0,255);
+    return true;
+    }
 //-->
 </script>
 
 <!--#if bunlocklock -->
 
 <table class="BabLoginMenuBackground" width="50%" border="0" cellspacing="0" cellpadding="2" align="center">
-<tr> 
-<td> 
-	<table class="" width="100%" border="0" cellspacing="0" cellpadding="5" align="center">
-	<tr> 
-		<td class="BabErrorMessage" colspan="2" align="center">{ warningmsg } </td>
-	</tr>
-	<tr align="left" valign="middle">
-		<td class="BabWarningBodyBackground" colspan="2" align="center"><a href="javascript:this.close()">{ close }</a> </td>
-	</tr>
-	</table>
+<tr>
+<td>
+    <table class="" width="100%" border="0" cellspacing="0" cellpadding="5" align="center">
+    <tr>
+        <td class="BabErrorMessage" colspan="2" align="center">{ warningmsg } </td>
+    </tr>
+    <tr align="left" valign="middle">
+        <td class="BabWarningBodyBackground" colspan="2" align="center"><a href="javascript:this.close()">{ close }</a> </td>
+    </tr>
+    </table>
 </td>
 </tr>
 </table>
@@ -235,40 +241,40 @@ function checkMaxLength(obj)
 <br />
 <table width="95%" border="0" cellspacing="0" cellpadding="2" align="center">
 <tr>
-<td class="BabLoginCadreBackground"> 
-	<table class="BabLoginMenuBackground" width="100%" border="0" cellspacing="0" cellpadding="5" align="center">
-		<tr>
-		<td align="right" width="30%">{ filetxt }:</td>
-		<td><input type="file" name="uploadf" size="50" maxlength="255" value="" /></td>
-		</tr>
-		<tr>
-		<td align="right">{ commenttxt }:</td>
-		<td><textarea cols="40" rows="10" name="comment" onkeyup="checkMaxLength(this);" id="comment"></textarea>
-		</td>
-		</tr>
-		<tr>
-		<td align="right">{ versiontxt }:</td>
-		<td>
-			<select name="vermajor">
-			  <option value="N">{ no }</option>
-			  <option value="Y">{ yes }</option>
-			</select>
-		</td>
-		</tr>
-		<tr>
-		<!--<td align="right">{ nametxt }:</td>
-		<td>
-			<select name="filename">
-			  <option value="N">{ no }</option>
-			  <option value="Y">{ yes }</option>
-			</select>
-		</td>
-		</tr>
-		<tr>-->
-			<td align="right">&nbsp;</td>
-			<td align="left"><input type="submit" name="bcommit" value="{ commit }" /></td>
-		</tr>
-	</table>
+<td class="BabLoginCadreBackground">
+    <table class="BabLoginMenuBackground" width="100%" border="0" cellspacing="0" cellpadding="5" align="center">
+        <tr>
+        <td align="right" width="30%">{ filetxt }:</td>
+        <td><input type="file" name="uploadf" size="50" maxlength="255" value="" /></td>
+        </tr>
+        <tr>
+        <td align="right">{ commenttxt }:</td>
+        <td><textarea cols="40" rows="10" name="comment" onkeyup="checkMaxLength(this);" id="comment"></textarea>
+        </td>
+        </tr>
+        <tr>
+        <td align="right">{ versiontxt }:</td>
+        <td>
+            <select name="vermajor">
+              <option value="N">{ no }</option>
+              <option value="Y">{ yes }</option>
+            </select>
+        </td>
+        </tr>
+        <tr>
+        <!--<td align="right">{ nametxt }:</td>
+        <td>
+            <select name="filename">
+              <option value="N">{ no }</option>
+              <option value="Y">{ yes }</option>
+            </select>
+        </td>
+        </tr>
+        <tr>-->
+            <td align="right">&nbsp;</td>
+            <td align="left"><input type="submit" name="bcommit" value="{ commit }" /></td>
+        </tr>
+    </table>
 </td>
 </tr>
 </table>
@@ -295,29 +301,29 @@ function checkMaxLength(obj)
 <br>
 <table width="95%" border="0" cellspacing="0" cellpadding="2" align="center">
 <tr>
-	<td class="BabLoginCadreBackground"> 
-		<table class="BabLoginMenuBackground" width="100%" border="0" cellspacing="0" cellpadding="5" align="center">
-		<tr>
-			<td align="right" width="30%">{ commenttxt }:</td>
-			<td>{ comment }</td>
-		</tr>
-		<tr>
-			<td align="right">{ confirmtxt }:</td>
-			<td>
-			<select name="bconfirm">
-			  <option value="Y">{ yes }</option>
-			  <option value="N">{ no }</option>
-			</select>
-			</td>
-		</tr>
-		<tr>
-			<td align="right">&nbsp;</td>
-			<td>
-				<input type="submit" name="bcommit" value="{ confirm }" />
-			</td>
-		</tr>
-		</table>
-	</td>
+    <td class="BabLoginCadreBackground">
+        <table class="BabLoginMenuBackground" width="100%" border="0" cellspacing="0" cellpadding="5" align="center">
+        <tr>
+            <td align="right" width="30%">{ commenttxt }:</td>
+            <td>{ comment }</td>
+        </tr>
+        <tr>
+            <td align="right">{ confirmtxt }:</td>
+            <td>
+            <select name="bconfirm">
+              <option value="Y">{ yes }</option>
+              <option value="N">{ no }</option>
+            </select>
+            </td>
+        </tr>
+        <tr>
+            <td align="right">&nbsp;</td>
+            <td>
+                <input type="submit" name="bcommit" value="{ confirm }" />
+            </td>
+        </tr>
+        </table>
+    </td>
 </tr>
 </table>
 </form>
@@ -337,70 +343,70 @@ function checkMaxLength(obj)
 
 
 <table width="95%" border="0" cellspacing="0" cellpadding="2" align="center">
-<tr> 
-<td class="BabLoginCadreBackground"> 
-	<table width="100%" border="0" cellspacing="0" cellpadding="5" align="center">
-	<tr class="BabSiteAdminTitleFontBackground"> 
-		<td>&nbsp;</td>
-		<td>{ versiontxt }</td>
-		<td>{ datetxt }</td>
-		<td>{ hourtxt }</td>
-		<td>{ authortxt }</td>
-		<td>{ commenttxt }</td>
-		<!--#if index -->
-		<td>{ t_index }</td>
-		<!--#endif index -->
+<tr>
+<td class="BabLoginCadreBackground">
+    <table width="100%" border="0" cellspacing="0" cellpadding="5" align="center">
+    <tr class="BabSiteAdminTitleFontBackground">
+        <td>&nbsp;</td>
+        <td>{ versiontxt }</td>
+        <td>{ datetxt }</td>
+        <td>{ hourtxt }</td>
+        <td>{ authortxt }</td>
+        <td>{ commenttxt }</td>
+        <!--#if index -->
+        <td>{ t_index }</td>
+        <!--#endif index -->
 
-	</tr> 
-	<!--#in getlastvers -->
-	<tr class="BabSiteAdminFontBackground"> 
-		<td>&nbsp;</td>
-		<td><a href="{ geturl }">{ version }</a></td>
-		<td>{ date }</td>
-		<td>{ hour }</td>
-		<td>{ author }</td>
-		<td>{ comment }</td>
-		<!--#if index -->
-		<td>{ index_status }</td>
-		<!--#endif index -->
-	</tr>
-	<!--#endin getlastvers -->
-	<!--#in getnextvers -->
-	<tr class="BabSiteAdminFontBackground"> 
-		<td>
-		<!--#if bmanager -->
-		<input type="checkbox" name="versions[]" value="{ version }" />
-		<!--#endif bmanager -->
-		&nbsp;</td>
-		<td><a href="{ geturl }">{ version }</a></td>
-		<td>{ date }</td>
-		<td>{ hour }</td>
-		<td>{ author }</td>
-		<td>{ comment }</td>
-		<!--#if index -->
-		<td>{ index_status }</td>
-		<!--#endif index -->
-	</tr>
-	<!--#endin getnextvers -->
-	<tr class="BabSiteAdminTitleFontBackground"> 
-		<td>
-		<!--#if bmanager -->
-		<a href="javascript:submitForm('lvers','listform')"><img src="{ babSkinPath }images/Puces/del.gif" alt="{ deletealt }" border="0" /></a>
-		<!--#endif bmanager -->&nbsp;
-		</td>
-		<td colspan="<!--#if index -->6<!--#else index -->5<!--#endif index -->">
-			<table border="0" width="100%" cellpadding="0" cellspacing="0" align="center">
-			<tr> 
-				<td width="1%"><a href="{ topurl }">{ topname }</a> &nbsp; </td>
-				<td width="1%"><a href="{ prevurl }">{ prevname }</a> &nbsp; </td>
-				<td width="1%"><a href="{ nexturl }">{ nextname }</a> &nbsp; </td>
-				<td width="1%"><a href="{ bottomurl }">{ bottomname }</a> &nbsp; </td>
-				<td width="96%"> &nbsp; </td>
-			</tr>
-			</table>
-		</td>
-	</tr> 
-	</table>
+    </tr>
+    <!--#in getlastvers -->
+    <tr class="BabSiteAdminFontBackground">
+        <td>&nbsp;</td>
+        <td><a href="{ geturl }">{ version }</a></td>
+        <td>{ date }</td>
+        <td>{ hour }</td>
+        <td>{ author }</td>
+        <td>{ comment }</td>
+        <!--#if index -->
+        <td>{ index_status }</td>
+        <!--#endif index -->
+    </tr>
+    <!--#endin getlastvers -->
+    <!--#in getnextvers -->
+    <tr class="BabSiteAdminFontBackground">
+        <td>
+        <!--#if bmanager -->
+        <input type="checkbox" name="versions[]" value="{ version }" />
+        <!--#endif bmanager -->
+        &nbsp;</td>
+        <td><a href="{ geturl }">{ version }</a></td>
+        <td>{ date }</td>
+        <td>{ hour }</td>
+        <td>{ author }</td>
+        <td>{ comment }</td>
+        <!--#if index -->
+        <td>{ index_status }</td>
+        <!--#endif index -->
+    </tr>
+    <!--#endin getnextvers -->
+    <tr class="BabSiteAdminTitleFontBackground">
+        <td>
+        <!--#if bmanager -->
+        <a href="javascript:submitForm('lvers','listform')"><img src="{ babSkinPath }images/Puces/del.gif" alt="{ deletealt }" border="0" /></a>
+        <!--#endif bmanager -->&nbsp;
+        </td>
+        <td colspan="<!--#if index -->6<!--#else index -->5<!--#endif index -->">
+            <table border="0" width="100%" cellpadding="0" cellspacing="0" align="center">
+            <tr>
+                <td width="1%"><a href="{ topurl }">{ topname }</a> &nbsp; </td>
+                <td width="1%"><a href="{ prevurl }">{ prevname }</a> &nbsp; </td>
+                <td width="1%"><a href="{ nexturl }">{ nextname }</a> &nbsp; </td>
+                <td width="1%"><a href="{ bottomurl }">{ bottomname }</a> &nbsp; </td>
+                <td width="96%"> &nbsp; </td>
+            </tr>
+            </table>
+        </td>
+    </tr>
+    </table>
 </td>
 </tr>
 </table>
