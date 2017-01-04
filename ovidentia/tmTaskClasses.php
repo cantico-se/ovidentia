@@ -2055,7 +2055,7 @@ bab_debug($sMsg);
 		function getIsoDatesFromEndDate(&$sStartDate, &$sEndDate)
 		{
 			$oStartDate = BAB_DateTime::fromIsoDateTime($this->m_sEndDate);
-			$oStartDate->init($oStartDate->_iYear, $oStartDate->_iMonth, $oStartDate->_iDay, 00, 00, 00);
+			$oStartDate->init($oStartDate->getYear(), $oStartDate->getMonth(), $oStartDate->getDayOfMonth(), 0, 0, 0);
 			$sStartDate = date('Y-m-d H:i:s', $oStartDate->getTimeStamp());
 			$sEndDate = $this->m_sEndDate;
 		}
