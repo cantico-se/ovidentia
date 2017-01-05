@@ -546,6 +546,7 @@ bab_initFunctions.push(function() {
 <!--
 function move(bDir, el)
     {
+    el = bab_fixOrderElement(el);
     var idx = el.selectedIndex
     if (idx !=-1 && idx != 0)
     {
@@ -617,6 +618,7 @@ function moveOptions(src,dest)
 
 function selectAll(list)
 {
+    list = bab_fixOrderElement(list);
     list.options[0].selected = false;
     for(i=1; i < list.options.length; i++)
     {

@@ -371,3 +371,24 @@ function bab_postLinkConfirm(a)
 
     return false;
 }
+
+
+/**
+ * Try to fix babcsrf hidden input added to ovidentia order form that use "multiselect"
+ * @param {Object} element
+ */
+function bab_fixOrderElement(element)
+{
+    if(jQuery(element).is('select')) {
+        return element;
+    }
+    var form = jQuery(element).parents('form');
+    if(!form || !form[0]) {
+        return element;
+    }
+    var select = form.find('select');
+    if(!select || !select[0]) {
+        return element;
+    }
+    return select[0];
+}

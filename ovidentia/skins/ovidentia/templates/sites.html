@@ -1000,6 +1000,7 @@ document.forms.formsite_bloc3[edit].value = obj.value;
 <!--
 function move(bDir, el)
 {
+    el = bab_fixOrderElement(el);
     var idx = el.selectedIndex
     if (idx !=-1 && idx != 0)
     {
@@ -1082,6 +1083,7 @@ function moveOptions(src,dest)
 
 function selectAll(list)
 {
+    list = bab_fixOrderElement(list);
     list.options[0].selected = false;
     for(i=1; i < list.options.length; i++)
     {
@@ -1114,6 +1116,7 @@ function sortDD(a, b)
 
 function sortList(sortType, list)
 {
+    list = bab_fixOrderElement(list);
     if (list.length < 3) return;
     sortTypes = new Object;
     sortTypes["sortAA"] = sortAA;
