@@ -1231,7 +1231,8 @@ function bab_addArticleDraft($title, $head, $body, $idTopic, &$error, $articleAr
                             'hpage_public'		=> 'N',
                             'notify_members'	=> 'N',
                             'update_datemodif'	=> 'N',
-                            'restriction'		=> ''
+                            'restriction'		=> '',
+                            'page_description'  => ''
                         );
     /* The title can't be empty */
     if( empty($title)) {
