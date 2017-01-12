@@ -1,47 +1,51 @@
 <!--#begin popupunload -->
 <!DOCTYPE html>
 <html lang="{ babLanguage }">
-	<head>
-		<title>{ babSiteName }</title>
-		{ babMeta }
-		{ babCss }
-		<meta http-equiv="Content-type" content="{ sContent }"/>
-		<script type="text/javascript">
-		window.focus();
-		</script>
-	</head>
-	<!--#if redirecturl -->
-	<body onunload="this.opener.location.href='{ redirecturl }';">
-	<!--#else redirecturl -->
-	<!--#if openerreload -->
-	<body onunload="this.opener.location.reload()">
-	<!--#else openerreload -->
-	<body>
-	<!--#endif openerreload -->
-	<!--#endif redirecturl -->
-	<br /><br /><br /><br />
-	
-	<table class="BabLoginMenuBackground" width="50%" border="0" cellspacing="0" cellpadding="2" align="center">
-		<tr> 
-			<td> 
-				<table class="" width="100%" border="0" cellspacing="0" cellpadding="5" align="center">
-					<tr> 
-						<td class="BabErrorMessage" colspan="2" align="center">{ message } </td>
-					</tr>
-					<tr align="left" valign="middle">
-						<td class="BabWarningBodyBackground" colspan="2" align="center"><a href="javascript:this.close()">{ close }</a></td>
-					</tr>
-				</table>
-			</td>
-		</tr>
-	</table>
-	<br />
-	<!--#if autoclose -->
-	<script type="text/javascript">
-		window.setTimeout("this.close()","1000");
-	</script>
-	<!--#endif autoclose -->
-	</body>
+    <head>
+        <title>{ babSiteName }</title>
+        { babMeta }
+        { babCss }
+        <meta http-equiv="Content-type" content="{ sContent }"/>
+        <script type="text/javascript">
+        window.focus();
+
+        function bab_unload(){
+            <!--#if redirecturl -->
+            window.opener.document.location.href='{ redirecturl }';
+            <!--#else redirecturl -->
+            <!--#if openerreload -->
+            window.opener.document.location.reload()
+            <!--#endif openerreload -->
+            <!--#endif redirecturl -->
+        };
+
+        window.onunload = bab_unload();
+        </script>
+    </head>
+    <body>
+    <br /><br /><br /><br />
+
+    <table class="BabLoginMenuBackground" width="50%" border="0" cellspacing="0" cellpadding="2" align="center">
+        <tr>
+            <td>
+                <table class="" width="100%" border="0" cellspacing="0" cellpadding="5" align="center">
+                    <tr>
+                        <td class="BabErrorMessage" colspan="2" align="center">{ message } </td>
+                    </tr>
+                    <tr align="left" valign="middle">
+                        <td class="BabWarningBodyBackground" colspan="2" align="center"><a href="javascript:this.close()">{ close }</a></td>
+                    </tr>
+                </table>
+            </td>
+        </tr>
+    </table>
+    <br />
+    <!--#if autoclose -->
+    <script type="text/javascript">
+        window.setTimeout("this.close()","1000");
+    </script>
+    <!--#endif autoclose -->
+    </body>
 </html>
 <!--#end popupunload -->
 
@@ -53,8 +57,8 @@
 <!DOCTYPE html>
 <html lang="{ babLanguage }">
 <head>
-	<title>{ babSiteName } <!--#if title --> - { title }<!--#endif title --></title>
-	<base href="{ babUrlScript }" />
+    <title>{ babSiteName } <!--#if title --> - { title }<!--#endif title --></title>
+    <base href="{ babUrlScript }" />
     <meta http-equiv="Content-type" content="{ sContent }"/>
 
     <link rel="shortcut icon" href="skins/{ babSkin }/images/favicon.ico" />
@@ -66,43 +70,43 @@
     <link rel="stylesheet" type="text/css" href="{ styleSheet }" />
 <!--#endin getNextStyleSheet -->
 
-	<script type="text/javascript" src="{ babOvidentiaJs }"></script>
+    <script type="text/javascript" src="{ babOvidentiaJs }"></script>
 </head>
 <body class="babbodypopup BabContentBackground <!--#if tg -->{ tg }<!--#endif tg -->">
-	<!--#if menuitems -->
+    <!--#if menuitems -->
 
-	<div class="contextmenu">
-		<table class="BabSiteAdminFontBackground" cellspacing="0" cellpadding="5" border="0">
-			<tr> 
-			<!--#in getNextMenu -->
-			<!--#if enabled "== 0" -->
-			<td align="center" class="BabMenuActiveBackground"> 
-			&nbsp;&nbsp;{ menutext }&nbsp;&nbsp;</td>
-			<!--#else enabled -->
-			<td  align="center" class="BabLoginMenuBackground">
-			&nbsp;&nbsp;<a class="BabMenuLink" href="{ menuurl }" { menuattribute }>{ menutext }</a>&nbsp;&nbsp;</td>
-			<!--#endif enabled -->
-			<!--#endin getNextMenu -->
-			<td>&nbsp;</td>
-			</tr>
-		</table>
+    <div class="contextmenu">
+        <table class="BabSiteAdminFontBackground" cellspacing="0" cellpadding="5" border="0">
+            <tr>
+            <!--#in getNextMenu -->
+            <!--#if enabled "== 0" -->
+            <td align="center" class="BabMenuActiveBackground">
+            &nbsp;&nbsp;{ menutext }&nbsp;&nbsp;</td>
+            <!--#else enabled -->
+            <td  align="center" class="BabLoginMenuBackground">
+            &nbsp;&nbsp;<a class="BabMenuLink" href="{ menuurl }" { menuattribute }>{ menutext }</a>&nbsp;&nbsp;</td>
+            <!--#endif enabled -->
+            <!--#endin getNextMenu -->
+            <td>&nbsp;</td>
+            </tr>
+        </table>
     </div>
-    
-	<!--#endif menuitems -->
-	
-	
-	<div class="BabContentBackground"> 
-		
-		<!--#if title -->
-		<h1 class="pagetitle">{ title }</h1>
-		<!--#endif title -->
-		
-		<!--#if msgerror -->
-        <h2 class="BabErrorMessage">{ msgerror }</h2> 
+
+    <!--#endif menuitems -->
+
+
+    <div class="BabContentBackground">
+
+        <!--#if title -->
+        <h1 class="pagetitle">{ title }</h1>
+        <!--#endif title -->
+
+        <!--#if msgerror -->
+        <h2 class="BabErrorMessage">{ msgerror }</h2>
         <!--#endif msgerror -->
 
-		{ content }
-	</div>
+        { content }
+    </div>
 </body>
 </html>
 <!--#end babbodypopup -->
@@ -118,15 +122,15 @@
       _editor_url = "{ babUrl }{ babScriptPath }htmlarea/";
       _editor_lang = "{ babLanguage }";
 
-	  textarea_id = new Array({ listeditname });
+      textarea_id = new Array({ listeditname });
 
 </script>
 <!--#endif first -->
 <!--#endif loadscripts -->
 
 <div align="left">
-	{ text_toolbar }
-	
+    { text_toolbar }
+
 <input type="hidden" name="{ editname }_format" value="html" />
 <textarea id="{ editname }" name="{ editname }" style="width:100%;height:{ heightpx }px" rows="20">{ contentval }</textarea>
 <input type="hidden" name="bab_editor_textmode[]" value="{ editname }" />
@@ -141,7 +145,7 @@
 
 <!--#if filter_html -->
 <p>
-	{ t_filter_html }
+    { t_filter_html }
 </p>
 <!--#endif filter_html -->
 
@@ -153,7 +157,7 @@
 
 <!--#begin babtexttoolbartemplate -->
 <div id="{ editname }_text_toolbar" class="bab_text_toolbar">
-	<a href="#" onclick="global_textarea_id = '{ uid }';insert_ovidentia();return false;">{ t_insert_ovidentia }</a>
+    <a href="#" onclick="global_textarea_id = '{ uid }';insert_ovidentia();return false;">{ t_insert_ovidentia }</a>
 </div>
 <input type="hidden" id="{ editname }_textmode" name="bab_editor_textmode[]" value="{ editname }" />
 <!--#end babtexttoolbartemplate -->
