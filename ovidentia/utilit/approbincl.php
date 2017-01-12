@@ -276,9 +276,13 @@ function bab_listWaitingFiles(bab_eventBeforeWaitingItemsDisplayed $event)
 
     while( $arr = $babDB->db_fetch_assoc($res2) )
     {
-        $fm_file = fm_getFileAccess($arr['id_file']);
+        $fm_file = fm_getFileAccess($arr['id_file'], false);
         $oFmFolder =& $fm_file['oFmFolder'];
         $oFolderFile =& $fm_file['oFolderFile'];
+        
+        if (!isset($oFmFolder) || !isset($oFolderFile)) {
+            continue;
+        }
 
         $iIdUrl = $oFmFolder->getId();
         if(mb_strlen($oFmFolder->getRelativePath()) > 0)

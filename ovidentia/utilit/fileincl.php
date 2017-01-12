@@ -1199,7 +1199,7 @@ function saveUpdateFile($idf, $fmFile, $fname, $description, $keywords, $readonl
  * Get file array and access rights on the file
  *
  */
-function fm_getFileAccess($idf)
+function fm_getFileAccess($idf, $testConfirmed = true)
 {
 
     $bupdate = false;
@@ -1220,7 +1220,7 @@ function fm_getFileAccess($idf)
 
     if(!is_null($oFolderFile))
     {
-        if('Y' === $oFolderFile->getGroup() && 'Y' === $oFolderFile->getConfirmed())
+        if('Y' === $oFolderFile->getGroup() && (!$testConfirmed || 'Y' === $oFolderFile->getConfirmed()))
         {
             $oFmFolderSet = new BAB_FmFolderSet();
 
