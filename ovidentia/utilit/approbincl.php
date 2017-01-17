@@ -244,7 +244,7 @@ function bab_listWaitingFiles(bab_eventBeforeWaitingItemsDisplayed $event)
     {
 
         $filedate = $arr['created'] == '0000-00-00 00:00:00'? '':$W->Label(bab_shortDate(bab_mktime($arr['created']), true));
-        $confirmurl = $GLOBALS['babUrlScript']."?idx=viewFile&idf=".$arr['id']."&id=".$arr['id_owner']."&gr=".$arr['bgroup']."&path=".urlencode(mb_substr($arr['path'],0,-1))."&file=".urlencode($arr['name'])."tg=fileman";
+        $confirmurl = $GLOBALS['babUrlScript']."?tg=fileman&idx=viewFile&idf=".$arr['id']."&id=".$arr['id_owner']."&gr=".$arr['bgroup']."&path=".urlencode(mb_substr($arr['path'],0,-1))."&file=".urlencode($arr['name']);
 
 
         $layout = $W->HBoxItems(
