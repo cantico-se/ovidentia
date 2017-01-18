@@ -27,7 +27,7 @@ function Set(string) {                   // select color
   else {                                                                // valid color
     View(color);
 	<!--#if callback -->
-    { callback }(color<!--#if param -->,'{ param }'<!--#endif param -->);
+	opener['{ callback }'](color<!--#if param -->,'{ param }'<!--#endif param -->);
 	window.close();
 	<!--#else callback -->
 	alert('callback is not defined');
@@ -763,7 +763,7 @@ function Set(string) {
     } else {
 	  View(color);
 	  <!--#if callback -->
-	  { callback }(color<!--#if param -->,'{ param }'<!--#endif param -->);
+	  opener['{ callback }'](color<!--#if param -->,'{ param }'<!--#endif param -->);
 	  window.close();
 	  <!--#else callback -->
 	  alert('callback is not defined');
