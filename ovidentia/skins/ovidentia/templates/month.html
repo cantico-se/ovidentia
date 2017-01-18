@@ -45,7 +45,7 @@ function callback(d,m,y)
 	val['year'] = y;
 	opener.bab_dialog._return(val);
 	<!--#else callback -->
-	self.opener.{ callback }(d,m,y);
+	self.opener['{ callback }'](d,m,y);
 	<!--#endif callback -->
 	window.close();
 	}
