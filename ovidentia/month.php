@@ -33,17 +33,17 @@ private $days;
 function bab_calendar($month, $year, $callback, $ymin, $ymax)
 	{
 	global $babBody;
-	
+
 	$ymin = (int) $ymin;
 	$ymax = (int) $ymax;
 	$this->year = (int) $year;
 	$this->month = (int) $month;
-	$this->callback = bab_toHtml($callback, BAB_HTML_JS);
+	$this->callback = bab_toHtml($callback, BAB_HTML_ENTITIES | BAB_HTML_JS);
 	$this->ymin = $year - $ymin - 1;
 	$this->ymax = $year + $ymax;
 	$this->value = $this->ymin;
 	$this->sContent	= 'text/html; charset=' . bab_charset::getIso();
-	
+
 	$this->months = bab_DateStrings::getMonths();
 	reset($this->months);
 	$this->days = bab_DateStrings::getDays();
@@ -65,7 +65,7 @@ function getnextyear()
 	{
 	if ($this->value < $this->ymax)
 		{
-		
+
 		$this->value++;
 		$this->selected = $this->value == $this->year ? 'selected' : '';
 		return true;
@@ -93,13 +93,13 @@ function getnextmonth()
 		reset($this->months);
 		return false;
 		}
-	
+
 	}
 
 function getnextwday()
 	{
 	static $i = 0;
-	
+
 	if ($i < 7)
 		{
 		$index = $this->startday + $i < 7 ? $this->startday + $i : $this->startday + $i -7;
@@ -112,7 +112,7 @@ function getnextwday()
 		return false;
 		}
 	}
-	
+
 }
 
 
