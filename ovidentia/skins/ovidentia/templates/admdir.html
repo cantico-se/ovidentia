@@ -657,7 +657,7 @@ document.forms.ovmldbf.ovmllist.value = txt;
 
 <tr>
     <td align="center" nowrap valign="middle">
-        <select name="listfields1"  size="12" multiple="multiple">
+        <select id="listfields1" name="listfields1"  size="12" multiple="multiple">
           <option value="0">{ listftxt }</option>
           <!--#in getnextf -->
           <option value="{ fid }">{ fieldval }</option>
@@ -666,13 +666,13 @@ document.forms.ovmldbf.ovmllist.value = txt;
     </td>
 
     <td align="center">
-        <a href="Javascript:moveOptions(document.dispdbf.listfields1,document.dispdbf.elements[5])"><img src="{ babSkinPath }images/Puces/PuceGoRight.gif" border=0 alt=""></a>
+        <a href="Javascript:moveOptions(document.getElementById('listfields1'), document.getElementById('listfd'))"><img src="{ babSkinPath }images/Puces/PuceGoRight.gif" border=0 alt=""></a>
         <br /><br />
-        <a href="Javascript:moveOptions(document.dispdbf.elements[5],document.dispdbf.listfields1)" ><img src="{ babSkinPath }images/Puces/PuceGoLeft.gif" border=0 alt=""></a>
+        <a href="Javascript:moveOptions(document.getElementById('listfd'), document.getElementById('listfields1'))" ><img src="{ babSkinPath }images/Puces/PuceGoLeft.gif" border=0 alt=""></a>
     </td>
 
     <td align="center">
-        <select name="listfd[]"  size="12" multiple="multiple">
+        <select id="listfd" name="listfd[]"  size="12" multiple="multiple">
           <option value="0">{ listdftxt }</option>
           <!--#in getnextdf -->
           <option value="{ fid }">{ fieldval }</option>
@@ -681,10 +681,10 @@ document.forms.ovmldbf.ovmllist.value = txt;
     </td>
 
     <td align="center">
-        <a href="Javascript:move(true, document.dispdbf.elements[5])"><img src="{ babSkinPath }images/Puces/PuceGoTop.gif" width="22" height="18" border=0 alt="{ moveup }"></a>
+        <a href="Javascript:move(true, document.getElementById('listfd'))"><img src="{ babSkinPath }images/Puces/PuceGoTop.gif" width="22" height="18" border=0 alt="{ moveup }"></a>
         <br>
         <br>
-        <a href="Javascript:move(false, document.dispdbf.elements[5])"><img src="{ babSkinPath }images/Puces/PuceGoDown.gif" width="22" height="18" border=0 alt="{ movedown }"></a>
+        <a href="Javascript:move(false, document.getElementById('listfd'))"><img src="{ babSkinPath }images/Puces/PuceGoDown.gif" width="22" height="18" border=0 alt="{ movedown }"></a>
     </td>
 
 </tr>
@@ -700,7 +700,7 @@ document.forms.ovmldbf.ovmllist.value = txt;
 
 <tr>
     <td align="center" nowrap valign="middle">
-        <select name="listfields2"  size="12" multiple="multiple">
+        <select id="listfields2" name="listfields2"  size="12" multiple="multiple">
           <option value="0">{ listftxt }</option>
           <!--#in getnextsortfs -->
           <option value="{ sortid }">{ description }</option>
@@ -709,13 +709,13 @@ document.forms.ovmldbf.ovmllist.value = txt;
     </td>
 
     <td align="center">
-        <a href="Javascript:moveOptions(document.dispdbf.listfields2,document.dispdbf.elements[7])"><img src="{ babSkinPath }images/Puces/PuceGoRight.gif" border=0 alt=""></a>
+        <a href="Javascript:moveOptions(document.getElementById('listfields2'), document.getElementById('sortfd'))"><img src="{ babSkinPath }images/Puces/PuceGoRight.gif" border=0 alt=""></a>
         <br /><br />
-        <a href="Javascript:moveOptions(document.dispdbf.elements[7],document.dispdbf.listfields2)" ><img src="{ babSkinPath }images/Puces/PuceGoLeft.gif" border=0 alt=""></a>
+        <a href="Javascript:moveOptions(document.getElementById('sortfd'), document.getElementById('listfields2'))" ><img src="{ babSkinPath }images/Puces/PuceGoLeft.gif" border=0 alt=""></a>
     </td>
 
     <td align="center">
-        <select name="sortfd[]"  size="12" multiple="multiple">
+        <select id="sortfd" name="sortfd[]"  size="12" multiple="multiple">
           <option value="0">{ listdftxt }</option>
           <!--#in getnextsortf -->
           <option value="{ fid }">{ fieldval }</option>
@@ -724,10 +724,10 @@ document.forms.ovmldbf.ovmllist.value = txt;
     </td>
 
     <td align="center">
-        <a href="Javascript:move(true, document.dispdbf.elements[7])"><img src="{ babSkinPath }images/Puces/PuceGoTop.gif" width="22" height="18" border=0 alt="{ moveup }"></a>
+        <a href="Javascript:move(true, document.getElementById('sortfd'))"><img src="{ babSkinPath }images/Puces/PuceGoTop.gif" width="22" height="18" border=0 alt="{ moveup }"></a>
         <br>
         <br>
-        <a href="Javascript:move(false, document.dispdbf.elements[7])"><img src="{ babSkinPath }images/Puces/PuceGoDown.gif" width="22" height="18" border=0 alt="{ movedown }"></a>
+        <a href="Javascript:move(false, document.getElementById('sortfd'))"><img src="{ babSkinPath }images/Puces/PuceGoDown.gif" width="22" height="18" border=0 alt="{ movedown }"></a>
     </td>
 
 </tr>
@@ -738,7 +738,7 @@ document.forms.ovmldbf.ovmllist.value = txt;
     <td align="center" colspan="4">
     <br />
     <br />
-    <input type="submit" name="Submit" value="{ update }" onClick="selectAll(document.dispdbf.elements[5]); selectAll(document.dispdbf.elements[7]); document.dispdbf.submit()" />
+    <input type="submit" name="Submit" value="{ update }" onClick="selectAll(document.getElementById('listfd')); selectAll(document.getElementById('sortfd')); document.dispdbf.submit()" />
     <br />
     <br />
     </td>
