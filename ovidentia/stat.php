@@ -1019,8 +1019,4 @@ $babBody->addItemMenu("pages", bab_translate("Pages"), $GLOBALS['babUrlScript'].
 $babBody->addItemMenu("pref", bab_translate("Preferences"), $GLOBALS['babUrlScript']."?tg=statconf&idx=pref");
 $babBody->addItemMenu("bask", bab_translate("Baskets"), $GLOBALS['babUrlScript']."?tg=statconf&idx=bask");
 }
-if( bab_statisticsAccess() == BAB_STAT_ACCESS_MANAGER )
-{
-$babBody->addItemMenu("maj", bab_translate("Update"), $GLOBALS['babUrlScript']."?tg=statconf&idx=maj&statrows=12000");
-}
 $babBody->setCurrentItemMenu("stat");
