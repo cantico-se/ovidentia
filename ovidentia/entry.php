@@ -348,6 +348,8 @@ function isAccessValid($article, $idg)
 $idx = bab_rp('idx', 'list');
 $idg = bab_rp('idg', 2); // non registered users
 
+$babBody = bab_getBody();
+
 if(bab_isUserLogged()) {
     $idg = 1; // registered users
 }
