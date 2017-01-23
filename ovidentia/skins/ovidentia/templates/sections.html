@@ -334,22 +334,22 @@ function selectAll(list)
     </tr>
     <tr>
     <td align="center">
-    <select name="listright[]"  size=12 multiple>
+    <select id="listright" name="listright[]"  size=12 multiple>
     <option value="">{ listrightsectxt }</option>
     <!--#in getnextsecright -->
     <option value="{ secid }">{ listrightsecval }</option>
     <!--#endin getnextsecright -->
     </select>
     </td>
-    <td align="center" valign="middle"><a href="Javascript:move(true, document.secorderf.elements[4])"><img src="{ babSkinPath }images/Puces/PuceGoTop.gif" width="22" height="18" border=0 alt="{ moveup }"></a>
+    <td align="center" valign="middle"><a href="Javascript:move(true, document.getElementById('listright'))"><img src="{ babSkinPath }images/Puces/PuceGoTop.gif" width="22" height="18" border=0 alt="{ moveup }"></a>
     <br>
     <br>
-    <a href="Javascript:move(false, document.secorderf.elements[4])"><img src="{ babSkinPath }images/Puces/PuceGoDown.gif" width="22" height="18" border=0 alt="{ movedown }"></a>
+    <a href="Javascript:move(false, document.getElementById('listright'))"><img src="{ babSkinPath }images/Puces/PuceGoDown.gif" width="22" height="18" border=0 alt="{ movedown }"></a>
     </td>
     </tr>
     <tr>
     <td align="center" valign="middle">
-    <input type="submit" name="Submit" value="{ update }" onClick="selectAll(document.secorderf.elements[4]); selectAll(document.secorderf.elements[3]); document.secorderf.submit()">
+    <input type="submit" name="Submit" value="{ update }" onClick="selectAll(document.getElementById('listright')); selectAll(document.secorderf.elements[3]); document.secorderf.submit()">
     <br>
     <br>
     </td>
