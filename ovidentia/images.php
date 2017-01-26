@@ -571,6 +571,9 @@ if ($old_name != '' && $new_name != '')
 switch($idx)
     {
     case 'get':
+        /**
+         * @deprecated since 8.5.94
+         */
         $imgf = $GLOBALS['babInstallPath'].'skins/ovidentia/images/imagesget.png';
         $mime = 'image/png';
         $fsize = filesize($imgf);

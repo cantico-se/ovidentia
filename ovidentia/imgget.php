@@ -25,6 +25,9 @@ include_once 'base.php';
 
 include_once $GLOBALS['babInstallPath'].'utilit/gdiincl.php';
 
+/**
+ * @deprecated since 8.5.94
+ */
 function getFmImage($idf, $w, $h)
 {
     $imgf = $GLOBALS['babInstallPath'].'skins/ovidentia/images/imgget.png';
