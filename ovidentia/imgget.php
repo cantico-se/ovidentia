@@ -27,7 +27,6 @@ include_once $GLOBALS['babInstallPath'].'utilit/gdiincl.php';
 
 function getFmImage($idf, $w, $h)
 {
-
     $imgf = $GLOBALS['babInstallPath'].'skins/ovidentia/images/imgget.png';
     $mime = 'image/png';
     $fsize = filesize($imgf);
@@ -38,19 +37,6 @@ function getFmImage($idf, $w, $h)
     print fread($fp,$fsize);
     fclose($fp);
     die;
-
-    /*global $babDB;
-    include_once $GLOBALS['babInstallPath'].'utilit/fileincl.php';
-
-    $access = fm_getFileAccess($idf);
-
-    if (!$access['bdownload'])
-    {
-        die('Access denied');
-    }
-
-    return bab_getResizedImage($access['oFolderFile']->getFullPathname(), $w, $h);*/
-
 }
 
 
