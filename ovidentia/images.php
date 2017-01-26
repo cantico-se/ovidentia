@@ -571,11 +571,6 @@ if ($old_name != '' && $new_name != '')
 switch($idx)
     {
     case 'get':
-        /*$w = bab_gp('w');
-        $h = bab_gp('h', 50);
-        require_once dirname(__FILE__).'/utilit/gdiincl.php';
-        bab_getResizedImage(bab_gp('f'), $w, $h);*/
-        //SECURITY DDOS
         $imgf = $GLOBALS['babInstallPath'].'skins/ovidentia/images/imagesget.png';
         $mime = 'image/png';
         $fsize = filesize($imgf);
