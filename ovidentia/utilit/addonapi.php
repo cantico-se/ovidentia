@@ -2701,14 +2701,14 @@ function bab_updateUserPasswordById($userId, $newPassword, $newPassword2, $ignor
                 $ldap = new babLDAP($babBody->babsite['ldap_host'], "", false);
                 $ret = $ldap->connect();
                 if ($ret === false) {
-                    $error = bab_translate("LDAP connection failed");
+                    $error = bab_translate("Connection failed");
                     return false;
                 }
 
                 $ret = $ldap->bind($babBody->babsite['ldap_admindn'], $babBody->babsite['ldap_adminpassword']);
                 if (!$ret) {
                     $ldap->close();
-                    $error = bab_translate("LDAP bind failed");
+                    $error = bab_translate("Binding failed");
                     return  false;
                 }
 
@@ -2724,7 +2724,7 @@ function bab_updateUserPasswordById($userId, $newPassword, $newPassword2, $ignor
 
                 if ($entries === false) {
                     $ldap->close();
-                    $error = bab_translate("LDAP search failed");
+                    $error = bab_translate("User not found in the directory");
                     return false;
                 }
 
@@ -3760,7 +3760,7 @@ function bab_requireSaveMethod()
     if (defined('BAB_CSRF_PROTECT') && false === BAB_CSRF_PROTECT) {
         return true;
     }
-    
+
     if ('GET' === $_SERVER['REQUEST_METHOD']) {
         header($_SERVER["SERVER_PROTOCOL"]." 405 Method Not Allowed", true, 405);
         $babBody = bab_getBody();

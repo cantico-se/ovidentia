@@ -1265,9 +1265,9 @@
 <string id="Password encryption type">Password encryption type</string>
 <string id="Allow administrators to connect if LDAP authentification fails">Allow administrators to connect if LDAP authentification fails</string>
 <string id="You must provide a login ID">You must provide a login ID</string>
-<string id="LDAP connection failed. Please contact your administrator">LDAP connection failed. Please contact your administrator</string>
-<string id="LDAP authentification failed. Please verify your login ID and your password">LDAP authentification failed. Please verify your login ID and your password</string>
-<string id="LDAP bind failed. Please contact your administratorrrrr">LDAP bind failed. Please contact your administratorrrrr</string>
+<string id="Connection failed. Please contact your administrator">Connection failed. Please contact your administrator</string>
+<string id="Authentification failed. Please verify your login ID and your password">Authentification failed. Please verify your login ID and your password</string>
+<string id="Binding failed. Please contact your administrator">Binding failed. Please contact your administrator</string>
 <string id="Are you sure you want to delete this add-on">Are you sure you want to delete this add-on</string>
 <string id="Approbation can't be disabled">Approbation can't be disabled</string>
 <string id="file(s) must be accepted or refused before">file(s) must be accepted or refused before</string>
@@ -1345,7 +1345,6 @@
 <string id="Permute with">Permute with</string>
 <string id="Open">Open</string>
 <string id="Maximum connexion attempts has been reached">Maximum connexion attempts has been reached</string>
-<string id="LDAP bind failed. Please contact your administrator">LDAP bind failed. Please contact your administrator</string>
 <string id="Sorry, your account is disabled. Please contact your administrator">Sorry, your account is disabled. Please contact your administrator</string>
 <string id="Online article(s)">Online article(s)</string>
 <string id="Old article(s)">Old article(s)</string>

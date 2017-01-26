@@ -1343,9 +1343,9 @@
 <string id="Password encryption type">Type de codage du mot de passe</string>
 <string id="Allow administrators to connect if LDAP authentification fails">Permettre aux administrateurs de se connecter si l'authentification par LDAP échoue</string>
 <string id="You must provide a login ID">Vous devez fournir un identifiant</string>
-<string id="LDAP connection failed. Please contact your administrator">La connexion LDAP a échoué. Contacter l'administrateur</string>
-<string id="LDAP authentification failed. Please verify your login ID and your password">L'authentification LDAP a échoué. Vérifier votre identifiant et votre mot de passe</string>
-<string id="LDAP bind failed. Please contact your administrator">La liaison LDAP a échoué. Contactez l'administrateur</string>
+<string id="Connection failed. Please contact your administrator">La connexion a échoué. Contacter l'administrateur</string>
+<string id="Authentification failed. Please verify your login ID and your password">L'authentification a échoué. Vérifier votre identifiant et votre mot de passe</string>
+<string id="Binding failed. Please contact your administrator">La liaison a échoué. Contactez l'administrateur</string>
 <string id="With/without introduction">Avec/sans introduction</string>
 <string id="With/without body">Avec/sans corps</string>
 <string id="Who can read posts?">Qui peut lire les contributions ?</string>
@@ -1940,9 +1940,9 @@
 <string id="Your file is waiting for approval">Votre fichier est en attente d'approbation</string>
 <string id="Filter">Filtre</string>
 <string id="Cannot reset password !!">Impossible d'initialiser le mot de passe !</string>
-<string id="LDAP connection failed">Echec de la connexion LDAP</string>
-<string id="LDAP bind failed">Echec du bind LDAP</string>
-<string id="LDAP search failed">Echec de la recherche LDAP</string>
+<string id="Connection failed">Echec de la connexion</string>
+<string id="Binding failed">Echec de la liaison</string>
+<string id="User not found in the directory">Utilisateur non trouvé</string>
 <string id="Filter">Filtre</string>
 <string id="All users">Tout le personnel</string>
 <string id="Update selected elements">Mettre à jour les éléments sélectionnés</string>
@@ -3454,10 +3454,9 @@ L'administrateur</string>
 <string id="Do you really want to accept the checked items?">Voulez-vous vraiment accepter les éléments cochés?</string>
 
 <string id="Password modification on active directory is not supported">La modification du mot de passe dans active directory n'est pas supportée</string>
-<string id="Failed to change password in LDAP">La modification du mot de passe dans LDAP a échouée</string>
-<string id="Failed to change password in LDAP because the admin DN or admin password are missing">La modification du mot de passe dans LDAP a échouée car le DN de l'administrateur ou le mot de passe de l'administrateur sont manquants</string>
-<string id="Failed to change password, LDAP bind failed">La modification du mot de passe a échouée, impossible de se connecter à l'annuaire LDAP</string>
-<string id="Failed to change password, LDAP search failed">La modification du mot de passe a échouée, la recherche dans l'annuaire LDAP n'a pas de résultats</string>
+<string id="Failed to change password">La modification du mot de passe dans a échouée</string>
+<string id="Failed to change password because the admin login or admin password are missing">La modification du mot de passe a échouée car l'identifiant ou le mot de passe de l'administrateur sont manquants</string>
+<string id="Failed to change password, binding failed">La modification du mot de passe a échouée, impossible de se connecter à l'annuaire</string>
 
 <string id="Registration is complete">Inscription terminée</string>
 <string id="At least one option must be selected on profile %s">Au moins une option doit être sélectionnée sur le profile %s</string>

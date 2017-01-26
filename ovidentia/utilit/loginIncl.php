@@ -492,7 +492,7 @@ class Func_PortalAuthentication_AuthOvidentia extends Func_PortalAuthentication
         $oLdap = new babLDAP($babBody->babsite['ldap_host'], '', false);
         if (false === $oLdap->connect())
         {
-            $this->addError(bab_translate("LDAP connection failed. Please contact your administrator"));
+            $this->addError(bab_translate("Connection failed. Please contact your administrator"));
             return null;
         }
 
@@ -516,7 +516,7 @@ class Func_PortalAuthentication_AuthOvidentia extends Func_PortalAuthentication
                 if (false === $oLdap->bind(bab_ldapEncode($sUserdn), bab_ldapEncode($sPassword)))
                 {
 
-                    $this->addError(bab_translate("LDAP bind failed. Please contact your administrator"));
+                    $this->addError(bab_translate("Binding failed. Please contact your administrator"));
                     $bLdapOk = false;
                 }
                 else
@@ -524,7 +524,7 @@ class Func_PortalAuthentication_AuthOvidentia extends Func_PortalAuthentication
                     $aEntries = $oLdap->search(bab_ldapEncode($sUserdn), '(objectclass=*)', $aAttributes);
                     if ($aEntries === false || $aEntries['count'] == 0)
                     {
-                        $this->addError(bab_translate("LDAP search failed"));
+                        $this->addError(bab_translate("User not found in the directory"));
                         $bLdapOk = false;
                     }
                 }
@@ -549,7 +549,7 @@ class Func_PortalAuthentication_AuthOvidentia extends Func_PortalAuthentication
 
                     if(false === $oLdap->bind($DnEntries[0]['dn'], bab_ldapEncode($sPassword)))
                     {
-                        $this->addError(bab_translate("LDAP bind failed. Please contact your administrator"));
+                        $this->addError(bab_translate("Binding failed. Please contact your administrator"));
                         $bLdapOk = false;
                     } else {
 
@@ -569,7 +569,7 @@ class Func_PortalAuthentication_AuthOvidentia extends Func_PortalAuthentication
         $iIdUser = false;
         if (!isset($aEntries) || $aEntries === false)
         {
-            $this->addError(bab_translate("LDAP authentification failed. Please verify your login ID and your password"));
+            $this->addError(bab_translate("Authentification failed. Please verify your login ID and your password"));
             $bLdapOk = false;
         }
 
@@ -609,7 +609,7 @@ class Func_PortalAuthentication_AuthOvidentia extends Func_PortalAuthentication
                 $bLdapOk = bab_haveAdministratorRight($sLogin, $sPassword, $iIdUser);
                 if (false === $bLdapOk)
                 {
-                    $this->addError(bab_translate("LDAP authentification failed. Please verify your login ID and your password"));
+                    $this->addError(bab_translate("Authentification failed. Please verify your login ID and your password"));
                 }
             }
         }
@@ -739,7 +739,7 @@ class Func_PortalAuthentication_AuthOvidentia extends Func_PortalAuthentication
         $oLdap = new babLDAP($babBody->babsite['ldap_host'], '', false);
         if (false === $oLdap->connect())
         {
-            $this->addError(bab_translate("LDAP connection failed. Please contact your administrator"));
+            $this->addError(bab_translate("Connection failed. Please contact your administrator"));
             return null;
         }
 
@@ -757,7 +757,7 @@ class Func_PortalAuthentication_AuthOvidentia extends Func_PortalAuthentication
 
             if (false === $oLdap->bind(bab_ldapEncode($sLogin."@".$babBody->babsite['ldap_domainname']), bab_ldapEncode($sPassword)))
             {
-                $this->addError(bab_translate("LDAP bind failed. Please contact your administrator"));
+                $this->addError(bab_translate("Binding failed. Please contact your administrator"));
                 $bLdapOk = false;
             }
             else
@@ -778,7 +778,7 @@ class Func_PortalAuthentication_AuthOvidentia extends Func_PortalAuthentication
         $iIdUser = false;
         if (!isset($aEntries) || $aEntries === false || (isset($aEntries['count']) && 0 === (int) $aEntries['count']))
         {
-            $this->addError(bab_translate("LDAP authentification failed. Please verify your login ID and your password"));
+            $this->addError(bab_translate("Authentification failed. Please verify your login ID and your password"));
             $bLdapOk = false;
         }
 
@@ -818,7 +818,7 @@ class Func_PortalAuthentication_AuthOvidentia extends Func_PortalAuthentication
                 $bLdapOk = bab_haveAdministratorRight($sLogin, $sPassword, $iIdUser);
                 if( false === $bLdapOk)
                 {
-                    $this->addError(bab_translate("LDAP authentification failed. Please verify your login ID and your password"));
+                    $this->addError(bab_translate("Authentification failed. Please verify your login ID and your password"));
                 }
             }
         }
