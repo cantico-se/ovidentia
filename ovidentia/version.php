@@ -94,6 +94,10 @@ function echoLang($path)
  */
 function bab_installAddon($name)
 {
+    if(!bab_isUserAdministrator() && !bab_anonymousUpgrade()) {
+        die(bab_translate("You must be logged as administrator"));
+    }
+    
     bab_addonsInfos::insertMissingAddonsInTable();
     bab_addonsInfos::clear();
     
@@ -245,6 +249,51 @@ function bab_getActionsMenu()
 }
 
 
+/**
+ * Set define('BAB_ANONYMOUS_UPGRADE', true); in config.php
+ * @return bool
+ */
+function bab_anonymousUpgrade()
+{
+    if (!defined('BAB_ANONYMOUS_UPGRADE')) {
+        return false;
+    }
+    
+    return BAB_ANONYMOUS_UPGRADE;
+}
+
+
+
+/**
+ * @return string HTML
+ */
+function bab_dispUpgrade()
+{
+    if(!bab_isUserAdministrator() && !bab_anonymousUpgrade()) {
+        die(bab_translate("You must be logged as administrator"));
+    }
+    
+    $str = '';
+    
+    if (empty($_POST)) {
+        $str = sprintf(bab_translate('Do you really want to update Ovidentia from %s to %s?'),
+            bab_getDbVersion(),
+            bab_getIniVersion());
+         $str .= bab_getInstallButton();
+         return $str;
+    }
+    
+    bab_requireSaveMethod();
+    if (true === bab_upgrade($GLOBALS['babInstallPath'], $str)) {
+        $str .= bab_endUpgrade();
+    }
+    
+    return $str;
+}
+
+
+
+
 
 /* main */
 $idx = bab_rp('idx','version');
@@ -256,17 +305,7 @@ $html = '';
 switch($idx)
 	{
 	case "upgrade":
-		if (empty($_POST)) {
-		    $str = sprintf(bab_translate('Do you really want to update Ovidentia from %s to %s?'), 
-		            bab_getDbVersion(), 
-		            bab_getIniVersion());
-		    $html = bab_getInstallButton();
-		} else {
-		    bab_requireSaveMethod();
-		    if (true === bab_upgrade($GLOBALS['babInstallPath'], $str)) {
-		        $html = bab_endUpgrade();
-		    }
-		}
+	    $html = bab_dispUpgrade();
 		break;
 	
 	/**
