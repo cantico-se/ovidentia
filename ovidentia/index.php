@@ -775,8 +775,7 @@ switch(bab_rp('tg'))
         exit;
         break;
     case "link":
-        include $GLOBALS['babInstallPath']."link.php";
-        exit;
+        $incl = 'link';
         break;
     case "oml":
         $incl = "oml";
