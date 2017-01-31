@@ -22,6 +22,7 @@
  * USA.																	*
 ************************************************************************/
 include_once "base.php";
+require_once dirname(__FILE__).'/utilit/urlincl.php';
 
 /**
  * Test if a direct redirect is allowed
@@ -35,7 +36,11 @@ function bab_isRedirectValid($url)
         return false;
     }
     
-    $nodes = $rootNode->getNodesByIndex('url', $url);
+    $redirectedUrl = $GLOBALS['babUrl'];
+    $redirectedUrl = bab_url::mod($redirectedUrl, 'tg', 'link');
+    $redirectedUrl = bab_url::mod($redirectedUrl, 'url', $url);
+    
+    $nodes = $rootNode->getNodesByIndex('url', $redirectedUrl);
     return (count($nodes) > 0);
 }
 
