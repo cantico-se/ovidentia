@@ -18,8 +18,35 @@
 </IfModule>
 
 
-# Apache 2.4
-Require all denied
-<FilesMatch "(\.(gif|png|jpg|jpeg|woff|ttf|eot|otf|svg|js|css|php)|)$">
-    Require all granted
-</FilesMatch>
+<IfModule mod_version.c>
+    <IfVersion >= 2.3>
+        Require all denied
+        <FilesMatch "^$">
+            Require all granted
+        </FilesMatch>
+        <FilesMatch "\.(gif|png|jpg|jpeg|woff|ttf|eot|otf|svg|js|css|php)$">
+            Require all granted
+        </FilesMatch>
+    </IfVersion>
+    <IfVersion < 2.3>
+        Order allow,deny
+        Deny from all
+        <FilesMatch "^$">
+            Allow from all
+        </FilesMatch>
+        <FilesMatch "\.(gif|png|jpg|jpeg|woff|ttf|eot|otf|svg|js|css|php)$">
+            Allow from all
+        </FilesMatch>
+    </IfVersion>
+</IfModule>
+
+<IfModule !mod_version.c>
+    Order allow,deny
+    Deny from all
+    <FilesMatch "^$">
+        Allow from all
+    </FilesMatch>
+    <FilesMatch "\.(gif|png|jpg|jpeg|woff|ttf|eot|otf|svg|js|css|php)$">
+        Allow from all
+    </FilesMatch>
+</IfModule>
