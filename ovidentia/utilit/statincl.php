@@ -104,7 +104,7 @@ class bab_WebStatEvent
 		{
 			return;
 		}
-		global $babBody, $babDB, $BAB_SESS_USERID;
+		global $babDB, $BAB_SESS_USERID;
 
 		bab_logUserActionTime($BAB_SESS_USERID, session_id());
 
@@ -114,9 +114,34 @@ class bab_WebStatEvent
 		$host = substr($this->host, 0, 255);
 		$tg = substr($this->tg, 0, 255);
 		
-		$babDB->db_query('INSERT INTO '.BAB_STATS_EVENTS_TBL. '
-							(evt_time, evt_tg, evt_id_site, evt_referer, evt_ip, evt_host, evt_client, evt_url, evt_session_id, evt_iduser)
-							VALUES (now(), '.$babDB->quote($tg).', 0, '.$babDB->quote($referer).', '.$babDB->quote($this->ip).', '.$babDB->quote($host).', '.$babDB->quote($client).', '.$babDB->quote($url).', '.$babDB->quote(session_id()).', 0)');
+		$babDB->db_query('INSERT INTO 
+		    '.BAB_STATS_EVENTS_TBL. '
+			     (
+		              evt_time, 
+		              evt_tg, 
+		              evt_id_site, 
+		              evt_referer, 
+		              evt_ip, 
+		              evt_host, 
+		              evt_client, 
+		              evt_url, 
+		              evt_session_id, 
+		              evt_iduser
+		          )
+		      VALUES 
+		          (
+		              now(),
+		              '.$babDB->quote($tg).', 
+		              0, 
+		              '.$babDB->quote($referer).',
+		              '.$babDB->quote($this->ip).',
+		              '.$babDB->quote($host).',
+		              '.$babDB->quote($client).', 
+		              '.$babDB->quote($url).',
+		              '.$babDB->quote(session_id()).', 
+		              0
+		    )');
+		
 		$this->idevt = $babDB->db_insert_id();
 	}
 
@@ -144,7 +169,7 @@ class bab_WebStatEvent
 
 	function addNewFile($id_dgowner)
 	{
-		global $babBody, $babDB;
+		global $babDB;
 		$date = date('Y-m-d');
 		$hour = date('H');
 		$idg = $id_dgowner != 0? array(0, $id_dgowner): array(0);

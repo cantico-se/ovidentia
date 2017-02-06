@@ -6,18 +6,21 @@
 <input type="hidden" name="idx" value="save_connections" />
 <div class="BabLoginCadreBackground" style="padding: 2px; margin: 1em 3em"> 
 <div class="BabLoginMenuBackground" style="padding: 1em">
-<div style="margin: 2em 1em">
-<p>{ t_save_user_connection_history }</p>
-<input name="activate" type="radio" <!--#if t_log_activated -->checked="checked"<!--#endif t_log_activated --> value="activated" >{ t_activate }</input>
-<br />
-<input name="activate" type="radio" <!--#if t_log_deactivated -->checked="checked"<!--#endif t_log_deactivated --> value="deactivated" >{ t_deactivate }</input>
-</div>
-<div style="margin: 2em 1em">
-<input name="remove" type="checkbox" value="remove" /> { t_delete_logs_before } <input name="remove_before" type="text" value="" />
-</div>
-<div style="margin: 2em 1em 0 1em; text-align: center">
-<input type="submit" name="submit" value="{ t_save }" />
-</div>
+
+	<div style="margin: 2em 1em">
+		<p>{ t_save_user_connection_history }</p>
+		<input name="activate" type="radio" <!--#if t_log_activated -->checked="checked"<!--#endif t_log_activated --> value="activated" >{ t_activate }</input>
+		<br />
+		<input name="activate" type="radio" <!--#if t_log_deactivated -->checked="checked"<!--#endif t_log_deactivated --> value="deactivated" >{ t_deactivate }</input>
+	</div>
+	
+	<div style="margin: 2em 1em">
+	   <input name="remove" type="checkbox" value="remove" /> { t_delete_logs_before } <input name="remove_before" type="text" value="" />
+	</div>
+	
+	<div style="margin: 2em 1em 0 1em; text-align: center">
+		<input type="submit" name="submit" value="{ t_save }" />
+	</div>
 </div>
 </div>
 </form>
