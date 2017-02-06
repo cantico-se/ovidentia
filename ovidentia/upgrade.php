@@ -7315,6 +7315,18 @@ function ovidentia_upgrade($version_base,$version_ini) {
 	if (!bab_isTableField('bab_cal_public', 'bgcolor')){
 	    $babDB->db_query("ALTER TABLE `bab_cal_public` ADD `bgcolor` varchar(6) NOT NULL default ''");
 	}
+	
+	
+	/**
+	 * Upgrade to 8.5.95
+	 */
+	if (!bab_isTableField('bab_stats_events', 'previous')) {
+	    $babDB->db_query("ALTER TABLE `bab_stats_events` ADD `previous` bigint(20) unsigned NOT NULL default '0'");
+	}
+	if (!bab_isTableField('bab_stats_events', 'processed')) {
+	    $babDB->db_query("ALTER TABLE `bab_stats_events` ADD `processed` tinyint(1) unsigned NOT NULL default '0'");
+	}
+	
 
     return true;
 

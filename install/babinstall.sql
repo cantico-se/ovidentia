@@ -2343,19 +2343,21 @@ CREATE TABLE bab_statsman_groups (
 # Table structure for table `bab_stats_events`
 #
 
-CREATE TABLE bab_stats_events (
-  id bigint(20) unsigned NOT NULL auto_increment,
-  evt_id_site tinyint(2) unsigned NOT NULL default '0',
-  evt_time datetime NOT NULL default '0000-00-00 00:00:00',
-  evt_tg varchar(255) NOT NULL default '',
-  evt_referer varchar(255) NOT NULL default '',
-  evt_ip varchar(15) NOT NULL default '',
-  evt_host varchar(255) NOT NULL default '',
-  evt_client varchar(255) NOT NULL default '',
-  evt_url varchar(255) NOT NULL default '',
-  evt_session_id varchar(32) NOT NULL default '',
-  evt_iduser int(11) unsigned NOT NULL default '0',
-  evt_info text,
+CREATE TABLE `bab_stats_events` (
+  `id` bigint(20) unsigned NOT NULL auto_increment,
+  `evt_id_site` tinyint(2) unsigned NOT NULL default '0',
+  `evt_time` datetime NOT NULL default '0000-00-00 00:00:00',
+  `evt_tg` varchar(255) NOT NULL default '',
+  `evt_referer` varchar(255) NOT NULL default '',
+  `evt_ip` varchar(15) NOT NULL default '',
+  `evt_host` varchar(255) NOT NULL default '',
+  `evt_client` varchar(255) NOT NULL default '',
+  `evt_url` varchar(255) NOT NULL default '',
+  `evt_session_id` varchar(32) NOT NULL default '',
+  `evt_iduser` int(11) unsigned NOT NULL default '0',
+  `evt_info` text,
+  `previous` bigint(20) unsigned NOT NULL default '0',
+  `processed` tinyint(1) unsigned NOT NULL default '0',
   PRIMARY KEY  (id)
 );
 
