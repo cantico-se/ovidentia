@@ -105,14 +105,25 @@ class bab_WebStatEvent
 			return;
 		}
 		global $babDB, $BAB_SESS_USERID;
+		
+		$session = bab_getInstance('bab_Session');
+		/*@var $session bab_Session */
 
-		bab_logUserActionTime($BAB_SESS_USERID, session_id());
+		bab_logUserActionTime($BAB_SESS_USERID, $session->getId());
+		
+		
+		
+		
 
 		$referer = substr($this->referer, 0, 255);
 		$client = substr($this->client, 0, 255);
 		$url = substr($this->url, 0, 255);
 		$host = substr($this->host, 0, 255);
 		$tg = substr($this->tg, 0, 255);
+		$previous = 0;
+		if (isset($session->stats_last_insert_id)) {
+		    $previous = $session->stats_last_insert_id;
+		}
 		
 		$babDB->db_query('INSERT INTO 
 		    '.BAB_STATS_EVENTS_TBL. '
@@ -126,7 +137,8 @@ class bab_WebStatEvent
 		              evt_client, 
 		              evt_url, 
 		              evt_session_id, 
-		              evt_iduser
+		              evt_iduser,
+		              previous
 		          )
 		      VALUES 
 		          (
@@ -138,11 +150,15 @@ class bab_WebStatEvent
 		              '.$babDB->quote($host).',
 		              '.$babDB->quote($client).', 
 		              '.$babDB->quote($url).',
-		              '.$babDB->quote(session_id()).', 
-		              0
+		              '.$babDB->quote($session->getId()).', 
+		              0,
+		              '.$babDB->quote($previous).'
 		    )');
 		
 		$this->idevt = $babDB->db_insert_id();
+		$session->stats_last_insert_id = (int) $this->idevt;
+		
+		
 	}
 
 
