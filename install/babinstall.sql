@@ -1024,6 +1024,7 @@ CREATE TABLE `bab_sites` (
   `allday` enum('Y','N') NOT NULL default 'Y',
   `usebgcolor` enum('Y','N') NOT NULL default 'Y',
   `stat_log` enum('Y','N') NOT NULL default 'N',
+  `stat_keep_history` tinyint(3) NOT NULL default '0' COMMENT 'Number of days of detailled history in stats',
   `show_update_info` enum('Y','N') NOT NULL default 'Y',
   `show_onlydays_of_month` enum('N','Y') NOT NULL default 'N',
   `id_calendar_cat` int(11) unsigned NOT NULL default '0',

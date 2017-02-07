@@ -34,15 +34,27 @@
 <input type="hidden" name="babCsrfProtect" value="{ babCsrfProtect }" />
 <input type="hidden" name="tg" value="admstats" />
 <input type="hidden" name="idx" value="cleanstats" />
+	
 <div class="BabLoginCadreBackground" style="padding: 2px; margin: 1em 3em"> 
-<div class="BabLoginMenuBackground" style="padding: 1em">
-<div style="margin: 2em 1em">
-<label>{ t_delete_statitems_before } { datepicker }</label>
-</div>
-<div style="margin: 2em 1em 0 1em; text-align: center">
-<input type="submit" name="submit" value="{ t_save }" />
-</div>
-</div>
+	<div class="BabLoginMenuBackground" style="padding: 1em">
+	
+	   <p>{ t_detailed_history_help }</p>
+	
+	   <div style="margin: 2em 1em">
+          <label>{ t_stat_keep_history } 
+             <input type="number" name="stat_keep_history" value="{ stat_keep_history }" size="3" style="width: 70px;" /> { t_days }
+          </label>
+        </div>
+        
+        <p>{ t_statintems_history_help }</p>
+        
+		<div style="margin: 2em 1em">
+		  <label>{ t_delete_statitems_before } { datepicker }</label>
+		</div>
+		<div style="margin: 2em 1em 0 1em; text-align: center">
+		  <input type="submit" name="submit" value="{ t_save }" />
+		</div>
+	</div>
 </div>
 </form>
 

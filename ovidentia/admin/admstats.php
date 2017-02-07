@@ -26,30 +26,41 @@ include_once "base.php";
 include_once $GLOBALS['babInstallPath']."admin/acl.php";
 
 
-function cleanStatsTables()
-	{
-	global $babBody;
+class statEventsSettingsCls
+{
+    public $t_statitem;
+    public $t_delete_statitems_before;
+    public $t_save;
+
+    public function __construct()
+    {
+        $this->t_detailed_history_help = bab_translate('The detailed history is used to build all the statistics, the history older than the limit set here is deleted by an automated task. Only the session tracking statistics need the detailed history.');
+        $this->t_statintems_history_help = bab_translate('The second parameter allow to clean history of all generated statistics items (articles, files, faq, forums, etc...)');
+        $this->t_delete_statitems_before = bab_translate("Delete logs before");
+        $this->t_stat_keep_history = bab_translate("Always keep detailed history for");
+        $this->t_days = bab_translate('days');
+        
+        
+        $settings = bab_getInstance('bab_Settings');
+        $site = $settings->getSiteSettings();
+        $this->stat_keep_history = bab_toHtml($site['stat_keep_history']);
+        	
+        $W = bab_Widgets();
+        $this->datepicker = $W->DatePicker()->setName('remove_before')->display($W->HtmlCanvas());
+        $this->t_save = bab_translate("Ok");
+    }
+}
+
+
+
+
+function statEventsSettings()
+{
+	$babBody = bab_getBody();
 	
-	class temp
-		{
-		var $t_statitem;
-
-		var $t_delete_statitems_before;
-		var $t_save;
-
-		function temp()
-			{
-			$this->t_delete_statitems_before = bab_translate("Delete logs before");
-			
-			$W = bab_Widgets();
-			$this->datepicker = $W->DatePicker()->setName('remove_before')->display($W->HtmlCanvas());
-			$this->t_save = bab_translate("Ok");
-			}
-		}
-
-	$temp = new temp();
-	$babBody->babecho(	bab_printTemplate($temp,"admstats.html", "cleanstats"));
-	}
+	$temp = new statEventsSettingsCls();
+	$babBody->babecho(bab_printTemplate($temp,"admstats.html", "cleanstats"));
+}
 
 function confirmCleanStatTables($deleteBefore = null)
 {
@@ -180,7 +191,7 @@ switch($idx)
 	case 'connections':
 		$babBody->title = bab_translate("Connections Log");
 		$babBody->addItemMenu("man", bab_translate("Managers"), $GLOBALS['babUrlScript']."?tg=admstats&idx=man");
-		$babBody->addItemMenu("empty", bab_translate("Empty"), $GLOBALS['babUrlScript']."?tg=admstats&idx=empty");
+		$babBody->addItemMenu("statevents", bab_translate("History"), $GLOBALS['babUrlScript']."?tg=admstats&idx=statevents");
 		$babBody->addItemMenu("connections", bab_translate("Connections"), $GLOBALS['babUrlScript']."?tg=admstats&idx=connections");
 		editConnectionLogSettings();
 		break;
@@ -188,7 +199,7 @@ switch($idx)
 	case 'save_connections':
 		$babBody->title = bab_translate("Connections Log");
 		$babBody->addItemMenu("man", bab_translate("Managers"), $GLOBALS['babUrlScript']."?tg=admstats&idx=man");
-		$babBody->addItemMenu("empty", bab_translate("Empty"), $GLOBALS['babUrlScript']."?tg=admstats&idx=empty");
+		$babBody->addItemMenu("statevents", bab_translate("History"), $GLOBALS['babUrlScript']."?tg=admstats&idx=statevents");
 		$babBody->addItemMenu("connections", bab_translate("Connections"), $GLOBALS['babUrlScript']."?tg=admstats&idx=connections");
 		$activate = (bab_rp('activate') == 'activated');
 		$remove = bab_rp('remove', false);
@@ -208,6 +219,7 @@ switch($idx)
 
 	case 'cleanstats':
 		$removeBefore = bab_rp('remove_before', '');
+		$stat_keep_history = (int) bab_rp('stat_keep_history', 0);
 
 		if (!empty($removeBefore)) {
 			require_once $GLOBALS['babInstallPath'] . 'utilit/dateTime.php';
@@ -215,17 +227,20 @@ switch($idx)
 			bab_requireSaveMethod() && confirmCleanStatTables($removeBefore);
 			$babBody->addMessage(bab_translate("Done"));
 		}
-		else
-		{
-			$babBody->msgerror = bab_translate("Nothing done");
-		}
-		$idx= 'empty';
-		/* no break; */
-	case 'empty':
-		$babBody->title = bab_translate("Clean statistics logs");
-		cleanStatsTables();
+		
+		$settings = bab_getInstance('bab_Settings');
+		$settings->setForAllSites('stat_keep_history', $stat_keep_history);
+		
+		$next = bab_url::get_request('tg');
+		$next->idx = 'statevents';
+		$next->location();
+		break;
+		
+	case 'statevents':
+		$babBody->title = bab_translate("History settings");
+		statEventsSettings();
 		$babBody->addItemMenu("man", bab_translate("Managers"), $GLOBALS['babUrlScript']."?tg=admstats&idx=man");
-		$babBody->addItemMenu("empty", bab_translate("Empty"), $GLOBALS['babUrlScript']."?tg=admstats&idx=empty");
+		$babBody->addItemMenu("statevents", bab_translate("History"), $GLOBALS['babUrlScript']."?tg=admstats&idx=statevents");
 		$babBody->addItemMenu("connections", bab_translate("Connections"), $GLOBALS['babUrlScript']."?tg=admstats&idx=connections");
 		break;
 
@@ -237,7 +252,7 @@ switch($idx)
 		$macl->filter(0,0,1,1,1);
         $macl->babecho();
 		$babBody->addItemMenu("man", bab_translate("Managers"), $GLOBALS['babUrlScript']."?tg=admstats&idx=man");
-		$babBody->addItemMenu("empty", bab_translate("Empty"), $GLOBALS['babUrlScript']."?tg=admstats&idx=empty");
+		$babBody->addItemMenu("statevents", bab_translate("History"), $GLOBALS['babUrlScript']."?tg=admstats&idx=statevents");
 		$babBody->addItemMenu("connections", bab_translate("Connections"), $GLOBALS['babUrlScript']."?tg=admstats&idx=connections");
 		$idx = 'man';
 		break;
