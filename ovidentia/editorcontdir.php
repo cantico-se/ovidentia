@@ -258,7 +258,7 @@ function directory($id, $pos, $xf, $badd)
                 $this->urlmail = null;
                 $this->email = bab_toHtml($this->arrf['email']);
                 $this->js_id = bab_toHtml($this->arrf['id'], BAB_HTML_JS);
-                $this->js_name = bab_toHtml(bab_composeUserName($this->arrf['givenname'],$this->arrf['sn']), BAB_HTML_JS);
+                $this->js_name = bab_toHtml(bab_composeUserName($this->arrf['givenname'],$this->arrf['sn']), BAB_HTML_ENTITIES | BAB_HTML_JS);
                 $this->js_iddir = $this->id;
                 $this->url = $GLOBALS['babUrlScript']."?tg=editorcontdir&idx=directory&id=".$this->id."&idu=".$this->arrf['id']."&pos=".$this->ord.$this->pos."&xf=".$this->xf;
                 $i++;

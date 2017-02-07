@@ -68,7 +68,7 @@ function browse($cat)
 					{
 					if(bab_isAccessValid(BAB_FAQCAT_GROUPS_TBL, $arr['idcat']))
 						{
-						$this->title = bab_toHtml($arr['question'], BAB_HTML_JS);
+						$this->title = bab_toHtml($arr['question'], BAB_HTML_ENTITIES | BAB_HTML_JS);
 						$this->titledisp = bab_toHtml($arr['question']);
 						$this->resp = '';
 						$this->faqid = $arr['id'];

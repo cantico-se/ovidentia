@@ -195,14 +195,14 @@ function browse($topics,$cat)
 					{
 					$this->display = true;
 					if( $arr['id_author'] != 0 && (($author = bab_getUserName($arr['id_author'])) != ''))
-						$this->articleauthor = $author;
+						$this->articleauthor = bab_toHtml($author);
 					else
 						$this->articleauthor = bab_translate("Anonymous");
 					$this->articledate = bab_strftime(bab_mktime($arr['date']));
 					$this->author = bab_translate("by") . ' '. $this->articleauthor. ' - '. $this->articledate;
 					$this->content = '';
 					$this->titledisp = bab_toHtml($arr['title']);
-					$this->title = bab_toHtml($arr['title'], BAB_HTML_JS);
+					$this->title = bab_toHtml($arr['title'], BAB_HTML_ENTITIES | BAB_HTML_JS);
 					$this->articleid = $arr['id'];
 					}
 				else
@@ -321,7 +321,7 @@ function browseArticles() {
 					}
 
 				if( $arr['id_author'] != 0 && (($author = bab_getUserName($arr['id_author'])) != ''))
-					$this->articleauthor = $author;
+					$this->articleauthor = bab_toHtml($author);
 				else
 					$this->articleauthor = bab_translate("Anonymous");
 					
@@ -329,7 +329,7 @@ function browseArticles() {
 				$this->author = bab_translate("by") . ' '. $this->articleauthor. ' - '. $this->articledate;
 				$this->content = '';
 				$this->titledisp = bab_toHtml($arr['title']);
-				$this->title = bab_toHtml($arr['title'], BAB_HTML_JS);
+				$this->title = bab_toHtml($arr['title'], BAB_HTML_ENTITIES | BAB_HTML_JS);
 				$this->articleid = $arr['id'];
 				
 				$i++;
