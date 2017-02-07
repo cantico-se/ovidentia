@@ -170,8 +170,8 @@ function iframe($path="")
 				}
 			}
 
-			$this->path = bab_toHtml($path);
-			$this->prevpath = bab_toHtml($prevpath);
+            $this->path = bab_toHtml($path, BAB_HTML_ENTITIES | BAB_HTML_JS);
+            $this->prevpath = bab_toHtml($prevpath, BAB_HTML_ENTITIES | BAB_HTML_JS);
 
 			$this->badmin = bab_imgLibWrite();
 			$this->comnum = 0;
