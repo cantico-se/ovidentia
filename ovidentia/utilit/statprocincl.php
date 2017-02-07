@@ -44,7 +44,7 @@ class bab_stats_base
 {
 	function bab_stats_base()
 	{
-		global $babDB;
+	    
 	}
 
 	function start()
@@ -1182,130 +1182,134 @@ class tempCLs
 		}
 	}
 
+	
+	
+/**
+ * Process stats detailed history
+ */
 class bab_stats_handler
 {
-	var $statrows;
-	var $statlimit;
-	var $statecho = false;
-	var $handlers = array();
 
-	/**
-	 * 
-	 * @param int $statrows
-	 * @param int $statlimit
-	 * @param bool | null $statecho			null: display nothing | false: html throw babBody | true: log infos (echo)
-	 */
-	function bab_stats_handler($statrows, $statlimit, $statecho)
-		{
-		$this->statrows = $statrows;
-		$this->statlimit = $statlimit;
-		$this->statecho = $statecho;
-		}
+    private $statrows;
 
-	function attach(&$handler)
-		{
-		if( get_parent_class($handler) == "bab_stats_base" )
-			{
-			$this->handlers[] = &$handler;
-			return true;
-			}
-		else
-			{
-			return false;
-			}
-		}
+    private $statlimit;
 
-	/**
-	 * 
-	 * @return array total,count
-	 */
-	function process_log()
-		{
-		global $babDB;
+    private $handlers = array();
 
-		for( $i = 0; $i < count($this->handlers); $i++ )
-			{
-			$this->handlers[$i]->start();
-			}
+    /**
+     *
+     * @param int $statrows            
+     * @param int $statlimit            
+     * 
+     */
+    public function __construct($statrows, $statlimit)
+    {
+        $this->statrows = $statrows;
+        $this->statlimit = $statlimit;
+    }
 
-		list($total) = $babDB->db_fetch_row($babDB->db_query("select count(id) from ".BAB_STATS_EVENTS_TBL.""));
-		$count = 0;
-		$req = "select * from ".BAB_STATS_EVENTS_TBL." order by id asc limit 0, ".$babDB->db_escape_string($this->statlimit);
-		$res = $babDB->db_query($req);
-		while( $res && $babDB->db_num_rows($res) > 0)
-			{
-			$maxid = 0;
-			while( $arr = $babDB->db_fetch_array($res))
-				{
-				$count++;
-				$maxid = $arr['id'];
-				$rr = explode(" ", $arr['evt_time']);
-				$date = $rr[0];
-				$time = $rr[1];
-				$rr = explode(":", $time);
-				$hour = $rr[0];
-				settype($hour, "integer");
-				$datas = array();
-				$datas['hour'] = $hour;
-				$datas['date'] = $date;
-				$datas['url'] = $arr['evt_url'];
-				$datas['referer'] = $arr['evt_referer'];
-				$datas['iduser'] = $arr['evt_iduser'];
-				$datas['session_id'] = $arr['evt_session_id'];
-				$datas['client'] = $arr['evt_client'];
-				$datas['host'] = $arr['evt_host'];
-				$datas['id_site'] = $arr['evt_id_site'];
-				$datas['tg'] = $arr['evt_tg'];
-				$datas['ip'] = $arr['evt_ip'];
-				$datas['info'] = unserialize($arr['evt_info']);
-				for( $i = 0; $i < count($this->handlers); $i++ )
-					{
-					$this->handlers[$i]->process($datas);
-					}
-				}
-			if( $maxid )
-				{
-				$babDB->db_query("delete from ".BAB_STATS_EVENTS_TBL." where id <= '".$babDB->db_escape_string($maxid)."'");
-				}
+    public function attach(&$handler)
+    {
+        if (get_parent_class($handler) == "bab_stats_base") {
+            $this->handlers[] = &$handler;
+            return true;
+        } else {
+            return false;
+        }
+    }
 
-			if( $this->statrows != 0 && $count >= $this->statrows )
-				{
-				break;
-				}
+   /**
+    * get date set from number of days in site settings
+    * @return string
+    */
+    private function getKeepDate()
+    {
+        require_once dirname(__FILE__).'/settings.class.php';
+        require_once dirname(__FILE__).'/dateTime.php';
+        
+        $settings = bab_getInstance('bab_Settings');
+        /*@var $settings bab_Settings */
+        $site = $settings->getSiteSettings();
+        
+        $keepDate = BAB_DateTime::now();
+        
+        $nbDays = (int) $site['stat_keep_history'];
+        
+        if (0 !== $nbDays) {
+            $keepDate->less($nbDays, BAB_DATETIME_DAY);
+        }
+        
+        return $keepDate->getIsoDateTime();
+    }
 
-			$res = $babDB->db_query($req);
-			}
+    /**
+     *
+     * @return array total,count
+     */
+    public function process_log()
+    {
+        global $babDB;
+        
+        $keepDate = $this->getKeepDate();
+        
+        for ($i = 0; $i < count($this->handlers); $i ++) {
+            $this->handlers[$i]->start();
+        }
+        
+        list ($total) = $babDB->db_fetch_row($babDB->db_query("select count(*) from " . BAB_STATS_EVENTS_TBL . " WHERE processed='0'"));
+        $count = 0;
+        $req = "select * from " . BAB_STATS_EVENTS_TBL . " WHERE processed='0' 
+            order by evt_time asc limit 0, " . $babDB->db_escape_string($this->statlimit);
+        
+        $res = $babDB->db_query($req);
+        while ($res && $babDB->db_num_rows($res) > 0) {
 
-		for( $i = 0; $i < count($this->handlers); $i++ )
-			{
-			$this->handlers[$i]->terminate();
-			}
+            while ($arr = $babDB->db_fetch_array($res)) {
+                $count ++;
+                $rr = explode(" ", $arr['evt_time']);
+                $date = $rr[0];
+                $time = $rr[1];
+                $rr = explode(":", $time);
+                $hour = $rr[0];
+                settype($hour, "integer");
+                $datas = array();
+                $datas['hour'] = $hour;
+                $datas['date'] = $date;
+                $datas['url'] = $arr['evt_url'];
+                $datas['referer'] = $arr['evt_referer'];
+                $datas['iduser'] = $arr['evt_iduser'];
+                $datas['session_id'] = $arr['evt_session_id'];
+                $datas['client'] = $arr['evt_client'];
+                $datas['host'] = $arr['evt_host'];
+                $datas['id_site'] = $arr['evt_id_site'];
+                $datas['tg'] = $arr['evt_tg'];
+                $datas['ip'] = $arr['evt_ip'];
+                $datas['info'] = unserialize($arr['evt_info']);
+                for ($i = 0; $i < count($this->handlers); $i ++) {
+                    $this->handlers[$i]->process($datas);
+                }
+                $babDB->db_query("UPDATE " . BAB_STATS_EVENTS_TBL . " SET processed='1' where id=".$babDB->quote($arr['id']));
+            }
+            
+            $babDB->db_query("delete from " . BAB_STATS_EVENTS_TBL . " where processed='1' AND evt_time<=".$babDB->quote($keepDate));
+            
+            if ($this->statrows != 0 && $count >= $this->statrows) {
+                break;
+            }
 
-		if( $babDB->db_num_rows($res) == 0 )
-			{
-			$babDB->db_query("TRUNCATE TABLE ".BAB_STATS_EVENTS_TBL."");
-			}
-
-		$babDB->db_query("update ".BAB_SITES_TBL." set stat_update_time=now()");
-		
-		if (null !== $this->statecho)
-		{
-			if( !$this->statecho )
-				{
-				global $babBody;
-				$temp = new tempCLs($total, $count);
-				$babBody->babecho(bab_printTemplate($temp,"statconf.html", "updatestat"));
-				}
-			else
-				{
-				bab_stat_debug("Number of rows ... ".$total."<br>");	
-				bab_stat_debug("Number of rows processed... ".$count."<br>");
-				}
-		}	
-			
-		return array($total, $count);
-		}
-	
+        }
+        
+        for ($i = 0; $i < count($this->handlers); $i ++) {
+            $this->handlers[$i]->terminate();
+        }
+        
+        $babDB->db_query("update " . BAB_SITES_TBL . " set stat_update_time=now()");
+        
+        return array(
+            $total,
+            $count
+        );
+    }
 }
 
 
