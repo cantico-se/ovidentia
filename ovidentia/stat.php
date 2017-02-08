@@ -495,6 +495,13 @@ if ($idx != 'connection')
 
 switch($idx)
 	{
+    case 'sessions':
+        if( bab_statisticsAccess() == BAB_STAT_ACCESS_MANAGER || bab_statisticsAccess() == BAB_STAT_ACCESS_DELEGATION)
+        {
+            include_once $GLOBALS['babInstallPath'] . 'statsessions.php';
+            bab_statSessions();
+        }
+        break;
 	case 'connections':
 		if( bab_statisticsAccess() == BAB_STAT_ACCESS_MANAGER || bab_statisticsAccess() == BAB_STAT_ACCESS_DELEGATION)
 		{
