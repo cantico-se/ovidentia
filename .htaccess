@@ -24,7 +24,7 @@
         <FilesMatch "^$">
             Require all granted
         </FilesMatch>
-        <FilesMatch "\.(gif|png|jpg|jpeg|woff|ttf|eot|otf|svg|js|css|php)$">
+        <FilesMatch "\.(gif|png|jpg|jpeg|woff|ttf|eot|otf|svg|js|css|php|ico)$">
             Require all granted
         </FilesMatch>
     </IfVersion>
@@ -34,7 +34,7 @@
         <FilesMatch "^$">
             Allow from all
         </FilesMatch>
-        <FilesMatch "\.(gif|png|jpg|jpeg|woff|ttf|eot|otf|svg|js|css|php)$">
+        <FilesMatch "\.(gif|png|jpg|jpeg|woff|ttf|eot|otf|svg|js|css|php|ico)$">
             Allow from all
         </FilesMatch>
     </IfVersion>
@@ -46,7 +46,7 @@
     <FilesMatch "^$">
         Allow from all
     </FilesMatch>
-    <FilesMatch "\.(gif|png|jpg|jpeg|woff|ttf|eot|otf|svg|js|css|php)$">
+    <FilesMatch "\.(gif|png|jpg|jpeg|woff|ttf|eot|otf|svg|js|css|php|ico)$">
         Allow from all
     </FilesMatch>
 </IfModule>
