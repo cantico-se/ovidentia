@@ -152,6 +152,44 @@ function bab_statSessionDisplay($sess)
 }
 
 
+class bab_statSessionListCls
+{
+    const NB_ITEMS = 50;
+    
+    private $res;
+    
+    public function __construct($filter)
+    {
+        $pos = 0;
+        if (isset($filter['pos'])) {
+            $pos = (int) $filter['pos'];
+        }
+        
+        global $babDB;
+        
+        $this->res = $babDB->db_query('SELECT 
+            e.evt_session_id,
+            evt_time,
+            e.evt_url,
+            evt_iduser 
+            
+         FROM 
+            '.BAB_STATS_EVENTS_TBL.' 
+            GROUP BY evt_session_id HAVING MAX(evt_time) ORDER BY evt_time DESC');
+    }
+    
+    public function getnext()
+    {
+        if ($arr = $babDB->db_fetch_assoc($this->res)) {
+            $this->detailurl = bab_toHtml($arr['evt_session_id']);
+            return true;
+        }
+        
+        return false;
+    }
+}
+
+
 function bab_statSessionList()
 {
     
