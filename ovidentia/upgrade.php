@@ -7326,9 +7326,13 @@ function ovidentia_upgrade($version_base,$version_ini) {
 	if (!bab_isTableField('bab_stats_events', 'processed')) {
 	    $babDB->db_query("ALTER TABLE `bab_stats_events` ADD `processed` tinyint(1) unsigned NOT NULL default '0'");
 	}
+	if (!bab_isTableField('bab_stats_events', 'evt_sitemap_node')) {
+	    $babDB->db_query("ALTER TABLE `bab_stats_events` ADD `evt_sitemap_node` varchar(255) NOT NULL default ''");
+	}
 	if (!bab_isTableField('bab_sites', 'stat_keep_history')) {
 	    $babDB->db_query("ALTER TABLE `bab_sites` ADD `stat_keep_history` tinyint(3) NOT NULL default '0' COMMENT 'Number of days of detailled history in stats'");
 	}
+	
 
     return true;
 

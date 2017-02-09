@@ -50,6 +50,16 @@ class bab_statSessionEvent
     public $url;
     
     /**
+     * @var string
+     */
+    public $ip;
+    
+    /**
+     * @var string
+     */
+    public $sitemap_node;
+    
+    /**
      * 
      * @var int
      */
@@ -99,11 +109,58 @@ class bab_statSessionEvent
     
     /**
      * Get sitemap node
+     * @return bab_siteMapItem
      */
-    public function getSitemapNode()
+    public function getSitemapItem()
     {
+        if (empty($this->sitemap_node)) {
+            return null;
+        }
         
+        $rootNode = bab_siteMap::getFromSite();
+        $node = $rootNode->getNodeById($this->sitemap_node);
+        
+        if (!isset($node)) {
+            return null;
+        }
+        
+        return $node->getData();
     }
+    
+    
+    /**
+     * @return string
+     */
+    public function getUserName()
+    {
+        if ($iduser > 0) {
+            return bab_getUserName($this->iduser);
+        }
+    
+        return sprintf(bab_translate('Anonymous (Ip address: %s)'), $this->ip);
+    }
+}
+
+
+
+
+
+
+
+function bab_statGetSessionHeaderWidget($res)
+{
+    global $babDB;
+    
+    // get last event and count
+    $arr = $babDB->db_fetch_assoc($res);
+    $event = bab_statCreateEventFromArray('evt', $arr);
+    $babDB->db_data_seek($res, 0);
+    $count = $babDB->db_num_rows($res);
+    
+    $W = bab_Widgets();
+    $frame = $W->Frame();
+    
+    return $frame;
 }
 
 
@@ -129,11 +186,15 @@ function bab_statGetEventWidget(bab_statSessionEvent $event)
     
     // COL 2
     
-    $frame->addItem($pageCell = $W->VBoxLayout());
+    $frame->addItem($pageCell = $W->VBoxLayout()->setVerticalSpacing(.5, 'em'));
     $pageCell->addClass('widget-50em');
     
-    $pageCell->addItem($W->Link($event->url, $event->url));
     
+    if ($node = $event->getSitemapItem()) {
+        $pageCell->addItem($W->Label($node->name)->addClass('widget-strong'));
+    }
+    
+    $pageCell->addItem($W->Link($event->url, $event->url));
     
     
     return $frame;
@@ -170,29 +231,34 @@ function bab_statSessionDisplay($sess)
     $W = bab_Widgets();
     $page = $W->BabPage();
     
-    $res = $babDB->db_query('SELECT 
+    $res = $babDB->db_query('
+        SELECT 
             e.id evt_id, 
             e.evt_time,
             e.evt_referer,
             e.evt_url,
+            e.evt_ip,
+            e.evt_sitemap_node,
             e.evt_iduser,
             e.evt_info, 
         
-            n.id            next_id,
-            n.evt_time      next_time,
-            n.evt_referer   next_referer,
-            n.evt_url       next_url,
-            n.evt_iduser    next_iduser,
-            n.evt_info      next_info  
+            n.id                next_id,
+            n.evt_time          next_time,
+            n.evt_referer       next_referer,
+            n.evt_url           next_url,
+            n.evt_ip            next_ip,
+            n.evt_sitemap_node  next_sitemap_node,
+            n.evt_iduser        next_iduser,
+            n.evt_info          next_info  
         FROM 
         '.BAB_STATS_EVENTS_TBL.' e 
             LEFT JOIN '.BAB_STATS_EVENTS_TBL.' n ON n.previous = e.id 
         WHERE e.evt_session_id='.$babDB->quote($sess).' 
         ORDER BY e.evt_time DESC');
     
+    $page->addItem(bab_statGetSessionHeaderWidget($res));
+    
     while ($arr = $babDB->db_fetch_assoc($res)) {
-        
-        bab_debug($arr);
         
         $event = bab_statCreateEventFromArray('evt', $arr);
         $event->next = bab_statCreateEventFromArray('next', $arr);
