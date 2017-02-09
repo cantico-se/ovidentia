@@ -1262,7 +1262,7 @@ class bab_stats_handler
             order by evt_time asc limit 0, " . $babDB->db_escape_string($this->statlimit);
         
         $res = $babDB->db_query($req);
-        while ($res && $babDB->db_num_rows($res) > 0) {
+        if ($res && $babDB->db_num_rows($res) > 0) {
 
             while ($arr = $babDB->db_fetch_array($res)) {
                 $count ++;
