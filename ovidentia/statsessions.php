@@ -286,11 +286,14 @@ class bab_statSessionListCls
     public $t_time;
     public $t_view_details;
     
+    public $altbg = true;
+    
     public function __construct($filter)
     {
         
         $this->t_user = bab_toHtml(bab_translate('User'));
-        $this->t_time = bab_toHtml(bab_translate('Last viewed'));
+        $this->t_time = bab_toHtml(bab_translate('Last visit'));
+        $this->t_clicks = bab_toHtml(bab_translate('Clicks'));
         $this->t_view_details = bab_toHtml(bab_translate('View details'));
         
         $this->filter = $filter;
@@ -302,17 +305,33 @@ class bab_statSessionListCls
         
         global $babDB;
         
-        $this->res = $babDB->db_query('SELECT 
+        $where = array();
+        
+        if ($filter['sd']) {
+            $where[] = 'DATE(evt_time)>='.$babDB->quote($filter['sd']);
+        }
+        
+        if ($filter['ed']) {
+            $where[] = 'DATE(evt_time)<='.$babDB->quote($filter['ed']);
+        }
+        
+        $query = 'SELECT 
             e.evt_session_id,
             evt_time,
             e.evt_url,
             evt_iduser,
             evt_ip,
-            evt_client 
-            
+            evt_client, 
+            COUNT(*) count 
          FROM 
-            '.BAB_STATS_EVENTS_TBL.' e 
-            GROUP BY evt_session_id HAVING MAX(evt_time) ORDER BY evt_time DESC');
+            '.BAB_STATS_EVENTS_TBL.' e ';
+        
+        if (count($where) > 0) {
+            $query .= ' WHERE '.implode(' AND ', $where);
+        }
+
+        $query .= ' GROUP BY evt_session_id HAVING MAX(evt_time) ORDER BY evt_time DESC';
+        $this->res = $babDB->db_query($query);
         
         $this->index = 0;
         $this->total = $babDB->db_num_rows($this->res);
@@ -324,8 +343,6 @@ class bab_statSessionListCls
         }
         
         if ($pos + self::NB_ITEMS < $this->total) {
-            // next page 
-            
             $this->nextPageUrl = bab_toHtml($this->getPageUrl($pos + self::NB_ITEMS));
         }
         
@@ -367,11 +384,14 @@ class bab_statSessionListCls
         
         if ($arr = $babDB->db_fetch_assoc($this->res)) {
             
+            $this->altbg = !$this->altbg;
+            
             $url = bab_url::get_request('tg', 'idx');
             $url->sess = $arr['evt_session_id'];
             
             $this->detailurl = bab_toHtml($url->toString());
             $this->name = $this->getUserHtml($arr['evt_iduser'], $arr['evt_ip'], $arr['evt_client']);
+            $this->count = (int) $arr['count'];
             $this->time = bab_toHtml(bab_shortDate(bab_mktime($arr['evt_time'])));
             $this->index++;
             return true;
@@ -388,12 +408,14 @@ class bab_statSessionListCls
 }
 
 
-function bab_statSessionList()
+function bab_statSessionList($sd, $ed)
 {
     $W = bab_Widgets();
     $page = $W->BabPage();
     
     $filter = bab_rp('filter');
+    $filter['sd'] = $sd;
+    $filter['ed'] = $ed;
     
     $list = new bab_statSessionListCls($filter);
     
@@ -404,7 +426,7 @@ function bab_statSessionList()
 
 
 
-function bab_statSessions()
+function bab_statSessions($sd, $ed)
 {
     $sess = bab_rp('sess', null);
     
@@ -412,5 +434,5 @@ function bab_statSessions()
         return bab_statSessionDisplay($sess);
     }
     
-    bab_statSessionList();
+    bab_statSessionList($sd, $ed);
 }
