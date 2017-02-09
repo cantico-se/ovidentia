@@ -1,0 +1,42 @@
+<!--#begin list -->
+<table border="0" width="95%" cellpadding="2" cellspacing="0" align="center">
+	<tr> 
+		<td class="BabLoginCadreBackground"> 
+			<table border="0" width="100%" cellpadding="5" cellspacing="2">
+				<tr class="BabSiteAdminTitleFontBackground"> 
+					<td>{ t_user }</td>
+					<td>{ t_time }</td>
+					<td></td>
+				</tr>
+				
+				<!--#in getnext --> 
+                <!--#if altbg --><tr class="BabSiteAdminFontBackground"><!--#else altbg --><tr class="BabForumBackground1"><!--#endif altbg -->
+                    <td>
+                        { name }</td>
+                    <td>
+                        { time }</td>
+                    <td>
+                        <a href="{ detailurl }">{ t_view_details }</a></td>
+                </tr>
+                <!--#endin getnext --> 
+			</table>
+		</td>
+	</tr>
+</table>
+
+<table width="95%">
+    <tr>
+        <td align="left">
+            <!--#if previousPageUrl -->
+            <a href="{ previousPageUrl }" title="{ t_previous }"><img src="{ babSkinPath }images/Puces/arrowPrev1a.gif" alt="{ t_previous }" /></a>
+            <!--#endif previousPageUrl -->
+        </td>
+        <td align="right">
+            <!--#if nextPageUrl -->
+            <a href="{ nextPageUrl }" title="{ t_next }"><img src="{ babSkinPath }images/Puces/arrowNext1a.gif" alt="{ t_next }" /></a>
+            <!--#endif nextPageUrl -->
+        </td>
+    </tr>
+</table>
+
+<!--#end list -->

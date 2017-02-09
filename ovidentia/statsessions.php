@@ -70,7 +70,7 @@ class bab_statSessionEvent
     
     /**
      * Get duration on page
-     * @return int
+     * @return string
      */
     public function getDuration()
     {
@@ -78,15 +78,65 @@ class bab_statSessionEvent
             return null;
         }
         
-        return (bab_mktime($this->next->time) - bab_mktime($this->time));
+        $seconds = (bab_mktime($this->next->time) - bab_mktime($this->time));
+        
+        if ($seconds > 60) {
+            $minutes = (int) round($seconds /60);
+            $seconds = $seconds % 60;
+            
+            return sprintf(bab_translate('%d minute(s), %d seconds'), $minutes, $seconds);
+        }
+        
+        return sprintf(bab_translate('%d seconds'), $seconds);
+    }
+    
+    
+    public function getHour()
+    {
+        $ts = bab_mktime($this->time);
+        return date('H:i', $ts);
+    }
+    
+    /**
+     * Get sitemap node
+     */
+    public function getSitemapNode()
+    {
+        
     }
 }
 
 
 
-function bab_statGetEventWidget(Array $arr)
+function bab_statGetEventWidget(bab_statSessionEvent $event)
 {
+    $W = bab_Widgets();
     
+    $frame = $W->Frame(null, $W->FlowLayout()->setSpacing(1, 'em'));
+    $frame->addClass('widget-bordered');
+    
+    // COL 1
+    
+    $frame->addItem($timeCell = $W->VBoxLayout());
+    
+    $timeCell->addClass('widget-20em');
+    $timeCell->addItem($W->Label($event->getHour()));
+    
+    $duration = $event->getDuration();
+    if (isset($duration)) {
+        $timeCell->addItem($W->Label($duration)->addClass('widget-strong'));
+    }
+    
+    // COL 2
+    
+    $frame->addItem($pageCell = $W->VBoxLayout());
+    $pageCell->addClass('widget-50em');
+    
+    $pageCell->addItem($W->Link($event->url, $event->url));
+    
+    
+    
+    return $frame;
 }
 
 
@@ -137,10 +187,12 @@ function bab_statSessionDisplay($sess)
         FROM 
         '.BAB_STATS_EVENTS_TBL.' e 
             LEFT JOIN '.BAB_STATS_EVENTS_TBL.' n ON n.previous = e.id 
-        WHERE evt_session_id='.$babDB->quote($sess).' 
-        ORDER BY evt_time');
+        WHERE e.evt_session_id='.$babDB->quote($sess).' 
+        ORDER BY e.evt_time DESC');
     
     while ($arr = $babDB->db_fetch_assoc($res)) {
+        
+        bab_debug($arr);
         
         $event = bab_statCreateEventFromArray('evt', $arr);
         $event->next = bab_statCreateEventFromArray('next', $arr);
@@ -152,14 +204,31 @@ function bab_statSessionDisplay($sess)
 }
 
 
+
+/**
+ * Paginated list of sessions, last sessions on top
+ */
 class bab_statSessionListCls
 {
     const NB_ITEMS = 50;
     
     private $res;
     
+    private $filter;
+    
+    public $t_user;
+    public $t_time;
+    public $t_view_details;
+    
     public function __construct($filter)
     {
+        
+        $this->t_user = bab_toHtml(bab_translate('User'));
+        $this->t_time = bab_toHtml(bab_translate('Last viewed'));
+        $this->t_view_details = bab_toHtml(bab_translate('View details'));
+        
+        $this->filter = $filter;
+        
         $pos = 0;
         if (isset($filter['pos'])) {
             $pos = (int) $filter['pos'];
@@ -171,28 +240,100 @@ class bab_statSessionListCls
             e.evt_session_id,
             evt_time,
             e.evt_url,
-            evt_iduser 
+            evt_iduser,
+            evt_ip,
+            evt_client 
             
          FROM 
-            '.BAB_STATS_EVENTS_TBL.' 
+            '.BAB_STATS_EVENTS_TBL.' e 
             GROUP BY evt_session_id HAVING MAX(evt_time) ORDER BY evt_time DESC');
+        
+        $this->index = 0;
+        $this->total = $babDB->db_num_rows($this->res);
+        
+        if ($pos > 0) {
+            $babDB->db_data_seek($this->res, $pos);
+            
+            $this->previousPageUrl = bab_toHtml($this->getPageUrl($pos - self::NB_ITEMS));
+        }
+        
+        if ($pos + self::NB_ITEMS < $this->total) {
+            // next page 
+            
+            $this->nextPageUrl = bab_toHtml($this->getPageUrl($pos + self::NB_ITEMS));
+        }
+        
     }
+    
+    
+    /**
+     * @return string
+     */
+    protected function getPageUrl($pos)
+    {
+        $url = new bab_url();
+        $url->filter = $this->filter;
+        $url->filter['pos'] = $pos;
+        
+        return $url->toString();
+    }
+    
+    /**
+     * @return string
+     */
+    protected function getUserHtml($iduser, $ip)
+    {
+        if ($iduser > 0) {
+            return bab_toHtml(bab_getUserName($iduser));
+        }
+        
+        return bab_toHtml(sprintf(bab_translate('Anonymous (Ip address: %s)'), $ip));
+    }
+    
     
     public function getnext()
     {
+        if ($this->index >= self::NB_ITEMS) {
+            return false;
+        }
+        
+        global $babDB;
+        
         if ($arr = $babDB->db_fetch_assoc($this->res)) {
-            $this->detailurl = bab_toHtml($arr['evt_session_id']);
+            
+            $url = bab_url::get_request('tg', 'idx');
+            $url->sess = $arr['evt_session_id'];
+            
+            $this->detailurl = bab_toHtml($url->toString());
+            $this->name = $this->getUserHtml($arr['evt_iduser'], $arr['evt_ip'], $arr['evt_client']);
+            $this->time = bab_toHtml(bab_shortDate(bab_mktime($arr['evt_time'])));
+            $this->index++;
             return true;
         }
         
         return false;
+    }
+    
+    
+    public function getHtml()
+    {
+        return bab_printTemplate($this, 'statsessions.html', 'list');
     }
 }
 
 
 function bab_statSessionList()
 {
+    $W = bab_Widgets();
+    $page = $W->BabPage();
     
+    $filter = bab_rp('filter');
+    
+    $list = new bab_statSessionListCls($filter);
+    
+    $page->addItem($W->Html($list->getHtml()));
+    
+    $page->displayHtml();
 }
 
 

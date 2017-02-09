@@ -1293,10 +1293,6 @@ class bab_stats_handler
             
             $babDB->db_query("delete from " . BAB_STATS_EVENTS_TBL . " where processed='1' AND evt_time<=".$babDB->quote($keepDate));
             
-            if ($this->statrows != 0 && $count >= $this->statrows) {
-                break;
-            }
-
         }
         
         for ($i = 0; $i < count($this->handlers); $i ++) {
