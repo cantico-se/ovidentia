@@ -609,6 +609,10 @@ switch(bab_rp('tg'))
         $babLevelOne = bab_translate("Statistics");
         $incl = "statconf";
         break;
+    case "statsessions":
+        $babLevelOne = bab_translate("Statistics");
+        $incl = "statsessions";
+        break;
     case "thesaurus":
         $babLevelOne = bab_translate("Thesaurus");
         $incl = "thesaurus";

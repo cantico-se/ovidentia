@@ -66,6 +66,11 @@ class bab_statSessionEvent
     public $iduser;
     
     /**
+     * Client user agent string
+     */
+    public $client;
+    
+    /**
      * Serialized informations
      * @var string
      */
@@ -133,7 +138,7 @@ class bab_statSessionEvent
      */
     public function getUserName()
     {
-        if ($iduser > 0) {
+        if ($this->iduser > 0) {
             return bab_getUserName($this->iduser);
         }
     
@@ -152,13 +157,41 @@ function bab_statGetSessionHeaderWidget($res)
     global $babDB;
     
     // get last event and count
-    $arr = $babDB->db_fetch_assoc($res);
-    $event = bab_statCreateEventFromArray('evt', $arr);
     $babDB->db_data_seek($res, 0);
+    
+    $arr = $babDB->db_fetch_assoc($res);
+    $lastEvent = bab_statCreateEventFromArray('evt', $arr);
+    
     $count = $babDB->db_num_rows($res);
+    $babDB->db_data_seek($res, $count-1);
+    
+    $arr = $babDB->db_fetch_assoc($res);
+    $firstEvent = bab_statCreateEventFromArray('evt', $arr);
+    $firstEvent->next = $lastEvent;
+    
+    $babDB->db_data_seek($res, 0);
     
     $W = bab_Widgets();
-    $frame = $W->Frame();
+    $frame = $W->Frame(null, $W->FlowLayout()
+            ->setVerticalAlign('top')
+            ->setHorizontalSpacing(2, 'em')
+    );
+    
+    $frame->addClass('widget-bordered');
+    $frame->addClass('BabLoginMenuBackground');
+    
+    $frame->addItem($col1 = $W->VBoxLayout()->setSpacing(.5, 'em'));
+    $frame->addItem($col2 = $W->VBoxLayout()->setSpacing(.5, 'em'));
+    
+    $col1->setSizePolicy('widget-50pc');
+    $col1->addItem($W->Title($lastEvent->getUserName(), 2));
+    $col1->addItem($W->Label($firstEvent->getDuration())->addClass('widget-strong'));
+    $col1->addItem($W->Label(sprintf(bab_translate('Total number of clicks: %d'), $count)));
+    
+    $col2->setSizePolicy('widget-50pc');
+    $col2->addItem($W->Title(bab_longDate(bab_mktime($firstEvent->time), false), 2));
+    $col2->addItem($W->Label(bab_translate('Used device:'))->addClass('widget-strong'));
+    $col2->addItem($W->Label($lastEvent->client));
     
     return $frame;
 }
@@ -196,6 +229,14 @@ function bab_statGetEventWidget(bab_statSessionEvent $event)
     
     $pageCell->addItem($W->Link($event->url, $event->url));
     
+    // COL 3
+    
+    $frame->addItem($loginCell = $W->VBoxLayout()->setVerticalSpacing(.5, 'em'));
+    $loginCell->addClass('widget-2em');
+    
+    if ($event->iduser > 0) {
+        $loginCell->addItem($W->Icon('', Func_Icons::APPS_PREFERENCES_AUTHENTICATION));
+    }
     
     return $frame;
 }
@@ -231,6 +272,9 @@ function bab_statSessionDisplay($sess)
     $W = bab_Widgets();
     $page = $W->BabPage();
     
+    bab_functionality::includeOriginal('Icons');
+    $page->addClass(Func_Icons::ICON_LEFT_24);
+    
     $res = $babDB->db_query('
         SELECT 
             e.id evt_id, 
@@ -240,7 +284,8 @@ function bab_statSessionDisplay($sess)
             e.evt_ip,
             e.evt_sitemap_node,
             e.evt_iduser,
-            e.evt_info, 
+            e.evt_info,
+            e.evt_client,
         
             n.id                next_id,
             n.evt_time          next_time,
@@ -249,7 +294,8 @@ function bab_statSessionDisplay($sess)
             n.evt_ip            next_ip,
             n.evt_sitemap_node  next_sitemap_node,
             n.evt_iduser        next_iduser,
-            n.evt_info          next_info  
+            n.evt_info          next_info, 
+            n.evt_client        next_client 
         FROM 
         '.BAB_STATS_EVENTS_TBL.' e 
             LEFT JOIN '.BAB_STATS_EVENTS_TBL.' n ON n.previous = e.id 
@@ -259,6 +305,8 @@ function bab_statSessionDisplay($sess)
     $page->addItem(bab_statGetSessionHeaderWidget($res));
     
     while ($arr = $babDB->db_fetch_assoc($res)) {
+        
+
         
         $event = bab_statCreateEventFromArray('evt', $arr);
         $event->next = bab_statCreateEventFromArray('next', $arr);
@@ -386,7 +434,8 @@ class bab_statSessionListCls
             
             $this->altbg = !$this->altbg;
             
-            $url = bab_url::get_request('tg', 'idx');
+            $url = bab_url::get_request();
+            $url->tg= 'statsessions';
             $url->sess = $arr['evt_session_id'];
             
             $this->detailurl = bab_toHtml($url->toString());
@@ -426,13 +475,9 @@ function bab_statSessionList($sd, $ed)
 
 
 
-function bab_statSessions($sd, $ed)
-{
-    $sess = bab_rp('sess', null);
+$sess = bab_rp('sess', null);
     
-    if (isset($sess)) {
-        return bab_statSessionDisplay($sess);
-    }
-    
-    bab_statSessionList($sd, $ed);
+if (isset($sess)) {
+    return bab_statSessionDisplay($sess);
 }
+

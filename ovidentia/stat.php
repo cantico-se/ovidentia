@@ -595,7 +595,7 @@ switch ($idx) {
     case 'sessions':
         if (bab_statisticsAccess() == BAB_STAT_ACCESS_MANAGER || bab_statisticsAccess() == BAB_STAT_ACCESS_DELEGATION) {
             require_once dirname(__FILE__) . '/statsessions.php';
-            bab_statSessions($sd, $ed);
+            bab_statSessionList($sd, $ed);
         }
         break;
     case 'connections':

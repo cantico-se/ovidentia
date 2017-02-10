@@ -152,7 +152,7 @@ class bab_WebStatEvent
 		              ' . $babDB->quote($url) . ',
                       ' . $babDB->quote(bab_siteMap::getPosition()) . ',
 		              ' . $babDB->quote($session->getId()) . ', 
-		              0,
+		              ' . $babDB->quote(bab_getUserId()). ',
 		              ' . $babDB->quote($previous) . '
 		    )');
         
