@@ -3541,4 +3541,9 @@ L'administrateur</string>
 <string id="Anonymous (Ip address: %s)">Anonyme (Address Ip: %s)</string>
 <string id="Last visit">Dernier accès</string>
 <string id="View details">Voir les détails</string>
+<string id="%d seconds">%d secondes</string>
+<string id="History settings">Paramètres de l'historique</string>
+<string id="The second parameter allow to clean history of all generated statistics items (articles, files, faq, forums, etc...)">Le second paramètre permet denettoyer l'historique de toutes les statistiques générées (articles, fichiers, faq, forums, etc...)</string>
+<string id="Always keep detailed history for">Toujours conserver l'historique détaillé sur</string>
+<string id="The detailed history is used to build all the statistics, the history older than the limit set here is deleted by an automated task. Only the session tracking statistics need the detailed history.">L'historique détaillé est utilisé pour générer toutes les statistiques, l'historique plus vieux que la limite configurée ici est supprimé par une tâche planifiée. Seul les statisitiques des sessions nécéssite l'historique détaillé.</string>
 </fr>
