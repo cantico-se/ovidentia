@@ -3535,4 +3535,10 @@ L'administrateur</string>
 <string id="Agenda color">Couleur de l'agenda</string>
 <string id="You are going to be redirected to an external site, please confirm">Vous allez être redirigé vers un site externe, veuillez confirmer</string>
 <string id="Delete logs before (dd/mm/yyyy)">Supprimer les logs avant (jj/mm/aaaa)</string>
+<string id="Used device:">Périphérique utilisé :</string>
+<string id="Total number of clicks: %d">Nombre total de clicks : %d</string>
+<string id="%d minute(s), %d seconds">%d minute(s), %d secondes</string>
+<string id="Anonymous (Ip address: %s)">Anonyme (Address Ip: %s)</string>
+<string id="Last visit">Dernier accès</string>
+<string id="View details">Voir les détails</string>
 </fr>

@@ -22,6 +22,7 @@
 * USA.																	*
 ************************************************************************/
 
+require_once dirname(__FILE__).'/utilit/dateTime.php';
 
 class bab_statSessionEvent
 {
@@ -144,6 +145,26 @@ class bab_statSessionEvent
     
         return sprintf(bab_translate('Anonymous (Ip address: %s)'), $this->ip);
     }
+    
+    
+    public function getPhotoPath()
+    {
+        if (!$this->iduser) {
+            return null;
+        }
+        
+        $entry = bab_getDirEntry($this->iduser);
+        
+        if (!isset($entry['jpegphoto']['photo'])) {
+            return null;
+        }
+        
+        $photo = $entry['jpegphoto']['photo'];
+        /*@var $photo bab_dirEntryPhoto */
+        
+        $photo->setThumbSize(64, 64);
+        return $photo->getUrl();
+    }
 }
 
 
@@ -180,10 +201,20 @@ function bab_statGetSessionHeaderWidget($res)
     $frame->addClass('widget-bordered');
     $frame->addClass('BabLoginMenuBackground');
     
-    $frame->addItem($col1 = $W->VBoxLayout()->setSpacing(.5, 'em'));
+    $frame->addItem($card = $W->HBoxLayout()->setSpacing(1, 'em'));
     $frame->addItem($col2 = $W->VBoxLayout()->setSpacing(.5, 'em'));
     
-    $col1->setSizePolicy('widget-50pc');
+    $card->setSizePolicy('widget-50pc');
+    $card->addClass(Func_Icons::ICON_LEFT_48);
+    
+    if ($path = $lastEvent->getPhotoPath()) {
+        $photo = $W->Image($path);
+    } else {
+        $photo = $W->Icon('', Func_Icons::OBJECTS_USER);
+    }
+    $card->addItem($photo);
+    $card->addItem($col1 = $W->VBoxLayout()->setSpacing(.5, 'em'));
+
     $col1->addItem($W->Title($lastEvent->getUserName(), 2));
     $col1->addItem($W->Label($firstEvent->getDuration())->addClass('widget-strong'));
     $col1->addItem($W->Label(sprintf(bab_translate('Total number of clicks: %d'), $count)));
@@ -227,7 +258,7 @@ function bab_statGetEventWidget(bab_statSessionEvent $event)
         $pageCell->addItem($W->Label($node->name)->addClass('widget-strong'));
     }
     
-    $pageCell->addItem($W->Link($event->url, $event->url));
+    $pageCell->addItem($W->Link($event->url, $event->url)->addAttribute('target', '_blank'));
     
     // COL 3
     
@@ -273,7 +304,6 @@ function bab_statSessionDisplay($sess)
     $page = $W->BabPage();
     
     bab_functionality::includeOriginal('Icons');
-    $page->addClass(Func_Icons::ICON_LEFT_24);
     
     $res = $babDB->db_query('
         SELECT 
@@ -304,6 +334,9 @@ function bab_statSessionDisplay($sess)
     
     $page->addItem(bab_statGetSessionHeaderWidget($res));
     
+    $page->addItem($list = $W->Frame());
+    $list->addClass(Func_Icons::ICON_LEFT_24);
+    
     while ($arr = $babDB->db_fetch_assoc($res)) {
         
 
@@ -311,7 +344,7 @@ function bab_statSessionDisplay($sess)
         $event = bab_statCreateEventFromArray('evt', $arr);
         $event->next = bab_statCreateEventFromArray('next', $arr);
         
-        $page->addItem(bab_statGetEventWidget($event));
+        $list->addItem(bab_statGetEventWidget($event));
     }
     
     $page->displayHtml();
@@ -343,6 +376,8 @@ class bab_statSessionListCls
         $this->t_time = bab_toHtml(bab_translate('Last visit'));
         $this->t_clicks = bab_toHtml(bab_translate('Clicks'));
         $this->t_view_details = bab_toHtml(bab_translate('View details'));
+        $this->t_previous = bab_translate('Previous page');
+        $this->t_next = bab_translate('Next page');
         
         $this->filter = $filter;
         
@@ -402,9 +437,10 @@ class bab_statSessionListCls
      */
     protected function getPageUrl($pos)
     {
-        $url = new bab_url();
-        $url->filter = $this->filter;
-        $url->filter['pos'] = $pos;
+        $url = bab_url::get_request('tg', 'idx', 'sd', 'ed');
+        $url->filter = array(
+            'pos' => $pos
+        );
         
         return $url->toString();
     }
@@ -441,7 +477,7 @@ class bab_statSessionListCls
             $this->detailurl = bab_toHtml($url->toString());
             $this->name = $this->getUserHtml($arr['evt_iduser'], $arr['evt_ip'], $arr['evt_client']);
             $this->count = (int) $arr['count'];
-            $this->time = bab_toHtml(bab_shortDate(bab_mktime($arr['evt_time'])));
+            $this->time = bab_toHtml(BAB_DateTimeUtil::relativePastDate($arr['evt_time'], true, true));
             $this->index++;
             return true;
         }

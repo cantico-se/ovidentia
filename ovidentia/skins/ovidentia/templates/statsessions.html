@@ -5,7 +5,7 @@
 			<table border="0" width="100%" cellpadding="10" cellspacing="0">
 				<tr class="BabSiteAdminTitleFontBackground"> 
 					<td>{ t_user }</td>
-					<td>{ t_clicks }</td>
+					<td align="right">{ t_clicks }</td>
 					<td>{ t_time }</td>
 					<td></td>
 				</tr>
@@ -14,7 +14,7 @@
                 <!--#if altbg --><tr class="BabSiteAdminFontBackground"><!--#else altbg --><tr class="BabForumBackground1"><!--#endif altbg -->
                     <td>
                         { name }</td>
-                    <td>
+                    <td align="right">
                         { count }</td>
                     <td>
                         { time }</td>
@@ -27,16 +27,16 @@
 	</tr>
 </table>
 
-<table width="95%">
+<table width="95%"  align="center">
     <tr>
         <td align="left">
             <!--#if previousPageUrl -->
-            <a href="{ previousPageUrl }" title="{ t_previous }"><img src="{ babSkinPath }images/Puces/arrowPrev1a.gif" alt="{ t_previous }" /></a>
+            <a href="{ previousPageUrl }"><img src="{ babSkinPath }images/Puces/arrowPrev1a.gif" align="absmiddle" alt="{ t_previous }" /> { t_previous }</a>
             <!--#endif previousPageUrl -->
         </td>
         <td align="right">
             <!--#if nextPageUrl -->
-            <a href="{ nextPageUrl }" title="{ t_next }"><img src="{ babSkinPath }images/Puces/arrowNext1a.gif" alt="{ t_next }" /></a>
+            <a href="{ nextPageUrl }">{ t_next } <img src="{ babSkinPath }images/Puces/arrowNext1a.gif" align="absmiddle" alt="{ t_next }" /></a>
             <!--#endif nextPageUrl -->
         </td>
     </tr>
