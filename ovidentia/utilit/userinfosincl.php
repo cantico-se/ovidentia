@@ -36,15 +36,15 @@ class bab_userInfos {
      * @return array | false
      */
     public static function getRow($id_user) {
-        
+
         if (!isset($id_user) || 0 == $id_user) {
             throw new Exception('Missing parameter id_user');
         }
 
         global $babDB;
         $res = $babDB->db_query('
-            SELECT * FROM 
-                '.BAB_USERS_TBL.' 
+            SELECT * FROM
+                '.BAB_USERS_TBL.'
             WHERE id='.$babDB->quote($id_user)
         );
 
@@ -88,12 +88,14 @@ class bab_userInfos {
         }
 
         return array(
-            'nickname'		=> $row['nickname'],
-            'disabled' 		=> $row['disabled'],
-            'password_md5'	=> $row['password'], // deprecated, password can be a string encoded with password_hash
-            'password'	    => $row['password'],
-            'changepwd'		=> $row['changepwd'],
-            'is_confirmed'	=> $row['is_confirmed']
+            'nickname'          => $row['nickname'],
+            'disabled'          => $row['disabled'],
+            'validity_start'    => $row['validity_start'],
+            'validity_end'      => $row['validity_end'],
+            'password_md5'      => $row['password'], // deprecated, password can be a string encoded with password_hash
+            'password'          => $row['password'],
+            'changepwd'         => $row['changepwd'],
+            'is_confirmed'      => $row['is_confirmed']
         );
     }
 

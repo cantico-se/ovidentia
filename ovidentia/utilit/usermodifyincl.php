@@ -111,10 +111,10 @@ class bab_userModify {
 
         return true;
     }
-    
-    
-    
-    
+
+
+
+
 
     /**
      * @static
@@ -142,24 +142,24 @@ class bab_userModify {
 
         $replace = array( " " => "", "-" => "");
         $hashname = md5(mb_strtolower(strtr($firstname.$middlename.$lastname, $replace)));
-        
+
         $encPassword = bab_Password::hash($password1);
 
         $sql="insert into ".BAB_USERS_TBL." (
-            nickname, 
-            firstname, 
-            lastname, 
-            hashname, 
-            password, 
+            nickname,
+            firstname,
+            lastname,
+            hashname,
+            password,
             password_hash_function,
-            email, 
-            date, 
+            email,
+            date,
             confirm_hash,
             is_confirmed,
             changepwd,
-            lang, 
-            langfilter, 
-            datelog, 
+            lang,
+            langfilter,
+            datelog,
             lastlog
          ) values (
             '". $babDB->db_escape_string($nickname)."',
@@ -400,6 +400,16 @@ class bab_userModify {
             {
                 $arruq[] =  'is_confirmed=0';
             }
+        }
+
+        if( isset($info['validity_start']))
+        {
+                $arruq[] = 'validity_start=' . $babDB->quote($info['validity_start']);
+        }
+
+        if( isset($info['validity_end']))
+        {
+            $arruq[] = 'validity_end=' . $babDB->quote($info['validity_end']);
         }
 
         if( isset($info['email']))
