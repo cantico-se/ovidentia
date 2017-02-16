@@ -504,6 +504,10 @@ function bab_statSessionList($sd, $ed)
 }
 
 
+if (bab_statisticsAccess() == - 1) {
+    $babBody->msgerror = bab_translate("Access denied");
+    return;
+}
 
 $sess = bab_rp('sess', null);
     

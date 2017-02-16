@@ -81,9 +81,9 @@ class bab_StatSessions
             e.evt_session_id,
             e.evt_time,
             e.evt_url,
-            evt_iduser,
-            evt_ip,
-            evt_client
+            e.evt_iduser,
+            e.evt_ip,
+            e.evt_client
          FROM
             bab_stats_events e
             JOIN (SELECT evt_session_id, MAX(evt_time) evt_time FROM bab_stats_events GROUP BY evt_session_id) AS max
@@ -97,5 +97,30 @@ class bab_StatSessions
         
         $query .= ' ORDER BY e.evt_time DESC';
         return $babDB->db_query($query);
+    }
+    
+    
+    /**
+     * Create links to user sessions
+     * @return Widget_Frame
+     */
+    public function getWidget()
+    {
+        if (bab_statisticsAccess() == -1) {
+            return null;
+        }
+        
+        global $babDB;
+        
+        $W = bab_Widgets();
+        $frame = $W->Frame(null, $W->VBoxLayout()->setVerticalSpacing(1, 'em'));
+        
+        $res = $this->getResource();
+        while ($arr = $babDB->db_fetch_assoc($res)) {
+            $text = sprintf(bab_translate('Last access: %s'), BAB_DateTimeUtil::relativePastDate($arr['evt_time']));
+            $frame->addItem($W->Link($text, '?tg=statsessions&sess='.$arr['evt_session_id']));
+        }
+            
+        return $frame;
     }
 }
