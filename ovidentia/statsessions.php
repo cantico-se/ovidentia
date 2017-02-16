@@ -23,6 +23,7 @@
 ************************************************************************/
 
 require_once dirname(__FILE__).'/utilit/dateTime.php';
+require_once dirname(__FILE__).'/utilit/statsessionsincl.php';
 
 class bab_statSessionEvent
 {
@@ -327,8 +328,8 @@ function bab_statSessionDisplay($sess)
             n.evt_info          next_info, 
             n.evt_client        next_client 
         FROM 
-        '.BAB_STATS_EVENTS_TBL.' e 
-            LEFT JOIN '.BAB_STATS_EVENTS_TBL.' n ON n.previous = e.id 
+        bab_stats_events e 
+            LEFT JOIN bab_stats_events n ON n.previous = e.id 
         WHERE e.evt_session_id='.$babDB->quote($sess).' 
         ORDER BY e.evt_time DESC');
     
@@ -387,34 +388,16 @@ class bab_statSessionListCls
         }
         
         global $babDB;
-        
-        $where = array();
+        $sessions = new bab_StatSessions();
         
         if ($filter['sd']) {
-            $where[] = 'DATE(evt_time)>='.$babDB->quote($filter['sd']);
+            $sessions->startDate = $filter['sd'];
         }
         
         if ($filter['ed']) {
-            $where[] = 'DATE(evt_time)<='.$babDB->quote($filter['ed']);
+            $sessions->endDate = $filter['ed'];
         }
-        
-        $query = 'SELECT 
-            e.evt_session_id,
-            evt_time,
-            e.evt_url,
-            evt_iduser,
-            evt_ip,
-            evt_client, 
-            COUNT(*) count 
-         FROM 
-            '.BAB_STATS_EVENTS_TBL.' e ';
-        
-        if (count($where) > 0) {
-            $query .= ' WHERE '.implode(' AND ', $where);
-        }
-
-        $query .= ' GROUP BY evt_session_id HAVING MAX(evt_time) ORDER BY evt_time DESC';
-        $this->res = $babDB->db_query($query);
+        $this->res = $sessions->getResource();
         
         $this->index = 0;
         $this->total = $babDB->db_num_rows($this->res);
@@ -458,6 +441,17 @@ class bab_statSessionListCls
     }
     
     
+    protected function getCount($sess)
+    {
+        global $babDB;
+        
+        $res = $babDB->db_query('SELECT COUNT(*) FROM bab_stats_events WHERE evt_session_id='.$babDB->quote($sess));
+        list($count) = $babDB->db_fetch_array($res);
+        
+        return $count;
+    }
+    
+    
     public function getnext()
     {
         if ($this->index >= self::NB_ITEMS) {
@@ -476,7 +470,7 @@ class bab_statSessionListCls
             
             $this->detailurl = bab_toHtml($url->toString());
             $this->name = $this->getUserHtml($arr['evt_iduser'], $arr['evt_ip'], $arr['evt_client']);
-            $this->count = (int) $arr['count'];
+            $this->count = $this->getCount($arr['evt_session_id']);
             $this->time = bab_toHtml(BAB_DateTimeUtil::relativePastDate($arr['evt_time'], true, true));
             $this->index++;
             return true;
@@ -510,6 +504,10 @@ function bab_statSessionList($sd, $ed)
 }
 
 
+if (bab_statisticsAccess() == - 1) {
+    $babBody->msgerror = bab_translate("Access denied");
+    return;
+}
 
 $sess = bab_rp('sess', null);
     
