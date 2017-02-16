@@ -6,12 +6,12 @@
 // it under the terms of the GNU General Public License as published by
 // the Free Software Foundation; either version 2, or (at your option)
 // any later version.
-// 
+//
 // This program is distributed in the hope that it will be useful, but
 // WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 // See the GNU General Public License for more details.
-// 
+//
 // You should have received a copy of the GNU General Public License
 // along with this program; if not, write to the Free Software
 // Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307,
@@ -30,23 +30,23 @@ require_once dirname(__FILE__).'/iterator/iterator.php';
  */
 class bab_RegistryIterator extends BAB_MySqlResultIterator
 {
-	
+
 	/**
 	 * Process a registry entry
-	 * 
+	 *
 	 * (non-PHPdoc)
 	 * @see utilit/iterator/BAB_MySqlResultIterator#getObject($aDatas)
-	 * 
+	 *
 	 * @return mixed
 	 */
 	public function getObject($arr)
 	{
 		switch($arr['value_type']) {
-				
+
 			case 'boolean':
 				$arr['value'] = $arr['value'] ? true : false;
 				break;
-			
+
 			case 'object':
 			case 'array':
 				$arr['value'] = unserialize($arr['value']);
@@ -66,7 +66,7 @@ class bab_RegistryIterator extends BAB_MySqlResultIterator
 			'lastupdate' => (int) $arr['lastupdate']  // timestamp
 		);
 	}
-	
+
 }
 
 /**
@@ -81,13 +81,13 @@ class bab_Registry
 	/**
 	 * This constructor should not be used directly.
 	 * Use function bab_getRegistryInstance instead.
-	 * 
+	 *
 	 * @see bab_getRegistryInstance
 	 * @return bab_Registry
 	 */
 	public function __construct()
 	{
-		
+
 	}
 
 
@@ -116,7 +116,7 @@ class bab_Registry
 	/**
 	 * Sets the current directory of the registry
 	 * Most other registry methods work relatively to this directory.
-	 * 
+	 *
 	 * @param string	$path		An absolute or relative path.
 	 */
 	public function changeDirectory($path)
@@ -146,9 +146,9 @@ class bab_Registry
 			trigger_error('"/" are forbidden in the key parameter of setKeyValue');
 			return 0;
 		}
-		
+
 		$userId = (int)bab_getUserId();
-		
+
 		$dirkey = $this->dir.$key;
 
 		$value_type = gettype($value);
@@ -172,14 +172,14 @@ class bab_Registry
 		if ($n > 0) {
 
 			$res = $babDB->db_query("
-			
-			UPDATE bab_registry 
+
+			UPDATE bab_registry
 				SET
-					value			= ".$babDB->quote($value).", 
-					value_type		= ".$babDB->quote($value_type).", 
-					update_id_user	= ".$babDB->quote($userId).", 
-					lastupdate		= NOW() 
-				WHERE 
+					value			= ".$babDB->quote($value).",
+					value_type		= ".$babDB->quote($value_type).",
+					update_id_user	= ".$babDB->quote($userId).",
+					lastupdate		= NOW()
+				WHERE
 					dirkey			= ".$babDB->quote($dirkey)."
 			");
 
@@ -190,18 +190,18 @@ class bab_Registry
 		} else {
 
 			$babDB->db_query("
-			
-			INSERT INTO bab_registry 
+
+			INSERT INTO bab_registry
 				(
-					dirkey, 
-					value, 
-					value_type, 
-					create_id_user, 
-					update_id_user, 
-					createdate, 
+					dirkey,
+					value,
+					value_type,
+					create_id_user,
+					update_id_user,
+					createdate,
 					lastupdate
-				) 
-			VALUES 
+				)
+			VALUES
 				(
 					".$babDB->quote($dirkey).",
 					".$babDB->quote($value).",
@@ -247,17 +247,17 @@ class bab_Registry
 		return $this->dir;
 	}
 
-	
+
 	/**
 	 * Get a value
-	 * If the second parameter is not NULL and the key is not created, 
+	 * If the second parameter is not NULL and the key is not created,
 	 * the key will be created with the second parameter as a value
 	 * @param string $key
 	 * @param mixed $default_create
 	 * @return mixed|null
 	 */
 	public function getValue($key, $default_create = NULL)
-	{	
+	{
 		$arr = $this->getValueEx($key);
 		if (NULL !== $arr) {
 			return $arr['value'];
@@ -270,14 +270,14 @@ class bab_Registry
 
 		return NULL;
 	}
-	
+
 
 
 	/**
 	 * Get a value with additionnal parameters
-	 * 
+	 *
 	 * @since 7.7.94 this method accept an array of keys for the key parameter
-	 * 
+	 *
 	 * @param string | array $key
 	 * @return array | bab_RegistryIterator | null
 	 */
@@ -296,33 +296,33 @@ class bab_Registry
 
 			$dirkey = $this->dir.$key;
 		}
-		
+
 		$res = $babDB->db_query("
-			SELECT 
+			SELECT
 				dirkey,
 				value,
 				value_type,
 				create_id_user,
 				update_id_user,
 				UNIX_TIMESTAMP(createdate) createdate,
-				UNIX_TIMESTAMP(lastupdate) lastupdate 
-			FROM bab_registry 
-			WHERE 
+				UNIX_TIMESTAMP(lastupdate) lastupdate
+			FROM bab_registry
+			WHERE
 				dirkey IN(".$babDB->quote($dirkey).")
 		");
-		
-		
-		
+
+
+
 		$I = new bab_RegistryIterator();
 		$I->setMySqlResult($res);
-		
+
 		if (!is_array($key))
 		{
 			if (0 === $I->count())
 			{
 				return null;
 			}
-			
+
 			foreach($I as $arr)
 			{
 				return $arr;
@@ -343,15 +343,15 @@ class bab_Registry
 		$l = mb_strlen($this->dir);
 
 		$res = $babDB->db_query("
-			DELETE 
-			FROM bab_registry 
+			DELETE
+			FROM bab_registry
 			WHERE LEFT(dirkey,'".$l."') = " . $babDB->quote($this->dir)
 		);
 
 		return $babDB->db_affected_rows($res);
 	}
 
-	
+
 	/**
 	 * Checks whether the path (absolute or not) is an existing directory.
 	 *
@@ -366,9 +366,9 @@ class bab_Registry
 		$path = $this->getFullPath($path);
 
 		$sql = '
-			SELECT dirkey FROM bab_registry 
+			SELECT dirkey FROM bab_registry
 			WHERE LEFT(dirkey, ' . $babDB->quote(mb_strlen($path)) . ') = ' . $babDB->quote($path);
-		
+
 		$res = $babDB->db_query($sql);
 		return ($babDB->db_num_rows($res) > 0);
 	}
@@ -397,10 +397,10 @@ class bab_Registry
 		$sourceLength = mb_strlen($source);
 
 		$sql = '
-			UPDATE bab_registry 
+			UPDATE bab_registry
 			SET dirkey = CONCAT(' . $babDB->quote($dest) . ', SUBSTRING(dirkey, ' . $babDB->quote($sourceLength + 1) . '))
 			WHERE LEFT(dirkey, ' . $babDB->quote($sourceLength) . ') = ' . $babDB->quote($source);
-		
+
 		$res = $babDB->db_query($sql);
 		return ($babDB->db_affected_rows($res) > 0);
 	}
@@ -419,13 +419,13 @@ class bab_Registry
 		}
 		if (!isset($this->r[$this->dir])) {
 			$l = mb_strlen($this->dir);
-			$sql = "SELECT DISTINCT 
-						LEFT(RIGHT(dirkey,LENGTH(dirkey)-'$l'), LOCATE('/',RIGHT(dirkey,LENGTH(dirkey)-'$l')) ) dirkey  
-					FROM bab_registry 
+			$sql = "SELECT DISTINCT
+						LEFT(RIGHT(dirkey,LENGTH(dirkey)-'$l'), LOCATE('/',RIGHT(dirkey,LENGTH(dirkey)-'$l')) ) dirkey
+					FROM bab_registry
 					WHERE dirkey REGEXP ".$babDB->quote('^'.preg_quote($this->dir).'[^/]+/.+$');
 			$this->r[$this->dir] = $babDB->db_query($sql);
 		}
-		
+
 		if ($arr = $babDB->db_fetch_assoc($this->r[$this->dir])) {
 			return $arr['dirkey'];
 		}
@@ -441,19 +441,19 @@ class bab_Registry
 	 * get next child key from current directory
 	 * @return string|false
 	 */
-	public function fetchChildKey() 
+	public function fetchChildKey()
 	{
 		global $babDB;
-		
+
 		static $r = array();
 		if (!isset($r[$this->dir])) {
 			$l = mb_strlen($this->dir);
 			$r[$this->dir] = $babDB->db_query("
-			
-			SELECT 
-				RIGHT(dirkey,LENGTH(dirkey)-'$l') dirkey  
+
+			SELECT
+				RIGHT(dirkey,LENGTH(dirkey)-'$l') dirkey
 			FROM bab_registry
-				WHERE dirkey REGEXP ".$babDB->quote('^'.preg_quote($this->dir).'[^/]+$')." 
+				WHERE dirkey REGEXP ".$babDB->quote('^'.preg_quote($this->dir).'[^/]+$')."
 				");
 		}
 
@@ -466,4 +466,34 @@ class bab_Registry
 		}
 		return false;
 	}
+
+
+    /**
+     *
+     * @param string $path
+     *
+     * @since 8.5.94
+     */
+    public static function get($path, $defaultValue = null)
+    {
+        static $registry = null;
+        if (!isset($registry)) {
+            $registry = bab_getRegistry();
+        }
+
+        if (substr($path, 0, 1) !== '/') {
+            $path = '/' . $path;
+        }
+        if (defined($path)) {
+            return constant($path);
+        }
+
+        $elements = explode('/', $path);
+        $key = array_pop($elements);
+        $path = implode('/', $elements);
+        $registry->changeDirectory($path);
+        $value = $registry->getValue($key, $defaultValue);
+
+        return $value;
+    }
 }
