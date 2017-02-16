@@ -50,7 +50,8 @@ class bab_StatSessions
         
         $sessions = array();
         
-        $res = $babDB->db_query('SELECT evt_session_id WHERE evt_iduser='.$babDB->quote($this->idUser));
+        $res = $babDB->db_query('SELECT evt_session_id FROM bab_stats_events 
+            WHERE evt_iduser='.$babDB->quote($this->idUser).' GROUP BY evt_session_id');
         while ($arr = $babDB->db_fetch_assoc($res)) {
             $sessions[] = $arr['evt_session_id'];
         }
@@ -66,7 +67,7 @@ class bab_StatSessions
         $where = array();
         
         if (isset($this->idUser)) {
-            $where[] = 'evt_session_id IN('.$babDB->quote($this->getUserSessions()).')';
+            $where[] = 'e.evt_session_id IN('.$babDB->quote($this->getUserSessions()).')';
         }
         
         if (isset($this->startDate)) {
@@ -88,14 +89,14 @@ class bab_StatSessions
             bab_stats_events e
             JOIN (SELECT evt_session_id, MAX(evt_time) evt_time FROM bab_stats_events GROUP BY evt_session_id) AS max
                 ON e.evt_session_id=max.evt_session_id
-                AND e.evt_time=max.evt_time
+                AND e.evt_time=max.evt_time 
         ';
         
         if (count($where) > 0) {
             $query .= ' WHERE '.implode(' AND ', $where);
         }
         
-        $query .= ' ORDER BY e.evt_time DESC';
+        $query .= ' GROUP BY evt_session_id ORDER BY e.evt_time DESC';
         return $babDB->db_query($query);
     }
     
@@ -117,7 +118,7 @@ class bab_StatSessions
         
         $res = $this->getResource();
         while ($arr = $babDB->db_fetch_assoc($res)) {
-            $text = sprintf(bab_translate('Last access: %s'), BAB_DateTimeUtil::relativePastDate($arr['evt_time']));
+            $text = sprintf(bab_translate('Last access: %s'), BAB_DateTimeUtil::relativePastDate($arr['evt_time'], true, true));
             $frame->addItem($W->Link($text, '?tg=statsessions&sess='.$arr['evt_session_id']));
         }
             
