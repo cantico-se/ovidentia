@@ -1125,27 +1125,35 @@ function bab_browserVersion()
     }
 
 
-function bab_translate($str, $folder = "", $lang="")
-    {
+
+/**
+ * Translate a text.
+ * If no translation is found, returns the input string.
+ *
+ * @param string $str       The string containing the text to translate
+ * @param string $folder    The addon name. If empty look for translation in ovidentia langfiles.
+ * @param string $lang      The language code to translate into. If empty uses the current language @see bab_getLanguage
+ * @return string
+ */
+function bab_translate($str, $folder = '', $lang = '')
+{
     static $babLA = array();
 
-    if( empty($lang)) {
-        if (!isset($GLOBALS['babLanguage'])) {
-            $lang = 'fr';
-        } else {
-            $lang = $GLOBALS['babLanguage'];
-        }
+    if (empty($lang)) {
+        $lang = bab_getLanguage();
     }
 
-    if( empty($lang) || empty($str))
+    if (empty($lang) || empty($str)) {
         return $str;
+    }
 
-    if( !empty($folder))
-        $tag = $folder."/".$lang;
-    else
-        $tag = "bab/".$lang;
+    if (!empty($folder)) {
+        $tag = $folder . '/' . $lang;
+    } else {
+        $tag = 'bab/' . $lang;
+    }
 
-    if( !isset($babLA[$tag])) {
+    if (!isset($babLA[$tag])) {
         require_once dirname(__FILE__).'/loadlanguage.php';
         babLoadLanguage($lang, $folder, $babLA[$tag]);
 
@@ -1154,15 +1162,12 @@ function bab_translate($str, $folder = "", $lang="")
         }
     }
 
-    if(isset($babLA[$tag][$str]))
-        {
-            return $babLA[$tag][$str];
-        }
-    else
-        {
-            return $str;
-        }
+    if (isset($babLA[$tag][$str])) {
+        return $babLA[$tag][$str];
+    } else {
+        return $str;
     }
+}
 
 
 /**
