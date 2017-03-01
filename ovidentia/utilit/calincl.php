@@ -54,7 +54,7 @@ function bab_getCalendarOwner($idcal)
 
 
 /**
- * 
+ *
  *
  */
 function bab_getCalendarOwnerName($idcal, $type='')
@@ -96,7 +96,7 @@ function bab_isCalendarAccessValid($calid)
 {
 	global $babBody, $babDB;
 	$ret = array();
-	
+
 	$arr = explode(',', $calid);
 	$ret = array();
 	foreach($arr as $refpart) {
@@ -114,7 +114,7 @@ function bab_isCalendarAccessValid($calid)
 	{
 		$result = false;
 	}
-		
+
 	return $result;
 }
 
@@ -127,26 +127,26 @@ function bab_isCalendarAccessValid($calid)
 function bab_getCalendarCategory($nameorid)
 {
 	global $babDB;
-	
+
 	if (empty($nameorid))
 	{
 		return null;
 	}
-	
-	
+
+
 	$query = 'SELECT id, name, description, bgcolor FROM '.BAB_CAL_CATEGORIES_TBL." WHERE ";
-	
+
 	if (is_numeric($nameorid)) {
 		$query .= "id=".$babDB->quote($nameorid);
 	} else {
 		$query .= "name LIKE '".$babDB->db_escape_like($nameorid)."'";
 	}
-	
+
 	$res = $babDB->db_query($query);
 	if (0 === $babDB->db_num_rows($res)) {
 		return null;
 	}
-	
+
 	return $babDB->db_fetch_assoc($res);
 }
 
@@ -159,33 +159,33 @@ function bab_getCalendarCategory($nameorid)
 function bab_getDomains($domsid, $tree = false)
 {
 	global $babDB;
-	
+
 	if (empty($domsid))
 	{
 		return null;
 	}
 	$domsid = explode(',', $domsid);
-	
+
 	$sql = 'SELECT v.name as value, d.name as domain, v.id as vid, d.id as did
 			FROM '.BAB_CAL_DOMAINS_TBL.' as v,  '.BAB_CAL_DOMAINS_TBL.' as d
 			WHERE v.id_parent = d.id
 			AND v.id IN('.$babDB->quote($domsid).')
 			ORDER BY d.order ASC, v.order ASC';
-	
+
 	$res = $babDB->db_query($sql);
 	if (0 === $babDB->db_num_rows($res)) {
 		return null;
 	}
-	
+
 	$return = array();
 	while($arr = $babDB->db_fetch_assoc($res)){
 		if($tree){
-			$return[$arr['did']][$arr['vid']] = array('domain' => $arr['domain'], 'value' => $arr['value']);	
+			$return[$arr['did']][$arr['vid']] = array('domain' => $arr['domain'], 'value' => $arr['value']);
 		}else{
 			$return[] = array('domain' => $arr['domain'], 'value' => $arr['value']);
 		}
 	}
-	
+
 	return $return;
 }
 
@@ -202,60 +202,60 @@ class bab_icalendars
 
 	/**
 	 * All visibles calendars indexed by end of reference type/id
-	 * @var array
+	 * @var bab_EventCalendar[]
 	 */
-	private $calendars	= null;
-	
+	private $calendars = null;
+
 
 	/**
 	 * iduser for access tests
 	 * @var int
 	 */
-	private $iduser 	= ''; 
-	
-	
+	private $iduser = '';
+
+
 	/**
 	 * The default calendar to display or null if no default calendar accessible
 	 * @var bab_EventCalendar
 	 */
 	private $default_calendar = null;
 
-	
+
 	/**
 	 * The user personal calendar or null if no personal calendar
 	 * @var bab_EventCalendar
 	 */
 	private $personal_calendar = null;
-	
-	
+
+
 	/**
-	 * 
+	 *
 	 * @var string
 	 */
 	public $calendar_backend;
-	
-	
+
+
 	/**
 	 * storage for personal calendar only, each user will be associated to the reference type of the calendar after initialization
 	 * @var array
 	 */
 	private $reftype_by_user = array();
-	
+
 
 	/**
-	 * 
+	 *
 	 * @param int $iduser		iduser can be empty for anonymous
-	 * 
+	 *
 	 */
 	public function __construct($iduser = '')
 	{
 		global $babDB;
 		require_once dirname(__FILE__).'/settings.class.php';
-		
+
 		$settings = bab_getInstance('bab_Settings');
 		/*@var $settings bab_Settings */
 		$site = $settings->getSiteSettings();
-		
+
 		$this->allday 			= $site['allday'];
 		$this->usebgcolor 		= $site['usebgcolor'];
 		$this->elapstime 		= $site['elapstime'];
@@ -304,16 +304,16 @@ class bab_icalendars
 				if (!empty($arr['dispdays']))
 					$this->dispdays = $arr['dispdays'];
 
-				if (!empty($arr['workdays'])) 
+				if (!empty($arr['workdays']))
 					$this->workdays = $arr['workdays'];
-				
+
 				$this->user_calendarids = $arr['user_calendarids'];
 				if ($arr['calendar_backend'])
 					{
 					$this->calendar_backend = $arr['calendar_backend'];
 					}
 				$this->show_update_info = $arr['show_update_info'];
-				
+
 				if($arr['usecatcolor'] != 'D')
 				    {
 				    $this->usecatcolor = $arr['usecatcolor'];
@@ -321,7 +321,7 @@ class bab_icalendars
 				}
 			}
 	}
-	
+
 	/**
 	 * Get user used for access rights verifications
 	 * @return unknown_type
@@ -330,10 +330,10 @@ class bab_icalendars
 	{
 		return $this->iduser;
 	}
-	
+
 	/**
 	 * Get personal calendar of access user
-	 * 
+	 *
 	 * @return bab_PersonalCalendar
 	 */
 	public function getPersonalCalendar()
@@ -341,42 +341,42 @@ class bab_icalendars
 		$this->initializeCalendars();
 		return $this->personal_calendar;
 	}
-	
-	
+
+
 	/**
 	 * Add a calendar to calendar collection, do not call directly
 	 * @see bab_eventCollectCalendarsBeforeDisplay::addCalendar()
-	 * 
+	 *
 	 * @param	bab_EventCalendar	$calendar
-	 * 
+	 *
 	 * @return unknown_type
 	 */
 	public function addCalendar(bab_EventCalendar $calendar)
 	{
 		$id_user = (int) $calendar->getIdUser();
-		
-		
+
+
 		$this->calendars[$calendar->getUrlIdentifier()] = $calendar;
-		
-			
+
+
 		if (null === $this->default_calendar && $calendar->isDefaultCalendar())
 		{
 			$this->default_calendar = $calendar;
-		}	
+		}
 
 		if ($this->iduser && ($this->iduser === $id_user))
 		{
 			$this->personal_calendar = $calendar;
 		}
-		
+
 		if (!isset($this->reftype_by_user[$id_user]) && ($calendar instanceof bab_PersonalCalendar))
 		{
 			$this->reftype_by_user[$id_user] = $calendar->getReferenceType();
 		}
 	}
-	
-	
-	
+
+
+
 	/**
 	 * Get the reference type currently used by the user personal calendar
 	 * @return string
@@ -388,37 +388,37 @@ class bab_icalendars
 		{
 			return $this->reftype_by_user[$id_user];
 		}
-		
+
 		return null;
 	}
-	
-	
-	
+
+
+
 	/**
 	 * Get a personal calendar Uid
 	 * return null if no personal calendar
-	 * 
+	 *
 	 * @param int $id_user
 	 * @return int
 	 */
 	public function getPersonalCalendarUid($id_user)
 	{
 		global $babDB;
-		
+
 		$res = $babDB->db_query("select id from ".BAB_CALENDAR_TBL." where owner='".$babDB->db_escape_string($id_user)."' and type='".BAB_CAL_USER_TYPE."'");
 		if ($arr = $babDB->db_fetch_assoc($res))
 		{
 			return (int) $arr['id'];
 		}
-		
+
 		return null;
 	}
-	
-	
-	
-	
-	
-	
+
+
+
+
+
+
 	/**
 	 * return default calendar or null if no default calendar
 	 * @see bab_EventCalendar::isDefaultCalendar()
@@ -431,63 +431,57 @@ class bab_icalendars
 		{
 			return $this->default_calendar;
 		}
-		
+
 		if (null !== $this->personal_calendar)
 		{
 			return $this->personal_calendar;
 		}
-		
+
 		foreach($this->getCalendars() as $calendar)
 		{
 			return $calendar;
 		}
-		
+
 		return null;
 	}
-	
+
 
 
 	/**
 	 * Calendars of user for url
 	 * @return string
 	 */
-	public function getUserCalendars() 
+	public function getUserCalendars()
 	{
 		$this->initializeCalendars();
-		
-		
+
 		$keys = array();
 		if (!empty($this->user_calendarids)) {
 			// user is logged, get recorded parameter
 			$options = explode(',',$this->user_calendarids);
-			
+
 			foreach($options as $key) {
 				if (isset($this->calendars[$key])) {
 					$keys[] = $key;
 				}
 			}
-			
 		}
-		
+
 		if (empty($keys)) {
 			// init user calendars with only my personal calendar
-			
+
 			$personal = $this->getPersonalCalendar();
-			
+
 			if (null == $personal)
 			{
 				$keys = array();
 			} else {
-			
+
 				$keys = array($personal->getUrlIdentifier());
 			}
-			
 		}
-		
-		
 
 		return implode(',', $keys);
-
 	}
 
 
@@ -499,19 +493,18 @@ class bab_icalendars
 	public function calendarAccess()
 	{
 		$this->initializeCalendars();
-		
-		if(count($this->calendars) > 0)
-		{
+
+		if (count($this->calendars) > 0) {
 			return true;
 		}
-		
+
 		return false;
 	}
 
-	
+
 	/**
-	 * Initialize all accessibles calendars with an event 
-	 * @return unknown_type
+	 * Initialize all accessibles calendars with an event
+	 * @return void
 	 */
 	public function initializeCalendars()
 	{
@@ -519,18 +512,18 @@ class bab_icalendars
 			// initialization done!
 			return;
 		}
-		
+
 		$this->calendars = array();
-		
+
 		require_once dirname(__FILE__).'/eventperiod.php';
 		$event = new bab_eventCollectCalendarsBeforeDisplay($this);
 		bab_fireEvent($event);
 		// initialization done!
 	}
 
-	
-	
-	
+
+
+
 	/**
 	 * Get calendar infos from the type and objectid of the reference, "type/id" the format used in url for calendars
 	 * @param string $reference_part
@@ -539,44 +532,39 @@ class bab_icalendars
 	public function getEventCalendar($reference_part)
 	{
 		$this->initializeCalendars();
-		
+
 		if (isset($this->calendars[$reference_part])) {
 			return $this->calendars[$reference_part];
 		}
-		
+
 		return null;
 	}
-	
-	
-	/**
-	 * Get all calendars
-	 * @param int $id_dgowner	filter by delegation (optional)
-	 * @return array
-	 */
-	public function getCalendars($id_dgowner = null)
-	{
-		$this->initializeCalendars();
-		
-		if (null !== $id_dgowner)
-		{
-			$id_dgowner = (int) $id_dgowner;
-			
-			$calendars = array();
-			foreach($this->calendars as $calendar)
-			{
-				/*@var $calendar bab_EventCalendar */
-				if ($calendar->visibleInDelegation($id_dgowner))
-				{
-					$calendars[$calendar->getUrlIdentifier()] = $calendar;
-				}
-			}
-			
-			return $calendars;
-		}
-		
-		return $this->calendars;
-	}
-	
+
+
+    /**
+     * Get all calendars
+     * @param int $id_dgowner	filter by delegation (optional)
+     * @return bab_EventCalendar[]     Array indexed by calendar url identifiers.
+     */
+    public function getCalendars($id_dgowner = null)
+    {
+        $this->initializeCalendars();
+
+        if (null !== $id_dgowner) {
+            $id_dgowner = (int) $id_dgowner;
+
+            $calendars = array();
+            foreach ($this->calendars as $calendar) {
+                if ($calendar->visibleInDelegation($id_dgowner)) {
+                    $calendars[$calendar->getUrlIdentifier()] = $calendar;
+                }
+            }
+
+            return $calendars;
+        }
+
+        return $this->calendars;
+    }
 }
 
 
@@ -587,7 +575,7 @@ class bab_icalendars
 /**
  * Delete a calendar from ovidentia core by id
  * @param int $idcal
- * @return unknown_type
+ * @return void
  */
 function bab_deleteCalendar($idcal)
 {
@@ -612,22 +600,22 @@ function bab_deleteCalendar($idcal)
 			aclDelete(BAB_CAL_RES_VIEW_GROUPS_TBL, $owner);
 			break;
 		case BAB_CAL_USER_TYPE:
-			$babDB->db_query("delete from ".BAB_CALACCESS_USERS_TBL." where id_cal='".$babDB->db_escape_string($idcal)."'");	
-			$babDB->db_query("delete from ".BAB_CALACCESS_USERS_TBL." where id_user='".$babDB->db_escape_string($owner)."'");	
-			$babDB->db_query("delete from ".BAB_CAL_USER_OPTIONS_TBL." where id_user='".$babDB->db_escape_string($owner)."'");	
+			$babDB->db_query("delete from ".BAB_CALACCESS_USERS_TBL." where id_cal='".$babDB->db_escape_string($idcal)."'");
+			$babDB->db_query("delete from ".BAB_CALACCESS_USERS_TBL." where id_user='".$babDB->db_escape_string($owner)."'");
+			$babDB->db_query("delete from ".BAB_CAL_USER_OPTIONS_TBL." where id_user='".$babDB->db_escape_string($owner)."'");
 			break;
 		}
 
 	$res = $babDB->db_query("select id_event from ".BAB_CAL_EVENTS_OWNERS_TBL." where id_cal='".$babDB->db_escape_string($idcal)."'");
 	while( $arr = $babDB->db_fetch_array($res))
 		{
-		$babDB->db_query("delete from ".BAB_CAL_EVENTS_TBL." where id='".$babDB->db_escape_string($arr['id_event'])."'");	
-		$babDB->db_query("delete from ".BAB_CAL_EVENTS_NOTES_TBL." where id_event='".$babDB->db_escape_string($arr['id_event'])."'");	
+		$babDB->db_query("delete from ".BAB_CAL_EVENTS_TBL." where id='".$babDB->db_escape_string($arr['id_event'])."'");
+		$babDB->db_query("delete from ".BAB_CAL_EVENTS_NOTES_TBL." where id_event='".$babDB->db_escape_string($arr['id_event'])."'");
 		$babDB->db_query("delete from ".BAB_CAL_EVENTS_REMINDERS_TBL." where id_event='".$babDB->db_escape_string($arr['id_event'])."'");
-		$babDB->db_query("delete from ".BAB_CAL_EVENTS_DOMAINS_TBL." where id='".$babDB->db_escape_string($arr['id_event'])."'");	
+		$babDB->db_query("delete from ".BAB_CAL_EVENTS_DOMAINS_TBL." where id='".$babDB->db_escape_string($arr['id_event'])."'");
 		}
-	$babDB->db_query("delete from ".BAB_CAL_EVENTS_OWNERS_TBL." where id_cal='".$babDB->db_escape_string($idcal)."'");	
-	$babDB->db_query("delete from ".BAB_CALENDAR_TBL." where id='".$babDB->db_escape_string($idcal)."'");	
+	$babDB->db_query("delete from ".BAB_CAL_EVENTS_OWNERS_TBL." where id_cal='".$babDB->db_escape_string($idcal)."'");
+	$babDB->db_query("delete from ".BAB_CALENDAR_TBL." where id='".$babDB->db_escape_string($idcal)."'");
 }
 
 
@@ -635,15 +623,15 @@ function bab_deleteCalendar($idcal)
 /**
  * Title to display on page, the name of the calendar if there is only one calendar or a geeric title
  * @param string	$calid			calid can be a "type/id" string or a multiple reference like "type/id,type/id"
- * @return unknown_type
+ * @return string
  */
 function bab_getCalendarTitle($calid) {
 	$calendar = bab_getICalendars()->getEventCalendar($calid);
-	
+
 	if (null === $calendar) {
 		return bab_translate('Calendar');
 	}
-	
+
 	return $calendar->getName();
 }
 
@@ -652,47 +640,45 @@ function bab_getCalendarTitle($calid) {
 /**
  * Get User by the email and name
  * return null if no match or multiple match
- * 
- * 
+ *
+ *
  * @param string $email
  * @param string $cn
- * 
- * @return int | null
+ *
+ * @return int|null
  */
 function bab_getUserIdByEmailAndName($email, $cn)
 {
 	global $babDB;
 	$query = "select id, firstname, lastname from ".BAB_USERS_TBL." where email LIKE '".$babDB->db_escape_string($email)."'";
 	$res = $babDB->db_query($query);
-	
+
 	$count = $babDB->db_num_rows($res);
-	
+
 	if(1 === $count)
 	{
 		$arr = $babDB->db_fetch_assoc($res);
 		return (int) $arr['id'];
 	}
-		
-		
+
+
 	if (0 === $count)
 	{
 		return null;
 	}
-	
+
 	while ($arr = $babDB->db_fetch_assoc($res))
 	{
 		if ($cn === bab_composeUserName($arr['firstname'], $arr['lastname']))
 		{
 			return (int) $arr['id'];
 		}
-		
+
 		if ($cn === bab_composeUserName($arr['lastname'], $arr['firstname']))
 		{
 			return (int) $arr['id'];
 		}
 	}
-	
+
 	return null;
 }
-
-
