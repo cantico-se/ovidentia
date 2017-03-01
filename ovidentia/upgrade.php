@@ -7333,6 +7333,74 @@ function ovidentia_upgrade($version_base,$version_ini) {
 	    $babDB->db_query("ALTER TABLE `bab_sites` ADD `stat_keep_history` tinyint(3) NOT NULL default '0' COMMENT 'Number of days of detailled history in stats'");
 	}
 	
+	
+	/**
+	 * Upgrade to 8.5.97
+	 */
+
+
+	if (!bab_isTable('bab_sitemap_default_create_groups')) {
+	    $babDB->db_query("
+            CREATE TABLE `bab_sitemap_default_create_groups` (
+            `id` int(11) unsigned         NOT NULL AUTO_INCREMENT,
+            `id_object` varchar(64)       NOT NULL default '',
+            `id_group` int(11) unsigned   NOT NULL,
+            PRIMARY KEY (`id`),
+            KEY `id_object` (`id_object`),
+            KEY `id_group` (`id_group`)
+            )
+        ");
+	}
+	
+	if (!bab_isTable('bab_sitemap_default_read_groups')) {
+	    $babDB->db_query("
+            CREATE TABLE `bab_sitemap_default_read_groups` (
+            `id` int(11) unsigned         NOT NULL AUTO_INCREMENT,
+            `id_object` varchar(64)       NOT NULL default '',
+            `id_group` int(11) unsigned   NOT NULL,
+            PRIMARY KEY (`id`),
+            KEY `id_object` (`id_object`),
+            KEY `id_group` (`id_group`)
+            )
+        ");
+	}
+	
+	if (!bab_isTable('bab_sitemap_default_update_groups')) {
+	    $babDB->db_query("
+            CREATE TABLE `bab_sitemap_default_update_groups` (
+            `id` int(11) unsigned         NOT NULL AUTO_INCREMENT,
+            `id_object` varchar(64)       NOT NULL default '',
+            `id_group` int(11) unsigned   NOT NULL,
+            PRIMARY KEY (`id`),
+            KEY `id_object` (`id_object`),
+            KEY `id_group` (`id_group`)
+            )
+        ");
+	}
+	
+	if (!bab_isTable('bab_sitemap_default_delete_groups')) {
+	    $babDB->db_query("
+            CREATE TABLE `bab_sitemap_default_delete_groups` (
+            `id` int(11) unsigned         NOT NULL AUTO_INCREMENT,
+            `id_object` varchar(64)       NOT NULL default '',
+            `id_group` int(11) unsigned   NOT NULL,
+            PRIMARY KEY (`id`),
+            KEY `id_object` (`id_object`),
+            KEY `id_group` (`id_group`)
+            )
+        ");
+	}
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
 
     return true;
 

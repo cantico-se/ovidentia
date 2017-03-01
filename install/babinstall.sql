@@ -4049,7 +4049,7 @@ CREATE TABLE bab_sitemap_profile_versions (
 );
 
 
-
+# Rights for sitemap nodes
 
 CREATE TABLE `bab_sitemap_node_create_groups` (
   `id` int(11) unsigned         NOT NULL AUTO_INCREMENT,
@@ -4089,6 +4089,56 @@ CREATE TABLE `bab_sitemap_node_delete_groups` (
   KEY `id_object` (`id_object`),
   KEY `id_group` (`id_group`)
 );
+
+
+
+
+
+
+# Default rights for the created subnodes
+
+
+CREATE TABLE `bab_sitemap_default_create_groups` (
+  `id` int(11) unsigned         NOT NULL AUTO_INCREMENT,
+  `id_object` varchar(64)       NOT NULL default '',
+  `id_group` int(11) unsigned   NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `id_object` (`id_object`),
+  KEY `id_group` (`id_group`)
+);
+
+
+CREATE TABLE `bab_sitemap_default_read_groups` (
+  `id` int(11) unsigned         NOT NULL AUTO_INCREMENT,
+  `id_object` varchar(64)       NOT NULL default '',
+  `id_group` int(11) unsigned   NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `id_object` (`id_object`),
+  KEY `id_group` (`id_group`)
+);
+
+
+CREATE TABLE `bab_sitemap_default_update_groups` (
+  `id` int(11) unsigned         NOT NULL AUTO_INCREMENT,
+  `id_object` varchar(64)       NOT NULL default '',
+  `id_group` int(11) unsigned   NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `id_object` (`id_object`),
+  KEY `id_group` (`id_group`)
+);
+
+
+CREATE TABLE `bab_sitemap_default_delete_groups` (
+  `id` int(11) unsigned         NOT NULL AUTO_INCREMENT,
+  `id_object` varchar(64)       NOT NULL default '',
+  `id_group` int(11) unsigned   NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `id_object` (`id_object`),
+  KEY `id_group` (`id_group`)
+);
+
+
+
 
 
 
