@@ -74,28 +74,28 @@ function cal_notify(bab_eventCalendarEvent $event, $subject, $body = null)
 		{
 			$body = $subject;
 		}
-		
-		
+
+
 		$description	= bab_toHtml($period->getProperty('DESCRIPTION'));
-		
+
 		$data = $period->getData();
-		
+
 		// html from WYSIWYG if any :
-		
+
 		if (isset($data['description']) && isset($data['description_format']) && 'html' === $data['description_format']) {
-			
+
 			// do not use the editor API for email because of url replacement
-			
+
 			/*
 			include_once $GLOBALS['babInstallPath']."utilit/editorincl.php";
 			$editor = new bab_contentEditor('bab_calendar_event');
 			$editor->setContent($data['description']);
 			$editor->setFormat($data['description_format']);
 			*/
-			
+
 			$description = $data['description'];
 		}
-		
+
 
 		$tempc = new clsNotifyEvent(
 			$period->getProperty('SUMMARY'),
@@ -307,11 +307,11 @@ function bab_createCalendarPeriod(Func_CalendarBackend $backend, $args, bab_Peri
 		{
 			throw new ErrorException(sprintf('The period UID=%s, DTSTART=%s does not exists in backend %s', $args['evtid'], $args['dtstart'], $backend->getUrlIdentifier()));
 		}
-		
+
 
 		$begin 	= bab_event_posted::getDateTime($args['startdate'], $period->ts_begin);
 		$end 	= bab_event_posted::getDateTime($args['enddate'], $period->ts_end);
-		
+
 		if (null === $end->getHour()) {
 		    $end->add(1, BAB_DATETIME_DAY);
 		}
@@ -319,10 +319,10 @@ function bab_createCalendarPeriod(Func_CalendarBackend $backend, $args, bab_Peri
 		$oldcollection = $period->getCollection();
 
     } else {
-        
+
 		$begin 	= bab_event_posted::getDateTime($args['startdate']);
 		$end 	= bab_event_posted::getDateTime($args['enddate']);
-		
+
 		if (null === $end->getHour()) {
 		    $end->add(1, BAB_DATETIME_DAY);
 		}
@@ -330,9 +330,9 @@ function bab_createCalendarPeriod(Func_CalendarBackend $backend, $args, bab_Peri
 		// create empty period
 		$period = $backend->CalendarPeriod($begin->getTimeStamp(), $end->getTimeStamp());
 	}
-	
-	
-	
+
+
+
 
 	$collection->addPeriod($period);
 	if (isset($oldcollection))
@@ -462,8 +462,8 @@ function bab_createCalendarPeriod(Func_CalendarBackend $backend, $args, bab_Peri
 						$status = 'NEEDS-ACTION';
 					}
 				}
-				
-				
+
+
 				if ($calendar->getUrlIdentifier() === $attendee->getUrlIdentifier()) {
 
 					$period->addRelation('PARENT', $attendee, $status, $idfai);
@@ -698,27 +698,27 @@ function confirmApprobEvent($uid, $idcal, $relationcal, $status, $comment, $dtst
 	include_once $GLOBALS['babInstallPath']."utilit/afincl.php";
 
 	$calendar = bab_getICalendars()->getEventCalendar($idcal);
-	
+
 	if (null === $calendar)
 	{
 		// the main calendar is not accessible, but the user must approve an event in it
 		$calendar = bab_getICalendars()->getEventCalendar($relationcal);
-	
+
 		if (null === $calendar)
 		{
 			$babBody->addError(bab_translate('The calendar is not accessible'));
 			return false;
 		}
 	}
-	
+
 	if (empty($dtstart))
 	{
 		throw new ErrorException('missing dtstart parameter');
 	}
-	
+
 	$backend = $calendar->getBackend();
 	$collection = $backend->CalendarEventCollection($calendar);
-	
+
 	$period = null;
 	$allperiods = $backend->getAllPeriods($collection, $uid);
 	foreach($allperiods as $tmp_period)
@@ -729,51 +729,51 @@ function confirmApprobEvent($uid, $idcal, $relationcal, $status, $comment, $dtst
 			break;
 		}
 	}
-	
+
 	if (!isset($period))
 	{
 		throw new ErrorException('missing period');
 	}
-	
+
 	// search for relation
 	$relations = $period->getRelations();
 	if (isset($relations[$relationcal]))
 	{
 		$relation = $relations[$relationcal];
 	}
-	
-	
+
+
 	if (empty($relation['X-CTO-WFINSTANCE']))
 	{
 		throw new ErrorException('missing approbation instance');
 	}
-	
-	
+
+
 	if (!$relation)
 	{
 		throw new Exception('Access denied to this approbation, relation not found with calendar '.$relationcal);
 		return false;
 	}
-	
+
 	require_once dirname(__FILE__).'/wfincl.php';
 	$approvers = bab_WFGetWaitingApproversInstance($relation['X-CTO-WFINSTANCE']);
-	
+
 	if (!in_array(bab_getUserId(), $approvers))
 	{
 		throw new Exception('Access denied to this approbation, user not found in approvers list');
 		return false;
 	}
-	
-	
-	
-	
+
+
+
+
 	switch($bupdrec)
 	{
 		case BAB_CAL_EVT_ALL:
 			$period_list = $allperiods;
 			$replace_list = array();
 			break;
-			
+
 		case BAB_CAL_EVT_CURRENT:
 			$period_list = array($period);
 			$replace_list = array();
@@ -783,27 +783,27 @@ function confirmApprobEvent($uid, $idcal, $relationcal, $status, $comment, $dtst
 			    }
 			}
 			break;
-			
+
 		default:
 			$period_list = array($period);
 			$replace_list = array();
 			break;
 	}
 
-	
-	
+
+
 	$ret = updateFlowInstance($relation['X-CTO-WFINSTANCE'], $GLOBALS['BAB_SESS_USERID'], (BAB_CAL_STATUS_ACCEPTED == $status));
-	
+
 	switch($ret)
 	{
 		case 0:
-	
+
 			if (confirmApprobEvent_setRelationStatus($backend, $period_list, $relationcal, 'DECLINED'))
 			{
 				deleteFlowInstance($relation['X-CTO-WFINSTANCE']);
-				
+
 				confirmApprobEvent_replaceInstance($replace_list, $relationcal, $relation['X-CTO-WFINSTANCE']);
-	
+
 				notifyEventApprobation(
 						$period,
 						$status,
@@ -812,19 +812,19 @@ function confirmApprobEvent($uid, $idcal, $relationcal, $status, $comment, $dtst
 						sprintf(bab_translate('A calendar in relation with your appointement has been rejected by %s'), $GLOBALS['BAB_SESS_USER'])
 				);
 			}
-	
+
 			break;
-	
-	
-	
+
+
+
 		case 1:
-			
+
 			if (confirmApprobEvent_setRelationStatus($backend, $period_list, $relationcal, 'ACCEPTED'))
 			{
 				deleteFlowInstance($relation['X-CTO-WFINSTANCE']);
-				
+
 				confirmApprobEvent_replaceInstance($replace_list, $relationcal, $relation['X-CTO-WFINSTANCE']);
-	
+
 				notifyEventApprobation(
 						$period,
 						$status,
@@ -832,9 +832,9 @@ function confirmApprobEvent($uid, $idcal, $relationcal, $status, $comment, $dtst
 						$relation['calendar']->getName(),
 						sprintf(bab_translate('A calendar in relation with your appointement has been approved by %s'), $GLOBALS['BAB_SESS_USER'])
 				);
-	
-	
-	
+
+
+
 				if ($relation['calendar'] instanceof bab_ResourceCalendar) {
 					notifyResourceEvent(
 							$period->getProperty('SUMMARY'),
@@ -857,12 +857,12 @@ function confirmApprobEvent($uid, $idcal, $relationcal, $status, $comment, $dtst
 					);
 				}
 			}
-	
-	
+
+
 			break;
-	
-	
-	
+
+
+
 		default: // next approbator
 			$nfusers = getWaitingApproversFlowInstance($relation['X-CTO-WFINSTANCE'], true);
 			if( count($nfusers) > 0 )
@@ -891,7 +891,7 @@ function confirmApprobEvent_setRelationStatus(Func_CalendarBackend $backend, $pe
 	foreach($period_list as $period)
 	{
 		/*@var $period bab_CalendarPeriod */
-		
+
 		// search for relation
 		$relations = $period->getRelations();
 		if (isset($relations[$relationcal]))
@@ -902,7 +902,7 @@ function confirmApprobEvent_setRelationStatus(Func_CalendarBackend $backend, $pe
 			throw new ErrorException(sprintf('relation %s not found in event %s %s', $relationcal, $period->getProperty('UID'), $period->getProperty('DTSTART')));
 		}
 	}
-	
+
 	return true;
 }
 
@@ -917,29 +917,29 @@ function confirmApprobEvent_setRelationStatus(Func_CalendarBackend $backend, $pe
  */
 function confirmApprobEvent_replaceInstance($period_list, $relationcal, $wf_instance)
 {
-	
+
 	$idfai = null;
-	
+
 	foreach($period_list as $period)
 	{
 		/*@var $period bab_CalendarPeriod */
-		
+
 		// search for relation
 		$relations = $period->getRelations();
 		if (isset($relations[$relationcal]))
 		{
 			$relation = $relations[$relationcal];
-			
-			
+
+
 			if (((int) $relation['X-CTO-WFINSTANCE']) === (int) $wf_instance && 'NEEDS-ACTION' === $relation['X-CTO-STATUS'])
 			{
 				$attendee = $relation['calendar'];
 				/*@var $attendee bab_EventCalendar */
-				
+
 				if (null === $idfai)
 				{
 					// create new instance for the first waiting associated calendar
-					
+
 					if($idsa = $attendee->getApprobationSheme())
 					{
 						$idfai = makeFlowInstance($idsa, $attendee->getUrlIdentifier().'-'.$period->getProperty('DTSTART').'-'.$period->getProperty('SUMMARY'));
@@ -947,16 +947,16 @@ function confirmApprobEvent_replaceInstance($period_list, $relationcal, $wf_inst
 						throw new ErrorException('failed to create approbation instance for non aproved events');
 					}
 				}
-				
+
 				$period->addRelation($relation['reltype'], $attendee, 'NEEDS-ACTION', $idfai);
 				$attendee->getBackend()->savePeriod($period);
 			}
-			
+
 		} else {
 			throw new ErrorException(sprintf('relation %s not found in event %s %s', $relationcal, $period->getProperty('UID'), $period->getProperty('DTSTART')));
 		}
 	}
-	
+
 	// considerer comme deja notifie
 	if (null !== $idfai)
 	{
@@ -986,14 +986,14 @@ function confirmEvent($evtid, $dtstart, $idcal, $partstat, $comment, $bupdrec)
 {
 	global $babDB, $babBody;
 	$calendar = bab_getICalendars()->getEventCalendar($idcal);
-	
+
 	if (!$calendar)
 	{
 		// the main calendar of event is not accessible
-		
+
 		// there is probably a copy in the user personal calendar or in the inbox
 		$calendar = bab_getICalendars()->getPersonalCalendar();
-		
+
 		if (!$calendar)
 		{
 			throw new Exception('This is not a personal calendar');
@@ -1001,29 +1001,29 @@ function confirmEvent($evtid, $dtstart, $idcal, $partstat, $comment, $bupdrec)
 		}
 	}
 
-	
-	
-	
-	
+
+
+
+
 	$backend = $calendar->getBackend();
 	$calendarPeriod = $backend->getPeriod($backend->CalendarEventCollection($calendar), $evtid, $dtstart);
-	
+
 	// do not continue if there is no calendarPeriod or if event is CANCELLED
-	
+
 	if (null === $calendarPeriod)
 	{
 		$babBody->addError(bab_translate('This event does not exists'));
 		return false;
 	}
-	
-	
+
+
 	if ('CANCELLED' === $calendarPeriod->getProperty('STATUS'))
 	{
 		$babBody->addError(bab_translate('This event has been cancelled'));
 		return false;
 	}
-	
-	
+
+
 	$collection = $calendarPeriod->getCollection();
 
 	bab_addHashEventsToCollection($collection, $calendarPeriod, $bupdrec);
@@ -1043,22 +1043,22 @@ function confirmEvent($evtid, $dtstart, $idcal, $partstat, $comment, $bupdrec)
 			}
 		}
 	}
-	
+
 	if (null === $attendeeCalendar)
 	{
 		throw new Exception('Calendar for partstat modification not found in event');
 		return false;
 	}
 
-	
+
 	foreach($attendees as $attendee)
 	{
 		// set period in a new collection linked to the attendee calendar
-		
+
 		$backend = $attendee['calendar']->getBackend();
 		$collection = $backend->CalendarEventCollection($attendee['calendar']);
 		$collection->addPeriod($calendarPeriod);
-		
+
 		try {
 			$backend->updateAttendeePartstat($calendarPeriod, $attendeeCalendar, $partstat, $comment);
 		} catch(Exception $e)
@@ -1067,8 +1067,8 @@ function confirmEvent($evtid, $dtstart, $idcal, $partstat, $comment, $bupdrec)
 			bab_debug($e->getMessage());
 		}
 	}
-	
-	
+
+
 	return true;
 }
 
@@ -1815,7 +1815,7 @@ class bab_event_posted {
 		    $minutes = null;
 		    $seconds = null;
 		} else {
-		    
+
 		    $hours = (int) $arr['hours'];
 		    $minutes = (int) $arr['minutes'];
 		    $seconds = 0;
@@ -1968,7 +1968,7 @@ class bab_event_posted {
 			$this->args['enddate']['minutes'] = $tb[1];
 		}
 
-		
+
 
 
 		if( isset($data['bprivate']) && $data['bprivate'] ==  'Y' )
@@ -1998,7 +1998,7 @@ class bab_event_posted {
 			$this->args['free'] = false;
 			}
 
-		if( $data['groupe-notif'] ==  '1' )
+		if( isset($data['groupe-notif']) && $data['groupe-notif'] ==  '1' )
 			{
 			$this->args['groupe-notif'] = true;
 			}
@@ -2129,7 +2129,7 @@ class bab_event_posted {
 			$backend = $calendar->getBackend();
 
 			$period = $backend->getPeriod($backend->CalendarEventCollection($calendar), $this->args['evtid']);
-			
+
 			if (!isset($period))
 			{
 				$msgerror = bab_translate('The event does not exists');
@@ -2144,7 +2144,7 @@ class bab_event_posted {
 			$begin 	= bab_event_posted::getDateTime($this->args['startdate']);
 			$end 	= bab_event_posted::getDateTime($this->args['enddate']);
 		}
-		
+
 		if (null === $end->getHour()) {
 		    $end->add(1, BAB_DATETIME_DAY);
 		}
@@ -2228,70 +2228,70 @@ class bab_event_posted {
 		if (!isset($this->calendarPeriod))
 		{
     		if (!empty($this->args['evtid'])) {
-    
+
     			// calid is the calendar where the event is recorded
     			// if calid is not in the list of selected calendars, the event must be canceled and a new calendar must be chosen to record the event
-    			
+
     			$allowed = array_flip($this->args['selected_calendars']);
     			$calendar = bab_getICalendars()->getEventCalendar($this->args['calid']);
-    			
+
     			if (isset($allowed[$this->args['calid']]))
     			{
-    				
-    				
+
+
     				if (!$calendar)
     				{
     					throw new Exception('Missing calendar '.$this->args['calid']);
     				}
     			} elseif ($delete) {
-    				
+
 					// delete event
-    
+
     				$backend = $calendar->getBackend();
     				$collection = $backend->CalendarEventCollection($calendar);
-    				
+
 					$period = bab_createCalendarPeriod($backend, $this->args, $collection, $createinstance);
-    				
+
     				$period->setProperty('STATUS', 'CANCELLED');
     				$period->cancelFromAllCalendars($calendar);
-    			
-    				
+
+
     				$this->args['evtid'] = null;
     			}
     		}
-    		
-    		
-    			
-    			
+
+
+
+
     		if (empty($this->args['evtid']))
     		{
     			$calendar = bab_getMainCalendar($this->args['selected_calendars']);
     		}
-    		
-    		
+
+
     		$backend = $calendar->getBackend();
     		$collection = $backend->CalendarEventCollection($calendar);
-    		
-    		
+
+
     		$calendarPeriod = bab_createCalendarPeriod($backend, $this->args, $collection, $createinstance);
-    		
+
     		if (empty($this->args['evtid'])) {
-    			
+
     			// creation
-    			
+
     			$calendarPeriod->setProperty(
     				'ORGANIZER;CN='.$calendarPeriod->escape($GLOBALS['BAB_SESS_USER']),
     				'MAILTO:'.bab_getUserEmail($GLOBALS['BAB_SESS_USERID'])
     			);
     		}
-    		
-    		
+
+
     		if (!$delete || !$createinstance)
     		{
     			// do not save in cache if delete not allowed
     			return $calendarPeriod;
     		}
-    		
+
     		$this->calendarPeriod = $calendarPeriod;
 		}
 
@@ -2314,17 +2314,17 @@ class bab_event_posted {
 	{
 	    $backend = $calendar->getBackend();
 	    /*@var $backend Func_CalendarBackend */
-	
+
 	    $calendarPeriod = $backend->getPeriod($backend->CalendarEventCollection($calendar), $evtid, $dtstart);
-	
+
 	    $calendarPeriod->setProperty('STATUS', 'CANCELLED');
-	
+
 	    $collection = $calendarPeriod->getCollection();
 	    bab_addHashEventsToCollection($collection, $calendarPeriod, $updateMethod);
-	
+
 	    $date_min = $calendarPeriod->ts_begin;
 	    $date_max = $calendarPeriod->ts_end;
-	
+
 	    foreach ($collection as $period) {
 	        if ($period->ts_begin < $date_min) {
 	            $date_min = $period->ts_begin;
@@ -2333,7 +2333,7 @@ class bab_event_posted {
 	            $date_max = $period->ts_end;
 	        }
 	    }
-	
+
 	    try {
 	        $calendarPeriod->cancelFromAllCalendars($calendar);
 	    } catch(ErrorException $e) {
@@ -2355,15 +2355,15 @@ class bab_event_posted {
 	    $originalEventId = $this->args['evtid'];
 	    $dtstart = $this->args['dtstart'];
 	    $originalCalendarId = $this->args['calid'];
-	    
+
 	    $newAllowedCalendarIds = array_flip($this->args['selected_calendars']);
 	    $calendar = bab_getICalendars()->getEventCalendar($this->args['calid']);
-	    
-	    	
+
+
 	    if (isset($updateMethod) && $updateMethod != BAB_CAL_EVT_CURRENT && !isset($newAllowedCalendarIds[$originalCalendarId])) {
 
 	        // In this case, we must change the calendar of recurring periods.
-	        
+
 	        $originalPeriod = $this->getCalendarPeriod(false, false);
 	        $originalCollection = $originalPeriod->getCollection();
 	        bab_addHashEventsToCollection($originalCollection, $originalPeriod, $updateMethod);
@@ -2375,7 +2375,7 @@ class bab_event_posted {
 
  	        // We recreate the collection on a new calendar...
 	        $collection = $backend->CalendarEventCollection($mainCalendar);
-	        
+
 	        // ...and add all the periods of the original calendar.
 	        foreach ($originalCollection as $p) {
 	            /* @var $p bab_CalendarPeriod */
@@ -2383,14 +2383,14 @@ class bab_event_posted {
 	            $collection->addPeriod($p);
 	            $backend->savePeriod($p);
 	        }
-	        
+
 	        // We delete the periods from the original calendar.
   	        $this->deleteEvent($calendar, $originalEventId, $dtstart, $updateMethod);
 
 	        return true;
 	    }
-	    
-	    
+
+
 		try {
 			$calendarPeriod = $this->getCalendarPeriod();
 		} catch(ErrorException $e) {
@@ -2438,8 +2438,8 @@ class bab_event_posted {
 			$message = sprintf(bab_translate('Creation of an event on calendar %s is not allowed'), $calendar->getName());
 			return false;
 		}
-		
-		
+
+
 		// remove from backend where the event is no more
 		$newcalendars = $calendarPeriod->getCalendars();
 		foreach($oldcalendars as $oldcalendar) {
@@ -2449,13 +2449,13 @@ class bab_event_posted {
 		        $_b->deletePeriod($calendarPeriod);
 		    }
 		}
-		
-		
+
+
 
 		bab_debug('<h1>$backend->SavePeriod()</h1>'. $calendarPeriod->toHtml(), DBG_TRACE, 'CalendarBackend');
-		
+
 		try {
-		
+
 			$backend->savePeriod($calendarPeriod);
 		} catch(ErrorException $e)
 		{
@@ -2463,10 +2463,10 @@ class bab_event_posted {
 			$message = $e->getMessage();
 			return false;
 		}
-		
+
 		$calendarPeriod->commitEvent();
-	
-		
+
+
 		$this->notifyRelationsApprobation($calendarPeriod, $oldrelations);
 
 		if($this->args['groupe-notif']){
@@ -2619,8 +2619,8 @@ class bab_event_posted {
 
 		$calendars = $calendarPeriod->getCalendars();
 		$collection = bab_CalendarRRULE::getCollection($calendarPeriod);
-		
-		
+
+
 
 		$result = true;
 		foreach($collection as $period)
@@ -2630,8 +2630,8 @@ class bab_event_posted {
 				$result = false;
 			}
 		}
-		
-		
+
+
 
 		return $result;
 	}
@@ -2663,29 +2663,29 @@ class bab_event_posted {
 		$sdate = date('Y-m-d H:i:s', $period->ts_begin);
 		$edate = date('Y-m-d H:i:s', $period->ts_end);
 
-		
+
 
 		// working hours test
 
 		$whObj = bab_mcalendars::create_events($sdate, $edate, $calid);
-		
+
 		if ($period->getProperty('UID'))
 		{
 			if (!$whObj->setAvailability($period, true))
 			{
 				// Event not found within boundaries
 				// it is possible when a new calendar is added to event
-				
+
 				bab_debug(sprintf('Failed to set the current event %s as an available event for the availability test, the event may conflict with himself', $period->getProperty('UID')));
 			}
 		}
-		
-		
-		
-		
+
+
+
+
 		$AvaReply = $whObj->getAvailability();
 
-		
+
 		$mcals = new bab_mcalendars($sdate, $edate, $calid, $whObj);
 		foreach($AvaReply->conflicts_events as $calPeriod) {
 
@@ -2827,15 +2827,15 @@ function bab_addHashEventsToCollection(bab_CalendarEventCollection $collection, 
 	{
 		$dtstart = $calendarPeriod->getProperty('DTSTART');
 	}
-	
-	
+
+
 	if ('' === $calendarPeriod->getProperty('RRULE') && !$collection->hash)
 	{
 		// do not add a RECURRENCE-ID on non-recuring event
 		$method = BAB_CAL_EVT_ALL;
 	}
 
-	
+
 
 	switch($method)
 	{
@@ -2846,7 +2846,7 @@ function bab_addHashEventsToCollection(bab_CalendarEventCollection $collection, 
 			$calendarPeriod->removeProperty('RRULE');
 			$calendarPeriod->setProperty('RECURRENCE-ID;VALUE=DATE-TIME', $dtstart);
 			return; // <--- ! exit function here if we select only the current period !
-			
+
 		case BAB_CAL_EVT_PREVIOUS:
 			$calendarPeriod->setProperty('RECURRENCE-ID;RANGE=THISANDPRIOR', $dtstart);
 			break;
@@ -2885,7 +2885,7 @@ function bab_addHashEventsToCollection(bab_CalendarEventCollection $collection, 
 	$userperiods = $backend->selectPeriods($criteria);
 
 
-	
+
 	$ref_begin = BAB_DateTime::fromTimeStamp($calendarPeriod->ts_begin);
 	$ref_end = BAB_DateTime::fromTimeStamp($calendarPeriod->ts_end);
 
