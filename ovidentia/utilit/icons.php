@@ -179,6 +179,8 @@ class Func_Icons extends bab_Functionality
 	const ACTIONS_ARROW_LEFT_DOUBLE				= 'actions-arrow-left-double';
 	const ACTIONS_ARROW_RIGHT_DOUBLE			= 'actions-arrow-right-double';
 
+	const ACTIONS_CONTEXT_MENU					= 'actions-context-menu';
+
 	const ACTIONS_VIEW_LIST_DETAILS				= 'actions-view-list-details';
 	const ACTIONS_VIEW_LIST_TEXT				= 'actions-view-list-text';
 	const ACTIONS_VIEW_LIST_TREE				= 'actions-view-list-tree';
