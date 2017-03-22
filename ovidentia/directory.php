@@ -2597,17 +2597,17 @@ function deleteDbContact($id, $idu)
     }
 
 function unassignDbContact($id, $idu)
-    {
+{
     global $babDB;
     list($idgroup) = $babDB->db_fetch_array($babDB->db_query("select id_group from ".BAB_DB_DIRECTORIES_TBL." where id='".$babDB->db_escape_string($id)."'"));
     if( $idgroup != 0  && $idgroup != BAB_REGISTERED_GROUP )
-        {
+    {
         list($iddu) = $babDB->db_fetch_array($babDB->db_query("select id_user from ".BAB_DBDIR_ENTRIES_TBL." where id='".$babDB->db_escape_string($idu)."'"));
         bab_removeUserFromGroup($iddu, $idgroup);
 
         return;
-        }
     }
+}
 
 function exportDbDirectory($id, $output_format, $wsepar, $separ, $listfd)
 {
@@ -2674,7 +2674,7 @@ $msg = bab_rp('msg');
 if( ('' != bab_pp('pfile')) && bab_isAccessValid(BAB_DBDIRIMPORT_GROUPS_TBL, $id))
     {
         bab_requireSaveMethod();
-        
+
         try {
             processImportDbFile($_POST, false); // simulation, verify mapping
             $monitor = new bab_processImportUsers($id);
@@ -2695,7 +2695,7 @@ if( ('Yes' ==  bab_gp('action'))  && bab_isAccessValid(BAB_DBDIREMPTY_GROUPS_TBL
 if( '' != ($modify = bab_pp('modify')))
 {
     bab_requireSaveMethod();
-    
+
     if( $modify == 'dbc' )
         {
         $idx = 'dbmod';
@@ -2777,7 +2777,7 @@ switch($idx)
 
     case 'unassign':
         $id = $id;
-        $idu = bab_gp('idu');
+        $idu = bab_rp('idu');
         if( bab_isAccessValid(BAB_DBDIRUNBIND_GROUPS_TBL, $id))
             {
             $msg = bab_translate("Your contact has been unassigned");
@@ -2788,7 +2788,7 @@ switch($idx)
             $msg = bab_translate("Access denied");
             exit;
             }
-        contactDbUnload($msg, bab_gp('refresh'));
+        contactDbUnload($msg, bab_rp('refresh'));
         exit();
         break;
 
