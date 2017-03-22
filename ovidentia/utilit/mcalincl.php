@@ -984,7 +984,9 @@ class cal_wmdbaseCls
 
         $this->bgcolor = '';
         $eventBackgroundColor = $calPeriod->getProperty('X-CTO-COLOR');
-        $calendarBackgroundColor = $this->currentCalendar->getBgcolor();
+        if ($this->currentCalendar) {
+            $calendarBackgroundColor = $this->currentCalendar->getBgcolor();
+        }
 
         if ($calendarProperties->usebgcolor == 'Y' && !empty($eventBackgroundColor)) {
             // We want to show the event specific color and the event has a specific color
