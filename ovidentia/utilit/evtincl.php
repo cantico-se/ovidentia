@@ -364,6 +364,7 @@ function bab_createCalendarPeriod(Func_CalendarBackend $backend, $args, bab_Peri
 	if ($cat) {
 		$period->setProperty('CATEGORIES', $cat['name']);
 	} else {
+	    $period->setProperty('CATEGORIES', '');
 		if ($args['color'])
 		{
 			$period->setProperty('X-CTO-COLOR', $args['color']);
