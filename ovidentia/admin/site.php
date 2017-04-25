@@ -1341,7 +1341,7 @@ function sectionDelete($id)
             $this->message = bab_translate("Are you sure you want to delete this site");
             $this->title = getSiteName($id);
             $this->warning = bab_translate("WARNING: This operation will delete the site and all references"). "!";
-            $this->urlyes = $GLOBALS['babUrlScript']."?tg=site&idx=Delete&site=".$id."&action=Yes";
+            $this->urlyes = $GLOBALS['babUrlScript']."?tg=site&idx=Delete&item=".$id."&action=Yes";
             $this->yes = bab_translate("Yes");
             $this->urlno = $GLOBALS['babUrlScript']."?tg=site&idx=modify&item=".$id;
             $this->no = bab_translate("No");
@@ -2682,10 +2682,9 @@ $idx = isset($_REQUEST['idx']) ? $_REQUEST['idx'] : 'menusite';
 
 
 
-if( isset($_GET['action']) && $_GET['action'] == "Yes")
-    {
-    bab_requireDeleteMethod() && confirmDeleteSite($_GET['site']);
-    }
+if(isset($_REQUEST['action']) && $_REQUEST['action'] == "Yes") {
+    bab_requireDeleteMethod() && confirmDeleteSite($_REQUEST['item']);
+}
 
 
 if (isset($_POST['action']))
