@@ -1439,7 +1439,7 @@ switch($idx)
         break;
 
     case 'delt':
-        $idart = bab_gp('idart', 0);
+        $idart = bab_rp('idart', 0);
         if( $idart )
         {
             bab_requireDeleteMethod() && deleteDraft($idart);
