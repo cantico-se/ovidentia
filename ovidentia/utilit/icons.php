@@ -184,6 +184,7 @@ class Func_Icons extends bab_Functionality
 	const ACTIONS_VIEW_LIST_DETAILS				= 'actions-view-list-details';
 	const ACTIONS_VIEW_LIST_TEXT				= 'actions-view-list-text';
 	const ACTIONS_VIEW_LIST_TREE				= 'actions-view-list-tree';
+	const ACTIONS_VIEW_LIST_CARDS				= 'actions-view-list-cards';
 
 	const ACTIONS_VIEW_CALENDAR_LIST			= 'actions-view-calendar-list';
 	const ACTIONS_VIEW_CALENDAR_DAY				= 'actions-view-calendar-day';
@@ -325,6 +326,7 @@ class Func_Icons extends bab_Functionality
 	const OBJECTS_RESOURCE						= 'objects-resource';
 	const OBJECTS_RESOURCE_CATEGORY				= 'objects-resource-category';
 	const OBJECTS_WAITING_ITEM					= 'objects-waiting-item'; // waiting for approval
+	const OBJECTS_FACTORY						= 'objects-factory';
 
 
 	//-----------------------------------------------------------------------
