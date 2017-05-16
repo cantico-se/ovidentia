@@ -373,7 +373,7 @@ class Func_PortalAuthentication_AuthOvidentia extends Func_PortalAuthentication
         header('location:'.$this->getLoginFormUrl());
         return false;
     }
-    
+
     /**
      * Get login form url, change protocol if required
      * @return string
@@ -381,18 +381,18 @@ class Func_PortalAuthentication_AuthOvidentia extends Func_PortalAuthentication
     public function getLoginFormUrl()
     {
         $url = $GLOBALS['babUrlScript'] . '?tg=login&cmd=authform&msg=' . urlencode($this->loginMessage) . '&err=' . urlencode(implode("\n", $this->errorMessages));
-        
+
         $settings = bab_getInstance('bab_Settings');
         /*@var $settings bab_Settings */
         $site = $settings->getSiteSettings();
-        
+
         if ($site['auth_https']) {
             $protocol = mb_substr($url, 0, 5);
             if ('http:' === $protocol) {
                 $url = 'https:'.mb_substr($url, 5);
             }
         }
-        
+
         return $url;
     }
 
@@ -946,7 +946,7 @@ function bab_getUserByIdPassword($iIdUser, $sPassword)
 
 /**
  * get user by email and password
- * 
+ *
  *
  * @param string $email
  * @param string $sPassword
@@ -980,9 +980,9 @@ function bab_getUserByEmailPassword($email, $sPassword)
 
 function bab_getUserByLoginPassword($sLogin, $sPassword)
 {
-    
+
     $user = bab_getUserByNickname($sLogin);
-    
+
     if (!bab_Password::verify($sPassword, $user['password'], $user['password_hash_function'])) {
         return null;
     }
@@ -1196,7 +1196,7 @@ class displayLogin_Template
 
 /**
  * Display a html form for in the login context
- * 
+ *
  * @param string $htmlform      Authentication form, registration form, lost password form
  * @param string $ovmlTemplate  File name of an optional ovml file
  */
@@ -1204,10 +1204,10 @@ function bab_displayLoginPage($htmlform, $ovmlTemplate)
 {
     $settings = bab_getInstance('bab_Settings');
     $site = $settings->getSiteSettings();
-    
+
     $babBody = bab_getBody();
     $method = $site['auth_fullscreen'] ? 'babpopup' : 'babecho';
-    
+
     try {
         $babBody->$method(bab_getHtmlFromOvml(
             $ovmlTemplate,
@@ -1229,11 +1229,11 @@ function bab_displayLoginPage($htmlform, $ovmlTemplate)
  */
 function displayAuthenticationForm($title, $errorMessages)
 {
-    
-    
+
+
     $settings = bab_getInstance('bab_Settings');
     $site = $settings->getSiteSettings();
-    
+
     $babBody = bab_getBody();
 
     $babBody->setTitle($title);
@@ -1242,7 +1242,7 @@ function displayAuthenticationForm($title, $errorMessages)
         $babBody->addError($errorMessage);
     }
     $babBody->addItemMenu('signon', bab_translate("Login"), $GLOBALS['babUrlScript'].'?tg=login&cmd=signon');
-    
+
     $babBody->setCurrentItemMenu('signon');
 
     if($site['registration'] == 'Y') {
@@ -1265,7 +1265,7 @@ function displayAuthenticationForm($title, $errorMessages)
 
     $temp = new displayLogin_Template($referer);
     $html =	bab_printTemplate($temp, 'login.html', 'login');
-    
+
     bab_displayLoginPage($html, 'signon.html');
 }
 
@@ -1377,7 +1377,7 @@ function displayForceChangePwdForm($idUser)
  */
 function loginRedirect($url)
 {
-    
+
     if(isset($GLOBALS['babLoginRedirect']) && $GLOBALS['babLoginRedirect'] == false)
     {
         class loginRedirectCls
