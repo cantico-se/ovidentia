@@ -1475,13 +1475,13 @@ function saveArticleProperties()
 	$idart = bab_rp('idart');
 	$item = bab_rp('item');
 	$topicid = bab_rp('topicid');
-	$cdatep = bab_rp('cdatep');
+	$cdatep = bab_rp('cdatep', null);
 	$yearbegin = bab_rp('yearbegin');
 	$yearpub = bab_rp('yearpub');
 	$monthpub = bab_rp('monthpub');
 	$daypub = bab_rp('daypub');
 	$timepub = bab_rp('timepub');
-	$cdatee = bab_rp('cdatee');
+	$cdatee = bab_rp('cdatee', null);
 	$yearend = bab_rp('yearend');
 	$monthend = bab_rp('monthend');
 	$dayend = bab_rp('dayend');
