@@ -1471,7 +1471,26 @@ function saveOrderArticles($id, $listarts)
 
 function saveArticleProperties()
 {
-	global $babBody, $babDB, $BAB_SESS_USERID, $idart, $item, $topicid, $cdatep, $yearbegin, $yearpub, $monthpub, $daypub, $timepub, $cdatee, $yearend, $yearend, $monthend, $dayend, $timeend, $restriction, $operator, $grpids, $ymin, $ymax;
+	global $babBody, $babDB, $BAB_SESS_USERID;
+	$idart = bab_rp('idart');
+	$item = bab_rp('item');
+	$topicid = bab_rp('topicid');
+	$cdatep = bab_rp('cdatep');
+	$yearbegin = bab_rp('yearbegin');
+	$yearpub = bab_rp('yearpub');
+	$monthpub = bab_rp('monthpub');
+	$daypub = bab_rp('daypub');
+	$timepub = bab_rp('timepub');
+	$cdatee = bab_rp('cdatee');
+	$yearend = bab_rp('yearend');
+	$monthend = bab_rp('monthend');
+	$dayend = bab_rp('dayend');
+	$timeend = bab_rp('timeend');
+	$restriction = bab_rp('restriction');
+	$operator = bab_rp('operator');
+	$grpids = bab_rp('grpids');
+	$ymin = bab_rp('ymin');
+	$ymax = bab_rp('ymax');
 
 	if( isset($cdatep) || isset($cdatee) || isset($topicid) || isset($restriction))
 	{
