@@ -1922,27 +1922,36 @@ class bab_FileTreeView extends bab_TreeView
         	}else{
         		$allFiles[$file['name'].$file['path'].$file['id_owner'].$file['bgroup']] = true;
         	}
-           $filePath = removeFirstPath($file['path']);
+        	
+        	if (!bab_FmFileCanDownload($file['id'])) {
+        	    continue;
+        	}
+        	
+            $filePath = removeFirstPath($file['path']);
             //$filePath = $file['path'];
             $subdirs = explode('/', $filePath);
 
             $fileId = 'g' . self::ID_SEPARATOR . $file['id'];
             $rootFolderName = getFirstPath($file['path']);
+            
+            
             if (is_null($folderId)) {
 	            $oCriteria = $oRelativePath->in($babDB->db_escape_like(''));
 	            $oCriteria = $oCriteria->_and($oName->in($rootFolderName));
-
 	            $folder = $folders->get($oCriteria);
 	            if (!$folder) {
 	                continue;
 	            }
             	$rootId = 'd' . self::ID_SEPARATOR . $folder->getId().':'.bab_toHtml($rootFolderName); // $file['id_owner'];
+            	
+            	
             } else {
             	$rootId = 'd' . self::ID_SEPARATOR . $folderId.':'.bab_toHtml($oFolder->getName()); // $file['id_owner'];
             }
             $fileType = $groupFileType;
 
             $parentId = $rootId;
+            
 
             foreach ($subdirs as $subdir) {
                 if (trim($subdir) !== '') {

@@ -187,7 +187,7 @@ class BAB_DateTime
     public static function fromICal($icaldatetime, $tzid = null)
     {
         $m = null;
-        
+
         if (preg_match('/^(?P<year>\d{4})(?P<month>\d{2})(?P<day>\d{2})T(?P<hours>\d{2})(?P<minutes>\d{2})(?P<seconds>\d{2})(?P<utc>Z)?$/', $icaldatetime, $m)) {
 
             $datetime = new BAB_DateTime($m['year'], $m['month'], $m['day'], $m['hours'], $m['minutes'], $m['seconds']);
@@ -576,6 +576,8 @@ class BAB_DateTime
                 }
                 break;
         }
+
+        return $this;
     }
 
 
@@ -602,6 +604,8 @@ class BAB_DateTime
                 $this->init($this->_iYear, $this->_iMonth, $this->_iDay, $this->_iHours, $this->_iMinutes, ((int) $this->_iSeconds - $iNbUnits));
                 break;
         }
+
+        return $this;
     }
 
 

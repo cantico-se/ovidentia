@@ -2776,7 +2776,6 @@ switch($idx)
         break;
 
     case 'unassign':
-        $id = $id;
         $idu = bab_rp('idu');
         if( bab_isAccessValid(BAB_DBDIRUNBIND_GROUPS_TBL, $id))
             {
