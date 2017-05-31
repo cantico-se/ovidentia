@@ -157,8 +157,8 @@ function fmUpgrade()
                 {
                     $sOldPath = $sUploadPath . 'G' . $aDatas['iId'];
 
-                    //Dans les anciennes versions tant que l'on avait pas acc�d� au r�pertoire
-                    //il n'�tait pas cr��
+                    //Dans les anciennes versions tant que l'on avait pas accede au repertoire
+                    //il n'etait pas cree
                     if(!is_dir($sOldPath))
                     {
                         if(false === @mkdir($sOldPath, 0777))
@@ -891,7 +891,7 @@ function tskMgrCreateProjectAdditionalFieldContext()
 {
     global $babDB;
 
-    //Pour chaque projet cr�ation de la table avec la liste des champs additionnels
+    //Pour chaque projet creation de la table avec la liste des champs additionnels
     $sQuery =
         'SELECT ' .
             'idProjectSpace iIdProjectSpace, ' .
@@ -906,7 +906,7 @@ function tskMgrCreateProjectAdditionalFieldContext()
     {
         while(false !== ($aDatasProject = $babDB->db_fetch_assoc($oResultProject)))
         {
-            //Liste des champs additionnels avec leurs valeurs par d�faut et cr�ation de la table
+            //Liste des champs additionnels avec leurs valeurs par defaut et creation de la table
             $sQuery =
                 'SELECT ' .
                     'fb.id iIdFldClass, ' .
@@ -968,7 +968,7 @@ function tskMgrCreateProjectAdditionalFieldContext()
             }
 
 
-            //Pour chaque t�che insertion des champs avec leurs valeurs si il y en a
+            //Pour chaque tache insertion des champs avec leurs valeurs si il y en a
             $sQuery =
                 'SELECT ' .
                     'id iIdTask ' .
@@ -984,7 +984,7 @@ function tskMgrCreateProjectAdditionalFieldContext()
             {
                 while(false !== ($aDatasTask = $babDB->db_fetch_assoc($oResultTask)))
                 {
-                    //Pour chaque t�che du projet cr�er une entr� dans la table des champs additionnels
+                    //Pour chaque tache du projet creer une entre dans la table des champs additionnels
                     $sQuery =
                         'SELECT ' .
                             'id iIdSpecificFieldInstance, ' .
@@ -1019,7 +1019,7 @@ function tskMgrCreateProjectAdditionalFieldContext()
                         }
                     }
 
-                    //Mettre la valeur par d�faut
+                    //Mettre la valeur par defaut
                     foreach($aFldClass as $iIdSpFldClass => $sDefaultValue)
                     {
                         if(!array_key_exists($iIdSpFldClass, $aProcessed))
@@ -1068,7 +1068,7 @@ function tskMgrCreateUsersAdditionalFieldContext()
 {
     global $babDB;
 
-    //Pour chaque utilisateur ayant des t�ches perso cr�ation de la table avec la liste des champs additionnels
+    //Pour chaque utilisateur ayant des taches perso creation de la table avec la liste des champs additionnels
     $sQuery =
         'SELECT ' .
             'DISTINCT t0.idUser iIdUser ' .
@@ -1085,7 +1085,7 @@ function tskMgrCreateUsersAdditionalFieldContext()
         while(false !== ($aDatasUser = $babDB->db_fetch_assoc($oResultUser)))
         {
 
-            //Liste des champs additionnels avec leurs valeurs par d�faut et cr�ation de la table
+            //Liste des champs additionnels avec leurs valeurs par defaut et creation de la table
             $sQuery =
                 'SELECT ' .
                     'fb.id iIdFldClass, ' .
@@ -1144,7 +1144,7 @@ function tskMgrCreateUsersAdditionalFieldContext()
                 $babDB->db_query($sQuery);
             }
 
-            //Pour chaque t�che insertion des champs avec leurs valeurs si il y en a
+            //Pour chaque tache insertion des champs avec leurs valeurs si il y en a
             $sQuery =
                 'SELECT ' .
                     'idTask iIdTask ' .
@@ -1162,7 +1162,7 @@ function tskMgrCreateUsersAdditionalFieldContext()
             {
                 while(false !== ($aDatasTask = $babDB->db_fetch_assoc($oResultTask)))
                 {
-                    //Pour chaque t�che perso cr�er une entr� dans la table des champs additionnels
+                    //Pour chaque tache perso creer une entre dans la table des champs additionnels
                     $sQuery =
                         'SELECT ' .
                             'id iIdSpecificFieldInstance, ' .
@@ -1197,7 +1197,7 @@ function tskMgrCreateUsersAdditionalFieldContext()
                         }
                     }
 
-                    //Mettre la valeur par d�faut
+                    //Mettre la valeur par defaut
                     foreach($aFldClass as $iIdSpFldClass => $sDefaultValue)
                     {
                         if(!array_key_exists($iIdSpFldClass, $aProcessed))
@@ -3875,7 +3875,7 @@ function upgrade601to602()
     if (bab_isTableField(BAB_VAC_ENTRIES_TBL, 'day_begin')) {
 
         // transformer bab_vac_entries
-        // 1 = journ�e enti�re
+        // 1 = journee entiere
         // 2 = matin
         // 3 = apres-midi
 
@@ -4087,9 +4087,9 @@ function upgrade602to603()
         /**
          * remove trigger_inperiod
          *
-         *	0 : Sur toute la p�riode du droit
-         *  1 : Dans la p�riode de la r�gle
-         *  2 : En dehors de la p�riode de la r�gle et dans la p�riode du droit
+         *	0 : Sur toute la periode du droit
+         *  1 : Dans la periode de la regle
+         *  2 : En dehors de la periode de la regle et dans la periode du droit
          */
 
          $res = $db->db_query("
@@ -5200,8 +5200,8 @@ function ovidentia_upgrade($version_base,$version_ini) {
         {
             $iIndex++;
 
-            //Avant le gestionnaire de projet n'utilisait jamais les dates de d�but et de fin plannifi�e, ce qui fait que si elles sont vides toutes
-            //les deux c'est que l'on utilise l'ancien syst�me
+            //Avant le gestionnaire de projet n'utilisait jamais les dates de debut et de fin plannifiee, ce qui fait que si elles sont vides toutes
+            //les deux c'est que l'on utilise l'ancien systeme
             if('0000-00-00 00:00:00' == $aDatas['sPlannedStartDate'] && '0000-00-00 00:00:00' == $aDatas['sPlannedEndDate'])
             {
                 $sQuery =
@@ -7280,67 +7280,67 @@ function ovidentia_upgrade($version_base,$version_ini) {
      * Upgrade to 8.4.94
      */
 
-	$functionalities->register('ContextActions'				, $GLOBALS['babInstallPath'].'utilit/contextactions.class.php');
-	$functionalities->register('ContextActions/Article'		, $GLOBALS['babInstallPath'].'utilit/contextactions.article.class.php');
-	$functionalities->register('ContextActions/ArticleTopic', $GLOBALS['babInstallPath'].'utilit/contextactions.article.class.php');
+    $functionalities->register('ContextActions'				, $GLOBALS['babInstallPath'].'utilit/contextactions.class.php');
+    $functionalities->register('ContextActions/Article'		, $GLOBALS['babInstallPath'].'utilit/contextactions.article.class.php');
+    $functionalities->register('ContextActions/ArticleTopic', $GLOBALS['babInstallPath'].'utilit/contextactions.article.class.php');
 
-	/**
-	 * Upgrade to 8.4.95
-	 */
+    /**
+     * Upgrade to 8.4.95
+     */
 
-	if (!bab_isTableField('bab_sites', 'smtpnovalidation')) {
-	    $babDB->db_query("ALTER TABLE `bab_sites` ADD `smtpnovalidation` tinyint(1) unsigned NOT NULL default '0' AFTER smtpsecurity");
-	}
+    if (!bab_isTableField('bab_sites', 'smtpnovalidation')) {
+        $babDB->db_query("ALTER TABLE `bab_sites` ADD `smtpnovalidation` tinyint(1) unsigned NOT NULL default '0' AFTER smtpsecurity");
+    }
 
-	
 
-	/**
-	 * Upgrade to 8.4.99
-	 */
-	$functionalities->register('Home'				, $GLOBALS['babInstallPath'].'utilit/home.class.php');
-	$functionalities->register('Home/Ovidentia'		, $GLOBALS['babInstallPath'].'utilit/home.ovidentia.class.php');
-	
-	/**
-	 * Upgrade to 8.5.0
-	 */
-	if (!bab_isTableField('bab_sites', 'usecatcolor')){
-	    $babDB->db_query("ALTER TABLE `bab_sites` ADD `usecatcolor` ENUM( 'Y', 'N' ) NOT NULL default 'Y'");
-	}
+
+    /**
+     * Upgrade to 8.4.99
+     */
+    $functionalities->register('Home'				, $GLOBALS['babInstallPath'].'utilit/home.class.php');
+    $functionalities->register('Home/Ovidentia'		, $GLOBALS['babInstallPath'].'utilit/home.ovidentia.class.php');
+
+    /**
+     * Upgrade to 8.5.0
+     */
+    if (!bab_isTableField('bab_sites', 'usecatcolor')){
+        $babDB->db_query("ALTER TABLE `bab_sites` ADD `usecatcolor` ENUM( 'Y', 'N' ) NOT NULL default 'Y'");
+    }
     if (!bab_isTableField('bab_cal_user_options', 'usecatcolor')){
-	    $babDB->db_query("ALTER TABLE `bab_cal_user_options` ADD `usecatcolor` ENUM( 'Y', 'N', 'D' ) NOT NULL default 'D'");
-	}
-	if (!bab_isTableField('bab_cal_resources', 'bgcolor')){
-	    $babDB->db_query("ALTER TABLE `bab_cal_resources` ADD `bgcolor` varchar(6) NOT NULL default ''");
-	}
-	if (!bab_isTableField('bab_cal_public', 'bgcolor')){
-	    $babDB->db_query("ALTER TABLE `bab_cal_public` ADD `bgcolor` varchar(6) NOT NULL default ''");
-	}
-	
-	
-	/**
-	 * Upgrade to 8.5.95
-	 */
-	if (!bab_isTableField('bab_stats_events', 'previous')) {
-	    $babDB->db_query("ALTER TABLE `bab_stats_events` ADD `previous` bigint(20) unsigned NOT NULL default '0'");
-	}
-	if (!bab_isTableField('bab_stats_events', 'processed')) {
-	    $babDB->db_query("ALTER TABLE `bab_stats_events` ADD `processed` tinyint(1) unsigned NOT NULL default '0'");
-	}
-	if (!bab_isTableField('bab_stats_events', 'evt_sitemap_node')) {
-	    $babDB->db_query("ALTER TABLE `bab_stats_events` ADD `evt_sitemap_node` varchar(255) NOT NULL default ''");
-	}
-	if (!bab_isTableField('bab_sites', 'stat_keep_history')) {
-	    $babDB->db_query("ALTER TABLE `bab_sites` ADD `stat_keep_history` tinyint(3) NOT NULL default '0' COMMENT 'Number of days of detailled history in stats'");
-	}
-	
-	
-	/**
-	 * Upgrade to 8.5.97
-	 */
+        $babDB->db_query("ALTER TABLE `bab_cal_user_options` ADD `usecatcolor` ENUM( 'Y', 'N', 'D' ) NOT NULL default 'D'");
+    }
+    if (!bab_isTableField('bab_cal_resources', 'bgcolor')){
+        $babDB->db_query("ALTER TABLE `bab_cal_resources` ADD `bgcolor` varchar(6) NOT NULL default ''");
+    }
+    if (!bab_isTableField('bab_cal_public', 'bgcolor')){
+        $babDB->db_query("ALTER TABLE `bab_cal_public` ADD `bgcolor` varchar(6) NOT NULL default ''");
+    }
 
 
-	if (!bab_isTable('bab_sitemap_default_create_groups')) {
-	    $babDB->db_query("
+    /**
+     * Upgrade to 8.5.95
+     */
+    if (!bab_isTableField('bab_stats_events', 'previous')) {
+        $babDB->db_query("ALTER TABLE `bab_stats_events` ADD `previous` bigint(20) unsigned NOT NULL default '0'");
+    }
+    if (!bab_isTableField('bab_stats_events', 'processed')) {
+        $babDB->db_query("ALTER TABLE `bab_stats_events` ADD `processed` tinyint(1) unsigned NOT NULL default '0'");
+    }
+    if (!bab_isTableField('bab_stats_events', 'evt_sitemap_node')) {
+        $babDB->db_query("ALTER TABLE `bab_stats_events` ADD `evt_sitemap_node` varchar(255) NOT NULL default ''");
+    }
+    if (!bab_isTableField('bab_sites', 'stat_keep_history')) {
+        $babDB->db_query("ALTER TABLE `bab_sites` ADD `stat_keep_history` tinyint(3) NOT NULL default '0' COMMENT 'Number of days of detailled history in stats'");
+    }
+
+
+    /**
+     * Upgrade to 8.5.97
+     */
+
+
+    if (!bab_isTable('bab_sitemap_default_create_groups')) {
+        $babDB->db_query("
             CREATE TABLE `bab_sitemap_default_create_groups` (
             `id` int(11) unsigned         NOT NULL AUTO_INCREMENT,
             `id_object` varchar(64)       NOT NULL default '',
@@ -7350,10 +7350,10 @@ function ovidentia_upgrade($version_base,$version_ini) {
             KEY `id_group` (`id_group`)
             )
         ");
-	}
-	
-	if (!bab_isTable('bab_sitemap_default_read_groups')) {
-	    $babDB->db_query("
+    }
+
+    if (!bab_isTable('bab_sitemap_default_read_groups')) {
+        $babDB->db_query("
             CREATE TABLE `bab_sitemap_default_read_groups` (
             `id` int(11) unsigned         NOT NULL AUTO_INCREMENT,
             `id_object` varchar(64)       NOT NULL default '',
@@ -7363,10 +7363,10 @@ function ovidentia_upgrade($version_base,$version_ini) {
             KEY `id_group` (`id_group`)
             )
         ");
-	}
-	
-	if (!bab_isTable('bab_sitemap_default_update_groups')) {
-	    $babDB->db_query("
+    }
+
+    if (!bab_isTable('bab_sitemap_default_update_groups')) {
+        $babDB->db_query("
             CREATE TABLE `bab_sitemap_default_update_groups` (
             `id` int(11) unsigned         NOT NULL AUTO_INCREMENT,
             `id_object` varchar(64)       NOT NULL default '',
@@ -7376,10 +7376,10 @@ function ovidentia_upgrade($version_base,$version_ini) {
             KEY `id_group` (`id_group`)
             )
         ");
-	}
-	
-	if (!bab_isTable('bab_sitemap_default_delete_groups')) {
-	    $babDB->db_query("
+    }
+
+    if (!bab_isTable('bab_sitemap_default_delete_groups')) {
+        $babDB->db_query("
             CREATE TABLE `bab_sitemap_default_delete_groups` (
             `id` int(11) unsigned         NOT NULL AUTO_INCREMENT,
             `id_object` varchar(64)       NOT NULL default '',
@@ -7389,18 +7389,18 @@ function ovidentia_upgrade($version_base,$version_ini) {
             KEY `id_group` (`id_group`)
             )
         ");
-	}
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
+    }
+
+
+
+
+
+
+
+
+
+
+
 
     return true;
 

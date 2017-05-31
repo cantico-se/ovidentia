@@ -2911,7 +2911,7 @@ function canPasteFolder($iIdSrcRootFolder, $sSrcPath, $bSrcPathIsCollective, $iI
         $sFullParentPath 	= mb_substr($sFullCurrFolder, 0, mb_strlen($sFullPathToPaste));
 
 
-        //Est ce que dans le r�pertoire courant il y a un r�pertoire de m�me nom ?
+        //Est ce que dans le repertoire courant il y a un repertoire de meme nom ?
         $bSameDir = true;
         $sTrgFullPathName = $sRootFmPath . addEndSlash($sTrgPath) . getLastPath($sSrcPath);
         $sSrcFullPathName = $sRootFmPath . removeEndSlah($sSrcPath);
@@ -3088,7 +3088,7 @@ function haveRightOn($sPath, $sTableName, $oFileMgrEnv = null)
     }
 }
 
-/* A utiliser seulement pour les fonction haveRightxxx quand on est � la racine*/
+/* A utiliser seulement pour les fonction haveRightxxx quand on est a la racine*/
 function haveAdministratorRight()
 {
     if(0 === bab_getCurrentUserDelegation())
