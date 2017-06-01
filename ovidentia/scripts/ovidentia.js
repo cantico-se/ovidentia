@@ -296,3 +296,99 @@ function bab_getInstallPath()
     }
     return '';
 }
+
+
+
+/**
+ * send the link variables with a POST form
+ * if there is a title, use it as confirm
+ * This function must be used with a return on a onclick attribute of a <a href=""> tag
+ * @param {DOMNode} a
+ * @return {boolean}
+ */
+function bab_postLinkConfirm(a)
+{
+    var title = a.getAttribute('title');
+    if (title && !confirm(title)) {
+        return false;
+    }
+
+    if (window.XMLHttpRequest) { // Mozilla, Safari, ...
+        httpRequest = new XMLHttpRequest();
+    }
+    else if (window.ActiveXObject) { // IE
+        httpRequest = new ActiveXObject("Microsoft.XMLHTTP");
+    }
+
+    function createHiddenField(name, value) {
+        var input=document.createElement('input');
+        input.type='hidden';
+        input.name=decodeURIComponent(name);
+        value = value.replace(/\+/g, '%20');
+        try {
+            decodeURIComponent(value);
+        } catch (e) {
+            value = unescape(value);
+        }
+        input.value=decodeURIComponent(value);
+        return input;
+    }
+
+
+    httpRequest = new XMLHttpRequest();
+
+    httpRequest.onreadystatechange = function() {
+
+        if (httpRequest.readyState == 4) {
+            if (httpRequest.status == 200) {
+                var pathItems = a.pathname.split('/');
+                var f = document.createElement('form');
+                f.action=pathItems[pathItems.length-1];
+                f.method='POST';
+
+                f.appendChild(createHiddenField('babCsrfProtect', httpRequest.responseText));
+
+                var vars = a.search.substr(1).split('&');
+                for (var i = 0; i < vars.length; i++) {
+                    var pair = vars[i].split('=');
+                    f.appendChild(createHiddenField(pair[0], pair[1]));
+                }
+
+                document.body.appendChild(f);
+                f.submit();
+
+            } else {
+                alert('Failed to retreive the CSRF token');
+            }
+        }
+
+
+
+    };
+
+    httpRequest.open('GET', '?tg=csrfprotect', true);
+    httpRequest.send();
+
+    return false;
+}
+
+
+/**
+ * Try to fix babcsrf hidden input added to ovidentia order form that use "multiselect"
+ * @param {Object} element
+ */
+function bab_fixOrderElement(element)
+{
+    if(jQuery(element).is('select')) {
+        return element;
+    }
+    var form = jQuery(element).parents('form');
+    if(!form || !form[0]) {
+        return element;
+    }
+    var select = form.find('select');
+    if(!select || !select[0]) {
+        return element;
+    }
+    return select[0];
+}

@@ -5,12 +5,12 @@
 // it under the terms of the GNU General Public License as published by
 // the Free Software Foundation; either version 2, or (at your option)
 // any later version.
-// 
+//
 // This program is distributed in the hope that it will be useful, but
 // WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 // See the GNU General Public License for more details.
-// 
+//
 // You should have received a copy of the GNU General Public License
 // along with this program; if not, write to the Free Software
 // Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307,
@@ -23,8 +23,8 @@
 
 require_once $GLOBALS['babInstallPath']."utilit/grptreeincl.php";
 require_once $GLOBALS['babInstallPath']."utilit/session.class.php";
-require_once $GLOBALS['babInstallPath']."utilit/userinfosincl.php";	
-	
+require_once $GLOBALS['babInstallPath']."utilit/userinfosincl.php";
+
 class macl
 {
 	var $tables = array();
@@ -38,12 +38,12 @@ class macl
 		$this->index = $index;
 		$this->id_object = $id_object;
 		$this->return = $return;
-		
+
 		$session = bab_getInstance('bab_Session');
 		$session->bab_acl_tablelist = array();
 	}
-	
-	
+
+
 	function addtable($table, $name = '')
 	{
 		global $babDB;
@@ -53,7 +53,7 @@ class macl
 				'title'		=> empty($name) ? bab_translate("Access rights") : $name,
 				'filter'	=> array()
 		);
-		
+
 		$session = bab_getInstance('bab_Session');
 		if (isset($session->bab_acl_tablelist))
 		{
@@ -61,13 +61,13 @@ class macl
 		} else {
 			$s_table = array();
 		}
-		
+
 		// store allowed table for verification while saving
 		$s_table[$table] = $table;
-		
+
 		$session->bab_acl_tablelist = $s_table;
 	}
-	
+
 
 	function filter($listgroups = 0,$disabled = 0,$everybody = 0,$users = 0,$guest = 0,$groups = array())
 	{
@@ -101,74 +101,74 @@ class macl
 		}
 	}
 
-	
+
 
 
 	private function getForm()
 	{
 		$W = bab_Widgets();
-		
+
 		$form = $W->Form(null, $W->VBoxLayout()->setVerticalSpacing(1.5,'em'));
 		$form->addClass('bab-acl-form');
 		$form->setHiddenValue('tg', $this->target);
 		$form->setHiddenValue('idx', $this->index);
 		$form->setHiddenValue('item', $this->id_object);
 		$form->setHiddenValue($this->return, 'update');
-		
+
 		foreach($this->aHiddenFields as $name => $value)
 		{
 			$form->setHiddenValue($name, $value);
 		}
-		
+
 		foreach($this->tables as $table)
 		{
 			$widget = $W->Acl()
 				->setTitle($table['title'])
 				->setName($table['table'])
 				->setValue(aclGetRightsString($table['table'], $this->id_object));
-			
+
 			foreach($table['filter'] as $g)
 			{
 				$widget->disableGroup($g[0], $g[1]);
 			}
-			
-			
+
+
 			$form->addItem($widget);
 		}
-		
+
 		$form->addItem($W->SubmitButton()->setLabel(bab_translate('Save')));
-		
+
 		return $form;
 	}
 
-	
+
 	public function getHtml()
 	{
 		$W = bab_Widgets();
-		
+
 		return $this->getForm()->display($W->HtmlCanvas());
 	}
-	
+
 
 	function babecho()
 	{
 		$W = bab_Widgets();
-		
+
 		$page = $W->BabPage();
 		$page->setEmbedded();
 		$page->addItem($this->getForm());
-		
+
 		// need jquery and jquery UI
-		
+
 		/* @var $J Func_jquery */
 		if ($J = bab_functionality::get('jquery')) {
             $J->includeCore();
             $J->includeUi();
 		}
-		
+
 		$page->displayHtml();
 	}
-	
+
 
 	function get_hidden_field($sName, &$sValue)
 	{
@@ -186,9 +186,9 @@ class macl
 		return true;
 	}
 }
-		
-	
-	
+
+
+
 
 
 
@@ -199,7 +199,7 @@ class acl_grp_node extends macl
 	$this->acl = &$acl;
 	$this->tree = &$acl->tree;
 	$this->tables = &$acl->tables;
-	$this->childs = $this->tree->getChilds($id_group, false);	
+	$this->childs = $this->tree->getChilds($id_group, false);
 	$this->t_group = bab_translate("Group");
 	}
 
@@ -221,7 +221,7 @@ class acl_grp_node extends macl
 		$this->subtree = acl_grp_node_html($this->acl, $this->id_group);
 		return true;
 		}
-	else 
+	else
 		{
 		return false;
 		}
@@ -247,7 +247,7 @@ function acl_grp_node_html(&$acl, $id_group)
 
 /**
  * Record ACL form
- * 
+ *
 
 function _maclGroups()
 	{
@@ -258,22 +258,22 @@ function _maclGroups()
 	unset($_SESSION['bab_groupAccess']['acltables']);
 	$babDB->db_query("UPDATE ".BAB_USERS_LOG_TBL." SET grp_change='1'");
 	bab_siteMap::clearAll();
-	
+
 	if (!isset($_SESSION['bab_acl_tablelist'])) {
 		return;
 	}
-	
+
 	$s_table = $_SESSION['bab_acl_tablelist'];
 	unset($_SESSION['bab_acl_tablelist']);
-	
+
 	if (isset($_POST['group']) && count($_POST['group']) > 0) {
 		foreach($_POST['group'] as $table => $groups)
 			{
 			if (isset($s_table[$table])) {
 				$babDB->db_query("DELETE FROM ".$babDB->db_escape_string($table)." WHERE id_object='".$babDB->db_escape_string($id_object)."' AND id_group NOT IN(".$babDB->quote($groups).") AND id_group < '".BAB_ACL_GROUP_TREE."'");
-	
+
 				$groups = array_flip($groups);
-	
+
 				$res = $babDB->db_query("SELECT id_group FROM ".$babDB->db_escape_string($table)." WHERE id_object='".$babDB->db_escape_string($id_object)."' AND id_group < '".BAB_ACL_GROUP_TREE."'");
 				while ($arr = $babDB->db_fetch_assoc($res))
 					{
@@ -281,7 +281,7 @@ function _maclGroups()
 						unset($groups[$arr['id_group']]);
 						}
 					}
-	
+
 				foreach ($groups as $id => $value)
 					{
 					$babDB->db_query("INSERT INTO ".$babDB->db_escape_string($table)." (id_object, id_group) VALUES ('".$babDB->db_escape_string($id_object)."', '".$babDB->db_escape_string($id)."')");
@@ -299,17 +299,17 @@ function _maclGroups()
 		}
 	}
 
-	
+
 	if (isset($_POST['tree']) && count($_POST['tree']) > 0) {
 		foreach($_POST['tree'] as $table => $groups)
 			{
 			if (isset($s_table[$table])) {
 				array_walk($groups, create_function('&$v,$k','$v += BAB_ACL_GROUP_TREE;'));
-				
+
 				$babDB->db_query("DELETE FROM ".$babDB->db_escape_string($table)." WHERE id_object='".$babDB->db_escape_string($id_object)."' AND id_group NOT IN(".$babDB->quote($groups).") AND id_group >= '".BAB_ACL_GROUP_TREE."'");
-	
+
 				$groups = array_flip($groups);
-	
+
 				$res = $babDB->db_query("SELECT id_group FROM ".$babDB->db_escape_string($table)." WHERE id_object='".$babDB->db_escape_string($id_object)."' AND id_group > '".BAB_ACL_GROUP_TREE."'");
 				while ($arr = $babDB->db_fetch_assoc($res))
 					{
@@ -317,7 +317,7 @@ function _maclGroups()
 						unset($groups[$arr['id_group']]);
 						}
 					}
-	
+
 				foreach ($groups as $id => $value)
 					{
 					$babDB->db_query("INSERT INTO ".$babDB->db_escape_string($table)."  (id_object, id_group) VALUES ('".$babDB->db_escape_string($id_object)."', '".$babDB->db_escape_string($id)."')");
@@ -326,8 +326,8 @@ function _maclGroups()
 			}
 		}
 
-	
-	if (isset($s_table)) { 
+
+	if (isset($s_table)) {
 		foreach($s_table as $table) {
 			if (!isset($_POST['tree'][$table])) {
 				$babDB->db_query("DELETE FROM ".$babDB->db_escape_string($table)." WHERE id_object='".$babDB->db_escape_string($id_object)."' AND id_group >= '".BAB_ACL_GROUP_TREE."'");
@@ -340,26 +340,32 @@ function _maclGroups()
 
 /**
  * Record ACL form
- * 
+ *
  */
 function maclGroups()
 {
 	global $babDB;
-	$id_object = &$_POST['item'];
 	
+	if (!isset($_POST['item'])) {
+	    return;
+	}
+	
+	bab_requireSaveMethod();
+	$id_object = &$_POST['item'];
+
 	unset($_SESSION['bab_groupAccess']['acltables']);
 	$babDB->db_query("UPDATE ".BAB_USERS_LOG_TBL." SET grp_change='1'");
 	bab_siteMap::clearAll();
-	
+
 	$session = bab_getInstance('bab_Session');
-	
+
 	if (!isset($session->bab_acl_tablelist)) {
 		return;
 	}
 
 	$s_table = $session->bab_acl_tablelist;
 	unset($session->bab_acl_tablelist);
-	
+
 	foreach($s_table as $tablename)
 	{
 		if (isset($_POST[$tablename]))
@@ -373,7 +379,7 @@ function maclGroups()
 
 
 
-	
+
 function aclGroups($target, $index, $table, $id, $return)
 	{
 	global $babBody;
@@ -397,9 +403,9 @@ function aclDelete($table, $id_object)
 
 /**
  * Removes all the ACL information stored for a group in the specified table.
- * 
+ *
  * @since	6.1.0
- * 
+ *
  * @param	string	$table			The acl table name.
  * @param	int		$id_group		The group for which acl should be removed.
  */
@@ -435,10 +441,10 @@ function aclSetGroups_unregistered($table, $id_object)
 
 function aclGetAccessGroups($table, $id_object) {
 	global $babBody, $babDB;
-	
+
 	$tree = new bab_grptree();
 	$groups = array();
-	
+
 	$res = $babDB->db_query("SELECT t.id_group, g.nb_groups FROM ".$babDB->backTick($table)." t left join ".BAB_GROUPS_TBL." g on g.id=t.id_group WHERE t.id_object='".$babDB->db_escape_string($id_object)."'");
 	while ($arr = $babDB->db_fetch_assoc($res)) {
 		if ($arr['id_group'] >= BAB_ACL_GROUP_TREE )
@@ -472,7 +478,7 @@ function aclGetAccessGroups($table, $id_object) {
 
 	return $groups;
 	}
-	
+
 
 /**
  * Return the list of the users who have the access right specified (table and id object)
@@ -496,27 +502,27 @@ function aclGetAccessGroups($table, $id_object) {
  */
 function aclGetAccessUsers($table, $id_object, $activeOrderBy=NULL, $returnDisabledUsers=false, $returnNonConfirmedUsers=false) {
 	global $babBody, $babDB;
-	
+
 	$groups = aclGetAccessGroups($table, $id_object);
 	$query = '';
-	
-	
+
+
 	if (isset($groups[BAB_REGISTERED_GROUP]) || isset($groups[BAB_ALLUSERS_GROUP])) {
-		
+
 		$where = bab_userInfos::queryAllowedUsers(null, $returnNonConfirmedUsers, $returnDisabledUsers);
-		
-		$query = 'SELECT `id`, `firstname`, `lastname`, `email` 
+
+		$query = 'SELECT `id`, `firstname`, `lastname`, `email`
 					FROM '.BAB_USERS_TBL.' WHERE '.$where;
 
 	} else {
-		
+
 		$where = bab_userInfos::queryAllowedUsers('u', $returnNonConfirmedUsers, $returnDisabledUsers);
-		
-		$query = 'SELECT `u`.id,`u`.`firstname`, `u`.`lastname`,`u`.`email` 
+
+		$query = 'SELECT `u`.id,`u`.`firstname`, `u`.`lastname`,`u`.`email`
 					FROM '.BAB_USERS_TBL.' `u`, '.BAB_USERS_GROUPS_TBL.' `g`
 						WHERE `g`.`id_object`=`u`.`id` AND `g`.`id_group` IN('.$babDB->quote($groups).') AND '.$where;
 	}
-	
+
 	if (isset($activeOrderBy)) {
 		if ($activeOrderBy == 'lastname') {
 			$query .= ' ORDER by `lastname`,`firstname`';
@@ -524,8 +530,8 @@ function aclGetAccessUsers($table, $id_object, $activeOrderBy=NULL, $returnDisab
 			$query .= ' ORDER by `firstname`,`lastname`';
 		}
 	}
-	
-	
+
+
 	$user = array();
 	if( !empty($query))
 	{
@@ -544,15 +550,15 @@ function aclGetAccessUsers($table, $id_object, $activeOrderBy=NULL, $returnDisab
 }
 
 /**
- * Duplicate rights from a source table with a certain id_object to a 
+ * Duplicate rights from a source table with a certain id_object to a
  * target table with an another id_object
- * 
- * @access  public 
+ *
+ * @access  public
  * @param   string	$srcTable		right table to duplicate
- * @param   int		$srcIdObject	id of object from which the corresponding rights will duplicated  
+ * @param   int		$srcIdObject	id of object from which the corresponding rights will duplicated
  * @param   string	$trgTable		duplicated rights table
- * @param   int		$trgIdObject	new affected rights id_object 
- * 
+ * @param   int		$trgIdObject	new affected rights id_object
+ *
  */
 function aclDuplicateRights($srcTable, $srcIdObject, $trgTable, $trgIdObject)
 {
@@ -563,7 +569,7 @@ function aclDuplicateRights($srcTable, $srcIdObject, $trgTable, $trgIdObject)
 	while ($arr = $babDB->db_fetch_assoc($res)) {
 		$babDB->db_query('INSERT INTO ' . $babDB->backTick($trgTable) . ' ( `id_object` , `id_group`) VALUES ( ' . $babDB->quote($trgIdObject) . ', ' . $babDB->quote($arr['id_group']) . ')');
 	}
-	
+
 	$babDB->db_query("UPDATE ".BAB_USERS_LOG_TBL." SET grp_change='1'");
 	if(array_key_exists('bab_groupAccess', $_SESSION))
 	{
@@ -573,20 +579,20 @@ function aclDuplicateRights($srcTable, $srcIdObject, $trgTable, $trgIdObject)
 }
 
 /**
- * Clone rights from a source table with a certain id_object to a 
+ * Clone rights from a source table with a certain id_object to a
  * target table with an another id_object
- * 
- * @access  public 
+ *
+ * @access  public
  * @param   string	$srcTable		right table to duplicate
- * @param   int		$srcIdObject	id of object from which the corresponding rights will duplicated  
+ * @param   int		$srcIdObject	id of object from which the corresponding rights will duplicated
  * @param   string	$trgTable		duplicated rights table
- * @param   int		$trgIdObject	new affected rights id_object 
- * 
+ * @param   int		$trgIdObject	new affected rights id_object
+ *
  */
 function aclCloneRights($srcTable, $srcIdObject, $trgTable, $trgIdObject)
 {
 	global $babDB;
-	
+
 	$babDB->db_query('DELETE FROM '.$babDB->backTick($trgTable).' WHERE id_object='.$babDB->quote($trgIdObject));
 
 	aclDuplicateRights($srcTable, $srcIdObject, $trgTable, $trgIdObject);
@@ -605,6 +611,11 @@ function aclAdd($sTable, $iIdGroup, $iIdObject)
 {
 	global $babDB;
 
+	$sql = 'SELECT id FROM ' . $babDB->backTick($sTable) . ' WHERE `id_object` = ' . $babDB->quote($iIdObject) . ' AND `id_group` = ' . $babDB->quote($iIdGroup);
+	$rows = $babDB->db_query($sql);
+	if ($babDB->db_fetch_assoc($rows)) {
+	    return true;
+	}
 	if ($babDB->db_query('INSERT INTO ' . $babDB->backTick($sTable) . ' ( `id_object` , `id_group`) VALUES (' . $babDB->quote($iIdObject) . ', ' . $babDB->quote($iIdGroup) . ')')) {
 		unset($_SESSION['bab_groupAccess']['acltables']);
 		$babDB->db_query("UPDATE ".BAB_USERS_LOG_TBL." SET grp_change='1'");
@@ -639,7 +650,7 @@ function aclRemove($table, $groupId, $objectId)
 			}
 		}
 	}
-	
+
 	if ($babDB->db_query('DELETE FROM ' . $babDB->backTick($table) . ' WHERE `id_object` = ' . $babDB->quote($objectId) . ' AND `id_group` IN (' . $babDB->quote($groups) . ')')) {
 		unset($_SESSION['bab_groupAccess']['acltables']);
 		$babDB->db_query("UPDATE ".BAB_USERS_LOG_TBL." SET grp_change='1'");
@@ -654,16 +665,16 @@ function aclRemove($table, $groupId, $objectId)
 
 /**
  * Create ACL table if not exists
- * 
+ *
  * @since 7.5.94
- * 
+ *
  * @param string $table
  * @return bool
  */
 function aclCreateTable($table)
 {
 	global $babDB;
-	
+
 	return $babDB->db_query("
 		CREATE TABLE IF NOT EXISTS ".$babDB->backTick($table)." (
 		  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
@@ -679,12 +690,12 @@ function aclCreateTable($table)
 
 /**
  * Get ACL access rights as string
- * 
+ *
  * @since 7.5.94
- * 
+ *
  * @param	string	$table
  * @param	int		$id_object
- * 
+ *
  * @return string	Access rights string with coma separated group list ex: 2,3,4+,6
  */
 function aclGetRightsString($table, $id_object)
@@ -695,42 +706,42 @@ function aclGetRightsString($table, $id_object)
 	while ($arr = $babDB->db_fetch_assoc($res))
 	{
 		$id_group = (int) $arr['id_group'];
-		
+
 		if( $id_group >= BAB_ACL_GROUP_TREE )
 		{
 			$id_group -= BAB_ACL_GROUP_TREE;
-			
+
 			$ouput[] = ((string) $id_group).'+';
-			
+
 		} else {
 			$ouput[] = (string) $id_group;
 		}
 	}
-	
+
 	return implode(',', $ouput);
 }
 
 /**
  * Save ACL access rights from string
- * 
+ *
  * @since 7.5.94
- * 
+ *
  * @param	string	$table
- * @param	int		$id_object		
+ * @param	int		$id_object
  * @param	string	$rights			Access rights string with coma separated group list ex: 2,3,4+,6
- * 
+ *
  * @return bool
  */
 function aclSetRightsString($table, $id_object, $rights)
 {
 	global $babDB;
 	$babDB->db_query('DELETE FROM '.$babDB->backTick($table).' WHERE id_object='.$babDB->quote($id_object));
-	
+
 	if ('' !== $rights)
 	{
 		$input = array_unique(explode(',',$rights));
 		$insert = array();
-		
+
 		foreach($input as $g)
 		{
 			if (mb_strlen($g) > 1 && '+' === mb_substr($g, -1))
@@ -743,10 +754,10 @@ function aclSetRightsString($table, $id_object, $rights)
 			} else {
 				$id_group = (int) $g;
 			}
-			
+
 			$insert[] = '('.$babDB->quote($id_object).', '.$babDB->quote($id_group).')';
 		}
-		
+
 		if (count($insert) > 0)
 		{
 			if (!$babDB->db_query('INSERT INTO '.$babDB->backTick($table).' (id_object, id_group) VALUES '.implode(',', $insert)))
@@ -755,9 +766,9 @@ function aclSetRightsString($table, $id_object, $rights)
 			}
 		}
 	}
-	
+
 	$babDB->db_query("UPDATE ".BAB_USERS_LOG_TBL." SET grp_change='1'");
 	bab_siteMap::clearAll();
-	
+
 	return true;
 }

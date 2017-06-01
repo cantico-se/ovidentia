@@ -23,6 +23,8 @@
 
 include_once $GLOBALS['babInstallPath'].'admin/register.php';
 require_once dirname(__FILE__).'/userinfosincl.php';
+require_once dirname(__FILE__).'/password.class.php';
+require_once dirname(__FILE__).'/settings.class.php';
 
 require_once $GLOBALS['babInstallPath'].'utilit/functionalityincl.php';
 
@@ -211,7 +213,6 @@ class Func_PortalAuthentication extends bab_functionality
      */
     public function authenticateUser($sLogin, $sPassword)
     {
-        require_once dirname(__FILE__).'/settings.class.php';
 
         $settings = bab_getInstance('bab_Settings');
         /*@var $settings bab_Settings */
@@ -355,6 +356,7 @@ class Func_PortalAuthentication_AuthOvidentia extends Func_PortalAuthentication
 
         if (!empty($sLogin) && !empty($sPassword))
         {
+            bab_requireSaveMethod();
             $iIdUser = $this->authenticateUser($sLogin, $sPassword);
             if ($this->userCanLogin($iIdUser))
             {
@@ -368,8 +370,30 @@ class Func_PortalAuthentication_AuthOvidentia extends Func_PortalAuthentication
         {
             $this->addError(bab_translate("You must complete all fields !!"));
         }
-        header('location:'.$GLOBALS['babUrlScript'] . '?tg=login&cmd=authform&msg=' . urlencode($this->loginMessage) . '&err=' . urlencode(implode("\n", $this->errorMessages)));
+        header('location:'.$this->getLoginFormUrl());
         return false;
+    }
+
+    /**
+     * Get login form url, change protocol if required
+     * @return string
+     */
+    public function getLoginFormUrl()
+    {
+        $url = $GLOBALS['babUrlScript'] . '?tg=login&cmd=authform&msg=' . urlencode($this->loginMessage) . '&err=' . urlencode(implode("\n", $this->errorMessages));
+
+        $settings = bab_getInstance('bab_Settings');
+        /*@var $settings bab_Settings */
+        $site = $settings->getSiteSettings();
+
+        if ($site['auth_https']) {
+            $protocol = mb_substr($url, 0, 5);
+            if ('http:' === $protocol) {
+                $url = 'https:'.mb_substr($url, 5);
+            }
+        }
+
+        return $url;
     }
 
 
@@ -468,7 +492,7 @@ class Func_PortalAuthentication_AuthOvidentia extends Func_PortalAuthentication
         $oLdap = new babLDAP($babBody->babsite['ldap_host'], '', false);
         if (false === $oLdap->connect())
         {
-            $this->addError(bab_translate("LDAP connection failed. Please contact your administrator"));
+            $this->addError(bab_translate("Connection failed. Please contact your administrator"));
             return null;
         }
 
@@ -492,7 +516,7 @@ class Func_PortalAuthentication_AuthOvidentia extends Func_PortalAuthentication
                 if (false === $oLdap->bind(bab_ldapEncode($sUserdn), bab_ldapEncode($sPassword)))
                 {
 
-                    $this->addError(bab_translate("LDAP bind failed. Please contact your administrator"));
+                    $this->addError(bab_translate("Binding failed. Please contact your administrator"));
                     $bLdapOk = false;
                 }
                 else
@@ -500,7 +524,7 @@ class Func_PortalAuthentication_AuthOvidentia extends Func_PortalAuthentication
                     $aEntries = $oLdap->search(bab_ldapEncode($sUserdn), '(objectclass=*)', $aAttributes);
                     if ($aEntries === false || $aEntries['count'] == 0)
                     {
-                        $this->addError(bab_translate("LDAP search failed"));
+                        $this->addError(bab_translate("User not found in the directory"));
                         $bLdapOk = false;
                     }
                 }
@@ -525,7 +549,7 @@ class Func_PortalAuthentication_AuthOvidentia extends Func_PortalAuthentication
 
                     if(false === $oLdap->bind($DnEntries[0]['dn'], bab_ldapEncode($sPassword)))
                     {
-                        $this->addError(bab_translate("LDAP bind failed. Please contact your administrator"));
+                        $this->addError(bab_translate("Binding failed. Please contact your administrator"));
                         $bLdapOk = false;
                     } else {
 
@@ -545,7 +569,7 @@ class Func_PortalAuthentication_AuthOvidentia extends Func_PortalAuthentication
         $iIdUser = false;
         if (!isset($aEntries) || $aEntries === false)
         {
-            $this->addError(bab_translate("LDAP authentification failed. Please verify your login ID and your password"));
+            $this->addError(bab_translate("Authentification failed. Please verify your login ID and your password"));
             $bLdapOk = false;
         }
 
@@ -585,7 +609,7 @@ class Func_PortalAuthentication_AuthOvidentia extends Func_PortalAuthentication
                 $bLdapOk = bab_haveAdministratorRight($sLogin, $sPassword, $iIdUser);
                 if (false === $bLdapOk)
                 {
-                    $this->addError(bab_translate("LDAP authentification failed. Please verify your login ID and your password"));
+                    $this->addError(bab_translate("Authentification failed. Please verify your login ID and your password"));
                 }
             }
         }
@@ -715,7 +739,7 @@ class Func_PortalAuthentication_AuthOvidentia extends Func_PortalAuthentication
         $oLdap = new babLDAP($babBody->babsite['ldap_host'], '', false);
         if (false === $oLdap->connect())
         {
-            $this->addError(bab_translate("LDAP connection failed. Please contact your administrator"));
+            $this->addError(bab_translate("Connection failed. Please contact your administrator"));
             return null;
         }
 
@@ -733,7 +757,7 @@ class Func_PortalAuthentication_AuthOvidentia extends Func_PortalAuthentication
 
             if (false === $oLdap->bind(bab_ldapEncode($sLogin."@".$babBody->babsite['ldap_domainname']), bab_ldapEncode($sPassword)))
             {
-                $this->addError(bab_translate("LDAP bind failed. Please contact your administrator"));
+                $this->addError(bab_translate("Binding failed. Please contact your administrator"));
                 $bLdapOk = false;
             }
             else
@@ -754,7 +778,7 @@ class Func_PortalAuthentication_AuthOvidentia extends Func_PortalAuthentication
         $iIdUser = false;
         if (!isset($aEntries) || $aEntries === false || (isset($aEntries['count']) && 0 === (int) $aEntries['count']))
         {
-            $this->addError(bab_translate("LDAP authentification failed. Please verify your login ID and your password"));
+            $this->addError(bab_translate("Authentification failed. Please verify your login ID and your password"));
             $bLdapOk = false;
         }
 
@@ -794,7 +818,7 @@ class Func_PortalAuthentication_AuthOvidentia extends Func_PortalAuthentication
                 $bLdapOk = bab_haveAdministratorRight($sLogin, $sPassword, $iIdUser);
                 if( false === $bLdapOk)
                 {
-                    $this->addError(bab_translate("LDAP authentification failed. Please verify your login ID and your password"));
+                    $this->addError(bab_translate("Authentification failed. Please verify your login ID and your password"));
                 }
             }
         }
@@ -823,6 +847,7 @@ function bab_getAuthType()
 {
     return bab_rp('sAuthType', '');
 }
+
 
 
 
@@ -861,6 +886,7 @@ function bab_doRequireCredential($sLoginMessage, $sAuthType)
     }
 
     $oAuthObject = bab_functionality::get($sAuthPath);
+    /*@var $oAuthObject Func_PortalAuthentication_AuthOvidentia */
 
     if (false === $oAuthObject)
     {
@@ -893,17 +919,8 @@ function bab_doRequireCredential($sLoginMessage, $sAuthType)
         }
 
 
-        if ($oAuthObject->errorMessages)
-        {
-            require_once dirname(__FILE__).'/urlincl.php';
-
-            $url = new bab_url($GLOBALS['babUrlScript']);
-            $url->tg = 'login';
-            $url->cmd = 'denied';
-            $url->errors = $oAuthObject->errorMessages;
-
-            loginRedirect($url->toString());
-
+        if ($oAuthObject->errorMessages) {
+            loginRedirect($oAuthObject->getLoginFormUrl());
         }
 
         // failed authentication without error message
@@ -912,88 +929,70 @@ function bab_doRequireCredential($sLoginMessage, $sAuthType)
     return true;
 }
 
+
+
+function bab_getUserByIdPassword($iIdUser, $sPassword)
+{
+    $user = bab_userInfos::getRow($iIdUser);
+
+    if (!bab_Password::verify($sPassword, $user['password'], $user['password_hash_function'])) {
+        return null;
+    }
+
+    return $user;
+}
+
+
+
 /**
  * get user by email and password
- * return false if more than one user with this email and password
+ *
  *
  * @param string $email
  * @param string $sPassword
- * @return multitype:|boolean|NULL
+ * @return array|NULL
  */
 function bab_getUserByEmailPassword($email, $sPassword)
 {
     global $babDB;
 
     $sQuery = '
-    SELECT *
+    SELECT id
     FROM ' . BAB_USERS_TBL . '
-    WHERE email = ' . $babDB->quote($email) . '
-    AND password = ' . $babDB->quote(md5(mb_strtolower($sPassword)));
+    WHERE email = ' . $babDB->quote($email) . ' LIMIT 0,10'; // 10 match max are tested
 
     $oResult = $babDB->db_query($sQuery);
     if(false !== $oResult)
     {
-        $iRows = $babDB->db_num_rows($oResult);
-        if($iRows === 1 && false !== ($aDatas = $babDB->db_fetch_array($oResult)))
-        {
-            return $aDatas;
-        }
-
-        if ($iRows > 1)
-        {
-            return false;
+        while ($arr = $babDB->db_fetch_assoc($oResult)) {
+            $user = bab_getUserByIdPassword($arr['id'], $sPassword);
+            if (false !== $user) {
+                return $user;
+            }
         }
     }
     return null;
 }
+
+
 
 
 
 function bab_getUserByLoginPassword($sLogin, $sPassword)
 {
-    global $babDB;
 
-    $sQuery = '
-        SELECT *
-        FROM ' . BAB_USERS_TBL . '
-        WHERE nickname = ' . $babDB->quote($sLogin) . '
-          AND password = ' . $babDB->quote(md5(mb_strtolower($sPassword)));
+    $user = bab_getUserByNickname($sLogin);
 
-    $oResult = $babDB->db_query($sQuery);
-    if(false !== $oResult)
-    {
-        $iRows = $babDB->db_num_rows($oResult);
-        if($iRows > 0 && false !== ($aDatas = $babDB->db_fetch_array($oResult)))
-        {
-            return $aDatas;
-        }
+    if (!bab_Password::verify($sPassword, $user['password'], $user['password_hash_function'])) {
+        return null;
     }
-    return null;
+
+    return $user;
 }
 
 
 
-function bab_getUserByIdPassword($iIdUser, $sPassword)
-{
-    global $babDB;
 
-    $sQuery = '
-        SELECT *
-        FROM ' . BAB_USERS_TBL . '
-        WHERE id = ' . $babDB->quote($iIdUser) . '
-        AND password = ' . $babDB->quote(md5(mb_strtolower($sPassword)));
-
-    $oResult = $babDB->db_query($sQuery);
-    if(false !== $oResult)
-    {
-        $iRows = $babDB->db_num_rows($oResult);
-        if($iRows > 0 && false !== ($aDatas = $babDB->db_fetch_array($oResult)))
-        {
-            return $aDatas;
-        }
-    }
-    return null;
-}
 
 
 /**
@@ -1113,7 +1112,7 @@ function bab_signOff()
 function bab_logout($bRedirect = true)
 {
     require_once dirname(__FILE__).'/eventloginincl.php';
-    global $babBody, $babDB, $BAB_HASH_VAR, $BAB_SESS_USER, $BAB_SESS_EMAIL, $BAB_SESS_USERID, $BAB_SESS_HASHID,$BAB_SESS_LOGGED;
+    global $babDB, $BAB_SESS_USERID;
 
     $babDB->db_query("delete from ".BAB_USERS_LOG_TBL." where id_user='".$babDB->db_escape_string($BAB_SESS_USERID)."' and sessid='".$babDB->db_escape_string(session_id())."'");
     $babDB->db_query("UPDATE ".BAB_USERS_TBL." SET  cookie_validity=NOW(), cookie_id='' WHERE id='".$babDB->db_escape_string($BAB_SESS_USERID)."'");
@@ -1194,20 +1193,48 @@ class displayLogin_Template
 }
 
 
+
+/**
+ * Display a html form for in the login context
+ *
+ * @param string $htmlform      Authentication form, registration form, lost password form
+ * @param string $ovmlTemplate  File name of an optional ovml file
+ */
+function bab_displayLoginPage($htmlform, $ovmlTemplate)
+{
+    $settings = bab_getInstance('bab_Settings');
+    $site = $settings->getSiteSettings();
+
+    $babBody = bab_getBody();
+    $method = $site['auth_fullscreen'] ? 'babpopup' : 'babecho';
+
+    try {
+        $babBody->$method(bab_getHtmlFromOvml(
+            $ovmlTemplate,
+            array('Form' => $htmlform),
+            array('Form' => 1) // bab_context::HTML
+        ));
+    } catch (Exception $e) {
+        // Ovml not found
+        $babBody->$method($htmlform);
+    }
+}
+
+
+
+
 /**
  * @param string	$title				The title displayed for the login form.
  * @param string	$errorMessages		A string of "\n" separated error messages.
  */
 function displayAuthenticationForm($title, $errorMessages)
 {
-    global $babBody;
 
-    /*
-    if(!empty($_SERVER['HTTP_HOST']) && !isset($_GET['redirected']) && mb_substr_count($GLOBALS['babUrl'], $_SERVER['HTTP_HOST']) == 0 && !$GLOBALS['BAB_SESS_LOGGED'])
-    {
-        header('location:'.$GLOBALS['babUrlScript'].'?tg=login&cmd=signon&redirected=1');
-    }
-    */
+
+    $settings = bab_getInstance('bab_Settings');
+    $site = $settings->getSiteSettings();
+
+    $babBody = bab_getBody();
 
     $babBody->setTitle($title);
     $errors = explode("\n", $errorMessages);
@@ -1215,8 +1242,10 @@ function displayAuthenticationForm($title, $errorMessages)
         $babBody->addError($errorMessage);
     }
     $babBody->addItemMenu('signon', bab_translate("Login"), $GLOBALS['babUrlScript'].'?tg=login&cmd=signon');
-//	bab_debug($babBody->babsite);
-    if($babBody->babsite['registration'] == 'Y') {
+
+    $babBody->setCurrentItemMenu('signon');
+
+    if($site['registration'] == 'Y') {
         $babBody->addItemMenu('register', bab_translate("Register"), $GLOBALS['babUrlScript'].'?tg=login&cmd=register');
     }
 
@@ -1235,7 +1264,9 @@ function displayAuthenticationForm($title, $errorMessages)
     }
 
     $temp = new displayLogin_Template($referer);
-    $babBody->babecho(	bab_printTemplate($temp, 'login.html', 'login'));
+    $html =	bab_printTemplate($temp, 'login.html', 'login');
+
+    bab_displayLoginPage($html, 'signon.html');
 }
 
 /**
@@ -1340,10 +1371,13 @@ function displayForceChangePwdForm($idUser)
 
 
 
-//--------------------------------------------------------------------------
-
+/**
+ * Redirect to url using javascript on option
+ * @param string $url
+ */
 function loginRedirect($url)
 {
+
     if(isset($GLOBALS['babLoginRedirect']) && $GLOBALS['babLoginRedirect'] == false)
     {
         class loginRedirectCls
@@ -1550,7 +1584,7 @@ function bab_ldapEntryGroups($id_user, $entry, $ldap_groups, $create)
             continue;
         }
 
-
+        $m = null;
         if (preg_match('/^CN=([^,]+),'.preg_quote($babBody->babsite['ldap_searchdn']).'$/i', $group, $m))
         {
             // if group is in search DN use CN as group name
@@ -1673,8 +1707,6 @@ function bab_getLdapExtraFieldIdAndUpdateAttributes(&$aAttributes, &$aUpdateAttr
 
 function bab_logUserConnectionToStat($iIdUser)
 {
-    require_once dirname(__FILE__).'/settings.class.php';
-
     $settings = bab_getInstance('bab_Settings');
     /*@var $settings bab_Settings */
 

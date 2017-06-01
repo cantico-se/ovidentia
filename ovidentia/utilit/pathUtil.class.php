@@ -34,6 +34,7 @@ class BAB_PathUtil
 		$sFirstChar = mb_substr($sPath, 0, 1);
 
 		$sDrive = '';
+		$aMatch = null;
 		if(0 !== preg_match("/(^[a-zA-z0-9]){1}(\:){1}(\/){1}.*$/", $sPath, $aMatch))
 		{
 			$sDrive	= $aMatch[1] . $aMatch[2] . $aMatch[3];

@@ -21,16 +21,15 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307,*
  * USA.																	*
 ************************************************************************/
-/**
-* @internal SEC1 NA 18/12/2006 FULL
-*/
+
 include 'base.php';
-require_once dirname(__FILE__).'/utilit/registerglobals.php';
-include_once $babInstallPath.'utilit/dirincl.php';
-include_once $babInstallPath.'utilit/ldap.php';
-include_once $babInstallPath.'utilit/tempfile.php';
-include_once $babInstallPath.'utilit/userinfosincl.php';
-include_once $babInstallPath.'admin/register.php';
+
+include_once $GLOBALS['babInstallPath'].'utilit/dirincl.php';
+include_once $GLOBALS['babInstallPath'].'utilit/ldap.php';
+include_once $GLOBALS['babInstallPath'].'utilit/tempfile.php';
+include_once $GLOBALS['babInstallPath'].'utilit/userinfosincl.php';
+include_once $GLOBALS['babInstallPath'].'utilit/directoryimport.php';
+include_once $GLOBALS['babInstallPath'].'admin/register.php';
 
 function trimQuotes($str)
 {
@@ -213,21 +212,7 @@ function browseLdapDirectory($id, $pos)
                 }
 
             /* find prefered mail account */
-            $req = "select * from ".BAB_MAIL_ACCOUNTS_TBL." where owner='".$babDB->db_escape_string($GLOBALS['BAB_SESS_USERID'])."' and prefered='Y'";
-            $res = $babDB->db_query($req);
-            if( !$res || $babDB->db_num_rows($res) == 0 )
-                {
-                $req = "select * from ".BAB_MAIL_ACCOUNTS_TBL." where owner='".$babDB->db_escape_string($GLOBALS['BAB_SESS_USERID'])."'";
-                $res = $babDB->db_query($req);
-                }
-
-            if( $babDB->db_num_rows($res) > 0 )
-                {
-                $arr = $babDB->db_fetch_array($res);
-                $this->accid = $arr['id'];
-                }
-            else
-                $this->accid = 0;
+            $this->accid = 0;
             }
 
 
@@ -256,7 +241,7 @@ function browseLdapDirectory($id, $pos)
                 $this->btel 				= bab_toHtml($this->getFromEntry('telephonenumber'));
                 $this->htel 				= bab_toHtml($this->getFromEntry('homephone'));
                 $this->email 				= bab_toHtml($this->getFromEntry('mail'));
-                $this->urlmail 				= bab_toHtml($GLOBALS['babUrlScript']."?tg=mail&idx=compose&accid=".$this->accid."&to=".urlencode($this->getFromEntry('email')));
+                $this->urlmail 				= null;
                 $i++;
                 return true;
                 }
@@ -393,21 +378,7 @@ function browseDbDirectory($id, $pos, $xf, $badd, $disable_email='N')
             $this->bgroup = $arr['id_group'] > 0;
 
             /* find prefered mail account */
-            $req = "select * from ".BAB_MAIL_ACCOUNTS_TBL." where owner='".$babDB->db_escape_string($GLOBALS['BAB_SESS_USERID'])."' and prefered='Y'";
-            $res = $babDB->db_query($req);
-            if( !$res || $babDB->db_num_rows($res) == 0 )
-                {
-                $req = "select * from ".BAB_MAIL_ACCOUNTS_TBL." where owner='".$babDB->db_escape_string($GLOBALS['BAB_SESS_USERID'])."'";
-                $res = $babDB->db_query($req);
-                }
-
-            if( $babDB->db_num_rows($res) > 0 )
-                {
-                $arr = $babDB->db_fetch_array($res);
-                $this->accid = $arr['id'];
-                }
-            else
-                $this->accid = 0;
+            $this->accid = 0;
 
             $this->select = array();
             }
@@ -542,7 +513,7 @@ function browseDbDirectory($id, $pos, $xf, $badd, $disable_email='N')
                 {
                 $this->altbg = !$this->altbg;
                 $this->arrf = $babDB->db_fetch_array($this->res);
-                $this->urlmail = bab_toHtml($GLOBALS['babUrlScript']."?tg=mail&idx=compose&accid=".urlencode($this->accid)."&to=".urlencode($this->arrf['email']));
+                $this->urlmail = null;
                 $this->email = $this->arrf['email'];
 
                 if ($_GET['idx'] == 'sdbovml')
@@ -2038,535 +2009,6 @@ function confirmAssignEntry($id, $fields, $idauser, $idatype)
 
 
 
-class bab_processImportEmailUsers
-{
-    /**
-     *
-     * @var int
-     */
-    private $id_directory;
-
-    /**
-     *
-     * @var bab_Path
-     */
-    private $file;
-
-    /**
-     *
-     * @param int $id_directory
-     */
-    public function __construct($id_directory)
-    {
-        require_once dirname(__FILE__).'/utilit/path.class.php';
-
-        $this->id_directory = $id_directory;
-
-        // create a temporary file to store the created users
-
-        $this->file = new bab_Path($GLOBALS['babUploadPath'], 'tmp');
-        $this->file->createDir();
-        $this->file->push(session_id().'_created_users.csv');
-
-        if ($this->file->fileExists())
-        {
-            $this->file->delete();
-        }
-    }
-
-    /**
-     * Add a user to the temporary CSV file
-     * @param int $id_user
-     * @param string | null $password
-     */
-    public function addUser($id_user, $password)
-    {
-        if (null !== $password)
-        {
-            $password = str_replace('"', '""', $password);
-        }
-
-        $csvline = '"'.$id_user.'","'.((string) $password).'"'."\n";
-        return file_put_contents($this->file->tostring(), $csvline , FILE_APPEND);
-    }
-
-
-    /**
-     * Display HTML page with progress
-     */
-    public function displayProgress()
-    {
-        require_once dirname(__FILE__).'/utilit/install.class.php';
-        require_once dirname(__FILE__).'/utilit/session.class.php';
-
-        $session = bab_getInstance('bab_Session');
-        $session->bab_directory_import_email_tmp_file = $this->file->getBasename();
-
-        $t_upgrade = bab_translate('Send email notifications to the imported users');
-        $t_continue = bab_translate('Back to directory');
-        $frameurl = $GLOBALS['babUrlScript'].'?tg=directory&idx=emailimported';
-        $nextpageurl = $GLOBALS['babUrlScript'].'?tg=directory&idx=sdbovml&directoryid='.$this->id_directory;
-
-        bab_installWindow::getPage($t_upgrade, $frameurl, $t_continue, $nextpageurl);
-
-        return true;
-    }
-
-
-
-    public static function iframe()
-    {
-        require_once dirname(__FILE__).'/utilit/install.class.php';
-
-        $frame = new bab_installWindow;
-        $frame->setStartMessage(bab_translate('Send an email for each created or updated account'));
-        $frame->setStopMessage(
-                bab_translate('Task done'),
-                bab_translate('No mail to send or all mail allready sent')
-        );
-
-        $frame->startInstall(array(__CLASS__, 'iframe_process'));
-        die();
-    }
-
-
-    /**
-     * iframe progress
-     */
-    public static function iframe_process()
-    {
-        require_once dirname(__FILE__).'/utilit/path.class.php';
-        require_once dirname(__FILE__).'/utilit/session.class.php';
-        require_once dirname(__FILE__).'/utilit/userinfosincl.php';
-        require_once dirname(__FILE__).'/admin/register.php';
-
-        $session = bab_getInstance('bab_Session');
-
-        if (!isset($session->bab_directory_import_email_tmp_file))
-        {
-            return false;
-        }
-
-        $file = new bab_Path($GLOBALS['babUploadPath'], 'tmp', $session->bab_directory_import_email_tmp_file);
-        if (!$file->fileExists())
-        {
-            return false;
-        }
-
-        $fd = fopen($file->tostring(), "r");
-        if( $fd )
-        {
-            while ($arr = fgetcsv($fd, 1024))
-            {
-                if ($user = bab_userInfos::getRow($arr[0]))
-                {
-                    $name = bab_composeUserName($user['firstname'], $user['lastname']);
-                    $email = trim($user['email']);
-                    if (empty($email))
-                    {
-                        bab_installWindow::message(sprintf(bab_translate('Error, empty email address for %s'), $name));
-                        continue;
-                    }
-
-
-                    if (notifyAdminUserRegistration($name, $email, $user['nickname'], $arr[1]))
-                    {
-                        bab_installWindow::message(sprintf(bab_translate('Notification sent to %s'), $name));
-                    } else {
-                        bab_installWindow::message(sprintf(bab_translate('Error : failed to notify %s (%s)'), $name, $email));
-                    }
-                }
-
-
-            }
-        }
-
-        $file->delete();
-        unset($session->bab_directory_import_email_tmp_file);
-        return true;
-
-    }
-}
-
-
-
-
-/***
- * Import CSV file to database
- */
-function processImportDbFile( $pfile, $id, $separ )
-    {
-    global $babBody, $babDB;
-
-
-    if (!file_exists($pfile))
-    {
-        $babBody->msgerror = bab_translate("No ongoing import");
-        return false;
-    }
-
-
-    list($idgroup) = $babDB->db_fetch_array($babDB->db_query("select id_group from ".BAB_DB_DIRECTORIES_TBL." where id='".$babDB->db_escape_string($id)."'"));
-    if($idgroup > 0)
-    {
-        list($pcalendar) = $babDB->db_fetch_row($babDB->db_query("select pcalendar as pcal from ".BAB_GROUPS_TBL." where id='".$idgroup."'"));
-    }
-
-    $arridfx = array();
-    $arrnamef = array();
-    $res = $babDB->db_query("select * from ".BAB_DBDIR_FIELDSEXTRA_TBL." where id_directory='".($idgroup != 0? 0: $babDB->db_escape_string($id))."'");
-    while( $arr = $babDB->db_fetch_array($res))
-        {
-        if( $arr['id_field'] < BAB_DBDIR_MAX_COMMON_FIELDS )
-            {
-            $rr = $babDB->db_fetch_array($babDB->db_query("select description, name from ".BAB_DBDIR_FIELDS_TBL." where id='".$babDB->db_escape_string($arr['id_field'])."'"));
-            $fieldname = $rr['name'];
-            $arrnamef[] = $fieldname;
-            }
-        else
-            {
-            $rr = $babDB->db_fetch_array($babDB->db_query("select * from ".BAB_DBDIR_FIELDS_DIRECTORY_TBL." where id='".$babDB->db_escape_string(($arr['id_field'] - BAB_DBDIR_MAX_COMMON_FIELDS))."'"));
-            $fieldname = "babdirf".$arr['id'];
-            $arridfx[] = $arr['id'];
-            }
-
-        if( $arr['required'] == "Y" && (!isset($GLOBALS[$fieldname]) || $GLOBALS[$fieldname] == "" ))
-            {
-            $babBody->msgerror = bab_translate("You must complete required fields");
-            return false;
-            }
-
-        }
-
-    if( $idgroup > 0 )
-        {
-        if( '' == bab_rp('password1') || '' == bab_rp('password2') || mb_strlen(bab_rp('nickname')) == 0)
-            {
-            $babBody->msgerror = bab_translate("You must complete required fields");
-            return false;
-            }
-
-        if( !isset($GLOBALS['sn']) || $GLOBALS['sn'] == "" || !isset($GLOBALS['givenname']) || $GLOBALS['givenname'] == "")
-            {
-            $babBody->msgerror = bab_translate( "You must complete firstname and lastname fields !!");
-            return false;
-            }
-
-        $minPasswordLengh = 6;
-        if(ISSET($GLOBALS['babMinPasswordLength']) && is_numeric($GLOBALS['babMinPasswordLength'])){
-            $minPasswordLengh = $GLOBALS['babMinPasswordLength'];
-            if($minPasswordLengh < 1){
-                $minPasswordLengh = 1;
-            }
-        }
-        if ( mb_strlen(bab_rp('password1')) < $minPasswordLengh )
-            {
-            $babBody->msgerror = sprintf(bab_translate("Password must be at least %s characters !!"),$minPasswordLengh);
-            return false;
-            }
-
-        if( bab_rp('password1') != bab_rp('password2'))
-            {
-            $babBody->msgerror = bab_translate("Passwords not match !!");
-            return false;
-            }
-
-
-
-
-        if ('Y' == bab_rp('notifyuser'))
-        {
-            $email_users = new bab_processImportEmailUsers($id);
-        }
-
-    }
-
-    $encoding = bab_rp('encoding', 'ISO-8859-15');
-
-    $fd = fopen($pfile, "r");
-    if( $fd )
-        {
-        $arr = fgetcsv($fd, 4096, $separ);
-        while ($arr = bab_getStringAccordingToDataBase(fgetcsv($fd, 4096, $separ), $encoding))
-            {
-            if( $idgroup > 0 )
-                {
-            if(!isset($arr[$GLOBALS['nickname']]) || empty($arr[$GLOBALS['nickname']])
-            || !isset($arr[$GLOBALS['givenname']]) || empty($arr[$GLOBALS['givenname']])
-            || !isset($arr[$GLOBALS['sn']]) || empty($arr[$GLOBALS['sn']])
-            )
-            {
-            continue;
-            }
-                }
-            else
-                {
-                    if(!isset($arr[$GLOBALS['givenname']]) || empty($arr[$GLOBALS['givenname']])
-                    || !isset($arr[$GLOBALS['sn']]) || empty($arr[$GLOBALS['sn']])
-                    )
-                    {
-                    continue;
-                    }
-                }
-
-            switch(bab_rp('duphand'))
-                {
-                case 1: // Replace duplicates with items imported
-                case 2: // Do not import duplicates
-                    if( $idgroup > 0 )
-                        {
-                        $query = "select id from ".BAB_USERS_TBL." where
-                            nickname='".$babDB->db_escape_string($arr[$GLOBALS['nickname']])."'
-                            OR (firstname LIKE '".$babDB->db_escape_like($arr[$GLOBALS['givenname']])."'
-                                AND lastname LIKE '".$babDB->db_escape_like($arr[$GLOBALS['sn']])."')";
-
-                        $res2 = $babDB->db_query($query);
-                        if( $babDB->db_num_rows($res2) > 0 )
-                            {
-                            if( 2 == bab_rp('duphand') )
-                            {
-                            break;
-                            }
-
-                            $rrr = $babDB->db_fetch_array($res2);
-                            $req = '';
-
-                            for( $k =0; $k < count($arrnamef); $k++ )
-                                {
-                                if( isset($GLOBALS[$arrnamef[$k]]) && $GLOBALS[$arrnamef[$k]] != "")
-                                    {
-                                    $req .= $arrnamef[$k]."='".$babDB->db_escape_string($arr[$GLOBALS[$arrnamef[$k]]])."',";
-                                    }
-                                }
-
-                            $bupdate = false;
-                            if( !empty($req))
-                                {
-                                $req = mb_substr($req, 0, mb_strlen($req) -1);
-                                $req = "update ".BAB_DBDIR_ENTRIES_TBL." set " . $req;
-                                $req .= " where id_directory='0' and id_user='".$babDB->db_escape_string($rrr['id'])."'";
-                                $babDB->db_query($req);
-                                $bupdate = true;
-                                }
-
-                            if( count($arridfx) > 0 )
-                                {
-                                list($idu) = $babDB->db_fetch_array($babDB->db_query("select id from ".BAB_DBDIR_ENTRIES_TBL." where id_directory='0' and id_user='".$babDB->db_escape_string($rrr['id'])."'"));
-                                for( $k=0; $k < count($arridfx); $k++ )
-                                    {
-                                    if( isset($arr[$GLOBALS["babdirf".$arridfx[$k]]]) )
-                                        {
-                                        $bupdate = true;
-                                        $rs = $babDB->db_query("select id from ".BAB_DBDIR_ENTRIES_EXTRA_TBL." where id_fieldx='".$babDB->db_escape_string($arridfx[$k])."' and  id_entry='".$babDB->db_escape_string($idu)."'");
-                                        if( $rs && $babDB->db_num_rows($rs) > 0 )
-                                            {
-                                            $babDB->db_query("update ".BAB_DBDIR_ENTRIES_EXTRA_TBL." set field_value='".$babDB->db_escape_string($arr[$GLOBALS["babdirf".$arridfx[$k]]])."' where id_fieldx='".$babDB->db_escape_string($arridfx[$k])."' and id_entry='".$babDB->db_escape_string($idu)."'");
-                                            }
-                                        else
-                                            {
-                                            $babDB->db_query("insert into ".BAB_DBDIR_ENTRIES_EXTRA_TBL." ( field_value, id_fieldx, id_entry) values ('".$babDB->db_escape_string($arr[$GLOBALS["babdirf".$arridfx[$k]]])."', '".$babDB->db_escape_string($arridfx[$k])."', '".$babDB->db_escape_string($idu)."')");
-                                            }
-                                        }
-                                    }
-                                }
-
-
-                            $password3 = bab_rp('password3');
-
-                            if( $password3 !== '')
-                                {
-                                    $pwd=false;
-                                    if (mb_strlen($arr[$password3]) >= 6)
-                                    {
-                                        $pwd = mb_strtolower($arr[$password3]);
-                                    }
-                                }
-                            else
-                                {
-                                $pwd = mb_strtolower(bab_rp('password1'));
-                                }
-                            $replace = array( " " => "", "-" => "");
-                            $hashname = md5(mb_strtolower(strtr($arr[$GLOBALS['givenname']].$arr[$GLOBALS['mn']].$arr[$GLOBALS['sn']], $replace)));
-                            $hash=md5($arr[$GLOBALS['nickname']].$GLOBALS['BAB_HASH_VAR']);
-
-                            $query = "update ".BAB_USERS_TBL." set
-                                nickname='".$babDB->db_escape_string($arr[$GLOBALS['nickname']])."',
-                                firstname='".$babDB->db_escape_string($arr[$GLOBALS['givenname']])."',
-                                lastname='".$babDB->db_escape_string($arr[$GLOBALS['sn']])."',
-                                email='".$babDB->db_escape_string($arr[$GLOBALS['email']])."',
-                                hashname='".$babDB->db_escape_string($hashname)."',
-                                confirm_hash='".$babDB->db_escape_string($hash)."' ";
-
-                            if (false !== $pwd)
-                            {
-                                $query .= ", password='".$babDB->db_escape_string(md5($pwd))."' ";
-                            }
-
-                            $query .= " where id='".$babDB->db_escape_string($rrr['id'])."'";
-
-
-                            $babDB->db_query($query);
-                            if( $bupdate )
-                                {
-                                $babDB->db_query("update ".BAB_DBDIR_ENTRIES_TBL." set date_modification=now(), id_modifiedby='".$babDB->db_escape_string($GLOBALS['BAB_SESS_USERID'])."' where id_directory='0' and id_user='".$babDB->db_escape_string($rrr['id'])."'");
-                                }
-
-                            if( $idgroup > 1 )
-                                {
-                                bab_addUserToGroup($rrr['id'], $idgroup);
-                                }
-
-
-                            if (isset($email_users))
-                            {
-                                $emailpwd = ($pwd && 'Y' === bab_rp('sendpwd')) ? $pwd : null;
-                                $email_users->addUser($rrr['id'], $pwd);
-                            }
-
-                            break;
-                            }
-                        }
-                    else
-                        {
-                        $res2 = $babDB->db_query("select id from ".BAB_DBDIR_ENTRIES_TBL." where givenname='".$babDB->db_escape_string($arr[$GLOBALS['givenname']])."' and sn='".$babDB->db_escape_string($arr[$GLOBALS['sn']])."' and id_directory='".$babDB->db_escape_string($id)."'");
-                        if( $res2 && $babDB->db_num_rows($res2 ) > 0 )
-                            {
-                            if( 2 == bab_rp('duphand') )
-                                break;
-                            else
-                                {
-                                $arr2 = $babDB->db_fetch_array($res2);
-                                }
-
-
-                            $req = '';
-                            for( $k =0; $k < count($arrnamef); $k++ )
-                                {
-                                if( isset($GLOBALS[$arrnamef[$k]]) && $GLOBALS[$arrnamef[$k]] != "")
-                                    {
-                                    $req .= $arrnamef[$k]."='".$babDB->db_escape_string($arr[$GLOBALS[$arrnamef[$k]]])."',";
-                                    }
-                                }
-
-                            $bupdate = false;
-                            if( !empty($req))
-                                {
-                                $req = mb_substr($req, 0, mb_strlen($req) -1);
-                                $req = "update ".BAB_DBDIR_ENTRIES_TBL." set " . $req;
-                                $req .= " where id='".$babDB->db_escape_string($arr2['id'])."'";
-                                $babDB->db_query($req);
-                                $bupdate = true;
-                                }
-
-                            if( count($arridfx) > 0 )
-                                {
-                                $bupdate = true;
-                                for( $k=0; $k < count($arridfx); $k++ )
-                                    {
-                                    if( isset($arr[$GLOBALS["babdirf".$arridfx[$k]]]) )
-                                        {
-                                        $bupdate = true;
-                                        $rs = $babDB->db_query("select id from ".BAB_DBDIR_ENTRIES_EXTRA_TBL." where id_fieldx='".$babDB->db_escape_string($arridfx[$k])."' and  id_entry='".$babDB->db_escape_string($arr2['id'])."'");
-                                        if( $rs && $babDB->db_num_rows($rs) > 0 )
-                                            {
-                                            $babDB->db_query("update ".BAB_DBDIR_ENTRIES_EXTRA_TBL." set field_value='".addslashes($arr[$GLOBALS["babdirf".$arridfx[$k]]])."' where id_fieldx='".$babDB->db_escape_string($arridfx[$k])."' and id_entry='".$babDB->db_escape_string($arr2['id'])."'");
-                                            }
-                                        else
-                                            {
-                                            $babDB->db_query("insert into ".BAB_DBDIR_ENTRIES_EXTRA_TBL." ( field_value, id_fieldx, id_entry) values ('".$babDB->db_escape_string($arr[$GLOBALS["babdirf".$arridfx[$k]]])."', '".$babDB->db_escape_string($arridfx[$k])."', '".$babDB->db_escape_string($arr2['id'])."')");
-                                            }
-                                        }
-                                    }
-                                }
-                            if( $bupdate )
-                                {
-                                $babDB->db_query("update ".BAB_DBDIR_ENTRIES_TBL." set date_modification=now(), id_modifiedby='".$babDB->db_escape_string($GLOBALS['BAB_SESS_USERID'])."' where id='".$babDB->db_escape_string($arr2['id'])."'");
-                                }
-                            break;
-                            }
-                        }
-
-                /* no break; */
-
-                case 0: // Allow duplicates to be created or create a new entry
-                    $req = "";
-                    $arrv = array();
-                    for( $k =0; $k < count($arrnamef); $k++ )
-                        {
-                        if( isset($GLOBALS[$arrnamef[$k]]) && $GLOBALS[$arrnamef[$k]] != "")
-                            {
-                            $req .= $arrnamef[$k].",";
-                            $val = isset($arr[$GLOBALS[$arrnamef[$k]]]) ? $arr[$GLOBALS[$arrnamef[$k]]] : '';
-                            array_push( $arrv, $val);
-                            }
-                        }
-
-                    if( !empty($req))
-                        {
-                        $req = "insert into ".BAB_DBDIR_ENTRIES_TBL." (".$req."id_directory,date_modification,id_modifiedby) values (";
-                        for( $i = 0; $i < count($arrv); $i++)
-                            $req .= "'". $babDB->db_escape_string($arrv[$i])."',";
-                        $req .= "'".($idgroup !=0 ? 0: $babDB->db_escape_string($id))."',";
-                        $req .= "now(), '".$babDB->db_escape_string($GLOBALS['BAB_SESS_USERID'])."')";
-                        $babDB->db_query($req);
-                        $idu = $babDB->db_insert_id();
-                        if( $idgroup > 0 )
-                            {
-                            $replace = array( " " => "", "-" => "");
-                            $hashname = md5(mb_strtolower(strtr($arr[$GLOBALS['givenname']].$arr[$GLOBALS['mn']].$arr[$GLOBALS['sn']], $replace)));
-                            $hash=md5($arr[$GLOBALS['nickname']].$GLOBALS['BAB_HASH_VAR']);
-                            if( bab_rp('password3') !== '' && mb_strlen($arr[bab_rp('password3')]) >= 6)
-                                {
-                                $pwd = mb_strtolower($arr[bab_rp('password3')]);
-                                }
-                            else
-                                {
-                                $pwd = mb_strtolower(bab_rp('password1'));
-                                }
-
-                            $babDB->db_query("insert into ".BAB_USERS_TBL." set nickname='".$babDB->db_escape_string($arr[$GLOBALS['nickname']])."', firstname='".$babDB->db_escape_string($arr[$GLOBALS['givenname']])."', lastname='".$babDB->db_escape_string($arr[$GLOBALS['sn']])."', email='".$babDB->db_escape_string($arr[$GLOBALS['email']])."', hashname='".$hashname."', password='".$babDB->db_escape_string(md5($pwd))."', confirm_hash='".$babDB->db_escape_string($hash)."', date=now(), is_confirmed='1', changepwd='1', lang=''");
-                            $iduser = $babDB->db_insert_id();
-                            $babDB->db_query("insert into ".BAB_CALENDAR_TBL." (owner, type, actif) values ('".$babDB->db_escape_string($iduser)."', '1', ".$babDB->quote($pcalendar).")");
-                            $babDB->db_query("update ".BAB_DBDIR_ENTRIES_TBL." set id_user='".$babDB->db_escape_string($iduser)."' where id='".$babDB->db_escape_string($idu)."'");
-                            if( $idgroup > 1 )
-                                {
-                                bab_addUserToGroup($iduser, $idgroup);
-                                }
-
-                            if (isset($email_users))
-                            {
-                                $emailpwd = ('Y' === bab_rp('sendpwd')) ? $pwd : null;
-                                $email_users->addUser($iduser, $emailpwd);
-                            }
-                        }
-
-                        if( count($arridfx) > 0 )
-                            {
-                            for( $k=0; $k < count($arridfx); $k++ )
-                                {
-                                $val = isset($arr[$GLOBALS["babdirf".$arridfx[$k]]]) ? addslashes($arr[$GLOBALS["babdirf".$arridfx[$k]]]) : '';
-                                $babDB->db_query("insert into ".BAB_DBDIR_ENTRIES_EXTRA_TBL." (id_fieldx, id_entry, field_value) values('".$babDB->db_escape_string($arridfx[$k])."','".$babDB->db_escape_string($idu)."','".$babDB->db_escape_string($val)."')");
-                                }
-                            }
-
-                        }
-                    break;
-
-                }
-            }
-        fclose($fd);
-        unlink($pfile);
-        }
-
-        if (isset($email_users))
-        {
-            return $email_users->displayProgress();
-        }
-
-        header('location:'.$GLOBALS['babUrlScript'].'?tg=directory&idx=sdbovml&directoryid='.$id);
-        exit;
-    }
-
 
 
 /**
@@ -2992,13 +2434,8 @@ function confirmAddDbContact($id, $fields, $file, $tmp_file, $password1, $passwo
 
         if ( $arr['name'] == 'jpegphoto' && $rr['required'] == "Y" && (empty($file) || $file == "none"))
             {
-            $tmp = $babDB->db_fetch_assoc($babDB->db_query("select photo_data from ".BAB_DBDIR_ENTRIES_TBL." where id_directory='".($idgroup !=0 ? 0: $babDB->db_escape_string($id))."' and id='".$babDB->db_escape_string($idu)."'"));
-
-            if (empty($tmp['photo_data']))
-                {
-                $babBody->msgerror = bab_translate("You must complete required fields");
-                return 0;
-                }
+            $babBody->msgerror = bab_translate("You must complete required fields");
+            return 0;
             }
 
         if( isset($fields[$arr['name']]) && $arr['name'] != 'jpegphoto')
@@ -3160,17 +2597,17 @@ function deleteDbContact($id, $idu)
     }
 
 function unassignDbContact($id, $idu)
-    {
+{
     global $babDB;
     list($idgroup) = $babDB->db_fetch_array($babDB->db_query("select id_group from ".BAB_DB_DIRECTORIES_TBL." where id='".$babDB->db_escape_string($id)."'"));
     if( $idgroup != 0  && $idgroup != BAB_REGISTERED_GROUP )
-        {
+    {
         list($iddu) = $babDB->db_fetch_array($babDB->db_query("select id_user from ".BAB_DBDIR_ENTRIES_TBL." where id='".$babDB->db_escape_string($idu)."'"));
         bab_removeUserFromGroup($iddu, $idgroup);
 
         return;
-        }
     }
+}
 
 function exportDbDirectory($id, $output_format, $wsepar, $separ, $listfd)
 {
@@ -3232,26 +2669,33 @@ else
     }
 
 $idx = bab_rp('idx', 'list');
+$msg = bab_rp('msg');
 
 if( ('' != bab_pp('pfile')) && bab_isAccessValid(BAB_DBDIRIMPORT_GROUPS_TBL, $id))
     {
-    if (!processImportDbFile(bab_pp('pfile'), $id, bab_pp('separ')))
-        {
+        bab_requireSaveMethod();
+
+        try {
+            processImportDbFile($_POST, false); // simulation, verify mapping
+            $monitor = new bab_processImportUsers($id);
+            $monitor->displayProgress();
+        } catch (bab_DirImportMappingException $e) {
+            $babBody->addError($e->getMessage());
             $idx = 'dbmap';
-        } else {
-            return;
         }
     }
 
 if( ('Yes' ==  bab_gp('action'))  && bab_isAccessValid(BAB_DBDIREMPTY_GROUPS_TBL, $id))
     {
-    confirmEmptyDb($id);
+    bab_requireSaveMethod() && confirmEmptyDb($id);
     }
 
     /*var_dump(bab_pp('expfile'));
     die;*/
 if( '' != ($modify = bab_pp('modify')))
 {
+    bab_requireSaveMethod();
+
     if( $modify == 'dbc' )
         {
         $idx = 'dbmod';
@@ -3292,7 +2736,7 @@ if( '' != ($modify = bab_pp('modify')))
         }
     elseif( $modify == 'cassign' )
         {
-        if( isset($byes) && bab_isAccessValid(BAB_DBDIRBIND_GROUPS_TBL, $id))
+        if( isset($_REQUEST['byes']) && bab_isAccessValid(BAB_DBDIRBIND_GROUPS_TBL, $id))
             {
             $idauser = bab_pp('idauser');
             assignDbContact($id, ($idauser == ''? array(): array($idauser)));
@@ -3314,9 +2758,9 @@ else if (  ('' !=  bab_pp('expfile'))  && bab_isAccessValid(BAB_DBDIREXPORT_GROU
 switch($idx)
     {
     case 'deldbc':
-        $id = $id;
-        $idu = bab_gp('idu');
-        if( bab_isAccessValid(BAB_DBDIRDEL_GROUPS_TBL, $id))
+        $id = bab_rp('id');
+        $idu = bab_rp('idu');
+        if( bab_isAccessValid(BAB_DBDIRDEL_GROUPS_TBL, $id) && bab_requireDeleteMethod())
             {
             $msg = bab_translate("Your contact has been deleted");
             deleteDbContact($id, $idu);
@@ -3332,8 +2776,7 @@ switch($idx)
         break;
 
     case 'unassign':
-        $id = $id;
-        $idu = bab_gp('idu');
+        $idu = bab_rp('idu');
         if( bab_isAccessValid(BAB_DBDIRUNBIND_GROUPS_TBL, $id))
             {
             $msg = bab_translate("Your contact has been unassigned");
@@ -3344,7 +2787,7 @@ switch($idx)
             $msg = bab_translate("Access denied");
             exit;
             }
-        contactDbUnload($msg, bab_gp('refresh'));
+        contactDbUnload($msg, bab_rp('refresh'));
         exit();
         break;
 
@@ -3537,8 +2980,8 @@ switch($idx)
             }
         break;
 
-    case 'emailimported':
-        bab_processImportEmailUsers::iframe();
+    case 'monitorimport':
+        bab_processImportUsers::iframe();
         exit;
         break;
 
@@ -3552,4 +2995,3 @@ switch($idx)
     }
 
 $babBody->setCurrentItemMenu($idx);
-?>

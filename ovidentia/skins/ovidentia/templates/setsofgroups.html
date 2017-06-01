@@ -67,6 +67,7 @@ function load_clear()
 
 <!--#begin sedit -->
 <form name="sedit" method="post" action="{ babPhpSelf }">
+<input type="hidden" name="babCsrfProtect" value="{ babCsrfProtect }" />
 <input type="hidden" name="tg" value="setsofgroups" />
 <input type="hidden" name="idx" value="list" />
 <input type="hidden" name="action" value="sedit" />
@@ -116,6 +117,7 @@ function submitCtrl(form)
 //-->
 </script>
 <form method="post" action="{ babPhpSelf }" name="listform" onSubmit="return submitCtrl(this);">
+<input type="hidden" name="babCsrfProtect" value="{ babCsrfProtect }" />
 <input type="hidden" name="tg" value="setsofgroups" />
 <input type="hidden" name="idx" value="glist" />
 <input type="hidden" name="action" value="glist" />

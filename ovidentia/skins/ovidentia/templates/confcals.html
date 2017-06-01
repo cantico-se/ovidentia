@@ -3,6 +3,7 @@
 <!--#begin categorycreate -->
 
 <form method="post" action="{ babPhpSelf }">
+<input type="hidden" name="babCsrfProtect" value="{ babCsrfProtect }" />
 <input type="hidden" name="tg" value="confcals">
 <input type="hidden" name="idx" value="listcat">
 <input type="hidden" name="userid" value="{ userid }">
@@ -91,6 +92,7 @@
 <br><br><br><br>
 <!--#begin categorycalmodify -->
 <form method="post" action="{ babPhpSelf }">
+<input type="hidden" name="babCsrfProtect" value="{ babCsrfProtect }" />
 <input type="hidden" name="tg" value="confcal">
 <input type="hidden" name="idx" value="modifycat">
 <input type="hidden" name="item" value="{ arr[id] }">
@@ -135,6 +137,7 @@
 <br><br><br><br>
 <!--#begin resourceslist -->
 <form method="post" action="{ babPhpSelf }" name="listform">
+<input type="hidden" name="babCsrfProtect" value="{ babCsrfProtect }" />
 <input type="hidden" name="tg" value="confcals">
 <input type="hidden" name="idx" value="listres">
 <input type="hidden" name="userid" value="{ userid }">
@@ -184,6 +187,7 @@ nowrap ><b>{ name }</b></td>
 <!--#begin resourcecreate -->
 
 <form method="post" action="{ babPhpSelf }">
+<input type="hidden" name="babCsrfProtect" value="{ babCsrfProtect }" />
 <input type="hidden" name="tg" value="confcals">
 <input type="hidden" name="idx" value="listres">
 <input type="hidden" name="userid" value="{ userid }">
@@ -230,6 +234,7 @@ nowrap ><b>{ name }</b></td>
 <br><br><br><br>
 <!--#begin resourcecalmodify -->
 <form method="post" action="{ babPhpSelf }">
+<input type="hidden" name="babCsrfProtect" value="{ babCsrfProtect }" />
 <input type="hidden" name="tg" value="confcal">
 <input type="hidden" name="idx" value="modifyres">
 <input type="hidden" name="item" value="{ arr[id] }">

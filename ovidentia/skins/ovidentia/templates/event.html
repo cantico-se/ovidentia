@@ -2,6 +2,7 @@
 <!--#begin newevent -->
 
 <form name="vacform" method="post" action="{ babPhpSelf }" onsubmit="submitCtrl(this,'vacform');" >
+<input type="hidden" name="babCsrfProtect" value="{ babCsrfProtect }" />
 <input type="hidden" name="tg" value="event" />
 <input type="hidden" name="idx" value="addevent" />
 <input type="hidden" name="date" value="{ curdate }" />
@@ -442,6 +443,7 @@ bab_event_alert_ed();
 </table>
 <!--#endif bshowupadetinfo -->
 <form name="vacform" method="post" action="{ babPhpSelf }" onsubmit="return(submitCtrl(this,'vacform'))">
+<input type="hidden" name="babCsrfProtect" value="{ babCsrfProtect }" />
 <input type="hidden" name="tg" value="event" />
 <input type="hidden" name="idx" value="unload" />
 <input type="hidden" name="date" value="{ curdate }" />

@@ -97,11 +97,10 @@ function uploadDone()
 	
 			var aImg = sJSon.sMessage.split(',');
 			
-			var sOldImage = _$('topicCreateModify').sTempImgName.value;
 			_$('topicCreateModify').sTempImgName.value = aImg[0];
 			_$('topicCreateModify').sImgName.value = aImg[1];
 	
-			_$('tempImg').src = "{ babUrlScript }?tg=topcat&idx=getImage&iWidth=120&iHeight=90&sImage=" + aImg[0] + '&sOldImage=' + sOldImage;
+			_$('tempImg').src = "{ babUrlScript }?tg=topcat&idx=getImage&iWidth=120&iHeight=90&sImage=" + aImg[0];
 			
 			bab_hide('messageTR');
 		}
@@ -297,6 +296,7 @@ function ovidentia_popuptreeviewselectparentcategory_topic() {
 </script>
 
 <form name="topicCreateModify" id="topicCreateModify" method="post" enctype="multipart/form-data" action="{ babPhpSelf }">
+<input type="hidden" name="babCsrfProtect" value="{ babCsrfProtect }" />
 	<input type="hidden" name="MAX_FILE_SIZE" value="{ iMaxImgFileSize }" />
 	<input type="hidden" name="tg" value="{ tgval }" />
 	<input type="hidden" name="idx" value="list" />
@@ -754,6 +754,7 @@ function ovidentia_popuptreeviewselectparentcategory_topic() {
 <br />
 <!--#begin articleslist -->
 <form method="post" action="{ babPhpSelf }" name="listform">
+<input type="hidden" name="babCsrfProtect" value="{ babCsrfProtect }" />
 <input type="hidden" name="tg" value="topic">
 <input type="hidden" name="idx" value="deletea">
 <input type="hidden" name="item" value="{ item }">

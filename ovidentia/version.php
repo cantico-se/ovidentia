@@ -22,7 +22,7 @@
  * USA.																	*
 ************************************************************************/
 include_once "base.php";
-require_once dirname(__FILE__).'/utilit/registerglobals.php';
+
 include_once $GLOBALS['babInstallPath'].'utilit/inifileincl.php';
 include_once $GLOBALS['babInstallPath'].'utilit/upgradeincl.php';
 
@@ -32,13 +32,13 @@ function getVersion()
 	$ini = new bab_inifile();
 	$ini->inifile($GLOBALS['babInstallPath'].'version.inc');
 
-	$str = "Sources Version ". $ini->getVersion()."\n";
+	$str = sprintf(bab_translate('Sources Version %s'), $ini->getVersion())."\n";
 
 	$dbVer = bab_getDbVersion();
 	if (NULL !== $dbVer) {
-		$str .= "Database Version ". $dbVer ."\n";
+		$str .= sprintf(bab_translate('Database Version %s'), $dbVer) ."\n";
 	} else {
-		$str .= "No Database Version (installation is not complete)\n";
+		$str .= bab_translate('No Database Version (installation is not complete)')."\n";
 	}
 	return $str;
 }
@@ -69,6 +69,7 @@ function echoLang($path)
 						$txt = fread($file, filesize($path.$filename));
 						fclose($file);
 						$reg = "/bab_translate[[:space:]]*\([[:space:]]*\"([^\"]*)/s";
+						$m1 = null;
 						preg_match_all($reg, $txt, $m1);
 						for ($i = 0; $i < count($m1[1]); $i++ )
 							{
@@ -87,117 +88,246 @@ function echoLang($path)
 }
 
 
+/**
+ * Install one addon and exit process
+ * @param string $name
+ */
+function bab_installAddon($name)
+{
+    if(!bab_isUserAdministrator() && !bab_anonymousUpgrade()) {
+        die(bab_translate("You must be logged as administrator"));
+    }
+    
+    bab_addonsInfos::insertMissingAddonsInTable();
+    bab_addonsInfos::clear();
+    
+    $addon = bab_getAddonInfosInstance($name);
+    if (false === $addon)
+    {
+        trigger_error('this addon does not exists');
+        die(bab_translate("Failed"));
+    }
+    
+    if (!$addon->isUpgradable() && !bab_isUserAdministrator())
+    {
+        trigger_error('Addon allready up to date');
+        die(bab_translate("Failed"));
+    }
+    
+    if (!$addon->isValid())
+    {
+        trigger_error('Invalid addon prerequists');
+        foreach ($addon->getIni()->getRequirementErrors() as $req) {
+            echo $req['description'].' '.$req['current']."<br />";
+        }
+        die(bab_translate("Failed"));
+    }
+    
+    if (!$addon->upgrade())
+    {
+        trigger_error('Addon upgrade failed');
+        die(bab_translate("Failed"));
+    }
+    
+    die(bab_translate("Ok"));
+}
+
+
+
+/**
+ * Button to launch tg=version&idx=upgrade in POST query
+ * @return string
+ */
+function bab_getInstallButton()
+{
+    $csrfToken = bab_getInstance('bab_CsrfProtect')->getToken();
+    
+    return '<form method="post" action="'.bab_getSelf().'">
+    <input type="hidden" name="babCsrfProtect" value="'.bab_toHtml($csrfToken).'" />
+    <input type="hidden" name="tg" value="version" />
+    <input type="hidden" name="idx" value="upgrade" />
+    <input type="hidden" name="iframe" value="1" />
+    <input type="submit" value="'.bab_translate("Update").'" />
+    </form>';
+}
+
+/**
+ * Button to launch tg=version&idx=upgradeaddons in POST query
+ * 
+ * @deprecated storeclient shoud be used instead
+ * @return string
+ */
+function bab_getInstallAddonsButton()
+{
+    $csrfToken = bab_getInstance('bab_CsrfProtect')->getToken();
+    
+    return '<form method="post" action="'.bab_getSelf().'">
+    <input type="hidden" name="babCsrfProtect" value="'.bab_toHtml($csrfToken).'" />
+    <input type="hidden" name="tg" value="version" />
+    <input type="hidden" name="idx" value="upgradeaddons" />
+    <input type="hidden" name="iframe" value="1" />
+    <input type="submit" value="'.bab_translate("Install or update the addons provided in this package (optional)").'" />
+    </form>';
+}
+
+/**
+ * End upgrade
+ * Propose to go back to homepage or to check addon upgrades in storeclient
+ * @return string
+ */
+function bab_endUpgrade()
+{
+	$html = '';
+	$linkTemplate = '<p><a target="_parent" href="%s">%s</a></p>';
+	
+	$addon = bab_getAddonInfosInstance('storeclient');
+	if ($addon && $addon->isAccessValid()) {
+		$html .= sprintf(
+			$linkTemplate,
+			bab_toHtml($addon->getUrl().'main&idx=admin.displaylist'),
+			bab_translate('Upgrade addons')
+		);
+	}
+	
+	$html .= sprintf(
+		$linkTemplate,
+		'?',
+		bab_translate('Go back to home page')
+	);
+	
+	return $html;
+}
+
+
+
+/**
+ * Menu to display possibles action and do the POST queries
+ * @return string
+ */
+function bab_getActionsMenu()
+{
+    
+    $html = bab_getInstallButton();
+    $folders = bab_getCoreFolders();
+    bab_sort::natcasesort($folders);
+    
+    $options = '';
+    foreach($folders as $name) {
+        $options .= '<option value="'.bab_toHtml($name).'">'.bab_toHtml($name).'</option>';
+    }
+    
+    $csrfToken = bab_getInstance('bab_CsrfProtect')->getToken();
+    
+    $html .= '
+    <br />
+    <h3>'.bab_translate('Copy addons from one folder to another').'</h3>
+    <form method="post" action="'.bab_getSelf().'">
+    <input type="hidden" name="babCsrfProtect" value="'.bab_toHtml($csrfToken).'" />
+    <input type="hidden" name="tg" value="version" />
+    <input type="hidden" name="idx" value="addons" />
+    <select name="from">'.$options.'</select>
+    <select name="to">'.$options.'</select>
+    <input type="submit" value="'.bab_translate("Copy").'" />
+    </form>
+    ';
+    
+    
+    $html .= '
+    <br />
+    <h3>'.bab_translate('Launch an addon upgrade program').'</h3>
+    <form method="post" action="'.bab_getSelf().'">
+    <input type="hidden" name="babCsrfProtect" value="'.bab_toHtml($csrfToken).'" />
+    <input type="hidden" name="tg" value="version" />
+    <input type="hidden" name="idx" value="addon" />
+    <label>'.bab_translate('Addon name').': <input type="text" name="name" value="" /></label>
+    <input type="submit" value="'.bab_translate("Update").'" />
+    </form>
+    
+    ';
+    
+    return $html;
+}
+
+
+/**
+ * Set define('BAB_ANONYMOUS_UPGRADE', true); in config.php
+ * @return bool
+ */
+function bab_anonymousUpgrade()
+{
+    if (!defined('BAB_ANONYMOUS_UPGRADE')) {
+        return false;
+    }
+    
+    return BAB_ANONYMOUS_UPGRADE;
+}
+
+
+
+/**
+ * @return string HTML
+ */
+function bab_dispUpgrade()
+{
+    if(!bab_isUserAdministrator() && !bab_anonymousUpgrade()) {
+        die(bab_translate("You must be logged as administrator"));
+    }
+    
+    $str = '';
+    
+    if (empty($_POST)) {
+        $str = sprintf(bab_translate('Do you really want to update Ovidentia from %s to %s?'),
+            bab_getDbVersion(),
+            bab_getIniVersion());
+         $str .= bab_getInstallButton();
+         return $str;
+    }
+    
+    bab_requireSaveMethod();
+    if (true === bab_upgrade($GLOBALS['babInstallPath'], $str)) {
+        $str .= bab_endUpgrade();
+    }
+    
+    return $str;
+}
+
+
+
 
 
 /* main */
 $idx = bab_rp('idx','version');
 
 
-$str = "";
+$str = '';
+$html = '';
+
 switch($idx)
 	{
 	case "upgrade":
-		$force = bab_rp('force', false);
-		bab_upgrade($GLOBALS['babInstallPath'], $str, $force);
+	    $html = bab_dispUpgrade();
 		break;
+	
+	/**
+	 * upgrade addons found in the install folder
+	 * @deprecated storeclient shoud be used instead
+	 */
+	case 'upgradeaddons':
+	    bab_requireSaveMethod() && bab_upgradeAddons($str);
+	    break;
 
 	case "addons":
-		if( !bab_isUserAdministrator())
+		if( !bab_isUserAdministrator()) {
 			die(bab_translate("You must be logged as administrator"));
-
-		if (isset($_GET['from']))
-			{
-			bab_cpaddons($_GET['from'], bab_rp('to',$GLOBALS['babInstallPath']), $str);
-			}
+		}
+		bab_requireSaveMethod() && bab_cpaddons(bab_rp('from'), bab_rp('to',$GLOBALS['babInstallPath']), $str);
 		break;
 		
 	case 'addon':
 		// allow addon upgrade for annonymous users
-		$name = bab_rp('name');
-		
-		bab_addonsInfos::insertMissingAddonsInTable();
-		bab_addonsInfos::clear();
-		
-		$addon = bab_getAddonInfosInstance($name);
-		if (false === $addon)
-		{
-			trigger_error('this addon does not exists');
-			die(bab_translate("Failed"));
-		}
-		
-		if (!$addon->isUpgradable() && !bab_isUserAdministrator())
-		{
-			trigger_error('Addon allready up to date');
-			die(bab_translate("Failed"));
-		}
-		
-		if (!$addon->isValid())
-		{
-			trigger_error('Invalid addon prerequists');
-			foreach ($addon->getIni()->getRequirementErrors() as $req) {
-			    echo $req['description'].' '.$req['current']."<br />";
-			}
-			die(bab_translate("Failed"));
-		}
-		
-		if (!$addon->upgrade())
-		{
-			trigger_error('Addon upgrade failed');
-			die(bab_translate("Failed"));
-		}
-		
-		die(bab_translate("Ok"));
+		bab_requireSaveMethod() && bab_installAddon(bab_rp('name'));
 		break;
 
-	case "lang":
-		if( !bab_isUserAdministrator())
-			exit;
-		$ar = echoLang($GLOBALS['babInstallPath']);
-		$tab = array();
-		for( $i = 0; $i < count($ar); $i++)
-			{
-			if( in_array($ar[$i], $tab) == false )
-				$tab[] = $ar[$i];
-			}
-		if( !isset($cmd) || empty($cmd))
-			$cmd = $GLOBALS['babLanguage'];
-		$filename = $GLOBALS['babInstallPath']."lang/lang-".$cmd.".xml";
-		if( !file_exists($filename))
-			{
-			$txt = "";
-			}
-		else
-			{
-			$file = @fopen($filename, "r");
-			$txt = fread($file, filesize($filename));
-			fclose($file);
-			}
-		$old = "";
-		$new = "";
-		for( $i = 0; $i < count($tab); $i++)
-			{
-			$reg = "/<string[[:space:]]*id=\"".preg_quote($tab[$i])."\">([^<]*)<\/string>/";
-			if( !empty($tab[$i]))
-				{
-				if( !preg_match($reg, $txt, $m))
-					{
-					$new .= "<string id=\"$tab[$i]\">".$tab[$i]."</string>"."\r\n";
-					}
-				}
-			}
-		$file = @fopen($filename, "w");
-		if( $file )
-			{
-			$reg = "/<".$cmd.">(.*)<\/".$cmd.">/s";
-			preg_match($reg, $txt, $m);
-			$txt = "<".$cmd.">".$m[1].$new."</".$cmd.">";
-			fputs($file, $txt);
-			fclose($file);
-			$str = bab_translate("You language file has been updated") ."( ".$filename." )";
-			}
-		else
-			$str = bab_translate("Cannot open file for writing") ."( ".$filename." )";
-		break;
 
 
 	case "version":
@@ -205,6 +335,7 @@ switch($idx)
 		if( !bab_isUserAdministrator())
 			exit;
 		$str = getVersion();
+		$html = bab_getActionsMenu();
 		break;
 	}
 ?>
@@ -226,6 +357,8 @@ switch($idx)
 	if (bab_rp('iframe')) {
 		
 		echo bab_toHtml($str, BAB_HTML_ALL);
+		echo $html;
+		
 		?>
 		<br id="BAB_ADDON_INSTALL_END" />
 		<?php 
@@ -235,9 +368,10 @@ switch($idx)
 		<h1>Ovidentia</h1>
 		
 		<?php
-		echo $babSiteName . "<br>";
+		echo $GLOBALS['babSiteName'] . "<br>";
 		echo bab_toHtml($str, BAB_HTML_ALL);
-	?>
+		echo $html;
+	    ?>
 		<br>
 		<p><a href="?"><?php echo bab_translate("Home");  ?></a></p>
 		<p class="copyright">&copy; 2001, <a href="http://www.cantico.fr/">CANTICO</a> All rights reserved.</p>

@@ -22,8 +22,8 @@
  * USA.																	*
 ************************************************************************/
 include_once "base.php";
-require_once dirname(__FILE__).'/../utilit/registerglobals.php';
-include_once $babInstallPath."utilit/grptreeincl.php";
+
+include_once $GLOBALS['babInstallPath']."utilit/grptreeincl.php";
 
 function groupCreateMod()
 	{
@@ -317,7 +317,6 @@ function groupsOptions()
 
 			if( bab_isUserAdministrator() && bab_getCurrentAdmGroup() == 0 )
 				{
-				$this->bdgmail = true;
 				$this->bdgnotes = true;
 				$this->bdgcontacts = true;
 				$this->bpcalendar = true;
@@ -325,10 +324,6 @@ function groupsOptions()
 				}
 			else
 				{
-				if( bab_isDelegated('mails') )
-					$this->bdgmail = true;
-				else
-					$this->bdgmail = false;
 
 				$this->bdgnotes = true;
 				$this->bdgcontacts = true;
@@ -354,10 +349,7 @@ function groupsOptions()
 				$this->burl = true;
 				$this->grpid = $this->arr['id'];
 
-				if( $this->arr['mail'] == "Y")
-					$this->mailcheck = "checked";
-				else
-					$this->mailcheck = "";
+				
 				if( $this->arr['notes'] == "Y")
 					$this->notescheck = "checked";
 				else
@@ -567,6 +559,7 @@ $idx = bab_rp('idx','List');
 
 if( isset($_POST['add']))
 	{
+	    
 	if (isset($_POST['deleteg']))
 		{
 		$item = $_POST['grpid'];
@@ -574,19 +567,20 @@ if( isset($_POST['add']))
 		}
 	else
 		{
+		bab_requireSaveMethod();
 		$idx = addModGroup();
 		}
 	}
 
-if( isset($update) && $update == "options")
+if( bab_rp('update') == "options")
 	{
-	if (!isset($mailgrpids)) $mailgrpids = array();
-	if (!isset($notgrpids)) $notgrpids = array();
-	if (!isset($congrpids)) $congrpids = array();
-	if (!isset($pdsgrpids)) $pdsgrpids = array();
-	if (!isset($pcalgrpids)) $pcalgrpids = array();
-	if (!isset($calperids)) $calperids = array();
-	saveGroupsOptions($mailgrpids, $notgrpids, $congrpids, $pdsgrpids, $pcalgrpids);
+    $mailgrpids = bab_rp('mailgrpids', array());
+    $notgrpids = bab_rp('notgrpids', array());
+    $congrpids = bab_rp('congrpids', array());
+    $pdsgrpids = bab_rp('pdsgrpids', array());
+    $pcalgrpids = bab_rp('pcalgrpids',array());
+
+	bab_requireSaveMethod() && saveGroupsOptions($mailgrpids, $notgrpids, $congrpids, $pdsgrpids, $pcalgrpids);
 	}
 
 if ($idx != "brow")
@@ -606,7 +600,7 @@ switch($idx)
 	case "brow": 
 		// Used by add-ons and deprecated after 6.1.0 for security reasons
 		// user must be admin
-		include_once $babInstallPath."utilit/grpincl.php";
+		include_once $GLOBALS['babInstallPath']."utilit/grpincl.php";
 		browseGroups(bab_gp('cb'));
 		exit;
 		break;
@@ -630,8 +624,9 @@ switch($idx)
 			}
 		break;
 	case "Delete":
-		if( $item > 3 )
+		if( $item > 3 ) {
 			groupDelete($item);
+		}
 		$babBody->title = bab_translate("Delete group");
 		$babBody->addItemMenu("Delete", bab_translate("Delete"), $GLOBALS['babUrlScript']."?tg=group&idx=Delete&item=".$item);
 		break;

@@ -22,8 +22,8 @@
  * USA.																	*
 ************************************************************************/
 include_once "base.php";
-require_once dirname(__FILE__).'/../utilit/registerglobals.php';
-include_once $babInstallPath."admin/acl.php";
+
+include_once $GLOBALS['babInstallPath']."admin/acl.php";
 include_once $GLOBALS['babInstallPath'].'utilit/addonsincl.php';
 include_once $GLOBALS['babInstallPath'].'utilit/inifileincl.php';
 
@@ -735,10 +735,10 @@ function exportall($id)
  */
 function bab_AddonDel($id)
 	{
-
 	$row = bab_addonsInfos::getDbRow($id);
 	$addon = bab_getAddonInfosInstance($row['title']);
-
+	$msgerror = null;
+	
 	if (false === $addon->delete($msgerror)) {
 		global $babBody;
 		$babBody->addError($msgerror);
@@ -778,6 +778,11 @@ function upload()
 function upload_tmpfile() {
 	global $babBody;
 	include_once $GLOBALS['babInstallPath'].'utilit/uploadincl.php';
+	
+	if (defined('BAB_SYSTEM_ACCESS') && BAB_SYSTEM_ACCESS === false) {
+	    $babBody->addError(bab_translate('System access is not allowed'));
+	    return false;
+	}
 
 	$upload = bab_fileHandler::upload('uploadf');
 
@@ -1304,7 +1309,7 @@ function functionalities() {
 
 	$tree = new bab_TreeView('bab_functionalities');
 
-	$root = & $tree->createElement( 'R', 'directory', bab_translate('All functionalities'), '', '');
+	$root = $tree->createElement( 'R', 'directory', bab_translate('All functionalities'), '', '');
 	$root->setIcon($GLOBALS['babSkinPath'] . 'images/nodetypes/category.png');
 	$tree->appendElement($root, NULL);
 
@@ -1340,7 +1345,7 @@ function functionalities() {
 
 				$description = $labelpath.' : '.$original->getDescription();
 
-				$element = & $tree->createElement( $id.'.'.$i, 'directory', $description, '', '');
+				$element = $tree->createElement( $id.'.'.$i, 'directory', $description, '', '');
 			} else {
 				if ($failsafe)
 				{
@@ -1349,7 +1354,7 @@ function functionalities() {
 					$description = $dir . ' : '.bab_translate('Missing target');
 				}
 				
-				$element = & $tree->createElement( $id.'.'.$i, 'directory', $description, '', '');
+				$element = $tree->createElement( $id.'.'.$i, 'directory', $description, '', '');
 
 				$url = bab_url::get_request('tg', 'idx', 'failsafe');
 				$url->remove = $funcpath;
@@ -1501,21 +1506,7 @@ function viewVersion()
 			$this->t_modified = bab_translate('Modified files');
 
 
-			$basedir = realpath('.').'/';
-			$dh = opendir($basedir);
-
-			$this->dirs = array();
-
-			if ($dh)
-			{
-				while (($file = readdir($dh)) !== false) {
-					if ($file !== '.' && $file !== '..'
-					 && is_dir($basedir.$file) && file_exists($basedir.$file.'/version.inc')) {
-						$this->dirs[] = $file;
-					}
-				}
-			}
-
+			$this->dirs = bab_getCoreFolders();
 			bab_sort::natcasesort($this->dirs);
 
 			$this->md5file = file_exists(realpath(dirname(__FILE__).'/../md5_file'));
@@ -1558,10 +1549,12 @@ function viewVersion()
 
 	$sImgPath = $GLOBALS['babInstallPath'] . 'skins/ovidentia/images/Puces/';
 
-	$oToolbar->addToolbarItem(
-		new BAB_ToolbarItem( bab_translate('Ovidentia upgrade'), $GLOBALS['babUrlScript'].'?tg=addons&idx=zipupgrade',
-			$sImgPath . 'package_settings.png', '', '', '')
-	);
+	if (!defined('BAB_SYSTEM_ACCESS') || BAB_SYSTEM_ACCESS === true) {
+    	$oToolbar->addToolbarItem(
+    		new BAB_ToolbarItem( bab_translate('Ovidentia upgrade'), $GLOBALS['babUrlScript'].'?tg=addons&idx=zipupgrade',
+    			$sImgPath . 'package_settings.png', '', '', '')
+    	);
+	}
 
 	$babBody->addStyleSheet('toolbar.css');
 	$babBody->babEcho($oToolbar->printTemplate());
@@ -1634,10 +1627,12 @@ function bab_addonUploadToolbar($message, $func = null) {
 
 	$sImgPath = $GLOBALS['babInstallPath'] . 'skins/ovidentia/images/Puces/';
 
-	$oToolbar->addToolbarItem(
-		new BAB_ToolbarItem($message, $GLOBALS['babUrlScript'].'?tg=addons&idx=upload',
-			$sImgPath . 'package_settings.png', '', '', '')
-	);
+	if (!defined('BAB_SYSTEM_ACCESS') || BAB_SYSTEM_ACCESS === true) {
+    	$oToolbar->addToolbarItem(
+    		new BAB_ToolbarItem($message, $GLOBALS['babUrlScript'].'?tg=addons&idx=upload',
+    			$sImgPath . 'package_settings.png', '', '', '')
+    	);
+	}
 
 	if (null !== $func) {
 		$oToolbar->addToolbarItem(
@@ -1655,13 +1650,15 @@ function bab_addonUploadToolbar($message, $func = null) {
 
 
 
-function display_addons_menu() {
-	global $babBody;
-
-	$babBody->addItemMenu("version", bab_translate('Version'), $GLOBALS['babUrlScript']."?tg=addons&idx=version");
-	$babBody->addItemMenu("list", bab_translate('Add-ons'), $GLOBALS['babUrlScript']."?tg=addons&idx=list");
-	$babBody->addItemMenu("theme", bab_translate('Skins'), $GLOBALS['babUrlScript']."?tg=addons&idx=theme");
-	$babBody->addItemMenu("library", bab_translate('Shared Libraries'), $GLOBALS['babUrlScript']."?tg=addons&idx=library");
+function display_addons_menu($currentMenu = null) {
+	$babBody = bab_getBody();
+	// create menu based on sitemap
+	$babBody->addMenu('babAdminInstall');
+	
+	if (isset($currentMenu)) {
+	   $babBody->setCurrentItemMenu($currentMenu);
+	   bab_siteMap::setPosition($currentMenu);
+	}
 }
 
 
@@ -1703,26 +1700,23 @@ if( !bab_isUserAdministrator() )
 	return;
 }
 
-if( !isset($idx))
-	$idx = "list";
+$idx = bab_rp('idx', 'list');
+$upgradeall = bab_rp('upgradeall');
+$item = bab_rp('item');
 
-if( !isset($upgradeall))
-	$upgradeall = '';
+if( isset($_REQUEST['update'])) {
+	$addons = bab_rp('addons', array());
 
-if( isset($update))
-	{
-	if( !isset($addons))
-		$addons = array();
-	if( $update == "disable" )
+	if( "disable" === bab_rp('update') && bab_requireSaveMethod()) {
 		disableAddons($addons);
 	}
+}
 
-if( isset($acladd))
-	{
+if( isset($_REQUEST['acladd']) && bab_requireSaveMethod()) {
 	maclGroups();
-	}
+}
 
-if (isset($_POST['action'])) {
+if (isset($_POST['action']) && bab_requireSaveMethod()) {
 	switch($_POST['action']) {
 
 		case 'upgrade':
@@ -1731,10 +1725,11 @@ if (isset($_POST['action'])) {
 	}
 }
 
+
 switch($idx)
 	{
 	case 'version':
-		display_addons_menu();
+		display_addons_menu('babAdminInstallVersion');
 		$babBody->title = bab_translate("Ovidentia informations");
 		viewVersion();
 		break;
@@ -1816,10 +1811,7 @@ switch($idx)
 
 
 	case "del":
-		$babBody->setTitle(bab_translate('Delete addon'));
-		display_addons_menu();
-		$babBody->addItemMenu("del", bab_translate("Delete"), $GLOBALS['babUrlScript']."?tg=addons&idx=del");
-		bab_AddonDel($item);
+		bab_requireDeleteMethod() && bab_AddonDel($item);
 		break;
 
 	case "export":
@@ -1832,7 +1824,7 @@ switch($idx)
 
 	case 'library':
 		$babBody->title = bab_translate('Shared Libraries');
-		display_addons_menu();
+		display_addons_menu('babAdminInstallLibraries');
 		bab_addonUploadToolbar(bab_translate('Upload a new library'), true);
 		libraryList();
 
@@ -1842,7 +1834,7 @@ switch($idx)
 
 	case 'theme':
 		$babBody->title = bab_translate('Skins');
-		display_addons_menu();
+		display_addons_menu('babAdminInstallThemes');
 		bab_addonUploadToolbar(bab_translate('Upload a new skin'));
 
 		themeList();
@@ -1858,7 +1850,7 @@ switch($idx)
 	default:
 		$babBody->setTitle(bab_translate("Add-ons list"));
 
-		display_addons_menu();
+		display_addons_menu('babAdminInstallAddons');
 		bab_addonUploadToolbar(bab_translate('Upload a new add-on'));
 
 		addonsList();

@@ -22,7 +22,7 @@
  * USA.																	*
 ************************************************************************/
 include_once "base.php";
-require_once dirname(__FILE__).'/utilit/registerglobals.php';
+
 
 /*
 Used by add-ons to let user select a color
@@ -35,9 +35,9 @@ function select_color()
 		function temp()
 			{
 			$this->title = bab_translate("Color");
-			$this->callback = isset($_GET['callback']) ? 'opener.'.$_GET['callback'] : false;
-			$this->param = isset($_GET['param']) ? $_GET['param'] : false;
-			
+			$this->callback = isset($_GET['callback']) ? bab_toHtml($_GET['callback'], BAB_HTML_ENTITIES | BAB_HTML_JS) : false;
+			$this->param = isset($_GET['param']) ? bab_toHtml($_GET['param'], BAB_HTML_ENTITIES | BAB_HTML_JS) : false;
+
 			}
 		}
 	$temp = new temp();

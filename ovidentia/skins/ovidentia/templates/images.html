@@ -111,6 +111,7 @@ window.focus();
 <!--#if upload -->
 
 <form name="fmadd" method="post" action="{ babPhpSelf }" enctype="multipart/form-data">
+<input type="hidden" name="babCsrfProtect" value="{ babCsrfProtect }" />
 <input type="hidden" name="MAX_FILE_SIZE" value="{ maximagessize }" />
 <input type="hidden" name="tg" value="images" />
 <input type="hidden" name="idx" value="list" />
@@ -304,7 +305,7 @@ bab_initFunctions.push(function() {
 <tr><td nowrap>
 <small>{ imgname_txt }</small>&nbsp;
 </td>
-<td align=right width="1%"><a class="BabSiteAdminListLink" href="javascript:confirm_url('{ delurl }','{ msg_delfile }')"><img src="{ babSkinPath }images/Puces/del.gif" alt="{ del }"  border="0"></a>
+<td align=right width="1%"><a class="BabSiteAdminListLink" href="{ delurl }" title="{ msg_delfile }" onclick="return bab_postLinkConfirm(this);"><img src="{ babSkinPath }images/Puces/del.gif" alt="{ del }"  border="0"></a>
 </td></tr></table>
 </td>
 </tr>
@@ -332,7 +333,7 @@ bab_initFunctions.push(function() {
 	</small>&nbsp;
 	<!--#if badmin -->
 		</td>
-		<td align=right width="1%"><a class="BabSiteAdminListLink" href="javascript:confirm_url('{ delurl }','{ msg_deltree }')"><img src="{ babSkinPath }images/Puces/del.gif" alt="{ del }"  border="0"></a>
+		<td align=right width="1%"><a class="BabSiteAdminListLink" href="{ delurl }" title="{ msg_deltree }" onclick="return bab_postLinkConfirm(this);"><img src="{ babSkinPath }images/Puces/del.gif" alt="{ del }"  border="0"></a>
 		</td>
 	<!--#endif badmin -->
 	</tr></table>
@@ -369,7 +370,7 @@ bab_initFunctions.push(function() {
 	</small>&nbsp;
 </td>
 <!--#if badmin -->
-<td align=right width="1%"><a href="" onclick="confirm_url('{ delurl }','{ msg_delfile }');return false;"><img src="{ babSkinPath }images/Puces/del.gif" alt="{ del }"  border="0"></a>
+<td align=right width="1%"><a href="{ delurl }" title="{ msg_delfile }" onclick="return bab_postLinkConfirm(this)"><img src="{ babSkinPath }images/Puces/del.gif" alt="{ del }"  border="0"></a>
 </td>
 <!--#endif badmin -->
 </tr></table>
@@ -381,6 +382,7 @@ bab_initFunctions.push(function() {
 </tr>
 </table>
 	<form name="add_directory" method="post" action="{ babPhpSelf }" enctype="multipart/form-data">
+<input type="hidden" name="babCsrfProtect" value="{ babCsrfProtect }" />
 	<input type="hidden" name="tg" value="images">
 	<input type="hidden" name="idx" value="iframe">
 	<input type="hidden" name="path" value="{ path }">
@@ -389,6 +391,7 @@ bab_initFunctions.push(function() {
 	</form>
 
 	<form name="rename" method="post" action="{ babPhpSelf }" enctype="multipart/form-data">
+<input type="hidden" name="babCsrfProtect" value="{ babCsrfProtect }" />
 	<input type="hidden" name="tg" value="images">
 	<input type="hidden" name="idx" value="iframe">
 	<input type="hidden" name="path" value="{ path }">

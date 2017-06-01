@@ -22,8 +22,8 @@
  * USA.																	*
 ************************************************************************/
 include_once "base.php";
-require_once dirname(__FILE__).'/../utilit/registerglobals.php';
-include_once $babInstallPath."admin/acl.php";
+
+include_once $GLOBALS['babInstallPath']."admin/acl.php";
 
 function getSectionName($id)
 	{
@@ -300,11 +300,27 @@ if( !bab_isUserAdministrator() && !bab_isDelegated('sections'))
 	return;
 }
 
+
+
+$idx = bab_rp('idx', 'Modify');
+$modify = bab_rp('modify', null);
+$submit = bab_rp('submit', null);
+$secdel = bab_rp('secdel', null);
+$aclsec = bab_rp('aclsec', null);
+$item = bab_rp('item');
+$title = bab_rp('title');
+$description = bab_rp('description');
+$template = bab_rp('template');
+$lang = bab_rp('lang');
+$opt = bab_rp('opt');
+$section = bab_rp('section');
+
+
 if( isset($modify))
 	{
 	if( isset($submit))
 		{
-		sectionUpdate($item, $title, $description, $template, $lang, $opt);
+		bab_requireSaveMethod() && sectionUpdate($item, $title, $description, $template, $lang, $opt);
 		}
 	else if(isset($secdel))
 		$idx = "Delete";
@@ -312,17 +328,16 @@ if( isset($modify))
 
 if( isset($aclsec))
 	{
-	maclGroups();
+	bab_requireSaveMethod() && maclGroups();
 	Header("Location: ". $GLOBALS['babUrlScript']."?tg=sections&idx=List");
 	exit;
 	}
 
-if( !isset($idx))
-	$idx = "Modify";
 
-if( isset($action) && $action == "Yes")
+
+if( bab_rp('action') == "Yes")
 	{
-	confirmDeleteSection($section);
+	bab_requireDeleteMethod() && confirmDeleteSection($section);
 	}
 
 switch($idx)

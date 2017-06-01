@@ -543,6 +543,7 @@ function bab_removeDiacritics($string, $charset = null)
         $chars['out'] = "EfSZszYcYuAAAAAACEEEEIIIINOOOOOOUUUUYaaaaaaceeeeiiiinoooooouuuuyy";
 
         $string = strtr($string, $chars['in'], $chars['out']);
+        $double_chars = array();
         $double_chars['in'] = array(chr(140), chr(156), chr(198), chr(208), chr(222), chr(223), chr(230), chr(240), chr(254));
         $double_chars['out'] = array('OE', 'oe', 'AE', 'DH', 'TH', 'ss', 'ae', 'dh', 'th');
         $string = str_replace($double_chars['in'], $double_chars['out'], $string);
@@ -583,28 +584,12 @@ class bab_charset
         if(!isset(self::$sCharset))
         {
             global $babDB;
-            $oResult = $babDB->db_query("SHOW VARIABLES LIKE 'character_set_database'");
-            if(false === $oResult)
-            {
-                self::$sCharset = 'latin1';
-            }
-
-            $aDbCharset = $babDB->db_fetch_assoc($oResult);
-            if(false === $aDbCharset)
-            {
-                self::$sCharset = 'latin1';
-            }
-
-            self::$sCharset = $aDbCharset['Value'];
+            self::$sCharset = $babDB->db_character_set_name();
         }
         return self::$sCharset;
     }
 
-    private static function resetCharset()
-    {
-        self::$sCharset = null;
-        bab_charset::getDatabase();
-    }
+
 
 
     /**
@@ -641,15 +626,7 @@ class bab_charset
                 return '';
         }
     }
-    
-    /**
-     * @param string $charset
-     */
-    public static function setDbCharset($charset)
-    {
-        self::$sCharset = $charset;
-        self::$sIsoCharset = self::getIsoCharsetFromDataBaseCharset($charset);
-    }
+
 }
 
 
@@ -836,6 +813,7 @@ class bab_DateStrings
 function bab_formatDate($format, $time)
 {
     $txt = $format;
+    $m = null;
     if(preg_match_all("/%(.)/", $format, $m))
         {
         for( $i = 0; $i< count($m[1]); $i++)
@@ -1009,6 +987,7 @@ function bab_editor_record(&$str)
 
     $worked = array();
 
+    $out = null;
     preg_match_all("/<\/?([^>]+?)\/?>/i",$str,$out);
 
     $nbtags = count($out[0]);
@@ -1025,6 +1004,7 @@ function bab_editor_record(&$str)
             if (isset($allowed_tags[$name]))
                 {
                 // work on attributes
+                $elements = null;
                 preg_match_all("/(\w+)\s*=\s*([\"'])(.*?)\\2/", $out[1][$i], $elements);
 
                 $worked_attributes = array();
@@ -1135,7 +1115,9 @@ function bab_browserVersion()
         }
 
     $tab = explode(";", $_SERVER['HTTP_USER_AGENT']);
-    if( ereg("([^(]*)([0-9].[0-9]{1,2})",$tab[1],$res))
+    $res = null;
+
+    if( preg_match("/([^(]*)([0-9]\.[0-9]{1,2})/",$tab[1],$res))
         {
         return trim($res[2]);
         }
@@ -1143,27 +1125,35 @@ function bab_browserVersion()
     }
 
 
-function bab_translate($str, $folder = "", $lang="")
-    {
+
+/**
+ * Translate a text.
+ * If no translation is found, returns the input string.
+ *
+ * @param string $str       The string containing the text to translate
+ * @param string $folder    The addon name. If empty look for translation in ovidentia langfiles.
+ * @param string $lang      The language code to translate into. If empty uses the current language @see bab_getLanguage
+ * @return string
+ */
+function bab_translate($str, $folder = '', $lang = '')
+{
     static $babLA = array();
 
-    if( empty($lang)) {
-        if (!isset($GLOBALS['babLanguage'])) {
-            $lang = 'fr';
-        } else {
-            $lang = $GLOBALS['babLanguage'];
-        }
+    if (empty($lang)) {
+        $lang = bab_getLanguage();
     }
 
-    if( empty($lang) || empty($str))
+    if (empty($lang) || empty($str)) {
         return $str;
+    }
 
-    if( !empty($folder))
-        $tag = $folder."/".$lang;
-    else
-        $tag = "bab/".$lang;
+    if (!empty($folder)) {
+        $tag = $folder . '/' . $lang;
+    } else {
+        $tag = 'bab/' . $lang;
+    }
 
-    if( !isset($babLA[$tag])) {
+    if (!isset($babLA[$tag])) {
         require_once dirname(__FILE__).'/loadlanguage.php';
         babLoadLanguage($lang, $folder, $babLA[$tag]);
 
@@ -1172,15 +1162,12 @@ function bab_translate($str, $folder = "", $lang="")
         }
     }
 
-    if(isset($babLA[$tag][$str]))
-        {
-            return $babLA[$tag][$str];
-        }
-    else
-        {
-            return $str;
-        }
+    if (isset($babLA[$tag][$str])) {
+        return $babLA[$tag][$str];
+    } else {
+        return $str;
     }
+}
 
 
 /**
@@ -1228,26 +1215,26 @@ function bab_isUserGroupManager($grpid="")
 */
 function bab_getUserName($iIdUser, $bComposeUserName = true)
 {
-    
-    
+
+
     include_once dirname(__FILE__).'/userinfosincl.php';
 
     if (true === $bComposeUserName) {
-        
+
         if (!$iIdUser) {
             return '';
         }
-        
+
         return bab_userInfos::composeName($iIdUser);
     } else {
-        
+
         if (!$iIdUser) {
             return array(
                 'firstname' => '',
                 'lastname' => ''
             );
         }
-        
+
         return bab_userInfos::arrName($iIdUser);
     }
 }
@@ -1560,6 +1547,7 @@ function bab_getUsersByName( $name, $nb = 5 )
     if( $babDB->db_num_rows($res) > 0)
         {
         $i = 0;
+        $resArr = array();
         while ($arr = $babDB->db_fetch_assoc($res)){
             $resArr[$i]['id'] = $arr['id'];
             $resArr[$i]['lastname'] = $arr['lastname'];
@@ -1888,8 +1876,12 @@ function bab_calendarPopup($callback, $month='', $year='', $low='', $high='')
 
 /**
  * Create a directory
+ * @param	string    $path       The directory path
+ * @param	int       $mode       The mode to apply on the created directory
+ * @param   bool      $recursive  Allows the creation of nested directories specified in $path
+ * @return 	bool
  */
-function bab_mkdir($path, $mode = '')
+function bab_mkdir($path, $mode = '', $recursive = false)
 {
     if (mb_substr($path, - 1) == '/') {
         $path = mb_substr($path, 0, - 1);
@@ -1905,7 +1897,7 @@ function bab_mkdir($path, $mode = '')
             $mode = 0770;
         }
     }
-    $res = mkdir($path, $mode);
+    $res = mkdir($path, $mode, $recursive);
     if (! $res) {
         include_once $GLOBALS['babInstallPath'] . 'utilit/devtools.php';
         bab_debug_print_backtrace();
@@ -1941,6 +1933,7 @@ function bab_getAvailableLanguages()
         {
         if ($file != "." && $file != "..")
             {
+            $regs = null;
             if( preg_match("/lang-([^.]*)/", $file, $regs))
                 {
                 if( $file == 'lang-'.$regs[1].'.xml')
@@ -1987,9 +1980,10 @@ function bab_getAvailableLanguages()
  */
 function bab_printTemplate($class, $file, $section = '')
 {
+    require_once dirname(__FILE__).'/skinincl.php';
     //bab_debug('Template file : '.$file.'<br />'.'Section in template file : '.$section);
 
-    global $babInstallPath, $babSkinPath, $babSkin;
+    global $babSkinPath, $babSkin;
 
 
     $skin = new bab_Skin($babSkin);
@@ -1998,12 +1992,12 @@ function bab_printTemplate($class, $file, $section = '')
     $html = $tpl->printTemplate($class, $skin->getThemePath().'templates/'. $file, $section);
 
     if (!$html) {
-        $html = $tpl->printTemplate($class, $babInstallPath.'skins/ovidentia/templates/'.$file, $section);
+        $html = $tpl->printTemplate($class, $GLOBALS['babInstallPath'].'skins/ovidentia/templates/'.$file, $section);
     }
     //VENDOR
-    //if (!$html) {
-    //    $html = $tpl->printTemplate($class, $file, $section);
-    //}
+    if (!$html) {
+        $html = $tpl->printTemplate($class, $file, $section);
+    }
 
     return $html;
 }
@@ -2712,14 +2706,14 @@ function bab_updateUserPasswordById($userId, $newPassword, $newPassword2, $ignor
                 $ldap = new babLDAP($babBody->babsite['ldap_host'], "", false);
                 $ret = $ldap->connect();
                 if ($ret === false) {
-                    $error = bab_translate("LDAP connection failed");
+                    $error = bab_translate("Connection failed");
                     return false;
                 }
 
                 $ret = $ldap->bind($babBody->babsite['ldap_admindn'], $babBody->babsite['ldap_adminpassword']);
                 if (!$ret) {
                     $ldap->close();
-                    $error = bab_translate("LDAP bind failed");
+                    $error = bab_translate("Binding failed");
                     return  false;
                 }
 
@@ -2735,7 +2729,7 @@ function bab_updateUserPasswordById($userId, $newPassword, $newPassword2, $ignor
 
                 if ($entries === false) {
                     $ldap->close();
-                    $error = bab_translate("LDAP search failed");
+                    $error = bab_translate("User not found in the directory");
                     return false;
                 }
 
@@ -2754,7 +2748,15 @@ function bab_updateUserPasswordById($userId, $newPassword, $newPassword2, $ignor
     }
 
     /* Update the user's password */
-    $sql = 'UPDATE ' . BAB_USERS_TBL . ' SET force_pwd_change = 0, pwd_change_date = CURDATE(), password=' . $babDB->quote(md5(mb_strtolower($newPassword))) . ' WHERE id=' . $babDB->quote($userId);
+
+    require_once dirname(__FILE__).'/password.class.php';
+    $encPassword = bab_Password::hash($newPassword);
+    $sql = 'UPDATE ' . BAB_USERS_TBL . ' SET
+            force_pwd_change = 0,
+            pwd_change_date = CURDATE(),
+            password=' . $babDB->quote($encPassword->value) . ',
+            password_hash_function='.$babDB->quote($encPassword->hashfunc).'
+            WHERE id=' . $babDB->quote($userId);
     $babDB->db_query($sql);
 
     $_SESSION['pwd_change_log'] = false;
@@ -3141,28 +3143,28 @@ function bab_printCachedOvmlTemplate($file, $args = array())
 }
 
 
-
 /**
  * Convert ovml to html
+ * @throws Exception
  * @param	string	$file
  * @param	array	$args
+ * @param   array   $formats
  * @return	string	html
  */
-function bab_printOvmlTemplate($file, $args=array())
+function bab_getHtmlFromOvml($file, $args, $formats = null)
 {
-    global $babInstallPath, $babSkinPath, $babOvmlPath;
+    global $babSkinPath, $babOvmlPath;
 
     /* Skin local path */
     $filepath = $babOvmlPath.$file; /* Ex. : skins/ovidentia_sw/ovml/test.ovml */
 
     if ($file == '') {
-        bab_debug(bab_translate("Error: The name of the OVML file is not specified"));
-        return '<!-- '.bab_translate("Error: The name of the OVML file is not specified").' : '.bab_toHtml($filepath).' -->';
+        throw new Exception(bab_translate("Error: The name of the OVML file is not specified"));
     }
 
     if ((false !== mb_strpos($file, '..')) || mb_strtolower(mb_substr($file, 0, 4)) == 'http') {
 
-        return '<!-- ERROR filename: '.bab_toHtml($file).' -->';
+        throw new Exception('ERROR filename: '.$file);
     }
 
 
@@ -3179,17 +3181,41 @@ function bab_printOvmlTemplate($file, $args=array())
         $filepath = $babSkinPath.'ovml/'.$file; /* Ex. : ovidentiainstall/skins/ovidentia/ovml/test.ovml */
 
         if (!file_exists($filepath)) {
-            bab_debug(bab_translate("Error: OVML file does not exist").' : '.bab_toHtml($file));
-            return '<!-- '.bab_translate("Error: OVML file does not exist").' : '.bab_toHtml($file).' -->';
+            throw new Exception(bab_translate("Error: OVML file does not exist").' : '.$file);
         }
     }
 
     $GLOBALS['babWebStat']->addOvmlFile($filepath);
 
-    include_once $babInstallPath.'utilit/omlincl.php';
+    include_once $GLOBALS['babInstallPath'].'utilit/omlincl.php';
     $tpl = new babOvTemplate($args);
+
+    if (isset($formats)) {
+        foreach($formats as $var => $format) {
+            $tpl->gctx->setFormat($var, $format);
+        }
+    }
+
     $template = $tpl->printout(file_get_contents($filepath), $filepath);
     return $template;
+}
+
+
+/**
+ * Convert ovml to html
+ * @param	string	$file
+ * @param	array	$args
+ * @return	string	html
+ */
+function bab_printOvmlTemplate($file, $args = array())
+{
+    try {
+        return bab_getHtmlFromOvml($file, $args);
+
+    } catch (Exception $e) {
+        bab_debug($e->getMessage());
+        return '<!-- '.bab_toHtml($e->getMessage()).' -->';
+    }
 }
 
 
@@ -3420,14 +3446,6 @@ function bab_isAjaxRequest()
 function bab_requireCredential($sLoginMessage = '', $sAuthType = '')
 {
     require_once $GLOBALS['babInstallPath'].'utilit/loginIncl.php';
-
-    if ($sAuthType === '') {
-        // If a requireCredential is triggerd during an ajax request
-        // we force AuthBasic to avoid silently failing requests.
-        if (bab_isAjaxRequest()) {
-            $sAuthType = 'Basic';
-        }
-    }
 
     return bab_doRequireCredential($sLoginMessage, $sAuthType);
 }
@@ -3733,4 +3751,62 @@ function bab_setLanguage($code)
 
     $session = bab_getInstance('bab_Session');
     $session->babLanguage = $code;
+}
+
+
+
+/**
+ * function to call before saving
+ * @since 8.4.91
+ * @return bool
+ */
+function bab_requireSaveMethod()
+{
+    if (defined('BAB_CSRF_PROTECT') && false === BAB_CSRF_PROTECT) {
+        return true;
+    }
+
+    if ('GET' === $_SERVER['REQUEST_METHOD']) {
+        header($_SERVER["SERVER_PROTOCOL"]." 405 Method Not Allowed", true, 405);
+        $babBody = bab_getBody();
+        $babBody->addError('Method not allowed');
+        $babBody->babpopup('');
+    }
+
+    return true;
+}
+
+
+/**
+ * function to call before deleting
+ * @since 8.4.91
+ *
+ */
+function bab_requireDeleteMethod()
+{
+    return bab_requireSaveMethod();
+}
+
+
+/**
+ * Get list of core folders
+ * @return array
+ */
+function bab_getCoreFolders()
+{
+    $basedir = realpath('.').'/';
+    $dh = opendir($basedir);
+
+    $dirs = array();
+
+    if ($dh) {
+        while (($file = readdir($dh)) !== false) {
+            if ($file !== '.' && $file !== '..'
+                    && is_dir($basedir.$file) && file_exists($basedir.$file.'/version.inc')) {
+                $dirs[] = $file;
+            }
+        }
+    }
+
+    return $dirs;
 }

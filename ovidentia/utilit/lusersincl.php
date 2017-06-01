@@ -104,7 +104,7 @@ function bab_browseUsers($pos, $cb)
     			$this->arr = $babDB->db_fetch_array($this->res);
     			$this->url = bab_toHtml($GLOBALS['babUrlScript']."?tg=user&idx=Modify&item=".$this->arr['id']."&pos=".$this->ord.$this->pos."&cb=").$this->cb;
     			$this->firstlast = $this->arr['lastname'].' '.$this->arr['firstname'];
-    			$this->firstlast = bab_toHtml($this->firstlast, BAB_HTML_JS);
+    			$this->firstlast = bab_toHtml($this->firstlast, BAB_HTML_ENTITIES | BAB_HTML_JS);
     			
     			$this->urlname = $this->arr['lastname'].' '.$this->arr['firstname'];
 

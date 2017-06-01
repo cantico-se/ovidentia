@@ -22,7 +22,7 @@
  * USA.																	*
 ************************************************************************/
 include_once "base.php";
-require_once dirname(__FILE__).'/utilit/registerglobals.php';
+
 include_once $GLOBALS['babInstallPath'].'utilit/indexincl.php';
 
 /**
@@ -168,7 +168,7 @@ if (isset($_GET['idx'])) {
 
 if (isset($_GET['cmd'])) {
 
-	// execute une commande appellée par le fichier bat
+	// execute une commande appellee par le fichier bat
 
 	switch($_GET['cmd']) {
 		case 'EOF': // tester les traitements a effectuer en fin d'indexation
@@ -178,5 +178,3 @@ if (isset($_GET['cmd'])) {
 }
 
 
-
-?>

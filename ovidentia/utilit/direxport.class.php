@@ -849,28 +849,48 @@ class bab_dbdir_export_vcard extends bab_dbdir_export
     protected function outputRow(Array $row)
     {
 
-        extract($row);
-
-        if (!$sn)
+        if (!$row['sn'])
         {
             return;
         }
 
 
         $T = bab_functionality::get('Thumbnailer');
-        $vcard_image_type = $this->getPhotoType($photo_type);
+        $vcard_image_type = $this->getPhotoType($row['photo_type']);
         $b64 = '';
 
-        if ($T && $photo_data && $vcard_image_type)
+        if ($T && $row['photo_data'] && $vcard_image_type)
         {
             /*@var $T Func_Thumbnailer */
-            $T->setSourceBinary($photo_data, $date_modification);
+            $T->setSourceBinary($row['photo_data'], $row['date_modification']);
             $imagePath = $T->getThumbnailPath(48, 48);
             $b64 = base64_encode(file_get_contents($imagePath->tostring()));
         }
 
-        $rev = BAB_DateTime::fromIsoDateTime($date_modification);
+        $rev = BAB_DateTime::fromIsoDateTime($row['date_modification']);
         $date_modification = $rev->getICal(true);
+        
+        $sn = $row['sn'];
+        $givenname = $row['givenname'];
+        $organisationname = $row['organisationname'];
+        $title = $row['title'];
+        $email = $row['email'];
+        $mobile = $row['mobile'];
+        $btel = $row['btel'];
+        $bfax = $row['bfax'];
+        $bstreetaddress = $row['bstreetaddress'];
+        $bcity = $row['bcity'];
+        $bstate = $row['bstate'];
+        $bpostalcode = $row['bpostalcode'];
+        $bcountry = $row['bcountry'];
+        $htel = $row['htel'];
+        $hstreetaddress = $row['hstreetaddress'];
+        $hcity = $row['hcity'];
+        $hstate = $row['hstate'];
+        $hpostalcode = $row['hpostalcode'];
+        $hcountry = $row['hcountry'];
+        $date_modification = $row['date_modification'];
+        
 
         $vcard = "BEGIN:VCARD
 VERSION:2.1

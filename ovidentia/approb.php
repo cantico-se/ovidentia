@@ -25,7 +25,7 @@
 * @internal SEC1 NA 14/12/2006 FULL
 */
 include 'base.php';
-require_once dirname(__FILE__).'/utilit/registerglobals.php';
+
 include_once $GLOBALS['babInstallPath'].'utilit/mailincl.php';
 include_once $GLOBALS['babInstallPath'].'utilit/afincl.php';
 include_once $GLOBALS['babInstallPath'].'utilit/topincl.php';
@@ -567,6 +567,8 @@ $idx = bab_rp('idx', 'all');
 
 if( '' != ($conf = bab_rp('conf')))
 {
+    bab_requireSaveMethod();
+    
 	if( $conf == 'art')
 	{
 		$bconfirm = bab_pp('bconfirm', 'N');
@@ -598,7 +600,7 @@ if( '' != ($conf = bab_rp('conf')))
 switch($idx)
 {
 	case "unload":
-		include_once $babInstallPath."utilit/uiutil.php";
+		include_once $GLOBALS['babInstallPath']."utilit/uiutil.php";
 		popupUnload(bab_translate("Update done"), $GLOBALS['babUrlScript']."?tg=approb&idx=all");
 		exit;
 		
@@ -620,7 +622,7 @@ switch($idx)
 		break;
 		
 	case 'confirm_checked':
-		bab_confirmCheckedItems();
+		bab_requireSaveMethod() && bab_confirmCheckedItems();
 		break;
 	
 

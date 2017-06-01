@@ -27,9 +27,9 @@
 */
 
 include_once 'base.php';
-require_once dirname(__FILE__).'/utilit/registerglobals.php';
-include_once $babInstallPath.'utilit/calincl.php';
-include_once $babInstallPath.'utilit/mcalincl.php';
+
+include_once $GLOBALS['babInstallPath'].'utilit/calincl.php';
+include_once $GLOBALS['babInstallPath'].'utilit/mcalincl.php';
 
 
 
@@ -216,16 +216,17 @@ class cal_monthCls extends cal_wmdbaseCls
 	{
 		if ($this->cindex < count($this->idcals)) {
 			$calendarId = $this->idcals[$this->cindex];
+			$this->currentCalendar = $this->mcals->getCalendar($calendarId);
 			$calname = $this->mcals->getCalendarName($calendarId);
 			$this->fullname = bab_toHtml($calname);
 			$this->fullnameten = $this->calstr($calname, BAB_CAL_NAME_LENGTH);
 			$this->evtarr = array();
 			$this->mcals->getEvents($calendarId, $this->cdate." 00:00:00", $this->cdate." 23:59:59", $this->evtarr);
-			
+
 			// cas specifique qui produit des doublon uniquement en vue mois
 			// un evenements sur une ressource et sur un agenda caldav apparais 2 fois sur l'agenda caldav
 			// il faut conserver l'evenement qui est modifiable quand c'est possible
-			
+
 			$this->countevent = count($this->evtarr);
 			$duplicates = array();
 			foreach($this->evtarr as $key => $calperiod)
@@ -234,28 +235,28 @@ class cal_monthCls extends cal_wmdbaseCls
 				if (isset($duplicates[$calperiod->getUiIdentifier()]))
 				{
 					// cet evenement existe deja, conserver le plus approprie
-					
+
 					$collection = $calperiod->getCollection();
 					$collectionCalendar = $collection->getCalendar();
 					if ($collectionCalendar && $collectionCalendar->getUrlIdentifier() === $calendarId)
 					{
 						unset($this->evtarr[$duplicates[$calperiod->getUiIdentifier()]]);
-						
+
 					} else {
 						unset($this->evtarr[$key]);
 					}
-					
+
 				} else {
 					$duplicates[$calperiod->getUiIdentifier()] = $key;
 				}
 			}
-			
+
 			if (count($this->evtarr) !== $this->countevent)
 			{
 				$this->evtarr = array_values($this->evtarr);
 				$this->countevent = count($this->evtarr);
 			}
-			
+
 			$this->cindex++;
 			return true;
 		}
@@ -326,13 +327,13 @@ class cal_monthCls extends cal_wmdbaseCls
 function cal_month($calids, $date)
 {
 	global $babBody;
-	
+
 	$start = microtime(true);
 
 	$temp = new cal_monthCls('view', $calids, $date);
 	$temp->prepare_events();
 	$temp->printout('calmonth.html', 'calmonth');
-	
+
 
 	$duration = microtime(true) - $start;
 	bab_debug(sprintf("Month view : %s s", round($duration,3)), DBG_TRACE, 'Statistics');
@@ -380,7 +381,7 @@ $date = bab_rp('date', date("Y,n,j"));
 switch($idx)
 {
 	case 'unload':
-		include_once $babInstallPath."utilit/uiutil.php";
+		include_once $GLOBALS['babInstallPath']."utilit/uiutil.php";
 		$popupmessage = bab_translate("Done");
 		popupUnload($popupmessage, $GLOBALS['babUrlScript']."?tg=calmonth&idx=free&calid=".$calid."&date=".$date);
 		exit;

@@ -6,12 +6,12 @@
 // it under the terms of the GNU General Public License as published by
 // the Free Software Foundation; either version 2, or (at your option)
 // any later version.
-// 
+//
 // This program is distributed in the hope that it will be useful, but
 // WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 // See the GNU General Public License for more details.
-// 
+//
 // You should have received a copy of the GNU General Public License
 // along with this program; if not, write to the Free Software
 // Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307,
@@ -31,14 +31,14 @@ include_once $GLOBALS['babInstallPath'].'utilit/treebase.php';
 
 /**
  * An element (node) of a bab_TreeView.
- * 
+ *
  * @see bab_TreeView::createElement()
  */
 class bab_TreeViewElement
 {
 	/**#@+
 	 * @access private
-	 */	
+	 */
 	var $_id;
 	var $_type;
 	var $_title;
@@ -53,7 +53,7 @@ class bab_TreeViewElement
 
 	var $_info;
 	var $_rank;
-	
+
 	var $_subTree;
 	var $_fetchContentScript;
 	/**#@-*/
@@ -99,7 +99,7 @@ class bab_TreeViewElement
 
 	/**
 	 * Adds an action icon for the treeview element.
-	 * 
+	 *
 	 * @param string	$name
 	 * @param string	$caption
 	 * @param string	$icon
@@ -122,7 +122,7 @@ class bab_TreeViewElement
 
 	/**
 	 * Adds a menu to the treeview element.
-	 * 
+	 *
 	 * @param string $name
 	 * @param string $caption
 	 * @param string $icon
@@ -168,7 +168,7 @@ class bab_TreeViewElement
 
 	/**
 	 * Adds a checkbox to the treeview element.
-	 * 
+	 *
 	 * @param string $name
 	 * @param boolean $check		True to check the box.
 	 * @param string $script		The script to execute on click.
@@ -180,7 +180,7 @@ class bab_TreeViewElement
 
 	/**
 	 * Defines an info text that will appear on the right of the treeview element title.
-	 * 
+	 *
 	 * @param string $text
 	 */
 	public function setInfo($text)
@@ -190,7 +190,7 @@ class bab_TreeViewElement
 
 	/**
 	 * Defines a tooltip text that will appear when hovering the icon and label of the element.
-	 * 
+	 *
 	 * @param string $text
 	 */
 	public function setTooltip($text)
@@ -200,7 +200,7 @@ class bab_TreeViewElement
 
 	/**
 	 * Defines the rank of the treeview element (that can be used by the compare and sort methods).
-	 * 
+	 *
 	 * @param int $rank
 	 */
 	public function setRank($rank)
@@ -210,7 +210,7 @@ class bab_TreeViewElement
 
 	/**
 	 * Defines the url link when the element is clicked.
-	 * 
+	 *
 	 * @param string $url
 	 */
 	public function setLink($url)
@@ -220,7 +220,7 @@ class bab_TreeViewElement
 
 	/**
 	 * Defines the url of the treeview element icon.
-	 * 
+	 *
 	 * @param string $url
 	 */
 	public function setIcon($url)
@@ -231,7 +231,7 @@ class bab_TreeViewElement
 	/**
 	 * Defines the url of the subTree (the url should provide the content of the subTree to be inserted).
 	 * The url will be called when the TreeViewElement is expanded.
-	 * 
+	 *
 	 * @param string $url
 	 */
 	public function setSubTree($url)
@@ -247,7 +247,7 @@ class bab_TreeViewElement
 	 * 	< 0 if $a is less than $b;
 	 *  > 0 if $a is greater than $b,
 	 *  = 0 if they are equal.
-	 * 
+	 *
 	 * @param bab_TreeViewElement $element
 	 * @return int
 	 */
@@ -297,13 +297,13 @@ class bab_TreeView extends bab_Template
 {
 //	const VIEW_COLLAPSED		=    1;
 //	const VIEW_EXPANDED			=    2;
-	
+
 	// Constants used for add/set/get/removeAttributes methods.
 	/**
 	 * The treeview will offer the selection of multiple nodes.
 	 */
 	const MULTISELECT			= 1024;
-	
+
 	/**
 	 * Will store the state of open/closed nodes in a cookie.
 	 */
@@ -319,7 +319,7 @@ class bab_TreeView extends bab_Template
 	 * The separator string use to separate type and id in an html id.
 	 */
 	const ID_SEPARATOR			= '__';
-	
+
 	/**
 	 * @var string
 	 */
@@ -328,7 +328,7 @@ class bab_TreeView extends bab_Template
 	 * @var bab_OrphanRootNode
 	 */
 	protected $_rootNode;
-	
+
 
 	/**
 	 * @var bab_NodeIterator
@@ -359,7 +359,7 @@ class bab_TreeView extends bab_Template
 	public $_templateScripts;
 	public $_templateCache;
 
-	
+
 	// Template properties.
 	protected $t_treeViewId;
 	protected $t_id;
@@ -410,7 +410,7 @@ class bab_TreeView extends bab_Template
 	 * 						Must begin with a letter ([A-Za-z]) and may be followed by any
 	 * 						number of letters, digits ([0-9]), hyphens ("-"), underscores ("_"),
 	 * 						colons (":"), and periods (".").
-	 * 
+	 *
 	 * @return bab_TreeView
 	 * @access public
 	 */
@@ -423,7 +423,7 @@ class bab_TreeView extends bab_Template
 		$this->_highlightedElements = array();
 
 		$this->t_treeViewId= $this->_id;
-		
+
 		$this->t_loading = bab_translate('Loading...');
 		$this->t_expand = bab_translate('Expand');
 		$this->t_collapse = bab_translate('Collapse');
@@ -469,7 +469,7 @@ class bab_TreeView extends bab_Template
 
 	/**
 	 * Returns the root node of the treeview
-	 * 
+	 *
 	 * @return bab_OrphanRootNode
 	 */
 	public function getRootNode()
@@ -480,7 +480,7 @@ class bab_TreeView extends bab_Template
 
 	/**
 	 * Returns whether the treeview is up to date.
-	 * 
+	 *
 	 * @return bool
 	 */
 	public function isUpToDate()
@@ -491,7 +491,7 @@ class bab_TreeView extends bab_Template
 
 	/**
 	 * Returns the attributes of the treeview.
-	 * 
+	 *
 	 * @return int
 	 * @access public
 	 */
@@ -499,10 +499,10 @@ class bab_TreeView extends bab_Template
 	{
 		return $this->_attributes;
 	}
-	
+
 	/**
 	 * Defines the attributes of the treeview.
-	 * 
+	 *
 	 * @param int $attributes
 	 * @access public
 	 */
@@ -517,18 +517,18 @@ class bab_TreeView extends bab_Template
 
 	/**
 	 * Adds attributes to the treeview.
-	 * 
+	 *
 	 * @param int $attributes
 	 */
 	public function addAttributes($attributes)
-	{		
+	{
 		$this->setAttributes($this->getAttributes() | $attributes);
 	}
 
 
 	/**
 	 * Adds attributes to the treeview.
-	 * 
+	 *
 	 * @param int $attributes
 	 */
 	public function removeAttributes($attributes)
@@ -539,7 +539,7 @@ class bab_TreeView extends bab_Template
 
 	/**
      * Checks if all the specified attributes are set.
-     * 
+     *
      * @param int	$attributes		A bitset of attributes.
      * @return bool		True if all specified attributes are set.
 	 */
@@ -555,7 +555,7 @@ class bab_TreeView extends bab_Template
 	 * @param string $title			The title (label) of the node.
 	 * @param string $description	An additional description that will appear as a tooltip.
 	 * @param string $link			A link when clicking the node title.
-	 * 
+	 *
 	 * @return bab_TreeViewElement
 	 */
 	public function createElement($id, $type, $title, $description, $link)
@@ -568,28 +568,28 @@ class bab_TreeView extends bab_Template
 	/**
 	 * Appends $element as the last child of the element with the id $parentId.
 	 * If $parentId is null, the element will appear as a first level node.
-	 * 
+	 *
 	 * @param bab_TreeViewElement	$element	An element created by the method createElement.
 	 * @param string 				$parentId	The id of the parent element.
 	 */
 	public function appendElement($element, $parentId)
 	{
 		$node = $this->_rootNode->createNode($element, $element->_id);
-		
+
 		if (!($node instanceof bab_Node))
 		{
 			throw new ErrorException('Unexpected node, id='.$element->_id);
 		}
-		
+
 		$this->_rootNode->appendChild($node, $parentId);
 		$this->_upToDate = false;
 		$this->onElementAppended($element, $parentId);
 	}
 
-	
+
 	/**
 	 * Removes the selected element and its descendants from the treeview.
-	 * 
+	 *
 	 * @param string			$id		The id of the element to remove.
 	 * @return	bool
 	 */
@@ -608,7 +608,7 @@ class bab_TreeView extends bab_Template
 
 	/**
 	 * Sorts the TreeView.
-	 * 
+	 *
 	 * Siblings of the same branch are ordered.
 	 * Ordering is performed using the bab_TreeViewElement::compare() method.
 	 */
@@ -619,16 +619,16 @@ class bab_TreeView extends bab_Template
 		$this->_rootNode->sortSubTree();
 	}
 
-	
+
 	public function highlightElement($id)
 	{
 		$this->_highlightedElements[$id] = true;
 	}
-		
+
 	/**#@+
 	 * Template methods.
 	 * @ignore
-	 */	
+	 */
 	public function getNextElement()
 	{
 		if (is_null($this->_iterator)) {
@@ -686,7 +686,7 @@ class bab_TreeView extends bab_Template
 		$this->_iterator = null;
 		return false;
 	}
-	
+
 	public function getNextAction()
 	{
 		if (!isset($this->_currentElement->_actions))
@@ -764,10 +764,10 @@ class bab_TreeView extends bab_Template
 	}
 
 	/**
-	 * 
+	 *
 	 * @return string
 	 */
-	public function printTemplate()
+	public function printTemplate(&$template = null, $filename = '', $section = '')
 	{
 		if (is_null($this->_templateCache)) {
 			if (!$this->isUpToDate()) {
@@ -780,8 +780,8 @@ class bab_TreeView extends bab_Template
 		}
 		return $this->_templateCache;
 	}
-	
-	
+
+
     protected function printOneTemplate($file, $template)
     {
         $arr = explode('/', $file);
@@ -791,12 +791,12 @@ class bab_TreeView extends bab_Template
             unset($arr[1]);
             return $addon->printTemplate($this, implode('/', $arr), $template);
         }
-        
+
         return bab_printTemplate($this, $file, $template);
     }
 
 	/**
-	 * 
+	 *
 	 * @return string
 	 */
 	public function printSubTree()
@@ -809,13 +809,13 @@ class bab_TreeView extends bab_Template
 	}
 
 	/**#@+
-	 * Overridable event method. 
+	 * Overridable event method.
 	 */
 
 	/**
 	 * DEPRECATED ** DO NOT USE ** Instead override the appendElement method of bab_TreeView.
-	 * 
-	 * This method is called after the bab_TreeViewElement $element has been appended to the treeview. 
+	 *
+	 * This method is called after the bab_TreeViewElement $element has been appended to the treeview.
 	 *
 	 * @param bab_TreeViewElement $element
 	 * @param string $parentId
@@ -901,7 +901,7 @@ define('BAB_ARTICLE_TREE_VIEW_MANAGE_TOPIC',						 5);
 class bab_ArticleTreeView extends bab_TreeView
 {
 	// Constants used for add/set/get/removeAttributes methods.
-	
+
 	/**
 	 * Show article category nodes in the treeview.
 	 */
@@ -911,18 +911,18 @@ class bab_ArticleTreeView extends bab_TreeView
 	 * Show article topic nodes in the treeview.
 	 */
 	const SHOW_TOPICS						=    1;
-	
+
 	/**
 	 * Show article nodes in the treeview (implies SHOW_TOPICS)
 	 */
 	const SHOW_ARTICLES						=    2;
-	
+
 	/**
 	 * Hide topic / category nodes containing zero article
 	 * (for the current user and purpose).
 	 */
 	const HIDE_EMPTY_TOPICS_AND_CATEGORIES	=    4;
-	
+
 	/**
 	 * Make article category nodes selectable.
 	 */
@@ -932,19 +932,19 @@ class bab_ArticleTreeView extends bab_TreeView
 	 * Make article topic nodes selectable.
 	 */
 	const SELECTABLE_TOPICS					=   16;
-	
+
 	/**
 	 * Make article nodes selectable.
 	 */
 	const SELECTABLE_ARTICLES				=   32;
-	
+
 	/**
 	 * Show a root node (Named "Categories, topics and articles",
 	 * "Categories and topics" or "Categories" depending on the
 	 * visible nodes).
 	 */
 	const SHOW_ROOT_NODE					=   64;
-	
+
 	/**
 	 * DEPRECATED ** Only show administered delegations.
 	 * @deprecated by SHOW_ONLY_ADMINISTERED_DELEGATION
@@ -964,7 +964,7 @@ class bab_ArticleTreeView extends bab_TreeView
 
 	/**#@+
 	 * @access private
-	 */	
+	 */
 	private $_action;
 	/**
 	 * @var $_link
@@ -974,15 +974,15 @@ class bab_ArticleTreeView extends bab_TreeView
 	var $_categoriesLinks;
 	var $_topicsLinks;
 	var $_articlesLinks;
-	
+
 	private $_ignoredCategories = array();
-	
+
 	/**
 	 * Datas on which the appendElement work
 	 * After the function call the $_datas is
 	 * invalid
-	 * 
-	 * @access private 
+	 *
+	 * @access private
 	 * @var mixed
 	 */
 	var $_datas;
@@ -1009,7 +1009,7 @@ class bab_ArticleTreeView extends bab_TreeView
 
 	/**
 	 * Ignore the specified categories when creating the treeview.
-	 * 
+	 *
 	 * @param array	$categoryIds		The array of ids to ignore.
 	 */
 	public function ignoreCategories($categoryIds)
@@ -1022,7 +1022,7 @@ class bab_ArticleTreeView extends bab_TreeView
 
 	/**
 	 * Returns the array of ignored categories.
-	 * 
+	 *
 	 * @return array		An array containing the ids of categories (as key and value).
 	 */
 	public function getIgnoredCategories()
@@ -1033,7 +1033,7 @@ class bab_ArticleTreeView extends bab_TreeView
 
 	/**
 	 * Defines the action for which the article tree is displayed.
-	 * 
+	 *
 	 * The treeview will only display the topics for which the
 	 * current user is allowed to perform the selected action.
 	 * Possible values for $action are:
@@ -1052,7 +1052,7 @@ class bab_ArticleTreeView extends bab_TreeView
 
 	/**
 	 * Returns the action for which the article tree is displayed.
-	 * 
+	 *
 	 * Possible returned values are:
 	 *  - bab_ArticleTreeView::READ_ARTICLES
 	 *  - bab_ArticleTreeView::SUBMIT_ARTICLES
@@ -1063,7 +1063,7 @@ class bab_ArticleTreeView extends bab_TreeView
 	 */
 	public function getAction()
 	{
-		return $this->_action;	
+		return $this->_action;
 	}
 
 	/**
@@ -1075,7 +1075,7 @@ class bab_ArticleTreeView extends bab_TreeView
 	{
 		$this->_link = $link;
 	}
-	
+
 	/**
 	 * Defines the link (can be javascript:...) that will be called when we click to a category element, SELECTABLE_CATEGORIES must be activated
 	 * @param string $links
@@ -1084,7 +1084,7 @@ class bab_ArticleTreeView extends bab_TreeView
 	{
 		$this->_categoriesLinks = $links;
 	}
-	
+
 	/**
 	 * Defines the link (can be javascript:...) that will be called when we click to a topic element, SELECTABLE_TOPICS must be activated
 	 * @param string $links
@@ -1093,7 +1093,7 @@ class bab_ArticleTreeView extends bab_TreeView
 	{
 		$this->_topicsLinks = $links;
 	}
-	
+
 	/**
 	 * Defines the link (can be javascript:...) that will be called when we click to a article element, SELECTABLE_ARTICLES must be activated
 	 * @param string $links
@@ -1102,8 +1102,8 @@ class bab_ArticleTreeView extends bab_TreeView
 	{
 		$this->_articlesLinks = $links;
 	}
-	
-	
+
+
 	/**
 	 * @return string	SQL query
 	 */
@@ -1123,8 +1123,8 @@ class bab_ArticleTreeView extends bab_TreeView
 
 		return $sql;
 	}
-	
-	
+
+
 
 	/**
 	 * Add article topics to the tree.
@@ -1138,14 +1138,16 @@ class bab_ArticleTreeView extends bab_TreeView
 		{
 			case self::MODIFY_ARTICLES:
 				/* !!! Only one possibility is not managed : the user has no rights in the topic but the option 'the author can modify his article' is activated */
-				
+
 				/* All id topics as which the current user has rights */
 				$topsub = bab_getUserIdObjects(BAB_TOPICSSUB_GROUPS_TBL);
 				$topman = bab_getUserIdObjects(BAB_TOPICSMAN_GROUPS_TBL);
 				$topmod = bab_getUserIdObjects(BAB_TOPICSMOD_GROUPS_TBL);
-			
+
 				if (count($topsub) > 0  || count($topman) > 0 || count($topmod) > 0)
 				{
+				    $tmp = array();
+				    
 					if (count($topsub) > 0) {
 						/* allow_update != 0 : authors can modify their articles */
 						$tmp[] = '(topics.id IN (' . $babDB->quote(array_keys($topsub)) . ") AND topics.allow_update != '0')";
@@ -1166,7 +1168,7 @@ class bab_ArticleTreeView extends bab_TreeView
 			case self::SUBMIT_ARTICLES:
 				$sql = $this->_getQueryByRight(BAB_TOPICSSUB_GROUPS_TBL);
 				break;
-				
+
 			case self::MANAGE_TOPIC:
 				$sql = $this->_getQueryByRight(BAB_TOPICSMAN_GROUPS_TBL);
 				break;
@@ -1175,7 +1177,7 @@ class bab_ArticleTreeView extends bab_TreeView
 			case self::READ_ARTICLES:
 				$sql = $this->_getQueryByRight(BAB_TOPICSVIEW_GROUPS_TBL);
 				break;
-				
+
 			// list topic by submit comments right seem to be not very usefull
 			// case self::SUBMIT_COMMENTS:
 
@@ -1191,7 +1193,7 @@ class bab_ArticleTreeView extends bab_TreeView
 				}
 				break;
 		}
-		
+
 		if ($sql !== '')
 		{
 			$elementType = 'topic';
@@ -1201,7 +1203,7 @@ class bab_ArticleTreeView extends bab_TreeView
 			}
 			$topics = $babDB->db_query($sql);
 			while ($topic = $babDB->db_fetch_array($topics)) {
-				/* _link is deprecated but used in ancient script */				
+				/* _link is deprecated but used in ancient script */
 				if ($this->_link !== '') {
 					$link = sprintf($this->_link, $topic['id']);
 				} else {
@@ -1220,17 +1222,17 @@ class bab_ArticleTreeView extends bab_TreeView
 												 bab_toHtml($topic['category']),
 												 ''/*$topic['description']*/,
 												 $link);
-				
-				
+
+
 				if (self::MANAGE_TOPIC === $this->_action) {
-				
+
 					list($nbarticles)= $babDB->db_fetch_row($babDB->db_query("select count(*) as total from ".BAB_ARTICLES_TBL." where id_topic='".$babDB->db_escape_string($topic['id'])."' and archive='N'"));
-				
+
 					list($nbarcharticles) = $babDB->db_fetch_row($babDB->db_query("select count(id) from ".BAB_ARTICLES_TBL." where id_topic='".$babDB->db_escape_string($topic['id'])."' and archive='Y'"));
-				
-					$element->setInfo(sprintf(bab_translate('%d Online article(s) | %d Old article(s)'), $nbarticles, $nbarcharticles));	
+
+					$element->setInfo(sprintf(bab_translate('%d Online article(s) | %d Old article(s)'), $nbarticles, $nbarcharticles));
 				}
-				
+
 				$element->setIcon($GLOBALS['babSkinPath'] . 'images/nodetypes/topic.png');
 				$parentId = ($topic['id_cat'] === '0' ? null :
 													'c' . self::ID_SEPARATOR . $topic['id_cat']);
@@ -1267,7 +1269,7 @@ class bab_ArticleTreeView extends bab_TreeView
 			$element->setIcon($GLOBALS['babSkinPath'] . 'images/nodetypes/category.png');
 			$this->appendElement($element, null);
 		}
-		
+
 		$sql = 'SELECT id, title, description, id_parent, enabled FROM ' . BAB_TOPICS_CATEGORIES_TBL;
 		if ($this->hasAttributes(self::SHOW_ONLY_ADMINISTERED_DELEGATION)) {
 			$sql .= ' WHERE id_dgowner=' . $babDB->quote(bab_getCurrentAdmGroup());
@@ -1349,11 +1351,11 @@ class bab_ArticleTreeView extends bab_TreeView
 		}
 	}
 
-	
+
 	/**
 	 * Gives a rank to each element of the treeview as specified in the
 	 * articles/topics/categories administration.
-	 * 
+	 *
 	 * A call to this method does not actually reorder the tree. It should be
 	 * followed by a call to {@link sort} in order to do so.
 	 */
@@ -1400,7 +1402,7 @@ class bab_ArticleTreeView extends bab_TreeView
 		}
 		$sql .= ' GROUP BY id';
 
-		
+
 		$articles = $babDB->db_query($sql);
 		while ($article = $babDB->db_fetch_array($articles)) {
 			$node = $this->getRootNode()->getNodeById('a' . self::ID_SEPARATOR . $article['id']);
@@ -1415,7 +1417,7 @@ class bab_ArticleTreeView extends bab_TreeView
 						$element->setInfo((int)$element->_info + (int)$article['hits']);
 						$element->setRank((int)$element->_rank + (int)$article['hits']);
 					}
-					$node = $node->parentNode();			
+					$node = $node->parentNode();
 				}
 			}
 		}
@@ -1460,7 +1462,7 @@ class bab_ArticleTreeView extends bab_TreeView
 //					}
 //				} while ($modified);
 //			}
-			
+
 			/* Here we remove empty categories */
 			do {
 				$iterator = $this->getRootNode()->createNodeIterator($this->getRootNode());
@@ -1485,7 +1487,7 @@ class bab_ArticleTreeView extends bab_TreeView
 
 		if ($this->hasAttributes(self::SHOW_ARTICLES))
 			$this->_addArticles();
-			
+
 		parent::_updateTree();
 	}
 }
@@ -1579,7 +1581,7 @@ class bab_FileTreeView extends bab_TreeView
 	 * Make files selectable.
 	 */
 	const SELECTABLE_FILES					=   32;
-	
+
 	/**
 	 * When the tree is displayed for administrative purpose and this
 	 * attribute is set the treeview will only display the currently
@@ -1614,19 +1616,19 @@ class bab_FileTreeView extends bab_TreeView
 		parent::__construct($id);
 
 		$this->addAttributes(self::SHOW_FILES);
-		
+
 		$this->_adminView = $adminView;
 
 		$this->setStartPath(null, '');
 		$this->setUpdateBaseUrl('');
 
 		$this->t_warnzone = bab_translate('Warning: Only non-empty folders are displayed.');
-		
+
 		$this->_directories = array();
 	}
 
-	
-	
+
+
 	public function setStartPath($folderId, $path)
 	{
 		$this->_startFolderId = $folderId;
@@ -1641,7 +1643,7 @@ class bab_FileTreeView extends bab_TreeView
 
 
 	/**
-	 * 
+	 *
 	 */
 	protected function _addVisibleDelegations()
 	{
@@ -1649,7 +1651,7 @@ class bab_FileTreeView extends bab_TreeView
 
 		$this->_visibleDelegations = bab_getUserFmVisibleDelegations();
 
-		
+
 		// When the tree is displayed for administrative purpose, we only
 		// display the currently administered delegation.
 		if ($this->hasAttributes(self::SHOW_ONLY_ADMINISTERED_DELEGATION))
@@ -1709,7 +1711,7 @@ class bab_FileTreeView extends bab_TreeView
 
 			$filePath = $file['path'];
 			$subdirs = explode('/', $filePath);
-				
+
 			$fileId = 'p' . self::ID_SEPARATOR . $file['id'];
 			$fileType = $personalFileType;
 			$rootId = 'pd' . self::ID_SEPARATOR . $file['id_owner'];
@@ -1778,11 +1780,11 @@ class bab_FileTreeView extends bab_TreeView
 		$oCriteria = $oCriteria->_and($oIdDgOwner->in(array_keys($this->_visibleDelegations)));
 
 		$oCriteria = $oCriteria->_and($oActive->in('Y'));
-		
-		// hidden directories must be visibles in popup 
+
+		// hidden directories must be visibles in popup
 		// this functionality allow users to publish files throw articles while the real file in file manager is not visible
 		// $oCriteria = $oCriteria->_and($oHide->in('N'));
-		
+
 		if (!is_null($folderId)) {
 			$oCriteria = $oCriteria->_and($oId->in($folderId));
 		}
@@ -1829,15 +1831,15 @@ class bab_FileTreeView extends bab_TreeView
     protected function _addCollectiveFiles($folderId = null, $path = '')
     {
         global $babDB, $babBody;
-        
+
         $sEndSlash = (mb_strlen(trim($path)) > 0 ) ? '/' : '' ;
 
-       
+
        // $rootPath = '';
 
         $folders = new BAB_FmFolderSet();
         $oId = $folders->aField['iId'];
-        
+
         if ($folderId !== null) {
             $oFolder = $folders->get($oId->in($folderId));
             if (is_a($oFolder, 'BAB_FmFolder')) {
@@ -1852,7 +1854,7 @@ class bab_FileTreeView extends bab_TreeView
 
         $aLeftJoin            = array();
         $aWhereClauseItem    = array();
-                
+
         if (isset($idDgOwner))
         {
             $aLeftJoin[]        = 'LEFT JOIN ' . BAB_FM_FOLDERS_TBL . ' folder ON file.id_owner=folder.id ';
@@ -1863,7 +1865,7 @@ class bab_FileTreeView extends bab_TreeView
         {
             $aWhereClauseItem[]    = 'file.bgroup=\'Y\'';
         }
-        
+
         if ($path . $sEndSlash !== '')
         {
             $aWhereClauseItem[]    = 'file.path LIKE ' . $babDB->quote($path . $sEndSlash . '%');
@@ -1873,7 +1875,7 @@ class bab_FileTreeView extends bab_TreeView
         $aWhereClauseItem[]    = 'file.state<>\'D\'';
         $aWhereClauseItem[]    = 'file.confirmed=\'Y\'';
 
-        
+
         $directoryType = 'folder';
         if (!($this->hasAttributes(self::MULTISELECT))
         	&& ($this->hasAttributes(self::SELECTABLE_SUB_FOLDERS))) {
@@ -1884,14 +1886,14 @@ class bab_FileTreeView extends bab_TreeView
        		&& ($this->hasAttributes(self::SELECTABLE_FILES))) {
             $groupFileType .= ' clickable';
         }
-        
-        
+
+
         $sWhereClause = '';
         if(count($aWhereClauseItem) > 0)
         {
             $sWhereClause = 'WHERE ' . implode(' AND ', $aWhereClauseItem);
         }
-        
+
         $sQuery =
             'SELECT ' .
                 'file.id, ' .
@@ -1920,27 +1922,36 @@ class bab_FileTreeView extends bab_TreeView
         	}else{
         		$allFiles[$file['name'].$file['path'].$file['id_owner'].$file['bgroup']] = true;
         	}
-           $filePath = removeFirstPath($file['path']);
+        	
+        	if (!bab_FmFileCanDownload($file['id'])) {
+        	    continue;
+        	}
+        	
+            $filePath = removeFirstPath($file['path']);
             //$filePath = $file['path'];
             $subdirs = explode('/', $filePath);
 
             $fileId = 'g' . self::ID_SEPARATOR . $file['id'];
             $rootFolderName = getFirstPath($file['path']);
+            
+            
             if (is_null($folderId)) {
 	            $oCriteria = $oRelativePath->in($babDB->db_escape_like(''));
 	            $oCriteria = $oCriteria->_and($oName->in($rootFolderName));
-	
 	            $folder = $folders->get($oCriteria);
 	            if (!$folder) {
 	                continue;
 	            }
             	$rootId = 'd' . self::ID_SEPARATOR . $folder->getId().':'.bab_toHtml($rootFolderName); // $file['id_owner'];
+            	
+            	
             } else {
             	$rootId = 'd' . self::ID_SEPARATOR . $folderId.':'.bab_toHtml($oFolder->getName()); // $file['id_owner'];
             }
             $fileType = $groupFileType;
 
             $parentId = $rootId;
+            
 
             foreach ($subdirs as $subdir) {
                 if (trim($subdir) !== '') {
@@ -1975,7 +1986,7 @@ class bab_FileTreeView extends bab_TreeView
             }
         }
     }
-	
+
 
 
 
@@ -2100,7 +2111,7 @@ define('BAB_FORUM_TREE_VIEW_SELECTABLE_POSTS',			16);
 class bab_ForumTreeView extends bab_TreeView
 {
 	// Constants used for add/set/get/removeAttributes methods.
-	
+
 	/**
 	 * Show forum nodes.
 	 */
@@ -2136,12 +2147,12 @@ class bab_ForumTreeView extends bab_TreeView
 	 * TODO : Has currently no effect
 	 */
 	const SHOW_ONLY_ADMINISTERED_DELEGATION =  128;
-	
+
 
 	public function __construct($id)
 	{
 		parent::__construct($id);
-		
+
 		$this->addAttributes(self::SHOW_POSTS);
 	}
 
@@ -2157,7 +2168,7 @@ class bab_ForumTreeView extends bab_TreeView
 			$sql .= ' WHERE id_dgowner = ' . $babDB->quote(bab_getCurrentAdmGroup());
 		}
 		$sql .= ' ORDER BY ordering';
-		
+
 		$forumType = 'forum';
 		if (!($this->hasAttributes(self::MULTISELECT))
 					&& $this->hasAttributes(self::SELECTABLE_FORUMS)) {
@@ -2189,7 +2200,7 @@ class bab_ForumTreeView extends bab_TreeView
 					' WHERE ft.id_dgowner = ' . $babDB->quote(bab_getCurrentAdmGroup());
 		}
 		$sql .= ' ORDER BY tt.date';
-		
+
 		$threadType = 'thread';
 		if (!($this->hasAttributes(self::MULTISELECT))
 					&& $this->hasAttributes(self::SELECTABLE_THREADS)) {
@@ -2205,7 +2216,7 @@ class bab_ForumTreeView extends bab_TreeView
 			$sql = 'SELECT id, subject, id_parent FROM ' . BAB_POSTS_TBL
 				. ' WHERE id_thread = ' . $babDB->quote($thread['id'])
 				. ' ORDER BY ' . BAB_POSTS_TBL . '.date';
-			
+
 			$posts = $babDB->db_query($sql);
 			$firstPost = true;
 			while ($post = $babDB->db_fetch_array($posts)) {
@@ -2268,11 +2279,11 @@ class bab_ForumTreeView extends bab_TreeView
 
 		// For each forum we calculate the total number of hits for all the posts in the forum.
 
-		// We loop over the forum nodes (ie. the siblings of the root node's first child).		
+		// We loop over the forum nodes (ie. the siblings of the root node's first child).
 		for ($forumNode = $this->getRootNode()->firstChild(); !is_null($forumNode); $forumNode = $forumNode->nextSibling()) {
-			
+
 			if (!is_null($forumNode->_firstChild)) {
-				
+
 				$total = 0;
 				$iterator = $this->getRootNode()->createNodeIterator($forumNode->_firstChild);
 				// We iterate all the nodes under the current forum node and calculate the total hits.
@@ -2283,7 +2294,7 @@ class bab_ForumTreeView extends bab_TreeView
 				}
 				$forumNode->_data->setInfo('' . $total);
 				$forumNode->_data->setRank($total);
-				
+
 			}
 		}
 	}
@@ -2374,7 +2385,7 @@ class bab_FaqTreeView extends bab_TreeView
 
 	/**#@+
 	 * @access private
-	 */	
+	 */
 	var $_categories;
 	/**#@-*/
 
@@ -2448,7 +2459,7 @@ class bab_FaqTreeView extends bab_TreeView
 		if (!($this->hasAttributes(self::MULTISELECT))
 					&& $this->hasAttributes(self::SELECTABLE_SUB_CATEGORIES)) {
 			$faqsubcategoryType .= ' clickable';
-		}		
+		}
 		$subCategories = $babDB->db_query($sql);
 		while ($subCategory = $babDB->db_fetch_array($subCategories)) {
 			$element = $this->createElement('subcat' . self::ID_SEPARATOR . $subCategory['id'],
@@ -2506,8 +2517,8 @@ class bab_FaqTreeView extends bab_TreeView
 		$iterator = $this->getRootNode()->createNodeIterator($this->getRootNode());
 		$iterator->nextNode();
 		while ($node = $iterator->nextNode())
-			(!is_null($node)) && $node->_data->setInfo('0');		
-		
+			(!is_null($node)) && $node->_data->setInfo('0');
+
 		$sql = 'SELECT st_faqqr_id AS id, SUM(st_hits) AS hits FROM ' . BAB_STATS_FAQQRS_TBL;
 		if ($start || $end) {
 			$sql .= ' WHERE ';
@@ -2532,7 +2543,7 @@ class bab_FaqTreeView extends bab_TreeView
 						$element->setInfo((int)$element->_info + (int)$faq['hits']);
 						$element->setRank((int)$element->_rank + (int)$faq['hits']);
 					}
-					$node = $node->parentNode();			
+					$node = $node->parentNode();
 				}
 			}
 		}
@@ -2567,10 +2578,10 @@ class bab_GroupTreeViewElement extends bab_TreeViewElement
 {
 	/**#@+
 	 * @access private
-	 */	
+	 */
 	var $_groupId;
 	/**#@-*/
-	
+
 	/**
 	 * @param string $groupId		The group id.
 	 * @param string $type			Will be used as a css class to style the element.
@@ -2595,7 +2606,7 @@ class bab_GroupTreeViewElement extends bab_TreeViewElement
 	{
 		return $this->_groupId;
 	}
-	
+
 }
 
 
@@ -2630,13 +2641,13 @@ class bab_GroupTreeView extends bab_TreeView
 
 	/**
 	 * Overloaded from bab_TreeView.
-	 * 
+	 *
 	 * @param string $id			A unique element id in the treeview.
 	 * @param string $type			Will be used as a css class to style the element.
 	 * @param string $title			The title (label) of the node.
 	 * @param string $description	An additional description that will appear as a tooltip.
 	 * @param string $link			A link when clicking the node title.
-	 * 
+	 *
 	 * @return bab_GroupTreeViewElement
 	 */
 	public function &createElement($id, $type, $title, $description, $link)
@@ -2648,10 +2659,10 @@ class bab_GroupTreeView extends bab_TreeView
 
 	/**
 	 * Overloaded from bab_TreeView.
-	 * 
+	 *
 	 * Appends $element as the last child of the element with the id $parentId.
 	 * If $parentId is null, the element will appear as a first level node.
-	 * 
+	 *
 	 * @param bab_TreeViewElement	$element	An element created by the method createElement.
 	 * @param string 				$parentId	The id of the parent element.
 	 * @access public
@@ -2704,7 +2715,7 @@ class bab_GroupTreeView extends bab_TreeView
 											 '');
 			$element->setIcon($GLOBALS['babSkinPath'] . 'images/nodetypes/folder.png');
 			$parentId = (BAB_REGISTERED_GROUP === (int) $group['id'] ? NULL : 'group' . self::ID_SEPARATOR . $group['id_parent']);
-			
+
 			$this->appendElement($element, $parentId);
 		}
 

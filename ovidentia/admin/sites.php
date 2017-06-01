@@ -21,8 +21,8 @@
  * @copyright Copyright (c) 2008 by CANTICO ({@link http://www.cantico.fr})
  */
 include_once 'base.php';
-require_once dirname(__FILE__).'/../utilit/registerglobals.php';
-include_once $babInstallPath.'utilit/sitesincl.php';
+
+include_once $GLOBALS['babInstallPath'].'utilit/sitesincl.php';
 
 
 function sitesList()
@@ -132,11 +132,33 @@ function database()
 
 
 
+function bab_exportDatabase()
+{
+    include_once $GLOBALS['babInstallPath']."utilit/sqlincl.php";
+    
+    if (defined('BAB_SYSTEM_ACCESS') && BAB_SYSTEM_ACCESS === false) {
+        header($_SERVER["SERVER_PROTOCOL"].' 403 Forbidden');
+	    exit("403 Access Forbidden");
+    }
+    
+    
+    if (count($_POST['tables']) > 0)
+    {
+        $structure = !empty($_POST['structure']) ? 1 : 0;
+        $drop_table = !empty($_POST['drop_table']) ? 1 : 0;
+        $data = !empty($_POST['data']) ? 1 : 0;
+    
+        $bab_sqlExport = new bab_sqlExport($_POST['tables'], $structure, $drop_table, $data);
+        $bab_sqlExport->exportFile();
+    }
+}
+
+
 	
 
 
 /* main */
-if( !isset($BAB_SESS_LOGGED) || empty($BAB_SESS_LOGGED) ||  !bab_isUserAdministrator())
+if( !bab_isUserLogged() || !bab_isUserAdministrator())
 {
 	$babBody->msgerror = bab_translate("Access denied");
 	return;
@@ -145,35 +167,20 @@ if( !isset($BAB_SESS_LOGGED) || empty($BAB_SESS_LOGGED) ||  !bab_isUserAdministr
 $idx = bab_rp('idx','list');
 
 	
-if (isset($_FILES['zipfile'])) {
-	if (unzipcore()) {
-		$idx = "zipupgrade_message";
-	}
-}
 
-if (isset($_POST['action']))
+
+if (isset($_POST['action'])) {
+
 	switch($_POST['action'])
 		{
 		case 'export_database':
-
-			include_once $GLOBALS['babInstallPath']."utilit/sqlincl.php";
-
-			if (count($_POST['tables']) > 0)
-				{
-				$structure = !empty($_POST['structure']) ? 1 : 0;
-				$drop_table = !empty($_POST['drop_table']) ? 1 : 0;
-				$data = !empty($_POST['data']) ? 1 : 0;
-
-				$bab_sqlExport = new bab_sqlExport($_POST['tables'], $structure, $drop_table, $data);
-				$bab_sqlExport->exportFile();
-				}
+		    bab_exportDatabase();
 			break;
 		}
-
-
-if (!isset($message)) {
-	$message = '';
 }
+
+$message = bab_rp('message');
+
 
 
 switch($idx)
@@ -200,7 +207,10 @@ switch($idx)
 		}
 
 		$babBody->addItemMenu("create", bab_translate("Create"),$GLOBALS['babUrlScript'].'?tg=site&idx=create');
-		$babBody->addItemMenu("database", bab_translate("Database"),$GLOBALS['babUrlScript'].'?tg=sites&idx=database');
+		
+		if (!defined('BAB_SYSTEM_ACCESS') || BAB_SYSTEM_ACCESS === true) {
+		    $babBody->addItemMenu("database", bab_translate("Database"),$GLOBALS['babUrlScript'].'?tg=sites&idx=database');
+		}
 		break;
 }
 

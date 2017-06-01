@@ -22,7 +22,7 @@
  * USA.																	*
 ************************************************************************/
 include_once "base.php";
-require_once dirname(__FILE__).'/../utilit/registerglobals.php';
+
 include_once $GLOBALS['babInstallPath']."utilit/grptreeincl.php";
 include_once $GLOBALS['babInstallPath']."utilit/delegincl.php";
 include_once $GLOBALS['babInstallPath']."utilit/topincl.php";
@@ -876,6 +876,7 @@ if( isset($add))
 			{
 			if (!empty($_POST['id']))
 				{
+				bab_requireSaveMethod();
 				if(!modifyDelegatGroup($_POST['gname'], $_POST['description'], $_POST['color'], (isset($_POST['delegitems'])? $_POST['delegitems']: array()), $_POST['id'], bab_pp('iIdCategory')))
 					$idx = "mod";
 				else
@@ -883,6 +884,7 @@ if( isset($add))
 				}
 			else
 				{
+				bab_requireSaveMethod();
 				if( !addDelegatGroup($_POST['gname'], $_POST['description'], $_POST['color'], (isset($_POST['delegitems'])? $_POST['delegitems']: array()), bab_pp('iIdCategory')))
 					$idx = 'new';
 				else
@@ -898,20 +900,21 @@ if( isset($add))
 	}
 
 
-if (isset($_POST['action']))
+if (isset($_POST['action'])) {
 switch($_POST['action'])
 	{
 	case 'add':
-		updateDelegatMembers();
+		bab_requireSaveMethod() && updateDelegatMembers();
 		break;
 	case 'del':
-		deleteDelegatMembers();
+		bab_requireDeleteMethod() && deleteDelegatMembers();
 		break;
 	case 'delete':
-		confirmDeleteDelegatGroup($_POST['id']);
+		bab_requireDeleteMethod() && confirmDeleteDelegatGroup($_POST['id']);
 		$idx = 'list';
 		break;
 	case 'addCategory':
+	    bab_requireSaveMethod();
 		if(!addCategory(bab_rp('catname'), bab_rp('catdesc'), bab_rp('bgcolor')))
 		{
 			$idx = 'displayAddCategorieForm';
@@ -919,12 +922,14 @@ switch($_POST['action'])
 		break;
 
 	case 'updateCategory':
+	    bab_requireSaveMethod();
 		if(!updateCategory(bab_rp('idcat'), bab_rp('catname'), bab_rp('catdesc'), bab_rp('bgcolor')))
 		{
 			$idx = 'displayModifyCategorieForm';
 		}
 		break;
 	}
+}
 
 
 if( $idx == 'list' )
@@ -936,7 +941,7 @@ if( $idx == 'list' )
 
 if( isset($aclupdate))
 	{
-	include_once $babInstallPath.'admin/acl.php';
+	include_once $GLOBALS['babInstallPath'].'admin/acl.php';
 	maclGroups();
 	Header("Location: ". $GLOBALS['babUrlScript']."?tg=delegat&idx=list");
 	exit;
@@ -955,7 +960,7 @@ switch($idx)
 		exit;
 		break;
 	case "acl":
-		include_once $babInstallPath.'admin/acl.php';
+		include_once $GLOBALS['babInstallPath'].'admin/acl.php';
 		$babBody->title = bab_translate("ACL delegation");
 		$macl = new macl("delegat", "Modify", $id, "aclupdate", false);
         $macl->addtable( BAB_DG_ACL_GROUPS_TBL,bab_translate("ACL to use with this delegation"));

@@ -22,7 +22,7 @@
  * USA.																	*
 ************************************************************************/
 include_once 'base.php';
-require_once dirname(__FILE__).'/utilit/registerglobals.php';
+
 
 function bab_getCategoryCalName($id)
 	{
@@ -289,10 +289,16 @@ function confirmDeleteresourcescal($userid, $id)
 	}
 
 /* main */
-if( !isset($idx))
-	$idx = "modifycat";
+	
+$idx = bab_rp('idx', 'modifycat');
+$userid = bab_rp('userid', 0);	
+$submit = bab_rp('submit', null);
 
-$grpid = array();
+$oldname = bab_rp('oldname');
+$name = bab_rp('name');
+$description = bab_rp('description');
+$item = bab_rp('item');
+
 if( $userid == 0 )
 	{
 	if( !bab_isUserAdministrator())
@@ -315,29 +321,32 @@ else
 		}
 	}
 
-if( isset($modify) && $modify == "modcat")
-	{
-	if( isset($submit))
-		modifyCategoryCal($userid, $oldname, $name, $description, $bgcolor, $item);
-	else if( isset($caldel))
+if( bab_rp('modify') == "modcat") {
+	if( isset($submit)) {
+	    $bgcolor = bab_rp('bgcolor');
+		bab_requireSaveMethod() && modifyCategoryCal($userid, $oldname, $name, $description, $bgcolor, $item);
+	} else if( isset($_REQUEST['caldel'])) {
 		$idx = "delcat";
 	}
+}
 
-if( isset($modify) && $modify == "modres")
-	{
-	if( isset($submit))
-		modifyResourceCal($userid, $oldname, $name, $description, $item);
-	else if( isset($resdel))
+if( bab_rp('modify') == "modres") {
+	if( isset($submit)) {
+		bab_requireSaveMethod() && modifyResourceCal($userid, $oldname, $name, $description, $item);
+	} else if( isset($_REQUEST['resdel'])) {
 		$idx = "delres";
 	}
+}
 
-if( isset($action) && $action == "Yes")
-	{
-	if( isset($category))
-		confirmDeletecategoriescal($userid,$category);
-	if( isset($resource))
-		confirmDeleteresourcescal($userid,$resource);
+if( bab_rp('action') == "Yes") {
+	if( isset($_REQUEST['category'])) {
+		bab_requireDeleteMethod() && confirmDeletecategoriescal($userid, bab_rp('category'));
 	}
+	
+	if( isset($_REQUEST['resource'])) {
+		bab_requireDeleteMethod() && confirmDeleteresourcescal($userid, bab_rp('resource'));
+	}
+}
 
 
 switch($idx)
@@ -376,5 +385,3 @@ switch($idx)
 	}
 
 $babBody->setCurrentItemMenu($idx);
-
-?>

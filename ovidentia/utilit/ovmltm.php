@@ -136,7 +136,7 @@ class Func_Ovml_Container_TmProjects extends Func_Ovml_Container
 		global $babDB, $babBody;
 
 		parent::setOvmlContext($ctx);
-		$spaceId = $ctx->get_value('spaceid');
+		$spaceId = $ctx->curctx->getAttribute('spaceid');
 
 		// We look for all the project for which the user has visualisation rights.
 		$this->projectIds = array();
@@ -274,7 +274,7 @@ class Func_Ovml_Container_TmTasks extends Func_Ovml_Container
 		parent::setOvmlContext($ctx);
 		$aFilter = array();
 
-		if ($idProject = $ctx->get_value('projectid'))
+		if ($idProject = $ctx->curctx->getAttribute('projectid'))
 		{
 			// If the parameter 'projectid' is specified we will return the tasks belonging
 			// to this project if the user has visibility on the project.
@@ -292,19 +292,19 @@ class Func_Ovml_Container_TmTasks extends Func_Ovml_Container
 			$aFilter['iIdOwner'] = $GLOBALS['BAB_SESS_USERID'];
 			$aFilter['isPersonnal'] = true;
 		}
-		if ($startDate = $ctx->get_value('startdate'))
+		if ($startDate = $ctx->curctx->getAttribute('startdate'))
 		{
 			$aFilter['sStartDate'] = $startDate;
 		}
-		if ($endDate = $ctx->get_value('enddate'))
+		if ($endDate = $ctx->curctx->getAttribute('enddate'))
 		{
 			$aFilter['sEndDate'] = $endDate;
 		}
-		if ($plannedStartDate = $ctx->get_value('plannedStartDate'))
+		if ($plannedStartDate = $ctx->curctx->getAttribute('plannedStartDate'))
 		{
 			$aFilter['sPlannedStartDate'] = $plannedStartDate;
 		}
-		if ($plannedEndDate = $ctx->get_value('plannedEndDate'))
+		if ($plannedEndDate = $ctx->curctx->getAttribute('plannedEndDate'))
 		{
 			$aFilter['sPlannedEndDate'] = $plannedEndDate;
 		}
@@ -314,12 +314,12 @@ class Func_Ovml_Container_TmTasks extends Func_Ovml_Container
 
 		// The 'orderby' parameter must contain the name of the column (OVML variable name without OV prefix) on which
 		// the container should be ordered.
-		if (($orderBy = $ctx->get_value('orderby')) && array_key_exists($orderBy, $columnNames))
+		if (($orderBy = $ctx->curctx->getAttribute('orderby')) && array_key_exists($orderBy, $columnNames))
 		{
 			$sortFields['sName'] = $columnNames[$orderBy];
 		}
 		// The 'order' parameter must contain 'asc' or 'desc'.
-		if (($order = $ctx->get_value('order')) && (mb_strtoupper($order) == 'ASC' || mb_strtoupper($order) == 'DESC'))
+		if (($order = $ctx->curctx->getAttribute('order')) && (mb_strtoupper($order) == 'ASC' || mb_strtoupper($order) == 'DESC'))
 		{
 			$sortFields['sOrder'] = mb_strtoupper($order);
 		}
@@ -432,7 +432,7 @@ class Func_Ovml_Container_TmTaskFields extends Func_Ovml_Container
 
 		parent::setOvmlContext($ctx);
 		$aTask		= array();
-		$iIdTask	= (int) $ctx->get_value('taskid');
+		$iIdTask	= (int) $ctx->curctx->getAttribute('taskid');
 
 		if($iIdTask > 0)
 		{

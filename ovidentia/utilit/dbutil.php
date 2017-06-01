@@ -76,6 +76,7 @@ class babDatabase
         return $dblink;
         }
 
+
     public function db_print_error($text) {
         if (session_id() && function_exists('bab_isUserAdministrator') && bab_isUserAdministrator()) {
             include_once dirname(__FILE__).'/devtools.php';
@@ -92,6 +93,10 @@ class babDatabase
         $error_reporting = (int) ini_get('error_reporting');
         if (E_USER_ERROR === ($error_reporting & E_USER_ERROR) && $display_errors) {
             echo $str;
+        }
+
+        if (!$display_errors) {
+            trigger_error($str);
         }
 
         if ($this->db_die_on_fail)
@@ -122,21 +127,31 @@ class babDatabase
     /**
      * Set mysql connexion charset according to the charset of the database
      */
-    public function db_setCharset()
+    public function db_setCharset() {
+        $oResult = $this->db_query("SHOW VARIABLES LIKE 'character_set_database'");
+        if(false !== $oResult)
         {
-            $oResult = $this->db_query("SHOW VARIABLES LIKE 'character_set_database'");
-            if(false !== $oResult)
+            $aDbCharset = $this->db_fetch_assoc($oResult);
+            if(false !== $aDbCharset && 'utf8' == $aDbCharset['Value'])
             {
-                $aDbCharset = $this->db_fetch_assoc($oResult);
-                if(false !== $aDbCharset && 'utf8' == $aDbCharset['Value'])
-                {
-                    $this->db_query("SET NAMES utf8");
-                    return;
-                }
+                //$this->db_query("SET NAMES utf8");
+                mysqli_set_charset($this->db_connect(), 'utf8');
+                return;
             }
-
-            $this->db_query("SET NAMES latin1");
         }
+
+        //$this->db_query("SET NAMES latin1");
+        mysqli_set_charset($this->db_connect(), 'latin1');
+    }
+
+    /**
+     * @return string
+     */
+    public function db_character_set_name() {
+        return mysqli_character_set_name($this->db_connect());
+    }
+
+
 
     public function db_create_db($dbname)
         {
@@ -184,6 +199,43 @@ class babDatabase
         return $res;
 
         }
+
+    /**
+     * sends multiple queries
+     * @param string $queries
+     * @return resource|false
+     * @since 8.4.91
+     */
+    public function db_multi_query($queries)
+    {
+
+        return mysqli_multi_query($this->db_connect(),$queries);
+
+    }
+
+    /**
+     * prepare next result from multi_query
+     * @return boolean
+     * @since 8.4.91
+     */
+    public function db_next_result()
+    {
+
+        return mysqli_next_result($this->db_connect());
+
+    }
+
+    /**
+     * check if there are any more query results from a multi query
+     * @return boolean
+     * @since 8.4.91
+     */
+    public function db_more_results()
+    {
+
+        return mysqli_more_results($this->db_connect());
+
+    }
 
     public function db_num_rows($result)
         {

@@ -27,9 +27,9 @@
 */
 
 include_once "base.php";
-require_once dirname(__FILE__).'/utilit/registerglobals.php';
-include_once $babInstallPath."utilit/calincl.php";
-include_once $babInstallPath."utilit/mcalincl.php";
+
+include_once $GLOBALS['babInstallPath']."utilit/calincl.php";
+include_once $GLOBALS['babInstallPath']."utilit/mcalincl.php";
 
 class cal_weekCls extends cal_wmdbaseCls
 	{
@@ -76,7 +76,7 @@ class cal_weekCls extends cal_wmdbaseCls
 		{
 			$this->monthname = $months[$firstmonth].' '.date("Y", $mktime1)." / ".$months[$lastmont].' '.date("Y", $mktime2);
 		}
-		
+
 		$time1 = mktime( 0,0,0, $this->month, $this->dworkdays[$this->workdays[0]], $this->year);
 		$time2 = $time1 + 7*24*3600;
 
@@ -128,7 +128,7 @@ class cal_weekCls extends cal_wmdbaseCls
 
 			$this->cdate = sprintf("%04s-%02s-%02s", date("Y", $mktime), date("n", $mktime), $dday);
 
-			
+
 			if( $dday == date("j", mktime()) && $this->month == date("n", mktime()) && $this->year ==  date("Y", mktime()))
 				{
 				$this->currentday = 1;
@@ -139,7 +139,7 @@ class cal_weekCls extends cal_wmdbaseCls
 				}
 			$this->dayname = bab_toHtml(bab_DateStrings::getDay($this->workdays[$i]));
 			$this->neweventurl = bab_toHtml($GLOBALS['babUrlScript']."?tg=event&idx=newevent&date=".date("Y", $mktime).",".date("n", $mktime).",".$dday."&calid=".implode(',',$this->idcals)."&view=viewq");
-			
+
 			$i++;
 			return true;
 			}
@@ -178,7 +178,7 @@ class cal_weekCls extends cal_wmdbaseCls
 					{
 					$this->hour = sprintf("%02d<sup>%02d</sup>", $curhour/60, $curhour%60);
 					}
-				
+
 				$this->hoururl = bab_toHtml( $GLOBALS['babUrlScript']."?tg=event&idx=newevent&date=".$this->urldate."&calid=".implode(',',$this->idcals)."&view=viewq&st=".mktime($curhour/60,$curhour%60,0,$this->month,$this->mday,$this->year));
 				if( $i % 2)
 					{
@@ -188,7 +188,7 @@ class cal_weekCls extends cal_wmdbaseCls
 					{
 					$this->altbgcolor = false;
 					}
-				
+
 				$this->startdt = $this->cdate." ".$this->h_start.":00";
 				$this->enddt = $this->cdate." ".$this->h_end.":00";
 				$i++;
@@ -202,20 +202,20 @@ class cal_weekCls extends cal_wmdbaseCls
 				return false;
 				}
 			}
-	
+
 	function getnextday()
 		{
 		static $d = 0;
 		if( $d < count($this->workdays))
 			{
-			
+
 			$this->mday = $this->dworkdays[$this->workdays[$d]];
 			$this->dayname = bab_DateStrings::getDay($this->workdays[$d]);
 			$mktime = mktime(0,0,0,$this->month, $this->mday,$this->year);
 			$dday = date("j", $mktime);
 			$this->cdate = sprintf("%04s-%02s-%02s", date("Y", $mktime), date("n", $mktime), $dday);
 			$this->urldate = sprintf("%d,%d,%d", date("Y", $mktime), date("n", $mktime), $dday);
-			
+
 			if( $dday == date("j", mktime()) && $this->month == date("n", mktime()) && $this->year ==  date("Y", mktime()))
 				{
 				$this->currentday = 1;
@@ -227,9 +227,9 @@ class cal_weekCls extends cal_wmdbaseCls
 			$this->currday = date("j", $mktime);
 			$this->daynumberurl = bab_toHtml($this->commonurl."&date=".date("Y", $mktime).",".date("n", $mktime).",".$dday);
 			$this->neweventurl = bab_toHtml($GLOBALS['babUrlScript']."?tg=event&idx=newevent&date=".date("Y", $mktime).",".date("n", $mktime).",".$dday."&calid=".implode(',',$this->idcals)."&view=viewq");
-			
+
 			$this->harray = array();
-			
+
 			$this->mcals->getHtmlArea('bab_NonWorkingDaysCollection', $this->cdate." 00:00:00", $this->cdate." 23:59:59", $this->harray['bab_NonWorkingDaysCollection']);
 			$this->hcols[0] = 0;
 			foreach($this->idcals as $calendarId )
@@ -250,51 +250,52 @@ class cal_weekCls extends cal_wmdbaseCls
 			return false;
 			}
 		}
-		
+
 	function getnextcollection()
 		{
-		
+
 		if(list(,$this->calendarId) = each($this->collections))
 			{
 			$this->nbCalEvents = isset($this->harray[$this->calendarId][0]) ? count($this->harray[$this->calendarId][0]) : 0;
 			$this->cols = count($this->harray[$this->calendarId]);
-			
+
 			if ($this->cols)
 			{
 				$this->cindex++;
 			}
-			
+
 			$this->icols = 0;
 			return true;
 			}
-		
+
 		reset($this->collections);
 		reset($this->idcals);
 		return false;
-			
+
 		}
 
 	function getnextcal()
 		{
-		
+
 		if(list(,$this->calendarId) = each($this->idcals))
 			{
 			$calname = $this->mcals->getCalendarName($this->calendarId);
+			$this->currentCalendar = $this->mcals->getCalendar($this->calendarId);
 			$this->fullname = bab_toHtml($calname);
 			$this->abbrev = $this->calstr($calname,BAB_CAL_NAME_LENGTH);
 			$this->nbCalEvents = isset($this->harray[$this->calendarId][0]) ? count($this->harray[$this->calendarId][0]) : 0;
 			$this->cols = count($this->harray[$this->calendarId]);
-			
-			
+
+
 			if (0 == $this->cols) {
 				$this->cols = 1;
 			}
-			
+
 			$this->cindex++;
 			$this->icols = 0;
-			
-			
-			
+
+
+
 			return true;
 			}
 		else
@@ -311,17 +312,17 @@ class cal_weekCls extends cal_wmdbaseCls
 		if( $this->icols < $this->cols)
 			{
 			$i = 0;
-			
+
 			$this->bevent = false;
-			
+
 			if (isset($this->harray[$this->calendarId][$this->icols]))
 				{
 				while( $i < count($this->harray[$this->calendarId][$this->icols]))
 					{
 					$calPeriod = & $this->harray[$this->calendarId][$this->icols][$i];
-					
-					if( 
-						date('Y-m-d H:i:s', $calPeriod->ts_end) > $this->startdt && 
+
+					if(
+						date('Y-m-d H:i:s', $calPeriod->ts_end) > $this->startdt &&
 						date('Y-m-d H:i:s', $calPeriod->ts_begin) < $this->enddt )
 						{
 						$this->createCommonEventVars($calPeriod);
@@ -336,12 +337,12 @@ class cal_weekCls extends cal_wmdbaseCls
 							}
 						$this->bevent = true;
 						$this->evtindex++;
-						
+
 						}
 					$i++;
 					}
 				}
-				
+
 			$this->md5 = 'm'.md5($this->calendarId.$this->dayname.$this->currday.$this->h_start.$this->icols);
 			$this->icols++;
 			return true;
@@ -366,7 +367,7 @@ class cal_weekCls extends cal_wmdbaseCls
 				$this->bfirstevents[$arr[0].$this->cdate] = 1;
 				}
 			$this->free = $arr[2] == 0;
-			
+
 			$time0 = bab_mktime($arr[0]);
 			$time1 = bab_mktime($arr[1]);
 			$this->starttime = bab_toHtml(bab_time($time0));
@@ -385,7 +386,7 @@ class cal_weekCls extends cal_wmdbaseCls
 			return false;
 			}
 		}
-	}	
+	}
 
 
 function cal_week($calids, $date)
@@ -430,23 +431,23 @@ $calid =bab_rp('calid',bab_getICalendars()->getUserCalendars());
 switch($idx)
 	{
 	case "unload":
-		include_once $babInstallPath."utilit/uiutil.php";
+		include_once $GLOBALS['babInstallPath']."utilit/uiutil.php";
 		popupUnload(bab_translate("Done"), $GLOBALS['babUrlScript']."?tg=calweek&idx=free&calid=".$calid."&date=".$date);
 		exit;
 		break;
 	case "rfree":
-		
+
 		$babBody->title = bab_translate("Search free events");
 		$babBody->addItemMenu("view", bab_translate("Calendar"), $GLOBALS['babUrlScript']."?tg=calweek&calid=".$calid."&date=".$date);
 		$babBody->addItemMenu("free", bab_translate("Availability"), $GLOBALS['babUrlScript']."?tg=calweek&idx=free&calid=".$calid."&date=".$date);
-		$babBody->addItemMenu("rfree", bab_translate("Search"), $GLOBALS['babUrlScript']."?tg=calweek&idx=rfree&calid=".$calid."&date=".$date);		
+		$babBody->addItemMenu("rfree", bab_translate("Search"), $GLOBALS['babUrlScript']."?tg=calweek&idx=rfree&calid=".$calid."&date=".$date);
 
 		searchAvailability(
-			$calid, 
-			$date, 
-			bab_rp('date0'), 
-			bab_rp('date1'), 
-			bab_rp('gap',0), 
+			$calid,
+			$date,
+			bab_rp('date0'),
+			bab_rp('date1'),
+			bab_rp('gap',0),
 			bab_rp('bopt','Y')
 			);
 		break;

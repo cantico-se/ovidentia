@@ -22,8 +22,8 @@
  * USA.																	*
 ************************************************************************/
 include_once "base.php";
-require_once dirname(__FILE__).'/../utilit/registerglobals.php';
-include_once $babInstallPath."admin/acl.php";
+
+include_once $GLOBALS['babInstallPath']."admin/acl.php";
 
 function getFaqName($id)
 	{
@@ -197,32 +197,37 @@ if( !bab_isUserAdministrator() && !bab_isDelegated('faqs'))
 	return;
 }
 
-if(!isset($idx))
-	{
-	$idx = "Modify";
-	}
+$idx = bab_rp('idx', 'Modify');
+$item = bab_rp('item');
 
-if( isset($add))
+if( isset($_REQUEST['add']))
 	{
-	if( isset($submit))
+	if( isset($_REQUEST['submit']))
 		{
+		    bab_requireSaveMethod();
+		    $category = bab_rp('category');
+		    $lang = bab_rp('lang');
 		if(!updateCategory($item, $category, $lang))
 			$idx = "Modify";
 		}
-	else if( isset($faqdel))
+	else if( isset($_REQUEST['faqdel']))
 		$idx = "Delete";
 	}
 
-if( isset($aclfaq))
+if( isset($_REQUEST['aclfaq']))
 	{
-	if( !isset($groups)) { $groups = array(); }
-	aclUpdate($table, $item, $groups, $what);
+	    $groups = bab_rp('groups', array());
+	    $table = bab_rp('table');
+	    $what = bab_rp('what');
+	    
+	
+	bab_requireSaveMethod() && aclUpdate($table, $item, $groups, $what);
 	Header("Location: ". $GLOBALS['babUrlScript']."?tg=admfaqs&idx=Categories");
 	}
 
-if( isset($action) && $action == "Yes")
+if( bab_rp('action') == "Yes")
 	{
-	confirmDeleteFaq($item);
+	bab_requireDeleteMethod() && confirmDeleteFaq($item);
 	}
 
 switch($idx)
@@ -261,5 +266,3 @@ switch($idx)
 		break;
 	}
 $babBody->setCurrentItemMenu($idx);
-
-?>

@@ -27,8 +27,8 @@
 */
 
 include_once 'base.php';
-require_once dirname(__FILE__).'/utilit/registerglobals.php';
-include_once $babInstallPath.'utilit/mcalincl.php';
+
+include_once $GLOBALS['babInstallPath'].'utilit/mcalincl.php';
 
 
 function accessCalendar($calendar, $urla)
@@ -182,6 +182,7 @@ function calendarOptions($urla)
 			$this->endtimetxt = bab_translate("End time");
 			$this->allday = bab_translate("On create new event, check all day");
 			$this->usebgcolor = bab_translate("Use background color for events");
+			$this->usecatcolor = bab_translate("Use category color for events");
 			$this->weeknumberstxt = bab_translate("Show week numbers");
 			$this->modify = bab_translate("Modify");
 			$this->yes = bab_translate("Yes");
@@ -196,6 +197,7 @@ function calendarOptions($urla)
 			$this->showonlydaysmonthinfo = bab_translate("In month view, display only the days of current month");
 			$this->t_calendar_backend = bab_translate('Personal calendar type');
 			$this->t_options = bab_translate('Options');
+			$this->defaultoption = bab_translate('Use default option');
 			
 			
 			$settings = bab_getInstance('bab_Settings');
@@ -231,8 +233,7 @@ function calendarOptions($urla)
 					$this->iSelectedCalAccess = $this->arr['iDefaultCalendarAccess'];
 				}
 			}
-			
-			
+						
 			$this->arrdv = array(bab_translate("Month"), bab_translate("Week"),bab_translate("Day"));
 			$this->arrdvw = array(bab_translate("Columns"), bab_translate("Rows"));
 			if( empty($this->arr['start_time']))
@@ -264,6 +265,11 @@ function calendarOptions($urla)
 			if( !isset($this->arr['bgcolor']))
 				{
 				$this->arr['bgcolor'] = $babsite['usebgcolor'];
+				}
+				
+			if( !isset($this->arr['usecatcolor']))
+				{
+				    $this->arr['usecatcolor'] = 'D';
 				}
 				
 			if( !isset($this->arr['allday']))
@@ -541,7 +547,7 @@ function unload()
 
 	}
 
-function updateCalOptions($startday, $starttime, $endtime, $allday, $usebgcolor, $elapstime, $defaultview, $showupdateinfo, $iDefaultCalendarAccess, $showonlydaysmonthinfo)
+function updateCalOptions($startday, $starttime, $endtime, $allday, $usebgcolor, $elapstime, $defaultview, $showupdateinfo, $iDefaultCalendarAccess, $showonlydaysmonthinfo, $usecatcolor)
 	{
 	global $babDB, $BAB_SESS_USERID;
 
@@ -554,7 +560,7 @@ function updateCalOptions($startday, $starttime, $endtime, $allday, $usebgcolor,
 		$starttime = $endtime;
 		$endtime = $tmp;
 		}
-
+		
 	$req = "select * from ".BAB_CAL_USER_OPTIONS_TBL." where id_user='".$babDB->db_escape_string($BAB_SESS_USERID)."'";
 	$res = $babDB->db_query($req);
 	if( $res && $babDB->db_num_rows($res) > 0)
@@ -571,7 +577,8 @@ function updateCalOptions($startday, $starttime, $endtime, $allday, $usebgcolor,
 			show_update_info =".$babDB->quote($showupdateinfo).", 
 			iDefaultCalendarAccess =".$babDB->quote($iDefaultCalendarAccess).", 
 			show_onlydays_of_month =".$babDB->quote($showonlydaysmonthinfo).", 
-			week_numbers='Y' 
+			week_numbers='Y',
+			usecatcolor =".$babDB->quote($usecatcolor)."
 		WHERE 
 			id_user=".$babDB->quote($BAB_SESS_USERID)."
 			";
@@ -592,7 +599,8 @@ function updateCalOptions($startday, $starttime, $endtime, $allday, $usebgcolor,
 				show_update_info, 
 				iDefaultCalendarAccess,
 				show_onlydays_of_month,
-				week_numbers
+				week_numbers,
+		        usecatcolor
 			) 
 		VALUES ";
 
@@ -609,7 +617,8 @@ function updateCalOptions($startday, $starttime, $endtime, $allday, $usebgcolor,
 			".$babDB->quote($showupdateinfo).",
 			".$babDB->quote($iDefaultCalendarAccess).",
 			".$babDB->quote($showonlydaysmonthinfo).",
-			'Y'
+			'Y',
+			".$babDB->quote($usecatcolor)."
 			)
 		";
 		}
@@ -1135,7 +1144,7 @@ class bab_changeCalendarBackend
 
 function bab_updateCalOptions()
 {
-	updateCalOptions($_POST['startday'], $_POST['starttime'], $_POST['endtime'], $_POST['allday'], $_POST['usebgcolor'], $_POST['elapstime'], $_POST['defaultview'], $_POST['showupdateinfo'], $_POST['iDefaultCalendarAccess'], $_POST['showonlydaysmonthinfo']);
+	updateCalOptions($_POST['startday'], $_POST['starttime'], $_POST['endtime'], $_POST['allday'], $_POST['usebgcolor'], $_POST['elapstime'], $_POST['defaultview'], $_POST['showupdateinfo'], $_POST['iDefaultCalendarAccess'], $_POST['showonlydaysmonthinfo'], $_POST['usecatcolor']);
 	
 	if (bab_pp('calendar_backend') && bab_getICalendars()->calendar_backend !== bab_pp('calendar_backend')) 
 	{
@@ -1161,9 +1170,9 @@ if (preg_match('/javascript:/', $urla))
 }
 
 	
-if( isset($modify) && $modify == "options" && $BAB_SESS_USERID != '')
+if( bab_rp('modify') == "options" && bab_isUserLogged())
 {
-	if (bab_updateCalOptions())
+	if (bab_requireSaveMethod() && bab_updateCalOptions())
 	{
 		return;
 	}
@@ -1171,7 +1180,7 @@ if( isset($modify) && $modify == "options" && $BAB_SESS_USERID != '')
 
 if (bab_pp('calendar_backend') && bab_pp('confirm') && bab_isUserLogged())
 {
-	bab_changeCalendarBackendConfirm(bab_pp('calendar_backend'), (int) bab_pp('copy_source'), (int) bab_pp('delete_destination'), bab_pp('start_copy_from'));
+	bab_requireSaveMethod() && bab_changeCalendarBackendConfirm(bab_pp('calendar_backend'), (int) bab_pp('copy_source'), (int) bab_pp('delete_destination'), bab_pp('start_copy_from'));
 	return;
 }
 
@@ -1186,7 +1195,7 @@ switch($idx)
 		break;
 
 	case "pop_calendarchoice":
-		include_once $babInstallPath."utilit/uiutil.php";
+		include_once $GLOBALS['babInstallPath']."utilit/uiutil.php";
 		$babBodyPopup = new babBodyPopup();
 		pop_calendarchoice();
 		printBabBodyPopup();
@@ -1196,7 +1205,7 @@ switch($idx)
 	case "unload":
 	
 		record_calendarchoice();
-		include_once $babInstallPath."utilit/uiutil.php";
+		include_once $GLOBALS['babInstallPath']."utilit/uiutil.php";
 		$babBodyPopup = new babBodyPopup();
 		unload();
 		printBabBodyPopup();
@@ -1255,4 +1264,3 @@ switch($idx)
 	}
 
 $babBody->setCurrentItemMenu($idx);
-?>

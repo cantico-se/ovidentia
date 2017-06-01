@@ -37,7 +37,7 @@ window.focus();
 			<td width="120">{ startdate }<br>{ starttime }</td>
 			<td align="left"><span style="font-Size:9">{ eventtitle }</span>
 			</td>
-			<td width="130" align="right"><a class="BabSummaryLinkColor" href="{ dismissurl }">{ dismisstxt }</a></td>
+			<td width="130" align="right"><a class="BabSummaryLinkColor" href="{ dismissurl }" onclick="return bab_postLinkConfirm(this);">{ dismisstxt }</a></td>
 		</tr>
 <!--#if altbg -->
 		<tr class="BabSiteAdminFontBackground">

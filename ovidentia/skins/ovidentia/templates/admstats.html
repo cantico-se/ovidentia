@@ -1,22 +1,26 @@
 <!--#begin edit_connection_logging_setup -->
 
 <form name="connection_logging_setup" method="post" action="{ babPhpSelf }">
+<input type="hidden" name="babCsrfProtect" value="{ babCsrfProtect }" />
 <input type="hidden" name="tg" value="admstats" />
 <input type="hidden" name="idx" value="save_connections" />
 <div class="BabLoginCadreBackground" style="padding: 2px; margin: 1em 3em"> 
 <div class="BabLoginMenuBackground" style="padding: 1em">
-<div style="margin: 2em 1em">
-<p>{ t_save_user_connection_history }</p>
-<input name="activate" type="radio" <!--#if t_log_activated -->checked="checked"<!--#endif t_log_activated --> value="activated" >{ t_activate }</input>
-<br />
-<input name="activate" type="radio" <!--#if t_log_deactivated -->checked="checked"<!--#endif t_log_deactivated --> value="deactivated" >{ t_deactivate }</input>
-</div>
-<div style="margin: 2em 1em">
-<input name="remove" type="checkbox" value="remove" /> { t_delete_logs_before } <input name="remove_before" type="text" value="" />
-</div>
-<div style="margin: 2em 1em 0 1em; text-align: center">
-<input type="submit" name="submit" value="{ t_save }" />
-</div>
+
+	<div style="margin: 2em 1em">
+		<p>{ t_save_user_connection_history }</p>
+		<input name="activate" type="radio" <!--#if t_log_activated -->checked="checked"<!--#endif t_log_activated --> value="activated" >{ t_activate }</input>
+		<br />
+		<input name="activate" type="radio" <!--#if t_log_deactivated -->checked="checked"<!--#endif t_log_deactivated --> value="deactivated" >{ t_deactivate }</input>
+	</div>
+	
+	<div style="margin: 2em 1em">
+	   <input name="remove" type="checkbox" value="remove" /> { t_delete_logs_before } <input name="remove_before" type="text" value="" />
+	</div>
+	
+	<div style="margin: 2em 1em 0 1em; text-align: center">
+		<input type="submit" name="submit" value="{ t_save }" />
+	</div>
 </div>
 </div>
 </form>
@@ -27,17 +31,30 @@
 <!--#begin cleanstats -->
 
 <form name="celanstatsform" method="post" action="{ babPhpSelf }">
+<input type="hidden" name="babCsrfProtect" value="{ babCsrfProtect }" />
 <input type="hidden" name="tg" value="admstats" />
 <input type="hidden" name="idx" value="cleanstats" />
+	
 <div class="BabLoginCadreBackground" style="padding: 2px; margin: 1em 3em"> 
-<div class="BabLoginMenuBackground" style="padding: 1em">
-<div style="margin: 2em 1em">
-{ t_delete_statitems_before } <input name="remove_before" type="text" value="" />
-</div>
-<div style="margin: 2em 1em 0 1em; text-align: center">
-<input type="submit" name="submit" value="{ t_save }" />
-</div>
-</div>
+	<div class="BabLoginMenuBackground" style="padding: 1em">
+	
+	   <p>{ t_detailed_history_help }</p>
+	
+	   <div style="margin: 2em 1em">
+          <label>{ t_stat_keep_history } 
+             <input type="number" name="stat_keep_history" value="{ stat_keep_history }" size="3" style="width: 70px;" /> { t_days }
+          </label>
+        </div>
+        
+        <p>{ t_statintems_history_help }</p>
+        
+		<div style="margin: 2em 1em">
+		  <label>{ t_delete_statitems_before } { datepicker }</label>
+		</div>
+		<div style="margin: 2em 1em 0 1em; text-align: center">
+		  <input type="submit" name="submit" value="{ t_save }" />
+		</div>
+	</div>
 </div>
 </form>
 

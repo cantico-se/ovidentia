@@ -23,6 +23,23 @@
 ************************************************************************/
 
 
+/**
+ * Close popup and reload parent page (unknown url)
+ */
+function bab_closePopup()
+{
+    echo '
+        <script type="text/javascript">
+            window.opener.location.reload();
+            window.close();
+        </script>';
+    die;
+}
+
+
+/**
+ * Close popup and reload a known url
+ */
 function popupUnload($message, $redirecturl, $openerreload=false, $autoclose=true)
 	{
 	global $babBody;
@@ -173,7 +190,7 @@ function printBabBodyPopup()
 						{
 						$this->menuattribute = "";
 						}
-					$this->menuurl = $this->menuvals[$i]["url"];
+					$this->menuurl = bab_toHtml($this->menuvals[$i]["url"]);
 					}
 				$i++;
 				return true;

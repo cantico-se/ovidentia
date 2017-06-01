@@ -50,7 +50,7 @@ class bab_SearchRealmFiles extends bab_SearchRealm {
 	 *		<li>files_content_versions</li>
 	 *		<li>metadata</li>
 	 *	</ul>
-	 * 
+	 *
 	 * @var	bab_SearchCriteria
 	 */
 	private $contentCriteria = null;
@@ -93,7 +93,7 @@ class bab_SearchRealmFiles extends bab_SearchRealm {
 	 * @return	array
 	 */
 	public function getSortMethods() {
-		
+
 		return array(
 			'relevance' 	=> bab_translate('Relevance'),
 			'name'			=> bab_translate('File name'),
@@ -131,7 +131,7 @@ class bab_SearchRealmFiles extends bab_SearchRealm {
 
 			$return = array(
 				$this->createField('ov_reference'	, bab_translate('Ovidentia reference'))->virtual(true),
-				$this->createField('id'				, bab_translate('File numeric identifier'))->searchable(false), 
+				$this->createField('id'				, bab_translate('File numeric identifier'))->searchable(false),
 				$this->createField('name'			, bab_translate('File name')),
 				$this->createField('id_owner'		, bab_translate('Owner numeric identifier'))->searchable(false),
 				$this->createField('description'	, bab_translate('Description')),
@@ -142,10 +142,10 @@ class bab_SearchRealmFiles extends bab_SearchRealm {
 				$this->createField('author'			, bab_translate('Author numeric identifier'))->searchable(false),
 				$this->createField('confirmed'		, bab_translate('Approbation status'))->searchable(false),
 				$this->createField('state'			, bab_translate('Delete state'))->searchable(false),
-				$this->createField('relevance'		, bab_translate('Relevance'))->searchable(false), 
+				$this->createField('relevance'		, bab_translate('Relevance'))->searchable(false),
 				$this->createField('id_dgowner'		, bab_translate('Delegation numeric identifier'))->setRealName('iIdDgOwner')->searchable(false),
 				$this->createField('search'			, bab_translate('search on metadata and file content'))->setRealName('fvalue')->searchable(false)
-				
+
 			);
 		}
 
@@ -162,7 +162,7 @@ class bab_SearchRealmFiles extends bab_SearchRealm {
 
 
 	/**
-	 * Get default criteria 
+	 * Get default criteria
 	 * @return	bab_SearchCriteria
 	 */
 	public function getDefaultCriteria() {
@@ -203,7 +203,7 @@ class bab_SearchRealmFiles extends bab_SearchRealm {
 		$this->createTemporaryTable();
 
 		$locations = $this->getSearchLocations();
-		
+
 
 		if (isset($locations['files_content'])) {
 			$this->addContentSearchResult();
@@ -241,8 +241,8 @@ class bab_SearchRealmFiles extends bab_SearchRealm {
 		global $babDB;
 
 		$req = "
-			CREATE TEMPORARY TABLE filresults (
-				`id` 			int(11) unsigned NOT NULL, 
+			CREATE TEMPORARY TABLE IF NOT EXISTS filresults (
+				`id` 			int(11) unsigned NOT NULL,
 				`relevance` 	int(11) unsigned NOT NULL
 			)
 		";
@@ -250,7 +250,7 @@ class bab_SearchRealmFiles extends bab_SearchRealm {
 		$babDB->db_query($req);
 	}
 
-	
+
 
 	/**
 	 * Query search engine once and store result in a property for others needs
@@ -265,18 +265,18 @@ class bab_SearchRealmFiles extends bab_SearchRealm {
 
 		$engine = bab_searchEngineInfos();
 		if ($engine['indexes']['bab_files']['index_disabled']) {
-			
+
 			$this->index_result = array(
 				'versions' => array(),
 				'currents' => array()
 			);
-			
+
 			return $this->index_result;
 		}
 
-		
+
 		if (null === $this->index_result) {
-			
+
 			$this->index_result = array(
 				'versions' => array(),
 				'currents' => array()
@@ -308,32 +308,32 @@ class bab_SearchRealmFiles extends bab_SearchRealm {
 	private function addContentSearchResultQueries($search, $relevance) {
 
 		global $babDB;
-		
+
 		if (empty($search)) {
 			return;
 		}
-		
+
 
 		$query = '
-			SELECT id, path, name FROM 
-				'.BAB_FILES_TBL.' 
-			WHERE 
+			SELECT id, path, name FROM
+				'.BAB_FILES_TBL.'
+			WHERE
 				('.implode(' OR ', $search).')
 		';
 
 		$criteria = $this->getDefaultCriteria();
-		
+
 		// add delegation filter
-		
+
 		$delegation = bab_rp('delegation', null);
-		
+
 		if (null !== $delegation && 'DGAll' !== $delegation)
 		{
 			// if id_dgowner field exist on search real, filter by delegation
-			
+
 			require_once dirname(__FILE__).'/delegincl.php';
 			$arr = bab_getUserVisiblesDelegations();
-			
+
 			if (isset($arr[$delegation]))
 			{
 				$id_dgowner = $arr[$delegation]['id'];
@@ -342,18 +342,18 @@ class bab_SearchRealmFiles extends bab_SearchRealm {
 			$id_dgowner = str_replace('DG', '', $delegation);
 			$criteria = $criteria->_AND_($this->id_dgowner->is($id_dgowner));
 		}
-		
-		
+
+
 		$where = $criteria->tostring($this->getBackend('mysql'));
 		if (!empty($where)) {
 			$query .= ' AND '.$where;
 		}
-		
+
 
 		bab_debug($query, DBG_INFO, 'Search');
 
 		$res = $babDB->db_query($query);
-		
+
 		if (0 === $babDB->db_num_rows($res)) {
 			bab_debug("Unexpected error, query with no results : \n".$query, DBG_ERROR  , 'Search');
 			return;
@@ -394,12 +394,12 @@ class bab_SearchRealmFiles extends bab_SearchRealm {
 			$fullpath = bab_removeFmUploadPath($result['file']);
 			$name = basename($fullpath);
 			$path = dirname($fullpath);
-			if( !empty($path) && '/' !== $path{mb_strlen($path) - 1}) 
+			if( !empty($path) && '/' !== $path{mb_strlen($path) - 1})
 			{
 				$path .='/';
 			}
 
-			
+
 			$search[] = '(path=\''.$babDB->db_escape_string($path).'\' AND name=\''. $babDB->db_escape_string($name)."')";
 			$relevance[$path.$name] = $result['relevance'];
 		}
@@ -412,7 +412,7 @@ class bab_SearchRealmFiles extends bab_SearchRealm {
 	 */
 	private function addVersionsContentSearchResult() {
 		global $babDB;
-		
+
 		$arr = $this->getIndexedResults();
 
 		if (empty($arr)) {
@@ -426,32 +426,33 @@ class bab_SearchRealmFiles extends bab_SearchRealm {
 		$search = array();
 		$relevance = array();
 
-		
+
 
 		foreach($arr['versions'] as $result) {
 			$fullpath = bab_removeFmUploadPath($result['file']);
 			$name = basename($fullpath);
 			$path = dirname($fullpath);
-			if( !empty($path) && '/' !== $path{mb_strlen($path) - 1}) 
+			if( !empty($path) && '/' !== $path{mb_strlen($path) - 1})
 			{
 				$path .='/';
 			}
-	
+
 			$path = dirname($path).'/';
+			$match = null;
 			if (!preg_match('/^\d+,\d+,(.*)$/', $name, $match)) {
 				bab_debug('Unexpected error, version file format', DBG_ERROR , 'Search');
 				return;
 			}
 
 			$name = $match[1];
-			
+
 
 			$search[] = '(path=\''.$babDB->db_escape_string($path).'\' AND name=\''. $babDB->db_escape_string($name)."')";
 			$relevance[$path.$name] = $result['relevance'];
 		}
 
 		$this->addContentSearchResultQueries($search, $relevance);
-		
+
 	}
 
 
@@ -460,14 +461,14 @@ class bab_SearchRealmFiles extends bab_SearchRealm {
 	 */
 	private function addDbSearchResult() {
 		global $babDB;
-		
+
 		$query = '
-			INSERT INTO filresults 
-			SELECT 
+			INSERT INTO filresults
+			SELECT
 				f.id,
-				\'0\' relevance 
-			FROM 
-				'.BAB_FILES_TBL.' f 
+				\'0\' relevance
+			FROM
+				'.BAB_FILES_TBL.' f
 			';
 
 		$where = $this->criteria->tostring($this->getBackend('mysql'));
@@ -494,20 +495,20 @@ class bab_SearchRealmFiles extends bab_SearchRealm {
 
 
 		$query = '
-			INSERT INTO filresults 
-			SELECT 
+			INSERT INTO filresults
+			SELECT
 				f.id,
-				\'0\' relevance 
-			FROM 
+				\'0\' relevance
+			FROM
 				'.BAB_FM_FIELDSVAL_TBL.' m,
-				'.BAB_FILES_TBL.' f 
+				'.BAB_FILES_TBL.' f
 
-			WHERE 
+			WHERE
 				f.id = m.id_file
 		';
 
 		// query on metadata
-	
+
 		$where = $this->contentCriteria->toString($this->getBackend('mysql'));
 		if (!empty($where)) {
 			$query .= ' AND '.$where;
@@ -525,11 +526,11 @@ class bab_SearchRealmFiles extends bab_SearchRealm {
 		bab_debug($query);
 		$babDB->db_query($query);
 	}
-	
+
 
 	/**
 	 * Get the result query
-	 * The query is a join between the temporary table and the files table, 
+	 * The query is a join between the temporary table and the files table,
 	 * the temporary table contain references to result and relevance key
 	 *
 	 * @return resource
@@ -542,7 +543,7 @@ class bab_SearchRealmFiles extends bab_SearchRealm {
 		}
 
 		switch($this->sort_method) {
-		    
+
 		    case 'createddesc':
 		        $orderby = 'created DESC';
 		        break;
@@ -563,7 +564,7 @@ class bab_SearchRealmFiles extends bab_SearchRealm {
 
 
 		$query = '
-			SELECT 
+			SELECT
 
 				f.id,
 				f.name,
@@ -575,19 +576,19 @@ class bab_SearchRealmFiles extends bab_SearchRealm {
 				f.bgroup collective,
 				f.author,
 				f.state,
-				f.confirmed, 
+				f.confirmed,
 				f.iIdDgOwner id_dgowner,
-				r.relevance  
-			FROM 
+				r.relevance
+			FROM
 				filresults r,
 				'.BAB_FILES_TBL.' f
 
 			WHERE
-				f.id = r.id 
+				f.id = r.id
 
-			
-			GROUP BY r.id 
-			ORDER BY '.$orderby.' 
+
+			GROUP BY r.id
+			ORDER BY '.$orderby.'
 		';
 
         bab_debug($query);
@@ -609,7 +610,7 @@ class bab_SearchRealmFiles extends bab_SearchRealm {
 		{
 			$aIdFolder = $aDownload;
 		}
-		
+
 		$aManager = bab_getUserIdObjects(BAB_FMMANAGERS_GROUPS_TBL);
 		if(is_array($aManager) && count($aManager) > 0)
 		{
@@ -668,7 +669,7 @@ class bab_SearchRealmFiles extends bab_SearchRealm {
 			));
 		} else {
 			return false;
-		}	
+		}
 
 		return $criteria;
 	}
@@ -689,11 +690,11 @@ class bab_SearchRealmFiles extends bab_SearchRealm {
 		$criteria = parent::getSearchFormCriteria();
 
 		$this->setFieldLessCriteria($criteria);
-	
+
 		return $criteria;
 	}
-	
-	
+
+
 
 
 	/**
@@ -784,7 +785,7 @@ class bab_SearchRealmFiles_ResultTemplate extends bab_SearchTemplate {
 		$this->orderdateurl = bab_url::mod($baseurl, 'field', 'modified');
 	}
 
-	
+
 	/**
 	 * Template method
 	 */
@@ -795,9 +796,9 @@ class bab_SearchRealmFiles_ResultTemplate extends bab_SearchTemplate {
 			{
 			$record = $this->res->current();
 			$this->altbg = !$this->altbg;
-			
 
-		
+
+
 			if ('Y' === $record->collective) {
 				$sUploadPath = BAB_FileManagerEnv::getCollectivePath($record->id_dgowner);
 			}
@@ -807,7 +808,7 @@ class bab_SearchRealmFiles_ResultTemplate extends bab_SearchTemplate {
 
 			$fullpath = $sUploadPath.$record->path.$record->name;
 
-			
+
 			$this->icon			= bab_SearchTemplate::getIcon($fullpath);
 
 
@@ -817,21 +818,21 @@ class bab_SearchRealmFiles_ResultTemplate extends bab_SearchTemplate {
 			$this->artauthor 	= bab_toHtml(bab_getUserName($record->author));
 			$this->filedesc 	= bab_toHtml($record->description);
 			$this->path 		= bab_toHtml($record->path);
-			
+
 			$searchUi = bab_functionality::get('SearchUi');
 			/*@var $searchUi Func_SearchUi */
-			
+
 			if ($fileurl = $searchUi->getFilePopupUrl($record->id)) {
 			    // with search interface
 			    $this->fileurl 		= bab_toHtml($fileurl);
 			} else {
-			    
+
 			    // default popup url
 			    $this->fileurl 		= bab_toHtml($GLOBALS['babUrlScript'].'?tg=fileman&idx=viewFile&idf='.$record->id.'&gr='.$record->collective.'&id='.$record->id_owner.'&path='.urlencode(removeEndSlah($this->path)));
 			}
 
-			
-			
+
+
 			if ('Y' === $record->collective) {
 				$this->folderurl	= bab_toHtml($GLOBALS['babUrlScript'].'?tg=fileman&idx=list&gr=Y&id='.$record->id_owner.'&path='.urlencode(removeEndSlah($this->path)));
 				$this->folder	= bab_toHtml($this->path);
@@ -843,7 +844,7 @@ class bab_SearchRealmFiles_ResultTemplate extends bab_SearchTemplate {
 			$this->res->next();
 			return true;
 			}
-		
+
 		return false;
 		}
 

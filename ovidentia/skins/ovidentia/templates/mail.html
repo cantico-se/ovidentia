@@ -4,6 +4,7 @@
 
 <br />
 <form method="post" name="composef" action="{ babPhpSelf }" enctype="multipart/form-data">
+<input type="hidden" name="babCsrfProtect" value="{ babCsrfProtect }" />
 <input type="hidden" name="tg" value="mail">
 <input type="hidden" name="idx" value="compose">
 <input type="hidden" name="accid" value="{ accid }">
@@ -133,6 +134,7 @@
 <!--#begin composeMailEditor -->
 
 <form method="post" name="composemail" action="{ babPhpSelf }">
+<input type="hidden" name="babCsrfProtect" value="{ babCsrfProtect }" />
 <input type="hidden" name="tg" value="composemail">
 <input type="hidden" name="idx" value="send">
 <!--#if popup -->

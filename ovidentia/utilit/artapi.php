@@ -162,7 +162,7 @@ function bab_getTopicArray($identifier)
     } else if (36 === strlen($identifier)) {
         $query .= "uuid=".$babDB->quote($identifier);
     } else {
-        throw new Exception('Wrong identifier');
+        throw new Exception('Wrong identifier '.$identifier);
     }
     $res = $babDB->db_query($query);
     if( $res && $babDB->db_num_rows($res) > 0)
@@ -1132,9 +1132,9 @@ function bab_getArticleAuthor($article)
  * @return 	array
  */
 function bab_getChildrenArticlesInformation($topicid, $fullpath = false, $articlestype = 2, $rightaccesstable = BAB_TOPICSVIEW_GROUPS_TBL) {
-    global $babDB, $babInstallPath;
+    global $babDB;
 
-    include_once $babInstallPath.'utilit/topincl.php';
+    include_once $GLOBALS['babInstallPath'].'utilit/topincl.php';
 
     $articles = array();
 
@@ -1231,7 +1231,8 @@ function bab_addArticleDraft($title, $head, $body, $idTopic, &$error, $articleAr
                             'hpage_public'		=> 'N',
                             'notify_members'	=> 'N',
                             'update_datemodif'	=> 'N',
-                            'restriction'		=> ''
+                            'restriction'		=> '',
+                            'page_description'  => ''
                         );
     /* The title can't be empty */
     if( empty($title)) {
@@ -2033,7 +2034,6 @@ function bab_TopicNotificationSubscription($id_topic, $id_user, $set = null)
     {
         if (false === $set)
         {
-            bab_debug('unsubscribe');
 
             $babDB->db_query("INSERT INTO bab_topics_unsubscribe (id_topic, id_user)
                 VALUES (".$babDB->quote($id_topic).", ".$babDB->quote($id_user).")");
@@ -2041,7 +2041,6 @@ function bab_TopicNotificationSubscription($id_topic, $id_user, $set = null)
             return 1;
 
         } else {
-            bab_debug('subscribe');
             $babDB->db_queryWem("DELETE FROM bab_topics_unsubscribe WHERE id_topic=".$babDB->quote($id_topic)." AND id_user=".$babDB->quote($id_user));
 
             return 0;

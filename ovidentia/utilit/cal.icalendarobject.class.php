@@ -129,9 +129,12 @@ abstract class bab_ICalendarObject
 
 	/**
 	 * get a property with a icalendar property name
+	 * if property contain attribute, the method return an array with attribute in key
+	 * 
+	 * @see self::getValue()
 	 *
 	 * @param	string	$icalProperty
-	 * @return	string
+	 * @return	string|array
 	 */
 	public function getProperty($icalProperty) {
 		if (isset($this->properties[$icalProperty])) {
@@ -139,7 +142,6 @@ abstract class bab_ICalendarObject
 			if (1 === count($this->properties[$icalProperty]) && isset($this->properties[$icalProperty][''])) {
 				return $this->properties[$icalProperty][''];
 			} else {
-				// return reset($this->properties[$icalProperty]);
 				return $this->properties[$icalProperty];
 			}
 			
@@ -147,6 +149,21 @@ abstract class bab_ICalendarObject
 		} else {
 			return '';
 		}
+	}
+	
+	
+	/**
+	 * Get a property value with icalendar property name
+	 * @param unknown_type $icalProperty
+	 * @return string
+	 */
+	public function getValue($icalProperty) {
+	    $prop = $this->getProperty($icalProperty);
+	    if (is_array($prop)) {
+	        return reset($prop);
+	    }
+	    
+	    return $prop;
 	}
 	
 	
@@ -975,6 +992,7 @@ class bab_ICalendarProperty
 	 */ 
 	public function setFromIcal($property)
 	{
+	    $m = null;
 		if (preg_match('/^([^:^;]+)/', $property, $m))
 		{
 			$this->name = $m[1];

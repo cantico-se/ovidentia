@@ -25,9 +25,9 @@
 * @internal SEC1 NA 18/12/2006 FULL
 */
 include_once 'base.php';
-require_once dirname(__FILE__).'/utilit/registerglobals.php';
-include_once $babInstallPath.'utilit/forumincl.php';
-include_once $babInstallPath.'utilit/mailincl.php';
+
+include_once $GLOBALS['babInstallPath'].'utilit/forumincl.php';
+include_once $GLOBALS['babInstallPath'].'utilit/mailincl.php';
 
 function listThreads($forum, $active, $pos)
 	{
@@ -587,16 +587,16 @@ function getClosedThreads($forum)
 	}
 
 /* main */
-if(!isset($idx))
-	{
-	$idx = 'List';
-	}
+$idx = bab_rp('idx', 'List');
+$pos = bab_rp('pos', 0);
+$forum = bab_rp('forum');
 
 if( !isset($pos))
 	$pos = 0;
 
-if( isset($add) && $add == 'addthread' && bab_isAccessValid(BAB_FORUMSPOST_GROUPS_TBL, $forum))
+if('addthread' === bab_rp('add') && bab_isAccessValid(BAB_FORUMSPOST_GROUPS_TBL, $forum))
 	{
+	bab_requireSaveMethod();
 	if (!saveThread())
 		{
 		$idx = 'newthread';
@@ -655,4 +655,4 @@ switch($idx)
 	}
 $babBody->setCurrentItemMenu($idx);
 bab_siteMap::setPosition('bab', 'UserForum'.$forum);
-?>
+

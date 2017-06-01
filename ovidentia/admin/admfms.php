@@ -22,7 +22,7 @@
  * USA.																	*
 ************************************************************************/
 include_once 'base.php';
-require_once dirname(__FILE__).'/../utilit/registerglobals.php';
+
 include_once $GLOBALS['babInstallPath'] . 'utilit/fileincl.php';
 
 function DisplayFileManager()
@@ -775,46 +775,57 @@ if(!bab_isUserAdministrator() && !bab_isDelegated('filemanager'))
 	return;
 }
 
-//bab_debug(__FILE__);
-//bab_debug($_POST);
-
-if(!isset($idx))
-{
-	$idx = 'list';
-}
+$idx = bab_rp('idx', 'list');
 
 
-if(isset($add) && $add == 'addfolder')
-{
-	if(!saveFolder($fname, $active, $said, $notification, $version, $bhide, $bautoapp, $baddtags, $bdownloadscapping, $maxdownloads, $bdownloadhistory, $orderm))
-	{
+
+if (bab_rp('add') == 'addfolder') {
+    
+    $fname = bab_rp('fname'); 
+    $active = bab_rp('active');
+    $said = bab_rp('said');
+    $notification = bab_rp('notification');
+    $version = bab_rp('version');
+    $bhide = bab_rp('bhide');
+    $bautoapp = bab_rp('bautoapp');
+    $baddtags = bab_rp('baddtags');
+    $bdownloadscapping = bab_rp('bdownloadscapping');
+    $maxdownloads = bab_rp('maxdownloads');
+    $bdownloadhistory = bab_rp('bdownloadhistory');
+    $orderm = bab_rp('orderm');
+    
+    bab_requireSaveMethod();
+    
+	if (!saveFolder($fname, $active, $said, $notification, $version, $bhide, $bautoapp, $baddtags, $bdownloadscapping, $maxdownloads, $bdownloadhistory, $orderm)) {
 		$idx = 'addf';
 	}
 }
 
 
-if(isset($update) && $update == 'folders')
+if(bab_rp('update') == 'folders')
 {
-	if(!isset($notifies)) { $notifies= array();}
-	if(!isset($actives)) { $actives= array();}
-	if(!isset($versions)) { $versions= array();}
-	if(!isset($bhides)) { $bhides= array();}
-	updateFolders($notifies, $actives, $versions, $bhides);
+
+	$notifies = bab_rp('notifies', array());
+	$actives = bab_rp('actives', array());
+	$versions = bab_rp('versions', array());
+	$bhides = bab_rp('bhides', array());
+	
+	bab_requireSaveMethod() && updateFolders($notifies, $actives, $versions, $bhides);
 }
-elseif(isset($update) && $update == 'displayfm')
+elseif(bab_rp('update') == 'displayfm')
 {
-	updateDisplayFileManager();
+	bab_requireSaveMethod() && updateDisplayFileManager();
 }
 
-$action = bab_gp('action', '');
+$action = bab_rp('action', '');
 if($action == 'notify')
 {
-	bab_notifyPurgeTrashs();
+	bab_requireSaveMethod() && bab_notifyPurgeTrashs();
 	$babBody->msgerror = bab_translate("Notification done");
 }
 elseif($action == 'purge')
 {
-	bab_purgeTrashs();
+	bab_requireSaveMethod() && bab_purgeTrashs();
 	$babBody->msgerror = bab_translate("Purge done");
 }
 

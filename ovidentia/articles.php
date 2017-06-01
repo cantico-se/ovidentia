@@ -25,11 +25,11 @@
 * @internal SEC1 NA 08/12/2006 FULL
 */
 include 'base.php';
-require_once dirname(__FILE__).'/utilit/registerglobals.php';
-include_once $babInstallPath.'utilit/uiutil.php';
-include_once $babInstallPath.'utilit/topincl.php';
-include_once $babInstallPath.'utilit/artincl.php';
-include_once $babInstallPath.'utilit/urlincl.php';
+
+include_once $GLOBALS['babInstallPath'].'utilit/uiutil.php';
+include_once $GLOBALS['babInstallPath'].'utilit/topincl.php';
+include_once $GLOBALS['babInstallPath'].'utilit/artincl.php';
+include_once $GLOBALS['babInstallPath'].'utilit/urlincl.php';
 
 
 
@@ -421,7 +421,7 @@ function listArticles($topics)
 					{
 					$GLOBALS['babWebStat']->addArticle($this->arr['id']);
 					}
-
+					
 				list($totalc) = $babDB->db_fetch_row($babDB->db_query("select count(id) as total from ".BAB_COMMENTS_TBL." where id_article='".$babDB->db_escape_string($this->arr['id'])."' and confirmed='Y'"));
 
 				if( $totalc > 0 || $this->bcomment)
@@ -972,7 +972,11 @@ function readMore($topics, $article)
 		    
 		    $addCommentTemplate = new bab_AddCommentTemplate(
 		            $this->topics, 
-		            $this->babtpl_articleid, bab_pp('subject'), bab_pp('message'), null, 'text');
+		            $this->babtpl_articleid, 
+		            bab_pp('subject'), 
+		            bab_pp('message'), 
+		            null
+		        );
 		    $this->addcommenteditor = bab_printTemplate($addCommentTemplate, 'comments.html', 'commentcreate');
             
 		}
@@ -1371,30 +1375,35 @@ function getImage()
 
 /**
  * Change subsription for current user and go back to previous page
- * @param int $id_topic
+ * @param int       $id_topic
+ * @param string    $customBackurl
  * @return unknown_type
  */
-function bab_topicSubscription($id_topic)
+function bab_topicSubscription($id_topic, $customBackurl)
 {
 
-	switch(bab_TopicNotificationSubscription($id_topic, $GLOBALS['BAB_SESS_USERID']))
+	switch(bab_TopicNotificationSubscription($id_topic, bab_getUserId()))
 	{
 		case 1:
-			bab_TopicNotificationSubscription($id_topic, $GLOBALS['BAB_SESS_USERID'], false);
+			$i = bab_TopicNotificationSubscription($id_topic, bab_getUserId(), false);
 			break;
 
 		case 0:
-			bab_TopicNotificationSubscription($id_topic, $GLOBALS['BAB_SESS_USERID'], true);
+			$i = bab_TopicNotificationSubscription($id_topic, bab_getUserId(), true);
 			break;
+			
+		default:
+		    die('Subscription is disabled');
+		    break;
 	}
 
-	$backurl = new bab_url;
+	$backurl = new bab_url();
 	$backurl->tg='articles';
 	$backurl->topics=$id_topic;
 
-	if (!empty($_SERVER['HTTP_REFERER']))
+	if (!empty($customBackurl))
 	{
-		$referer = new bab_url($_SERVER['HTTP_REFERER']);
+		$referer = new bab_url($customBackurl);
 		$self = bab_url::get_request_gp();
 
 		if ($referer->checksum() !== $self->checksum())
@@ -1404,6 +1413,38 @@ function bab_topicSubscription($id_topic)
 	}
 
 	$backurl->location();
+}
+
+
+
+function bab_topicSubscriptionForm($id_topic)
+{
+    $W = bab_Widgets();
+    
+    $form = $W->Form(null, $W->VBoxLayout()->setVerticalSpacing(3, 'em'));
+    $form->setSelfPageHiddenFields();
+    
+    if (!empty($_SERVER['HTTP_REFERER'])) {
+        $form->setHiddenValue('backurl', $_SERVER['HTTP_REFERER']);
+    }
+    
+    $form->addClass('BabLoginMenuBackground');
+    $form->addClass('widget-bordered');
+    
+    $label = bab_translate('Notify me by email when an article is published');
+    
+    if (1 === bab_TopicNotificationSubscription($id_topic, bab_getUserId())) {
+        
+        $label = bab_translate('Stop receiving notifications for this topic'); 
+    }
+    
+    $form->addItem($W->Title(bab_getTopicTitle($id_topic), 2));
+    $form->addItem($W->SubmitButton()->setLabel($label));
+    
+    $page = $W->BabPage();
+    $page->addItem($form);
+    
+    $page->displayHtml();
 }
 
 
@@ -1447,7 +1488,7 @@ if ($topics === false || (!bab_isAccessValid(BAB_TOPICSMOD_GROUPS_TBL,$topics) &
 if ('mod' == bab_pp('conf')) {
 	if (isset($_POST['bupdate'])) { /* bupdate is the name of the button submitted in the form (bcancel the other button) */
 		/* Create a new article draft and go to ?tg=artedit&idx=s1 */
-		confirmModifyArticle(bab_pp('topics'), bab_pp('article'), bab_pp('comment'), bab_pp('bupdmod'));
+		bab_requireSaveMethod() && confirmModifyArticle(bab_pp('topics'), bab_pp('article'), bab_pp('comment'), bab_pp('bupdmod'));
 	}
 }
 
@@ -1456,8 +1497,9 @@ $supp_rfurl = isset($_REQUEST['rfurl']) ? '&rfurl='.urlencode($_REQUEST['rfurl']
 switch($idx)
 	{
 	case "unload":
-		if( !isset($popupmessage)) { $popupmessage ='';}
-		if( !isset($refreshurl)) { $refreshurl ='';}
+		$popupmessage = bab_rp('popupmessage');
+		$refreshurl = bab_rp('refreshurl');
+		
 		popupUnload($popupmessage, $refreshurl);
 		exit;
 
@@ -1528,13 +1570,17 @@ switch($idx)
 	case 'subscription':
 		// change notification subscription status to topic
 		$id_topic = (int) bab_rp('topic');
-		if (!$id_topic || !$GLOBALS['BAB_SESS_LOGGED'])
+		if (!$id_topic || !bab_isUserLogged())
 		{
 			$babBody->addError(bab_translate('You need to be logged in to subscribe or unsuscribe'));
 			break;
 		}
-		bab_topicSubscription($id_topic);
-
+		
+		if (!empty($_POST)) {
+		    bab_requireSaveMethod() && bab_topicSubscription($id_topic, bab_pp('backurl'));
+		}
+		
+		bab_topicSubscriptionForm($id_topic);
 		break;
 
 

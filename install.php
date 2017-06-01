@@ -194,6 +194,21 @@ class bab_dumpToDb
 		{
 		return mysqli_query($this->db, $query);
 		}
+		
+	function db_multiQuery($queries)
+		{
+		return mysqli_multi_query($this->db,$queries);
+		}
+		
+	function db_nextResult()
+		{
+		return mysqli_next_result($this->db);
+		}
+		
+	function db_moreResults()
+		{
+		return mysqli_more_results($this->db);
+		}
 
 	function db_fetch_array($result)
     	{
@@ -221,80 +236,32 @@ class bab_dumpToDb
 			}
 		}
 
-
-	function getFileContent()
-		{
-		$this->fileContent = '';
-		$f = fopen(BABINSTALL,'r');
-		if ($f === false)
-			{
-			$this->error->add($this->trans->str('There is an error into configuration, can\'t read sql dump file'));
-			return false;
-			}
-		while (!feof($f))
-			{
-			$this->fileContent .= fread($f, 1024);
-			}
-		return true;
-		}
-
-	function workOnQuery()
-		{
-		$reg = "/(?:INSERT|CREATE)(?:[^';]*'(?:[^']|\\\\'|'')*')*[^';]*;/";
-		if (preg_match_all($reg, $this->fileContent, $m))
-			{
-			$this->succes->add(count($m[0]).' '.$this->trans->str('queries found in dump file'));
-			for ($k = 0; $k < count($m[0]); $k++ )
-				{
-				$query = $m[0][$k];
-				if (!$this->db_queryWem($query))
-					{
-					$this->error->add($this->trans->str('There is an error in sql dump file at query : ')."\n\n".$query."\n".mysqli_error($this->db));
-					return false;
-					}
-
-				}
-
-			$this->succes->add($this->trans->str('Database initialisation done'));
-			}
-		else
-			{
-			$this->error->add($this->trans->str('ERROR : can\'t fetch file content'));
-			}
-
-		return true;
-		}
+	
 
     function executeSqlFile($file)
     {
-        $file = fopen($file, 'r');
-
-        if ($file === false) {
+    	$sql=file_get_contents($file);
+        if ($sql === false) {
             $this->error->add($this->trans->str('There is an error into configuration, can\'t read sql dump file'));
             return false;
         }
 
-        $regExp = '/\;\s*$/s';
-        $query = '';
+        
+		if (!$this->db_multiQuery($sql)) {
+		    $this->error->add(mysqli_error($this->db));
+		    return false;
+		}
+		
+		while ($this->db_moreResults()){
+			if (!$this->db_nextResult()) {
+			    $this->error->add(mysqli_error($this->db));
+			    return false;
+			}
+		}
 
-        while (feof($file) === false) {
-            $line = fgets($file);
-            if (substr($line, 0, 1) === '#') {
-                continue;
-            }
-            $query .= $line;
-            if (preg_match($regExp, $line) === 1) {
-                $query = trim($query);
-                if (!$this->db_queryWem($query)) {
-                    $this->error->add($this->trans->str('There is an error in sql dump file at query : ')."\n\n".$query."\n".mysqli_error($this->db));
-                    return false;
-                }
-               $query = '';
-            }
-        }
-        $this->succes->add($this->trans->str('Database initialisation done'));
+		$this->succes->add($this->trans->str('Database initialisation done'));
 
-        return fclose($file);
+        return true;
     }
 
 
@@ -311,12 +278,13 @@ class bab_dumpToDb
 	}
 
 
-function writeConfig()
+	function writeConfig()
 	{
 	global $error,$succes,$trans, $install;
 
 	function replace($txt, $var, $value)
 		{
+		$match = null;
 		preg_match('/'.preg_quote($var, '/')."\s*=\s*\"([^\"]*)\"/", $txt, $match);
 		if ($match[1] != $value)
 			{
@@ -713,6 +681,7 @@ if ($install->getFromUser())
 			$dump = new bab_dumpToDb();
 			if ($dump->db_connect())
 				{
+				$strerror = null;
 				if ($ini->isInstallValid($dump, $strerror))
 					{
 					$succes->add($trans->str('Configuration requirements tests successful'));

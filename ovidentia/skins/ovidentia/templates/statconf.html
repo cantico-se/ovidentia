@@ -1,5 +1,6 @@
 <!--#begin pages -->
 <form name="accform" method="post" action="{ babPhpSelf }">
+<input type="hidden" name="babCsrfProtect" value="{ babCsrfProtect }" />
 <input type="hidden" name="tg" value="statconf" />
 <input type="hidden" name="idx" value="pages" />
 <input type="hidden" name="action" value="dpages" />
@@ -31,6 +32,7 @@
 <br />
 <br />
 <form name="gcreate" method="post" action="{ babPhpSelf }">
+<input type="hidden" name="babCsrfProtect" value="{ babCsrfProtect }" />
 	<input type="hidden" name="tg" value="statconf" />
 	<input type="hidden" name="idx" value="pages" />
 	<input type="hidden" name="action" value="apage" />
@@ -86,6 +88,7 @@
 
 <!--#begin preferences -->
 <form method="post" action="{ babPhpSelf }">
+<input type="hidden" name="babCsrfProtect" value="{ babCsrfProtect }" />
 <input type="hidden" name="tg" value="statconf">
 <input type="hidden" name="idx" value="stat">
 <input type="hidden" name="action" value="apref">
@@ -170,6 +173,7 @@ function page_select_fill()
 </script>
 <!--#endif bmpages -->
 <form name="listform" method="post" action="{ babPhpSelf }">
+<input type="hidden" name="babCsrfProtect" value="{ babCsrfProtect }" />
 <input type="hidden" name="tg" value="statconf">
 <input type="hidden" name="idx" value="bask">
 <input type="hidden" name="pos" value="{ pos }">
@@ -221,6 +225,7 @@ page_select_fill();
 <!--#endif bmpages -->
 <br />
 <form name="baskcreate" method="post" action="{ babPhpSelf }">
+<input type="hidden" name="babCsrfProtect" value="{ babCsrfProtect }" />
 <input type="hidden" name="tg" value="statconf">
 <input type="hidden" name="idx" value="bask">
 <input type="hidden" name="action" value="abask">
@@ -256,6 +261,7 @@ page_select_fill();
 
 <!--#begin basket_edit -->
 <form name="baskupd" method="post" action="{ babPhpSelf }">
+<input type="hidden" name="babCsrfProtect" value="{ babCsrfProtect }" />
 <input type="hidden" name="tg" value="statconf">
 <input type="hidden" name="idx" value="bask">
 <input type="hidden" name="action" value="mbask">
@@ -335,6 +341,7 @@ function co_selectItem(tab) {
 //-->
 </script>
 <form name="baskupd" method="post" action="{ babPhpSelf }">
+<input type="hidden" name="babCsrfProtect" value="{ babCsrfProtect }" />
 <input type="hidden" name="tg" value="statconf">
 <input type="hidden" name="idx" value="bask">
 <input type="hidden" name="action" value="acbask">
@@ -373,6 +380,7 @@ function co_selectItem(tab) {
 
 <!--#begin basket_content_edit -->
 <form name="baskupd" method="post" action="{ babPhpSelf }">
+<input type="hidden" name="babCsrfProtect" value="{ babCsrfProtect }" />
 <input type="hidden" name="tg" value="statconf">
 <input type="hidden" name="idx" value="baskcontent">
 <input type="hidden" name="action" value="acubask">

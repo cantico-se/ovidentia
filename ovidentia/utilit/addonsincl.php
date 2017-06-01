@@ -57,9 +57,9 @@ class bab_addonsInfos {
 
 		include_once $GLOBALS['babInstallPath'].'utilit/inifileincl.php';
 		global $babDB;
-		
+
 		$ini = new bab_inifile();
-		
+
 		$standard = new bab_AddonStandardLocation($title);
 		if (file_exists($standard->getIniFilePath())) {
 		    $ini->inifile($standard->getIniFilePath());
@@ -70,7 +70,7 @@ class bab_addonsInfos {
 		$arr_ini = $ini->inifile;
 
 		$access_control = isset($arr_ini['addon_access_control']) ? (int) $arr_ini['addon_access_control'] : 1;
-	
+
 		$access = false;
 		if (0 === $access_control || bab_isAccessValid('bab_addons_groups', $id_addon)) {
 			if($ini->getVersion()) {
@@ -92,54 +92,54 @@ class bab_addonsInfos {
 	 * @return boolean
 	 */
 	private function createIndex() {
-		
-	
+
+
 		if (!$this->indexById || !$this->indexByName) {
-		
+
 			global $babDB;
-	
+
 			$res = $babDB->db_query("select * from ".BAB_ADDONS_TBL." where enabled='Y' AND installed='Y'");
 			while( $arr = $babDB->db_fetch_assoc($res)) {
 
 				$arr['access'] = self::isAccessible($arr['id'], $arr['title'], $arr['version'],'Y', 'Y');
 				$name = mb_strtolower($arr['title']);
-					
+
 				$this->indexById[$arr['id']] = $arr;
 				$this->indexByName[$name] 	 = $arr;
 			}
 		}
-		
-		
+
+
 		return !empty($this->indexById);
 	}
-	
-	
-	
+
+
+
 	/**
 	 * Create full index of addons with disabled and not installed addons
 	 * @return boolean
 	 */
 	private function createFullIndex() {
-	
+
 		if (!$this->fullIndexById || !$this->fullIndexByName) {
-		
+
 			global $babDB;
-	
+
 			$res = $babDB->db_query("select * from bab_addons");
 			while( $arr = $babDB->db_fetch_array($res)) {
-			    
+
 			    $name = mb_strtolower($arr['title']);
-					
+
 				$this->fullIndexById[$arr['id']] = $arr;
 				$this->fullIndexByName[$name] 	 = $arr;
 			}
 		}
-		
-		
+
+
 		return !empty($this->fullIndexById);
 	}
-	
-	
+
+
 	private static function getInstance()
 	{
 		return bab_getInstance('bab_addonsInfos');
@@ -153,51 +153,51 @@ class bab_addonsInfos {
 	 * @return array
 	 */
 	public static function getRows() {
-	
+
 		$obj = self::getInstance();
 		$obj->createIndex();
-		
+
 		return $obj->indexById;
 	}
-	
-	
+
+
 	/**
 	 * Get addon row from installed and enabled addons list
 	 * @param	int	$id_addon
 	 * @return	false|array
 	 */
 	public static function getRow($id_addon) {
-		
+
 		$arr = bab_addonsInfos::getDbRows();
-		
+
 		if (!isset($arr[$id_addon])) {
 			return false;
 		}
-		
+
 		if (!self::isAccessible($id_addon, $arr[$id_addon]['title'], $arr[$id_addon]['version'], $arr[$id_addon]['installed'], $arr[$id_addon]['enabled'])) {
 			return false;
 		}
 
 		$arr[$id_addon]['access'] = true;
-		
+
 		return $arr[$id_addon];
 	}
-	
-	
+
+
 	/**
 	 * Get all addons indexed by id
 	 * @return array
 	 */
 	public static function getDbRows() {
-	
+
 		$obj = bab_getInstance('bab_addonsInfos');
 		/*@var $obj bab_addonsInfos */
 		$obj->createFullIndex();
-		
+
 		return $obj->fullIndexById;
 	}
-	
-	
+
+
 	/**
 	 * Get all addons rows indexed by name
 	 * @return array
@@ -205,7 +205,7 @@ class bab_addonsInfos {
 	public static function getDbRowsByName() {
 		$obj = bab_getInstance('bab_addonsInfos');
 		$obj->createFullIndex();
-		
+
 		return $obj->fullIndexByName;
 	}
 
@@ -216,7 +216,7 @@ class bab_addonsInfos {
 	public static function getDbAddonsByName() {
 		$return = array();
 		foreach(self::getDbRows() as $row) {
-			
+
 			$obj = new bab_addonInfos();
 			if (false !== $obj->setAddonName($row['title'], false)) {
 				$return[$row['title']] = $obj;
@@ -226,40 +226,40 @@ class bab_addonsInfos {
 		return $return;
 	}
 
-	
+
 	/**
 	 * Get addon row if exist, from all addons in table
 	 * @param	int	$id_addon
 	 * @return	false|array
 	 */
 	public static function getDbRow($id_addon) {
-	
+
 		$arr = bab_addonsInfos::getDbRows();
-		
+
 		if (!isset($arr[$id_addon])) {
 			return false;
 		}
-		
+
 		return $arr[$id_addon];
 	}
-	
-	
-	
+
+
+
 	/**
 	 * Clear cache for addons
 	 */
 	public static function clear() {
-		
+
 		$obj = bab_getInstance('bab_addonsInfos');
-		
+
 		$obj->indexById 		= array();
 		$obj->indexByName 		= array();
 		$obj->fullIndexById 	= array();
 		$obj->fullIndexByName 	= array();
 	}
-	
-	
-	
+
+
+
 	/**
 	 * Get addon id by name (case insensitive)
 	 *
@@ -269,12 +269,12 @@ class bab_addonsInfos {
 	 * @return int|false
 	 */
 	public static function getAddonIdByName($name, $access_rights = true) {
-		
+
 		$obj = bab_getInstance('bab_addonsInfos');
 		$obj->createFullIndex();
-		
+
 		$name = mb_strtolower($name);
-		
+
 		if (!isset($obj->fullIndexByName[$name])) {
 			return false;
 		}
@@ -284,15 +284,15 @@ class bab_addonsInfos {
 		if ($access_rights && !bab_addonsInfos::isAccessible($arr['id'], $arr['title'], $arr['version'], $arr['installed'], $arr['enabled'])) {
 			return false;
 		}
-		
+
 		return (int) $arr['id'];
 	}
-	
-	
-	
-	
-	
-	
+
+
+
+
+
+
 	/**
 	 * Browse addons folder and add missing addons to bab_addons
 	 */
@@ -307,8 +307,8 @@ class bab_addonsInfos {
 		    self::insertAddon($addonName);
 		}
 	}
-	
-	
+
+
 	private static function insertAddon($title)
 	{
 	    global $babDB;
@@ -340,18 +340,18 @@ class bab_addonsInfos {
  * @return boolean
  */
 function bab_isAddonAccessValid($id_addon) {
-	
+
 	$arr = bab_addonsInfos::getRow($id_addon);
-	
+
 	if (!$arr) {
 		// trigger_error(sprintf('No addon id %d',$addonid));
 		return false;
 	}
-	
+
 	if (false === $arr['access']) {
 		return false;
 	}
-	
+
 	return true;
 }
 
@@ -364,27 +364,27 @@ function bab_isAddonAccessValid($id_addon) {
  * @return boolean
  */
 function bab_setAddonGlobals($id_addon) {
-	
+
 	if (null === $id_addon) {
-		
+
 		if (isset($GLOBALS['babAddonFolder'])) unset($GLOBALS['babAddonFolder']);
 		if (isset($GLOBALS['babAddonTarget'])) unset($GLOBALS['babAddonTarget']);
 		if (isset($GLOBALS['babAddonUrl'])) unset($GLOBALS['babAddonUrl']);
 		if (isset($GLOBALS['babAddonPhpPath'])) unset($GLOBALS['babAddonPhpPath']);
 		if (isset($GLOBALS['babAddonHtmlPath'])) unset($GLOBALS['babAddonHtmlPath']);
 		if (isset($GLOBALS['babAddonUpload'])) unset($GLOBALS['babAddonUpload']);
-		
+
 		return true;
 	}
-	
-	$arr = bab_addonsInfos::getDbRow($id_addon); 
-	
+
+	$arr = bab_addonsInfos::getDbRow($id_addon);
+
 	if (!$arr) {
-		
+
 		trigger_error('Failed to load addon row for id:'.$id_addon);
 		return false;
 	}
-	
+
 	$GLOBALS['babAddonFolder'] = $arr['title'];
 	$GLOBALS['babAddonTarget'] = 'addon/'.$id_addon;
 	$GLOBALS['babAddonUrl'] = $GLOBALS['babUrl'].bab_getSelf().'?tg=addon/'.$id_addon.'/';
@@ -397,16 +397,16 @@ function bab_setAddonGlobals($id_addon) {
 	} else {
 
 		// in some cases, babUploadPath is not defined
-		
+
 		global $babDB;
-		
+
 		$req="SELECT uploadpath from ".BAB_SITES_TBL." where name='".$babDB->db_escape_string($GLOBALS['babSiteName'])."'";
 		$res = $babDB->db_query($req);
 		$row = $babDB->db_fetch_assoc($res);
 
 		$GLOBALS['babAddonUpload'] = realpath($row['uploadpath']).'/addons/'.$arr['title'].'/';
 	}
-	
+
 	return true;
 }
 
@@ -415,19 +415,18 @@ function bab_setAddonGlobals($id_addon) {
 
 /**
  * Calls a function defined in init.php for each addon.
- * 
+ *
  * For each addon, the string $func will be prefixed by the addon name and an underscore
  * if this function is defined in the addon's init.php, it will be called with
  * all the additional parameters passed to bab_callAddonsFunction.
- 
+
  * @param	string	$func
  * @return 	array
  */
 function bab_callAddonsFunction($func)
 {
 	$results = array();
-	
-	
+
 	$oldBabAddonFolder = isset($GLOBALS['babAddonFolder'])? $GLOBALS['babAddonFolder']: '';
 	$oldBabAddonTarget = isset($GLOBALS['babAddonTarget'])? $GLOBALS['babAddonTarget']: '';
 	$oldBabAddonUrl =  isset($GLOBALS['babAddonUrl'])? $GLOBALS['babAddonUrl']: '';
@@ -435,49 +434,44 @@ function bab_callAddonsFunction($func)
 	$oldBabAddonHtmlPath =  isset($GLOBALS['babAddonHtmlPath'])? $GLOBALS['babAddonHtmlPath']: '';
 	$oldBabAddonUpload =  isset($GLOBALS['babAddonUpload'])? $GLOBALS['babAddonUpload']: '';
 
-	
 	$addons = bab_addonsInfos::getRows();
-	
-	foreach($addons as $key => $row)
-		{ 
-		if($row['access'])
-			{
-			$addonpath = $GLOBALS['babInstallPath'].'addons/'.$row['title'];
-			if( is_file($addonpath.'/init.php' ))
-				{
+
+	foreach ($addons as $row) {
+		if ($row['access']) {
+			$addon = bab_getAddonInfosInstance($row['title']);
+			$addonpath = $addon->getPhpPath();
+
+			if (is_file($addonpath . 'init.php')) {
 				bab_setAddonGlobals($row['id']);
-				
-				require_once( $addonpath.'/init.php' );
+
+				require_once($addonpath . 'init.php');
 				$call = $row['title'].'_'.$func;
-				if( !empty($call)  && function_exists($call) )
-					{
+				if (!empty($call)  && function_exists($call)) {
 					$args = func_get_args();
 					$call .= '(';
-					for($k=1; $k < sizeof($args); $k++) {
-						
-						if (is_string($args[$k]))
-						{
+					for ($k=1; $k < sizeof($args); $k++) {
+						if (is_string($args[$k])) {
 							$args[$k] = "'".$args[$k]."'";
 						}
-						
 						eval ( "\$call .= \"$args[$k],\";");
 					}
-					
+
 					if (',' === mb_substr($call, -1)) {
 						$call = mb_substr($call, 0, -1);
 					}
 					$call .= ')';
-					
+
+					$retval = null;
 					eval ( "\$retval = $call;");
-					
-						$results[$row['id']] = array(
-							'addon_name' => $row['title'],
-							'return_value' => $retval
-						);
-					}
+
+					$results[$row['id']] = array(
+						'addon_name' => $row['title'],
+						'return_value' => $retval
+					);
 				}
 			}
 		}
+	}
 
 	$GLOBALS['babAddonFolder'] = $oldBabAddonFolder;
 	$GLOBALS['babAddonTarget'] = $oldBabAddonTarget;
@@ -485,8 +479,8 @@ function bab_callAddonsFunction($func)
 	$GLOBALS['babAddonPhpPath'] = $oldBabAddonPhpPath;
 	$GLOBALS['babAddonHtmlPath'] = $oldBabAddonHtmlPath;
 	$GLOBALS['babAddonUpload'] = $oldBabAddonUpload;
-	
-	
+
+
 	return $results;
 }
 
@@ -508,21 +502,21 @@ function bab_callAddonsFunctionArray($func, $args)
 	$oldBabAddonUpload =  isset($GLOBALS['babAddonUpload'])? $GLOBALS['babAddonUpload']: '';
 
 	$addons = bab_addonsInfos::getRows();
-	
+
 	foreach($addons as $key => $row)
-		{ 
-		$addonpath = $GLOBALS['babInstallPath'].'addons/'.$row['title'];
-		if( is_file($addonpath.'/init.php' ))
-			{
+	{
+		$addon = bab_getAddonInfosInstance($row['title']);
+		$addonpath = $addon->getPhpPath();
+
+		if (is_file($addonpath . 'init.php')) {
 			bab_setAddonGlobals($row['id']);
-			require_once( $addonpath.'/init.php' );
+			require_once( $addonpath . 'init.php' );
 			$call = $row['title'].'_'.$func;
-			if( function_exists($call) )
-				{
+			if (function_exists($call)) {
 				$call($args);
-				}
 			}
 		}
+	}
 
 	$GLOBALS['babAddonFolder'] = $oldBabAddonFolder;
 	$GLOBALS['babAddonTarget'] = $oldBabAddonTarget;
@@ -539,14 +533,14 @@ function bab_callAddonsFunctionArray($func, $args)
 /**
  * Path corespondance for addon location "in core"
  * @see bab_AddonInCoreLocation
- * 
+ *
  * @return array
  */
 function bab_getAddonsFilePath() {
-	
-	
+
+
 	return array(
-	
+
 	'loc_in' => array(
 				$GLOBALS['babInstallPath'].'addons',
 				$GLOBALS['babInstallPath'].'lang/addons',
@@ -555,7 +549,7 @@ function bab_getAddonsFilePath() {
 				$GLOBALS['babInstallPath'].'skins/ovidentia/ovml/addons',
 				$GLOBALS['babInstallPath'].'skins/ovidentia/images/addons',
 				'skins'
-				),	
+				),
 
 	'loc_out' => array(
 				"programs",
@@ -576,15 +570,15 @@ function bab_getAddonsFilePath() {
  * Get Addon file path from a TG string
  * return null if the parameter is not a valid tg
  * return false if the addon is not accessible
- * 
+ *
  * @param string $tg
- * 
+ *
  * @return string
  */
 function bab_getAddonFilePathFromTg($tg, $babWebStat = null)
 {
     global $babBody;
-    
+
     $arr = explode("/", $tg);
     if( sizeof($arr) !== 3 || $arr[0] !== "addon")
     {
@@ -609,16 +603,16 @@ function bab_getAddonFilePathFromTg($tg, $babWebStat = null)
         {
             bab_requireAccess('bab_addons_groups', $addon->getId(), bab_translate('You must be logged in to access this page.'));
         }
-        
+
         $babBody->addError(bab_translate('Access denied'));
         return false;
     }
 
     $module = preg_replace("/[^A-Za-z0-9_\-]/", "", $arr[2]);
     bab_setAddonGlobals($addon->getId());
-    
+
     if (isset($babWebStat)) {
-        
+
         $babWebStat->addon($addon->getName());
         $babWebStat->module("/".$module);
     }

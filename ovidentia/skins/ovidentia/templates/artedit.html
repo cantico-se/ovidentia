@@ -26,7 +26,7 @@ function confirm_submit(url)
 	<!--#if altbg --><tr class="BabSiteAdminFontBackground"><!--#else altbg --><tr class="BabForumBackground1"><!--#endif altbg -->
 		<td align="center" width="1%" nowrap>
 			<a title="{ t_modify }" href="{ urlname }"><img valign="absmiddle" src="{ babSkinPath }images/Puces/edit.gif" alt="{ t_modify }" border="0"></a>
-			&nbsp;<a title="{ confirmdelete }" href="{ deleteurl }" onclick="return confirm(this.title);"><img valign="absmiddle" src="{ babSkinPath }images/Puces/del.gif" alt="{ deletetxt }" border="0"></a>
+			&nbsp;<a title="{ confirmdelete }" href="{ deleteurl }" onclick="return bab_postLinkConfirm(this);"><img valign="absmiddle" src="{ babSkinPath }images/Puces/del.gif" alt="{ deletetxt }" border="0"></a>
 			
 		</td>
 		<td>
@@ -40,7 +40,7 @@ function confirm_submit(url)
 		<td>&nbsp;{ status }</td>
 		<td align="center">
 		<!--#if bsubmit -->
-		<a href="#" onclick="confirm_submit('{ bsubmiturl }');return false;" title="{ submittxt }"><img valign="absmiddle" src="{ babSkinPath }images/Puces/submit.gif" alt="{ submittxt }" border="0" /></a>
+		<a href="{ bsubmiturl }" onclick="return bab_postLinkConfirm(this);" title="{ submittxt }"><img valign="absmiddle" src="{ babSkinPath }images/Puces/submit.gif" alt="{ submittxt }" border="0" /></a>
 		<!--#else bsubmit -->&nbsp;
 		<!--#endif bsubmit -->
 		</td>
@@ -114,7 +114,7 @@ function confirm_submit(url)
 	<!--#in getnext -->
 	<tr class="BabSiteAdminFontBackground"> 
 		<td nowrap width="1%">
-			<a title="{ restoretxt }" href="{ restoreurl }"><img valign="absmiddle" src="{ babSkinPath }images/Puces/utrash.gif" alt="{ restoretxt }" border="0"></a>&nbsp;
+			<a onclick="return bab_postLinkConfirm(this);" href="{ restoreurl }"><img valign="absmiddle" src="{ babSkinPath }images/Puces/utrash.gif" alt="{ restoretxt }" border="0"></a>&nbsp;
 		</td>
 		<td><a title="{ previewtxt }" href="{ previewurl }" target="_blank" onclick="bab_popup(this.href);return false;">{ name }</a></td>
 		<td align="center">&nbsp;{ datecreate }</td>
@@ -123,7 +123,7 @@ function confirm_submit(url)
 	<!--#endin getnext -->
 	<tr class="BabSiteAdminTitleFontBackground"> 
 		<td>&nbsp;</td>
-		<td><a class="BabSiteAdminListLink" href="{ urladd }">{ addtxt }</a></td>
+		<td><a class="BabSiteAdminListLink" onclick="return bab_postLinkConfirm(this);" href="{ urladd }">{ addtxt }</a></td>
 		<td colspan="2">&nbsp;</td>
 	</tr>
 	</table>
@@ -143,6 +143,7 @@ window.focus();
 { message }
 <!--#endif message -->
 <form name= "createart" method="post" action="{ babPhpSelf }">
+<input type="hidden" name="babCsrfProtect" value="{ babCsrfProtect }" />
 <input type="hidden" name="tg" value="artedit">
 <input type="hidden" name="idx" value="list">
 <input type="hidden" name="idart" value="{ idart }">
@@ -169,8 +170,8 @@ window.focus();
 	<tr class="BabSiteAdminFontBackground"> 
 		<td  nowrap width="1%">
 			<!--#if bdelete -->
-			<a title="{ restoretxt }" href="{ restoreurl }"><img valign="absmiddle" src="{ babSkinPath }images/Puces/backarrow.gif" alt="{ restoretxt }" border="0"></a>
-			<a title="{ deletetxt }" href="{ deleteurl }"><img valign="absmiddle" src="{ babSkinPath }images/Puces/del.gif" alt="{ deletetxt }" border="0"></a>
+			<a onclick="return bab_postLinkConfirm(this);" href="{ restoreurl }"><img valign="absmiddle" src="{ babSkinPath }images/Puces/backarrow.gif" alt="{ restoretxt }" border="0"></a>
+			<a title="{ deletetxt }" onclick="return bab_postLinkConfirm(this);" href="{ deleteurl }"><img valign="absmiddle" src="{ babSkinPath }images/Puces/del.gif" alt="{ deletetxt }" border="0"></a>
 			<!--#endif bdelete -->
 		</td>
 		<td>
@@ -209,6 +210,7 @@ document.forms[fmname].updstep02.value = cmd;
 //-->
 </script>
 <form name="step02form" method="post" action="{ babPhpSelf }">
+<input type="hidden" name="babCsrfProtect" value="{ babCsrfProtect }" />
 <input type="hidden" name="tg" value="artedit">
 <input type="hidden" name="idx" value="s02">
 <input type="hidden" name="rfurl" value="{ rfurl }">
@@ -281,6 +283,7 @@ document.forms[fmname].updstep02.value = cmd;
 </script>
 
 <form id="step0form" name="step0form" method="post" action="{ babPhpSelf }">
+<input type="hidden" name="babCsrfProtect" value="{ babCsrfProtect }" />
 	 <input type="hidden" name="tg" value="artedit">
 	 <input type="hidden" name="idx" value="choosearticle">
 	 <input type="hidden" name="idart" value="{ idarticle }">

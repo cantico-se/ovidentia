@@ -593,7 +593,7 @@ class bab_RootNode extends bab_Node
 	 *
 	 * Returns the node whose id is given by $id. If no such node exists, returns null.
 	 * @param string $id
-	 * @return bab_Node | null
+	 * @return bab_Node
 	 */
 	public function getNodeById($id)
 	{
@@ -625,7 +625,7 @@ class bab_RootNode extends bab_Node
 	 * @param string $name
 	 * @return array
 	 */
-	public function getIndex($name)
+	public function getRootIndex($name)
 	{
 	    return $this->_index[$name];
 	}

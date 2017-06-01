@@ -30,10 +30,10 @@
  * Archive toolkit container
  */
 class Func_Archive extends bab_functionality {
-	
-	public function getDescription() {
-		return bab_translate('Archive manager');
-	}
+
+    public function getDescription() {
+        return bab_translate('Archive manager');
+    }
 }
 
 
@@ -44,95 +44,95 @@ class Func_Archive extends bab_functionality {
  * Interface required for a zip functionality
  */
 class Func_Archive_Zip extends Func_Archive {
-	
-	/**
-	 * charset of files names added in archive
-	 * @see Func_Archive_Zip::setCharset()
-	 * @var string | null
-	 */
-	protected $charset = null;
-	
 
-	public function getDescription() {
-		return bab_translate('Zip archive manager');
-	}
-
-	/**
-	 * Open file, if the file does not exists it will be overwriten
-	 * @return bool
-	 */
-	public function open($filename) {}
-
-	/**
-	 * @return bool
-	 */
-	public function close() {}
-
-	/**
-	 * Add file to zip
-	 * set charset of files names with the setCharset method, by default, the charset is deducted from the browser OS of the user, aproximatively with the user agent string
-	 * 
-	 * @param	string	$filename		The path to the file to add. 
-	 * @param	string	$localname		File in zip archive, according to ovidentia database charset
-	 * 
-	 */
-	public function addFile($filename, $localname) {}
+    /**
+     * charset of files names added in archive
+     * @see Func_Archive_Zip::setCharset()
+     * @var string | null
+     */
+    protected $charset = null;
 
 
-	/**
-	 * Extract all files of archive to destination
-	 * This function, maintains/forces the directory structure within the ZIP file.
-	 * @param	string	$destination		full path
-	 */
-	public function extractTo($destination) {}
-	
-	
-	/**
-	 * Set charset of new filenames added in archive
-	 * to accept different charset, the iconv function is needed
-	 * @param string | null $charset
-	 * @return Func_Archive_Zip
-	 */
-	public function setCharset($charset)
-	{
-		$this->charset = $charset;
-		return $this;
-	}
-	
-	
-	/**
-	 * Encode filename before adding into zip archive
-	 * 
-	 * @param	string	$filename
-	 * @return string
-	 */
-	protected function encode($filename)
-	{
-		if (function_exists('iconv')) {
-			
-			if (null === $this->charset) 
-			{
-				bab_locale();
-				
-				// T8371
-				// it seem that the IBM437 charset does not allways work for windows users
-				// it can be set manually with setCharset() if required
-				
-				// if ('windows' === bab_browserOS()) {
-				//	  $this->charset = 'IBM437';
-				// } else {
-					$this->charset = 'ASCII';
-				// }
-			}
-			
-			$filename = iconv(bab_charset::getDatabase(), $this->charset.'//TRANSLIT', $filename);
+    public function getDescription() {
+        return bab_translate('Zip archive manager');
+    }
 
-		} else {
-			$filename = bab_removeDiacritics($filename);
-		}
-		
-		return $filename;
-	}
+    /**
+     * Open file, if the file does not exists it will be overwriten
+     * @return bool
+     */
+    public function open($filename) {}
+
+    /**
+     * @return bool
+     */
+    public function close() {}
+
+    /**
+     * Add file to zip
+     * set charset of files names with the setCharset method, by default, the charset is deducted from the browser OS of the user, aproximatively with the user agent string
+     *
+     * @param	string	$filename		The path to the file to add.
+     * @param	string	$localname		File in zip archive, according to ovidentia database charset
+     *
+     */
+    public function addFile($filename, $localname) {}
+
+
+    /**
+     * Extract all files of archive to destination
+     * This function, maintains/forces the directory structure within the ZIP file.
+     * @param	string	$destination		full path
+     */
+    public function extractTo($destination) {}
+
+
+    /**
+     * Set charset of new filenames added in archive
+     * to accept different charset, the iconv function is needed
+     * @param string | null $charset
+     * @return Func_Archive_Zip
+     */
+    public function setCharset($charset)
+    {
+        $this->charset = $charset;
+        return $this;
+    }
+
+
+    /**
+     * Encode filename before adding into zip archive
+     *
+     * @param	string	$filename
+     * @return string
+     */
+    protected function encode($filename)
+    {
+        if (function_exists('iconv')) {
+
+            if (null === $this->charset)
+            {
+                bab_locale();
+
+                // T8371
+                // it seem that the IBM437 charset does not allways work for windows users
+                // it can be set manually with setCharset() if required
+
+                // if ('windows' === bab_browserOS()) {
+                //	  $this->charset = 'IBM437';
+                // } else {
+                    $this->charset = 'ASCII';
+                // }
+            }
+
+            $filename = iconv(bab_charset::getIso(), $this->charset.'//TRANSLIT', $filename);
+
+        } else {
+            $filename = bab_removeDiacritics($filename);
+        }
+
+        return $filename;
+    }
 }
 
 
@@ -141,56 +141,56 @@ class Func_Archive_Zip extends Func_Archive {
 /**
  * zip toolkit based on zlib
  * Slow but compliant
- * 
+ *
  * @depreated Since ovidentia 8.3.90, php 5.3.0 is required so we use Func_Archive_Zip_ZipArchive instead
  */
 class Func_Archive_Zip_Zlib extends Func_Archive_Zip {
 
-	private $zip 			= null;
-	private $filename 		= null;
-	private $add	 		= array();
+    private $zip 			= null;
+    private $filename 		= null;
+    private $add	 		= array();
 
-	public function __construct() {
-		include_once dirname(__FILE__)."/zip.lib.php";
-		$this->zip = new Zip;
-	}
+    public function __construct() {
+        include_once dirname(__FILE__)."/zip.lib.php";
+        $this->zip = new Zip;
+    }
 
-	public function getDescription() {
-		return bab_translate('Zip archive manager with the zlib php extension');
-	}
+    public function getDescription() {
+        return bab_translate('Zip archive manager with the zlib php extension');
+    }
 
-	public function open($filename) {
-		$this->filename = $filename;
-		return true;
-	}
+    public function open($filename) {
+        $this->filename = $filename;
+        return true;
+    }
 
-	/**
-	 * Commit added files
-	 */
-	public function close() {
+    /**
+     * Commit added files
+     */
+    public function close() {
 
-		$result = true;
+        $result = true;
 
-		if ($this->add) {
-			// write files to archive
-			$this->zip->Add($this->add,1);
+        if ($this->add) {
+            // write files to archive
+            $this->zip->Add($this->add,1);
 
-			// record to file
-			$result = file_put_contents($this->filename, $this->zip->get_file());
-		}
+            // record to file
+            $result = file_put_contents($this->filename, $this->zip->get_file());
+        }
 
-		return $result;
-	}
+        return $result;
+    }
 
 
-	public function addFile($filename, $localname) {
-		$this->add[] = array($this->encode($localname), file_get_contents($filename));
-	}
+    public function addFile($filename, $localname) {
+        $this->add[] = array($this->encode($localname), file_get_contents($filename));
+    }
 
-	
-	public function extractTo($destination) {
-		$this->zip->Extract($this->filename, $destination);
-	}
+
+    public function extractTo($destination) {
+        $this->zip->Extract($this->filename, $destination);
+    }
 }
 
 
@@ -206,144 +206,144 @@ class Func_Archive_Zip_Zlib extends Func_Archive_Zip {
  */
 class Func_Archive_Zip_ZipArchive extends Func_Archive_Zip {
 
-	private $zip 				= null;
-	private $opened_filename 	= null;
-	private $add_file_limit 	= 128;
-	
-	public function __construct()
-	{
-		if (class_exists('ZipArchive')) {
-			$this->zip = new ZipArchive;
-		} else {
-			// do not throw here because object can be creted only for getDescription
-			bab_debug(bab_translate('The php zip extension is not available'));
-		}
-	}
+    private $zip 				= null;
+    private $opened_filename 	= null;
+    private $add_file_limit 	= 128;
+
+    public function __construct()
+    {
+        if (class_exists('ZipArchive')) {
+            $this->zip = new ZipArchive;
+        } else {
+            // do not throw here because object can be creted only for getDescription
+            bab_debug(bab_translate('The php zip extension is not available'));
+        }
+    }
 
 
 
-	/**
-	 * @return string
-	 */
-	public function getDescription()
-	{
-		return bab_translate('Zip archive manager with the zip php extension');
-	}
+    /**
+     * @return string
+     */
+    public function getDescription()
+    {
+        return bab_translate('Zip archive manager with the zip php extension');
+    }
 
 
-	
-	/**
-	 * Opens a zip archive file.
-	 * 
-	 * @param string $filename The full pathname of the this archive to open (or create).
-	 * @param string $mode     The optional opening mode ('r' or 'w'), by default it will be 'r' if filename
-	 *                         is the name of a readable file, 'w' otherwise.
-	 *
-	 * @return bool | int      True on success.
-	 */
-	public function open($filename, $mode = null)
-	{
-		if (!isset($this->zip)) {
-		    $message = bab_translate('Trying to open an uninitialized ZipArchive.');
-			throw new Exception($message);
-		}
-		$this->opened_filename = $filename;
-		
-		if (!isset($mode)) {
-			if (is_readable($filename)) {
-				$mode = 'r';
-			} else {
-				$mode = 'w';
-			}
-		}
-		switch ($mode) {
-			case 'r':
-				return $this->zip->open($filename);
-			case 'w':
-				return $this->zip->open($filename, ZIPARCHIVE::OVERWRITE | ZIPARCHIVE::CREATE);
-		}
-	}
+
+    /**
+     * Opens a zip archive file.
+     *
+     * @param string $filename The full pathname of the this archive to open (or create).
+     * @param string $mode     The optional opening mode ('r' or 'w'), by default it will be 'r' if filename
+     *                         is the name of a readable file, 'w' otherwise.
+     *
+     * @return bool | int      True on success.
+     */
+    public function open($filename, $mode = null)
+    {
+        if (!isset($this->zip)) {
+            $message = bab_translate('Trying to open an uninitialized ZipArchive.');
+            throw new Exception($message);
+        }
+        $this->opened_filename = $filename;
+
+        if (!isset($mode)) {
+            if (is_readable($filename)) {
+                $mode = 'r';
+            } else {
+                $mode = 'w';
+            }
+        }
+        switch ($mode) {
+            case 'r':
+                return $this->zip->open($filename);
+            case 'w':
+                return $this->zip->open($filename, ZIPARCHIVE::OVERWRITE | ZIPARCHIVE::CREATE);
+        }
+    }
 
 
-	/**
-	 * Closes and open the zip archive.
-	 * 
-	 * This is needed by addFile() to avoid the following problem:
-	 * " When adding a file to your zip, the file is opened and stays open.
-	 *   When adding over 1024 files (depending on your open files limit)
-	 *   the server stops adding files, resulting in a status 11 in your zip Archive.
-	 *   There is no warning when exceeding this open files limit with addFile."
-	 *  	-- Comment by aartdebruijn at gmail dot com on php.net
-	 * 
-	 * @return bool | int
-	 */
-	private function reopen()
-	{
-		if (null === $this->opened_filename) {
-			return null;
-		}
+    /**
+     * Closes and open the zip archive.
+     *
+     * This is needed by addFile() to avoid the following problem:
+     * " When adding a file to your zip, the file is opened and stays open.
+     *   When adding over 1024 files (depending on your open files limit)
+     *   the server stops adding files, resulting in a status 11 in your zip Archive.
+     *   There is no warning when exceeding this open files limit with addFile."
+     *  	-- Comment by aartdebruijn at gmail dot com on php.net
+     *
+     * @return bool | int
+     */
+    private function reopen()
+    {
+        if (null === $this->opened_filename) {
+            return null;
+        }
 
-		$filename = $this->opened_filename;
+        $filename = $this->opened_filename;
 
-		if ( !$this->close() ) {
+        if ( !$this->close() ) {
             return false;
         }
-		
-		$this->opened_filename = $filename;
-		$this->add_file_limit = 128;
-		return $this->zip->open($filename);
-	}
+
+        $this->opened_filename = $filename;
+        $this->add_file_limit = 128;
+        return $this->zip->open($filename);
+    }
 
 
-	/**
-	 * Commit added files
-	 */
-	public function close()
-	{
-		if (!isset($this->zip)) {
-		    $message = bab_translate('Trying to close an uninitialized ZipArchive.');
-			throw new Exception($message);
-		}
-		$this->opened_filename = null;
-		$this->add_file_limit = 128;
-		return $this->zip->close();
-	}
+    /**
+     * Commit added files
+     */
+    public function close()
+    {
+        if (!isset($this->zip)) {
+            $message = bab_translate('Trying to close an uninitialized ZipArchive.');
+            throw new Exception($message);
+        }
+        $this->opened_filename = null;
+        $this->add_file_limit = 128;
+        return $this->zip->close();
+    }
 
 
-	/**
-	 * Adds the specified file to the archive from a given path. 
-	 * @param string $filename  The full path to the file to add.
-	 * @param string $localname The relative pathname of the file in the archive. 
-	 */
-	public function addFile($filename, $localname)
-	{
-		if (!isset($this->zip)) {
-		    $message = bab_translate('Trying to add a file to an uninitialized ZipArchive.');
-			throw new Exception($message);
-		}
+    /**
+     * Adds the specified file to the archive from a given path.
+     * @param string $filename  The full path to the file to add.
+     * @param string $localname The relative pathname of the file in the archive.
+     */
+    public function addFile($filename, $localname)
+    {
+        if (!isset($this->zip)) {
+            $message = bab_translate('Trying to add a file to an uninitialized ZipArchive.');
+            throw new Exception($message);
+        }
 
-		if ($this->add_file_limit <= 0) {
-			$this->reopen();
-		}
+        if ($this->add_file_limit <= 0) {
+            $this->reopen();
+        }
 
-		$this->zip->addFile($filename, $this->encode($localname));
-		$this->add_file_limit--;
-	}
+        $this->zip->addFile($filename, $this->encode($localname));
+        $this->add_file_limit--;
+    }
 
-	
-	/**
-	 * 
-	 * @param string $destination The full pathanme of the folder where the archive should be extracted.
-	 * 
-	 * @return bool True on success, false on failure.
-	 */
-	public function extractTo($destination)
-	{
-		if (!isset($this->zip)) {
-		    $message = bab_translate('Trying to extract from an uninitialized ZipArchive.');
-			throw new Exception($message);
-		}
-		$result = $this->zip->extractTo($destination);
-		return $result;
-	}
+
+    /**
+     *
+     * @param string $destination The full pathanme of the folder where the archive should be extracted.
+     *
+     * @return bool True on success, false on failure.
+     */
+    public function extractTo($destination)
+    {
+        if (!isset($this->zip)) {
+            $message = bab_translate('Trying to extract from an uninitialized ZipArchive.');
+            throw new Exception($message);
+        }
+        $result = $this->zip->extractTo($destination);
+        return $result;
+    }
 }

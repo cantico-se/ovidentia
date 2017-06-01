@@ -66,8 +66,8 @@ class bab_configTemplate_sectionBabmeta {
  */
 function getGlobalVariable($var)
 {
-	
-	
+
+
 	switch($var)
 	{
 		case 'babCss': return bab_printTemplate(new stdClass, "config.html", "babCss");
@@ -105,6 +105,7 @@ function getGlobalVariable($var)
 		case 'babAddonFolder' : return bab_toHtml($GLOBALS['babAddonFolder']);
 		case 'tg': return bab_toHtml(bab_rp('tg'));
 		case 'idx': if(is_array(bab_rp('idx'))){return '';} return bab_toHtml((string) bab_rp('idx'));
+		case bab_CsrfProtect::FIELDNAME: return bab_toHtml(bab_getInstance('bab_CsrfProtect')->getToken());
 	}
 	return NULL;
 }
@@ -226,7 +227,7 @@ class bab_Template
 
 		for ($sectionStartFound = false; !feof($templateFile); ) {
 			$line = fgets($templateFile, 8192);
-			if (preg_match($sectionStart, $line, $matches)) {
+			if (preg_match($sectionStart, $line)) {
 				$sectionStartFound = true;
 				break;
 			}
@@ -237,7 +238,7 @@ class bab_Template
 		$sectionContent = '';
 		for ($sectionEndFound = false; !feof($templateFile); ) {
 			$line = fgets($templateFile, 8192);
-			if (preg_match($sectionEnd, $line, $matches)) {
+			if (preg_match($sectionEnd, $line)) {
 				$sectionEndFound = true;
 				break;
 			}
@@ -264,11 +265,11 @@ class bab_Template
 		if (!empty($section)) {
 			return $this->_loadSection($pathname, $section);
 		}
-		
+
 		if (!file_exists($pathname)) {
 		    return false;
 		}
-		
+
 		return file_get_contents($pathname);
 	}
 
@@ -342,7 +343,7 @@ class bab_Template
 	 * 								processed.
 	 * @return	string				The processed template or null.
 	 */
-	public function printTemplate(&$template, $filename, $section = '')
+	public function printTemplate(&$template = null, $filename = '', $section = '')
 	{
 		bab_Template::resetErrors($template);
 		$this->_parsedTemplate = bab_TemplateCache::get($filename, $section);
@@ -358,6 +359,7 @@ class bab_Template
 		ob_start();
 		if (eval('?>' . $this->_parsedTemplate) === false) {
 			$errorMessage = ob_get_contents();
+			$matches = null;
 			$lineNumber = preg_match('/line ([0-9]+)$/', strip_tags($errorMessage), $matches) ? $matches[1] : -1;
 			bab_Template::addError($template, $errorMessage, $lineNumber);
 			$processedTemplate = '';
@@ -605,6 +607,7 @@ class bab_Template
 	 */
 	public static function getTemplates($pathname)
 	{
+	    $m = null;
 		if (preg_match_all('/<\!--#begin\s+(.*?)\s+-->/', file_get_contents($pathname), $m)) {
 			return $m[1];
 		}

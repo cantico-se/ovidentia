@@ -22,8 +22,8 @@
  * @copyright Copyright (c) 2008 by CANTICO ({@link http://www.cantico.fr})
  */
 include_once 'base.php';
-require_once dirname(__FILE__).'/utilit/registerglobals.php';
-include_once $babInstallPath.'utilit/orgincl.php';
+
+include_once $GLOBALS['babInstallPath'].'utilit/orgincl.php';
 
 
 
@@ -483,14 +483,21 @@ function updateOrgChartPrimaryRoleUser($ocid, $oeid, $iduser, $prole)
 
 /* main */
 $babLittleBody = new babLittleBody();
-$babLittleBody->frrefresh = isset($rf)?$rf: false;
+$babLittleBody->frrefresh = bab_rp('rf', false);
 $access = false;
 $update = false;
+
+$ocid = bab_rp('ocid');
+$updr = bab_rp('updr', null);
+$oeid = bab_rp('oeid');
+$idx = bab_rp('idx', "listr");
+$iduser = bab_rp('iduser', 0);
+$prole = bab_rp('prole');
 
 if( bab_isAccessValid(BAB_OCUPDATE_GROUPS_TBL, $ocid))
 {
 	$ocinfo = $babDB->db_fetch_array($babDB->db_query("select * from ".BAB_ORG_CHARTS_TBL." where id='".$ocid."'"));
-	if( $ocinfo['edit'] == 'Y' && $ocinfo['edit_author'] == $BAB_SESS_USERID)
+	if( $ocinfo['edit'] == 'Y' && $ocinfo['edit_author'] == bab_getUserId())
 	{
 		$update = true;
 	}
@@ -515,15 +522,12 @@ $oeinfo = $babDB->db_fetch_array($babDB->db_query("select * from ".BAB_OC_ENTITI
 chart_session_oeid($ocid);
 }
 
-if( !isset($idx) || empty($idx)) { $idx = "listr"; }
 
 if( isset($updr) && $updr == "updr" && $update)
 {
 	updateOrgChartPrimaryRoleUser($ocid, $oeid, $iduser, $prole);
 }
 
-if (!isset($iduser))
-	$iduser = 0;
 
 switch($idx)
 	{

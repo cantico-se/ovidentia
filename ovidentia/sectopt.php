@@ -25,7 +25,7 @@
 * @internal SEC1 NA 18/12/2006 FULL
 */
 include_once 'base.php';
-require_once dirname(__FILE__).'/utilit/registerglobals.php';
+
 
 function sectionsList()
 {
@@ -218,7 +218,7 @@ if( '' != ($update = bab_pp('update')))
 	if( $update == 'enable')
 		{
 		$sections = bab_pp('sections', array());
-		enableOptionalSections($sections);
+		bab_requireSaveMethod() && enableOptionalSections($sections);
 		}
 	}
 

@@ -60,6 +60,7 @@ function updateEditor()
 </p>
 <!--#else noarticles -->
 <form method="post" name="editorarticle" action="{ babPhpSelf }">
+<input type="hidden" name="babCsrfProtect" value="{ babCsrfProtect }" />
 
 <ul id="bab_editor_functions">
 	<!--#in getnextarticle -->

@@ -1,26 +1,26 @@
-<!--#begin siteslist --> 
+<!--#begin siteslist -->
 <table  width="95%" border="0" cellspacing="0" cellpadding="2" align="center">
-<tr> 
-	<td class="BabLoginCadreBackground" > 
+<tr>
+    <td class="BabLoginCadreBackground" >
       <table width="100%" border="0" cellspacing="0" cellpadding="2" align="center">
-        <tr class="BabSiteAdminTitleFontBackground"> 
-			<td>{ name }</td>
-			<td>{ lang }</td>
-			<td>{ email }</td>
-			<td>{ description }</td>
-			<td>{ homepages }</td>
-		</tr>
-		<!--#in getnext -->
-		<tr class="BabSiteAdminFontBackground"> 
-			<td><a class="BabSiteAdminListLink" href="{ url }">{ urlname }</a></td>
-			<td>&nbsp;{ arr[lang] }</td>
+        <tr class="BabSiteAdminTitleFontBackground">
+            <td>{ name }</td>
+            <td>{ lang }</td>
+            <td>{ email }</td>
+            <td>{ description }</td>
+            <td>{ homepages }</td>
+        </tr>
+        <!--#in getnext -->
+        <tr class="BabSiteAdminFontBackground">
+            <td><a class="BabSiteAdminListLink" href="{ url }">{ urlname }</a></td>
+            <td>&nbsp;{ arr[lang] }</td>
           <td>&nbsp;{ arr[adminemail] }</td>
           <td>&nbsp;{ arr[description] }</td>
           <td>&nbsp;<a class="BabSiteAdminListLink" href="{ hmanagementurl }">{ hmanagement }</a></td>
-		</tr>
-		<!--#endin getnext -->
-	</table>
-	</td>
+        </tr>
+        <!--#endin getnext -->
+    </table>
+    </td>
 </tr>
 </table>
 <!--#end siteslist -->
@@ -28,25 +28,25 @@
 
 <!--#begin menu -->
 <table  width="50%" border="0" cellspacing="0" cellpadding="2" align="center">
-<tr> 
-<td class="BabLoginCadreBackground" align="center" valign="middle"> 
-	<table class="BabLoginMenuBackground" width="100%" border="0" cellspacing="0" cellpadding="5">
-		
-		<tr>
-			<td>{ arr[description] }<br /><br /></td>
-		</tr>
-		
-		<!--#in getnext -->
-		<tr onmouseover="this.className='BabMenuActiveBackground'" onmouseout="this.className=''"> 
-			<td align="center"> 
-				<a href="{ babUrlScript }?tg=site&idx=menu{ page }&item={ arr[id] }">{ text }</a>
-			</td>
-		</tr>
-		<!--#endin getnext -->
-		<tr>
-			<td align="center"><br /><br /><input type="button" value="{ t_delete }" onclick="document.location.href='{ babUrlScript }?tg=site&idx=Delete&item={ arr[id] }'" /></td>
-		</tr>
-	</table>
+<tr>
+<td class="BabLoginCadreBackground" align="center" valign="middle">
+    <table class="BabLoginMenuBackground" width="100%" border="0" cellspacing="0" cellpadding="5">
+
+        <tr>
+            <td>{ arr[description] }<br /><br /></td>
+        </tr>
+
+        <!--#in getnext -->
+        <tr onmouseover="this.className='BabMenuActiveBackground'" onmouseout="this.className=''">
+            <td align="center">
+                <a href="{ babUrlScript }?tg=site&idx=menu{ page }&item={ arr[id] }">{ text }</a>
+            </td>
+        </tr>
+        <!--#endin getnext -->
+        <tr>
+            <td align="center"><br /><br /><input type="button" value="{ t_delete }" onclick="document.location.href='{ babUrlScript }?tg=site&idx=Delete&item={ arr[id] }'" /></td>
+        </tr>
+    </table>
 </td>
 </tr>
 </table>
@@ -65,35 +65,36 @@
 <!--#begin menu1 -->
 
 <form name="formsite" method="post" action="{ babPhpSelf }">
+<input type="hidden" name="babCsrfProtect" value="{ babCsrfProtect }" />
 <input type="hidden" name="tg" value="site" />
 <input type="hidden" name="idx" value="menusite" />
 <input type="hidden" name="item" value="{ item }" />
 <input type="hidden" name="action" value="menu1" />
 <table width="70%" border="0" cellspacing="0" cellpadding="2" align="center">
-<tr> 
-<td class="BabLoginCadreBackground"> 
+<tr>
+<td class="BabLoginCadreBackground">
         <table width="100%" border="0" cellspacing="0" cellpadding="5" align="center" class="BabLoginMenuBackground">
-          <tr> 
+          <tr>
             <td>{ name }</td>
-            <td> 
+            <td>
               <input type="text" name="name" size="30" maxlength="255" value="{ arr[name] }" />
-				</td>
-			</tr>
-          <tr> 
+                </td>
+            </tr>
+          <tr>
             <td>{ description }</td>
-            <td> 
+            <td>
               <input type="text" name="description" size="30" maxlength="255" value="{ arr[description] }" />
-			</td>
-		</tr>
-		<tr>
-			<td>{ babslogan_title }</td>
-            <td> 
-				<input type="text" name="babslogan" size="30" maxlength="255" value="{ arr[babslogan] }" />
-			</td>
-		</tr>
-          <tr> 
+            </td>
+        </tr>
+        <tr>
+            <td>{ babslogan_title }</td>
+            <td>
+                <input type="text" name="babslogan" size="30" maxlength="255" value="{ arr[babslogan] }" />
+            </td>
+        </tr>
+          <tr>
             <td>{ lang }</td>
-            <td> 
+            <td>
               <select name="lang">
                   <option value="">{ t_lang_default }</option>
                   <!--#in getnextlang -->
@@ -102,28 +103,28 @@
                 </select>
 </td>
 </tr>
-          <tr> 
+          <tr>
             <td>{ langfiltertxt }</td>
-            <td> 
-			<select name="langfilter">
-			<!--#in getnextlangfilter -->
-			<option value="{ langfilterval }" <!--#if langfilterselected --> selected="selected" <!--#endif langfilterselected --> >{ langfilterval }</option>
-			<!--#endin getnextlangfilter -->
-			</select>
+            <td>
+            <select name="langfilter">
+            <!--#in getnextlangfilter -->
+            <option value="{ langfilterval }" <!--#if langfilterselected --> selected="selected" <!--#endif langfilterselected --> >{ langfilterval }</option>
+            <!--#endin getnextlangfilter -->
+            </select>
 </td>
 </tr>
 
-		<!--#if skinerror -->
-		<tr>
-			<td colspan="2">
-				{ skinerror }
-			</td>
-		</tr>
-		<!--#endif skinerror -->
+        <!--#if skinerror -->
+        <tr>
+            <td colspan="2">
+                { skinerror }
+            </td>
+        </tr>
+        <!--#endif skinerror -->
 
-          <tr> 
+          <tr>
             <td>{ skin }</td>
-            <td> 
+            <td>
               <select name="skin" onChange="mm(document.forms.formsite.skin.selectedIndex)">
                   <!--#in getnextskin -->
                   <option value="{ skinval }" <!--#if skinselected --> selected="selected" <!--#endif skinselected --> >{ skinval }</option>
@@ -132,11 +133,11 @@
                 <select name="style">
                 </select>
             </td>
-		</tr>
-		
-		<tr> 
+        </tr>
+
+        <tr>
             <td>{ sitemap }</td>
-            <td> 
+            <td>
               <select name="sitemap">
                   <!--#in getnextsitemap -->
                   <option value="{ uid }" <!--#if selected --> selected="selected" <!--#endif selected --> >{ name }</option>
@@ -145,99 +146,99 @@
                 <img src="{ babInstallPath }skins/ovidentia/images/Puces/help.png" alt="" onmouseout="bab_showOnMouse('oSiteMapInfo', 0)" onmouseover="bab_showOnMouse('oSiteMapInfo', 1)" />
                 <div style="font-family: Arial, sans-serif; font-size:11px; border:#71BF44 2px solid; background-color:#FFFBCB; padding:0px; position:absolute; text-align:left; visibility:hidden; width:200px; z-index:100; max-height:300px; overflow:hidden;" id="oSiteMapInfo">{ sSiteMapInfo }</div>
             </td>
-		</tr>
-		
-		<tr> 
+        </tr>
+
+        <tr>
             <td>{ siteemail }</td>
-            <td> 
+            <td>
               <input type="text" name="siteemail" size="30" maxlength="254" value="{ arr[adminemail] }" />
-			</td>
-		</tr>
-          <tr> 
+            </td>
+        </tr>
+          <tr>
             <td>{ adminnametxt }</td>
-            <td> 
+            <td>
               <input type="text" name="adminname" size="30" maxlength="254" value="{ arr[adminname] }" />
-			  </td>
-			</tr>
+              </td>
+            </tr>
 
-          <tr> 
+          <tr>
             <td>{ maxemailtxt }</td>
-            <td> 
+            <td>
               <input type="text" name="maxemail" size="3" maxlength="3" value="{ arr[mail_maxperpacket] }" />
-			  </td>
-			</tr>
+              </td>
+            </tr>
 
-          <tr> 
+          <tr>
             <td>{ mailfieldaddresstxt }</td>
-            <td> 
+            <td>
               <select name="mfa">
                   <option value="Bcc" { bccselected }>BCC</option>
                   <option value="Cc" { ccselected }>CC</option>
                   <option value="To" { toselected }>TO</option>
                 </select>
-			  </td>
-			</tr>
+              </td>
+            </tr>
 
-          <tr> 
+          <tr>
             <td>{ proposemassmailingtxt }</td>
-           <td> 
+           <td>
               <select name="mass_mailing">
-				<!--#if arr[mass_mailing] "== Y" -->
+                <!--#if arr[mass_mailing] "== Y" -->
                   <option value="Y" selected="selected">{ yes }</option>
                   <option value="N">{ no }</option>
-				 <!--#else arr[mass_mailing] -->
-				  <option value="Y">{ yes }</option>
+                 <!--#else arr[mass_mailing] -->
+                  <option value="Y">{ yes }</option>
                   <option value="N" selected="selected">{ no }</option>
-				<!--#endif arr[mass_mailing] -->
+                <!--#endif arr[mass_mailing] -->
                 </select>
             </td>
-			</tr>
+            </tr>
 
-		  <tr> 
+          <tr>
             <td>{ stattxt }</td>
-            <td> 
+            <td>
               <select name="statlog">
-				<!--#if arr[stat_log] "== Y" -->
+                <!--#if arr[stat_log] "== Y" -->
                   <option value="Y" selected="selected">{ yes }</option>
                   <option value="N">{ no }</option>
-				 <!--#else arr[stat_log] -->
-				  <option value="Y">{ yes }</option>
+                 <!--#else arr[stat_log] -->
+                  <option value="Y">{ yes }</option>
                   <option value="N" selected="selected">{ no }</option>
-				<!--#endif arr[stat_log] -->
+                <!--#endif arr[stat_log] -->
                 </select>
             </td>
-		</tr>
-		<tr> 
+        </tr>
+        <tr>
             <td>{ name_order_title }</td>
-            <td> 
-				<select name="name_order">
-				<!--#if arr[name_order] "== F L" -->
-				<option value="F L" selected="selected">{ firstlast }</option>
-				<option value="L F">{ lastfirst }</option>
-				<!--#else arr[name_order] -->
-				<option value="F L">{ firstlast }</option>
-				<option value="L F" selected="selected">{ lastfirst }</option>
-				<!--#endif arr[name_order] -->
-				</select>
-			</td>
-		</tr>
-		
-		<tr> 
+            <td>
+                <select name="name_order">
+                <!--#if arr[name_order] "== F L" -->
+                <option value="F L" selected="selected">{ firstlast }</option>
+                <option value="L F">{ lastfirst }</option>
+                <!--#else arr[name_order] -->
+                <option value="F L">{ firstlast }</option>
+                <option value="L F" selected="selected">{ lastfirst }</option>
+                <!--#endif arr[name_order] -->
+                </select>
+            </td>
+        </tr>
+
+        <tr>
             <td>{ staticurl_title }</td>
-            <td> 
-				<input type="text" name="staticurl" size="30" maxlength="255" value="{ arr[staticurl] }" />
-			</td>
-		</tr>
-		
-		
-		<tr>
-			<td colspan="2" align="center"><br />
-			<input type="submit" name="Submit" value="{ t_record }" />
-			</td>
-		</tr>
-	</table>
-	</td>
-	</tr>
+            <td>
+                <input type="text" name="staticurl" size="30" maxlength="255" value="{ arr[staticurl] }" />
+            </td>
+        </tr>
+
+
+        <tr>
+            <td colspan="2" align="center"><br />
+            <input type="submit" name="Submit" value="{ t_record }" />
+            </td>
+        </tr>
+    </table>
+    </td>
+    </tr>
 </table>
 </form>
 <script type="text/javascript">
@@ -254,19 +255,19 @@ var stsel = { stselectedindex };
 
 function mm(index)
 {
-	for (i = document.forms.formsite.style.length; i >= 0; i--) {
-		document.forms.formsite.style.options[i] = null; 
-	}
-	if (tab[index]) {
-		for (var i = 0; i < tab[index].length; i++)
-		{
-		document.forms.formsite.style.options[i] = new Option(tab[index][i],tab[index][i]);
-		}
-		if( index == sksel )
-		{
-			document.forms.formsite.style.options[stsel].selected = true;
-		}
-	}
+    for (i = document.forms.formsite.style.length; i >= 0; i--) {
+        document.forms.formsite.style.options[i] = null;
+    }
+    if (tab[index]) {
+        for (var i = 0; i < tab[index].length; i++)
+        {
+        document.forms.formsite.style.options[i] = new Option(tab[index][i],tab[index][i]);
+        }
+        if( index == sksel )
+        {
+            document.forms.formsite.style.options[stsel].selected = true;
+        }
+    }
 }
 mm(sksel);
 //-->
@@ -277,279 +278,290 @@ mm(sksel);
 
 <!--#begin menu2 -->
 <script type="text/javascript">
-	<!--
-	
-	function validateNum(field) {
-		var valid = "0123456789"
-		var temp;
-		for (var i=0; i<field.value.length; i++) {
-			temp = "" + field.value.substring(i, i+1);
-			if (valid.indexOf(temp) == "-1") {
-				field.value = field.value.substring(0, i)+field.value.substring(i+1,field.value.length);
-			}
-		}
-	}
-	
-	/* Hide or display smtp functions */
-	function ovidentia_hidesmtpfunctions(select) {
-		var selection = select.options.selectedIndex;
-		switch(select.options[selection].value) {
-			case 'mail':
-				document.getElementById('ovidentia_smtpfunctions').style.display = 'none';
-				break;
-			case 'smtp':
-				document.getElementById('ovidentia_smtpfunctions').style.display = 'block';
-				break;
-			case 'sendmail':
-				document.getElementById('ovidentia_smtpfunctions').style.display = 'none';
-				break;
-			case '':
-				document.getElementById('ovidentia_smtpfunctions').style.display = 'none';
-				break;
-		}
-	}
-	
-	// -->
+    <!--
+
+    function validateNum(field) {
+        var valid = "0123456789"
+        var temp;
+        for (var i=0; i<field.value.length; i++) {
+            temp = "" + field.value.substring(i, i+1);
+            if (valid.indexOf(temp) == "-1") {
+                field.value = field.value.substring(0, i)+field.value.substring(i+1,field.value.length);
+            }
+        }
+    }
+
+    /* Hide or display smtp functions */
+    function ovidentia_hidesmtpfunctions(select) {
+        var selection = select.options.selectedIndex;
+        switch(select.options[selection].value) {
+            case 'mail':
+                document.getElementById('ovidentia_smtpfunctions').style.display = 'none';
+                break;
+            case 'smtp':
+                document.getElementById('ovidentia_smtpfunctions').style.display = 'block';
+                break;
+            case 'sendmail':
+                document.getElementById('ovidentia_smtpfunctions').style.display = 'none';
+                break;
+            case '':
+                document.getElementById('ovidentia_smtpfunctions').style.display = 'none';
+                break;
+        }
+    }
+
+    // -->
 </script>
 
 <form name="formsite" method="post" action="{ babPhpSelf }">
-	<input type="hidden" name="tg" value="site" />
-	<input type="hidden" name="idx" value="menusite" />
-	<input type="hidden" name="item" value="{ item }" />
-	<input type="hidden" name="action" value="menu2" />
-	<table width="70%" border="0" cellspacing="0" cellpadding="2" align="center">
-	<tr> 
-		<td class="BabLoginCadreBackground"> 
-	        <table width="100%" border="0" cellspacing="0" cellpadding="4" align="center" class="BabLoginMenuBackground">
-	          <tr> 
-	            <td width="50%">{ mailfunction }</td>
-	            <td width="50%"> 
-	              <select name="mailfunc" onchange="ovidentia_hidesmtpfunctions(this);" onkeyup="ovidentia_hidesmtpfunctions(this);" id="ovidentia_smtpfunctionsselect">
-					  <option value="">{ disabled }</option>
-	                  <option value="mail" <!--#if arr[mailfunc] "== mail" --> selected="selected"<!--#endif arr[mailfunc] --> >{ mail }</option>
-	                  <option value="smtp" <!--#if arr[mailfunc] "== smtp" --> selected="selected"<!--#endif arr[mailfunc] --> >{ smtp }</option>
-	                  <option value="sendmail" <!--#if arr[mailfunc] "== sendmail" --> selected="selected"<!--#endif arr[mailfunc] --> >{ sendmail }</option>
-	                </select>
-	            </td>
-			  </tr>
-			  <tr>
-			  	<td colspan="2">
-			  		<table width="100%" border="0" cellspacing="0" cellpadding="4" id="ovidentia_smtpfunctions">
-				          <tr> 
-				            <td width="50%">{ server }</td>
-				            <td width="50%"> 
-				              <input type="text" name="smtpserver" size="30" maxlength="254" value="{ arr[smtpserver] }" />
-							</td>
-							</tr>
-				          <tr> 
-				            <td>{ serverport }</td>
-				            <td> 
-				              <input type="text" name="smtpport" size="5" maxlength="10" value="{ arr[smtpport] }" onKeyUp="validateNum(this)" />
-							</td>
-							</tr>
-                          <tr> 
-				            <td>{ security }</td>
-				            <td> 
-				              <select name="smtpsecurity">
-				              	 <option value="" <!--#if arr[smtpsecurity] "== " -->selected="selected"<!--#endif arr[smtpsecurity] -->>{ security_none }</option>
-				              	 <option value="ssl" <!--#if arr[smtpsecurity] "== ssl" -->selected="selected"<!--#endif arr[smtpsecurity] --> <!--#if ssl_disabled -->disabled="disabled"<!--#endif ssl_disabled -->>{ security_ssl }</option>
-				              	 <option value="tls" <!--#if arr[smtpsecurity] "== tls" -->selected="selected"<!--#endif arr[smtpsecurity] --> <!--#if tls_disabled -->disabled="disabled"<!--#endif tls_disabled -->>{ security_tls }</option>
-				              </select>
-							</td>
-							</tr>
-				          <tr> 
-				            <td>{ smtpuser }</td>
-				            <td> 
-				              <input type="text" name="smtpuser" size="30" maxlength="255" value="{ arr[smtpuser] }" />
-							</td>
-							</tr>
-				          <tr> 
-				            <td>{ smtppass }</td>
-				            <td> 
-				              <input type="password" name="smtppass" size="30" maxlength="256" value="{ arr[smtppass] }" />
-							</td>
-							</tr>
-				          <tr> 
-				            <td>{ smtppass2 }</td>
-				            <td> 
-				              <input type="password" name="smtppass2" size="30" maxlength="256" value="{ arr[smtppass] }" />
-						    </td>
-						  </tr>
-					</table>
-				</td>
-	          <tr> 
-	            <td colspan="2" align="center"><br />
-	            	<!--#if mailspooler -->
-	            	<a href="{ babUrlScript }?tg=addon/mailspooler/mailspool">{ t_mailspool }</a><br /><br />
-	            	<!--#endif mailspooler -->
-	            </td>
-			  </tr>
-			  <tr>
-	          	<td colspan="2">
-	          		<img src="{ babSkinPath }/images/Puces/PuceSectionContrib.gif" alt="" title="" /> <b>{ thelp }</b><br />
-	          		- { thelp2 }<br />
-	          		- { thelp3 }<br />
-	          		- { thelp4 }<br />
-	          		- { thelp5 }
-	          	</td>
-	          </tr>
-	          <tr> 
-	            <td>&nbsp;</td>
-	            <td> <br />
-	              <input type="submit" name="Submit" value="{ t_record }" />
-				<br />
-				</td>
-			</tr>
-		</table>
-			</td>
-		</tr>
-	</table>
+<input type="hidden" name="babCsrfProtect" value="{ babCsrfProtect }" />
+    <input type="hidden" name="tg" value="site" />
+    <input type="hidden" name="idx" value="menusite" />
+    <input type="hidden" name="item" value="{ item }" />
+    <input type="hidden" name="action" value="menu2" />
+    <table width="70%" border="0" cellspacing="0" cellpadding="2" align="center">
+    <tr>
+        <td class="BabLoginCadreBackground">
+            <table width="100%" border="0" cellspacing="0" cellpadding="4" align="center" class="BabLoginMenuBackground">
+              <tr>
+                <td width="50%">{ mailfunction }</td>
+                <td width="50%">
+                  <select name="mailfunc" onchange="ovidentia_hidesmtpfunctions(this);" onkeyup="ovidentia_hidesmtpfunctions(this);" id="ovidentia_smtpfunctionsselect">
+                      <option value="">{ disabled }</option>
+                      <option value="mail" <!--#if arr[mailfunc] "== mail" --> selected="selected"<!--#endif arr[mailfunc] --> >{ mail }</option>
+                      <option value="smtp" <!--#if arr[mailfunc] "== smtp" --> selected="selected"<!--#endif arr[mailfunc] --> >{ smtp }</option>
+                      <option value="sendmail" <!--#if arr[mailfunc] "== sendmail" --> selected="selected"<!--#endif arr[mailfunc] --> >{ sendmail }</option>
+                    </select>
+                </td>
+              </tr>
+              <tr>
+                  <td colspan="2">
+                      <table width="100%" border="0" cellspacing="0" cellpadding="4" id="ovidentia_smtpfunctions">
+                          <tr>
+                            <td width="50%">{ server }</td>
+                            <td width="50%">
+                              <input type="text" name="smtpserver" size="30" maxlength="254" value="{ arr[smtpserver] }" />
+                            </td>
+                            </tr>
+                          <tr>
+                            <td>{ serverport }</td>
+                            <td>
+                              <input type="text" name="smtpport" size="5" maxlength="10" value="{ arr[smtpport] }" onKeyUp="validateNum(this)" />
+                            </td>
+                            </tr>
+                          <tr>
+                            <td>{ security }</td>
+                            <td>
+                              <select name="smtpsecurity">
+                                   <option value="" <!--#if arr[smtpsecurity] "== " -->selected="selected"<!--#endif arr[smtpsecurity] -->>{ security_none }</option>
+                                   <option value="ssl" <!--#if arr[smtpsecurity] "== ssl" -->selected="selected"<!--#endif arr[smtpsecurity] --> <!--#if ssl_disabled -->disabled="disabled"<!--#endif ssl_disabled -->>{ security_ssl }</option>
+                                   <option value="tls" <!--#if arr[smtpsecurity] "== tls" -->selected="selected"<!--#endif arr[smtpsecurity] --> <!--#if tls_disabled -->disabled="disabled"<!--#endif tls_disabled -->>{ security_tls }</option>
+                              </select>
+                            </td>
+                            </tr>
+                          <tr>
+                            <td>{ validation }</td>
+                            <td>
+                              <select name="smtpnovalidation">
+                                 <option value="0" <!--#if arr[smtpnovalidation] "== 0" -->selected="selected"<!--#endif arr[smtpnovalidation] -->>{ certificate_validation }</option>
+                                 <option value="1" <!--#if arr[smtpnovalidation] "== 1" -->selected="selected"<!--#endif arr[smtpnovalidation] -->>{ no_certificate_validation }</option>
+                              </select>
+                            </td>
+                            </tr>
+                          <tr>
+                            <td>{ smtpuser }</td>
+                            <td>
+                              <input type="text" name="smtpuser" size="30" maxlength="255" value="{ arr[smtpuser] }" />
+                            </td>
+                            </tr>
+                          <tr>
+                            <td>{ smtppass }</td>
+                            <td>
+                              <input type="password" name="smtppass" size="30" maxlength="256" value="{ arr[smtppass] }" />
+                            </td>
+                            </tr>
+                          <tr>
+                            <td>{ smtppass2 }</td>
+                            <td>
+                              <input type="password" name="smtppass2" size="30" maxlength="256" value="{ arr[smtppass] }" />
+                            </td>
+                          </tr>
+                    </table>
+                </td>
+              <tr>
+                <td colspan="2" align="center"><br />
+                    <!--#if mailspooler -->
+                    <a href="{ babUrlScript }?tg=addon/mailspooler/mailspool">{ t_mailspool }</a><br /><br />
+                    <!--#endif mailspooler -->
+                </td>
+              </tr>
+              <tr>
+                  <td colspan="2">
+                      <img src="{ babSkinPath }/images/Puces/PuceSectionContrib.gif" alt="" title="" /> <b>{ thelp }</b><br />
+                      - { thelp2 }<br />
+                      - { thelp3 }<br />
+                      - { thelp4 }<br />
+                      - { thelp5 }
+                  </td>
+              </tr>
+              <tr>
+                <td>&nbsp;</td>
+                <td> <br />
+                  <input type="submit" name="Submit" value="{ t_record }" />
+                <br />
+                </td>
+            </tr>
+        </table>
+            </td>
+        </tr>
+    </table>
 </form>
 
 <script type="text/javascript">
-	<!--
-	
-	/* Hide smtp functions when onload page */
-	ovidentia_hidesmtpfunctions(document.getElementById('ovidentia_smtpfunctionsselect'));
-	
-	// -->
+    <!--
+
+    /* Hide smtp functions when onload page */
+    ovidentia_hidesmtpfunctions(document.getElementById('ovidentia_smtpfunctionsselect'));
+
+    // -->
 </script>
 <!--#end menu2 -->
 
 
 <!--#begin menu3 -->
 <form name="formsite_bloc2" method="post" action="{ babPhpSelf }">
+<input type="hidden" name="babCsrfProtect" value="{ babCsrfProtect }" />
 <input type="hidden" name="tg" value="site" />
 <input type="hidden" name="idx" value="menusite" />
 <input type="hidden" name="action" value="menu3" />
 <input type="hidden" name="item" value="{ item }" />
 
 <table width="70%" border="0" cellspacing="0" cellpadding="2" align="center">
-<tr> 
-<td class="BabLoginCadreBackground"> 
+<tr>
+<td class="BabLoginCadreBackground">
         <table width="100%" border="0" cellspacing="0" cellpadding="4" align="center" class="BabLoginMenuBackground">
 
-		<tr>
-			<td>{ change_nickname_title }</td>
-            <td> 
-				<select name="change_nickname">
-				<!--#if arr[change_nickname] "== Y" -->
-				<option value="Y" selected="selected">{ yes }</option>
-				<option value="N">{ no }</option>
-				<!--#else arr[change_nickname] -->
-				<option value="Y">{ yes }</option>
-				<option value="N" selected="selected">{ no }</option>
-				<!--#endif arr[change_nickname] -->
-				</select>
-			</td>
-		</tr>
-		<tr>
-			<td>{ change_password_title }</td>
-            <td> 
-				<select name="change_password">
-				<!--#if arr[change_password] "== Y" -->
-				<option value="Y" selected="selected">{ yes }</option>
-				<option value="N">{ no }</option>
-				<!--#else arr[change_password] -->
-				<option value="Y">{ yes }</option>
-				<option value="N" selected="selected">{ no }</option>
-				<!--#endif arr[change_password] -->
-				</select>
-			</td>
-		</tr>
-		<tr>
-			<td>{ change_lang_title }</td>
-            <td> 
-				<select name="change_lang">
-				<!--#if arr[change_lang] "== Y" -->
-				<option value="Y" selected="selected">{ yes }</option>
-				<option value="N">{ no }</option>
-				<!--#else arr[change_lang] -->
-				<option value="Y">{ yes }</option>
-				<option value="N" selected="selected">{ no }</option>
-				<!--#endif arr[change_lang] -->
-				</select>
-			</td>
-		</tr>
-		<tr>
-			<td>{ change_skin_title }</td>
-            <td> 
-				<select name="change_skin">
-				<!--#if arr[change_skin] "== Y" -->
-				<option value="Y" selected="selected">{ yes }</option>
-				<option value="N">{ no }</option>
-				<!--#else arr[change_skin] -->
-				<option value="Y">{ yes }</option>
-				<option value="N" selected="selected">{ no }</option>
-				<!--#endif arr[change_skin] -->
-				</select>
-			</td>
-		</tr>
-		<tr>
-			<td>{ change_date_title }</td>
-            <td> 
-				<select name="change_date">
-				<!--#if arr[change_date] "== Y" -->
-				<option value="Y" selected="selected">{ yes }</option>
-				<option value="N">{ no }</option>
-				<!--#else arr[change_date] -->
-				<option value="Y">{ yes }</option>
-				<option value="N" selected="selected">{ no }</option>
-				<!--#endif arr[change_date] -->
-				</select>
-			</td>
-		</tr>
-		<tr>
-			<td>{ change_unavailability_title }</td>
-            <td> 
-				<select name="change_unavailability">
-				<!--#if arr[change_unavailability] "== Y" -->
-				<option value="Y" selected="selected">{ yes }</option>
-				<option value="N">{ no }</option>
-				<!--#else arr[change_unavailability] -->
-				<option value="Y">{ yes }</option>
-				<option value="N" selected="selected">{ no }</option>
-				<!--#endif arr[change_unavailability] -->
-				</select>
-			</td>
-		</tr>
-		<tr>
-			<td>{ user_workdays_title }</td>
-            <td> 
-				<select name="user_workdays">
-				<!--#if arr[user_workdays] "== Y" -->
-				<option value="Y" selected="selected">{ yes }</option>
-				<option value="N">{ no }</option>
-				<!--#else arr[user_workdays] -->
-				<option value="Y">{ yes }</option>
-				<option value="N" selected="selected">{ no }</option>
-				<!--#endif arr[user_workdays] -->
-				</select>
-			</td>
-		</tr>
-		
-		<tr>
-			<td>{ browse_users_title }</td>
-            <td> 
-				<select name="browse_users">
-				<!--#if arr[browse_users] "== Y" -->
-				<option value="Y" selected="selected">{ yes }</option>
-				<option value="N">{ no }</option>
-				<!--#else arr[browse_users] -->
-				<option value="Y">{ yes }</option>
-				<option value="N" selected="selected">{ no }</option>
-				<!--#endif arr[browse_users] -->
-				</select>
-			</td>
-		</tr>
-		 <tr> 
+        <tr>
+            <td>{ change_nickname_title }</td>
+            <td>
+                <select name="change_nickname">
+                <!--#if arr[change_nickname] "== Y" -->
+                <option value="Y" selected="selected">{ yes }</option>
+                <option value="N">{ no }</option>
+                <!--#else arr[change_nickname] -->
+                <option value="Y">{ yes }</option>
+                <option value="N" selected="selected">{ no }</option>
+                <!--#endif arr[change_nickname] -->
+                </select>
+            </td>
+        </tr>
+        <tr>
+            <td>{ change_password_title }</td>
+            <td>
+                <select name="change_password">
+                <!--#if arr[change_password] "== Y" -->
+                <option value="Y" selected="selected">{ yes }</option>
+                <option value="N">{ no }</option>
+                <!--#else arr[change_password] -->
+                <option value="Y">{ yes }</option>
+                <option value="N" selected="selected">{ no }</option>
+                <!--#endif arr[change_password] -->
+                </select>
+            </td>
+        </tr>
+        <tr>
+            <td>{ change_lang_title }</td>
+            <td>
+                <select name="change_lang">
+                <!--#if arr[change_lang] "== Y" -->
+                <option value="Y" selected="selected">{ yes }</option>
+                <option value="N">{ no }</option>
+                <!--#else arr[change_lang] -->
+                <option value="Y">{ yes }</option>
+                <option value="N" selected="selected">{ no }</option>
+                <!--#endif arr[change_lang] -->
+                </select>
+            </td>
+        </tr>
+        <tr>
+            <td>{ change_skin_title }</td>
+            <td>
+                <select name="change_skin">
+                <!--#if arr[change_skin] "== Y" -->
+                <option value="Y" selected="selected">{ yes }</option>
+                <option value="N">{ no }</option>
+                <!--#else arr[change_skin] -->
+                <option value="Y">{ yes }</option>
+                <option value="N" selected="selected">{ no }</option>
+                <!--#endif arr[change_skin] -->
+                </select>
+            </td>
+        </tr>
+        <tr>
+            <td>{ change_date_title }</td>
+            <td>
+                <select name="change_date">
+                <!--#if arr[change_date] "== Y" -->
+                <option value="Y" selected="selected">{ yes }</option>
+                <option value="N">{ no }</option>
+                <!--#else arr[change_date] -->
+                <option value="Y">{ yes }</option>
+                <option value="N" selected="selected">{ no }</option>
+                <!--#endif arr[change_date] -->
+                </select>
+            </td>
+        </tr>
+        <tr>
+            <td>{ change_unavailability_title }</td>
+            <td>
+                <select name="change_unavailability">
+                <!--#if arr[change_unavailability] "== Y" -->
+                <option value="Y" selected="selected">{ yes }</option>
+                <option value="N">{ no }</option>
+                <!--#else arr[change_unavailability] -->
+                <option value="Y">{ yes }</option>
+                <option value="N" selected="selected">{ no }</option>
+                <!--#endif arr[change_unavailability] -->
+                </select>
+            </td>
+        </tr>
+        <tr>
+            <td>{ user_workdays_title }</td>
+            <td>
+                <select name="user_workdays">
+                <!--#if arr[user_workdays] "== Y" -->
+                <option value="Y" selected="selected">{ yes }</option>
+                <option value="N">{ no }</option>
+                <!--#else arr[user_workdays] -->
+                <option value="Y">{ yes }</option>
+                <option value="N" selected="selected">{ no }</option>
+                <!--#endif arr[user_workdays] -->
+                </select>
+            </td>
+        </tr>
+
+        <tr>
+            <td>{ browse_users_title }</td>
+            <td>
+                <select name="browse_users">
+                <!--#if arr[browse_users] "== Y" -->
+                <option value="Y" selected="selected">{ yes }</option>
+                <option value="N">{ no }</option>
+                <!--#else arr[browse_users] -->
+                <option value="Y">{ yes }</option>
+                <option value="N" selected="selected">{ no }</option>
+                <!--#endif arr[browse_users] -->
+                </select>
+            </td>
+        </tr>
+         <tr>
             <td colspan="2" align="center">
             <br />
               <input type="submit" name="Submit" value="{ t_record }" />
-			<br />
-			</td>
-		</tr>
-	</table>
+            <br />
+            </td>
+        </tr>
+    </table>
 </td>
 </tr>
 </table>
@@ -559,93 +571,96 @@ mm(sksel);
 
 <!--#begin menu4 -->
 <script language="javascript">
-function validateNum(field) 
-	{
-	var valid = "0123456789"
-	var temp;
-	for (var i=0; i<field.value.length; i++) {
-		temp = "" + field.value.substring(i, i+1);
-		if (valid.indexOf(temp) == "-1") 
-			field.value = field.value.substring(0, i)+field.value.substring(i+1,field.value.length);
-		}
-	}
+function validateNum(field)
+    {
+    var valid = "0123456789"
+    var temp;
+    for (var i=0; i<field.value.length; i++) {
+        temp = "" + field.value.substring(i, i+1);
+        if (valid.indexOf(temp) == "-1")
+            field.value = field.value.substring(0, i)+field.value.substring(i+1,field.value.length);
+        }
+    }
 </script>
 <form name="formsite_bloc2" method="post" action="{ babPhpSelf }">
+<input type="hidden" name="babCsrfProtect" value="{ babCsrfProtect }" />
 <input type="hidden" name="tg" value="site" />
 <input type="hidden" name="idx" value="menusite" />
 <input type="hidden" name="action" value="menu4" />
 <input type="hidden" name="item" value="{ item }" />
 
 <table width="70%" border="0" cellspacing="0" cellpadding="2" align="center">
-<tr> 
-<td class="BabLoginCadreBackground"> 
+<tr>
+<td class="BabLoginCadreBackground">
         <table width="100%" border="0" cellspacing="0" cellpadding="4" align="center" class="BabLoginMenuBackground">
-		
-		<tr>
-			<td>{ imgsize_title }</td>
-            <td> 
-				<input type="text" name="imgsize" size="30" maxlength="255" value="{ arr[imgsize] }" />
-			</td>
-		</tr>
-		
-		<tr>
-			<td>{ uploadpath_title }</td>
-            <td> 
-				<input type="text" name="uploadpath" size="30" maxlength="255" value="{ arr[uploadpath] }" />
-			</td>
-		</tr>
-		<tr>
-			<td>{ maxfilesize_title }</td>
-            <td> 
-				<input type="text" name="maxfilesize" size="20" maxlength="10" value="{ arr[maxfilesize] }" onKeyUp="validateNum(this)" /> { t_mb }
-			</td>
-		</tr>
-		<tr>
-			<td>{ maxzipsize_title }</td>
-            <td> 
-				<input type="text" name="maxzipsize" size="20" maxlength="10" value="{ arr[maxzipsize] }" onKeyUp="validateNum(this)" /> { t_mb }
-			</td>
-		</tr>
-		<tr>
-			<td colspan="2"><br /><br /><h4>{ t_filemanager } :</h4></td>
-		</tr>
-		<tr>
-			<td>{ folder_diskspace_title }</td>
-            <td> 
-				<input type="text" name="folder_diskspace" size="20" maxlength="10" value="{ arr[folder_diskspace] }" onKeyUp="validateNum(this)" /> { t_mb }
-			</td>
-		</tr>
-		<tr>
-			<td>{ user_diskspace_title }</td>
-            <td> 
-				<input type="text" name="user_diskspace" size="20" maxlength="10" value="{ arr[user_diskspace] }" onKeyUp="validateNum(this)" /> { t_mb }
-			</td>
-		</tr>
-		<tr>
-			<td>{ total_diskspace_title }</td>
-            <td> 
-				<input type="text" name="total_diskspace" size="20" maxlength="10" value="{ arr[total_diskspace] }" onKeyUp="validateNum(this)" /> { t_mb }
-			</td>
-		</tr>
-		<tr>
-			<td>{ notif_quota_total }</td>
-            <td> 
-				<input type="text" name="quota_total" size="20" maxlength="10" value="{ arr[quota_total] }" onKeyUp="validateNum(this)" /> { t_pc }
-			</td>
-		</tr>
-		<tr>
-			<td>{ notif_quota_folder }</td>
-            <td> 
-				<input type="text" name="quota_folder" size="20" maxlength="10" value="{ arr[quota_folder] }" onKeyUp="validateNum(this)" /> { t_pc }
-			</td>
-		</tr>
-		<tr>
-			<td colspan="2" align="center">
-			<br />
-			<input type="submit" name="Submit" value="{ t_record }" />
-			</td>
-		</tr>
-		</table>
+
+        <tr>
+            <td>{ imgsize_title }</td>
+            <td>
+                <input type="text" name="imgsize" size="30" maxlength="255" value="{ arr[imgsize] }" />
+            </td>
+        </tr>
+
+        <tr>
+            <td>{ uploadpath_title }</td>
+            <td>
+                <input type="text" name="uploadpath" size="30" maxlength="255" value="{ arr[uploadpath] }" />
+            </td>
+        </tr>
+
+
+        <tr>
+            <td colspan="2"><br /><br /><h4>{ t_filemanager } :</h4></td>
+        </tr>
+        <tr>
+            <td>{ maxfilesize_title }</td>
+            <td>
+                <input type="text" name="maxfilesize" size="20" maxlength="10" value="{ arr[maxfilesize] }" onKeyUp="validateNum(this)" /> { t_mb }
+            </td>
+        </tr>
+        <tr>
+            <td>{ maxzipsize_title }</td>
+            <td>
+                <input type="text" name="maxzipsize" size="20" maxlength="10" value="{ arr[maxzipsize] }" onKeyUp="validateNum(this)" /> { t_mb }
+            </td>
+        </tr>
+        <tr>
+            <td>{ folder_diskspace_title }</td>
+            <td>
+                <input type="text" name="folder_diskspace" size="20" maxlength="10" value="{ arr[folder_diskspace] }" onKeyUp="validateNum(this)" /> { t_mb }
+            </td>
+        </tr>
+        <tr>
+            <td>{ user_diskspace_title }</td>
+            <td>
+                <input type="text" name="user_diskspace" size="20" maxlength="10" value="{ arr[user_diskspace] }" onKeyUp="validateNum(this)" /> { t_mb }
+            </td>
+        </tr>
+        <tr>
+            <td>{ total_diskspace_title }</td>
+            <td>
+                <input type="text" name="total_diskspace" size="20" maxlength="10" value="{ arr[total_diskspace] }" onKeyUp="validateNum(this)" /> { t_mb }
+            </td>
+        </tr>
+        <tr>
+            <td>{ notif_quota_total }</td>
+            <td>
+                <input type="text" name="quota_total" size="20" maxlength="10" value="{ arr[quota_total] }" onKeyUp="validateNum(this)" /> { t_pc }
+            </td>
+        </tr>
+        <tr>
+            <td>{ notif_quota_folder }</td>
+            <td>
+                <input type="text" name="quota_folder" size="20" maxlength="10" value="{ arr[quota_folder] }" onKeyUp="validateNum(this)" /> { t_pc }
+            </td>
+        </tr>
+        <tr>
+            <td colspan="2" align="center">
+            <br />
+            <input type="submit" name="Submit" value="{ t_record }" />
+            </td>
+        </tr>
+        </table>
 </td>
 </tr>
 </table>
@@ -663,68 +678,69 @@ function validateNum(field)
 function selChange(obj, edit)
 {
 if( obj.value == '' )
-	return;
+    return;
 document.forms.formsite_bloc3[edit].value = obj.value;
 }
 -->
 </script>
 
 <form name="formsite_bloc3" method="post" action="{ babPhpSelf }">
+<input type="hidden" name="babCsrfProtect" value="{ babCsrfProtect }" />
 <input type="hidden" name="tg" value="site" />
 <input type="hidden" name="idx" value="menusite" />
 <input type="hidden" name="item" value="{ item }" />
 <input type="hidden" name="action" value="menu5" />
 
 <table  width="70%" border="0" cellspacing="0" cellpadding="2" align="center">
-<tr> 
-<td class="BabLoginCadreBackground" align="center" valign="middle"> 
-	<table  width="100%" border="0" cellspacing="0" cellpadding="5" align="center" class="BabLoginMenuBackground">
-	<tr> 
-	<td width="30%" align="right" nowrap valign="middle">{ date_lformat_title }:</td>
-	<td width="70%" valign="middle"> 
-		
-		<select name="date_longformat">
-			<option value=""></option>
-			<!--#in getnextlongdate -->
-			<option value="{ dateval }" <!--#if selected --> selected="selected" <!--#endif selected -->>{ datetxt }</option>
-			<!--#endin getnextlongdate -->
-		</select>
-			
-	</td>
-	</tr>
-	<tr> 
-	<td width="30%" align="right" nowrap valign="middle">{ date_sformat_title }:</td>
-	<td width="70%" valign="middle"> 
+<tr>
+<td class="BabLoginCadreBackground" align="center" valign="middle">
+    <table  width="100%" border="0" cellspacing="0" cellpadding="5" align="center" class="BabLoginMenuBackground">
+    <tr>
+    <td width="30%" align="right" nowrap valign="middle">{ date_lformat_title }:</td>
+    <td width="70%" valign="middle">
 
-		<select name="date_shortformat">
-			<option value=""></option>
-			<!--#in getnextshortdate -->
-			<option value="{ dateval }" <!--#if selected --> selected="selected" <!--#endif selected -->>{ datetxt }</option>
-			<!--#endin getnextshortdate -->
-		</select>
+        <select name="date_longformat">
+            <option value=""></option>
+            <!--#in getnextlongdate -->
+            <option value="{ dateval }" <!--#if selected --> selected="selected" <!--#endif selected -->>{ datetxt }</option>
+            <!--#endin getnextlongdate -->
+        </select>
 
-	</td>
-	</tr>
-	<tr> 
-	<td width="30%" align="right" nowrap valign="middle">{ time_format_title }:</td>
-	<td width="70%" valign="middle"> 
+    </td>
+    </tr>
+    <tr>
+    <td width="30%" align="right" nowrap valign="middle">{ date_sformat_title }:</td>
+    <td width="70%" valign="middle">
 
-		<select name="time_format">
-			<option value=""></option>
-			<!--#in getnexttime -->
-			<option value="{ timeval }" <!--#if selected --> selected="selected" <!--#endif selected -->>{ timetxt }</option>
-			<!--#endin getnexttime -->
-		</select>
-		
-	</td>
-	</tr>
-	<tr> 
-	<td colspan="2" align="center"> 
-		<br /><input type="submit" value="{ t_record }" />
-	<br>
-	</td>
-	</tr>
-	</table>
+        <select name="date_shortformat">
+            <option value=""></option>
+            <!--#in getnextshortdate -->
+            <option value="{ dateval }" <!--#if selected --> selected="selected" <!--#endif selected -->>{ datetxt }</option>
+            <!--#endin getnextshortdate -->
+        </select>
+
+    </td>
+    </tr>
+    <tr>
+    <td width="30%" align="right" nowrap valign="middle">{ time_format_title }:</td>
+    <td width="70%" valign="middle">
+
+        <select name="time_format">
+            <option value=""></option>
+            <!--#in getnexttime -->
+            <option value="{ timeval }" <!--#if selected --> selected="selected" <!--#endif selected -->>{ timetxt }</option>
+            <!--#endin getnexttime -->
+        </select>
+
+    </td>
+    </tr>
+    <tr>
+    <td colspan="2" align="center">
+        <br /><input type="submit" value="{ t_record }" />
+    <br>
+    </td>
+    </tr>
+    </table>
 </td>
 </tr>
 </table>
@@ -737,195 +753,203 @@ document.forms.formsite_bloc3[edit].value = obj.value;
 <!--#begin menu6 -->
 
 <form name="formsite_bloc4" method="post" action="{ babPhpSelf }" onsubmit="selectAll()">
-	<input type="hidden" name="tg" value="site" />
-	<input type="hidden" name="idx" value="menusite" />
-	<input type="hidden" name="item" value="{ item }" />
-	<input type="hidden" name="action" value="menu6" />
-	
-	<table  width="70%" border="0" cellspacing="0" cellpadding="2" align="center">
-		<tr> 
-			<td class="BabLoginCadreBackground" align="center" valign="middle"> 
-				<table  width="100%" border="0" cellspacing="0" cellpadding="5" class="BabLoginMenuBackground">
-					<tr>
-						<td valign="top">
-							<dl>
-								<dt><h5>{ t_dispdays }</h5></dt>
-								<!--#in getnextdispday -->
-								<dd>
-									<input type="checkbox" name="dispdays[]" id="{ dayid }" value="{ dayid }"  { checked } /><label for="{ dayid }">{ shortday }</label>
-								</dd>
-								<!--#endin getnextdispday -->
-							</dl>
-							<dl>
-								<table border="1" cellspacing="0" cellpadding="5" >
-									<tr align="center">
-										<td nowrap><h5>{ t_startdaytxt }</h5></td>
-										<td nowrap><h5>{ t_starttimetxt }</h5></td>
-										<td nowrap><h5>{ t_endtimetxt }</h5></td>
-									</tr>
-									<tr align="center">
-										<td>
-											<select name="startday">
-												<!--#in getnextstartday -->
-												<option value="{ dayid }" { checked } />{ shortday }</option>
-												<!--#endin getnextstartday -->
-											</select>
-										</td>
-										<td>
-											<select name="starttime">
-												<!--#in getnexttime -->
-												<option value="{ timeid }" { checked } />{ timeval }</option>
-												<!--#endin getnexttime -->
-											</select>
-										</td>
-										<td>
-											<select name="endtime">
-												<!--#in getnexttime -->
-												<option value="{ timeid }" { checked } />{ timeval }</option>
-												<!--#endin getnexttime -->
-											</select>
-										</td>
-									</tr>
-								</table>
-							</dl>
-						</td>
-						<td width="50%" valign="top">
-							<dl> 
-								<h5>{ allday }</h5>
-									<select name="allday">
-										<option value="Y" { yallday }>{ yes }</option>
-										<option value="N" { nallday }>{ no }</option>
-									</select>
-							</dl>
-							<dl> 
-								<h5>{ usebgcolor }</h5>
-									<select name="usebgcolor">
-										<option value="Y" { yusebgcolor }>{ yes }</option>
-										<option value="N" { nusebgcolor }>{ no }</option>
-									</select>
-							</dl>
-							<dl> 
-								<h5>{ elapstime }</h5>
-									<select name="elapstime">
-									<!--#in getnextet -->
-										<option value="{ etval }" { etselected }>{ etval }&nbsp;{ minutes }</option>
-									<!--#endin getnextet -->
-									</select>
-							</dl>
-							<dl> 
-								<h5>{ defaultview }</h5>
-									<select name="defaultview">
-									<!--#in getnextdv -->
-										<option value="{ dvvalid }" { dvselected }>{ dvval }</option>
-									<!--#endin getnextdv -->
-									</select>
-							</dl>
-							<dl> 
-								<h5>{ showupdateinfo }</h5>
-									<select name="showupdateinfo">
-										<option value="Y" { yshowupdateinfo }>{ yes }</option>
-										<option value="N" { nshowupdateinfo }>{ no }</option>
-									</select>
-							</dl>
-							<dl> 
-								<h5>{ showonlydaysmonthinfo }</h5>
-									<select name="showonlydaysmonthinfo">
-										<option value="Y" { yshowonlydaysmonthinfo }>{ yes }</option>
-										<option value="N" { nshowonlydaysmonthinfo }>{ no }</option>
-									</select>
-							</dl>
-							<dl>
-								<h5>{ t_defaultCalAccess }</h5>
-								<select name="iDefaultCalendarAccess">
-									<!--#in getNextCalAccess -->
-									<option value="{ iCalAccess }" { sCalAccessSelected } /> { sCalAccess }</option>
-									<!--#endin getNextCalAccess -->
-								</select>
-							</dl>
-							<dl>
-								<h5>{ t_personalCalAccess }</h5>
-								<select name="iPersonalCalendarAccess">
-										<option value="N" { npcalaccess }>{ no }</option>
-										<option value="Y" { ypcalaccess }>{ yes }</option>
-								</select>
-							</dl>
-							<dl>
-								<h5>{ t_callendarnotif }</h5>
-								<select name="calendar_notif_author">
-										<option value="N" { ncallendarnotif }>{ no }</option>
-										<option value="Y" { ycallendarnotif }>{ yes }</option>
-								</select>
-							</dl>
-						</td>
-					</tr>
-					<tr>
-						<td align="center" colspan="2">
-							<br />
-							<input type="submit" value="{ t_record }" />
-						</td>
-					</tr>
-				</table>
-			</td>
-		</tr>
-	</table>
+<input type="hidden" name="babCsrfProtect" value="{ babCsrfProtect }" />
+    <input type="hidden" name="tg" value="site" />
+    <input type="hidden" name="idx" value="menusite" />
+    <input type="hidden" name="item" value="{ item }" />
+    <input type="hidden" name="action" value="menu6" />
+
+    <table  width="70%" border="0" cellspacing="0" cellpadding="2" align="center">
+        <tr>
+            <td class="BabLoginCadreBackground" align="center" valign="middle">
+                <table  width="100%" border="0" cellspacing="0" cellpadding="5" class="BabLoginMenuBackground">
+                    <tr>
+                        <td valign="top">
+                            <dl>
+                                <dt><h5>{ t_dispdays }</h5></dt>
+                                <!--#in getnextdispday -->
+                                <dd>
+                                    <input type="checkbox" name="dispdays[]" id="{ dayid }" value="{ dayid }"  { checked } /><label for="{ dayid }">{ shortday }</label>
+                                </dd>
+                                <!--#endin getnextdispday -->
+                            </dl>
+                            <dl>
+                                <table border="1" cellspacing="0" cellpadding="5" >
+                                    <tr align="center">
+                                        <td nowrap><h5>{ t_startdaytxt }</h5></td>
+                                        <td nowrap><h5>{ t_starttimetxt }</h5></td>
+                                        <td nowrap><h5>{ t_endtimetxt }</h5></td>
+                                    </tr>
+                                    <tr align="center">
+                                        <td>
+                                            <select name="startday">
+                                                <!--#in getnextstartday -->
+                                                <option value="{ dayid }" { checked } />{ shortday }</option>
+                                                <!--#endin getnextstartday -->
+                                            </select>
+                                        </td>
+                                        <td>
+                                            <select name="starttime">
+                                                <!--#in getnexttime -->
+                                                <option value="{ timeid }" { checked } />{ timeval }</option>
+                                                <!--#endin getnexttime -->
+                                            </select>
+                                        </td>
+                                        <td>
+                                            <select name="endtime">
+                                                <!--#in getnexttime -->
+                                                <option value="{ timeid }" { checked } />{ timeval }</option>
+                                                <!--#endin getnexttime -->
+                                            </select>
+                                        </td>
+                                    </tr>
+                                </table>
+                            </dl>
+                        </td>
+                        <td width="50%" valign="top">
+                            <dl>
+                                <h5>{ allday }</h5>
+                                    <select name="allday">
+                                        <option value="Y" { yallday }>{ yes }</option>
+                                        <option value="N" { nallday }>{ no }</option>
+                                    </select>
+                            </dl>
+                            <dl>
+                                <h5>{ usebgcolor }</h5>
+                                    <select name="usebgcolor">
+                                        <option value="Y" { yusebgcolor }>{ yes }</option>
+                                        <option value="N" { nusebgcolor }>{ no }</option>
+                                    </select>
+                            </dl>
+                            <dl>
+                                 <h5>{ usecatcolor }</h5>
+                                     <select name="usecatcolor">
+                                        <option value="Y" { yusecatcolor }>{ yes }</option>
+                                        <option value="N" { nusecatcolor }>{ no }</option>
+                                     </select>
+                            </dl>
+                            <dl>
+                                <h5>{ elapstime }</h5>
+                                    <select name="elapstime">
+                                    <!--#in getnextet -->
+                                        <option value="{ etval }" { etselected }>{ etval }&nbsp;{ minutes }</option>
+                                    <!--#endin getnextet -->
+                                    </select>
+                            </dl>
+                            <dl>
+                                <h5>{ defaultview }</h5>
+                                    <select name="defaultview">
+                                    <!--#in getnextdv -->
+                                        <option value="{ dvvalid }" { dvselected }>{ dvval }</option>
+                                    <!--#endin getnextdv -->
+                                    </select>
+                            </dl>
+                            <dl>
+                                <h5>{ showupdateinfo }</h5>
+                                    <select name="showupdateinfo">
+                                        <option value="Y" { yshowupdateinfo }>{ yes }</option>
+                                        <option value="N" { nshowupdateinfo }>{ no }</option>
+                                    </select>
+                            </dl>
+                            <dl>
+                                <h5>{ showonlydaysmonthinfo }</h5>
+                                    <select name="showonlydaysmonthinfo">
+                                        <option value="Y" { yshowonlydaysmonthinfo }>{ yes }</option>
+                                        <option value="N" { nshowonlydaysmonthinfo }>{ no }</option>
+                                    </select>
+                            </dl>
+                            <dl>
+                                <h5>{ t_defaultCalAccess }</h5>
+                                <select name="iDefaultCalendarAccess">
+                                    <!--#in getNextCalAccess -->
+                                    <option value="{ iCalAccess }" { sCalAccessSelected } /> { sCalAccess }</option>
+                                    <!--#endin getNextCalAccess -->
+                                </select>
+                            </dl>
+                            <dl>
+                                <h5>{ t_personalCalAccess }</h5>
+                                <select name="iPersonalCalendarAccess">
+                                        <option value="N" { npcalaccess }>{ no }</option>
+                                        <option value="Y" { ypcalaccess }>{ yes }</option>
+                                </select>
+                            </dl>
+                            <dl>
+                                <h5>{ t_callendarnotif }</h5>
+                                <select name="calendar_notif_author">
+                                        <option value="N" { ncallendarnotif }>{ no }</option>
+                                        <option value="Y" { ycallendarnotif }>{ yes }</option>
+                                </select>
+                            </dl>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td align="center" colspan="2">
+                            <br />
+                            <input type="submit" value="{ t_record }" />
+                        </td>
+                    </tr>
+                </table>
+            </td>
+        </tr>
+    </table>
 </form>
 <!--#end menu6 -->
 
 <!--#begin versions -->
 <table  width="90%" border="0" cellspacing="0" cellpadding="2" align="center">
-<tr> 
-<td class="BabLoginCadreBackground" align="center" valign="middle"> 
-	<table  width="100%" border="0" cellspacing="0" cellpadding="5" align="center" class="BabLoginMenuBackground">
-	
-	<!--#if message -->
-	<tr> 
-		<td colspan="2" align="center" class="BabSiteAdminTitleFontBackground">
-			{ message }
-			
-		</td>
-	</tr>
-	<!--#endif message -->
+<tr>
+<td class="BabLoginCadreBackground" align="center" valign="middle">
+    <table  width="100%" border="0" cellspacing="0" cellpadding="5" align="center" class="BabLoginMenuBackground">
 
-	<!--#if upgrade -->
-	<tr> 
-		<td colspan="2" align="center">
-			<br />
-			<br />
-			<a href="?tg=version&idx=upgrade">{ upgrade }</a>
-			<br />
-			<br />
-		</td>
-	</tr>
-	<!--#endif upgrade -->
+    <!--#if message -->
+    <tr>
+        <td colspan="2" align="center" class="BabSiteAdminTitleFontBackground">
+            { message }
 
-	<tr> 
-		<td align="right">{ srcversiontxt }&nbsp;:</td>
-		<td>{ srcversion }</td>
-	</tr>
-	<tr> 
-		<td align="right">{ phpversiontxt }&nbsp;:</td>
-		<td>{ phpversion }</td>
-	</tr>
-	<tr> 
-		<td align="right">{ baseversiontxt }&nbsp;:</td>
-		<td>{ baseversion }</td>
-	</tr>
-	<tr> 
-		<td align="right">{ basedirtxt }&nbsp;:</td>
-		<td>{ basedir }</td>
-	</tr>
-	<tr> 
-		<td align="center" nowrap colspan="2"><a href="{ urlphpinfo }" onclick="bab_popup(this.href,6,1);return false;">{ phpinfo }</a>
-		<!--#if md5file -->
-		&nbsp; &nbsp; <a href="{ modifiedurl }" onclick="bab_popup(this.href);return false;">{ t_modified }</a>
-		<!--#endif md5file -->
-		
-		</td>
-	</tr>
-	<tr> 
-		<td align="center" colspan="2">&copy; 2001-{ currentyear }, <a href="http://www.cantico.fr/">CANTICO</a> All rights reserved.</td>
-	</tr>
-	</table>
+        </td>
+    </tr>
+    <!--#endif message -->
+
+    <!--#if upgrade -->
+    <tr>
+        <td colspan="2" align="center">
+            <br />
+            <br />
+            <a href="?tg=version&idx=upgrade">{ upgrade }</a>
+            <br />
+            <br />
+        </td>
+    </tr>
+    <!--#endif upgrade -->
+
+    <tr>
+        <td align="right">{ srcversiontxt }&nbsp;:</td>
+        <td>{ srcversion }</td>
+    </tr>
+    <tr>
+        <td align="right">{ phpversiontxt }&nbsp;:</td>
+        <td>{ phpversion }</td>
+    </tr>
+    <tr>
+        <td align="right">{ baseversiontxt }&nbsp;:</td>
+        <td>{ baseversion }</td>
+    </tr>
+    <tr>
+        <td align="right">{ basedirtxt }&nbsp;:</td>
+        <td>{ basedir }</td>
+    </tr>
+    <tr>
+        <td align="center" nowrap colspan="2"><a href="{ urlphpinfo }" onclick="bab_popup(this.href,6,1);return false;">{ phpinfo }</a>
+        <!--#if md5file -->
+        &nbsp; &nbsp; <a href="{ modifiedurl }" onclick="bab_popup(this.href);return false;">{ t_modified }</a>
+        <!--#endif md5file -->
+
+        </td>
+    </tr>
+    <tr>
+        <td align="center" colspan="2">&copy; 2001-{ currentyear }, <a href="http://www.cantico.fr/">CANTICO</a> All rights reserved.</td>
+    </tr>
+    </table>
 </td>
 </tr>
 </table>
@@ -944,25 +968,25 @@ document.forms.formsite_bloc3[edit].value = obj.value;
 <p align="center">{ t_version_directories }</p>
 
 <table width="30%" border="0" cellspacing="0" cellpadding="2" align="center">
-<tr> 
-	<td class="BabLoginCadreBackground" align="center" valign="middle"> 
-		<table width="100%" border="0" cellspacing="0" cellpadding="3" align="center">
-		<tr class="BabSiteAdminTitleFontBackground"> 
-			<td width="1%">&nbsp;</td>
-			<td>{ t_name } </td>
-		</tr>
-		<!--#in getnextdir --> 
-		<!--#if altbg --><tr class="BabSiteAdminFontBackground"><!--#else altbg --><tr class="BabForumBackground1"><!--#endif altbg -->
-			<!--#if current_core -->
-			<td><img src="{ babSkinPath }images/Puces/action_success.gif" alt="{ t_current_core }" /></td>
-			<!--#else current_core -->
-			<td><img src="{ babSkinPath }images/Puces/action_fail.gif" alt="{ t_not_used }" /></td>
-			<!--#endif current_core -->
-			<td>{ name }</td>
-		</tr>
-		<!--#endin getnextdir -->
-		</table>
-	</td>
+<tr>
+    <td class="BabLoginCadreBackground" align="center" valign="middle">
+        <table width="100%" border="0" cellspacing="0" cellpadding="3" align="center">
+        <tr class="BabSiteAdminTitleFontBackground">
+            <td width="1%">&nbsp;</td>
+            <td>{ t_name } </td>
+        </tr>
+        <!--#in getnextdir -->
+        <!--#if altbg --><tr class="BabSiteAdminFontBackground"><!--#else altbg --><tr class="BabForumBackground1"><!--#endif altbg -->
+            <!--#if current_core -->
+            <td><img src="{ babSkinPath }images/Puces/action_success.gif" alt="{ t_current_core }" /></td>
+            <!--#else current_core -->
+            <td><img src="{ babSkinPath }images/Puces/action_fail.gif" alt="{ t_not_used }" /></td>
+            <!--#endif current_core -->
+            <td>{ name }</td>
+        </tr>
+        <!--#endin getnextdir -->
+        </table>
+    </td>
 </tr>
 </table>
 
@@ -976,144 +1000,147 @@ document.forms.formsite_bloc3[edit].value = obj.value;
 <!--
 function move(bDir, el)
 {
-	var idx = el.selectedIndex
-	if (idx !=-1 && idx != 0) 
-	{
-		if( idx == 1 && bDir == true)
-			return;
-		if( idx == el.options.length-1 && bDir == false)
-			return;
-		var nxidx = idx + ( bDir ? - 1 : 1)
-		if ( nxidx<0 )
-			nxidx=el.length-1
-		if ( nxidx>=el.length) nxidx=0
-		var oldVal = el[idx].value
-		var oldText = el[idx].text
-		var oldTitle = el[idx].title
-		el[idx].value = el[nxidx].value
-		el[idx].text = el[nxidx].text
-		if(el[nxidx].title){
-			el[idx].title = el[nxidx].title
-		}else if(el[idx].title){
-			el[idx].title = null
-		}
-		el[nxidx].value = oldVal
-		el[nxidx].text = oldText
-		if(oldTitle){
-			el[nxidx].title = oldTitle
-		}else if(el[nxidx].title){
-			el[nxidx].title = null
-		}
-		el.selectedIndex = nxidx
-	}
+    el = bab_fixOrderElement(el);
+    var idx = el.selectedIndex
+    if (idx !=-1 && idx != 0)
+    {
+        if( idx == 1 && bDir == true)
+            return;
+        if( idx == el.options.length-1 && bDir == false)
+            return;
+        var nxidx = idx + ( bDir ? - 1 : 1)
+        if ( nxidx<0 )
+            nxidx=el.length-1
+        if ( nxidx>=el.length) nxidx=0
+        var oldVal = el[idx].value
+        var oldText = el[idx].text
+        var oldTitle = el[idx].title
+        el[idx].value = el[nxidx].value
+        el[idx].text = el[nxidx].text
+        if(el[nxidx].title){
+            el[idx].title = el[nxidx].title
+        }else if(el[idx].title){
+            el[idx].title = null
+        }
+        el[nxidx].value = oldVal
+        el[nxidx].text = oldText
+        if(oldTitle){
+            el[nxidx].title = oldTitle
+        }else if(el[nxidx].title){
+            el[nxidx].title = null
+        }
+        el.selectedIndex = nxidx
+    }
 }
 
 function moveOptions(src,dest)
-{	 
-	srclen = src.options.length;
-	reslen = dest.options.length + srclen;
-	resopt = new Array(reslen);
-	destcnt = 1;
-	rescnt = 1;
-	nbsel = 0;
-	resopt[0] = new Option(dest.options[0].text,dest.options[0].value);
-	while(destcnt < dest.options.length)
-	{
-		resopt[rescnt] = new Option(dest.options[destcnt].text,dest.options[destcnt].value);
-		destcnt++;
-		rescnt++;
-	}
-	for(i = 1; i < srclen; i++)
-	{
-		while((i < srclen) && (src.options[i].selected == false))
-			i++;
-		if(i < srclen)
-		{
-			if(src.options[i].value != src.options[0].value)
-			{
-				nbsel++;
-				resopt[rescnt] = new Option(src.options[i].text,src.options[i].value);
-				src.options[i] = null;
-				i--;
-				srclen--;
-				rescnt++;
-			}
-		}
-	}
-	dest.options[0] = null;
-	dest.options[0] = resopt[0];
-	
-	for(i=0; i < nbsel;i++)
-	{
-		dest.options[i+1] = null;
-		dest.options[i+1] = resopt[rescnt - nbsel + i];
-	}
+{
+    srclen = src.options.length;
+    reslen = dest.options.length + srclen;
+    resopt = new Array(reslen);
+    destcnt = 1;
+    rescnt = 1;
+    nbsel = 0;
+    resopt[0] = new Option(dest.options[0].text,dest.options[0].value);
+    while(destcnt < dest.options.length)
+    {
+        resopt[rescnt] = new Option(dest.options[destcnt].text,dest.options[destcnt].value);
+        destcnt++;
+        rescnt++;
+    }
+    for(i = 1; i < srclen; i++)
+    {
+        while((i < srclen) && (src.options[i].selected == false))
+            i++;
+        if(i < srclen)
+        {
+            if(src.options[i].value != src.options[0].value)
+            {
+                nbsel++;
+                resopt[rescnt] = new Option(src.options[i].text,src.options[i].value);
+                src.options[i] = null;
+                i--;
+                srclen--;
+                rescnt++;
+            }
+        }
+    }
+    dest.options[0] = null;
+    dest.options[0] = resopt[0];
 
-	for(i=0; i < rescnt - nbsel - 1; i++)
-	{
-		dest.options[nbsel + 1 + i] = null;
-		dest.options[nbsel + 1 + i] = resopt[i + 1];
-	}
+    for(i=0; i < nbsel;i++)
+    {
+        dest.options[i+1] = null;
+        dest.options[i+1] = resopt[rescnt - nbsel + i];
+    }
+
+    for(i=0; i < rescnt - nbsel - 1; i++)
+    {
+        dest.options[nbsel + 1 + i] = null;
+        dest.options[nbsel + 1 + i] = resopt[i + 1];
+    }
 }
 
 function selectAll(list)
 {
-	list.options[0].selected = false;
-	for(i=1; i < list.options.length; i++)
-	{
-		list.options[i].selected = true;
-	}
+    list = bab_fixOrderElement(list);
+    list.options[0].selected = false;
+    for(i=1; i < list.options.length; i++)
+    {
+        list.options[i].selected = true;
+    }
 }
 function sortAA(a, b)
 {
-	if (a.toLowerCase() < b.toLowerCase()) return -1;
-	if (a.toLowerCase() > b.toLowerCase()) return 1;
-	return 0;
+    if (a.toLowerCase() < b.toLowerCase()) return -1;
+    if (a.toLowerCase() > b.toLowerCase()) return 1;
+    return 0;
 }
 
 function sortAD(a, b)
 {
-	if (a.toLowerCase() < b.toLowerCase()) return 1;
-	if (a.toLowerCase() > b.toLowerCase()) return -1;
-	return 0;
+    if (a.toLowerCase() < b.toLowerCase()) return 1;
+    if (a.toLowerCase() > b.toLowerCase()) return -1;
+    return 0;
 }
 
 function sortDA(a, b)
 {
-	return 0;
+    return 0;
 }
 
 function sortDD(a, b)
 {
-	return 0;
+    return 0;
 }
 
 function sortList(sortType, list)
 {
-	if (list.length < 3) return;
-	sortTypes = new Object;
-	sortTypes["sortAA"] = sortAA;
-	sortTypes["sortAD"] = sortAD;
-	sortTypes["sortDA"] = sortDA;
-	sortTypes["sortDD"] = sortDD;
-	a = new Array();
-	for (var i = 0; i < list.length - 1; i++){
-		a[i] = list.options[i+1].text + "||" + list.options[i+1].value + "|" + list.options[i+1].title;
-	}
-	a.sort(sortTypes[sortType]);
-	for (var i = 0; i < list.length - 1; i++)
-	{
-		idx1 = a[i].lastIndexOf("|");
-		idx2 = a[i].lastIndexOf("||");
-		list.options[i+1].text = a[i].substring(0, idx2);
-		list.options[i+1].value = a[i].substring(idx2 + 2, idx1);
-		title = a[i].substring(idx1 + 1, a[i].length);
-		if(title){
-			list.options[i+1].title = title;
-		}else if(list.options[i+1].title){
-			list.options[i+1].title = null
-		}
-	}
+    list = bab_fixOrderElement(list);
+    if (list.length < 3) return;
+    sortTypes = new Object;
+    sortTypes["sortAA"] = sortAA;
+    sortTypes["sortAD"] = sortAD;
+    sortTypes["sortDA"] = sortDA;
+    sortTypes["sortDD"] = sortDD;
+    a = new Array();
+    for (var i = 0; i < list.length - 1; i++){
+        a[i] = list.options[i+1].text + "||" + list.options[i+1].value + "|" + list.options[i+1].title;
+    }
+    a.sort(sortTypes[sortType]);
+    for (var i = 0; i < list.length - 1; i++)
+    {
+        idx1 = a[i].lastIndexOf("|");
+        idx2 = a[i].lastIndexOf("||");
+        list.options[i+1].text = a[i].substring(0, idx2);
+        list.options[i+1].value = a[i].substring(idx2 + 2, idx1);
+        title = a[i].substring(idx1 + 1, a[i].length);
+        if(title){
+            list.options[i+1].title = title;
+        }else if(list.options[i+1].title){
+            list.options[i+1].title = null
+        }
+    }
 }
 //-->
 </script>
@@ -1125,244 +1152,251 @@ function sortList(sortType, list)
 <!--#if showform -->
 <script type="text/javascript">
 <!--
-function hideShowCnx() 
-	{
-	var sf = document.forms.formsiteauth;
-	var obj0 = document.getElementById('ldapconfig');
-	var obj1 = document.getElementById('ldpapauthpassid');
-	var obj2 = document.getElementById('ldapadmindnid');
-	var obj3 = document.getElementById('ldpapdomainnameid');
-	var obj4 = document.getElementById('tdfieldid0');
-	var obj5 = document.getElementById('ldapadminpwd1id');
-	var obj6 = document.getElementById('ldapadminpwd2id');
-	var obj7 = document.getElementById('ldpapuserdnid');
+function hideShowCnx()
+    {
+    var sf = document.forms.formsiteauth;
+    var obj0 = document.getElementById('ldapconfig');
+    var obj1 = document.getElementById('ldpapauthpassid');
+    var obj2 = document.getElementById('ldapadmindnid');
+    var obj3 = document.getElementById('ldpapdomainnameid');
+    var obj4 = document.getElementById('tdfieldid0');
+    var obj5 = document.getElementById('ldapadminpwd1id');
+    var obj6 = document.getElementById('ldapadminpwd2id');
+    var obj7 = document.getElementById('ldpapuserdnid');
 
-	if( sf.authtype[sf.authtype.selectedIndex].value == 0 )
-	{
-	if (obj0.style.display == '') obj0.style.display = 'none';
-	}
-	else if( sf.authtype[sf.authtype.selectedIndex].value == 1 )
-	{
-	if (obj0.style.display == 'none') obj0.style.display = '';
-	if (obj1.style.display == 'none') obj1.style.display = '';
-	if (obj2.style.display == 'none') obj2.style.display = '';
-	if (obj3.style.display == '') obj3.style.display = 'none';
-	if (obj4.style.display == 'none') obj4.style.display = '';
-	if (obj5.style.display == 'none') obj5.style.display = '';
-	if (obj6.style.display == 'none') obj6.style.display = '';
-	if (obj7.style.display == 'none') obj7.style.display = '';
-	}
-	else
-	{
-	if (obj0.style.display == 'none') obj0.style.display = '';
-	if (obj1.style.display == '') obj1.style.display = 'none';
-	if (obj2.style.display == '') obj2.style.display = 'none';
-	if (obj3.style.display == 'none') obj3.style.display = '';
-	if (obj4.style.display == '') obj4.style.display = 'none';
-	if (obj5.style.display == '') obj5.style.display = 'none';
-	if (obj6.style.display == '') obj6.style.display = 'none';
-	if (obj7.style.display == '') obj7.style.display = 'none';
-	}
-	}
+    if( sf.authtype[sf.authtype.selectedIndex].value == 0 )
+    {
+    if (obj0.style.display == '') obj0.style.display = 'none';
+    }
+    else if( sf.authtype[sf.authtype.selectedIndex].value == 1 )
+    {
+    if (obj0.style.display == 'none') obj0.style.display = '';
+    if (obj1.style.display == 'none') obj1.style.display = '';
+    if (obj2.style.display == 'none') obj2.style.display = '';
+    if (obj3.style.display == '') obj3.style.display = 'none';
+    if (obj4.style.display == 'none') obj4.style.display = '';
+    if (obj5.style.display == 'none') obj5.style.display = '';
+    if (obj6.style.display == 'none') obj6.style.display = '';
+    if (obj7.style.display == 'none') obj7.style.display = '';
+    }
+    else
+    {
+    if (obj0.style.display == 'none') obj0.style.display = '';
+    if (obj1.style.display == '') obj1.style.display = 'none';
+    if (obj2.style.display == '') obj2.style.display = 'none';
+    if (obj3.style.display == 'none') obj3.style.display = '';
+    if (obj4.style.display == '') obj4.style.display = 'none';
+    if (obj5.style.display == '') obj5.style.display = 'none';
+    if (obj6.style.display == '') obj6.style.display = 'none';
+    if (obj7.style.display == '') obj7.style.display = 'none';
+    }
+    }
 //-->
 </script>
 
 <form name="formsiteauth" method="post" action="{ babPhpSelf }">
+<input type="hidden" name="babCsrfProtect" value="{ babCsrfProtect }" />
 <input type="hidden" name="tg" value="site" />
 <input type="hidden" name="idx" value="modify" />
 <input type="hidden" name="item" value="{ id }" />
 <input type="hidden" name="action" value="menu8" />
 <table class="BabLoginCadreBackground"  width="90%" border="0" cellspacing="0" cellpadding="2" align="center">
-<tr> 
-<td> 
-	<table class="BabLoginMenuBackground" width="100%" border="0" cellspacing="0" cellpadding="10" align="center">
-	<tr> 
-		<td align="center" colspan="2"><label><input type="checkbox" name="auth_multi_session" <!--#if auth_multi_session --> checked="checked"<!--#endif auth_multi_session --> value="1" style="vertical-align:middle" />&nbsp;{ t_auth_multi_session }</label></td>
-	</tr>
-	<tr>
-		<td align="right" width="50%">{ remember_login_title }</td>
-           <td> 
-			<select name="remember_login">
-			<!--#if remember_login "== Y" -->
-			<option value="Y" selected="selected">{ yes }</option>
-			<option value="N">{ no }</option>
-			<option value="L">{ login_only }</option>
-			<!--#endif remember_login -->
-			<!--#if remember_login "== N" -->
-			<option value="Y">{ yes }</option>
-			<option value="N" selected="selected">{ no }</option>
-			<option value="L">{ login_only }</option>
-			<!--#endif remember_login -->
-			<!--#if remember_login "== L" -->
-			<option value="Y">{ yes }</option>
-			<option value="N">{ no }</option>
-			<option value="L" selected="selected">{ login_only }</option>
-			<!--#endif remember_login -->
-			</select>
-		</td>
-	</tr>
-	<tr>
-		<td align="right">{ email_password_title }</td>
-           <td> 
-			<select name="email_password">
-			<!--#if email_password "== Y" -->
-			<option value="Y" selected="selected">{ yes }</option>
-			<option value="N">{ no }</option>
-			<!--#else email_password -->
-			<option value="Y">{ yes }</option>
-			<option value="N" selected="selected">{ no }</option>
-			<!--#endif email_password -->
-			</select>
-		</td>
-	</tr>
-	
-	<tr>
-		<td align="right">{ ask_nickname_title }</td>
-           <td> 
-			<select name="ask_nickname">
-			<!--#if ask_nickname -->
-			<option value="1" selected="selected">{ yes }</option>
-			<option value="0">{ no }</option>
-			<!--#else ask_nickname -->
-			<option value="1">{ yes }</option>
-			<option value="0" selected="selected">{ no }</option>
-			<!--#endif ask_nickname -->
-			</select>
-		</td>
-	</tr>
-	
-	<tr> 
-		<td align="right">{ authentificationtxt }</td>
-		<td>
-		<select name="authtype" onchange="javascript:hideShowCnx();">
-		<!--#in getnextauth -->
-		<option value="{ authval }" { authselected }>{ authname }</option>
-		<!--#endin getnextauth -->
-		</select>
-		&nbsp;&nbsp;
-		</td>
-	</tr>
-	
-	<tr  id="ldapconfig"> 
-		<td align="right" colspan="2">
-		<table width="100%" border="0" cellspacing="0" cellpadding="5" align="center">
-	<tr> 
-		<td colspan="2"><input type="checkbox" name="ldpapchkcnx" value="Y" { ldpachkcnxchecked } />&nbsp;{ ldpachkcnxtxt }</td>
-	</tr>
-	<tr> 
-		<td colspan="2"><input type="checkbox" name="ldpapchknotif" value="Y" { ldpachknotifchecked } />&nbsp;{ ldpachknotifyadmintxt } <a href="?tg=users&idx=notif" class="BabSiteAdminListLink">{ ldpachkviewnotifyadmintxt }</a></td>
-	</tr>
-	<tr> 
-		<td colspan="2"><input type="checkbox" name="ldap_usercreate_test" value="1" { ldap_usercreate_test_checked } />&nbsp;{ ldap_usercreate_test_txt }</td>
-	</tr>
-	<tr> 
-		<td align="right">&nbsp;</td>
-		<td><span style="color:red">*</span>&nbsp;{ fieldrequiredtxt }</td>
-	</tr>
-	<tr> 
-		<td align="right" nowrap>{ hosttxt }&nbsp;<span style="color:red">*</span></td>
-		<td>
-		<input type="text" name="host" size="50" value="{ ldaphost }" />
-		</td>
-	</tr>
-	<tr id="ldpapdomainnameid"> 
-		<td align="right" nowrap>{ domainnametxt }&nbsp;<span style="color:red">*</span></td>
-		<td>
-		<input type="text" name="hostname" size="50" value="{ ldaphostname }" />
-		</td>
-	</tr>
-	<tr> 
-		<td align="right">{ searchbasetxt }</td>
-		<td>
-		<input type="text" name="searchdn" size="50" value="{ ldapsearchdnsite }" />
-		</td>
-	</tr>
-	<tr> 
-		<td align="right">{ filtertxt }</td>
-		<td>
-		<input type="text" name="ldapfilter" size="50" value="{ ldapfiltersite }" />
-		</td>
-	</tr>
+<tr>
+<td>
+    <table class="BabLoginMenuBackground" width="100%" border="0" cellspacing="0" cellpadding="10" align="center">
+    <tr>
+        <td colspan="2"><label><input type="checkbox" name="auth_https" <!--#if auth_https --> checked="checked"<!--#endif auth_https --> value="1" style="vertical-align:middle" />&nbsp;{ t_auth_https }</label></td>
+    </tr>
+    <tr>
+        <td colspan="2"><label><input type="checkbox" name="auth_fullscreen" <!--#if auth_fullscreen --> checked="checked"<!--#endif auth_fullscreen --> value="1" style="vertical-align:middle" />&nbsp;{ t_auth_fullscreen }</label></td>
+    </tr>
+    <tr>
+        <td colspan="2"><label><input type="checkbox" name="auth_multi_session" <!--#if auth_multi_session --> checked="checked"<!--#endif auth_multi_session --> value="1" style="vertical-align:middle" />&nbsp;{ t_auth_multi_session }</label></td>
+    </tr>
+    <tr>
+        <td width="50%">{ remember_login_title }</td>
+           <td>
+            <select name="remember_login">
+            <!--#if remember_login "== Y" -->
+            <option value="Y" selected="selected">{ yes }</option>
+            <option value="N">{ no }</option>
+            <option value="L">{ login_only }</option>
+            <!--#endif remember_login -->
+            <!--#if remember_login "== N" -->
+            <option value="Y">{ yes }</option>
+            <option value="N" selected="selected">{ no }</option>
+            <option value="L">{ login_only }</option>
+            <!--#endif remember_login -->
+            <!--#if remember_login "== L" -->
+            <option value="Y">{ yes }</option>
+            <option value="N">{ no }</option>
+            <option value="L" selected="selected">{ login_only }</option>
+            <!--#endif remember_login -->
+            </select>
+        </td>
+    </tr>
+    <tr>
+        <td>{ email_password_title }</td>
+           <td>
+            <select name="email_password">
+            <!--#if email_password "== Y" -->
+            <option value="Y" selected="selected">{ yes }</option>
+            <option value="N">{ no }</option>
+            <!--#else email_password -->
+            <option value="Y">{ yes }</option>
+            <option value="N" selected="selected">{ no }</option>
+            <!--#endif email_password -->
+            </select>
+        </td>
+    </tr>
 
-	<tr> 
-		<td align="right" nowrap valign="middle">{ decodetypetxt }</td>
-		<td valign="middle">
-		<select name="decodetype">
-		<!--#in getnextdecodetype --> 
-		<option value="{ stid }" { selected }>{ stval }</option>
-		<!--#endin getnextdecodetype --> 
-		</select>
-		</td>
-	</tr>
+    <tr>
+        <td>{ ask_nickname_title }</td>
+           <td>
+            <select name="ask_nickname">
+            <!--#if ask_nickname -->
+            <option value="1" selected="selected">{ yes }</option>
+            <option value="0">{ no }</option>
+            <!--#else ask_nickname -->
+            <option value="1">{ yes }</option>
+            <option value="0" selected="selected">{ no }</option>
+            <!--#endif ask_nickname -->
+            </select>
+        </td>
+    </tr>
 
-	<tr id="ldpapauthpassid"> 
-		<td align="right">{ authpasstypetxt }</td>
-		<td>
+    <tr>
+        <td>{ authentificationtxt }</td>
+        <td>
+        <select name="authtype" onchange="javascript:hideShowCnx();">
+        <!--#in getnextauth -->
+        <option value="{ authval }" { authselected }>{ authname }</option>
+        <!--#endin getnextauth -->
+        </select>
+        &nbsp;&nbsp;
+        </td>
+    </tr>
+
+    <tr  id="ldapconfig">
+        <td align="right" colspan="2">
+        <table width="100%" border="0" cellspacing="0" cellpadding="5" align="center">
+    <tr>
+        <td colspan="2"><input type="checkbox" name="ldpapchkcnx" value="Y" { ldpachkcnxchecked } />&nbsp;{ ldpachkcnxtxt }</td>
+    </tr>
+    <tr>
+        <td colspan="2"><input type="checkbox" name="ldpapchknotif" value="Y" { ldpachknotifchecked } />&nbsp;{ ldpachknotifyadmintxt } <a href="?tg=users&idx=notif" class="BabSiteAdminListLink">{ ldpachkviewnotifyadmintxt }</a></td>
+    </tr>
+    <tr>
+        <td colspan="2"><input type="checkbox" name="ldap_usercreate_test" value="1" { ldap_usercreate_test_checked } />&nbsp;{ ldap_usercreate_test_txt }</td>
+    </tr>
+    <tr>
+        <td align="right">&nbsp;</td>
+        <td><span style="color:red">*</span>&nbsp;{ fieldrequiredtxt }</td>
+    </tr>
+    <tr>
+        <td align="right" nowrap>{ hosttxt }&nbsp;<span style="color:red">*</span></td>
+        <td>
+        <input type="text" name="host" size="50" value="{ ldaphost }" />
+        </td>
+    </tr>
+    <tr id="ldpapdomainnameid">
+        <td align="right" nowrap>{ domainnametxt }&nbsp;<span style="color:red">*</span></td>
+        <td>
+        <input type="text" name="hostname" size="50" value="{ ldaphostname }" />
+        </td>
+    </tr>
+    <tr>
+        <td align="right">{ searchbasetxt }</td>
+        <td>
+        <input type="text" name="searchdn" size="50" value="{ ldapsearchdnsite }" />
+        </td>
+    </tr>
+    <tr>
+        <td align="right">{ filtertxt }</td>
+        <td>
+        <input type="text" name="ldapfilter" size="50" value="{ ldapfiltersite }" />
+        </td>
+    </tr>
+
+    <tr>
+        <td align="right" nowrap valign="middle">{ decodetypetxt }</td>
+        <td valign="middle">
+        <select name="decodetype">
+        <!--#in getnextdecodetype -->
+        <option value="{ stid }" { selected }>{ stval }</option>
+        <!--#endin getnextdecodetype -->
+        </select>
+        </td>
+    </tr>
+
+    <tr id="ldpapauthpassid">
+        <td align="right">{ authpasstypetxt }</td>
+        <td>
 <select name="crypttype">
 <option value=""></option>
 <!--#in getnextpasstype -->
 <option value="{ passtypeval }" { passtypeselected }>{ passtypename }</option>
 <!--#endin getnextpasstype -->
 </select>
-		</td>
-	</tr>
-	<tr id="ldapadmindnid"> 
-		<td align="right">{ admindntxt }</td>
-		<td>
-		<input type="text" name="admindn" size="50" value="{ ldapadmindn }" />
-		</td>
-	</tr>
-	<tr id="ldapadminpwd1id"> 
-		<td align="right">{ adminpwd1txt }</td>
-		<td>
-		<input type="password" name="adminpwd1" size="50" value="{ ldapadminpwd1 }" />
-		</td>
-	</tr>
-	<tr id="ldapadminpwd2id"> 
-		<td align="right">{ adminpwd2txt }</td>
-		<td>
-		<input type="password" name="adminpwd2" size="50" value="{ ldapadminpwd2 }" />
-		</td>
-	</tr>
-	<tr id="ldpapuserdnid"> 
-		<td align="right" nowrap>{ userdntxt }&nbsp;</td>
-		<td>
-		<input type="text" name="userdn" size="50" value="{ ldapuserdn }" />
-		</td>
-	</tr>
-	<!--#in getnextfield -->
-	<tr id="tdfieldid{ iindex }"> 
-		<td align="right">{ ofieldname }&nbsp;<!--#if required "== Y" --><span style="color:red">*</span><!--#endif required -->&nbsp;&nbsp;</td>
-		<td>
-		<select name="{ ofieldv }">
-		<option value=""></option>
-		<!--#in getnextval -->
-		<option value="{ ffieldid }" { fselected }>{ ffieldname }</option>
-		<!--#endin getnextval -->
-		</select>&nbsp;&nbsp;<input type="text" name="i_{ ofieldv }" size="20" value="{ ofieldval }" />
-		</td>
-	</tr>
-	<!--#endin getnextfield -->
-	
-	<tr> 
-		<td align="right" valign="top">{ groups }&nbsp;</td>
-		<td>
-			<input type="text" name="ldap_groups" size="30" value="{ ldap_groups }" /> <img src="{ babSkinPath }images/Puces/help.gif" onclick="alert(this.title);" title="{ groups_help }" /><br/>
-			<label><input type="checkbox" name="ldap_groups_create" value="1" <!--#if ldap_groups_create --> checked="checked" <!--#endif ldap_groups_create --> style="vertical-align:middle" />&nbsp;{ groups_create }</label><br />
-			<label><input type="checkbox" name="ldap_groups_remove" value="1" <!--#if ldap_groups_remove --> checked="checked" <!--#endif ldap_groups_remove --> style="vertical-align:middle" />&nbsp;{ groups_remove }</label>
-		</td>
-	</tr>
+        </td>
+    </tr>
+    <tr id="ldapadmindnid">
+        <td align="right">{ admindntxt }</td>
+        <td>
+        <input type="text" name="admindn" size="50" value="{ ldapadmindn }" />
+        </td>
+    </tr>
+    <tr id="ldapadminpwd1id">
+        <td align="right">{ adminpwd1txt }</td>
+        <td>
+        <input type="password" name="adminpwd1" size="50" value="{ ldapadminpwd1 }" />
+        </td>
+    </tr>
+    <tr id="ldapadminpwd2id">
+        <td align="right">{ adminpwd2txt }</td>
+        <td>
+        <input type="password" name="adminpwd2" size="50" value="{ ldapadminpwd2 }" />
+        </td>
+    </tr>
+    <tr id="ldpapuserdnid">
+        <td align="right" nowrap>{ userdntxt }&nbsp;</td>
+        <td>
+        <input type="text" name="userdn" size="50" value="{ ldapuserdn }" />
+        </td>
+    </tr>
+    <!--#in getnextfield -->
+    <tr id="tdfieldid{ iindex }">
+        <td align="right">{ ofieldname }&nbsp;<!--#if required "== Y" --><span style="color:red">*</span><!--#endif required -->&nbsp;&nbsp;</td>
+        <td>
+        <select name="{ ofieldv }">
+        <option value=""></option>
+        <!--#in getnextval -->
+        <option value="{ ffieldid }" { fselected }>{ ffieldname }</option>
+        <!--#endin getnextval -->
+        </select>&nbsp;&nbsp;<input type="text" name="i_{ ofieldv }" size="20" value="{ ofieldval }" />
+        </td>
+    </tr>
+    <!--#endin getnextfield -->
 
-		</table>
-		</td>
-	</tr>
-	<tr> 
-		<td align="center" colspan="2"><br />
-		<input type="Submit" name="Submit" value="{ modify }" />
-		</td>
-	</tr>
-	
-	</table>
+    <tr>
+        <td align="right" valign="top">{ groups }&nbsp;</td>
+        <td>
+            <input type="text" name="ldap_groups" size="30" value="{ ldap_groups }" /> <img src="{ babSkinPath }images/Puces/help.gif" onclick="alert(this.title);" title="{ groups_help }" /><br/>
+            <label><input type="checkbox" name="ldap_groups_create" value="1" <!--#if ldap_groups_create --> checked="checked" <!--#endif ldap_groups_create --> style="vertical-align:middle" />&nbsp;{ groups_create }</label><br />
+            <label><input type="checkbox" name="ldap_groups_remove" value="1" <!--#if ldap_groups_remove --> checked="checked" <!--#endif ldap_groups_remove --> style="vertical-align:middle" />&nbsp;{ groups_remove }</label>
+        </td>
+    </tr>
+
+        </table>
+        </td>
+    </tr>
+    <tr>
+        <td align="center" colspan="2"><br />
+        <input type="Submit" name="Submit" value="{ modify }" />
+        </td>
+    </tr>
+
+    </table>
 </td>
 </tr>
 </table>
@@ -1377,87 +1411,88 @@ hideShowCnx();
 
 <!--#begin menu9 -->
 <form name="formsitereg" method="post" action="{ babPhpSelf }">
+<input type="hidden" name="babCsrfProtect" value="{ babCsrfProtect }" />
 <input type="hidden" name="tg" value="site" />
 <input type="hidden" name="idx" value="menusite" />
 <input type="hidden" name="item" value="{ item }" />
 <input type="hidden" name="action" value="menu9" />
 <br />
 <table width="95%" border="0" cellspacing="0" cellpadding="2" align="center">
-<tr> 
-<td class="BabLoginCadreBackground"> 
-	<table class="BabLoginMenuBackground" width="100%" border="0" cellspacing="0" cellpadding="10" align="center">
-      
-	<tr> 
-		<td colspan="2"><h4>{ disclaimertxt }</h4></td>
-	</tr>
-	 <tr> 
-		<td align="right">{ registration }</td>
-		<td> 
-		  <select name="register">
-				<!--#if arrsite[registration] "== Y" -->
-				<option value="Y" selected="selected">{ yes }</option>
-				<option value="N">{ no }</option>
-				<!--#else arrsite[registration] -->
-				<option value="Y">{ yes }</option>
-				<option value="N" selected="selected">{ no }</option>
-				<!--#endif arrsite[registration] -->
-			</select>
-		</td>
-	</tr>
-	<tr>
-		<td align="right"><input type="checkbox" name="cdp" value="Y" { dpchecked }></td>
-		<td>{ disclaimer }&nbsp;(&nbsp;<a href="javascript: bab_popup('{ urleditdp }',6);">{ editdptxt }</a>&nbsp;)</td>
-	</tr>
-	<tr>
-		<td align="center" colspan="2">
-			<select name="cen">
-				<!--#in getnextoption -->
-				<option value="{ optid }" { optsel }>{ optname }</option>
-				<!--#endin getnextoption -->
-			</select>
-		</td>
-	</tr>
-	<tr>
-		<td align="right">
-			<select name="group">
-				<option value="0">{ none }</option>
-				<!--#in getnextgrp -->
-				<option value="{ grpid }" { grpsel }>{ grpname }</option>
-				<!--#endin getnextgrp -->
-			</select>
-		</td>
-		<td>{ groupregistration }</td>
-	</tr>
-	</table>
+<tr>
+<td class="BabLoginCadreBackground">
+    <table class="BabLoginMenuBackground" width="100%" border="0" cellspacing="0" cellpadding="10" align="center">
+
+    <tr>
+        <td colspan="2"><h4>{ disclaimertxt }</h4></td>
+    </tr>
+     <tr>
+        <td align="right">{ registration }</td>
+        <td>
+          <select name="register">
+                <!--#if arrsite[registration] "== Y" -->
+                <option value="Y" selected="selected">{ yes }</option>
+                <option value="N">{ no }</option>
+                <!--#else arrsite[registration] -->
+                <option value="Y">{ yes }</option>
+                <option value="N" selected="selected">{ no }</option>
+                <!--#endif arrsite[registration] -->
+            </select>
+        </td>
+    </tr>
+    <tr>
+        <td align="right"><input type="checkbox" name="cdp" value="Y" { dpchecked }></td>
+        <td>{ disclaimer }&nbsp;(&nbsp;<a href="javascript: bab_popup('{ urleditdp }',6);">{ editdptxt }</a>&nbsp;)</td>
+    </tr>
+    <tr>
+        <td align="center" colspan="2">
+            <select name="cen">
+                <!--#in getnextoption -->
+                <option value="{ optid }" { optsel }>{ optname }</option>
+                <!--#endin getnextoption -->
+            </select>
+        </td>
+    </tr>
+    <tr>
+        <td align="right">
+            <select name="group">
+                <option value="0">{ none }</option>
+                <!--#in getnextgrp -->
+                <option value="{ grpid }" { grpsel }>{ grpname }</option>
+                <!--#endin getnextgrp -->
+            </select>
+        </td>
+        <td>{ groupregistration }</td>
+    </tr>
+    </table>
 </td>
 </tr>
 </table>
 <br />
 <table width="95%" border="0" cellspacing="0" cellpadding="2" align="center">
-<tr> 
-<td class="BabLoginCadreBackground"> 
-	<table width="100%" border="0" cellspacing="0" cellpadding="5" align="center">
-	<tr class="BabSiteAdminTitleFontBackground"> 
-		<td width="80%" align="left" nowrap>{ field }</td>
-		<td width="10%" align="left" nowrap>{ required }</td>
-	</tr>
-	<!--#in getnextfield -->
-	<!--#if altbg --><tr class="BabSiteAdminFontBackground"><!--#else altbg --><tr class="BabForumBackground1"><!--#endif altbg -->
-	<!--#if disabled -->
-		<td><input type="checkbox" { rwchecked } disabled />
-			<input type="hidden" name="rw[]" value="{ fieldid }" />&nbsp;{ fieldn }</td>
-		<td><input type="checkbox" { reqchecked } disabled />
-			<!--#if reqchecked -->
-			<input type="hidden" name="req[]" value="{ fieldid }" /></td>
-			<!--#endif reqchecked -->
-		
-		<!--#else disabled -->
-		<td><input type="checkbox" name="rw[]" { rwchecked } value="{ fieldid }" />&nbsp;{ fieldn }</td>
-		<td><input type="checkbox" name="req[]" { reqchecked } value="{ fieldid }" /></td>
-	<!--#endif disabled -->
-	</tr>
-	<!--#endin getnextfield -->
-	</table>
+<tr>
+<td class="BabLoginCadreBackground">
+    <table width="100%" border="0" cellspacing="0" cellpadding="5" align="center">
+    <tr class="BabSiteAdminTitleFontBackground">
+        <td width="80%" align="left" nowrap>{ field }</td>
+        <td width="10%" align="left" nowrap>{ required }</td>
+    </tr>
+    <!--#in getnextfield -->
+    <!--#if altbg --><tr class="BabSiteAdminFontBackground"><!--#else altbg --><tr class="BabForumBackground1"><!--#endif altbg -->
+    <!--#if disabled -->
+        <td><input type="checkbox" { rwchecked } disabled />
+            <input type="hidden" name="rw[]" value="{ fieldid }" />&nbsp;{ fieldn }</td>
+        <td><input type="checkbox" { reqchecked } disabled />
+            <!--#if reqchecked -->
+            <input type="hidden" name="req[]" value="{ fieldid }" /></td>
+            <!--#endif reqchecked -->
+
+        <!--#else disabled -->
+        <td><input type="checkbox" name="rw[]" { rwchecked } value="{ fieldid }" />&nbsp;{ fieldn }</td>
+        <td><input type="checkbox" name="req[]" { reqchecked } value="{ fieldid }" /></td>
+    <!--#endif disabled -->
+    </tr>
+    <!--#endin getnextfield -->
+    </table>
 </td>
 </tr>
 </table>
@@ -1468,29 +1503,30 @@ hideShowCnx();
 
 <!--#begin disclaimeredit -->
 <form name="discmod" method="post" action="{ babPhpSelf }">
+<input type="hidden" name="babCsrfProtect" value="{ babCsrfProtect }" />
 <input type="hidden" name="tg" value="site" />
 <input type="hidden" name="idx" value="unload" />
 <input type="hidden" name="item" value="{ item }" />
 <input type="hidden" name="action" value="updisc" />
 <table class="BabLoginCadreBackground" width="80%" border="0" cellspacing="0" cellpadding="2" align="center">
-<tr> 
-<td> 
-	<table class="BabLoginMenuBackground" width="100%" border="0" cellspacing="0" cellpadding="5" align="center">
-		<tr> 
-			<td align="center" valign="middle">{ disclaimertxt }</td>
-		</tr>
-		<tr align="center" valign="middle"> 
-			<td> 
-			{ editor }
-			</td>
-		</tr>
+<tr>
+<td>
+    <table class="BabLoginMenuBackground" width="100%" border="0" cellspacing="0" cellpadding="5" align="center">
+        <tr>
+            <td align="center" valign="middle">{ disclaimertxt }</td>
+        </tr>
+        <tr align="center" valign="middle">
+            <td>
+            { editor }
+            </td>
+        </tr>
 
-		<tr> 
-			<td align="center" valign="middle">
-				<input type="submit" name="submit" value="{ modify }" />
-			</td>
-		</tr>
-	</table>
+        <tr>
+            <td align="center" valign="middle">
+                <input type="submit" name="submit" value="{ modify }" />
+            </td>
+        </tr>
+    </table>
 </td>
 </tr>
 </table>
@@ -1502,64 +1538,65 @@ hideShowCnx();
 <script type="text/javascript">
 <!--
  function wait_upload() {
-	obj = document.forms['formsiteauth'].submitbtn;
+    obj = document.forms['formsiteauth'].submitbtn;
  //}
-	obj.value = '{ t_wait }';
-	obj.disabled = true;
+    obj.value = '{ t_wait }';
+    obj.disabled = true;
  }
 //-->
 </script>
 
 <form name="formsiteauth" method="post" action="{ babPhpSelf }" enctype="multipart/form-data" onsubmit="wait_upload()">
+<input type="hidden" name="babCsrfProtect" value="{ babCsrfProtect }" />
 <input type="hidden" name="tg" value="addons" />
 <input type="hidden" name="idx" value="zipupgrade" />
 <input type="hidden" name="MAX_FILE_SIZE" value="{ babMaxFileSize }" />
 
 <table class="BabLoginCadreBackground"  width="70%" border="0" cellspacing="0" cellpadding="2" align="center">
-<tr> 
-<td> 
-	<table class="BabLoginMenuBackground" width="100%" border="0" cellspacing="0" cellpadding="5">
-	<tr> 
-		<td align="right" nowrap>{ t_file }</td>
-		<td><input type="file" name="zipfile" /></td>
-	</tr>
-	<tr> 
-		<td align="right" nowrap>{ t_new_core_name }</td>
-		<td nowrap>
-			<!--#if val[core_name_switch] "== specify" -->
-			<input type="radio" name="core_name_switch" value="file_name" />{ t_file_name }<br />
-			<input type="radio" name="core_name_switch" value="specify" checked /><input type="text" name="dir_name" value="{ val[dir_name] }" />
-			<!--#else val[core_name_switch] -->
-			<input type="radio" name="core_name_switch" value="file_name" checked />{ t_file_name }<br />
-			<input type="radio" name="core_name_switch" value="specify" /><input type="text" name="dir_name" value="{ val[dir_name] }" />
-			<!--#endif val[core_name_switch] -->
-		</td>
-	</tr>
-	<tr> 
-		<td align="right" nowrap>{ t_upgrade }</td>
-		<td>
-			<!--#if val[upgrade] -->
-			<input type="checkbox" name="upgrade" checked="checked" />
-			<!--#else val[upgrade] -->
-			<input type="checkbox" name="upgrade" />
-			<!--#endif val[upgrade] -->
-		</td>
-	</tr>
-	<tr> 
-		<td align="right" nowrap>{ t_copy_addons }</td>
-		<td>
-			<!--#if val[copy_addons] -->
-			<input type="checkbox" name="copy_addons" checked="checked" />
-			<!--#else val[copy_addons] -->
-			<input type="checkbox" name="copy_addons" />
-			<!--#endif val[copy_addons] -->
-		</td>
-	</tr>
+<tr>
+<td>
+    <table class="BabLoginMenuBackground" width="100%" border="0" cellspacing="0" cellpadding="5">
+    <tr>
+        <td align="right" nowrap>{ t_file }</td>
+        <td><input type="file" name="zipfile" /></td>
+    </tr>
+    <tr>
+        <td align="right" nowrap>{ t_new_core_name }</td>
+        <td nowrap>
+            <!--#if val[core_name_switch] "== specify" -->
+            <input type="radio" name="core_name_switch" value="file_name" />{ t_file_name }<br />
+            <input type="radio" name="core_name_switch" value="specify" checked /><input type="text" name="dir_name" value="{ val[dir_name] }" />
+            <!--#else val[core_name_switch] -->
+            <input type="radio" name="core_name_switch" value="file_name" checked />{ t_file_name }<br />
+            <input type="radio" name="core_name_switch" value="specify" /><input type="text" name="dir_name" value="{ val[dir_name] }" />
+            <!--#endif val[core_name_switch] -->
+        </td>
+    </tr>
+    <tr>
+        <td align="right" nowrap>{ t_upgrade }</td>
+        <td>
+            <!--#if val[upgrade] -->
+            <input type="checkbox" name="upgrade" checked="checked" />
+            <!--#else val[upgrade] -->
+            <input type="checkbox" name="upgrade" />
+            <!--#endif val[upgrade] -->
+        </td>
+    </tr>
+    <tr>
+        <td align="right" nowrap>{ t_copy_addons }</td>
+        <td>
+            <!--#if val[copy_addons] -->
+            <input type="checkbox" name="copy_addons" checked="checked" />
+            <!--#else val[copy_addons] -->
+            <input type="checkbox" name="copy_addons" />
+            <!--#endif val[copy_addons] -->
+        </td>
+    </tr>
 
-	<tr>
-		<td colspan="2" align="center"><br /><input type="submit" name="submitbtn" value="{ t_submit }" /></td>
-	</tr>
-	</table>
+    <tr>
+        <td colspan="2" align="center"><br /><input type="submit" name="submitbtn" value="{ t_submit }" /></td>
+    </tr>
+    </table>
 </td>
 </tr>
 </table>
@@ -1569,20 +1606,20 @@ hideShowCnx();
 
 <!--#begin zipupgrade_message -->
 <table class="BabLoginCadreBackground"  width="70%" border="0" cellspacing="0" cellpadding="2" align="center">
-<tr> 
-<td> 
-	<table class="BabLoginMenuBackground" width="100%" border="0" cellspacing="0" cellpadding="5">
+<tr>
+<td>
+    <table class="BabLoginMenuBackground" width="100%" border="0" cellspacing="0" cellpadding="5">
 
-	<tr>
-		<td colspan="2" align="center">
+    <tr>
+        <td colspan="2" align="center">
 
-			{ message }
+            { message }
 
-			<p align="center"><a href="{ babUrlScript }?tg=addons&amp;idx=version">{ t_next }</a></p>
-		
-		</td>
-	</tr>
-	</table>
+            <p align="center"><a href="{ babUrlScript }?tg=addons&amp;idx=version">{ t_next }</a></p>
+
+        </td>
+    </tr>
+    </table>
 </td>
 </tr>
 </table>
@@ -1595,73 +1632,74 @@ hideShowCnx();
 <script type="text/javascript">
 <!--
 function drop_table_check(obj)
-	{
-	var f = document.forms['database'];
-	if (obj.checked)
-		f.drop_table.disabled = false;
-	else
-		f.drop_table.disabled = true;
-	}
+    {
+    var f = document.forms['database'];
+    if (obj.checked)
+        f.drop_table.disabled = false;
+    else
+        f.drop_table.disabled = true;
+    }
 //-->
 </script>
 
 <form name="database" method="post" action="{ babPhpSelf }">
+<input type="hidden" name="babCsrfProtect" value="{ babCsrfProtect }" />
 <input type="hidden" name="tg" value="sites" />
 <input type="hidden" name="idx" value="database" />
 <input type="hidden" name="action" value="export_database" />
 
 <table class="BabLoginCadreBackground"  width="70%" border="0" cellspacing="0" cellpadding="2" align="center">
-<tr> 
-<td> 
-	<table class="BabLoginMenuBackground" width="100%" border="0" cellspacing="0" cellpadding="5">
+<tr>
+<td>
+    <table class="BabLoginMenuBackground" width="100%" border="0" cellspacing="0" cellpadding="5">
 
-	<tr> 
-		<td align="right" valign="top">{ t_tables }</td>
-		<td>
-			<select name="tables[]" multiple="multiple" size="14">
-			<!--#in getnexttable -->
-			<option value="{ table }" selected="selected">{ table }</option>
-			<!--#endin getnexttable -->
-			</select>
-		</td>
-	</tr>
+    <tr>
+        <td align="right" valign="top">{ t_tables }</td>
+        <td>
+            <select name="tables[]" multiple="multiple" size="14">
+            <!--#in getnexttable -->
+            <option value="{ table }" selected="selected">{ table }</option>
+            <!--#endin getnexttable -->
+            </select>
+        </td>
+    </tr>
 
-	<tr> 
-		<td align="right" width="50%" nowrap>{ t_structure }</td>
-		<td>
-			<!--#if val[structure] -->
-			<input type="checkbox" name="structure" onclick="drop_table_check(this)" checked />
-			<!--#else val[structure] -->
-			<input type="checkbox" name="structure" onclick="drop_table_check(this)" />
-			<!--#endif val[structure] -->
-		</td>
-	</tr>
-	<tr> 
-		<td align="right" nowrap>{ t_data }</td>
-		<td>
-			<!--#if val[data] -->
-			<input type="checkbox" name="data" checked />
-			<!--#else val[data] -->
-			<input type="checkbox" name="data" />
-			<!--#endif val[data] -->
-		</td>
-	</tr>
-	
-	<tr> 
-		<td align="right" nowrap>{ t_drop_table }</td>
-		<td>
-			<!--#if val[drop_table] -->
-			<input type="checkbox" name="drop_table" checked />
-			<!--#else val[drop_table] -->
-			<input type="checkbox" name="drop_table" />
-			<!--#endif val[drop_table] -->
-		</td>
-	</tr>
+    <tr>
+        <td align="right" width="50%" nowrap>{ t_structure }</td>
+        <td>
+            <!--#if val[structure] -->
+            <input type="checkbox" name="structure" onclick="drop_table_check(this)" checked />
+            <!--#else val[structure] -->
+            <input type="checkbox" name="structure" onclick="drop_table_check(this)" />
+            <!--#endif val[structure] -->
+        </td>
+    </tr>
+    <tr>
+        <td align="right" nowrap>{ t_data }</td>
+        <td>
+            <!--#if val[data] -->
+            <input type="checkbox" name="data" checked />
+            <!--#else val[data] -->
+            <input type="checkbox" name="data" />
+            <!--#endif val[data] -->
+        </td>
+    </tr>
 
-	<tr>
-		<td colspan="2" align="center"><br /><input type="submit" value="{ t_submit }" /></td>
-	</tr>
-	</table>
+    <tr>
+        <td align="right" nowrap>{ t_drop_table }</td>
+        <td>
+            <!--#if val[drop_table] -->
+            <input type="checkbox" name="drop_table" checked />
+            <!--#else val[drop_table] -->
+            <input type="checkbox" name="drop_table" />
+            <!--#endif val[drop_table] -->
+        </td>
+    </tr>
+
+    <tr>
+        <td colspan="2" align="center"><br /><input type="submit" value="{ t_submit }" /></td>
+    </tr>
+    </table>
 </td>
 </tr>
 </table>
@@ -1678,18 +1716,19 @@ drop_table_check(document.forms['database'].structure);
 <script type="text/javascript">
 function show_hide_el(obj)
 {
-	var tr = document.getElementById('allow_elements');
-	if (obj.checked)
-		{
-		tr.style.display = '';
-		}
-	else
-		{
-		tr.style.display = 'none';
-		}
+    var tr = document.getElementById('allow_elements');
+    if (obj.checked)
+        {
+        tr.style.display = '';
+        }
+    else
+        {
+        tr.style.display = 'none';
+        }
 }
 </script>
 <form name="editor" method="post" action="{ babPhpSelf }">
+<input type="hidden" name="babCsrfProtect" value="{ babCsrfProtect }" />
 <input type="hidden" name="tg" value="site" />
 <input type="hidden" name="idx" value="menusite" />
 <input type="hidden" name="action" value="menu10" />
@@ -1697,61 +1736,61 @@ function show_hide_el(obj)
 <input type="hidden" name="bitstring_len" value="{ bitstring_len }" />
 
 <table class="BabLoginCadreBackground"  width="70%" border="0" cellspacing="0" cellpadding="2" align="center">
-<tr> 
-<td> 
-	<table class="BabLoginMenuBackground" width="100%" border="0" cellspacing="0" cellpadding="5">
-	<tr>
-		<td align="right" width="40%">{ t_use_editor } :</td>
-		<td><input type="checkbox" name="use_editor" value="1" <!--#if arr[use_editor] --> checked="checked"<!--#endif arr[use_editor] --> /></td>
-	</tr>
-	<tr>
-		<td align="right">{ t_filter_html } :</td>
-		<td><input type="checkbox" name="filter_html" value="1" onclick="show_hide_el(this);" <!--#if arr[filter_html] --> checked="checked"<!--#endif arr[filter_html] --> /></td>
-	</tr>
-	<tr id="allow_elements">
-		<td align="right" valign="top">{ t_allow_elements } :</td>
-		<td>
+<tr>
+<td>
+    <table class="BabLoginMenuBackground" width="100%" border="0" cellspacing="0" cellpadding="5">
+    <tr>
+        <td align="right" width="40%">{ t_use_editor } :</td>
+        <td><input type="checkbox" name="use_editor" value="1" <!--#if arr[use_editor] --> checked="checked"<!--#endif arr[use_editor] --> /></td>
+    </tr>
+    <tr>
+        <td align="right">{ t_filter_html } :</td>
+        <td><input type="checkbox" name="filter_html" value="1" onclick="show_hide_el(this);" <!--#if arr[filter_html] --> checked="checked"<!--#endif arr[filter_html] --> /></td>
+    </tr>
+    <tr id="allow_elements">
+        <td align="right" valign="top">{ t_allow_elements } :</td>
+        <td>
 
-		<p>
-		<input type="checkbox" name="bitstring[]" value="0" id="tags_presentation" <!--#if bitstring[0] --> checked="checked"<!--#endif bitstring[0] --> /><label for="tags_presentation">{ t_presentation }</label>
-		</p>
+        <p>
+        <input type="checkbox" name="bitstring[]" value="0" id="tags_presentation" <!--#if bitstring[0] --> checked="checked"<!--#endif bitstring[0] --> /><label for="tags_presentation">{ t_presentation }</label>
+        </p>
 
-		<p>
-		<input type="checkbox" name="bitstring[]" value="1" id="tags_lists" <!--#if bitstring[1] --> checked="checked"<!--#endif bitstring[1] --> /><label for="tags_lists">{ t_lists }</label>
-		</p>
+        <p>
+        <input type="checkbox" name="bitstring[]" value="1" id="tags_lists" <!--#if bitstring[1] --> checked="checked"<!--#endif bitstring[1] --> /><label for="tags_lists">{ t_lists }</label>
+        </p>
 
-		<p>
-		<input type="checkbox" name="bitstring[]" value="2" id="tags_tables" <!--#if bitstring[2] --> checked="checked"<!--#endif bitstring[2] --> /><label for="tags_tables">{ t_tables }</label>
-		</p>
+        <p>
+        <input type="checkbox" name="bitstring[]" value="2" id="tags_tables" <!--#if bitstring[2] --> checked="checked"<!--#endif bitstring[2] --> /><label for="tags_tables">{ t_tables }</label>
+        </p>
 
-		<P>
-		<input type="checkbox" name="bitstring[]" value="3" id="tags_nonhtml" <!--#if bitstring[3] --> checked="checked"<!--#endif bitstring[3] --> /><label for="tags_nonhtml">{ t_nonhtml }</label>
-		</p>
+        <P>
+        <input type="checkbox" name="bitstring[]" value="3" id="tags_nonhtml" <!--#if bitstring[3] --> checked="checked"<!--#endif bitstring[3] --> /><label for="tags_nonhtml">{ t_nonhtml }</label>
+        </p>
 
-		<p>
-		<input type="checkbox" name="bitstring[]" value="4" id="tags_images" <!--#if bitstring[4] --> checked="checked"<!--#endif bitstring[4] --> /><label for="tags_images">{ t_images }</label>
-		</p>
+        <p>
+        <input type="checkbox" name="bitstring[]" value="4" id="tags_images" <!--#if bitstring[4] --> checked="checked"<!--#endif bitstring[4] --> /><label for="tags_images">{ t_images }</label>
+        </p>
 
-		<p>
-		<input type="checkbox" name="bitstring[]" value="5" id="tags_iframe" <!--#if bitstring[5] --> checked="checked"<!--#endif bitstring[5] --> /><label for="tags_iframe">{ t_iframes }</label>
-		</p>
+        <p>
+        <input type="checkbox" name="bitstring[]" value="5" id="tags_iframe" <!--#if bitstring[5] --> checked="checked"<!--#endif bitstring[5] --> /><label for="tags_iframe">{ t_iframes }</label>
+        </p>
 
-		<p>
-		<input type="checkbox" name="bitstring[]" value="6" id="tags_forms" <!--#if bitstring[6] --> checked="checked"<!--#endif bitstring[6] --> /><label for="tags_forms">{ t_forms }</label>
-		</p>
+        <p>
+        <input type="checkbox" name="bitstring[]" value="6" id="tags_forms" <!--#if bitstring[6] --> checked="checked"<!--#endif bitstring[6] --> /><label for="tags_forms">{ t_forms }</label>
+        </p>
 
-		<p>
-		<input type="checkbox" name="bitstring[]" value="7" id="attrib_target" <!--#if bitstring[7] --> checked="checked"<!--#endif bitstring[7] --> /><label for="attrib_target">{ t_target }</label>
-		</p>
-		</td>
-	</tr>
+        <p>
+        <input type="checkbox" name="bitstring[]" value="7" id="attrib_target" <!--#if bitstring[7] --> checked="checked"<!--#endif bitstring[7] --> /><label for="attrib_target">{ t_target }</label>
+        </p>
+        </td>
+    </tr>
 
-	<tr>
-		<td align="center" colspan="2">
-			<input type="submit" value="{ t_submit }" />
-		</td>
-	</tr>
-	</table>
+    <tr>
+        <td align="center" colspan="2">
+            <input type="submit" value="{ t_submit }" />
+        </td>
+    </tr>
+    </table>
 </td>
 </tr>
 </table>
@@ -1767,105 +1806,105 @@ show_hide_el(document.forms['editor'].filter_html);
 <!--
 
 function getDateList()
-	{
-	return document.getElementById('snwid');
-	}
+    {
+    return document.getElementById('snwid');
+    }
 
 function removesel()
-	{
-	var l = getDateList();
-	var srclen = l.options.length;
-	for(i = srclen; i > 0 ; i--)
-		{
-		if (l.options[i-1].selected)
-			{
-			l.options[i-1] = null;
-			}
-		}
-	}
+    {
+    var l = getDateList();
+    var srclen = l.options.length;
+    for(i = srclen; i > 0 ; i--)
+        {
+        if (l.options[i-1].selected)
+            {
+            l.options[i-1] = null;
+            }
+        }
+    }
 
 function selectAll()
 {
-	var l = getDateList();
-	for(i=0; i < l.options.length; i++)
-	{
-		l.options[i].selected = true;
-	}
+    var l = getDateList();
+    for(i=0; i < l.options.length; i++)
+    {
+        l.options[i].selected = true;
+    }
 }
 
 function nonworking_add_day()
-	{
-	var f = document.forms['formsite_bloc13'];
+    {
+    var f = document.forms['formsite_bloc13'];
 
-	var type = parseInt(f.nonworking_day_type.value);
-	if (type > 100 && f.nonworking_day_to_add.value == '')
-		return;
+    var type = parseInt(f.nonworking_day_type.value);
+    if (type > 100 && f.nonworking_day_to_add.value == '')
+        return;
 
-	var date = f.nonworking_day_to_add.value;
-	var d = date.split('-');
+    var date = f.nonworking_day_to_add.value;
+    var d = date.split('-');
 
-	var l = getDateList();
-	var srclen = l.options.length;
+    var l = getDateList();
+    var srclen = l.options.length;
 
-	var text = f.nonworking_day_text.value;
-	
-	switch (type)
-		{
-		case 101:
-			var name = text == '' ? '{ t_type[101] } : '+date : text;
-			var opt = new Option(name, text+'#'+type+','+date);
-			break;
-		case 102:
-			var name = text == '' ? '{ t_type[102] } : '+d[0]+'-'+d[1] : text;
-			var opt = new Option(name, text+'#'+type+','+d[0]+'-'+d[1]);
-			break;
+    var text = f.nonworking_day_text.value;
 
-		<!--#in getnextnonworking_type -->
-		case { type }:
-			var opt = new Option('{ txt }', type);
-			break;
+    switch (type)
+        {
+        case 101:
+            var name = text == '' ? '{ t_type[101] } : '+date : text;
+            var opt = new Option(name, text+'#'+type+','+date);
+            break;
+        case 102:
+            var name = text == '' ? '{ t_type[102] } : '+d[0]+'-'+d[1] : text;
+            var opt = new Option(name, text+'#'+type+','+d[0]+'-'+d[1]);
+            break;
 
-		<!--#endin getnextnonworking_type -->
-		}
+        <!--#in getnextnonworking_type -->
+        case { type }:
+            var opt = new Option('{ txt }', type);
+            break;
 
-	for (var i = 0; i < srclen; i++ )
-		{
-		if (opt.text == l.options[i].text)
-			{
-			l.options[i].selected = true;
-			return;
-			}
-		}
-	
-	if (opt)
-		l.options[srclen] = opt;
-	}
+        <!--#endin getnextnonworking_type -->
+        }
+
+    for (var i = 0; i < srclen; i++ )
+        {
+        if (opt.text == l.options[i].text)
+            {
+            l.options[i].selected = true;
+            return;
+            }
+        }
+
+    if (opt)
+        l.options[srclen] = opt;
+    }
 
 function nonworking_day_cb(d,m,y)
-	{
-	var f = document.forms['formsite_bloc13'];
-	f.nonworking_day_to_add.value = d+'-'+m+'-'+y;
-	}
+    {
+    var f = document.forms['formsite_bloc13'];
+    f.nonworking_day_to_add.value = d+'-'+m+'-'+y;
+    }
 
-document.onkeypress = function(ev) { 
-	if (document.all) ev = window.event;
-	if (ev.keyCode == 46) 
-		removesel(); 
-	};
+document.onkeypress = function(ev) {
+    if (document.all) ev = window.event;
+    if (ev.keyCode == 46)
+        removesel();
+    };
 
 function changetype(obj)
-	{
-	var f = document.forms['formsite_bloc13'];
-	if (obj.value > 100)
-		{
-		f.nonworking_day_text.disabled = false;
-		}
-	else
-		{
-		f.nonworking_day_text.disabled = true;
-		f.nonworking_day_text.value = '';
-		}
-	}
+    {
+    var f = document.forms['formsite_bloc13'];
+    if (obj.value > 100)
+        {
+        f.nonworking_day_text.disabled = false;
+        }
+    else
+        {
+        f.nonworking_day_text.disabled = true;
+        f.nonworking_day_text.value = '';
+        }
+    }
 
 function setColor(color)
 {
@@ -1877,121 +1916,122 @@ document.getElementById('evtColor').style.backgroundColor = '#'+color;
 </script>
 
 <form name="formsite_bloc13" method="post" action="{ babPhpSelf }" onsubmit="selectAll()">
-	<input type="hidden" name="tg" value="site" />
-	<input type="hidden" name="idx" value="menusite" />
-	<input type="hidden" name="item" value="{ item }" />
-	<input type="hidden" name="action" value="menu13" />
-	
-	<table  width="70%" border="0" cellspacing="0" cellpadding="2" align="center">
-		<tr> 
-			<td class="BabLoginCadreBackground" align="center" valign="middle"> 
-				<table  width="100%" border="0" cellspacing="0" cellpadding="5" class="BabLoginMenuBackground">
-					<tr>
-						<td valign="top">
-						<!--#if selectfunc -->
-							{ t_workinghours }<br />
-							<select name="funcname">
-								<!--#in getnextfunc -->
-								<option value="{ name }" <!--#if selected --> selected="selected"<!--#endif selected -->>{ description }</option>
-								<!--#endin getnextfunc -->
-							</select>
-						<!--#endif selectfunc -->
-						
-							<dl>
-								<dt><h5>{ t_workdays }</h5></dt>
-								<!--#in getnextworkday -->
-								<dd>
-									<input type="checkbox" name="workdays[]" id="{ dayid }" value="{ dayid }"  { checked } /><label for="{ dayid }">{ shortday }</label>
-								</dd>
-								<!--#endin getnextworkday -->
-							</dl>
-							<dl>
-								<table border="1" cellspacing="0" cellpadding="5" >
-									<tr align="center">
-										<td nowrap><h5>{ t_starttimetxt }</h5></td>
-										<td nowrap><h5>{ t_endtimetxt }</h5></td>
-									</tr>
-									<tr align="center">
-										<td>
-											<select name="starttime">
-												<!--#in getnexttime -->
-												<option value="{ timeid }" { checked } />{ timeval }</option>
-												<!--#endin getnexttime -->
-											</select>
-										</td>
-										<td>
-											<select name="endtime">
-												<!--#in getnexttime -->
-												<option value="{ timeid }" { checked } />{ timeval }</option>
-												<!--#endin getnexttime -->
-											</select>
-										</td>
-									</tr>
-								</table>
-							</dl>
-								<dt><h5>{ t_cal_category }</h5></dt>
-								<table border="1" cellspacing="0" cellpadding="5" >
-									<tr align="center">
-										<select name="category">
-										<option value="0"></option>
-										<!--#in getnextcat -->
-										<option value="{ categid }" {  selected }>{ categname }</option>
-										<!--#endin getnextcat -->
-										</select>
-									</tr>
-								</table>	
-							<dl>
-							
-							</dl>
-						</td>
-						<td width="50%" valign="top">
-							<dl>
-								<h5>{ t_nonworking }</h5>
-								<select id="snwid" name="nonworking[]" multiple="multiple" size="4" style="width:100%">
-								<!--#in getnextnonworking -->
-									<option value="{ value }">{ text }</option>
-								<!--#endin getnextnonworking -->
-								</select>
-								<div align="right">
-									<a href="?" onclick="removesel();return false;">{ t_delete }</a>
-								</div>
-								<fieldset>
-									<legend>{ t_add }</legend>
-									<p>
-										<label for="nonworking_day_to_add">{ t_date }:</label>
-										<span style="white-space:nowrap">
-											<input type="text" name="nonworking_day_to_add" id="nonworking_day_to_add" disabled="disabled" size="14" />&nbsp;<a href="{ babUrlScript }?tg=month&callback=nonworking_day_cb" onclick="Start(this.href, 'calendar', 'width=250,height=250,status=no,resizable=no,top=200,left=200'); return false;" title="{ t_load_date }"><img src="{ babSkinPath }images/Puces/calendar.gif" alt="{ t_load_date }" border="0" align="absmiddle"></a>
-										</span>
-									</p>
-									<p>
-										<label for="nonworking_day_text">{ t_text }:</label>
-										<input type="text" name="nonworking_day_text" id="nonworking_day_text" size="25" />
-									</p>
-									<p>
-										<label for="nonworking_day_type">{ t_type_date }:</label>
-										<select name="nonworking_day_type" id="nonworking_day_type" onchange="changetype(this)">
-											<option value="101" /> { t_type[101] }</option>
-											<option value="102" /> { t_type[102] }</option>
-											<!--#in getnextnonworking_type -->
-											<option value="{ type }" /> { txt }</option>
-											<!--#endin getnextnonworking_type -->
-										</select>
-									</p>
-									<input type="button" value="{ t_ok }" onclick="nonworking_add_day()" /><br />
-								</fieldset>
-							</dl>
-						</td>
-					</tr>
-					<tr>
-						<td align="center" colspan="2">
-							<br />
-							<input type="submit" value="{ t_record }" />
-						</td>
-					</tr>
-				</table>
-			</td>
-		</tr>
-	</table>
+<input type="hidden" name="babCsrfProtect" value="{ babCsrfProtect }" />
+    <input type="hidden" name="tg" value="site" />
+    <input type="hidden" name="idx" value="menusite" />
+    <input type="hidden" name="item" value="{ item }" />
+    <input type="hidden" name="action" value="menu13" />
+
+    <table  width="70%" border="0" cellspacing="0" cellpadding="2" align="center">
+        <tr>
+            <td class="BabLoginCadreBackground" align="center" valign="middle">
+                <table  width="100%" border="0" cellspacing="0" cellpadding="5" class="BabLoginMenuBackground">
+                    <tr>
+                        <td valign="top">
+                        <!--#if selectfunc -->
+                            { t_workinghours }<br />
+                            <select name="funcname">
+                                <!--#in getnextfunc -->
+                                <option value="{ name }" <!--#if selected --> selected="selected"<!--#endif selected -->>{ description }</option>
+                                <!--#endin getnextfunc -->
+                            </select>
+                        <!--#endif selectfunc -->
+
+                            <dl>
+                                <dt><h5>{ t_workdays }</h5></dt>
+                                <!--#in getnextworkday -->
+                                <dd>
+                                    <input type="checkbox" name="workdays[]" id="{ dayid }" value="{ dayid }"  { checked } /><label for="{ dayid }">{ shortday }</label>
+                                </dd>
+                                <!--#endin getnextworkday -->
+                            </dl>
+                            <dl>
+                                <table border="1" cellspacing="0" cellpadding="5" >
+                                    <tr align="center">
+                                        <td nowrap><h5>{ t_starttimetxt }</h5></td>
+                                        <td nowrap><h5>{ t_endtimetxt }</h5></td>
+                                    </tr>
+                                    <tr align="center">
+                                        <td>
+                                            <select name="starttime">
+                                                <!--#in getnexttime -->
+                                                <option value="{ timeid }" { checked } />{ timeval }</option>
+                                                <!--#endin getnexttime -->
+                                            </select>
+                                        </td>
+                                        <td>
+                                            <select name="endtime">
+                                                <!--#in getnexttime -->
+                                                <option value="{ timeid }" { checked } />{ timeval }</option>
+                                                <!--#endin getnexttime -->
+                                            </select>
+                                        </td>
+                                    </tr>
+                                </table>
+                            </dl>
+                                <dt><h5>{ t_cal_category }</h5></dt>
+                                <table border="1" cellspacing="0" cellpadding="5" >
+                                    <tr align="center">
+                                        <select name="category">
+                                        <option value="0"></option>
+                                        <!--#in getnextcat -->
+                                        <option value="{ categid }" {  selected }>{ categname }</option>
+                                        <!--#endin getnextcat -->
+                                        </select>
+                                    </tr>
+                                </table>
+                            <dl>
+
+                            </dl>
+                        </td>
+                        <td width="50%" valign="top">
+                            <dl>
+                                <h5>{ t_nonworking }</h5>
+                                <select id="snwid" name="nonworking[]" multiple="multiple" size="4" style="width:100%">
+                                <!--#in getnextnonworking -->
+                                    <option value="{ value }">{ text }</option>
+                                <!--#endin getnextnonworking -->
+                                </select>
+                                <div align="right">
+                                    <a href="?" onclick="removesel();return false;">{ t_delete }</a>
+                                </div>
+                                <fieldset>
+                                    <legend>{ t_add }</legend>
+                                    <p>
+                                        <label for="nonworking_day_to_add">{ t_date }:</label>
+                                        <span style="white-space:nowrap">
+                                            <input type="text" name="nonworking_day_to_add" id="nonworking_day_to_add" disabled="disabled" size="14" />&nbsp;<a href="{ babUrlScript }?tg=month&callback=nonworking_day_cb" onclick="Start(this.href, 'calendar', 'width=250,height=250,status=no,resizable=no,top=200,left=200'); return false;" title="{ t_load_date }"><img src="{ babSkinPath }images/Puces/calendar.gif" alt="{ t_load_date }" border="0" align="absmiddle"></a>
+                                        </span>
+                                    </p>
+                                    <p>
+                                        <label for="nonworking_day_text">{ t_text }:</label>
+                                        <input type="text" name="nonworking_day_text" id="nonworking_day_text" size="25" />
+                                    </p>
+                                    <p>
+                                        <label for="nonworking_day_type">{ t_type_date }:</label>
+                                        <select name="nonworking_day_type" id="nonworking_day_type" onchange="changetype(this)">
+                                            <option value="101" /> { t_type[101] }</option>
+                                            <option value="102" /> { t_type[102] }</option>
+                                            <!--#in getnextnonworking_type -->
+                                            <option value="{ type }" /> { txt }</option>
+                                            <!--#endin getnextnonworking_type -->
+                                        </select>
+                                    </p>
+                                    <input type="button" value="{ t_ok }" onclick="nonworking_add_day()" /><br />
+                                </fieldset>
+                            </dl>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td align="center" colspan="2">
+                            <br />
+                            <input type="submit" value="{ t_record }" />
+                        </td>
+                    </tr>
+                </table>
+            </td>
+        </tr>
+    </table>
 </form>
 <script type="text/javascript">
 <!--

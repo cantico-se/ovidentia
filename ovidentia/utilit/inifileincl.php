@@ -115,7 +115,7 @@ class bab_inifile_requirements {
             $arr = $db->db_fetch_assoc($res);
 
             $mysql = 'Undefined';
-
+            $matches = null;
             if (preg_match('/([0-9\.]+)/', $arr['Value'], $matches)) {
                 $mysql = $matches[1];
             }
@@ -158,6 +158,7 @@ class bab_inifile_requirements {
 
             while ($arr = $db->db_fetch_array($res))
             {
+                $m = null;
                 if (preg_match('/^GRANT\s([A-Z\s,]+)\sON/', $arr[0], $m))
                 {
                     foreach(preg_split('/\s*,\s*/', strtoupper($m[1])) as $privilege)
@@ -729,6 +730,7 @@ class bab_inifile_requirements {
 
         if (extension_loaded('gd') && function_exists('gd_info')) {
            $ver_info = gd_info();
+           $match = null;
            preg_match('/\d/', $ver_info['GD Version'], $match);
            $status = 2 == $match[0];
        }
@@ -928,14 +930,32 @@ class bab_inifile_requirements {
 
         require_once dirname(__FILE__).'/settings.class.php';
         $error = null;
-
-        $rootNode = bab_sitemap::getFromSite();
-
-
+        
         $settings = bab_getInstance('bab_Settings');
         /*@var $settings bab_Settings */
-
+        
         $site = $settings->getSiteSettings();
+
+        $sitemap = bab_sitemap::getSiteSitemap();
+        $rootNode = $sitemap->getRootNode(null, null, false);
+        
+        if (!isset($rootNode)) {
+            
+            // il ne faut pas construire le plan au moment des tests car cela peut provoquer des boucles infinies
+            // car pour construire le plan, beaucoup de tests sont effectues dont la validite des modules
+            
+            
+            return array(
+                'description'	=> sprintf(bab_translate("Node ID in the site sitemap (%s)"), $site['sitemap']),
+                'display_value' => bab_translate('Node not found'),
+                'current'		=> bab_translate('Node not found'),
+                'result'		=> true,
+                'error'			=> bab_translate('Test disabled because no valid sitemap')
+            );
+        }
+
+
+        
 
 
         $found = array();
@@ -986,6 +1006,7 @@ class bab_inifile_requirements {
         {
             $r = trim($r);
             $operator = '>=';
+            $m = null;
             if (preg_match('/^(>=|<=|>|<|=)([0-9\.]+)$/', $r, $m)) {
                 $operator = $m[1];
                 $r = $m[2];
@@ -1178,11 +1199,12 @@ class bab_inifile {
             $preinstall_script = dirname($tmp_extract.'/'.$inifile).$this->inifile['preinstall_script'];
             if (file_exists($preinstall_script))
             {
-                $this->addCustomScript($name, $this->getTmpPath().'/'.$preinstall_script);
+                $this->addCustomScript($this->inifile['name'], $this->getTmpPath().'/'.$preinstall_script);
             }
         }
 
         require_once dirname(__FILE__).'/delincl.php';
+        $msgerror = null;
         bab_deldir($tmp_extract, $msgerror);
     }
 
@@ -1328,25 +1350,10 @@ class bab_inifile {
     function getVersion() {
 
         if (isset($this->inifile['version'])) {
-
-            if (preg_match('/\$Name$/', $this->inifile['version'], $m)) {
-                $tag = trim($m[1]);
-
-                if (empty($tag)) {
-                    // ongoing dev
-                    return '';
-                }
-
-                $tag = str_replace('version-', '', $tag);
-                $version = str_replace('-', '.', $tag);
-
-                return $version;
-            }
-
-
+            
             return $this->inifile['version'];
         }
-        return '';
+        return null;
     }
 
 
@@ -1614,11 +1621,9 @@ class bab_inifile {
 
                 $key = mb_strtolower($name);
 
-                if (defined('BAB_ADDONS_AUTO_UPGRADE') && BAB_ADDONS_AUTO_UPGRADE) {
-                     $addon = bab_getAddonInfosInstance($name);
-                     if ($addon && $addon->isUpgradable()) {
-                         $addon->upgrade();
-                     }
+                $addon = bab_getAddonInfosInstance($name);
+                if ($addon && $addon->isUpgradable()) {
+                    $addon->upgrade();
                 }
 
                 if (isset($installed[$key])) {

@@ -25,10 +25,10 @@
 * @internal SEC1 NA 18/12/2006 FULL
 */
 include_once 'base.php';
-require_once dirname(__FILE__).'/utilit/registerglobals.php';
-include_once $babInstallPath.'utilit/forumincl.php';
-include_once $babInstallPath.'utilit/topincl.php';
-include_once $babInstallPath.'utilit/mailincl.php';
+
+include_once $GLOBALS['babInstallPath'].'utilit/forumincl.php';
+include_once $GLOBALS['babInstallPath'].'utilit/topincl.php';
+include_once $GLOBALS['babInstallPath'].'utilit/mailincl.php';
 
 function listPosts($forum, $thread, $post)
 	{
@@ -1289,6 +1289,36 @@ function dlfile($forum,$post,$name)
 		}
 	trigger_error('File has been deleted or upload directory has moved');
 	}
+	
+	
+/**
+ * Add button to open/close the subject
+ * 
+ */	
+function bab_openCloseThread($open, $forum, $thread, $flat)
+{
+    $babBody = bab_getBody();
+    
+    $W = bab_Widgets();
+    $form = $W->Form();
+    $form->setSelfPageHiddenFields();
+    
+    
+    if($open) {
+        $form->setHiddenValue('idx', 'Close');
+        $label = bab_translate("Close thread");
+    }
+    else {
+        $form->setHiddenValue('idx', 'Open');
+        $label = bab_translate("Open thread");
+    }
+    
+    $form->addItem($W->SubmitButton()->setLabel($label));
+    
+    $babBody->babEcho($form->display($W->HtmlCanvas()));
+}
+	
+	
 
 /* main */
 $idx = bab_rp('idx', 'List');
@@ -1297,7 +1327,8 @@ $flat = bab_rp('flat', 0);
 $forum = bab_rp('forum', 0);
 $thread = bab_rp('thread', 0);
 $add = bab_rp('add', null);
-$action = bab_rp('action', null);
+$action = bab_pp('action', null);
+$post = bab_rp('post');
 
 bab_siteMap::setPosition('bab', 'UserForum'.$forum);
 
@@ -1315,45 +1346,45 @@ if( isset($add) && $add == 'addreply' && bab_isAccessValid(BAB_FORUMSREPLY_GROUP
 	$author = bab_pp('author', '');
 	$subject = bab_pp('subject', '');
 	$postid = bab_pp('postid', 0);
-	saveReply($forum, $thread, $postid, $author, $subject);
+	bab_requireSaveMethod() && saveReply($forum, $thread, $postid, $author, $subject);
 	$post = $postid;
 	}
 
 $update = bab_rp('update', '');
 if( $update == 'updatereply' )
 	{
-	updateReply($forum, $thread, $subject, $post);
+	bab_requireSaveMethod() && updateReply($forum, $thread, $subject, $post);
 	}
 
 $move = bab_rp('move', '');
 if( $move == 'movet' )
 	{
 	$newforum = bab_pp('newforum', 0);
-	confirmMoveThread($forum, $thread, $newforum, $flat);
+	bab_requireSaveMethod() && confirmMoveThread($forum, $thread, $newforum, $flat);
 	}
 
 if( $idx == 'Close' && $moderator)
 	{
-	bab_closeThread($thread);
+	bab_requireSaveMethod() && bab_closeThread($thread);
 	$idx = 'List';
 	}
 
 if( $idx == 'Open' && $moderator)
 	{
-	bab_openThread($thread);
+	bab_requireSaveMethod() && bab_openThread($thread);
 	$idx = 'List';
 	}
 
 if( $idx == 'DeleteP' && $moderator)
 	{
-	bab_deletePost($forum, $post);
+	bab_requireDeleteMethod() && bab_deletePost($forum, $post);
 	unset($post);
 	$idx = 'List';
 	}
 
 if( isset($action) && $action == 'Yes' && $moderator)
 	{
-	confirmDeleteThread($forum, $thread);
+	bab_requireDeleteMethod() && confirmDeleteThread($forum, $thread);
 	}
 
 
@@ -1406,16 +1437,10 @@ switch($idx)
 				{
 				$babBody->addItemMenu('reply', bab_translate("Reply"), $GLOBALS['babUrlScript'].'?tg=posts&idx=reply&forum='.$forum.'&thread='.$thread.'&post='.$post.'&flat='.$flat);
 				}
+			
 			if( $moderator )
 				{
-				if($open)
-					{
-					$babBody->addItemMenu('Close', bab_translate("Close thread"), $GLOBALS['babUrlScript'].'?tg=posts&idx=Close&forum='.$forum.'&thread='.$thread.'&flat='.$flat);
-					}
-				else
-					{
-					$babBody->addItemMenu('Open', bab_translate("Open thread"), $GLOBALS['babUrlScript'].'?tg=posts&idx=Open&forum='.$forum.'&thread='.$thread.'&flat='.$flat);
-					}
+				bab_openCloseThread($open, $forum, $thread, $flat);
 				}
 			}
 		break;
@@ -1430,14 +1455,7 @@ switch($idx)
 				{
 				$babBody->addItemMenu('reply', bab_translate("Reply"), $GLOBALS['babUrlScript'].'?tg=posts&idx=reply&forum='.$forum.'&thread='.$thread.'&post='.$post.'&flat='.$flat);
 				}
-			if($open)
-				{
-				$babBody->addItemMenu('Close', bab_translate("Close thread"), $GLOBALS['babUrlScript'].'?tg=posts&idx=Close&forum='.$forum.'&thread='.$thread.'&flat='.$flat);
-				}
-			else
-				{
-				$babBody->addItemMenu('Open', bab_translate("Open thread"), $GLOBALS['babUrlScript'].'?tg=posts&idx=Open&forum='.$forum.'&thread='.$thread.'&flat='.$flat);
-				}
+			bab_openCloseThread($open, $forum, $thread, $flat);
 			$babBody->addItemMenu('Modify', bab_translate("Modify"), $GLOBALS['babUrlScript'].'?tg=posts&idx=Modify&forum='.$forum.'&thread='.$thread.'&post='.$post.'&flat='.$flat);
 			}
 		else
@@ -1457,6 +1475,7 @@ switch($idx)
 				}
 			}
 		break;
+		
 
 	case 'MoveT':
 		if( $moderator)
@@ -1472,7 +1491,7 @@ switch($idx)
 		break;
 
 	case 'Confirm':
-		bab_confirmPost($forum, $thread, $post);
+		bab_requireSaveMethod() && bab_confirmPost($forum, $thread, $post);
 		Header('Location: '. $GLOBALS['babUrlScript'].'?tg=threads&idx=List&forum='.$forum);
 		exit;
 		break;
@@ -1505,14 +1524,7 @@ switch($idx)
 				}
 			if( $moderator )
 				{
-				if( $open)
-					{
-					$babBody->addItemMenu('Close', bab_translate("Close thread"), $GLOBALS['babUrlScript'].'?tg=posts&idx=Close&forum='.$forum.'&thread='.$thread.'&flat='.$flat);
-					}
-				else
-					{
-					$babBody->addItemMenu('Open', bab_translate("Open thread"), $GLOBALS['babUrlScript'].'?tg=posts&idx=Open&forum='.$forum.'&thread='.$thread.'&flat='.$flat);
-					}
+				bab_openCloseThread($open, $forum, $thread, $flat);
 				$babBody->addItemMenu('DeleteT', bab_translate("Delete thread"), $GLOBALS['babUrlScript'].'?tg=posts&idx=DeleteT&forum='.$forum.'&thread='.$thread.'&flat='.$flat);
 				$forums = bab_get_forums();
 				if( count($forums) > 1 )

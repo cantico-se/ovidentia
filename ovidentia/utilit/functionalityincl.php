@@ -502,7 +502,7 @@ class bab_functionalities {
 	{
 		$return = array();
 		$contents = file_get_contents($file);
-		
+		$matches = null;
 		if (preg_match_all('/class\s+Func_([_\w]+)\s+extends\s+/', $contents, $matches)) {
 			foreach($matches[1] as $func) {
 				$arr = explode('_', $func);
@@ -617,12 +617,18 @@ class bab_functionalities {
 
 		$children = $this->getChildren($path);
 		foreach ($children as $child) {
-			$this->cleanTree($path.$child.'/');
+		    
+		    bab_functionality::includeOriginal($path.$child);
+		    
+		    $this->cleanTree($path.$child.'/');
+			
 			$file = $this->treeRootPath.$path.$child.'/'.$this->filename;
 			if (false === (include_once $file)) {
 				// la destination du lien n'existe pas
 				$this->unregister($path.$child);
 			}
+			
+			
 		}
 	}
 

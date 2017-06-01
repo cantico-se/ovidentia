@@ -428,6 +428,7 @@ function printBody()
 				$i++;
 				return true;
 			} else {
+				$i = 0;
 				return false;
 			}
 		}

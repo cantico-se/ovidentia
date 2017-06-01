@@ -29,6 +29,7 @@
 
 <!--#begin categorieslist -->
 <form method="post" action="{ babPhpSelf }">
+<input type="hidden" name="babCsrfProtect" value="{ babCsrfProtect }" />
 	<input type="hidden" name="tg" value="delegat" />
 	<input type="hidden" name="idx" value="displayCategoriesListForm" />
 
@@ -80,6 +81,7 @@ function setColor(color)
 //]]>
 </script>
 <form name="catcolor" method="post" action="{ babPhpSelf }">
+<input type="hidden" name="babCsrfProtect" value="{ babCsrfProtect }" />
 	<input type="hidden" name="tg" value="{ tgval }" />
 	<input type="hidden" name="idx" value="categoriesList" />
 	<input type="hidden" name="idcat" value="{ idcat }" />
@@ -161,6 +163,7 @@ function ovidentia_optionsdelegations_onCheckAll(state){
 //]]>
 </script>
 <form name="dgcreate" enctype="multipart/form-data" method="post" action="{ babPhpSelf }">
+<input type="hidden" name="babCsrfProtect" value="{ babCsrfProtect }" />
 	<input type="hidden" name="MAX_FILE_SIZE" value="{ iMaxImgFileSize }" />
 	<input type="hidden" name="tg" value="{ tgval }" />
 	<input type="hidden" name="idx" value="list" />
@@ -203,7 +206,7 @@ function ovidentia_optionsdelegations_onCheckAll(state){
 								<div style="position: relative;width: 100%;">
 									<img alt="{ sImageName }" src="{ sImageURL }">
 									<div style="position: absolute;top: 3px;left: 0px;width: 100%;">
-										<a onclick="return confirm('{ sImageRemoveConfirm }')" style="background: url('ovidentia/skins/ovidentia/images/22x22/stop.png') no-repeat rgb(0.5, 0.5, 0.5); background: url('ovidentia/skins/ovidentia/images/22x22/stop.png') no-repeat rgba(0, 0, 0, 0.5); color: white; padding:3px 10px 5px 22px;" href="{ sImageRemoveUrl }">{ sImageRemove }</a>
+										<a title="{ sImageRemoveConfirm }" onclick="return bab_postLinkConfirm(this);" style="background: url('ovidentia/skins/ovidentia/images/22x22/stop.png') no-repeat rgb(0.5, 0.5, 0.5); background: url('ovidentia/skins/ovidentia/images/22x22/stop.png') no-repeat rgba(0, 0, 0, 0.5); color: white; padding:3px 10px 5px 22px;" href="{ sImageRemoveUrl }">{ sImageRemove }</a>
 									</div>
 								</div>
 							</td>
@@ -298,6 +301,7 @@ function ovidentia_optionsdelegations_onCheckAll(state){
 <!--#begin delegatdelete -->
 
 <form name="dgcreate" method="post" action="{ babPhpSelf }">
+<input type="hidden" name="babCsrfProtect" value="{ babCsrfProtect }" />
 <input type="hidden" name="tg" value="delegat" />
 <input type="hidden" name="idx" value="list" />
 <input type="hidden" name="id" value="{ id }" />
@@ -328,6 +332,7 @@ function ovidentia_optionsdelegations_onCheckAll(state){
 
 <!--#begin delegatmembers -->
 <form name="listform" method="post" action="{ babPhpSelf }">
+<input type="hidden" name="babCsrfProtect" value="{ babCsrfProtect }" />
 	<input type="hidden" name="tg" value="delegat" />
 	<input type="hidden" name="idx" value="mem" />
 	<input type="hidden" name="id" value="{ id }" />
@@ -379,6 +384,7 @@ function ovidentia_optionsdelegations_onCheckAll(state){
 //]]>
 </script>
 <form name="ucreate" method="post" action="{ babPhpSelf }">
+<input type="hidden" name="babCsrfProtect" value="{ babCsrfProtect }" />
 	<input type="hidden" name="tg" value="delegat" />
 	<input type="hidden" name="idx" value="mem" />
 	<input type="hidden" name="id" value="{ id }" />

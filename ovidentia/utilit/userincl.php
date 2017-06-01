@@ -33,11 +33,18 @@ define("BAB_ART_STATUS_WAIT", 1); /* Used with BAB_ART_DRAFTS_TBL table in colum
 define("BAB_ART_STATUS_OK"	, 2); /* Used with BAB_ART_DRAFTS_TBL table in column result : article draft is approved (Remark : this status is not used because a draft approved in converted to an article) */
 define("BAB_ART_STATUS_NOK"	, 3); /* Used with BAB_ART_DRAFTS_TBL table in column result : article draft is non-approved */
 
-function bab_printOvml($content, $args)
+
+/**
+ * @param string    $content            OVML string
+ * @param array     $args               arguments for global context
+ * @param string    $debug_location     String to use in error message (file location)
+ * @return string HTML
+ */
+function bab_printOvml($content, $args, $debug_location = null)
 {
     include_once $GLOBALS['babInstallPath']."utilit/omlincl.php";
     $tpl = new babOvTemplate($args);
-    return $tpl->printout($content);
+    return $tpl->printout($content, $debug_location);
 }
 
 function bab_printCachedOvml($name, $content, $args = array())
@@ -666,6 +673,10 @@ function bab_getOrgChartRoleUsers($idroles)
 
 /**
  * Get superior in organizational chart
+ * Before ovidentia 8.4.90 this function serach only in the superiors main roles
+ * after 8.4.90, the function will get the superior also if not the main role
+ *
+ *
  * @param int	$iduser
  * @param int	$idoc
  * @return unknown_type
@@ -772,7 +783,6 @@ function bab_getSuperior($iduser, $idoc = '')
                 ocrt.id_oc='".$babDB->db_escape_string($idoc)."'
                 and oct.lf <  '".$babDB->db_escape_string($rr['lf'])."'
                 AND oct.lr >  '".$babDB->db_escape_string($rr['lr'])."'
-                AND ocrut.isprimary='Y'
                 and ocrt.type ='1'
             ORDER  BY oct.lf desc
             limit 0,1
@@ -795,7 +805,7 @@ function bab_getSuperior($iduser, $idoc = '')
 
 function bab_addUserToGroup($iduser, $idgroup, $oc = true)
 {
-    global $babDB, $babBody;
+    global $babDB;
 
     if( $oc )
     {
@@ -804,6 +814,7 @@ function bab_addUserToGroup($iduser, $idgroup, $oc = true)
         {
             $role = $babDB->db_fetch_assoc($babDB->db_query("select id, id_oc from ".BAB_OC_ROLES_TBL." where id_entity='".$babDB->db_escape_string($identity)."' and type='3'"));
             $restemp = $babDB->db_query("select id from ".BAB_OC_ROLES_TBL." where id_entity='".$babDB->db_escape_string($identity)."'");
+            $roles = array();
             while($temproles = $babDB->db_fetch_assoc($restemp)){
                 $roles[] = $temproles['id'];
             };
@@ -950,7 +961,7 @@ function bab_replace_get() {
 * 								used
 *
 * @since	6.7.0
-* @author	Z�bina Samuel
+* @author	Zebina Samuel
 *
 * @return	boolean	True if the session for the given user is in bab_user_logs,
 * 					false othewise

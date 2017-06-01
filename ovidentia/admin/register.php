@@ -47,7 +47,7 @@ function updateUserPasswordById($userId, $newPassword, $newPassword2, $ignoreAcc
 
 function notifyUserRegistration($link, $name, $email)
     {
-    global $babBody, $babAdminEmail, $babInstallPath;
+    global $babBody, $babAdminEmail;
 
     class tempa
         {
@@ -112,7 +112,7 @@ function notifyUserRegistration($link, $name, $email)
 
 function notifyAdminRegistration($name, $useremail, $warning)
     {
-    global $babBody, $babDB, $babAdminEmail, $babInstallPath;
+    global $babBody, $babDB, $babAdminEmail;
 
     class tempb
         {
@@ -189,7 +189,7 @@ function registerUser( $firstname, $lastname, $middlename, $email, $nickname, $p
         return false;
         }
 
-    if( empty($firstname) && empty($lastname))
+    if( empty($lastname) )
         {
         $babBody->msgerror = bab_translate( "Lastname is required");
         return false;
@@ -281,7 +281,7 @@ function registerUser( $firstname, $lastname, $middlename, $email, $nickname, $p
 
 function notifyUserPassword($passw, $email, $nickname='')
     {
-    global $babBody, $babAdminEmail, $babInstallPath;
+    global $babBody, $babAdminEmail;
 
     class tempa
         {
@@ -350,7 +350,7 @@ class bab_notifyAdminUserRegistrationCls
  */
 function notifyAdminUserRegistration($name, $email, $nickname, $pwd)
 {
-    global $babBody, $babAdminEmail, $babInstallPath;
+    global $babBody, $babAdminEmail;
 
     $mail = bab_mail();
     if( $mail == false ) {
@@ -438,7 +438,7 @@ function sendPassword($nickname, $email)
         }
 
 
-    $req="select id, nickname, email, changepwd from ".BAB_USERS_TBL." where  email=".$babDB->quote($email);
+    $req="select id, nickname, email, changepwd from ".BAB_USERS_TBL." where  email LIKE '".$babDB->db_escape_like($email)."'";
 
     if ($site['ask_nickname'])
     {

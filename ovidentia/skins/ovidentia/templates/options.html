@@ -2,6 +2,7 @@
 <!--#begin changepassword -->
 <br>
 <form method="post" action="{ babPhpSelf }">
+<input type="hidden" name="babCsrfProtect" value="{ babCsrfProtect }" />
 <input type="hidden" name="tg" value="options" />
 <input type="hidden" name="update" value="password" />
 <table  width="95%" border="0" cellspacing="0" cellpadding="2" align="center">
@@ -76,6 +77,7 @@
 <br>
 
 <form method="post" action="{ babPhpSelf }">
+<input type="hidden" name="babCsrfProtect" value="{ babCsrfProtect }" />
 <input type="hidden" name="tg" value="options">
 <input type="hidden" name="update" value="userinfo">
 <table  width="50%" border="0" cellspacing="0" cellpadding="2" align="center">
@@ -157,6 +159,7 @@ valign="middle">{ password }:</td>
 <!--#endif changepassword -->
 <!--#if changenickname -->
 <form method="post" action="{ babPhpSelf }">
+<input type="hidden" name="babCsrfProtect" value="{ babCsrfProtect }" />
 <input type="hidden" name="tg" value="options">
 <input type="hidden" name="update" value="nickname">
 <table  width="50%" border="0" cellspacing="0" cellpadding="2" align="center">
@@ -195,6 +198,7 @@ valign="middle">{ password }:</td>
 
 <!--#begin changelang -->
 <form method="post" action="{ babPhpSelf }">
+<input type="hidden" name="babCsrfProtect" value="{ babCsrfProtect }" />
 <input type="hidden" name="tg" value="options">
 <input type="hidden" name="update" value="lang">
 	<table width="50%" border="0" cellspacing="0" cellpadding="2" align="center">
@@ -246,6 +250,7 @@ valign="middle">{ password }:</td>
 
 <!--#begin changeskin -->
 <form name="formskin" method="post" action="{ babPhpSelf }">
+<input type="hidden" name="babCsrfProtect" value="{ babCsrfProtect }" />
 	<input type="hidden" name="tg" value="options">
 	<input type="hidden" name="update" value="skin">
 	<table width="50%" border="0" cellspacing="0" cellpadding="2" align="center">
@@ -318,6 +323,7 @@ valign="middle">{ password }:</td>
 
 <!--#begin profileslist -->
 <form name="listform" method="post" action="{ babPhpSelf }">
+<input type="hidden" name="babCsrfProtect" value="{ babCsrfProtect }" />
 <input type="hidden" name="tg" value="options">
 <input type="hidden" name="idx" value="">
 <input type="hidden" name="update" value="profiles">
@@ -402,6 +408,7 @@ valign="middle">{ password }:</td>
 
 <!--#begin regionalsettings -->
 <form name="regsetform" method="post" action="{ babPhpSelf }">
+<input type="hidden" name="babCsrfProtect" value="{ babCsrfProtect }" />
 <input type="hidden" name="tg" value="options">
 <input type="hidden" name="update" value="regsettings">
 	<table  width="50%" border="0" cellspacing="0" cellpadding="2" align="center">
@@ -507,6 +514,7 @@ eval('f.id_substitute.value=\'\';');
 //-->
 </script>
 <form name="unavform" method="post" action="{ babPhpSelf }">
+<input type="hidden" name="babCsrfProtect" value="{ babCsrfProtect }" />
 <input type="hidden" name="tg" value="options">
 <input type="hidden" name="iduser" value="{ iduser }">
 <input type="hidden" name="update" value="unavailability">
@@ -552,6 +560,7 @@ eval('f.id_substitute.value=\'\';');
 
 <!--#begin workdays -->
 <form name="workdays" method="post" action="{ babPhpSelf }">
+<input type="hidden" name="babCsrfProtect" value="{ babCsrfProtect }" />
 <input type="hidden" name="tg" value="options">
 <input type="hidden" name="update" value="workdays">
 <table  width="50%" border="0" cellspacing="0" cellpadding="2" align="center">

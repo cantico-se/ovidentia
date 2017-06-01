@@ -3,47 +3,48 @@
 
 <!--#begin sectionscreate -->
 <form name="seccreate" method="post" action="{ babPhpSelf }">
+<input type="hidden" name="babCsrfProtect" value="{ babCsrfProtect }" />
 <input type="hidden" name="tg" value="sections">
 <input type="hidden" name="idx" value="ch">
 <input type="hidden" name="js" value="{ jscript }">
 <input type="hidden" name="create" value="create">
 <table class="BabLoginCadreBackground" width="90%" border="0" cellspacing="0" cellpadding="2" align="center">
 <tr>
-<td> 
+<td>
 <table class="BabLoginMenuBackground" width="100%" border="0" cellspacing="0" cellpadding="5" align="center">
-<tr> 
+<tr>
             <td colspan="2"><table width="100%" border="0" cellspacing="1" cellpadding="1">
                 <tr>
-                  <td width="25%">{ 
-                    title }&nbsp;&nbsp; 
+                  <td width="25%">{
+                    title }&nbsp;&nbsp;
                     <input type="text" name="title" size="20" maxlength="60"></td>
-                  <td width="50%">&nbsp;{ 
+                  <td width="50%">&nbsp;{
                     description }&nbsp;&nbsp;
                     <input type="text" name="description" size="40" maxlength="200"></td>
                   <td width="25%">&nbsp;{ optionaltxt }&nbsp;
-				   <select name="opt">
-				   <option value="N" { nselected }>{ no }</option>
-				   <option value="Y" { yselected }>{ yes }</option>
-				   </select>
+                   <select name="opt">
+                   <option value="N" { nselected }>{ no }</option>
+                   <option value="Y" { yselected }>{ yes }</option>
+                   </select>
                    </td>
                 </tr>
               </table></td>
 </tr>
-<tr> 
+<tr>
             <td colspan="2"><table width="100%" border="0" cellspacing="1" cellpadding="1">
                 <tr>
-                  <td width="33%">{ position 
+                  <td width="33%">{ position
                     }&nbsp; <select name="position">
                       <option value="0" selected>{ left }</option>
                       <option value="1">{ right }</option>
                     </select></td>
                   <td width="33%">{ langLabel }&nbsp; <select name="lang">
                       <!--#in getnextlang -->
-                      <option value="{ langValue }" { langSelected }>{ langValue 
+                      <option value="{ langValue }" { langSelected }>{ langValue
                       }</option>
                       <!--#endin getnextlang -->
                     </select></td>
-                  <td width="33%">{ templatetxt 
+                  <td width="33%">{ templatetxt
                     }&nbsp; <select name="template">
                       <option value=""></option>
                       <!--#in getnexttemplate -->
@@ -53,22 +54,22 @@
                 </tr>
               </table> </td>
 </tr>
-<tr align="center"> 
+<tr align="center">
 <td colspan="2">{ content }</td>
 </tr>
 <tr>
-	<td>
-	<!--#if editor -->
-	{ editor }
-	<!--#else editor -->
-	<textarea name="content" style="width:100%" rows="20"></textarea>
-	<!--#endif editor -->
-	</td>
+    <td>
+    <!--#if editor -->
+    { editor }
+    <!--#else editor -->
+    <textarea name="content" style="width:100%" rows="20"></textarea>
+    <!--#endif editor -->
+    </td>
 </tr>
 
-<tr align="center"> 
-<td colspan="2"> 
-	<input type="submit" name="Submit" value="{ create }" /></td></tr>
+<tr align="center">
+<td colspan="2">
+    <input type="submit" name="Submit" value="{ create }" /></td></tr>
 </table>
 </td>
 </tr>
@@ -76,63 +77,64 @@
 </form>
 
 <br>
-<!--#end sectionscreate --> 
+<!--#end sectionscreate -->
 
-<!--#begin sectionslist --> 
+<!--#begin sectionslist -->
 <form method="post" action="{ babPhpSelf }" name="listform">
+<input type="hidden" name="babCsrfProtect" value="{ babCsrfProtect }" />
 <input type="hidden" name="tg" value="sections" />
 <input type="hidden" name="idx" value="List" />
 <input type="hidden" name="update" value="disable" />
 <table width="95%" border="0" cellspacing="0" cellpadding="2" align="center">
-<tr> 
-<td class="BabLoginCadreBackground"> 
+<tr>
+<td class="BabLoginCadreBackground">
         <table width="100%" border="0" cellspacing="0" cellpadding="5" align="center">
-          <tr class="BabSiteAdminTitleFontBackground"> 
-			<td>{ title }</td>
-			<td>{ description }</td>
-			<td>{ access }</td>
-			<td align="center">{ disabled }</td>
-			<td align="center">{ opttxt }</td>
-		</tr>
-			
-		<!--#in getnext -->
-			<!--#if altbg --><tr class="BabSiteAdminFontBackground"><!--#else altbg --><tr class="BabForumBackground1"><!--#endif altbg -->
-				<td>
-					<!--#if url -->
-					<a href="{ url }">{ title }</a>
-					<!--#else url -->
-					{ title }
-					<!--#endif url -->
-				</td>
-				<td>{ description }</td>
-				<td>
-					<!--#if accessurl -->
-					<a href="{ accessurl }">{ access }</a>
-					<!--#else accessurl -->
-					&nbsp;
-					<!--#endif accessurl -->
-				</td>
-				<td align="center"><input type="checkbox" name="sections[]" { secchecked } value="{ idvalue }" /></td>
-				<td align="center">
-					<!--#if opt -->
-					<input type="checkbox" name="sectopt[]" { optchecked } value="{ idvalue }" />
-					<!--#else opt -->
-					&nbsp;
-					<!--#endif opt -->
-				</td>
-			</tr>
-		<!--#endin getnext -->
-		
-		<tr class="BabSiteAdminTitleFontBackground"> 
-			<td colspan="2">&nbsp;</td>
-			<td width="1%">&nbsp;</td>
-			<td width="1%" align="center" nowrap="nowrap">
-				<a href="javascript:onCheckAll('sections', true)"><img src="{ babSkinPath }images/Puces/Pucecheked.gif" alt="{ checkall }" width="10" height="10" border="0" /></a><a href="javascript:onCheckAll('sections', false)"><img src="{ babSkinPath }images/Puces/PuceUncheked.gif" alt="{ uncheckall }" width="10" height="10" border="0" /></a></td>
-			<td width="1%" align="center" nowrap>
-				<a href="javascript:onCheckAll('sectopt', true)"><img src="{ babSkinPath }images/Puces/Pucecheked.gif" alt="{ checkall }" width="10" height="10" border="0"></a><a href="javascript:onCheckAll('sectopt', false)"><img src="{ babSkinPath }images/Puces/PuceUncheked.gif" alt="{ uncheckall }" width="10" height="10" border="0" /></a>
-			</td>
-		</tr>
-	</table>
+          <tr class="BabSiteAdminTitleFontBackground">
+            <td>{ title }</td>
+            <td>{ description }</td>
+            <td>{ access }</td>
+            <td align="center">{ disabled }</td>
+            <td align="center">{ opttxt }</td>
+        </tr>
+
+        <!--#in getnext -->
+            <!--#if altbg --><tr class="BabSiteAdminFontBackground"><!--#else altbg --><tr class="BabForumBackground1"><!--#endif altbg -->
+                <td>
+                    <!--#if url -->
+                    <a href="{ url }">{ title }</a>
+                    <!--#else url -->
+                    { title }
+                    <!--#endif url -->
+                </td>
+                <td>{ description }</td>
+                <td>
+                    <!--#if accessurl -->
+                    <a href="{ accessurl }">{ access }</a>
+                    <!--#else accessurl -->
+                    &nbsp;
+                    <!--#endif accessurl -->
+                </td>
+                <td align="center"><input type="checkbox" name="sections[]" { secchecked } value="{ idvalue }" /></td>
+                <td align="center">
+                    <!--#if opt -->
+                    <input type="checkbox" name="sectopt[]" { optchecked } value="{ idvalue }" />
+                    <!--#else opt -->
+                    &nbsp;
+                    <!--#endif opt -->
+                </td>
+            </tr>
+        <!--#endin getnext -->
+
+        <tr class="BabSiteAdminTitleFontBackground">
+            <td colspan="2">&nbsp;</td>
+            <td width="1%">&nbsp;</td>
+            <td width="1%" align="center" nowrap="nowrap">
+                <a href="javascript:onCheckAll('sections', true)"><img src="{ babSkinPath }images/Puces/Pucecheked.gif" alt="{ checkall }" width="10" height="10" border="0" /></a><a href="javascript:onCheckAll('sections', false)"><img src="{ babSkinPath }images/Puces/PuceUncheked.gif" alt="{ uncheckall }" width="10" height="10" border="0" /></a></td>
+            <td width="1%" align="center" nowrap>
+                <a href="javascript:onCheckAll('sectopt', true)"><img src="{ babSkinPath }images/Puces/Pucecheked.gif" alt="{ checkall }" width="10" height="10" border="0"></a><a href="javascript:onCheckAll('sectopt', false)"><img src="{ babSkinPath }images/Puces/PuceUncheked.gif" alt="{ uncheckall }" width="10" height="10" border="0" /></a>
+            </td>
+        </tr>
+    </table>
 </td>
 </tr>
 </table>
@@ -149,43 +151,44 @@
 
 
 
-<!--#begin sectionsmodify --> 
+<!--#begin sectionsmodify -->
 <form name="secmod" method="post" action="{ babPhpSelf }">
+<input type="hidden" name="babCsrfProtect" value="{ babCsrfProtect }" />
 <input type="hidden" name="tg" value="section" />
 <input type="hidden" name="idx" value="modify" />
 <input type="hidden" name="item" value="{ id }" />
 <input type="hidden" name="modify" value="modify" />
 <table class="BabLoginCadreBackground" width="95%" border="0" cellspacing="0" cellpadding="2" align="center">
 <tr>
-<td> 
+<td>
 <table class="BabLoginMenuBackground" width="100%" border="0" cellspacing="0" cellpadding="5" align="center">
-<tr> 
+<tr>
             <td colspan="2"><table width="100%" border="0" cellspacing="1" cellpadding="1">
                 <tr>
-                  <td width="25%">{ title }&nbsp;&nbsp; 
+                  <td width="25%">{ title }&nbsp;&nbsp;
                     <input type="text" name="title" size="20" maxlength="60" value="{ titleval }" /></td>
-                  <td width="50%">&nbsp;{ 
+                  <td width="50%">&nbsp;{
                     description }&nbsp;&nbsp;
                     <input type="text" name="description" size="40" maxlength="200" value="{ descval }" /></td>
                   <td width="25%">&nbsp;{ optionaltxt }&nbsp;
-				   <select name="opt">
-				   <option value="N" { nselected }>{ no }</option>
-				   <option value="Y" { yselected }>{ yes }</option>
-				   </select>
+                   <select name="opt">
+                   <option value="N" { nselected }>{ no }</option>
+                   <option value="Y" { yselected }>{ yes }</option>
+                   </select>
                    </td>
                 </tr>
               </table></td>
 </tr>
-<tr> 
+<tr>
             <td colspan="2"><table width="100%" border="0" cellspacing="1" cellpadding="1">
                 <tr>
                   <td width="33%">{ langLabel }&nbsp; <select name="lang">
                       <!--#in getnextlang -->
-                      <option value="{ langValue }" { langSelected }>{ langValue 
+                      <option value="{ langValue }" { langSelected }>{ langValue
                       }</option>
                       <!--#endin getnextlang -->
                     </select></td>
-                  <td width="33%">{ templatetxt 
+                  <td width="33%">{ templatetxt
                     }&nbsp; <select name="template">
                       <option value=""></option>
                       <!--#in getnexttemplate -->
@@ -196,8 +199,8 @@
               </table> </td>
 </tr>
 
-<tr> 
-<td align="center" colspan="2"> 
+<tr>
+<td align="center" colspan="2">
 <!--#if editor -->
 { editor }
 <!--#else editor -->
@@ -205,9 +208,9 @@
 <!--#endif editor -->
 </td>
 </tr>
-<tr> 
-<td align="center" colspan="2"> 
-	<input type="submit" name="submit" value="{ modify }" />&nbsp;&nbsp;<input type="submit" name="secdel" value="{ delete }" />
+<tr>
+<td align="center" colspan="2">
+    <input type="submit" name="submit" value="{ modify }" />&nbsp;&nbsp;<input type="submit" name="secdel" value="{ delete }" />
 </td>
 </tr>
 </table>
@@ -216,7 +219,7 @@
 </table>
 </form>
 
-<!--#end sectionsmodify --> 
+<!--#end sectionsmodify -->
 
 
 
@@ -227,129 +230,132 @@
 <script language="JavaScript">
 <!--
 function move(bDir, el)
-	{
-	var idx = el.selectedIndex
-	if (idx !=-1 && idx != 0) 
-	{
-		if( idx == 1 && bDir == true)
-			return;
-		if( idx == el.options.length-1 && bDir == false)
-			return;
-		var nxidx = idx + ( bDir ? - 1 : 1)
-		if ( nxidx<0 )
-			nxidx=el.length-1
-		if ( nxidx>=el.length) nxidx=0
-		var oldVal = el[idx].value
-		var oldText = el[idx].text
-		el[idx].value = el[nxidx].value
-		el[idx].text = el[nxidx].text
-		el[nxidx].value = oldVal
-		el[nxidx].text = oldText
-		el.selectedIndex = nxidx
-	}
+    {
+    el = bab_fixOrderElement(el);
+    var idx = el.selectedIndex
+    if (idx !=-1 && idx != 0)
+    {
+        if( idx == 1 && bDir == true)
+            return;
+        if( idx == el.options.length-1 && bDir == false)
+            return;
+        var nxidx = idx + ( bDir ? - 1 : 1)
+        if ( nxidx<0 )
+            nxidx=el.length-1
+        if ( nxidx>=el.length) nxidx=0
+        var oldVal = el[idx].value
+        var oldText = el[idx].text
+        el[idx].value = el[nxidx].value
+        el[idx].text = el[nxidx].text
+        el[nxidx].value = oldVal
+        el[nxidx].text = oldText
+        el.selectedIndex = nxidx
+    }
 }
 
 function moveOptions(src,dest)
-{	 
-	srclen = src.options.length;
-	reslen = dest.options.length + srclen;
-	resopt = new Array(reslen);
-	destcnt = 1;
-	rescnt = 1;
-	resopt[0] = new Option(dest.options[0].text,dest.options[0].value);
-	while(destcnt < dest.options.length)
-	{
-		resopt[rescnt] = new Option(dest.options[destcnt].text,dest.options[destcnt].value);
-		destcnt++;
-		rescnt++;
-	}
-	for(i = 1; i < srclen; i++)
-	{
-		while((i < srclen) && (src.options[i].selected == false))
-			i++;
-		if(i < srclen)
-		{
-			if(src.options[i].value != src.options[0].value)
-			{
-				resopt[rescnt] = new Option(src.options[i].text,src.options[i].value);
-				src.options[i] = null;
-				i--;
-				srclen--;
-				rescnt++;
-			}
-		}
-	}
-	for(i=0; i< rescnt;i++)
-	{
-		dest.options[i] = null;
-		dest.options[i] = resopt[i];
-	}
+{
+    srclen = src.options.length;
+    reslen = dest.options.length + srclen;
+    resopt = new Array(reslen);
+    destcnt = 1;
+    rescnt = 1;
+    resopt[0] = new Option(dest.options[0].text,dest.options[0].value);
+    while(destcnt < dest.options.length)
+    {
+        resopt[rescnt] = new Option(dest.options[destcnt].text,dest.options[destcnt].value);
+        destcnt++;
+        rescnt++;
+    }
+    for(i = 1; i < srclen; i++)
+    {
+        while((i < srclen) && (src.options[i].selected == false))
+            i++;
+        if(i < srclen)
+        {
+            if(src.options[i].value != src.options[0].value)
+            {
+                resopt[rescnt] = new Option(src.options[i].text,src.options[i].value);
+                src.options[i] = null;
+                i--;
+                srclen--;
+                rescnt++;
+            }
+        }
+    }
+    for(i=0; i< rescnt;i++)
+    {
+        dest.options[i] = null;
+        dest.options[i] = resopt[i];
+    }
 }
 
 function selectAll(list)
 {
-	list.options[0].selected = false;
-	for(i=1; i < list.options.length; i++)
-	{
-		dummy = 1;
-		list.options[i].selected = true;
-	}
+    list = bab_fixOrderElement(list);
+    list.options[0].selected = false;
+    for(i=1; i < list.options.length; i++)
+    {
+        dummy = 1;
+        list.options[i].selected = true;
+    }
 }
 //-->
 </script>
 
 <form method="post" name="secorderf" action="{ babPhpSelf }">
+<input type="hidden" name="babCsrfProtect" value="{ babCsrfProtect }" />
 <input type="hidden" name="tg" value="sections" />
 <input type="hidden" name="idx" value="List" />
 <input type="hidden" name="update" value="order" />
 
 <table  width="50%" border="0" cellspacing="0" cellpadding="2" align="center">
-<tr> 
-<td class="BabLoginCadreBackground" align="center" valign="middle"> 
-	<table class="BabLoginMenuBackground" width="100%" border="0" cellspacing="0" cellpadding="5">
-	<tr> 
-	<td align="center" valign="center"> <br />
-	<select name="listleft[]"  size="12" multiple="multiple">
-	<option value="">{ listleftsectxt }</option>
-	<!--#in getnextsecleft --> 
-	<option value="{ secid }">{ listleftsecval }</option>
-	<!--#endin getnextsecleft --> 
-	</select>
-	</td>
-	<td align="center"><a href="Javascript:move(true, document.secorderf.elements[3])"><img src="{ babSkinPath }images/Puces/PuceGoTop.gif" width="22" height="18" border=0 alt="{ moveup }"></a> 
-	<br>
-	<br>
-	<a href="Javascript:move(false, document.secorderf.elements[3])"> <img src="{ babSkinPath }images/Puces/PuceGoDown.gif" width="22" height="18" border=0 alt="{ movedown }"></a> 
-	</td>
-	</tr>
-	<tr> 
-	<td align="center" valign="middle"><a href="Javascript:moveOptions(document.secorderf.elements[3],document.secorderf.elements[4])"><img src="{ babSkinPath }images/Puces/PuceGoHandDown.gif" width="20" height="24" border=0 alt="Down"></a>&nbsp;&nbsp;&nbsp;&nbsp;<a href="Javascript:moveOptions(document.secorderf.elements[4],document.secorderf.elements[3])" ><img src="{ babSkinPath }images/Puces/PuceGoHandTop.gif" width="20" height="24" border=0 alt="Up"></a></td>
-	<td>&nbsp;</td>
-	</tr>
-	<tr> 
-	<td align="center"> 
-	<select name="listright[]"  size=12 multiple>
-	<option value="">{ listrightsectxt }</option>
-	<!--#in getnextsecright --> 
-	<option value="{ secid }">{ listrightsecval }</option>
-	<!--#endin getnextsecright --> 
-	</select>
-	</td>
-	<td align="center" valign="middle"><a href="Javascript:move(true, document.secorderf.elements[4])"><img src="{ babSkinPath }images/Puces/PuceGoTop.gif" width="22" height="18" border=0 alt="{ moveup }"></a> 
-	<br>
-	<br>
-	<a href="Javascript:move(false, document.secorderf.elements[4])"><img src="{ babSkinPath }images/Puces/PuceGoDown.gif" width="22" height="18" border=0 alt="{ movedown }"></a> 
-	</td>
-	</tr>
-	<tr> 
-	<td align="center" valign="middle"> 
-	<input type="submit" name="Submit" value="{ update }" onClick="selectAll(document.secorderf.elements[4]); selectAll(document.secorderf.elements[3]); document.secorderf.submit()">
-	<br>
-	<br>
-	</td>
-	<td>&nbsp; </td>
-	</tr>
-	</table>
+<tr>
+<td class="BabLoginCadreBackground" align="center" valign="middle">
+    <table class="BabLoginMenuBackground" width="100%" border="0" cellspacing="0" cellpadding="5">
+    <tr>
+    <td align="center" valign="center"> <br />
+    <select name="listleft[]"  size="12" multiple="multiple">
+    <option value="">{ listleftsectxt }</option>
+    <!--#in getnextsecleft -->
+    <option value="{ secid }">{ listleftsecval }</option>
+    <!--#endin getnextsecleft -->
+    </select>
+    </td>
+    <td align="center"><a href="Javascript:move(true, document.secorderf.elements[3])"><img src="{ babSkinPath }images/Puces/PuceGoTop.gif" width="22" height="18" border=0 alt="{ moveup }"></a>
+    <br>
+    <br>
+    <a href="Javascript:move(false, document.secorderf.elements[3])"> <img src="{ babSkinPath }images/Puces/PuceGoDown.gif" width="22" height="18" border=0 alt="{ movedown }"></a>
+    </td>
+    </tr>
+    <tr>
+    <td align="center" valign="middle"><a href="Javascript:moveOptions(document.secorderf.elements[3],document.secorderf.elements[4])"><img src="{ babSkinPath }images/Puces/PuceGoHandDown.gif" width="20" height="24" border=0 alt="Down"></a>&nbsp;&nbsp;&nbsp;&nbsp;<a href="Javascript:moveOptions(document.secorderf.elements[4],document.secorderf.elements[3])" ><img src="{ babSkinPath }images/Puces/PuceGoHandTop.gif" width="20" height="24" border=0 alt="Up"></a></td>
+    <td>&nbsp;</td>
+    </tr>
+    <tr>
+    <td align="center">
+    <select id="listright" name="listright[]"  size=12 multiple>
+    <option value="">{ listrightsectxt }</option>
+    <!--#in getnextsecright -->
+    <option value="{ secid }">{ listrightsecval }</option>
+    <!--#endin getnextsecright -->
+    </select>
+    </td>
+    <td align="center" valign="middle"><a href="Javascript:move(true, document.getElementById('listright'))"><img src="{ babSkinPath }images/Puces/PuceGoTop.gif" width="22" height="18" border=0 alt="{ moveup }"></a>
+    <br>
+    <br>
+    <a href="Javascript:move(false, document.getElementById('listright'))"><img src="{ babSkinPath }images/Puces/PuceGoDown.gif" width="22" height="18" border=0 alt="{ movedown }"></a>
+    </td>
+    </tr>
+    <tr>
+    <td align="center" valign="middle">
+    <input type="submit" name="Submit" value="{ update }" onClick="selectAll(document.getElementById('listright')); selectAll(document.secorderf.elements[3]); document.secorderf.submit()">
+    <br>
+    <br>
+    </td>
+    <td>&nbsp; </td>
+    </tr>
+    </table>
 </td>
 </tr>
 </table>

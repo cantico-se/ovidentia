@@ -46,7 +46,7 @@ function addElement($type)
 		$this->elements[] = array(0 => $type, 1 => array());
 		return $id;
 		}
-	else 
+	else
 		{
 		trigger_error("Parameter of addElement function must be part of : ".implode(',',$this->elements_types), E_USER_ERROR);
 		return false;
@@ -55,7 +55,7 @@ function addElement($type)
 
 function removeElement($id)
 	{
-	if (isset($this->elements[$id])) 
+	if (isset($this->elements[$id]))
 		{
 		unset($this->elements[$id]);
 		return true;
@@ -100,16 +100,16 @@ function bab_isAddonInstalled($name = '')
 	if (empty($name)) {
 		$name = $GLOBALS['babAddonFolder'];
 	}
-		
+
 	$addons = bab_addonsInfos::getRows();
-		
+
 	foreach ($addons as $value) {
-	
+
 		if ($value['title'] == $name) {
 			return bab_isAddonAccessValid($value['id']);
 		}
 	}
-	
+
 
 	return false;
 }
@@ -182,8 +182,8 @@ class bab_synchronizeSql
 	var $return = array();
 
 	private $differences = array();
-	
-	
+
+
 	private $displayMessage = true;
 
 
@@ -213,7 +213,7 @@ class bab_synchronizeSql
 
 
 	/**
-	 * @param string	$filename	A string containing the sql structure of the tables to synchronize.
+	 * @param string	$sql	A string containing the sql structure of the tables to synchronize.
 	 */
 	function fromSqlString($sql)
 	{
@@ -221,7 +221,7 @@ class bab_synchronizeSql
 
 		$this->updateDatabase();
 	}
-	
+
 	/**
 	 * Add a set to filecontent
 	 * @param ORM_MySqlRecordSet $set
@@ -230,17 +230,17 @@ class bab_synchronizeSql
 	public function addOrmSet(ORM_RecordSet $set)
 	{
 		$mysqlbackend = new ORM_MySqlBackend($GLOBALS['babDB']);
-		
+
 		$this->fileContent .= $mysqlbackend->setToSql($set)."\n";
 	}
-	
-	
-	
+
+
+
 	/**
 	 * Disable or enable display of the message in install console
 	 * @param	bool	$status
 	 * @return	bab_synchronizeSql
-	 */ 
+	 */
 	public function setDisplayMessage($status)
 	{
 		$this->displayMessage = $status;
@@ -255,12 +255,12 @@ class bab_synchronizeSql
 			{
 				$this->showTables();
 				$this->checkTables();
-				
+
 				$this->alterTables();
 			}
-		}		
+		}
 	}
-	
+
 	function getFileContent()
 	{
 		$f = @fopen($this->file,'r');
@@ -269,7 +269,7 @@ class bab_synchronizeSql
 			trigger_error('There is an error into synchronizeSql function, can\'t read sql dump file '.$this->file);
 			return false;
 		}
-		while (!feof($f)) 
+		while (!feof($f))
 		{
 			$this->fileContent .= fread($f, 1024);
 		}
@@ -279,6 +279,7 @@ class bab_synchronizeSql
 
 	function getCreateQueries()
 	{
+	    $m = null;
 		if (preg_match_all("/CREATE\s+TABLE\s+`(.*?)`\s+\((.*?)\;/s", $this->fileContent, $m)) {
 			for ($k = 0; $k < count($m[1]); $k++ )
 				{
@@ -287,6 +288,7 @@ class bab_synchronizeSql
 
 				$field = array();
 				$keys = array();
+                $n = null;
 
 				preg_match_all("/(.*?)[\s|\(]`(.*?)`.*/", $fields, $n);
 
@@ -294,7 +296,7 @@ class bab_synchronizeSql
 					{
 					$key = trim($n[1][$l]);
 					$f = $n[2][$l];
-					
+
 					if ('PRIMARY KEY' === $key) {
 						$f = 'PRIMARY';
 					}
@@ -322,7 +324,7 @@ class bab_synchronizeSql
 			if (isset($this->file)) {
 			    trigger_error('can\'t fetch file content, no CREATE TABLE found in file : '.$this->file);
 			} else {
-			    
+
 			    trigger_error('No CREATE TABLE found SQL data');
 			}
 			return false;
@@ -334,20 +336,20 @@ class bab_synchronizeSql
 
 	function showTables()
 		{
-		
+
 		global $babDB;
-		
+
 		$tables_in_files = array_keys($this->create);
-		
+
 
 		foreach ($tables_in_files as $table)
 			{
-			
+
 			$this->tables[$table] = array();
-			
+
 
 			$req = '
-					SELECT 
+					SELECT
 						`COLUMN_NAME` `Field`,
 						`COLUMN_TYPE` `Type`,
 						`IS_NULLABLE` `Null`,
@@ -355,23 +357,23 @@ class bab_synchronizeSql
 						`COLUMN_DEFAULT` `Default`,
 						`EXTRA` `Extra`,
 						`COLUMN_COMMENT` `Comment`
-						
-					FROM 
+
+					FROM
 						INFORMATION_SCHEMA.COLUMNS
-					WHERE 
-						table_name = '.$babDB->quote($table).' 
-						AND table_schema = '.$babDB->quote($GLOBALS['babDBName']).' 
+					WHERE
+						table_name = '.$babDB->quote($table).'
+						AND table_schema = '.$babDB->quote($GLOBALS['babDBName']).'
 				';
-			
-			
+
+
 			$res2 = $babDB->db_queryWem($req);
-			
+
 			if (!$res2) {
 				// alternate methode if no inforamtion schema
-			
+
 				$res2 = $babDB->db_queryWem("SHOW COLUMNS FROM ".$babDB->db_escape_string($table));
 			}
-			
+
 			if ($res2) {
 				while ($arr = $babDB->db_fetch_assoc($res2))
 					{
@@ -383,13 +385,13 @@ class bab_synchronizeSql
 
 	function checkTables()
 		{
-		
+
 		include_once $GLOBALS['babInstallPath'].'utilit/upgradeincl.php';
 		include_once $GLOBALS['babInstallPath'].'utilit/install.class.php';
 
 		$nb_modified = 0;
 		$nb_created = 0;
-		
+
 		foreach($this->create as $table => $arr)
 			{
 			if (bab_isTable($table))
@@ -426,17 +428,17 @@ class bab_synchronizeSql
 			bab_installWindow::message($message);
 		}
 	}
-		
-		
+
+
 	function getTableKeysDetail($tablename) {
 		global $babDB;
-		
+
 		$res = $babDB->db_query('SHOW INDEX FROM '.$babDB->backTick($tablename));
 		$fields = array();
 		$key_type = array();
 		$non_unique = array();
 		while ($arr = $babDB->db_fetch_assoc($res)) {
-		
+
 			if ('PRIMARY' === $arr['Key_name']) {
 				if (isset($fields['PRIMARY'])) {
 					$fields['PRIMARY'][] = $babDB->backTick($arr['Column_name']);
@@ -447,13 +449,13 @@ class bab_synchronizeSql
 				$key_type['PRIMARY'] = 'PRI';
 
 			} else {
-		
+
 				if (isset($fields[$arr['Key_name']])) {
 					$fields[$arr['Key_name']][] = $babDB->backTick($arr['Column_name']);
 				} else {
 					$fields[$arr['Key_name']] = array($babDB->backTick($arr['Column_name']));
 				}
-				
+
 
 				if ($arr['Non_unique']) {
 					$key_type[$arr['Key_name']] = 'MUL';
@@ -461,36 +463,36 @@ class bab_synchronizeSql
 					$key_type[$arr['Key_name']] = 'UNI';
 				}
 			}
-			
-			
-			
-			
+
+
+
+
 		}
-		
-		
+
+
 		$keys = array();
 		foreach($key_type as $Key_name => $type) {
-		
+
 			switch($type) {
 				case 'PRI':
 					$colname = trim($fields[$Key_name][0],'`');
 					$keys[$Key_name] = 'PRIMARY KEY ('.implode(', ', $fields[$Key_name]).')';
 					break;
-				
+
 				case 'MUL':
 					$keys[$Key_name] = 'KEY '.$babDB->backTick($Key_name).' ('.implode(', ', $fields[$Key_name]).')';
 					break;
-					
+
 				case 'UNI':
 					$keys[$Key_name] = 'UNIQUE KEY '.$babDB->backTick($Key_name).' ('.implode(', ', $fields[$Key_name]).')';
 					break;
 			}
 		}
-		
+
 		return $keys;
 	}
-	
-	
+
+
 	/**
 	 * Add key on table
 	 *
@@ -498,13 +500,13 @@ class bab_synchronizeSql
 	function addKey($table, $key, $keydetail) {
 		global $babDB;
 		$babDB->db_queryWem('ALTER TABLE '.$babDB->backTick($table).' ADD '.$keydetail);
-		
+
 		$this->differences[] = array(
 				'Table' => $table,
 				'Field' => $keydetail
 			);
 	}
-	
+
 
 
 	function checkFields($table)
@@ -525,12 +527,12 @@ class bab_synchronizeSql
 				$return = true;
 				}
 			}
-			
+
 		$keys = $this->getTableKeysDetail($table);
-		
-		
-			
-		foreach($this->create[$table]['keys'] as $key => $keydetail) 
+
+
+
+		foreach($this->create[$table]['keys'] as $key => $keydetail)
 			{
 			if (isset($keys[$key]))
 				{
@@ -544,7 +546,7 @@ class bab_synchronizeSql
 				$return = true;
 				}
 			}
-		
+
 		foreach($this->tables[$table] as $field => $arr)
 			{
 			if (!isset($this->create[$table]['fields'][$field]))
@@ -554,30 +556,30 @@ class bab_synchronizeSql
 				{
 					$this->db->db_query('ALTER TABLE '.$this->db->backTick($table).' DROP FOREIGN KEY '.$this->db->backTick($const['CONSTRAINT_NAME']));
 				}
-				
+
 				$this->db->db_query("ALTER TABLE ".$this->db->backTick($table)." DROP ".$this->db->backTick($field));
 				$return = true;
 				}
 			}
-		
+
 		return $return;
 		}
-		
-		
-		
+
+
+
 	function trimall($str) {
 	  	return mb_strtolower(str_replace(array(' ', "\t", "\n", "\r", "\0", "\x0B", "'", '\\'), '', $str));
 	}
-		
-		
-		
-		
-		
+
+
+
+
+
 
 	function checkOptions($table, $field)
 		{
 		$option_file = $this->create[$table]['fields'][$field];
-		
+
 		$null = $this->tables[$table][$field]['Null'] != 'YES' ? ' NOT NULL' : '';
 
 		$default = '';
@@ -594,11 +596,11 @@ class bab_synchronizeSql
 		$comment = !empty($this->tables[$table][$field]['Comment']) ? " COMMENT '".$this->tables[$table][$field]['Comment']."'" : '';
 		$option_table = $this->tables[$table][$field]['Type'].$null.$default.$extra.$comment;
 
-		
+
 		$old = $this->trimall($option_table);
 		$new = $this->trimall($option_file);
-		
-		
+
+
 		if ($old != $new)
 			{
 
@@ -615,19 +617,19 @@ class bab_synchronizeSql
 
 		return false;
 		}
-		
-		
-	
-		
+
+
+
+
 	/**
 	 * verify key
 	 * if key is different, drop and create
 	 */
 	function checkKeyDetail($table, $key_name, $existing_key, $new_key) {
-		
+
 		$old = $this->trimall($existing_key);
 		$new = $this->trimall($new_key);
-		
+
 		if ($old != $new) {
 
 			$this->differences[] = array(
@@ -644,36 +646,53 @@ class bab_synchronizeSql
 		}
 	}
 
-	
-	public function isWorkedTable($table)
-		{
-		return isset($this->return[$table]);
-		}
 
-	public function isCreatedTable($table)
-		{
-		return 1 == $this->return[$table];
-		}
 
-	public function isModifiedTable($table)
-		{
-		return 2 == $this->return[$table];
-		}
+    /**
+     * @param string $table
+     * @return bool
+     */
+    public function isWorkedTable($table)
+    {
+        return isset($this->return[$table]);
+    }
 
-	public function isUnmodifiedTable($table)
-		{
-		return 0 == $this->return[$table];
-		}
+    /**
+     * @param string $table
+     * @return bool
+     */
+    public function isCreatedTable($table)
+    {
+        return 1 == $this->return[$table];
+    }
+
+    /**
+     * @param string $table
+     * @return bool
+     */
+    public function isModifiedTable($table)
+    {
+        return 2 == $this->return[$table];
+    }
+
+    /**
+     * @param string $table
+     * @return boolean
+     */
+    public function isUnmodifiedTable($table)
+    {
+        return 0 == $this->return[$table];
+    }
 
 	/**
-	 * 
+	 *
 	 * @return array
 	 */
-	public function getDifferences() 
+	public function getDifferences()
 		{
 		return $this->differences;
 		}
-		
+
 	/**
 	 * Test if the table has been synchronized and if there is no rows
 	 * @param string $table
@@ -685,24 +704,24 @@ class bab_synchronizeSql
 			{
 				return true;
 			}
-			
+
 			if (!$this->isWorkedTable($table))
 			{
 				return false;
 			}
-			
+
 			global $babDB;
-			
+
 			$res = $babDB->db_query('SELECT COUNT(*) FROM '.$babDB->backTick($table));
 			if ($arr = $babDB->db_fetch_array($res))
 			{
 				return 0 === (int) $arr[0];
 			}
-			
+
 			return false;
 		}
-		
-		
+
+
 	/**
 	 * add the aditional alter tables in file
 	 * @return unknown_type
@@ -710,6 +729,7 @@ class bab_synchronizeSql
 	public function alterTables()
 	{
 		global $babDB;
+		$m = null;
 		if (preg_match_all("/ALTER\s+TABLE\s+`(.*?)`\s+[^;]+\;/s", $this->fileContent, $m))
 			{
 			for ($k = 0; $k < count($m[0]); $k++ )
@@ -735,7 +755,7 @@ function bab_export_tables($tables, $file = false)
 	$dump = $bab_sqlExport->exportString();
 
 	if (!$file) return $dump;
-	
+
 	if (is_writable($file)) {
 		$handle = fopen($file, 'w+');
 		fwrite($handle, $dump);
@@ -759,40 +779,22 @@ function bab_export_tables($tables, $file = false)
 function bab_execSqlFile($file, $fileEncoding = null) {
 	
 	global $babDB;
-	$content = '';
-	
-	$fp=fopen($file,"rb");
-	if ($fp) {
-		while (!feof($fp)) {
-			$content .= fread($fp, 8192);
-		}
-		
-		fclose($fp);
+
+	$sql=file_get_contents($file);
+    if ($sql === false) {
+        return false;
+    }
+
+    if (isset($fileEncoding)) {
+		$sql = bab_getStringAccordingToDataBase($sql, $fileEncoding);
 	}
-	
-	
-	if (!$content) {
-		return false;
+
+	$babDB->db_multi_query($sql);
+	while($babDB->db_more_results()){
+		$babDB->db_next_result();
 	}
-	
-	if (isset($fileEncoding)) {
-		$content = bab_getStringAccordingToDataBase($content, $fileEncoding);
-	}
-	
-	// match sql query, split with ; but ignore ; in content strings
-	$reg = "/\w(?:[^';]*'(?:[^']|\\\\'|'')*')*[^';]*;/";
-	if (preg_match_all($reg, $content, $m)) {
-		for ($k = 0; $k < count($m[0]); $k++ ) {
-			$query = trim($m[0][$k]);
-			if (!empty($query)) {
-				if (!$babDB->db_query($query)) {
-					return false;
-				}
-			}
-		}	
-		return true;
-	}
-	return false;
+
+	return true;
 }
 
 
@@ -800,19 +802,19 @@ function bab_execSqlFile($file, $fileEncoding = null) {
 
 function bab_f_getDebug() {
 
-	
+
 
 	class bab_f_getDebugCls {
 		var $messages;
 		var $message;
-		
+
 		var $nb_messages = 0;
 		var $t_messages;
-		
-		
-		
+
+
+
 		private $iterable_limit;
-		
+
 		function bab_f_getDebugCls() {
 			$this->messages = $GLOBALS['bab_debug_messages'];
 			$this->nb_messages += count($this->messages);
@@ -823,7 +825,7 @@ function bab_f_getDebug() {
 			}
 			$this->t_categories = bab_translate('Categories');
 			$this->t_all_categories = bab_translate('All');
-			
+
 			$this->categories = array();
 			foreach ($this->messages as $message) {
 				$category = $message['category'];
@@ -901,7 +903,7 @@ function bab_f_getDebug() {
 				$previous = $this->getIterableProperties($row);
 			}
 
-	
+
 			if (30 < count($previous) || empty($previous)) {
 				return $this->html_print_r($i);
 			}
@@ -957,7 +959,7 @@ function bab_f_getDebug() {
 			if (is_object($data)) {
 				return $this->html_print_r($data);
 			}
-			 
+
 			// int, float, boolean
 			return $data;
 		}
@@ -967,9 +969,9 @@ function bab_f_getDebug() {
 
 		function getNextMessage() {
 			if (list(, $arr) = each($this->messages)) {
-				
+
 				$this->iterable_limit = 1;
-				
+
 				$this->message['category']	= bab_toHtml($arr['category']);
 				$this->message['severity']	= bab_toHtml($arr['severity']);
 				$this->message['file'] 		= bab_toHtml(basename($arr['file']));
@@ -986,7 +988,7 @@ function bab_f_getDebug() {
 				}
 
 				$size = 0;
-		
+
 				if (is_array($arr['data']) || is_object($arr['data'])) {
 					$size = count($arr['data']);
 				}
@@ -996,7 +998,7 @@ function bab_f_getDebug() {
 				}
 
 				$this->message['size'] 		= bab_toHtml($size);
-				
+
 				return true;
 			}
 			reset($this->messages);
@@ -1011,7 +1013,7 @@ function bab_f_getDebug() {
 			return false;
 		}
 	}
-	
+
 	$babBody = bab_getInstance('babBody');
 
 	/*@var $babBody babBody */
@@ -1057,7 +1059,7 @@ function bab_getParentsClasses($obj, $str = '') {
 		}
 		$str = bab_getParentsClasses($parent, $str);
 	}
-	
+
 	return $str;
 }
 
@@ -1074,13 +1076,13 @@ function bab_getParentsClasses($obj, $str = '') {
  */
 function bab_debug_print_backtrace($echo = false)
 {
-    
+
     $error_reporting = (int) ini_get('error_reporting');
-    
+
     if (E_NOTICE !== ($error_reporting & E_NOTICE)) {
     	return;
     }
-    
+
     // Get backtrace
     static $uniqueId = 0;
 	$uniqueId++;
@@ -1088,7 +1090,7 @@ function bab_debug_print_backtrace($echo = false)
 
     // Unset call to debug_print_backtrace
     array_shift($backtrace);
-    
+
     // Iterate backtrace
     $calls = array();
     foreach ($backtrace as $i => $call) {
@@ -1100,14 +1102,14 @@ function bab_debug_print_backtrace($echo = false)
         $function = (isset($call['class'])) ?
             '<b>' . $call['class'] . '</b>.<b>' . $call['function'] . '</b>':
             '<b>' . $call['function'] . '</b>';
-       
+
         $params = '';
         if (isset($call['args'])) {
 			$nbParam = 0;
 			foreach ($call['args'] as $param)
 			{
-				$param_str = '';	
-			
+				$param_str = '';
+
 				if (is_string($param) || is_numeric($param)) {
 					$param_str = (string) $param;
 				} elseif (is_array($param)) {
@@ -1165,7 +1167,7 @@ function bab_debug_print_backtrace($echo = false)
 			bab_debug($display);
 		}
 	}
-	
+
 }
 
 ?>

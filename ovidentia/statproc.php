@@ -25,10 +25,14 @@
 * @internal SEC1 NA 11/12/2006 FULL
 */
 
-require_once dirname(__FILE__).'/registerglobals.php';
 require_once dirname(__FILE__).'/statprocincl.php';
 
 /* main */
+
+bab_requireSaveMethod();
+
+// deprecated: use LibTimer instead to update stats
+
 $idx = bab_rp('idx');
 $statlimit = bab_rp('statlimit', OVSTAT_LIMIT);
 $statrows = bab_rp('statrows', OVSTAT_ROWS);
@@ -54,4 +58,3 @@ if( $statecho )
 {
 	exit;
 }
-?>

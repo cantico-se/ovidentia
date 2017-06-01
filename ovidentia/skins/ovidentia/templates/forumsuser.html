@@ -88,6 +88,7 @@
 
 <!--#begin forumssearch -->
 <form name="fsearch" method="post" action="{ babPhpSelf }">
+<input type="hidden" name="babCsrfProtect" value="{ babCsrfProtect }" />
 <input type="hidden" name="tg" value="forumsuser">
 <input type="hidden" name="idx" value="searchr">
 <table width="99%" border="0" cellspacing="1" cellpadding="0" align="center">
@@ -218,6 +219,7 @@
     <tr>
     <td class="BabForumBackground" valign="midlle">
 	<form name="threadl" method="post" action="{ babPhpSelf }">
+<input type="hidden" name="babCsrfProtect" value="{ babCsrfProtect }" />
 	<input type="hidden" name="tg" value="threads">
 	<input type="hidden" name="idx" value="{ idx }">
 	{ jumpto_txt }&nbsp;&nbsp;<select class="BabForumBackground" name="forum">
@@ -321,6 +323,7 @@ window.focus();
 
 <!--#begin forumsoptions -->
 <form name="foptions" method="post" action="{ babPhpSelf }">
+<input type="hidden" name="babCsrfProtect" value="{ babCsrfProtect }" />
 <input type="hidden" name="tg" value="forumsuser">
 <input type="hidden" name="idx" value="list">
 <input type="hidden" name="action" value="options">

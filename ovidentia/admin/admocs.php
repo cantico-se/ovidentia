@@ -185,6 +185,7 @@ $idx = bab_rp('idx', 'list');
 $addoc = bab_pp('addoc');
 if( $addoc == "addoc" )
 {
+    bab_requireSaveMethod();
 	$fname = bab_pp('fname');
 	$description = bab_pp('description');
 	$dirid = bab_pp('dirid');

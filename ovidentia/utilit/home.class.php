@@ -22,10 +22,33 @@
  * USA.																	*
 ************************************************************************/
 
+
+
 /**
-* @internal SEC1 PR 20/02/2007 FULL
-*/
+ * Home page manager, root functionality
+ */
+class Func_Home extends bab_functionality
+{
+    public function getDescription()
+    {
+        return bab_translate('Home page manager');
+    }
+    
+    /**
+     * Set sitemap position for home page
+     * This can be used to set a different sitemap entry for each language
+     */
+    public function setSitemapPosition()
+    {
+        bab_siteMap::setPosition(bab_siteMap::getSitemapRootNode());
+    }
+    
+    /**
+     * Include home page
+     */
+    public function includePage()
+    {
+        throw new Exception('This method must be implemented');
+    }
+}
 
-include_once 'base.php';
-
-trigger_error('summary has been deprecated, please use the portal_summary addon instead of this url');

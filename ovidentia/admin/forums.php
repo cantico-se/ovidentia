@@ -22,9 +22,9 @@
  * USA.																	*
 ************************************************************************/
 include_once 'base.php';
-require_once dirname(__FILE__).'/../utilit/registerglobals.php';
-include_once $babInstallPath.'utilit/forumincl.php';
-include_once $babInstallPath.'utilit/dirincl.php';
+
+include_once $GLOBALS['babInstallPath'].'utilit/forumincl.php';
+include_once $GLOBALS['babInstallPath'].'utilit/dirincl.php';
 
 function addForum($nameval, $descriptionval, $nbmsgdisplayval)
 	{
@@ -413,26 +413,38 @@ if( !bab_isUserAdministrator() && !bab_isDelegated('forums'))
 	return;
 }
 
-if(!isset($idx))
-	{
-	$idx = "List";
-	}
+$idx = bab_rp('idx', 'Modify');
+$update = bab_rp('update', null);
+$addforum = bab_rp('addforum', null);
+$nbmsgdisplay = bab_rp('nbmsgdisplay');
+$description = bab_rp('description');
+
 
 if( isset($addforum) && $addforum == "addforum" )
 	{
+	    $fname = bab_rp('fname');
+	    $moderation = bab_rp('moderation');
+	    $notification = bab_rp('notification');
+	    $active = bab_rp('active');
+	    
+	    bab_requireSaveMethod();
+	    
 	if( !saveForum($fname, $description, $moderation, $notification, $nbmsgdisplay, $active))
 		$idx = "addforum";
 	}
 
 if( isset($update) && $update == "order")
 	{
-	saveOrderForums($listforums);
+	    $listforums = bab_rp('listforums');
+	bab_requireSaveMethod() && saveOrderForums($listforums);
 	}
 
 if( isset($update) && $update == "forumnotices")
 	{
-	updateForumFields($listfd);
+	    $listfd = bab_rp('listfd');
+	bab_requireSaveMethod() && updateForumFields($listfd);
 	Header("Location: ". $GLOBALS['babUrlScript']."?tg=forums&idx=List");
+	exit;
 	}
 
 switch($idx)
@@ -441,10 +453,9 @@ switch($idx)
 		$babBody->title = bab_translate("Add a new forum");
 		$babBody->addItemMenu("List", bab_translate("Forums"), $GLOBALS['babUrlScript']."?tg=forums&idx=List");
 		$babBody->addItemMenu("addforum", bab_translate("Add"), $GLOBALS['babUrlScript']."?tg=forums&idx=addforum");
-		if (!isset($name)) $name  ='';
 		if (!isset($description)) $description  ='';
 		if (!isset($nbmsgdisplay)) $nbmsgdisplay  ='';
-		addForum($name, $description, $nbmsgdisplay);
+		addForum(bab_rp('name'), $description, $nbmsgdisplay);
 		break;
 
 	case "ord":
@@ -483,4 +494,4 @@ switch($idx)
 	}
 $babBody->setCurrentItemMenu($idx);
 bab_siteMap::setPosition('bab','AdminForums');
-?>
+

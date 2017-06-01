@@ -22,8 +22,8 @@
  * USA.																	*
 ************************************************************************/
 include_once "base.php";
-require_once dirname(__FILE__).'/../utilit/registerglobals.php';
-include_once $babInstallPath."admin/mgroup.php";
+
+include_once $GLOBALS['babInstallPath']."admin/mgroup.php";
 
 function setOfGroupsName($sid)
 {
@@ -276,7 +276,7 @@ switch ($_POST['action'])
 	case 'sedit':
 		if (isset($_POST['deleteg']))
 			{
-			sedit_delete();
+			bab_requireDeleteMethod() && sedit_delete();
 			}
 		else if (!sedit_record())
 			$idx='sedit';
@@ -284,11 +284,11 @@ switch ($_POST['action'])
 
 	case 'mgroups':
 		$arr = mgroups_getSelected();
-		record_setOfGroups($arr);
+		bab_requireSaveMethod() && record_setOfGroups($arr);
 		break;
 
 	case 'glist':
-		delete_glist();
+		bab_requireDeleteMethod() && delete_glist();
 		break;
 }
 
@@ -334,5 +334,3 @@ switch ($idx)
 }
 
 $babBody->setCurrentItemMenu($idx);
-
-?>

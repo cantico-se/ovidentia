@@ -22,7 +22,7 @@
  * USA.																	*
 ************************************************************************/
 include_once 'base.php';
-require_once dirname(__FILE__).'/utilit/registerglobals.php';
+
 
 function OrgChartPage($ocid, $oeid, $iduser, $disp)
 {
@@ -55,12 +55,16 @@ function OrgChartPage($ocid, $oeid, $iduser, $disp)
 	die(bab_printTemplate($temp,"chart.html", "chartpage"));
 }
 
-if (!isset($idx)){
-	$idx = '';
-}
 
-if (!isset($oeid))
-{
+// main
+
+$idx = bab_rp('idx');
+$ocid = bab_rp('ocid');
+$oeid = bab_rp('oeid', 0);
+$iduser = bab_rp('iduser', 0);
+$disp = bab_rp('disp', 'disp3');
+
+if (empty($oeid)) {
 	$oeinfo = $babDB->db_fetch_array(
 		$babDB->db_query(
 			"select oet.id
@@ -75,18 +79,6 @@ if (!isset($oeid))
 switch($idx)
 {
 	default:
-		if(!isset($oeid))
-		{
-			$oeid = 0;
-		}
-		if(!isset($iduser))
-		{
-			$iduser = 0;
-		}
-		if(!isset($disp))
-		{
-			$disp = 'disp3';
-		}
 		OrgChartPage($ocid, $oeid, $iduser, $disp);
 		break;
 }

@@ -25,9 +25,9 @@
 * @internal SEC1 NA 08/12/2006 FULL
 */
 include_once 'base.php';
-require_once dirname(__FILE__).'/../utilit/registerglobals.php';
-include_once $babInstallPath.'admin/acl.php';
-include_once $babInstallPath.'utilit/topincl.php';
+
+include_once $GLOBALS['babInstallPath'].'admin/acl.php';
+include_once $GLOBALS['babInstallPath'].'utilit/topincl.php';
 
 function addTopic($cat, $ncat, $category, $description, $saart, $sacom, $saupd, $bnotif, $atid, $disptid, $restrict, $bhpages, $bpubdates, $battachment, $bartupdate, $bmanmod, $maxarts, $bautoapp, $busetags, $allow_empty_head)
 	{
@@ -919,7 +919,6 @@ function getImage()
 	$iWidth		= (int) bab_rp('iWidth', 0);
 	$iHeight	= (int) bab_rp('iHeight', 0);
 	$sImage		= (string) bab_rp('sImage', '');
-	$sOldImage	= (string) bab_rp('sOldImage', '');
 	$oEnvObj	= bab_getInstance('bab_PublicationPathsEnv');
 
 	global $babBody;
@@ -928,11 +927,6 @@ function getImage()
 	
 	$oImageResize = new bab_ImageResize();
 	$oImageResize->resizeImageAuto($sPath . $sImage, $iWidth, $iHeight);
-
-	if(file_exists($sPath . $sOldImage))
-	{
-		@unlink($sPath . $sOldImage);
-	}
 }
 	
 function deleteTempImage()
@@ -971,14 +965,34 @@ $cat = intval(bab_rp('cat', 0));
 
 if(isset($_POST['add']))
 {
-	$sAllowAddImg = bab_rp('sAllowAddImg', 'N');
-	if(!saveCategory($category, $ncat, $sacom, $saart, $saupd, $bnotif, $lang, $atid, $disptid, $bhpages, $bpubdates, $battachment, $bartupdate, $bmanmod, $maxarts, $bautoapp, $busetags, $sAllowAddImg, bab_rp('allow_empty_head')))
+    bab_requireSaveMethod();
+    
+	if(!saveCategory(
+	    bab_rp('category'), 
+	    bab_rp('ncat'), 
+	    bab_rp('sacom'), 
+	    bab_rp('saart'), 
+	    bab_rp('saupd'), 
+	    bab_rp('bnotif'), 
+	    bab_rp('lang'), 
+	    bab_rp('atid'), 
+	    bab_rp('disptid'), 
+	    bab_rp('bhpages'), 
+	    bab_rp('bpubdates'), 
+	    bab_rp('battachment'), 
+	    bab_rp('bartupdate'), 
+	    bab_rp('bmanmod'), 
+	    bab_rp('maxarts'), 
+	    bab_rp('bautoapp'), 
+	    bab_rp('busetags'), 
+	    bab_rp('sAllowAddImg', 'N'), 
+	    bab_rp('allow_empty_head')))
 	{
 		$idx = 'addtopic';
 	}
 	else
 	{
-		$cat = $ncat;
+		$cat = bab_rp('ncat');
 		Header("Location: ". $GLOBALS['babUrlScript']."?tg=topcats");
 		exit;
 	}
@@ -990,6 +1004,7 @@ if( !$cat )
 	return;
 }
 
+$idp = bab_rp('idp', null);
 if( !isset($idp))
 {
 	list($idp) = $babDB->db_fetch_row($babDB->db_query("select id_parent from ".BAB_TOPICS_CATEGORIES_TBL." where id='".$cat."'"));
@@ -1006,11 +1021,11 @@ switch($idx)
 		exit;
 	
 	case 'uploadTopicImg': // called by ajax
-		uploadTopicImg();
+		bab_requireSaveMethod() && uploadTopicImg();
 		exit;	
 	
 	case 'deleteTempImage': // called by ajax
-		deleteTempImage();
+		bab_requireDeleteMethod() && deleteTempImage();
 		exit;
 
 	case "addtopic":
@@ -1046,5 +1061,3 @@ switch($idx)
 		exit;
 	}
 $babBody->setCurrentItemMenu($idx);
-
-?>

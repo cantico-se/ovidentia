@@ -22,5 +22,5 @@
  * USA.																	*
 ************************************************************************/
 include "config.php";
-include $babInstallPath."index.php";
+include $GLOBALS['babInstallPath']."index.php";
 ?>

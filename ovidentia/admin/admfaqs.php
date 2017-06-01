@@ -22,8 +22,8 @@
  * USA.																	*
 ************************************************************************/
 include_once "base.php";
-require_once dirname(__FILE__).'/../utilit/registerglobals.php';
-include_once $babInstallPath."admin/acl.php";
+
+include_once $GLOBALS['babInstallPath']."admin/acl.php";
 
 function getFaqName($id)
 	{
@@ -235,13 +235,15 @@ if( !bab_isUserAdministrator() && !bab_isDelegated('faqs'))
 	return;
 }
 
-if(!isset($idx))
-	{
-	$idx = "Categories";
-	}
+$idx = bab_rp('idx', "Categories");
 
-if( isset($add))
+
+if( isset($_REQUEST['add']))
 	{
+	    bab_requireSaveMethod();
+	    $category = bab_rp('category');
+	    $lang = bab_rp('lang');
+	    
 	$faqCategoryId = saveCategory($category, $lang);
 	header('location:'.$GLOBALS['babUrlScript'].'?tg=admfaqs&idx=Categories#bab_faq_' . $faqCategoryId);
 	}
@@ -269,4 +271,3 @@ switch($idx)
 	}
 $babBody->setCurrentItemMenu($idx);
 bab_siteMap::setPosition('bab','AdminFaqs');
-?>

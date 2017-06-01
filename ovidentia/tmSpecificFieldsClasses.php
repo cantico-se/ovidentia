@@ -22,10 +22,10 @@
  * USA.																	*
 ************************************************************************/
 	include "base.php";
-	require_once($babInstallPath . 'utilit/baseFormProcessingClass.php');
-	require_once($babInstallPath . 'utilit/tableWrapperClass.php');
-	require_once($babInstallPath . 'utilit/tmdefines.php');
-	require_once($babInstallPath . 'utilit/tmIncl.php');
+	require_once($GLOBALS['babInstallPath'] . 'utilit/baseFormProcessingClass.php');
+	require_once($GLOBALS['babInstallPath'] . 'utilit/tableWrapperClass.php');
+	require_once($GLOBALS['babInstallPath'] . 'utilit/tmdefines.php');
+	require_once($GLOBALS['babInstallPath'] . 'utilit/tmIncl.php');
 	
 class BAB_TM_FieldBase extends BAB_BaseFormProcessing
 {
@@ -157,6 +157,10 @@ class BAB_TM_FieldText extends BAB_TM_FieldBase
 		$db = &$GLOBALS['babDB'];
 		
 		$this->set_htmlData('sFieldType', bab_translate("Text"));
+		
+		$iIdProject = null;
+		$iIdField = null;
+		
 		$this->get_data('iIdProject', $iIdProject);
 		$this->get_data('iIdField', $iIdField);
 		
@@ -203,6 +207,10 @@ class BAB_TM_FieldArea extends BAB_TM_FieldBase
 		$db = &$GLOBALS['babDB'];
 		
 		$this->set_htmlData('sFieldType', bab_translate("Text Area"));
+		
+		$iIdProject = null;
+		$iIdField = null;
+		
 		$this->get_data('iIdProject', $iIdProject);
 		$this->get_data('iIdField', $iIdField);
 		
@@ -246,6 +254,7 @@ class BAB_TM_FieldRadio extends BAB_TM_FieldBase
 
 		$this->set_data('aOptions', bab_rp('aOptions', array('')));
 		
+		$aOptions = null;
 		$this->get_data('aOptions', $aOptions);
 		$this->set_htmlData('iOptionCount', (int) bab_rp('iOptionCount', count($aOptions)));
 		
@@ -258,6 +267,7 @@ class BAB_TM_FieldRadio extends BAB_TM_FieldBase
 		$db = &$GLOBALS['babDB'];
 
 		$this->set_htmlData('sFieldType', bab_translate("Choice"));
+		$iIdField = null;
 		$this->get_data('iIdField', $iIdField);
 		
 		$this->getOptionCount($iIdField);
@@ -272,8 +282,14 @@ class BAB_TM_FieldRadio extends BAB_TM_FieldBase
 		
 		$this->set_data('iDefaultOption', bab_rp('iDefaultOption', 0));
 		
+		$iIdProject = null;
+		$iIdField = null;
+		
 		$this->get_data('iIdProject', $iIdProject);
 		$this->get_data('iIdField', $iIdField);
+		
+		$is_deletable = null;
+		$is_modifiable = null;
 		
 		$this->isFieldModifiableAndDeletable($iIdProject, $iIdField, $is_deletable, $is_modifiable);
 		$this->set_data('is_deletable', $is_deletable);
@@ -305,6 +321,7 @@ class BAB_TM_FieldRadio extends BAB_TM_FieldBase
 	function getFieldNameAndDefaultChoice($iIdField)
 	{
 		$db = &$GLOBALS['babDB'];
+		$iIdProject = null;
 		$this->get_data('iIdProject', $iIdProject);
 		$result = $this->selectFieldNameAndDefaultChoiceQuery($iIdProject, $iIdField);
 
@@ -344,6 +361,12 @@ class BAB_TM_FieldRadio extends BAB_TM_FieldBase
 	
 	function nextOption() 
 	{
+	    $bResubmission = null;
+	    $bEdition = null;
+	    $bCreation = null;
+	    $iDefaultOption = null;
+	    $aOptions = null;
+	    
 		$this->get_data('bResubmission', $bResubmission);
 		$this->get_data('bEdition', $bEdition);
 		$this->get_data('bCreation', $bCreation);

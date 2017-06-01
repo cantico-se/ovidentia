@@ -1,5 +1,6 @@
 <!--#begin select -->
 <form method="post" action="{ babPhpSelf }">
+<input type="hidden" name="babCsrfProtect" value="{ babCsrfProtect }" />
 <!--#in _getnexthidden -->
 <input type="hidden" name="{ name }" value="{ value }" />
 <!--#endin _getnexthidden -->
@@ -285,6 +286,7 @@ bab_initFunctions.push(function() { document.onmousemove = bab_tooltipPosition; 
 </script>
 
 <form method="post" id="oCalAccessForm" action="{ babPhpSelf }">
+<input type="hidden" name="babCsrfProtect" value="{ babCsrfProtect }" />
 	<!--#in _getnexthidden -->
 	<input type="hidden" name="{ name }" value="{ value }" />
 	<!--#endin _getnexthidden -->

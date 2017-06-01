@@ -92,8 +92,8 @@ function getGroupsMembers($id_grp)
 
     $res = $babDB->db_query("SELECT u.* FROM ".BAB_USERS_GROUPS_TBL." g, ".BAB_USERS_TBL." u WHERE g.id_group IN (".$babDB->quote($id_grp).") AND g.id_object=u.id");
 
-    if( $res && $babDB->db_num_rows($res) > 0)
-        {
+    if( $res && $babDB->db_num_rows($res) > 0) {
+        $user = array();
         $i = 0;
         while ($arr = $babDB->db_fetch_array($res))
             {
@@ -277,7 +277,6 @@ function bab_addGroup($name, $description, $managerid = 0, $grpdg, $parent = 1)
                 name='".$babDB->db_escape_string($name)."',
                 description = '".$babDB->db_escape_string($description)."',
                 nb_set = '0',
-                mail = 'N',
                 ustorage = 'N',
                 notes = 'N',
                 contacts = 'N',

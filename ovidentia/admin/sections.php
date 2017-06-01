@@ -22,8 +22,8 @@
  * USA.																	*
 ************************************************************************/
 include_once "base.php";
-require_once dirname(__FILE__).'/../utilit/registerglobals.php';
-include_once $babInstallPath."admin/acl.php";
+
+include_once $GLOBALS['babInstallPath']."admin/acl.php";
 
 function getSectionName($id)
 	{
@@ -758,31 +758,42 @@ if( !bab_isUserAdministrator() && !bab_isDelegated('sections'))
 	return;
 }
 
+
+$idx = bab_rp('idx', 'List');
+$create = bab_rp('create', null);
+$script = bab_rp('script', null);
+$update = bab_rp('update', null);
+$position = bab_rp('position');
+$title = bab_rp('title');
+$description = bab_rp('description');
+$template = bab_rp('template');
+$lang = bab_rp('lang');
+$opt = bab_rp('opt');
+$js = bab_rp('js');
+
 if( isset($create))
 	{
 	if (!isset($script))
 		$script = '';
-	sectionSave($title, $position, $description, $script, $js, $template, $lang, $opt);
+	bab_requireSaveMethod() && sectionSave($title, $position, $description, $script, $js, $template, $lang, $opt);
 	}
 
 if( isset($update))
 	{
 	if( $update == "order" )
 		{
-		if ( !isset($listleft))  { $listleft= array(); }
-		if ( !isset($listright)) { $listright= array(); }
-		saveSectionsOrder($listleft, $listright);
+	    $listleft = bab_rp('listleft', array());
+	    $listright = bab_rp('listright', array());
+		bab_requireSaveMethod() && saveSectionsOrder($listleft, $listright);
 		}
 	else if( $update == "disable" )
 		{
-		if( !isset($sections)) { $sections= array();}
-		if( !isset($sectopt)) { $sectopt= array();}
-		disableSections($sections, $sectopt);
+		$sections = bab_rp('sections', array());
+		$sectopt = bab_rp('sectopt', array());
+		bab_requireSaveMethod() && disableSections($sections, $sectopt);
 		}
 	}
 
-if( !isset($idx))
-	$idx = "List";
 
 
 switch($idx)

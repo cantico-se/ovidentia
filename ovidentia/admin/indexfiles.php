@@ -22,7 +22,7 @@
  * USA.																	*
 ************************************************************************/
 include_once "base.php";
-require_once dirname(__FILE__).'/../utilit/registerglobals.php';
+
 include_once $GLOBALS['babInstallPath'].'utilit/indexincl.php';
 
 
@@ -200,7 +200,7 @@ function record_status() {
 
 // main
 
-if( !isset($BAB_SESS_LOGGED) || empty($BAB_SESS_LOGGED) ||  !bab_isUserAdministrator() || false === bab_searchEngineInfos())
+if( !bab_isUserLogged() ||  !bab_isUserAdministrator() || false === bab_searchEngineInfos())
 {
 	$babBody->msgerror = bab_translate("Access denied");
 	return;
@@ -211,6 +211,9 @@ $idx = bab_rp('idx','files');
 
 
 if (isset($_POST['action'])) {
+    
+    bab_requireSaveMethod();
+    
 	switch($_POST['action']) {
 		case 'status':
 			if (!record_status()) {

@@ -22,8 +22,8 @@
  * USA.																	*
 ************************************************************************/
 include_once "base.php";
-include_once $babInstallPath."admin/acl.php";
-include_once $babInstallPath.'utilit/ocapi.php';
+include_once $GLOBALS['babInstallPath']."admin/acl.php";
+include_once $GLOBALS['babInstallPath'].'utilit/ocapi.php';
 
 function modifyOrgChart($id)
 {
@@ -551,6 +551,8 @@ $update = bab_pp('update');
 
 if( $update )
 {
+    bab_requireSaveMethod();
+    
     switch ($update)
     {
         case 'updateoc':
@@ -593,23 +595,23 @@ if( $aclview == 'update' )
 if (isset($action)) {
     switch($action) {
         case 'Yes':
-            confirmDeleteOrgChart($item);
+            bab_requireDeleteMethod() && confirmDeleteOrgChart($item);
             Header("Location: ". $GLOBALS['babUrlScript']."?tg=admocs&idx=list");
             exit;
 
         case 'save_types':
             $entityTypes = bab_rp('entity_type', array());
-            saveOrgChartEntityTypes($item, $entityTypes);
+            bab_requireSaveMethod() && saveOrgChartEntityTypes($item, $entityTypes);
 
             $newEntityType = bab_rp('new_entity_type', null);
             if ($newEntityType && $newEntityType['name'] != '') {
-                addOrgChartEntityType($item, $newEntityType);
+                bab_requireSaveMethod() && addOrgChartEntityType($item, $newEntityType);
             }
             break;
 
         case 'delete_type':
             $entityTypeId = bab_rp('entitytype');
-            deleteOrgChartEntityType($item, $entityTypeId);
+            bab_requireDeleteMethod() && deleteOrgChartEntityType($item, $entityTypeId);
             break;
     }
 }
@@ -682,4 +684,3 @@ switch($idx)
         break;
 }
 $babBody->setCurrentItemMenu($idx);
-?>

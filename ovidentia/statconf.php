@@ -22,8 +22,8 @@
  * USA.																	*
 ************************************************************************/
 include_once "base.php";
-require_once dirname(__FILE__).'/utilit/registerglobals.php';
-include_once $babInstallPath."admin/acl.php";
+
+include_once $GLOBALS['babInstallPath']."admin/acl.php";
 
 define("BAB_STAT_BCT_TOPIC",		1);
 define("BAB_STAT_BCT_ARTICLE",		2);
@@ -834,49 +834,53 @@ $action = bab_rp('action', null);
 
 $aclview = bab_rp('aclview', null);
 
+$baskid = bab_rp('baskid');
+$url = bab_rp('url');
+$desc = bab_rp('desc');
+
 
 if( isset($action))
 {
 	switch( $action)
 	{
 		case 'dpages':
-		deletePages($pages);
+		bab_requireDeleteMethod() && deletePages(bab_rp('pages'));
 			break;
 		case 'apage':
-		if(addPage($url, $desc))
-		{
-			$url = '';
-			$desc = '';
-		}
+		    bab_requireSaveMethod();
+		    if (addPage($url, $desc)) {
+    			$url = '';
+    			$desc = '';
+    		}
 			break;
+			
 		case 'apref':
-		updateStatPreferences($wsepar, $separ);
-		Header("Location: ". $GLOBALS['babUrlScript']."?tg=stat");
-		exit;
+		    bab_requireSaveMethod() && updateStatPreferences(bab_rp('wsepar'), bab_rp('separ'));
+		    Header("Location: ". $GLOBALS['babUrlScript']."?tg=stat");
+		    exit;
 			break;
+			
 		case 'abask':
-			addStatBasket($baskname, $baskdesc);
+			bab_requireSaveMethod() && addStatBasket(bab_rp('baskname'), bab_rp('baskdesc'));
 			Header("Location: ". $GLOBALS['babUrlScript']."?tg=statconf&idx=bask");
 			exit;
 			break;
 		case 'dbask':
-			deleteStatBasket($baskid);
+			bab_requireDeleteMethod() && deleteStatBasket(bab_rp('baskid'));
 			break;
 		case 'mbask':
-			updateStatBasket($baskid, $baskname, $baskdesc);
-			unset($baskname);
-			unset($baskdesc);
+			bab_requireSaveMethod() && updateStatBasket(bab_rp('baskid'), bab_rp('baskname'), bab_rp('baskdesc'));
 			break;
 		case 'bcdel':
-			deleteStatBasketContentItem();
+			bab_requireDeleteMethod() && deleteStatBasketContentItem();
 			break;
 		case 'acbask':
-			addStatBasketContentItem();
+			bab_requireSaveMethod() && addStatBasketContentItem();
 			$baskid = $_POST['baskid'];
 			$idx = 'baskcontent';
 			break;
 		case 'acubask':
-			updateStatBasketContentItem();
+			bab_requireSaveMethod() && updateStatBasketContentItem();
 			$baskid = $_POST['baskid'];
 			$idx = 'baskcontent';
 			break;
@@ -899,10 +903,9 @@ switch($idx)
 		statBrowseBasketItem();
 		printBabBodyPopup();
 		exit;
-		exit;
 		break;
 
-	case 'baskrights':
+case 'baskrights':
 		$babBody->title = bab_translate("List of groups");
 		$macl = new macl("statconf", "bask", $baskid, "aclview");
 		$macl->addtable( BAB_STATSBASKETS_GROUPS_TBL,bab_translate("Who can view this statistic basket?"));
@@ -913,10 +916,6 @@ switch($idx)
 		$babBody->addItemMenu("pref", bab_translate("Preferences"), $GLOBALS['babUrlScript']."?tg=statconf&idx=pref");
 		$babBody->addItemMenu("bask", bab_translate("Baskets"), $GLOBALS['babUrlScript']."?tg=statconf&idx=bask");
 		$babBody->addItemMenu("baskrights", bab_translate("Rights"), $GLOBALS['babUrlScript']."?tg=statconf&idx=baskrights");
-		if( bab_getCurrentAdmGroup() == 0 )
-			{
-			$babBody->addItemMenu("maj", bab_translate("Update"), $GLOBALS['babUrlScript']."?tg=statconf&idx=maj&statrows=12000");
-			}
 		break;
 
 	case 'baskdel':
@@ -926,12 +925,6 @@ switch($idx)
 		$babBody->addItemMenu("pref", bab_translate("Preferences"), $GLOBALS['babUrlScript']."?tg=statconf&idx=pref");
 		$babBody->addItemMenu("bask", bab_translate("Baskets"), $GLOBALS['babUrlScript']."?tg=statconf&idx=bask");
 		$babBody->addItemMenu("baskdel", bab_translate("Delete"), $GLOBALS['babUrlScript']."?tg=statconf&idx=baskdel");
-		if( bab_getCurrentAdmGroup() == 0 )
-			{
-			$babBody->addItemMenu("maj", bab_translate("Update"), $GLOBALS['babUrlScript']."?tg=statconf&idx=maj&statrows=12000");
-			}
-		if( !isset($baskname) ) { $baskname ='';}
-		if( !isset($baskdesc) ) { $baskdesc ='';}
 		statDeleteBasket($baskid);
 		break;
 
@@ -942,10 +935,6 @@ switch($idx)
 		$babBody->addItemMenu("pref", bab_translate("Preferences"), $GLOBALS['babUrlScript']."?tg=statconf&idx=pref");
 		$babBody->addItemMenu("bask", bab_translate("Baskets"), $GLOBALS['babUrlScript']."?tg=statconf&idx=bask");
 		$babBody->addItemMenu("baskedit", bab_translate("Modify"), $GLOBALS['babUrlScript']."?tg=statconf&idx=baskedit");
-		if( bab_getCurrentAdmGroup() == 0 )
-			{
-			$babBody->addItemMenu("maj", bab_translate("Update"), $GLOBALS['babUrlScript']."?tg=statconf&idx=maj&statrows=12000");
-			}
 		statModifyBasket();
 		break;
 
@@ -956,11 +945,6 @@ switch($idx)
 		$babBody->addItemMenu("pref", bab_translate("Preferences"), $GLOBALS['babUrlScript']."?tg=statconf&idx=pref");
 		$babBody->addItemMenu("bask", bab_translate("Baskets"), $GLOBALS['babUrlScript']."?tg=statconf&idx=bask");
 		$babBody->addItemMenu("baskcedit", bab_translate("Modify"), $GLOBALS['babUrlScript']."?tg=statconf&idx=baskcedit&baskid=".$baskid);
-//		$babBody->addItemMenu("baskcadd", bab_translate("Add"), $GLOBALS['babUrlScript']."?tg=statconf&idx=baskcadd&baskid=".$baskid);
-		if( bab_getCurrentAdmGroup() == 0 )
-			{
-			$babBody->addItemMenu("maj", bab_translate("Update"), $GLOBALS['babUrlScript']."?tg=statconf&idx=maj&statrows=12000");
-			}
 		statUpdateContentBasket();
 		break;
 
@@ -972,10 +956,6 @@ switch($idx)
 		$babBody->addItemMenu("bask", bab_translate("Baskets"), $GLOBALS['babUrlScript']."?tg=statconf&idx=bask");
 		$babBody->addItemMenu("baskcontent", bab_translate("Content"), $GLOBALS['babUrlScript']."?tg=statconf&idx=baskcontent&baskid=".$baskid);
 		$babBody->addItemMenu("baskcadd", bab_translate("Add"), $GLOBALS['babUrlScript']."?tg=statconf&idx=baskcadd&baskid=".$baskid);
-		if( bab_getCurrentAdmGroup() == 0 )
-			{
-			$babBody->addItemMenu("maj", bab_translate("Update"), $GLOBALS['babUrlScript']."?tg=statconf&idx=maj&statrows=12000");
-			}
 		statAddContentBasket();
 		break;
 
@@ -986,12 +966,6 @@ switch($idx)
 		$babBody->addItemMenu("pref", bab_translate("Preferences"), $GLOBALS['babUrlScript']."?tg=statconf&idx=pref");
 		$babBody->addItemMenu("bask", bab_translate("Baskets"), $GLOBALS['babUrlScript']."?tg=statconf&idx=bask");
 		$babBody->addItemMenu("baskcontent", bab_translate("Content"), $GLOBALS['babUrlScript']."?tg=statconf&idx=baskcontent");
-		if( bab_getCurrentAdmGroup() == 0 )
-			{
-			$babBody->addItemMenu("maj", bab_translate("Update"), $GLOBALS['babUrlScript']."?tg=statconf&idx=maj&statrows=12000");
-			}
-		if( !isset($baskname) ) { $baskname ='';}
-		if( !isset($baskdesc) ) { $baskdesc ='';}
 		statContentBasket($baskid);
 		break;
 
@@ -1001,13 +975,7 @@ switch($idx)
 		$babBody->addItemMenu("pages", bab_translate("Pages"), $GLOBALS['babUrlScript']."?tg=statconf&idx=pages");
 		$babBody->addItemMenu("pref", bab_translate("Preferences"), $GLOBALS['babUrlScript']."?tg=statconf&idx=pref");
 		$babBody->addItemMenu("bask", bab_translate("Baskets"), $GLOBALS['babUrlScript']."?tg=statconf&idx=bask");
-		if( bab_getCurrentAdmGroup() == 0 )
-			{
-			$babBody->addItemMenu("maj", bab_translate("Update"), $GLOBALS['babUrlScript']."?tg=statconf&idx=maj&statrows=12000");
-			}
-		if( !isset($baskname) ) { $baskname ='';}
-		if( !isset($baskdesc) ) { $baskdesc ='';}
-		statBaskets($baskname, $baskdesc);
+		statBaskets(bab_rp('baskname'), bab_rp('baskdesc'));
 		break;
 
 	case 'pref':
@@ -1016,10 +984,6 @@ switch($idx)
 		$babBody->addItemMenu("pages", bab_translate("Pages"), $GLOBALS['babUrlScript']."?tg=statconf&idx=pages");
 		$babBody->addItemMenu("pref", bab_translate("Preferences"), $GLOBALS['babUrlScript']."?tg=statconf&idx=pref");
 		$babBody->addItemMenu("bask", bab_translate("Baskets"), $GLOBALS['babUrlScript']."?tg=statconf&idx=bask");
-		if( bab_getCurrentAdmGroup() == 0 )
-			{
-			$babBody->addItemMenu("maj", bab_translate("Update"), $GLOBALS['babUrlScript']."?tg=statconf&idx=maj&statrows=12000");
-			}
 		statPreferences();
 		break;
 
@@ -1028,43 +992,22 @@ switch($idx)
 		$babBody->addItemMenu("stat", bab_translate("Statistics"), $GLOBALS['babUrlScript']."?tg=stat");
 		$babBody->addItemMenu("pages", bab_translate("Pages"), $GLOBALS['babUrlScript']."?tg=statconf&idx=pages");
 		$babBody->addItemMenu("pref", bab_translate("Preferences"), $GLOBALS['babUrlScript']."?tg=statconf&idx=pref");
-		$babBody->addItemMenu("bask", bab_translate("Baskets"), $GLOBALS['babUrlScript']."?tg=statconf&idx=bask");
-		if( bab_getCurrentAdmGroup() == 0 )
-			{
-			$babBody->addItemMenu("maj", bab_translate("Update"), $GLOBALS['babUrlScript']."?tg=statconf&idx=maj&statrows=12000");
-			}		
+		$babBody->addItemMenu("bask", bab_translate("Baskets"), $GLOBALS['babUrlScript']."?tg=statconf&idx=bask");		
 		if( !isset($url)) { $url = ""; }
 		if( !isset($desc)) { $desc = ""; }
 		statPages($url, $desc);
 		break;
 
 	case 'maj':
-		$babBody->title = bab_translate("Update");
-		$babBody->addItemMenu("stat", bab_translate("Statistics"), $GLOBALS['babUrlScript']."?tg=stat");
-		$babBody->addItemMenu("pages", bab_translate("Pages"), $GLOBALS['babUrlScript']."?tg=statconf&idx=pages");
-		$babBody->addItemMenu("pref", bab_translate("Preferences"), $GLOBALS['babUrlScript']."?tg=statconf&idx=pref");
-		$babBody->addItemMenu("bask", bab_translate("Baskets"), $GLOBALS['babUrlScript']."?tg=statconf&idx=bask");
-		if( bab_getCurrentAdmGroup() == 0 )
-			{
-			$babBody->addItemMenu("maj", bab_translate("Update"), $GLOBALS['babUrlScript']."?tg=statconf&idx=maj&statrows=12000");
-			include_once $babInstallPath."utilit/statproc.php";
-			}
-		else
-			{
-			$babBody->msgerror = bab_translate("Access denied");
-			}
-		break;
+	    $babBody->msgerror = bab_translate("Access denied, LibTimer is used instead to update statistics");
+	    break;
 
 	default:
 	case 'conf':
 		$babBody->addItemMenu("stat", bab_translate("Statistics"), $GLOBALS['babUrlScript']."?tg=stat");
 		$babBody->addItemMenu("pages", bab_translate("Pages"), $GLOBALS['babUrlScript']."?tg=statconf&idx=pages");
 		$babBody->addItemMenu("pref", bab_translate("Preferences"), $GLOBALS['babUrlScript']."?tg=statconf&idx=pref");
-		$babBody->addItemMenu("bask", bab_translate("Baskets"), $GLOBALS['babUrlScript']."?tg=statconf&idx=bask");
-		if( bab_getCurrentAdmGroup() == 0 )
-			{
-			$babBody->addItemMenu("maj", bab_translate("Update"), $GLOBALS['babUrlScript']."?tg=statconf&idx=maj&statrows=12000");
-			}		
+		$babBody->addItemMenu("bask", bab_translate("Baskets"), $GLOBALS['babUrlScript']."?tg=statconf&idx=bask");	
 		break;
 	}
 

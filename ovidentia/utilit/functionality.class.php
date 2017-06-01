@@ -21,7 +21,7 @@
  * @copyright Copyright (c) 2008 by CANTICO ({@link http://www.cantico.fr})
  */
 
-
+require_once dirname(__FILE__).'/defines.php';
 
 
 /**
@@ -47,23 +47,36 @@ class bab_functionality {
 
     /**
      * Include php file with the functionality class
+     * @param string $pathname
+     * @return bool
+     */
+    private static function includeFileIfExists($path, $filename)
+    {
+        $pathname = self::getRootPath().'/'.$path.'/'.$filename;
+
+        $include_result = false;
+        if (file_exists($pathname))  {
+            $include_result = include $pathname;
+        }
+
+        if (false === $include_result) {
+            bab_debug(sprintf('The functionality %s is not available', $path), DBG_ERROR, __CLASS__);
+        }
+
+        return $include_result;
+    }
+
+
+    /**
+     * Include php file with the functionality class
      * @see bab_functionality::get()
      * @param	string	$path		path to functionality
      * @return string | false		the object class name or false if the file already included or false if the include failed
      */
     public static function includefile($path)
     {
-        $include_result = false;
-        $pathname = self::getRootPath().'/'.$path.'/'.BAB_FUNCTIONALITY_LINK_FILENAME;
-        if (file_exists($pathname))  {
-            $include_result = include $pathname;
-        }
-
-        if (false === $include_result) {
-            //bab_debug(sprintf('The functionality %s is not available', $path), DBG_ERROR, __CLASS__);
-        }
-
-        return $include_result;
+        require_once dirname(__FILE__).'/defines.php';
+        return self::includeFileIfExists($path, BAB_FUNCTIONALITY_LINK_FILENAME);
     }
 
 
@@ -77,8 +90,17 @@ class bab_functionality {
      */
     public static function includeOriginal($path)
     {
-        return include self::getRootPath().'/'.$path.'/'.BAB_FUNCTIONALITY_LINK_ORIGINAL_FILENAME;
+        $parentPath = dirname($path);
+        
+        if ('.' !== $parentPath && '/' !== $parentPath && '\\' !== $parentPath && !empty($parentPath)) {
+            self::includeOriginal($parentPath);
+        }
+        
+        return self::includeFileIfExists($path, BAB_FUNCTIONALITY_LINK_ORIGINAL_FILENAME);
     }
+
+
+
 
 
     /**

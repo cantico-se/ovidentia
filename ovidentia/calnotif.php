@@ -25,7 +25,6 @@
 * @internal SEC1 NA 12/12/2006 FULL
 */
 
-require_once dirname(__FILE__).'/registerglobals.php';
 
 function sendReminders()
 {
@@ -178,19 +177,21 @@ $idx = bab_rp('idx');
 
 if( $idx == 'dismiss')
 {
-	dismissEvent($evtid);
+	bab_requireSaveMethod() && dismissEvent(bab_rp('evtid'));
 	$idx = 'popup';
 }
 
 switch($idx)
 {
 	case 'email':
+	    // Warning! GET URL
+	    // this require $babEmailReminder = true in configuration
 		sendReminders();
 		exit;
 		break;
+		
 	case 'popup':
 		updatePopupNotifier();
 		exit;
 		break;
 }
-?>

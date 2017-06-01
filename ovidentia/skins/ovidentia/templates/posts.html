@@ -33,6 +33,7 @@
 </table>
 <br>
 <form name="postcr" method="post" action="{ babPhpSelf }" enctype="multipart/form-data">
+<input type="hidden" name="babCsrfProtect" value="{ babCsrfProtect }" />
 <input type="hidden" name="tg" value="posts">
 <input type="hidden" name="idx" value="List">
 <input type="hidden" name="forum" value="{ forum }">
@@ -153,10 +154,12 @@
 <!--#begin postedit -->
 <!--#if allow_post_files -->
 <form name="postcr" method="post" action="{ babPhpSelf }" enctype="multipart/form-data">
+<input type="hidden" name="babCsrfProtect" value="{ babCsrfProtect }" />
 <input type="hidden" name="MAX_FILE_SIZE" value="{ maxfilesize }">
 <input type="hidden" name="files_fields" value="1">
 <!--#else allow_post_files -->
 <form name="postcr" method="post" action="{ babPhpSelf }">
+<input type="hidden" name="babCsrfProtect" value="{ babCsrfProtect }" />
 <!--#endif allow_post_files -->
 <input type="hidden" name="tg" value="posts">
 <input type="hidden" name="idx" value="Waiting">
@@ -273,7 +276,7 @@
         <!--#if what "== N" -->
 <!--#if moderator --> 
 <img src="{ babSkinPath }images/Puces/PuceForumWaitConfirm.gif" border=0 alt="{ waiting_txt }" title="{ waiting_txt }" align="absmiddle"><img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="5" height="1" border="0"><a 
-class="BabForumTopicsNavContribution" href="{ confirmurl }">{ confirmname }</a><img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="5" height="1" border="0"><a class="BabForumTopicsNavContribution" href="{ deleteurl }">{ deletename }</a><img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="5" height="1" border="0">
+class="BabForumTopicsNavContribution" href="{ confirmurl }" onclick="return bab_postLinkConfirm(this);">{ confirmname }</a><img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="5" height="1" border="0"><a class="BabForumTopicsNavContribution" href="{ deleteurl }" onclick="return bab_postLinkConfirm(this);">{ deletename }</a><img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="5" height="1" border="0">
 <!--#else moderator --> 
 <!--#if moreurl --> 
 <img src="{ babSkinPath }images/Puces/PuceForumWaitConfirm.gif" border=0 alt="{ waiting_txt }" title="{ waiting_txt }" align="absmiddle">
@@ -285,7 +288,7 @@ class="BabForumTopicsNavContribution" href="{ confirmurl }">{ confirmname }</a><
 <a class="BabForumTopicsNavContribution" href="{ moreurl }">{ morename }</a><img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="5" height="1" border="0">
 <!--#endif moreurl -->
 <!--#if removeurl --> 
-<a class="BabForumTopicsNavContribution" href="{ removeurl }" onclick="return confirm('{ removeconfirmtxt }')">{ removetxt }</a><img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="5" height="1" border="0">
+<a class="BabForumTopicsNavContribution" href="{ removeurl }" title="{ removeconfirmtxt }" onclick="return bab_postLinkConfirm(this);">{ removetxt }</a><img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="5" height="1" border="0">
 <!--#endif removeurl --> 
 <!--#if replyurl --> 
 <a class="BabForumTopicsNavContribution" href="{ replyurl }">{ reply_txt }</a><img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="5" height="1" border="0">
@@ -454,6 +457,7 @@ class="BabForumTopicsNavContribution" href="{ confirmurl }">{ confirmname }</a><
 	<tr>
 	<td>
 	<form name="threadl" method="post" action="{ babPhpSelf }">
+<input type="hidden" name="babCsrfProtect" value="{ babCsrfProtect }" />
 	<input type="hidden" name="tg" value="threads">
 	<input type="hidden" name="idx" value="{ idx }">
 	{ jumpto_txt }&nbsp;&nbsp;<select class="BabForumBackground" name="forum">
@@ -579,8 +583,8 @@ class="BabForumTopicsNavContribution" href="{ confirmurl }">{ confirmname }</a><
 		<!--#if what "== N" --> 
 		<!--#if moderator --> 
 		<img src="{ babSkinPath }images/Puces/PuceForumWaitConfirm.gif" border=0 alt="{ waiting_txt }" title="{ waiting_txt }" align="absmiddle"><img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="5" height="1" border="0"><a 
-		 href="{ confirmurl }">{ confirmname }</a><img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="5" height="1" border="0"><a 
-		 href="{ deleteurl }">{ deletename }</a><img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="5" height="1" border="0">
+		 href="{ confirmurl }" onclick="return bab_postLinkConfirm(this);">{ confirmname }</a><img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="5" height="1" border="0"><a 
+		 href="{ deleteurl }" onclick="return bab_postLinkConfirm(this);">{ deletename }</a><img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="5" height="1" border="0">
 		<!--#endif moderator --> 
 		<!--#endif what -->
 
@@ -588,7 +592,7 @@ class="BabForumTopicsNavContribution" href="{ confirmurl }">{ confirmname }</a><
 		<a  href="{ moreurl }">{ morename }</a><img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="5" height="1" border="0">
 		<!--#endif moreurl --> 
 		<!--#if removeurl --> 
-		<a href="{ removeurl }" onclick="return confirm('{ removeconfirmtxt }')">{ removetxt }</a><img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="5" height="1" border="0">
+		<a href="{ removeurl }" title="{ removeconfirmtxt }" onclick="return bab_postLinkConfirm(this);">{ removetxt }</a><img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="5" height="1" border="0">
 		<!--#endif removeurl --> 
 		</td>
 		</tr>
@@ -623,6 +627,7 @@ class="BabForumTopicsNavContribution" href="{ confirmurl }">{ confirmname }</a><
 	<tr>
 	<td>
 	<form name="threadl" method="post" action="{ babPhpSelf }">
+<input type="hidden" name="babCsrfProtect" value="{ babCsrfProtect }" />
 	<input type="hidden" name="tg" value="threads">
 	<input type="hidden" name="idx" value="{ idx }">
 	{ jumpto_txt }&nbsp;&nbsp;<select class="BabForumBackground" name="forum">
@@ -649,6 +654,7 @@ class="BabForumTopicsNavContribution" href="{ confirmurl }">{ confirmname }</a><
 <!--#begin movethread -->
 <!--#if countforums -->
 <form name="movet" method="post" action="{ babPhpSelf }">
+<input type="hidden" name="babCsrfProtect" value="{ babCsrfProtect }" />
 <input type="hidden" name="tg" value="posts">
 <input type="hidden" name="idx" value="List">
 <input type="hidden" name="forum" value="{ forum }">

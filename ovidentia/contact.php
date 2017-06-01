@@ -25,7 +25,7 @@
 * @internal SEC1 NA 15/12/2006 FULL
 */
 include_once 'base.php';
-require_once dirname(__FILE__).'/utilit/registerglobals.php';
+
 
 function contactCreate($id, $firstname, $lastname, $email, $compagny, $hometel, $mobiletel, $businesstel, $businessfax, $jobtitle, $baddress, $haddress, $bliste)
 	{
@@ -206,7 +206,7 @@ function updateContact( $id, $firstname, $lastname, $email, $compagny, $hometel,
 }
 
 /* main */
-if( !$BAB_SESS_LOGGED || !bab_contactsAccess())
+if( !bab_isUserLogged() || !bab_contactsAccess())
 {
 	$babBody->msgerror = bab_translate("Access denied");
 	return;
@@ -215,10 +215,12 @@ $idx = bab_rp('idx', 'create');
 
 $msgerror = '';
 
-if( $BAB_SESS_USERID != '' )
+if( bab_isUserLogged() )
 {
 if( '' != ($addcontact = bab_pp('addcontact')))
 	{
+	bab_requireSaveMethod();
+	
 	if( $addcontact == 'add')
 		{
 		$firstname = bab_pp('firstname');
@@ -301,4 +303,3 @@ switch($idx)
 		contactCreate($id, $firstname, $lastname, $email, $compagny, $hometel, $mobiletel, $businesstel, $businessfax, $jobtitle, $baddress, $haddress, $_REQUEST['bliste']);
 		break;
 	}
-?>

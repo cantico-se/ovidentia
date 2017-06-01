@@ -35,6 +35,7 @@ define("BAB_IUD_ARTICLES", BAB_IUF."/".BAB_IUF_ARTICLES."/");
 
 function imagesReplace($txt, $prefix, &$tab)
 	{
+    $m = null;
 	preg_match_all("|src=\"?([^\"' >]+)|i", $txt, $m);
 	while(list(,$link) = each($m[1]))
 		{
@@ -73,6 +74,7 @@ function imagesReplace($txt, $prefix, &$tab)
 
 function deleteImages($txt, $id, $prefix)
 	{
+    $m = null;
 	preg_match_all("|src=\"?([^\"' >]+)|i", $txt, $m);
 	while(list(,$link) = each($m[1]))
 		{
@@ -87,6 +89,7 @@ function deleteImages($txt, $id, $prefix)
 
 function imagesUpdateLink($txt, $prefix, $newprefix)
 	{
+    $m = null;
 	preg_match_all("|src=\"?([^\"' >]+)|i", $txt, $m);
 	while(list(,$link) = each($m[1]))
 		{

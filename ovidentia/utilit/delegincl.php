@@ -57,12 +57,11 @@ function bab_getDelegationsObjects()
 			array("faqs"		, bab_translate("Faq")					, 'AdminFaqs'		, $babUrlScript.'?tg=admfaqs'					, bab_translate("Frequently Asked Questions"), Func_Icons::APPS_FAQS),
 			array("forums"		, bab_translate("Forums")				, 'AdminForums'		, $babUrlScript.'?tg=forums'					, null, Func_Icons::APPS_FORUMS),
 			array("calendars"	, bab_translate("Calendar")				, 'AdminCalendars'	, $babUrlScript.'?tg=admcals'					, null, Func_Icons::APPS_CALENDAR),
-			array("mails"		, bab_translate("Mail")					, 'AdminMail'		, $babUrlScript.'?tg=maildoms&userid=0&bgrp=y' 	, null, Func_Icons::APPS_MAIL),
 			array("directories"	, bab_translate("Directories")			, 'AdminDir'		, $babUrlScript.'?tg=admdir'					, null, Func_Icons::APPS_DIRECTORIES),
-			array("approbations", bab_translate("Approbation schemas")	, 'AdminApprob'		, $babUrlScript.'?tg=apprflow'					, null, Func_Icons::APPS_APPROBATIONS),
+			array("approbations", bab_translate("Approbation schemas")	, 'AdminApprob'		, null					                        , null, null),
 			array("filemanager"	, bab_translate("File manager")			, 'AdminFm'			, $babUrlScript.'?tg=admfms'					, null, Func_Icons::APPS_FILE_MANAGER),
-			array("orgchart"	, bab_translate("Charts")				, 'AdminCharts'		, $babUrlScript.'?tg=admocs'					, null, Func_Icons::APPS_ORGCHARTS),
-			array("taskmanager"	, bab_translate("Task Manager")			, 'AdminTm'			, $babUrlScript.'?tg=admTskMgr'					, null, Func_Icons::APPS_TASK_MANAGER)
+			array("orgchart"	, bab_translate("Charts")				, 'AdminCharts'		, $babUrlScript.'?tg=admocs'					, null, Func_Icons::APPS_ORGCHARTS)
+		//	array("taskmanager"	, bab_translate("Task Manager")			, 'AdminTm'			, $babUrlScript.'?tg=admTskMgr'					, null, Func_Icons::APPS_TASK_MANAGER)
 		);
 	}
 
@@ -133,7 +132,7 @@ function bab_getDelegationsFromResource($res, $dgall = true, $dg0 = true) {
 
 	global $babDB;
 
-
+	$allobjects = array();
 	foreach(bab_getDelegationsObjects() as $arr) {
 		$allobjects[$arr[0]] = $arr;
 	}

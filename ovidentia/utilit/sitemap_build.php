@@ -278,7 +278,8 @@ class bab_eventBeforeSiteMapCreated extends bab_event {
     public function addFunction(bab_siteMap_buildItem $obj) {
 
         if (isset($this->nodes[$obj->uid])) {
-            trigger_error(sprintf('The node %s is already in the sitemap',$obj->uid));
+            // do nothing because of a possible double installation of an addon (core/vendor)
+            // trigger_error(sprintf('The node %s is already in the sitemap',$obj->uid));
             $this->propagation_status = false;
             return false;
         }
@@ -1275,7 +1276,7 @@ class bab_siteMap_insertTree
             return BAB_UNREGISTERED_SITEMAP_PROFILE;
         }
 
-        return $id_profile;
+        return null;
     }
 
 
@@ -1540,22 +1541,20 @@ function bab_getUserAddonsUrls() {
     foreach( $addons as $row )
         {
         if($row['access']) {
-            $addonpath = $GLOBALS['babInstallPath'].'addons/'.$row['title'];
-            if( is_dir($addonpath)) {
-                $arr = bab_getAddonsMenus($row, 'getUserSectionMenus');
-                reset ($arr);
-                while (list ($txt, $url) = each($arr)) {
 
-                    if (0 === mb_strpos($url, $GLOBALS['babUrl'].bab_getSelf())) {
-                        $url = mb_substr($url, mb_strlen($GLOBALS['babUrl'].bab_getSelf()));
-                    }
+            $arr = bab_getAddonsMenus($row, 'getUserSectionMenus');
+            reset ($arr);
+            while (list ($txt, $url) = each($arr)) {
 
-                    $addon_urls[] = array(
-                        'label' => $txt,
-                        'url' => $url,
-                        'uid' => $row['title'].sprintf('_%u',crc32($url))
-                        );
-                    }
+                if (0 === mb_strpos($url, $GLOBALS['babUrl'].bab_getSelf())) {
+                    $url = mb_substr($url, mb_strlen($GLOBALS['babUrl'].bab_getSelf()));
+                }
+
+                $addon_urls[] = array(
+                    'label' => $txt,
+                    'url' => $url,
+                    'uid' => $row['title'].sprintf('_%u',crc32($url))
+                    );
                 }
             }
         }
@@ -1745,7 +1744,7 @@ function bab_getUserDelegationUrls($id_delegation, $deleg, $dg_prefix) {
 
     /*
      * replaced by the orgchart addon
-     * 
+     *
     if( bab_orgchartAccess() )
         {
         $array_urls[] = array(
@@ -1756,7 +1755,7 @@ function bab_getUserDelegationUrls($id_delegation, $deleg, $dg_prefix) {
             );
         }
     */
-        
+
     if ( bab_statisticsAccess() != -1 )
         {
         $array_urls[] = array(
@@ -1767,9 +1766,8 @@ function bab_getUserDelegationUrls($id_delegation, $deleg, $dg_prefix) {
             );
         }
 
-
-    global $babInstallPath;
-    require_once($babInstallPath . 'tmContext.php');
+    /*
+    require_once($GLOBALS['babInstallPath'] . 'tmContext.php');
 
     $context =& getTskMgrContext();
 
@@ -1816,7 +1814,7 @@ function bab_getUserDelegationUrls($id_delegation, $deleg, $dg_prefix) {
                 );
             }
         }
-
+    */
 
 
     include_once dirname(__FILE__).'/forumincl.php';

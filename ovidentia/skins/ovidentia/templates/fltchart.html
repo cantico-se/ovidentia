@@ -86,6 +86,7 @@ top.document.frames['fr'].document.location.reload();
 <br>
 <!--#if update -->
 <form method="post" action="{ babPhpSelf }" name="listform">
+<input type="hidden" name="babCsrfProtect" value="{ babCsrfProtect }" />
 <input type="hidden" name="tg" value="fltchart">
 <input type="hidden" name="idx" value="listr">
 <input type="hidden" name="ocid" value="{ ocid }">

@@ -100,13 +100,15 @@ if (!isset($babUrl)) {
 }
 
 
-require_once $babInstallPath.'utilit/functionality.class.php';
-require_once $babInstallPath.'utilit/addonapi.php';
+require_once dirname(__FILE__).'/utilit/functionality.class.php';
+require_once dirname(__FILE__).'/utilit/addonapi.php';
+require_once dirname(__FILE__).'/utilit/csrfprotect.class.php';
 
 if(!bab_isAjaxRequest() && bab_getUserId()){
     if(isset($_SESSION['pwd_change_log']) && $_SESSION['pwd_change_log']){
         if(!isset($_REQUEST['tg']) || $_REQUEST['tg'] != 'login'){
             header('Location: ?tg=login&cmd=changePwd&user='.$_SESSION['BAB_SESS_USERID']);
+            exit;
         }else{
             $_GET['babHttpContext'] = false;
         }
@@ -121,17 +123,22 @@ if (isset($_GET['babHttpContext'])) {
 }
 
 
-if (!isset($_SERVER['HTTP_HOST']) && isset($_SERVER["argv"][1])) {
+if (php_sapi_name() === 'cli' && isset($_SERVER["argv"][1])) {
     parse_str($_SERVER["argv"][1], $_GET);
     parse_str($_SERVER["argv"][1], $_REQUEST);
 }
 
 
+if (!bab_getInstance('bab_CsrfProtect')->isRequestValid()) {
+    header($_SERVER["SERVER_PROTOCOL"].' 403 Forbidden');
+	exit("403 Access Forbidden");
+}
+
 // addon controller
 
 if (isset($_REQUEST['addon']))
 {
-    include_once $babInstallPath.'utilit/dbutil.php';
+    include_once $GLOBALS['babInstallPath'].'utilit/dbutil.php';
     include_once $GLOBALS['babInstallPath'].'utilit/addonsincl.php';
 
     $babDB = new babDatabase();
@@ -214,15 +221,15 @@ $babSiteName	= mb_substr($babSiteName, 0, 255);
 
 /* Controler */
 
-include_once $babInstallPath.'utilit/defines.php';
-include_once $babInstallPath.'utilit/dbutil.php';
+include_once $GLOBALS['babInstallPath'].'utilit/defines.php';
+include_once $GLOBALS['babInstallPath'].'utilit/dbutil.php';
 $babDB = new babDatabase();
 $babDB->db_setCharset();
-include_once $babInstallPath.'utilit/statincl.php';
+include_once $GLOBALS['babInstallPath'].'utilit/statincl.php';
 $babWebStat =new bab_WebStatEvent();
 
-include $babInstallPath.'utilit/utilit.php';
-include $babInstallPath.'utilit/skinincl.php';
+include $GLOBALS['babInstallPath'].'utilit/utilit.php';
+include $GLOBALS['babInstallPath'].'utilit/skinincl.php';
 
 bab_initMbString();
 bab_UsersLog::check();
@@ -238,9 +245,16 @@ unset($BAB_SESS_LOGGED);
 ini_set('default_charset', bab_charset::getIso());
 
 if ('version' !== bab_rp('tg') || 'upgrade' !== bab_rp('idx')) {
+    
+    /**
+     * Context intialisation for all pages except the new 
+     * addon controller (addon=name.file) and tg=version (upgrades iframe)
+     */
+    
+    
     bab_updateSiteSettings(); /* Get the site settings */
     if ($GLOBALS['babCookieIdent'] === true) {
-        include $babInstallPath."utilit/cookieident.php";
+        include $GLOBALS['babInstallPath']."utilit/cookieident.php";
     }
 
     if (isset($_GET['clear'])) {
@@ -254,6 +268,11 @@ if ('version' !== bab_rp('tg') || 'upgrade' !== bab_rp('idx')) {
     bab_isUserLogged();
     bab_updateUserSettings();
 } else {
+    
+    /**
+     * Special context initialization for upgrades
+     */
+    
     if (!isset($babLanguage)) {
         $babLanguage = 'fr';
     }
@@ -266,7 +285,7 @@ if ('version' !== bab_rp('tg') || 'upgrade' !== bab_rp('idx')) {
 }
 
 $babSkinPath = bab_getSkinPath();
-$babScriptPath = bab_getStaticUrl().$babInstallPath."scripts/";
+$babScriptPath = bab_getStaticUrl().$GLOBALS['babInstallPath']."scripts/";
 $babOvidentiaJs = $babScriptPath."ovidentia.js";
 $babOvmlPath = bab_Skin::getUserSkin()->getThemePath().'ovml/';
 
@@ -274,14 +293,16 @@ $babOvmlPath = bab_Skin::getUserSkin()->getThemePath().'ovml/';
 
 
 
-
+/**
+ * URL rewriting
+ */
 if (isset($_GET['babrw']))
 {
     if (false !== $arr = bab_siteMap::extractNodeUrlFromRewrite($_GET['babrw'], true))
     {
         $_GET += $arr;
         $_REQUEST += $arr;
-        extract($arr, EXTR_SKIP);
+        
     } else {
         bab_pageNotFound();
     }
@@ -311,115 +332,109 @@ switch(bab_rp('tg'))
     case "sections":
         $babLevelOne = bab_translate("Administration");
         $babLevelTwo = bab_translate("Sections");
-        if( isset($BAB_SESS_LOGGED) && $BAB_SESS_LOGGED && (bab_isUserAdministrator() || bab_getCurrentAdmGroup() != 0))
+        if( bab_isUserLogged() && (bab_isUserAdministrator() || bab_getCurrentAdmGroup() != 0))
             $incl = "admin/sections";
         break;
     case "section":
         $babLevelOne = bab_translate("Administration");
         $babLevelTwo = bab_translate("Sections");
-        if( isset($BAB_SESS_LOGGED) && $BAB_SESS_LOGGED && (bab_isUserAdministrator() || bab_getCurrentAdmGroup() != 0))
+        if( bab_isUserLogged() && (bab_isUserAdministrator() || bab_getCurrentAdmGroup() != 0))
             $incl = "admin/section";
         break;
     case "users":
         $babLevelOne = bab_translate("Administration");
         $babLevelTwo = bab_translate("Users");
-        if( isset($BAB_SESS_LOGGED) && $BAB_SESS_LOGGED && (bab_isUserAdministrator() || bab_getCurrentAdmGroup() != 0))
+        if( bab_isUserLogged() && (bab_isUserAdministrator() || bab_getCurrentAdmGroup() != 0))
             $incl = "admin/users";
         break;
     case "user":
         $babLevelOne = bab_translate("Administration");
         $babLevelTwo = bab_translate("Users");
-        if( isset($BAB_SESS_LOGGED) && $BAB_SESS_LOGGED && (bab_isUserAdministrator() || bab_getCurrentAdmGroup() != 0))
+        if( bab_isUserLogged() && (bab_isUserAdministrator() || bab_getCurrentAdmGroup() != 0))
             $incl = "admin/user";
         break;
     case "groups":
         $babLevelOne = bab_translate("Administration");
         $babLevelTwo = bab_translate("Groups");
-        if( isset($BAB_SESS_LOGGED) && $BAB_SESS_LOGGED && (bab_isUserAdministrator() || bab_getCurrentAdmGroup() != 0))
+        if( bab_isUserLogged() && (bab_isUserAdministrator() || bab_getCurrentAdmGroup() != 0))
             $incl = "admin/groups";
         break;
     case "group":
         $babLevelOne = bab_translate("Administration");
         $babLevelTwo = bab_translate("Groups");
-        if( isset($BAB_SESS_LOGGED) && $BAB_SESS_LOGGED && (bab_isUserAdministrator() || bab_getCurrentAdmGroup() != 0))
+        if( bab_isUserLogged() && (bab_isUserAdministrator() || bab_getCurrentAdmGroup() != 0))
             $incl = "admin/group";
         break;
     case "setsofgroups":
         $babLevelOne = bab_translate("Administration");
         $babLevelTwo = bab_translate("Sets of groups");
-        if( isset($BAB_SESS_LOGGED) && $BAB_SESS_LOGGED && (bab_isUserAdministrator() || bab_getCurrentAdmGroup() != 0))
+        if( bab_isUserLogged() && (bab_isUserAdministrator() || bab_getCurrentAdmGroup() != 0))
             $incl = "admin/setsofgroups";
         break;
     case "profiles":
         $babLevelOne = bab_translate("Administration");
         $babLevelTwo = bab_translate("Profiles");
-        if( isset($BAB_SESS_LOGGED) && $BAB_SESS_LOGGED && (bab_isUserAdministrator() || bab_getCurrentAdmGroup() != 0))
+        if( bab_isUserLogged() && (bab_isUserAdministrator() || bab_getCurrentAdmGroup() != 0))
             $incl = "admin/profiles";
         break;
     case "admfaqs":
         $babLevelOne = bab_translate("Administration");
         $babLevelTwo = bab_translate("Faqs");
-        if( isset($BAB_SESS_LOGGED) && $BAB_SESS_LOGGED && (bab_isUserAdministrator() || bab_getCurrentAdmGroup() != 0))
+        if( bab_isUserLogged() && (bab_isUserAdministrator() || bab_getCurrentAdmGroup() != 0))
             $incl = "admin/admfaqs";
         break;
     case "admfaq":
         $babLevelOne = bab_translate("Administration");
         $babLevelTwo = bab_translate("Faqs");
-        if( isset($BAB_SESS_LOGGED) && $BAB_SESS_LOGGED && (bab_isUserAdministrator() || bab_getCurrentAdmGroup() != 0))
+        if( bab_isUserLogged() && (bab_isUserAdministrator() || bab_getCurrentAdmGroup() != 0))
             $incl = "admin/admfaq";
         break;
     case "topcat":
         $babLevelOne = bab_translate("Administration");
         $babLevelTwo = bab_translate("Topics categories");
-        if( isset($BAB_SESS_LOGGED) && $BAB_SESS_LOGGED && (bab_isUserAdministrator() || bab_getCurrentAdmGroup() != 0))
+        if( bab_isUserLogged() && (bab_isUserAdministrator() || bab_getCurrentAdmGroup() != 0))
             $incl = "admin/topcat";
         break;
     case "topcats":
         $babLevelOne = bab_translate("Administration");
         $babLevelTwo = bab_translate("Topics categories");
-        if( isset($BAB_SESS_LOGGED) && $BAB_SESS_LOGGED && (bab_isUserAdministrator() || bab_getCurrentAdmGroup() != 0))
+        if( bab_isUserLogged() && (bab_isUserAdministrator() || bab_getCurrentAdmGroup() != 0))
             $incl = "admin/topcats";
-        break;
-    case "apprflow":
-        $babLevelOne = bab_translate("Administration");
-        $babLevelTwo = bab_translate("Approbations");
-        if( isset($BAB_SESS_LOGGED) && $BAB_SESS_LOGGED && (bab_isUserAdministrator() || bab_getCurrentAdmGroup() != 0))
-            $incl = "admin/apprflow";
         break;
     case "admfms":
         $babLevelOne = bab_translate("Administration");
         $babLevelTwo = bab_translate("File manager");
-        if( isset($BAB_SESS_LOGGED) && $BAB_SESS_LOGGED && (bab_isUserAdministrator() || bab_getCurrentAdmGroup() != 0))
+        if( bab_isUserLogged() && (bab_isUserAdministrator() || bab_getCurrentAdmGroup() != 0))
             $incl = "admin/admfms";
         break;
     case "admfm":
         $babLevelOne = bab_translate("Administration");
         $babLevelTwo = bab_translate("File manager");
-        if( isset($BAB_SESS_LOGGED) && $BAB_SESS_LOGGED && (bab_isUserAdministrator() || bab_getCurrentAdmGroup() != 0))
+        if( bab_isUserLogged() && (bab_isUserAdministrator() || bab_getCurrentAdmGroup() != 0))
             $incl = "admin/admfm";
         break;
     case "admindex":
         $babLevelOne = bab_translate("Administration");
         $babLevelTwo = bab_translate("Search indexes");
-        if( isset($BAB_SESS_LOGGED) && $BAB_SESS_LOGGED && (bab_isUserAdministrator() && bab_getCurrentAdmGroup() == 0))
+        if( bab_isUserLogged() && (bab_isUserAdministrator() && bab_getCurrentAdmGroup() == 0))
             $incl = "admin/indexfiles";
         break;
     case "topman":
         $babLevelOne = bab_translate("User's section");
         $babLevelTwo = bab_translate("Managed topics");
-        if( isset($BAB_SESS_LOGGED) && $BAB_SESS_LOGGED)
+        if( bab_isUserLogged())
             $incl = "topman";
         break;
     case "topics":
         $babLevelOne = bab_translate("Administration");
         $babLevelTwo = bab_translate("Topics categories");
-        if( isset($BAB_SESS_LOGGED) && $BAB_SESS_LOGGED)
+        if( bab_isUserLogged())
             $incl = "admin/topics";
         break;
     case "topic":
         $babLevelOne = bab_translate("Administration");
         $babLevelTwo = bab_translate("Topics categories");
-        if( isset($BAB_SESS_LOGGED) && $BAB_SESS_LOGGED)
+        if( bab_isUserLogged())
             $incl = "admin/topic";
         break;
     case "topusr":
@@ -433,49 +448,49 @@ switch(bab_rp('tg'))
     case "forums":
         $babLevelOne = bab_translate("Administration");
         $babLevelTwo = bab_translate("Forums");
-        if( isset($BAB_SESS_LOGGED) && $BAB_SESS_LOGGED && (bab_isUserAdministrator() || bab_getCurrentAdmGroup() != 0))
+        if( bab_isUserLogged() && (bab_isUserAdministrator() || bab_getCurrentAdmGroup() != 0))
             $incl = "admin/forums";
         break;
     case "forum":
         $babLevelOne = bab_translate("Administration");
         $babLevelTwo = bab_translate("Forums");
-        if( isset($BAB_SESS_LOGGED) && $BAB_SESS_LOGGED && (bab_isUserAdministrator() || bab_getCurrentAdmGroup() != 0))
+        if( bab_isUserLogged() && (bab_isUserAdministrator() || bab_getCurrentAdmGroup() != 0))
             $incl = "admin/forum";
         break;
     case "admcals":
         $babLevelOne = bab_translate("Administration");
         $babLevelTwo = bab_translate("Calendar");
-        if( isset($BAB_SESS_LOGGED) && $BAB_SESS_LOGGED && (bab_isUserAdministrator() || bab_getCurrentAdmGroup() != 0))
+        if( bab_isUserLogged() && (bab_isUserAdministrator() || bab_getCurrentAdmGroup() != 0))
             $incl = "admin/admcals";
         break;
     case "admcal":
         $babLevelOne = bab_translate("Administration");
         $babLevelTwo = bab_translate("Calendar");
-        if( isset($BAB_SESS_LOGGED) && $BAB_SESS_LOGGED && (bab_isUserAdministrator() || bab_getCurrentAdmGroup() != 0))
+        if( bab_isUserLogged() && (bab_isUserAdministrator() || bab_getCurrentAdmGroup() != 0))
             $incl = "admin/admcal";
         break;
     case "admocs":
         $babLevelOne = bab_translate("Administration");
         $babLevelTwo = bab_translate("Organization chart");
-        if( isset($BAB_SESS_LOGGED) && $BAB_SESS_LOGGED && (bab_isUserAdministrator() || bab_getCurrentAdmGroup() != 0))
+        if( bab_isUserLogged() && (bab_isUserAdministrator() || bab_getCurrentAdmGroup() != 0))
             $incl = "admin/admocs";
         break;
     case "admoc":
         $babLevelOne = bab_translate("Administration");
         $babLevelTwo = bab_translate("Organization chart");
-        if( isset($BAB_SESS_LOGGED) && $BAB_SESS_LOGGED && (bab_isUserAdministrator() || bab_getCurrentAdmGroup() != 0))
+        if( bab_isUserLogged() && (bab_isUserAdministrator() || bab_getCurrentAdmGroup() != 0))
             $incl = "admin/admoc";
         break;
     case "sites":
         $babLevelOne = bab_translate("Administration");
         $babLevelTwo = bab_translate("Sites");
-        if( isset($BAB_SESS_LOGGED) && $BAB_SESS_LOGGED && bab_isUserAdministrator())
+        if( bab_isUserLogged() && bab_isUserAdministrator())
             $incl = "admin/sites";
         break;
     case "site":
         $babLevelOne = bab_translate("Administration");
         $babLevelTwo = bab_translate("Sites");
-        if( isset($BAB_SESS_LOGGED) && $BAB_SESS_LOGGED && bab_isUserAdministrator())
+        if( bab_isUserLogged() && bab_isUserAdministrator())
             $incl = "admin/site";
         break;
     case "addons":
@@ -486,32 +501,32 @@ switch(bab_rp('tg'))
     case "admdir":
         $babLevelOne = bab_translate("Administration");
         $babLevelTwo = bab_translate("Directories");
-        if(isset($BAB_SESS_LOGGED) && $BAB_SESS_LOGGED && (bab_isUserAdministrator() || bab_getCurrentAdmGroup() != 0))
+        if(bab_isUserLogged() && (bab_isUserAdministrator() || bab_getCurrentAdmGroup() != 0))
             $incl = "admin/admdir";
         break;
     case "delegat":
         $babLevelOne = bab_translate("Administration");
         $babLevelTwo = bab_translate("Delegation");
-        if( isset($BAB_SESS_LOGGED) && $BAB_SESS_LOGGED && bab_isUserAdministrator())
+        if( bab_isUserLogged() && bab_isUserAdministrator())
             $incl = "admin/delegat";
         break;
     case "admstats":
         $babLevelOne = bab_translate("Administration");
         $babLevelTwo = bab_translate("Statistics");
-        if( isset($BAB_SESS_LOGGED) && $BAB_SESS_LOGGED && bab_isUserAdministrator())
+        if( bab_isUserLogged() && bab_isUserAdministrator())
             $incl = "admin/admstats";
         break;
     case "admthesaurus":
         $babLevelOne = bab_translate("Administration");
         $babLevelTwo = bab_translate("Thesaurus");
-        if( isset($BAB_SESS_LOGGED) && $BAB_SESS_LOGGED && bab_isUserAdministrator())
+        if( bab_isUserLogged() && bab_isUserAdministrator())
             $incl = "admin/admthesaurus";
         break;
 
     case "delegusr":
         $babLevelOne = bab_translate("Administration");
         $babLevelTwo = bab_translate("Delegation");
-        if( isset($BAB_SESS_LOGGED) && $BAB_SESS_LOGGED)
+        if( bab_isUserLogged())
             $incl = "delegusr";
         break;
 
@@ -521,81 +536,15 @@ switch(bab_rp('tg'))
     case "options":
         $babLevelOne = bab_translate("User's section");
         $babLevelTwo = bab_translate("Options");
-        if( $BAB_SESS_LOGGED)
+        if( bab_isUserLogged())
             $incl = "options";
         break;
-    case "composemail":
-        $babLevelOne = bab_translate("User's section");
-        $babLevelTwo = bab_translate("Compose mail");
-        if( $BAB_SESS_LOGGED)
-            $incl = "composemail";
-        break;
-    case "mail":
-        $babLevelOne = bab_translate("User's section");
-        $babLevelTwo = bab_translate("Mail");
-        if( $BAB_SESS_LOGGED)
-            $incl = "mail";
-        break;
-    case "mailopt":
-        $babLevelOne = bab_translate("User's section");
-        $babLevelTwo = bab_translate("Options");
-        if( $BAB_SESS_LOGGED)
-            $incl = "mailopt";
-        break;
-    case "maildoms":
-        if( isset($userid) && $userid == 0 )
-            {
-            $babLevelOne = bab_translate("Administration");
-            $babLevelTwo = bab_translate("Mail");
-            }
-        else
-            {
-            $babLevelOne = bab_translate("User's section");
-            $babLevelTwo = bab_translate("Options");
-            }
-        if( $BAB_SESS_LOGGED)
-            $incl = "maildoms";
-        break;
-    case "maildom":
-        if( isset($userid) && $userid == 0 )
-            {
-            $babLevelOne = bab_translate("Administration");
-            $babLevelTwo = bab_translate("Mail");
-            }
-        else
-            {
-            $babLevelOne = bab_translate("User's section");
-            $babLevelTwo = bab_translate("Options");
-            }
-        if( $BAB_SESS_LOGGED)
-            $incl = "maildom";
-        break;
     case "confcals":
-        if( isset($userid) && $userid == 0 )
-            {
-            $babLevelOne = bab_translate("Administration");
-            $babLevelTwo = bab_translate("Calendar");
-            }
-        else
-            {
-            $babLevelOne = bab_translate("User's section");
-            $babLevelTwo = bab_translate("Options");
-            }
-        if( $BAB_SESS_LOGGED)
+        if( bab_isUserLogged())
             $incl = "confcals";
         break;
     case "confcal":
-        if( isset($userid) && $userid == 0 )
-            {
-            $babLevelOne = bab_translate("Administration");
-            $babLevelTwo = bab_translate("Calendar");
-            }
-        else
-            {
-            $babLevelOne = bab_translate("User's section");
-            $babLevelTwo = bab_translate("Options");
-            }
-        if( $BAB_SESS_LOGGED)
+        if( bab_isUserLogged())
             $incl = "confcal";
         break;
     case "calendar":
@@ -621,13 +570,8 @@ switch(bab_rp('tg'))
     case "event":
         $babLevelOne = bab_translate("User's section");
         $babLevelTwo = bab_translate("Calendar");
-        if( $BAB_SESS_LOGGED)
+        if( bab_isUserLogged())
             $incl = "event";
-        break;
-    case "calview":
-        $babLevelOne = bab_translate("User's section");
-        $babLevelTwo = bab_translate("Summary");
-           $incl = "calview";
         break;
     case "calopt":
         $babLevelOne = bab_translate("User's section");
@@ -637,7 +581,7 @@ switch(bab_rp('tg'))
     case "sectopt":
         $babLevelOne = bab_translate("User's section");
         $babLevelTwo = bab_translate("Options");
-        if( $BAB_SESS_LOGGED)
+        if( bab_isUserLogged())
             $incl = "sectopt";
         break;
     case "directory":
@@ -648,13 +592,13 @@ switch(bab_rp('tg'))
     case "lusers":
         $babLevelOne = "";
         $babLevelTwo = "";
-        if( $BAB_SESS_LOGGED)
+        if( bab_isUserLogged())
             $incl = "lusers";
         break;
     case "selector":
         $babLevelOne = "";
         $babLevelTwo = "";
-        if( $BAB_SESS_LOGGED)
+        if( bab_isUserLogged())
             $incl = "selector";
         break;
     case "stat":
@@ -665,6 +609,10 @@ switch(bab_rp('tg'))
         $babLevelOne = bab_translate("Statistics");
         $incl = "statconf";
         break;
+    case "statsessions":
+        $babLevelOne = bab_translate("Statistics");
+        $incl = "statsessions";
+        break;
     case "thesaurus":
         $babLevelOne = bab_translate("Thesaurus");
         $incl = "thesaurus";
@@ -672,7 +620,7 @@ switch(bab_rp('tg'))
     case "forumsuser":
         $babLevelOne = bab_translate("Forums");
         $babLevelTwo = bab_translate("Forums");
-           $incl = "forumsuser";
+        $incl = "forumsuser";
         break;
     case "threads":
         $babLevelOne = bab_translate("Forums");
@@ -694,6 +642,8 @@ switch(bab_rp('tg'))
     case "comments":
         $incl = "comments";
         break;
+        
+    /*
     case "charts":
         $babLevelOne = bab_translate("User's section");
         $babLevelTwo = bab_translate("Charts");
@@ -702,27 +652,29 @@ switch(bab_rp('tg'))
     case "chart":
         $babLevelOne = bab_translate("User's section");
         $babLevelTwo = bab_translate("Charts");
-        include $babInstallPath."chart.php";
+        include $GLOBALS['babInstallPath']."chart.php";
         exit;
         break;
     case "frchart":
         $babLevelOne = bab_translate("User's section");
         $babLevelTwo = bab_translate("Charts");
-        include $babInstallPath."frchart.php";
+        include $GLOBALS['babInstallPath']."frchart.php";
         exit;
         break;
     case "fltchart":
         $babLevelOne = bab_translate("User's section");
         $babLevelTwo = bab_translate("Charts");
-        include $babInstallPath."fltchart.php";
+        include $GLOBALS['babInstallPath']."fltchart.php";
         exit;
         break;
     case "flbchart":
         $babLevelOne = bab_translate("User's section");
         $babLevelTwo = bab_translate("Charts");
-        include $babInstallPath."flbchart.php";
+        include $GLOBALS['babInstallPath']."flbchart.php";
         exit;
         break;
+    */
+        
     case "faq":
         $babLevelOne = bab_translate("User's section");
         $babLevelTwo = bab_translate("Faqs");
@@ -741,106 +693,99 @@ switch(bab_rp('tg'))
     case "notes":
         $babLevelOne = bab_translate("User's section");
         $babLevelTwo = bab_translate("Notes");
-        if( $BAB_SESS_LOGGED && bab_notesAccess())
+        if( bab_isUserLogged() && bab_notesAccess())
             $incl = "notes";
         break;
     case "note":
         $babLevelOne = bab_translate("User's section");
         $babLevelTwo = bab_translate("Notes");
-        if( $BAB_SESS_LOGGED && bab_notesAccess())
+        if( bab_isUserLogged() && bab_notesAccess())
             $incl = "note";
-        break;
-    case "inbox":
-        $babLevelOne = bab_translate("User's section");
-        $babLevelTwo = bab_translate("Mail");
-        if( $BAB_SESS_LOGGED)
-            $incl = "inbox";
         break;
     case "contacts":
         $babLevelOne = bab_translate("User's section");
         $babLevelTwo = bab_translate("Contacts");
-        if( $BAB_SESS_LOGGED && bab_contactsAccess())
+        if( bab_isUserLogged() && bab_contactsAccess())
             $incl = "contacts";
         break;
     case "contact":
         $babLevelOne = bab_translate("User's section");
         $babLevelTwo = bab_translate("Contacts");
-        if( $BAB_SESS_LOGGED && bab_contactsAccess())
+        if( bab_isUserLogged() && bab_contactsAccess())
             {
-            include $babInstallPath."contact.php";
+            include $GLOBALS['babInstallPath']."contact.php";
             exit;
             }
         break;
     case "address":
-        if( $BAB_SESS_LOGGED)
+        if( bab_isUserLogged())
             {
-            include $babInstallPath."address.php";
+            include $GLOBALS['babInstallPath']."address.php";
             exit;
             }
         break;
     case "lsa":
-        if( $BAB_SESS_LOGGED)
+        if( bab_isUserLogged())
             {
-            include $babInstallPath."lsa.php";
+            include $GLOBALS['babInstallPath']."lsa.php";
             exit;
             }
         break;
     case "month":
-        include $babInstallPath."month.php";
+        include $GLOBALS['babInstallPath']."month.php";
         exit;
         break;
     case "images":
-        include $babInstallPath."images.php";
+        include $GLOBALS['babInstallPath']."images.php";
         exit;
         break;
     case "version":
-        include $babInstallPath."version.php";
+        include $GLOBALS['babInstallPath']."version.php";
         exit;
         break;
-    case "statproc":
-        include $babInstallPath."utilit/statproc.php";
+    case "statproc": // deprecated: use LibTimer instead to update stats
+        include $GLOBALS['babInstallPath']."statproc.php";
         break;
     case "calnotif":
-        include $babInstallPath."utilit/calnotif.php";
+        include $GLOBALS['babInstallPath']."calnotif.php";
         exit;
         break;
     case "editorarticle":
-        include $babInstallPath."editorarticle.php";
+        include $GLOBALS['babInstallPath']."editorarticle.php";
         exit;
         break;
     case "editorfaq":
-        include $babInstallPath."editorfaq.php";
+        include $GLOBALS['babInstallPath']."editorfaq.php";
         exit;
         break;
     case "editorovml":
-        include $babInstallPath."editorovml.php";
+        include $GLOBALS['babInstallPath']."editorovml.php";
         exit;
         break;
     case "editorcontdir":
-        include $babInstallPath."editorcontdir.php";
+        include $GLOBALS['babInstallPath']."editorcontdir.php";
         exit;
         break;
     case 'editorfunctions':
-        include $babInstallPath."editorfunctions.php";
+        include $GLOBALS['babInstallPath']."editorfunctions.php";
         exit;
         break;
     case "selectcolor":
-        include $babInstallPath."selectcolor.php";
+        include $GLOBALS['babInstallPath']."selectcolor.php";
         exit;
         break;
     case "imgget":
-        include $babInstallPath."imgget.php";
+        include $GLOBALS['babInstallPath']."imgget.php";
         exit;
         break;
     case "link":
-        include $babInstallPath."link.php";
-        exit;
+        $incl = 'link';
         break;
     case "oml":
         $incl = "oml";
         break;
     case "omlsoap":
-        include $babInstallPath."omlsoap.php";
+        include $GLOBALS['babInstallPath']."omlsoap.php";
         exit;
         break;
     case "accden":
@@ -851,18 +796,25 @@ switch(bab_rp('tg'))
         $babLevelTwo = '';
         $incl = "entry";
         break;
+    /*
     case 'admTskMgr':
         $incl = 'admin/tmtaskmanager';
         break;
     case 'usrTskMgr':
         $incl = 'tmtaskmanager';
         break;
+    */
+        
     case 'charset':
         $incl = 'admin/charset';
         break;
     case "menu":
-        include $babInstallPath."menu.php";
+        include $GLOBALS['babInstallPath']."menu.php";
         break;
+    case 'csrfprotect':
+        die(bab_getInstance('bab_CsrfProtect')->getToken());
+        break;
+        
     case 'search':
         /**
          * forward to search addon for backward compatibility
@@ -878,11 +830,10 @@ switch(bab_rp('tg'))
     default:
         $babLevelOne = "";
         $babLevelTwo = "";
-        $incl = "entry";
-        $babWebStat->module($incl);
+
+        $babWebStat->module("entry");
 
         if ($module = bab_getAddonFilePathFromTg(bab_rp('tg'), $babWebStat)) {
-            $incl = null;
             if (!file_exists($module)) {
                 bab_pageNotFound();
             }
@@ -893,17 +844,11 @@ switch(bab_rp('tg'))
                 bab_pageNotFound();
             }
             
-            bab_siteMap::setPosition(bab_siteMap::getSitemapRootNode());
-            if(bab_isUserLogged()) {
-                $file = "private.html";
-            } else {
-                $file = "public.html";
-            }
-
-            if( file_exists($GLOBALS['babOvmlPath'].$file)) {
-                $incl = "oml";
-            } else {
-                $incl = "entry";
+            if ($home = bab_functionality::get('Home')) {
+                /*@var $home Func_Home */
+                
+                $home->setSitemapPosition();
+                $home->includePage();
             }
         }
         break;
@@ -912,7 +857,7 @@ switch(bab_rp('tg'))
 
 if( !empty($incl))
     {
-    include $babInstallPath."$incl.php";
+    include $GLOBALS['babInstallPath']."$incl.php";
     }
 
 

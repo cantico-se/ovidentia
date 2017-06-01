@@ -75,9 +75,9 @@ function bab_OCGetRootEntity($idoc='')
         }
     }
 
-    if( isset($ocentities[$idoc]))
+    if( isset($ocrootentities[$idoc]))
     {
-        return $ocentities[$idoc];
+        return $ocrootentities[$idoc];
     }
 
     $ocrootentities[$idoc] = array();
@@ -699,8 +699,8 @@ function bab_OCGetEntityTypes($entityId)
  * 		'id_dir_entry' 		=> directory entry id (@see bab_getDirEntry)
  * 		'role_type' 		=>  1 = Superior, 2 = Temporary employee, 3 = Members, 0 = Other collaborators
  * 		'role_name' 		=> The role title
- * 		'user_disabled' 	=> 1 = disabled, 0 = not disabled		// deprecated : allways not disabled
- * 		'user_confirmed' 	=> 1 = confirmed, 0 = not confirmed	// deprecated : allways confirmed
+ * 		'user_disabled' 	=> 1 = disabled, 0 = not disabled
+ * 		'user_confirmed' 	=> 1 = confirmed, 0 = not confirmed
  * 		'sn' 				=>	The member's surname (last name)
  * 		'givenname' 		=> The member's given name (first name)
  * 		'id_user' 			=> The member user ID (can be empty if the member is a directory entry without associated user)
@@ -713,10 +713,12 @@ function bab_OCGetEntityTypes($entityId)
  *
  * @param int  $entityId			Id of orgchart entity.
  * @param bool $useNameOrder		If FALSE always order members by their lastname, if TRUE takes global name order into consideration.
+ * @param bool $nonConfirmed        Include non-confirmed users (default false)
+ * @param bool $disabled            Include disabled users (default false)
  *
  * @return resource		The mysql resource or FALSE on error
  */
-function bab_OCSelectEntityCollaborators($entityId, $useNameOrder = true)
+function bab_OCSelectEntityCollaborators($entityId, $useNameOrder = true, $nonConfirmed = false, $disabled = false)
 {
     global $babDB, $babBody;
     require_once dirname(__FILE__).'/userinfosincl.php';
@@ -735,7 +737,7 @@ function bab_OCSelectEntityCollaborators($entityId, $useNameOrder = true)
     $sql .= ' LEFT JOIN ' . BAB_DBDIR_ENTRIES_TBL . ' AS dir_entries ON users.id_user = dir_entries.id';
     $sql .= ' LEFT JOIN bab_users AS babusers ON dir_entries.id_user = babusers.id';
     $sql .= ' WHERE roles.id_entity = ' . $babDB->quote($entityId);
-    $sql .= ' AND '.bab_userInfos::queryAllowedUsers('babusers');
+    $sql .= ' AND '.bab_userInfos::queryAllowedUsers('babusers', $nonConfirmed, $disabled);
     $sql .= ' ORDER BY roles.ordering ASC, '; // We want role types to appear in the order 1,2,3,0
     if ($useNameOrder) {
         $sql .= ($babBody->nameorder[0] === 'F') ?
@@ -760,6 +762,8 @@ function bab_OCSelectEntityCollaborators($entityId, $useNameOrder = true)
  * 		'id_user' 			=> The member user ID (can be empty if the member is a directory entry without associated user)
  * 		'sn' 				=>	The member's surname (last name)
  * 		'givenname' 		=> The member's given name (first name)
+ *      'user_disabled' 	=> 1 = disabled, 0 = not disabled
+ * 		'user_confirmed' 	=> 1 = confirmed, 0 = not confirmed
  * )
  * The result set is ordered by role ordering (which is by default type
  * in order 1,2,3,0 but can be manually reordered) and by user name
@@ -771,7 +775,7 @@ function bab_OCSelectEntityCollaborators($entityId, $useNameOrder = true)
  *
  * @return resource		The mysql resource or FALSE on error
  */
-function bab_OCGetUsersByRole($idRole)
+function bab_OCGetUsersByRole($idRole, $nonConfirmed = false, $disabled = false)
 {
     global $babDB;
     $sql = "SELECT";
@@ -779,14 +783,16 @@ function bab_OCGetUsersByRole($idRole)
     $sql.= "	ort.id_user as id_dir,";
     $sql.= "	dir.id_user,";
     $sql.= "	dir.sn,";
-    $sql.= "	dir.givenname";
+    $sql.= "	dir.givenname,";
+    $sql .= '   babusers.disabled AS user_disabled,';
+    $sql .= '   babusers.is_confirmed AS user_confirmed ';
     $sql.= " FROM bab_oc_roles_users ort";
 
     $sql.= " LEFT JOIN bab_dbdir_entries AS dir ON ort.id_user = dir.id";
 
     $sql.= ' LEFT JOIN bab_users AS babusers ON dir.id_user = babusers.id';
     $sql.= " WHERE ort.id_role='".$idRole."'";
-    $sql.= ' AND '.bab_userInfos::queryAllowedUsers('babusers');
+    $sql.= ' AND '.bab_userInfos::queryAllowedUsers('babusers', $nonConfirmed, $disabled);
 
     $sql.= " ORDER BY dir.sn, dir.givenname asc";
 
@@ -1425,7 +1431,7 @@ class bab_OrgChartUtil
     }
 
 
-    function isAccessValid()
+    public function isAccessValid()
     {
         $this->bHaveUpdateRight	= bab_isAccessValid(BAB_OCUPDATE_GROUPS_TBL, $this->iIdOrgChart, $this->iIdSessUser);
         $this->bHaveViewRight	= bab_isAccessValid(BAB_OCVIEW_GROUPS_TBL, $this->iIdOrgChart, $this->iIdSessUser);
@@ -1544,11 +1550,6 @@ class bab_OrgChartUtil
     {
         global $babDB, $babBody;
 
-        if(false === $this->isAccessValid())
-        {
-            $babBody->addError(bab_translate("Error: Right insufficient"));
-            return false;
-        }
 
         $sQuery =
             'SELECT ' .
@@ -1618,18 +1619,8 @@ class bab_OrgChartUtil
         {
             if(0 !== $babDB->db_num_rows($oResult))
             {
-                if(false !== ($aOrgChartInfo = $babDB->db_fetch_assoc($oResult)))
-                {
-                    $bHaveUpdateRight	= bab_isAccessValid(BAB_OCUPDATE_GROUPS_TBL, (int) $aOrgChartInfo['id'], $this->iIdSessUser);
-                    $bHaveViewRight		= bab_isAccessValid(BAB_OCVIEW_GROUPS_TBL, (int) $aOrgChartInfo['id'], $this->iIdSessUser);
-                    if(false !== $bHaveUpdateRight || false !== $bHaveViewRight)
-                    {
-                        return true;
-                    }
-                    else
-                    {
-                        $babBody->addError(bab_translate("Error: Right insufficient"));
-                    }
+                if(false !== ($aOrgChartInfo = $babDB->db_fetch_assoc($oResult))) {
+                    return true;
                 }
             }
         }
@@ -1806,11 +1797,6 @@ class bab_OrgChartUtil
     function getLockInfo()
     {
         global $babBody;
-        if(false === $this->isAccessValid())
-        {
-            $babBody->addError(bab_translate("Access denied"));
-            return false;
-        }
 
         $aLockInfo = array('iIdUser' => 0, 'sNickName' => '', 'sFirstName' => '', 'sLastName' => '');
 
@@ -1847,11 +1833,6 @@ class bab_OrgChartUtil
             return false;
         }
 
-        if(!$this->isLockedBy($this->iIdSessUser))
-        {
-            $babBody->addError(bab_translate("Access denied"));
-            return false;
-        }
 
         require_once dirname(__FILE__) . '/grpincl.php';
         if(false === bab_isGroup($iIdParentGroup))
@@ -1958,36 +1939,35 @@ class bab_OrgChartUtil
         $iIdTempEmpRole 	= $this->createRole($iIdEntity, bab_translate("Temporary employee"), '', BAB_OC_ROLE_TEMPORARY_EMPLOYEE, 'N');
         $iIdMemberRole 		= $this->createRole($iIdEntity, bab_translate("Members"), '', BAB_OC_ROLE_MEMBER, 'Y');
 
-        if('none' !== (string) $mixedGroup && 'new' !== (string) $mixedGroup)
+        if($iIdGroup)
         {
-            if('Y' === (string) $this->aCachedOrgChart['isprimary'] && 1 === (int) $this->aCachedOrgChart['id_group'])
-            {
-                $sQuery =
-                    'SELECT ' .
-                        'det.id ' .
-                    'FROM ' .
-                        BAB_DBDIR_ENTRIES_TBL . ' det ' .
-                    'LEFT JOIN ' .
-                        BAB_USERS_GROUPS_TBL . ' ugt on det.id_user = ugt.id_object ' .
-                    'WHERE ' .
-                        'ugt.id_group = ' . $babDB->quote($iIdGroup) . ' AND ' .
-                        'det.id_directory = \'0\'';
 
-                //bab_debug($sQuery);
-                $oResult = $babDB->db_query($sQuery);
-                if(false !== $oResult)
+            $sQuery =
+                'SELECT ' .
+                    'det.id ' .
+                'FROM ' .
+                    BAB_DBDIR_ENTRIES_TBL . ' det ' .
+                'LEFT JOIN ' .
+                    BAB_USERS_GROUPS_TBL . ' ugt on det.id_user = ugt.id_object ' .
+                'WHERE ' .
+                    'ugt.id_group = ' . $babDB->quote($iIdGroup) . ' AND ' .
+                    'det.id_directory = \'0\'';
+
+            //bab_debug($sQuery);
+            $oResult = $babDB->db_query($sQuery);
+            if(false !== $oResult)
+            {
+                $iNumRows = $babDB->db_num_rows($oResult);
+                if(0 < $iNumRows)
                 {
-                    $iNumRows = $babDB->db_num_rows($oResult);
-                    if(0 < $iNumRows)
+                    while(false !== ($aData = $babDB->db_fetch_assoc($oResult)))
                     {
-                        while(false !== ($aData = $babDB->db_fetch_assoc($oResult)))
-                        {
-                            $iIdUser = (int) $aData['id'];
-                            $this->createRoleUser($iIdMemberRole, $iIdUser);
-                        }
+                        $iIdUser = (int) $aData['id'];
+                        $this->createRoleUser($iIdMemberRole, $iIdUser);
                     }
                 }
             }
+            
         }
         return $iIdEntity;
     }
@@ -2006,11 +1986,6 @@ class bab_OrgChartUtil
         {
             if((int) $this->aCachedEntity['id'] === (int) $iIdEntity)
             {
-                if(false === $this->isAccessValid())
-                {
-                    $babBody->addError(bab_translate("Error: Right insufficient"));
-                    return false;
-                }
                 return $this->aCachedEntity;
             }
         }
@@ -2037,12 +2012,6 @@ class bab_OrgChartUtil
             return false;
         }
 
-        if(false === $this->isAccessValid())
-        {
-            $babBody->addError(bab_translate("Error: Right insufficient"));
-            return false;
-        }
-
         return $this->aCachedEntity;
     }
 
@@ -2058,11 +2027,6 @@ class bab_OrgChartUtil
     {
         global $babBody, $babDB;
 
-        if(!$this->isAccessValid())
-        {
-            $babBody->addError(bab_translate("Error: Right insufficient"));
-            return false;
-        }
 
         static $aGoodType = array(
             BAB_OC_ROLE_CUSTOM => BAB_OC_ROLE_CUSTOM,
@@ -2134,11 +2098,6 @@ class bab_OrgChartUtil
      */
     function updateEntity($iIdEntity, $sName, $sDescription)
     {
-        if(!$this->isLockedBy($this->iIdSessUser))
-        {
-            return false;
-        }
-
         global $babBody, $babDB;
 
         $aEntity = $this->getEntity($iIdEntity);
@@ -2184,10 +2143,6 @@ class bab_OrgChartUtil
      */
     function updateGroupEntity($iIdEntity, $idGroup)
     {
-        if(!$this->isLockedBy($this->iIdSessUser))
-        {
-            return false;
-        }
 
         global $babBody, $babDB;
 
@@ -2224,10 +2179,6 @@ class bab_OrgChartUtil
 
     function deleteEntity($iIdEntity, $iDeleteType)
     {
-        if(!$this->isLockedBy($this->iIdSessUser))
-        {
-            return false;
-        }
 
         $aEntity = $this->getEntity($iIdEntity);
         if(false !== $aEntity)
@@ -2266,10 +2217,6 @@ class bab_OrgChartUtil
 
     function moveEntity($iIdSrcEntity, $iIdTrgEntity, $iMove, $iMoveType)
     {
-        if(!$this->isLockedBy($this->iIdSessUser))
-        {
-            return false;
-        }
 
         global $babBody;
 
@@ -2397,10 +2344,6 @@ class bab_OrgChartUtil
 
     function createRole($iIdEntity, $sName, $sDescription, $iType, $sCardinality)
     {
-        if(!$this->isLockedBy($this->iIdSessUser))
-        {
-             return false;
-        }
 
         global $babBody;
 
@@ -2467,10 +2410,6 @@ class bab_OrgChartUtil
 
     function updateRole($iIdRole, $sName, $sDescription)
     {
-        if(!$this->isLockedBy($this->iIdSessUser))
-        {
-             return false;
-        }
 
         global $babBody;
 
@@ -2501,11 +2440,6 @@ class bab_OrgChartUtil
 
     function updateRoleOrder($iIdRole, $order)
     {
-        if(!$this->isLockedBy($this->iIdSessUser))
-        {
-             return false;
-        }
-
         global $babBody;
 
         global $babDB;
@@ -2533,12 +2467,6 @@ class bab_OrgChartUtil
     function getRoleById($iIdRole)
     {
         global $babBody, $babDB;
-
-        if(!$this->isAccessValid())
-        {
-            $babBody->addError(bab_translate("Error: Right insufficient"));
-            return false;
-        }
 
         $aRole = array();
 
@@ -2575,12 +2503,6 @@ class bab_OrgChartUtil
     function getRoleByUserId($iIdEntity, $iIdUser, $aRoleType = null)
     {
         global $babBody, $babDB;
-
-        if(!$this->isAccessValid())
-        {
-            $babBody->addError(bab_translate("Error: Right insufficient"));
-            return false;
-        }
 
         static $aGoodType = array(
             BAB_OC_ROLE_CUSTOM => BAB_OC_ROLE_CUSTOM,
@@ -2655,12 +2577,6 @@ class bab_OrgChartUtil
     {
         global $babBody, $babDB;
 
-        if(!$this->isAccessValid())
-        {
-            $babBody->addError(bab_translate("Error: Right insufficient"));
-            return false;
-        }
-
         $aRole = array();
 
         static $aGoodType = array(
@@ -2712,71 +2628,61 @@ class bab_OrgChartUtil
     {
         global $babBody, $babDB;
 
-        if($this->isAccessValid())
+
+        $aRole = array();
+
+        static $aGoodType = array(
+            BAB_OC_ROLE_CUSTOM => BAB_OC_ROLE_CUSTOM,
+            BAB_OC_ROLE_SUPERIOR => BAB_OC_ROLE_SUPERIOR,
+            BAB_OC_ROLE_TEMPORARY_EMPLOYEE => BAB_OC_ROLE_TEMPORARY_EMPLOYEE,
+            BAB_OC_ROLE_MEMBER => BAB_OC_ROLE_MEMBER);
+
+        $aWhereClauseItem = array();
+
+        if(!isset($aGoodType[$iType]))
         {
-            $aRole = array();
-
-            static $aGoodType = array(
-                BAB_OC_ROLE_CUSTOM => BAB_OC_ROLE_CUSTOM,
-                BAB_OC_ROLE_SUPERIOR => BAB_OC_ROLE_SUPERIOR,
-                BAB_OC_ROLE_TEMPORARY_EMPLOYEE => BAB_OC_ROLE_TEMPORARY_EMPLOYEE,
-                BAB_OC_ROLE_MEMBER => BAB_OC_ROLE_MEMBER);
-
-            $aWhereClauseItem = array();
-
-            if(!isset($aGoodType[$iType]))
-            {
-                $babBody->addError(bab_translate("ERROR: The specified role type is not valid"));
-                return false;
-            }
-
-            if(0 === mb_strlen(trim($sName)))
-            {
-                $babBody->addError(bab_translate("Error: The role name is not valid"));
-                return false;
-            }
-
-            $aWhereClauseItem[] = 'type = ' . $babDB->quote($iType);
-            $aWhereClauseItem[] = 'id_entity = ' . $babDB->quote($iIdEntity);
-            $aWhereClauseItem[] = 'name LIKE ' . $babDB->quote($babDB->db_escape_like($sName));
-
-            $sQuery =
-                'SELECT ' .
-                    '* ' .
-                'FROM ' .
-                    BAB_OC_ROLES_TBL . ' ' .
-                'WHERE ' .
-                    implode(' AND ', $aWhereClauseItem);
-
-            //bab_debug($sQuery);
-            $iNumRows	= 0;
-            $aRole		= array();
-            $oResult	= $babDB->db_query($sQuery);
-            if(false !== $oResult)
-            {
-                $iNumRows = $babDB->db_num_rows($oResult);
-                if($iNumRows > 0)
-                {
-                    $aRole = $babDB->db_fetch_assoc($oResult);
-                }
-            }
-            return $aRole;
+            $babBody->addError(bab_translate("ERROR: The specified role type is not valid"));
+            return false;
         }
 
-        $babBody->addError(bab_translate("Error: Right insufficient"));
-        return false;
+        if(0 === mb_strlen(trim($sName)))
+        {
+            $babBody->addError(bab_translate("Error: The role name is not valid"));
+            return false;
+        }
+
+        $aWhereClauseItem[] = 'type = ' . $babDB->quote($iType);
+        $aWhereClauseItem[] = 'id_entity = ' . $babDB->quote($iIdEntity);
+        $aWhereClauseItem[] = 'name LIKE ' . $babDB->quote($babDB->db_escape_like($sName));
+
+        $sQuery =
+            'SELECT ' .
+                '* ' .
+            'FROM ' .
+                BAB_OC_ROLES_TBL . ' ' .
+            'WHERE ' .
+                implode(' AND ', $aWhereClauseItem);
+
+        //bab_debug($sQuery);
+        $iNumRows	= 0;
+        $aRole		= array();
+        $oResult	= $babDB->db_query($sQuery);
+        if(false !== $oResult)
+        {
+            $iNumRows = $babDB->db_num_rows($oResult);
+            if($iNumRows > 0)
+            {
+                $aRole = $babDB->db_fetch_assoc($oResult);
+            }
+        }
+        return $aRole;
+
     }
 
 
     function getRoleByEntityId($iIdEntity, $iType = null)
     {
         global $babBody, $babDB;
-
-        if(false === $this->isAccessValid())
-        {
-            $babBody->addError(bab_translate("Error: Right insufficient"));
-            return false;
-        }
 
         $aRole = array();
 
@@ -2827,11 +2733,6 @@ class bab_OrgChartUtil
 
     function deleteRoleByEntityId($iIdEntity, $iType = null)
     {
-        if(!$this->isLockedBy($this->iIdSessUser))
-        {
-            return false;
-        }
-
         $aEntity = $this->getEntity($iIdEntity);
         if(false !== $aEntity)
         {
@@ -2878,10 +2779,6 @@ class bab_OrgChartUtil
 
     function createRoleUser($iIdRole, $iIdUser)
     {
-        if(!$this->isLockedBy($this->iIdSessUser))
-        {
-            return false;
-        }
 
         global $babDB, $babBody;
 
@@ -3001,38 +2898,37 @@ class bab_OrgChartUtil
 
     function getRoleUserByUserId($iIdEntity, $iIdUser)
     {
-        if($this->isAccessValid())
+    
+        global $babDB;
+
+        $sQuery =
+            'SELECT ' .
+                'ru.* ' .
+            'FROM ' .
+                BAB_OC_ROLES_USERS_TBL . ' ru ' .
+            'LEFT JOIN ' .
+                BAB_OC_ROLES_TBL . ' r on r.id = ru.id_role ' .
+            'WHERE ' .
+                'r.id_entity = ' . $babDB->quote($iIdEntity) . ' AND ' .
+                'ru.id_user = ' . $babDB->quote($iIdUser);
+
+        $aRoleUser = false;
+        $aDatas = false;
+        //bab_debug($sQuery);
+        $oResult = $babDB->db_query($sQuery);
+        if(false !== $oResult)
         {
-            global $babDB;
-
-            $sQuery =
-                'SELECT ' .
-                    'ru.* ' .
-                'FROM ' .
-                    BAB_OC_ROLES_USERS_TBL . ' ru ' .
-                'LEFT JOIN ' .
-                    BAB_OC_ROLES_TBL . ' r on r.id = ru.id_role ' .
-                'WHERE ' .
-                    'r.id_entity = ' . $babDB->quote($iIdEntity) . ' AND ' .
-                    'ru.id_user = ' . $babDB->quote($iIdUser);
-
-            $aRoleUser = false;
-            $aDatas = false;
-            //bab_debug($sQuery);
-            $oResult = $babDB->db_query($sQuery);
-            if(false !== $oResult)
+            $iNumRows = $babDB->db_num_rows($oResult);
+            if(0 < $iNumRows)
             {
-                $iNumRows = $babDB->db_num_rows($oResult);
-                if(0 < $iNumRows)
+                while(false !== ($aDatas = $babDB->db_fetch_assoc($oResult)))
                 {
-                    while(false !== ($aDatas = $babDB->db_fetch_assoc($oResult)))
-                    {
-                        $aRoleUser[$aDatas['id']] = $aDatas;
-                    }
-                    return $aRoleUser;
+                    $aRoleUser[$aDatas['id']] = $aDatas;
                 }
+                return $aRoleUser;
             }
         }
+    
         return false;
     }
 
@@ -3052,10 +2948,6 @@ class bab_OrgChartUtil
      */
     function deleteRole($IdRole)
     {
-        if(!$this->isLockedBy($this->iIdSessUser))
-        {
-            return false;
-        }
 
         $this->deleteRoleUserByRoleId($IdRole);
 
@@ -3079,10 +2971,6 @@ class bab_OrgChartUtil
 
     function deleteRoleUserByRoleUserId($IdRoleUser)
     {
-        if(!$this->isLockedBy($this->iIdSessUser))
-        {
-            return false;
-        }
 
         global $babDB;
 
@@ -3152,10 +3040,6 @@ class bab_OrgChartUtil
 
     function deleteRoleUserByRoleId($iIdRole)
     {
-        if(!$this->isLockedBy($this->iIdSessUser))
-        {
-            return false;
-        }
 
         global $babDB;
 
@@ -3385,12 +3269,6 @@ class bab_OrgChartUtil
     public function updateUserPrimaryRole($iduser, $prole)
     {
         global $babDB;
-
-
-        if(!$this->isLockedBy($this->iIdSessUser))
-        {
-            return false;
-        }
 
         $req = "SELECT ocrut.id
                 FROM  ".BAB_OC_ROLES_USERS_TBL." ocrut

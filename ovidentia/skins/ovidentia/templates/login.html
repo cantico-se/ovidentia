@@ -1,7 +1,8 @@
 
 
 <!--#begin login -->
-<form method="post" action="{ babPhpSelf }">
+<form method="post" action="{ babPhpSelf }" class="bab-login-form">
+<input type="hidden" name="babCsrfProtect" value="{ babCsrfProtect }" />
 
 <input type="hidden" name="tg" value="login" />
 <input type="hidden" name="referer" value="{ referer }" />
@@ -64,6 +65,7 @@
 </tr></table>
   <br>
 <form method="post" action="{ babPhpSelf }">
+<input type="hidden" name="babCsrfProtect" value="{ babCsrfProtect }" />
 
 <input type="hidden" name="tg" value="login">
 
@@ -147,6 +149,7 @@
 
 
 <form method="post" action="{ babPhpSelf }">
+<input type="hidden" name="babCsrfProtect" value="{ babCsrfProtect }" />
 
 <input type="hidden" name="tg" value="login" />
 
@@ -187,8 +190,10 @@
 <!--#begin registration -->
 <!--#if bphoto -->
 <form method="post" action="{ babPhpSelf }" enctype="multipart/form-data">
+<input type="hidden" name="babCsrfProtect" value="{ babCsrfProtect }" />
 <!--#else bphoto -->
 <form method="post" action="{ babPhpSelf }">
+<input type="hidden" name="babCsrfProtect" value="{ babCsrfProtect }" />
 <!--#endif bphoto -->
 <input type="hidden" name="tg" value="login" />
 <input type="hidden" name="adduser" value="register" />
@@ -387,6 +392,7 @@
 //]]>
 </script>
 <form name ="displayMessage" method="post" action="{ babPhpSelf }">
+<input type="hidden" name="babCsrfProtect" value="{ babCsrfProtect }" />
 	<input type="hidden" name="tg" value="{ m_datas[sTg] }" />
 	<input type="hidden" name="cmd" value="{  m_datas[sCmd] }" />
 	<table border="0" width="50%" cellspacing="0" cellpadding="2" align="center">
@@ -409,3 +415,28 @@
 	</table>
 </form>
 <!--#end displayMessage -->
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!--#begin confirmForm -->
+<form method="post" action="{ babPhpSelf }">
+<input type="hidden" name="babCsrfProtect" value="{ babCsrfProtect }" />
+
+<input type="hidden" name="tg" value="login" />
+<input type="hidden" name="cmd" value="confirm" />
+<input type="hidden" name="hash" value="{ hash }" />
+<input type="hidden" name="name" value="{ name }" />
+  <p>{ confirmMessage }</p>
+  <input type="submit" value="{ confirmButton }">
+</form>
+<!--#end confirmForm -->

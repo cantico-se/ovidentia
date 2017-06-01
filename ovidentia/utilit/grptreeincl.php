@@ -165,7 +165,8 @@ class bab_grptree extends bab_dbtree
 	$node_id = getNextAvariableId();
 
 	list($grp, $firstchild) = $this->setAlphaChild($id_parent, $childname);
-
+	$id_previous = null;
+	
 	foreach($grp as $key => $value)
 		{
 		if ('new' == $key && isset($id_previous))
@@ -188,7 +189,7 @@ class bab_grptree extends bab_dbtree
 
 	list($grp, $firstchild) = $this->setAlphaChild($id_parent, $childname);
 
-
+	$id_previous = null;
 	foreach($grp as $key => $value)
 		{
 		if ('new' == $key && isset($id_previous))

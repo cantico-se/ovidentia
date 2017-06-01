@@ -25,11 +25,11 @@
  * @internal SEC1 NA 11/12/2006 FULL
 */
 include_once 'base.php';
-require_once dirname(__FILE__).'/utilit/registerglobals.php';
-include_once $babInstallPath.'utilit/topincl.php';
-include_once $babInstallPath.'utilit/treeincl.php';
-include_once $babInstallPath.'utilit/imgincl.php';
-require_once $babInstallPath . 'utilit/toolbar.class.php';
+
+include_once $GLOBALS['babInstallPath'].'utilit/topincl.php';
+include_once $GLOBALS['babInstallPath'].'utilit/treeincl.php';
+include_once $GLOBALS['babInstallPath'].'utilit/imgincl.php';
+require_once $GLOBALS['babInstallPath'] . 'utilit/toolbar.class.php';
 
 function isUserManager()
 {
@@ -1264,30 +1264,31 @@ if( isUserManager() )
 {
     if( 'addquestion' == bab_pp('addquestion'))
     {
-        saveQuestion($item, bab_pp('newidscat'),  bab_pp('question'));
+        bab_requireSaveMethod() && saveQuestion($item, bab_pp('newidscat'),  bab_pp('question'));
     }
     else if( 'updatequestion' == bab_pp('updatequestion'))
     {
-        updateQuestion(bab_pp('idq'), bab_pp('newidscat'), bab_pp('question'));
+        bab_requireSaveMethod() && updateQuestion(bab_pp('idq'), bab_pp('newidscat'), bab_pp('question'));
     }
     else if( 'Yes' == bab_gp('action'))
     {
-        confirmDeleteQuestion($item, bab_gp('idq'));
+        bab_requireDeleteMethod() && confirmDeleteQuestion($item, bab_gp('idq'));
         Header("Location: ". $GLOBALS['babUrlScript']."?tg=faq&idx=questions&item=".$item);
+        exit;
     }
     else if( 'addscat' == bab_pp('addsc'))
     {
-        saveSubCategory($item, bab_pp('newidscat'), bab_pp('subcat'));
+        bab_requireSaveMethod() && saveSubCategory($item, bab_pp('newidscat'), bab_pp('subcat'));
     }
     else if( 'modscat' == bab_pp('modsc'))
     {
         if( isset($_POST['bdel']))
         {
-            deleteSubCategory($item, $idscat, bab_pp('ids'));
+            bab_requireDeleteMethod() && deleteSubCategory($item, $idscat, bab_pp('ids'));
         }
         else
         {
-            updateSubCategory($item, $idscat, bab_pp('ids'), bab_pp('subcat'));
+            bab_requireSaveMethod() && updateSubCategory($item, $idscat, bab_pp('ids'), bab_pp('subcat'));
         }
     }
 }
@@ -1423,4 +1424,3 @@ switch($idx)
 }
 
 $babBody->setCurrentItemMenu($idx);
-?>

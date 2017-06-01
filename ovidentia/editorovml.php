@@ -22,7 +22,7 @@
  * USA.																	*
 ************************************************************************/
 include_once 'base.php';
-require_once dirname(__FILE__).'/utilit/registerglobals.php';
+
 
 function dire_ext($rep, $ext)
 {
@@ -157,21 +157,13 @@ function browse($url)
 
 
 
-if (!isset($url)) {
+$url = bab_rp('url');
+if (false !== mb_strpos($url, '..')) {
 	$url = '';
-} else {
-	if (false !== mb_strpos($url, '..')) {
-		$url = '';
-	}
 }
 
-if (!isset($cb)) {
-	$cb = 'EditorOnInsertOvml';
-}
-
-if (!isset($idx)) {
-	$idx = 'browse';
-}
+$cb = bab_rp('cb', 'EditorOnInsertOvml');
+$idx = bab_rp('idx', 'browse');
 
 switch ($idx) {
 	default:

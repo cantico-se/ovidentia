@@ -14,122 +14,123 @@ var op = null;
 function openPopup(url)
 {
 if( op == null || op.closed )
-	op = this.open(url+'onApprover', 'babuserslist', 'width=550,height=550,status=no,resizable=yes,top=200,left=200,scrollbars=yes');
+    op = this.open(url+'onApprover', 'babuserslist', 'width=550,height=550,status=no,resizable=yes,top=200,left=200,scrollbars=yes');
 else
-	op.focus();
+    op.focus();
 }
 //-->
 </script>
 
 <form name="forcreate" method="post" action="{ babPhpSelf }">
+<input type="hidden" name="babCsrfProtect" value="{ babCsrfProtect }" />
 <input type="hidden" name="tg" value="forums">
 <input type="hidden" name="idx" value="List">
 <input type="hidden" name="addforum" value="addforum">
 <table  width="90%" border="0" cellspacing="0" cellpadding="2" align="center">
-	<tr> 
-		<td class="BabLoginCadreBackground" align="center" valign="middle"> 
-			<table class="BabLoginMenuBackground" width="100%" border="0" cellspacing="0" cellpadding="5" align="center">
-			<tr> 
-			<td  align="right" nowrap 
-			valign="middle">{ name }:</td>
-			<td valign="middle"> 
-			<input type="text" name="fname" size="30" maxlength="30" value="{ nameval }">
-			</td>
-			</tr>
-			<tr> 
-			<td align="right">{ description }:</td>
-			<td> 
-			<textarea name="description" cols="30">{ descriptionval }</textarea>
-			</td>
-			</tr>
-			<tr> 
-			<td align="right" >{ active }:</td>
-			<td> 
-			<select name="active">
-			<option value="Y" selected >{ yes }</option>
-			<option value="N" >{ no }</option>
-			</select>
-			</td>
-			</tr>
-			<tr> 
-			<td align="right">{ moderation }:</td>
-			<td> 
-			<select name="moderation">
-			<option value="Y" selected >{ yes }</option>
-			<option value="N" >{ no }</option>
-			</select>
-			</td>
-			</tr>
-			<tr> 
-			<td align="right">{ notification }:</td>
-			<td> 
-			<select name="notification">
-			<option value="Y">{ yes }</option>
-			<option value="N" selected>{ no }</option>
-			</select>
-			</td>
-			</tr>
-			<tr> 
-			<td align="right">{ nbmsgdisplay }:</td>
-			<td>
-			<input type="text" name="nbmsgdisplay" size="4" maxlength="3" value="10">
-			</td>
-			</tr>
-			<tr> 
-			<td align="right">{ use_flatview_txt }:</td>
-			<td> 
-			<select name="bflatview">
-			<option value="Y"  selected>{ yes }</option>
-			<option value="N">{ no }</option>
-			</select>
-			</td>
-			</tr>
-			<tr> 
-			<td align="right">{ show_email_txt }:</td>
-			<td> 
-			<select name="bdisplayemailaddress">
-			<option value="Y" selected>{ yes }</option>
-			<option value="N">{ no }</option>
-			</select>
-			</td>
-			</tr>
-			<tr> 
-			<td align="right">{ show_authordetails_txt }:</td>
-			<td> 
-			<select name="bdisplayauhtordetails">
-			<option value="Y"  selected>{ yes }</option>
-			<option value="N">{ no }</option>
-			</select>
-			</td>
-			</tr>
-			<tr> 
-			<td align="right">{ allow_moderatorupdate_txt }:</td>
-			<td> 
-			<select name="bupdatemoderator">
-			<option value="Y"  selected>{ yes }</option>
-			<option value="N">{ no }</option>
-			</select>
-			</td>
-			</tr>
-			<tr> 
-			<td align="right">{ allow_authorupdate_txt }:</td>
-			<td> 
-			<select name="bupdateauthor">
-			<option value="N" selected>{ no }</option>
-			<option value="Y">{ yes }</option>
-			</select>
-			</td>
-			</tr>
-			<tr> 
-			<td>&nbsp;</td>
-			<td>
-			<input type="submit" name="Submit" value="{ add }">
-			<br>
-			</td>
-			</tr>
-			</table>
-		</td>
-	</tr>
+    <tr>
+        <td class="BabLoginCadreBackground" align="center" valign="middle">
+            <table class="BabLoginMenuBackground" width="100%" border="0" cellspacing="0" cellpadding="5" align="center">
+            <tr>
+            <td  align="right" nowrap
+            valign="middle">{ name }:</td>
+            <td valign="middle">
+            <input type="text" name="fname" size="30" maxlength="30" value="{ nameval }">
+            </td>
+            </tr>
+            <tr>
+            <td align="right">{ description }:</td>
+            <td>
+            <textarea name="description" cols="30">{ descriptionval }</textarea>
+            </td>
+            </tr>
+            <tr>
+            <td align="right" >{ active }:</td>
+            <td>
+            <select name="active">
+            <option value="Y" selected >{ yes }</option>
+            <option value="N" >{ no }</option>
+            </select>
+            </td>
+            </tr>
+            <tr>
+            <td align="right">{ moderation }:</td>
+            <td>
+            <select name="moderation">
+            <option value="Y" selected >{ yes }</option>
+            <option value="N" >{ no }</option>
+            </select>
+            </td>
+            </tr>
+            <tr>
+            <td align="right">{ notification }:</td>
+            <td>
+            <select name="notification">
+            <option value="Y">{ yes }</option>
+            <option value="N" selected>{ no }</option>
+            </select>
+            </td>
+            </tr>
+            <tr>
+            <td align="right">{ nbmsgdisplay }:</td>
+            <td>
+            <input type="text" name="nbmsgdisplay" size="4" maxlength="3" value="10">
+            </td>
+            </tr>
+            <tr>
+            <td align="right">{ use_flatview_txt }:</td>
+            <td>
+            <select name="bflatview">
+            <option value="Y"  selected>{ yes }</option>
+            <option value="N">{ no }</option>
+            </select>
+            </td>
+            </tr>
+            <tr>
+            <td align="right">{ show_email_txt }:</td>
+            <td>
+            <select name="bdisplayemailaddress">
+            <option value="Y" selected>{ yes }</option>
+            <option value="N">{ no }</option>
+            </select>
+            </td>
+            </tr>
+            <tr>
+            <td align="right">{ show_authordetails_txt }:</td>
+            <td>
+            <select name="bdisplayauhtordetails">
+            <option value="Y"  selected>{ yes }</option>
+            <option value="N">{ no }</option>
+            </select>
+            </td>
+            </tr>
+            <tr>
+            <td align="right">{ allow_moderatorupdate_txt }:</td>
+            <td>
+            <select name="bupdatemoderator">
+            <option value="Y"  selected>{ yes }</option>
+            <option value="N">{ no }</option>
+            </select>
+            </td>
+            </tr>
+            <tr>
+            <td align="right">{ allow_authorupdate_txt }:</td>
+            <td>
+            <select name="bupdateauthor">
+            <option value="N" selected>{ no }</option>
+            <option value="Y">{ yes }</option>
+            </select>
+            </td>
+            </tr>
+            <tr>
+            <td>&nbsp;</td>
+            <td>
+            <input type="submit" name="Submit" value="{ add }">
+            <br>
+            </td>
+            </tr>
+            </table>
+        </td>
+    </tr>
 </table>
 </form>
 <br>
@@ -152,184 +153,185 @@ var op = null;
 function openPopup(url)
 {
 if( op == null || op.closed )
-	op = this.open(url+'onApprover', 'babuserslist', 'width=550,height=550,status=no,resizable=yes,top=200,left=200,scrollbars=yes');
+    op = this.open(url+'onApprover', 'babuserslist', 'width=550,height=550,status=no,resizable=yes,top=200,left=200,scrollbars=yes');
 else
-	op.focus();
+    op.focus();
 }
 //-->
 </script>
 <form name="formodify" method="post" action="{ babPhpSelf }">
+<input type="hidden" name="babCsrfProtect" value="{ babCsrfProtect }" />
 <input type="hidden" name="tg" value="forum">
 <input type="hidden" name="item" value="{ arr[id] }">
 <input type="hidden" name="update" value="updateforum">
 <center>
 <input type="hidden" name="idx" value="Modify">
 <table  width="50%" border="0" cellspacing="0" cellpadding="2" align="center">
-<tr> 
-<td class="BabLoginCadreBackground" align="center" valign="middle"> 
-	<table class="BabLoginMenuBackground"  width="100%" border="0" cellspacing="0" cellpadding="5" align="center">
-	<tr> 
-		<td width="40%" align="right">{ name }:</td>
-		<td width="60%"> 
-		<input type="text" name="fname" size="30" maxlength="30" value="{ arr[name] }">
-		</td>
-	</tr>
-	<tr> 
-		<td align="right">{ description }:</td>
-		<td> 
-		<textarea name="description" cols="30">{ arr[description] }</textarea>
-		</td>
-	</tr>
-	<tr> 
-		<td align="right">{ active }:</td>
-		<td> 
-		<select name="active">
-		                      <option value="Y"  
-		                      <!--#if arr[active] "== Y" -->
-		                      selected 
-		                      <!--#endif arr[active] -->
-		                      >{ yes }</option>
-		                      <option value="N"  
-		                      <!--#if arr[active] "== N" -->
-		                      selected 
-		                      <!--#endif arr[active] -->
-		                      >{ no }</option>
-		</select>
-		</td>
-	</tr>
-	<tr> 
-		<td align="right">{ moderation }:</td>
-		<td> 
-		<select name="moderation">
-		 <option value="Y" 
-		<!--#if arr[moderation] "== Y" -->
-		   selected 
-		<!--#endif arr[moderation] -->
-		>{ yes }</option>
-		<option value="N"  
-		<!--#if arr[moderation] "== N" -->
-		selected 
-		<!--#endif arr[moderation] -->
-		>{ no }</option>
-		</select>
-		</td>
-	</tr>
-	<tr> 
-		<td align="right">{ notification }:</td>
-		<td> 
-		<select name="notification">
-		 <option value="Y" 
-		<!--#if arr[notification] "== Y" -->
-		   selected 
-		<!--#endif arr[notification] -->
-		>{ yes }</option>
-		<option value="N"  
-		<!--#if arr[notification] "== N" -->
-		selected 
-		<!--#endif arr[notification] -->
-		>{ no }</option>
-		</select>
-		</td>
-	</tr>
-	<tr>
-		<td align="right">{ nbmsgdisplay }:</td>
-		<td>
-		<input type="text" name="nbmsgdisplay" size="4" maxlength="3" value="{ arr[display] }">
-		</td>
-	</tr>
-	<tr> 
-		<td align="right">{ use_flatview_txt }:</td>
-		<td> 
-		<select name="bflatview">
-		 <option value="Y" 
-		<!--#if arr[bflatview] "== Y" -->
-		   selected 
-		<!--#endif arr[bflatview] -->
-		>{ yes }</option>
-		<option value="N"  
-		<!--#if arr[bflatview] "== N" -->
-		selected 
-		<!--#endif arr[bflatview] -->
-		>{ no }</option>
-		</select>
-		</td>
-	</tr>
-	<tr> 
-		<td align="right">{ show_email_txt }:</td>
-		<td> 
-		<select name="bdisplayemailaddress">
-		 <option value="Y" 
-		<!--#if arr[bdisplayemailaddress] "== Y" -->
-		   selected 
-		<!--#endif arr[bdisplayemailaddress] -->
-		>{ yes }</option>
-		<option value="N"  
-		<!--#if arr[bdisplayemailaddress] "== N" -->
-		selected 
-		<!--#endif arr[bdisplayemailaddress] -->
-		>{ no }</option>
-		</select>
-		</td>
-	</tr>
-	<tr> 
-		<td align="right">{ show_authordetails_txt }:</td>
-		<td valign="middle"> 
-		<select name="bdisplayauhtordetails">
-		 <option value="Y" 
-		<!--#if arr[bdisplayauhtordetails] "== Y" -->
-		   selected 
-		<!--#endif arr[bdisplayauhtordetails] -->
-		>{ yes }</option>
-		<option value="N"  
-		<!--#if arr[bdisplayauhtordetails] "== N" -->
-		selected 
-		<!--#endif arr[bdisplayauhtordetails] -->
-		>{ no }</option>
-		</select>
-		</td>
-	</tr>
-	<tr> 
-		<td align="right">{ allow_moderatorupdate_txt }:</td>
-		<td> 
-		<select name="bupdatemoderator">
-		 <option value="Y" 
-		<!--#if arr[bupdatemoderator] "== Y" -->
-		   selected 
-		<!--#endif arr[bupdatemoderator] -->
-		>{ yes }</option>
-		<option value="N"  
-		<!--#if arr[bupdatemoderator] "== N" -->
-		selected 
-		<!--#endif arr[bupdatemoderator] -->
-		>{ no }</option>
-		</select>
-		</td>
-	</tr>
-	<tr> 
-		<td align="right">{ allow_authorupdate_txt }:</td>
-		<td> 
-		<select name="bupdateauthor">
-		 <option value="Y" 
-		<!--#if arr[bupdateauthor] "== Y" -->
-		   selected 
-		<!--#endif arr[bupdateauthor] -->
-		>{ yes }</option>
-		<option value="N"  
-		<!--#if arr[bupdateauthor] "== N" -->
-		selected 
-		<!--#endif arr[bupdateauthor] -->
-		>{ no }</option>
-		</select>
-		</td>
-	</tr>
-	<tr> 
-		<td>&nbsp;</td>
-		<td>
-		<input type="submit" name="submit" value="{ update }">&nbsp;&nbsp;<input type="submit" name="bdelete" value="{ delete }">
-		<br>
-		</td>
-	</tr>
-	</table>
+<tr>
+<td class="BabLoginCadreBackground" align="center" valign="middle">
+    <table class="BabLoginMenuBackground"  width="100%" border="0" cellspacing="0" cellpadding="5" align="center">
+    <tr>
+        <td width="40%" align="right">{ name }:</td>
+        <td width="60%">
+        <input type="text" name="fname" size="30" maxlength="30" value="{ arr[name] }">
+        </td>
+    </tr>
+    <tr>
+        <td align="right">{ description }:</td>
+        <td>
+        <textarea name="description" cols="30">{ arr[description] }</textarea>
+        </td>
+    </tr>
+    <tr>
+        <td align="right">{ active }:</td>
+        <td>
+        <select name="active">
+                              <option value="Y"
+                              <!--#if arr[active] "== Y" -->
+                              selected
+                              <!--#endif arr[active] -->
+                              >{ yes }</option>
+                              <option value="N"
+                              <!--#if arr[active] "== N" -->
+                              selected
+                              <!--#endif arr[active] -->
+                              >{ no }</option>
+        </select>
+        </td>
+    </tr>
+    <tr>
+        <td align="right">{ moderation }:</td>
+        <td>
+        <select name="moderation">
+         <option value="Y"
+        <!--#if arr[moderation] "== Y" -->
+           selected
+        <!--#endif arr[moderation] -->
+        >{ yes }</option>
+        <option value="N"
+        <!--#if arr[moderation] "== N" -->
+        selected
+        <!--#endif arr[moderation] -->
+        >{ no }</option>
+        </select>
+        </td>
+    </tr>
+    <tr>
+        <td align="right">{ notification }:</td>
+        <td>
+        <select name="notification">
+         <option value="Y"
+        <!--#if arr[notification] "== Y" -->
+           selected
+        <!--#endif arr[notification] -->
+        >{ yes }</option>
+        <option value="N"
+        <!--#if arr[notification] "== N" -->
+        selected
+        <!--#endif arr[notification] -->
+        >{ no }</option>
+        </select>
+        </td>
+    </tr>
+    <tr>
+        <td align="right">{ nbmsgdisplay }:</td>
+        <td>
+        <input type="text" name="nbmsgdisplay" size="4" maxlength="3" value="{ arr[display] }">
+        </td>
+    </tr>
+    <tr>
+        <td align="right">{ use_flatview_txt }:</td>
+        <td>
+        <select name="bflatview">
+         <option value="Y"
+        <!--#if arr[bflatview] "== Y" -->
+           selected
+        <!--#endif arr[bflatview] -->
+        >{ yes }</option>
+        <option value="N"
+        <!--#if arr[bflatview] "== N" -->
+        selected
+        <!--#endif arr[bflatview] -->
+        >{ no }</option>
+        </select>
+        </td>
+    </tr>
+    <tr>
+        <td align="right">{ show_email_txt }:</td>
+        <td>
+        <select name="bdisplayemailaddress">
+         <option value="Y"
+        <!--#if arr[bdisplayemailaddress] "== Y" -->
+           selected
+        <!--#endif arr[bdisplayemailaddress] -->
+        >{ yes }</option>
+        <option value="N"
+        <!--#if arr[bdisplayemailaddress] "== N" -->
+        selected
+        <!--#endif arr[bdisplayemailaddress] -->
+        >{ no }</option>
+        </select>
+        </td>
+    </tr>
+    <tr>
+        <td align="right">{ show_authordetails_txt }:</td>
+        <td valign="middle">
+        <select name="bdisplayauhtordetails">
+         <option value="Y"
+        <!--#if arr[bdisplayauhtordetails] "== Y" -->
+           selected
+        <!--#endif arr[bdisplayauhtordetails] -->
+        >{ yes }</option>
+        <option value="N"
+        <!--#if arr[bdisplayauhtordetails] "== N" -->
+        selected
+        <!--#endif arr[bdisplayauhtordetails] -->
+        >{ no }</option>
+        </select>
+        </td>
+    </tr>
+    <tr>
+        <td align="right">{ allow_moderatorupdate_txt }:</td>
+        <td>
+        <select name="bupdatemoderator">
+         <option value="Y"
+        <!--#if arr[bupdatemoderator] "== Y" -->
+           selected
+        <!--#endif arr[bupdatemoderator] -->
+        >{ yes }</option>
+        <option value="N"
+        <!--#if arr[bupdatemoderator] "== N" -->
+        selected
+        <!--#endif arr[bupdatemoderator] -->
+        >{ no }</option>
+        </select>
+        </td>
+    </tr>
+    <tr>
+        <td align="right">{ allow_authorupdate_txt }:</td>
+        <td>
+        <select name="bupdateauthor">
+         <option value="Y"
+        <!--#if arr[bupdateauthor] "== Y" -->
+           selected
+        <!--#endif arr[bupdateauthor] -->
+        >{ yes }</option>
+        <option value="N"
+        <!--#if arr[bupdateauthor] "== N" -->
+        selected
+        <!--#endif arr[bupdateauthor] -->
+        >{ no }</option>
+        </select>
+        </td>
+    </tr>
+    <tr>
+        <td>&nbsp;</td>
+        <td>
+        <input type="submit" name="submit" value="{ update }">&nbsp;&nbsp;<input type="submit" name="bdelete" value="{ delete }">
+        <br>
+        </td>
+    </tr>
+    </table>
 </td>
 </tr>
 </table>
@@ -341,22 +343,22 @@ else
 
 <!--#begin forumslist -->
 <table  width="95%" border="0" cellspacing="0" cellpadding="2" align="center">
-<tr> 
-<td class="BabLoginCadreBackground" align="center" valign="middle"> 
-	<table  width="100%" border="0" cellspacing="0" cellpadding="5" align="center">
-	<tr class="BabSiteAdminTitleFontBackground"> 
-	<td width="10%" valign="middle">{ name }</td>
-	<td width="50%" valign="middle">{ description }</td>
-	<td width="10%" valign="middle" align="left">{ access }</td>
-	</tr>
-	<!--#in getnext -->
-	<tr class="BabSiteAdminFontBackground"> 
-		<td><a href="{ url }" nowrap>{ urlname }</a></td>
-		<td>{ descval }</td>
-		<td><a href="{ rightsurl }" nowrap>{ rights }</a></td>
-	</tr>
-	<!--#endin getnext -->
-	</table>
+<tr>
+<td class="BabLoginCadreBackground" align="center" valign="middle">
+    <table  width="100%" border="0" cellspacing="0" cellpadding="5" align="center">
+    <tr class="BabSiteAdminTitleFontBackground">
+    <td width="10%" valign="middle">{ name }</td>
+    <td width="50%" valign="middle">{ description }</td>
+    <td width="10%" valign="middle" align="left">{ access }</td>
+    </tr>
+    <!--#in getnext -->
+    <tr class="BabSiteAdminFontBackground">
+        <td><a href="{ url }" nowrap>{ urlname }</a></td>
+        <td>{ descval }</td>
+        <td><a href="{ rightsurl }" nowrap>{ rights }</a></td>
+    </tr>
+    <!--#endin getnext -->
+    </table>
 </td>
 </tr>
 </table>
@@ -365,29 +367,30 @@ else
 
 <!--#begin forumsorder -->
 <form method="post" name="ordform" action="{ babPhpSelf }">
+<input type="hidden" name="babCsrfProtect" value="{ babCsrfProtect }" />
 <input type="hidden" name="tg" value="forums">
 <input type="hidden" name="idx" value="List">
 <input type="hidden" name="update" value="order">
 
 <table  width="50%" border="0" cellspacing="0" cellpadding="2" align="center">
-<tr> 
-<td class="BabLoginCadreBackground" align="center" valign="middle"> 
+<tr>
+<td class="BabLoginCadreBackground" align="center" valign="middle">
 <table class="BabLoginMenuBackground" width="100%" border="0" cellspacing="0" cellpadding="5" align="center">
-<tr> 
-<td valign="middle" align="center"> 
+<tr>
+<td valign="middle" align="center">
 <select name="listforums[]"  size=12 multiple>
   <option value="0">{ forumtxt }</option>
-  <!--#in getnext --> 
+  <!--#in getnext -->
   <option value="{ forumid }">{ forumval }</option>
-  <!--#endin getnext --> 
+  <!--#endin getnext -->
 </select>
 </td>
-<td valign="middle" align="center"><a 
-href="Javascript:move(true, document.ordform.elements[3])"><img src="{ babSkinPath }images/Puces/PuceGoTop.gif" 
+<td valign="middle" align="center"><a
+href="Javascript:move(true, document.ordform.elements[3])"><img src="{ babSkinPath }images/Puces/PuceGoTop.gif"
 width="22" height="18" border=0 alt="{ moveup }"></a> <br>
 <br>
-<a href="Javascript:move(false, document.ordform.elements[3])"> 
-<img src="{ babSkinPath }images/Puces/PuceGoDown.gif" width="22" height="18" border=0 alt="{ movedown }"></a> 
+<a href="Javascript:move(false, document.ordform.elements[3])">
+<img src="{ babSkinPath }images/Puces/PuceGoDown.gif" width="22" height="18" border=0 alt="{ movedown }"></a>
 <br /><br />
 <a href="Javascript:sortList('sortAA', document.ordform.elements[3])">
 <img src="{ babSkinPath }images/Puces/a-z.gif" border=0 alt="{ sorta }">
@@ -398,9 +401,9 @@ width="22" height="18" border=0 alt="{ moveup }"></a> <br>
 </a>
 </td>
 </tr>
-<tr> 
-<td align="center"> 
-<input type="submit" name="Submit" value="{ create }" 
+<tr>
+<td align="center">
+<input type="submit" name="Submit" value="{ create }"
 onclick="selectAll(document.ordform.elements[3]); document.ordform.submit()" />
 <br>
 <br>
@@ -418,137 +421,140 @@ onclick="selectAll(document.ordform.elements[3]); document.ordform.submit()" />
 <script language="JavaScript">
 <!--
 function move(bDir, el)
-	{
-	var idx = el.selectedIndex
-	if (idx !=-1 && idx != 0) 
-	{
-		if( idx == 1 && bDir == true)
-			return;
-		if( idx == el.options.length-1 && bDir == false)
-			return;
-		var nxidx = idx + ( bDir ? - 1 : 1)
-		if ( nxidx<0 )
-			nxidx=el.length-1
-		if ( nxidx>=el.length) nxidx=0
-		var oldVal = el[idx].value
-		var oldText = el[idx].text
-		el[idx].value = el[nxidx].value
-		el[idx].text = el[nxidx].text
-		el[nxidx].value = oldVal
-		el[nxidx].text = oldText
-		el.selectedIndex = nxidx
-	}
+    {
+    el = bab_fixOrderElement(el);
+    var idx = el.selectedIndex
+    if (idx !=-1 && idx != 0)
+    {
+        if( idx == 1 && bDir == true)
+            return;
+        if( idx == el.options.length-1 && bDir == false)
+            return;
+        var nxidx = idx + ( bDir ? - 1 : 1)
+        if ( nxidx<0 )
+            nxidx=el.length-1
+        if ( nxidx>=el.length) nxidx=0
+        var oldVal = el[idx].value
+        var oldText = el[idx].text
+        el[idx].value = el[nxidx].value
+        el[idx].text = el[nxidx].text
+        el[nxidx].value = oldVal
+        el[nxidx].text = oldText
+        el.selectedIndex = nxidx
+    }
 }
 
 function moveOptions(src,dest)
-{	 
-	srclen = src.options.length;
-	reslen = dest.options.length + srclen;
-	resopt = new Array(reslen);
-	destcnt = 1;
-	rescnt = 1;
-	nbsel = 0;
-	resopt[0] = new Option(dest.options[0].text,dest.options[0].value);
-	while(destcnt < dest.options.length)
-	{
-		resopt[rescnt] = new Option(dest.options[destcnt].text,dest.options[destcnt].value);
-		destcnt++;
-		rescnt++;
-	}
-	for(i = 1; i < srclen; i++)
-	{
-		while((i < srclen) && (src.options[i].selected == false))
-			i++;
-		if(i < srclen)
-		{
-			if(src.options[i].value != src.options[0].value)
-			{
-				nbsel++;
-				resopt[rescnt] = new Option(src.options[i].text,src.options[i].value);
-				src.options[i] = null;
-				i--;
-				srclen--;
-				rescnt++;
-			}
-		}
-	}
-	dest.options[0] = null;
-	dest.options[0] = resopt[0];
-	
-	for(i=0; i < nbsel;i++)
-	{
-		dest.options[i+1] = null;
-		dest.options[i+1] = resopt[rescnt - nbsel + i];
-	}
+{
+    srclen = src.options.length;
+    reslen = dest.options.length + srclen;
+    resopt = new Array(reslen);
+    destcnt = 1;
+    rescnt = 1;
+    nbsel = 0;
+    resopt[0] = new Option(dest.options[0].text,dest.options[0].value);
+    while(destcnt < dest.options.length)
+    {
+        resopt[rescnt] = new Option(dest.options[destcnt].text,dest.options[destcnt].value);
+        destcnt++;
+        rescnt++;
+    }
+    for(i = 1; i < srclen; i++)
+    {
+        while((i < srclen) && (src.options[i].selected == false))
+            i++;
+        if(i < srclen)
+        {
+            if(src.options[i].value != src.options[0].value)
+            {
+                nbsel++;
+                resopt[rescnt] = new Option(src.options[i].text,src.options[i].value);
+                src.options[i] = null;
+                i--;
+                srclen--;
+                rescnt++;
+            }
+        }
+    }
+    dest.options[0] = null;
+    dest.options[0] = resopt[0];
 
-	for(i=0; i < rescnt - nbsel - 1; i++)
-	{
-		dest.options[nbsel + 1 + i] = null;
-		dest.options[nbsel + 1 + i] = resopt[i + 1];
-	}
+    for(i=0; i < nbsel;i++)
+    {
+        dest.options[i+1] = null;
+        dest.options[i+1] = resopt[rescnt - nbsel + i];
+    }
+
+    for(i=0; i < rescnt - nbsel - 1; i++)
+    {
+        dest.options[nbsel + 1 + i] = null;
+        dest.options[nbsel + 1 + i] = resopt[i + 1];
+    }
 }
 
 function selectAll(list)
 {
-	list.options[0].selected = false;
-	for(i=1; i < list.options.length; i++)
-	{
-		list.options[i].selected = true;
-	}
+    list = bab_fixOrderElement(list);
+    list.options[0].selected = false;
+    for(i=1; i < list.options.length; i++)
+    {
+        list.options[i].selected = true;
+    }
 }
 //-->
 </script>
 <form method="post" name="dispforumfield" action="{ babPhpSelf }">
+<input type="hidden" name="babCsrfProtect" value="{ babCsrfProtect }" />
 <input type="hidden" name="tg" value="forum">
 <input type="hidden" name="idx" value="dispfield">
 <input type="hidden" name="item" value="{ id }">
 <input type="hidden" name="update" value="displayfield">
 <table  width="80%" border="0" cellspacing="0" cellpadding="2" align="center">
-<tr> 
-<td class="BabLoginCadreBackground"> 
+<tr>
+<td class="BabLoginCadreBackground">
 <table class="BabLoginMenuBackground" width="100%" border="0" cellspacing="0" cellpadding="5" align="center">
 
-<tr> 
+<tr>
 <td class="BabLoginMenuBackground" align="center" nowrap valign="middle" colspan="4">{ infotxt }:</td>
 </tr>
 
-<tr> 
-<td align="center" nowrap valign="middle"> 
+<tr>
+<td align="center" nowrap valign="middle">
 <select name="listfields1"  size="12" multiple="multiple">
   <option value="0">{ listftxt }</option>
-  <!--#in getnextf --> 
+  <!--#in getnextf -->
   <option value="{ fid }">{ fieldval }</option>
-  <!--#endin getnextf --> 
+  <!--#endin getnextf -->
 </select>
 </td>
 
 <td align="center"><a href="Javascript:moveOptions(document.dispforumfield.listfields1,document.dispforumfield.elements[5])"><img src="{ babSkinPath }images/Puces/PuceGoRight.gif" width="20" height="24" border=0 alt="Down"></a><br /><br /><a href="Javascript:moveOptions(document.dispforumfield.elements[5],document.dispforumfield.listfields1)" ><img src="{ babSkinPath }images/Puces/PuceGoLeft.gif" width="20" height="24" border=0 alt="Up"></a>
 </td>
 
-<td align="center"> 
+<td align="center">
 <select name="listfd[]"  size="12" multiple="multiple">
   <option value="0">{ listdftxt }</option>
-  <!--#in getnextdf --> 
+  <!--#in getnextdf -->
   <option value="{ fid }">{ fieldval }</option>
-  <!--#endin getnextdf --> 
+  <!--#endin getnextdf -->
 </select>
 </td>
 
-<td align="center" ><a href="Javascript:move(true, document.dispforumfield.elements[5])"><img src="{ babSkinPath }images/Puces/PuceGoTop.gif" width="22" height="18" border=0 alt="{ moveup }"></a> 
+<td align="center" ><a href="Javascript:move(true, document.dispforumfield.elements[5])"><img src="{ babSkinPath }images/Puces/PuceGoTop.gif" width="22" height="18" border=0 alt="{ moveup }"></a>
 <br>
 <br>
-<a href="Javascript:move(false, document.dispforumfield.elements[5])"> 
-<img src="{ babSkinPath }images/Puces/PuceGoDown.gif" width="22" height="18" border=0 alt="{ movedown }"></a> 
+<a href="Javascript:move(false, document.dispforumfield.elements[5])">
+<img src="{ babSkinPath }images/Puces/PuceGoDown.gif" width="22" height="18" border=0 alt="{ movedown }"></a>
 </td>
 
 </tr>
-<tr valign="middle"> 
-<td align="center" colspan="4"> 
+<tr valign="middle">
+<td align="center" colspan="4">
 <input type="submit" name="Submit" value="{ update }" onClick="selectAll(document.dispforumfield.elements[5]); document.dispforumfield.submit()">
 <br>
 <br>
 </td>
-<td>&nbsp; 
+<td>&nbsp;
 </td>
 </tr>
 
@@ -563,137 +569,140 @@ function selectAll(list)
 <script language="JavaScript">
 <!--
 function move(bDir, el)
-	{
-	var idx = el.selectedIndex
-	if (idx !=-1 && idx != 0) 
-	{
-		if( idx == 1 && bDir == true)
-			return;
-		if( idx == el.options.length-1 && bDir == false)
-			return;
-		var nxidx = idx + ( bDir ? - 1 : 1)
-		if ( nxidx<0 )
-			nxidx=el.length-1
-		if ( nxidx>=el.length) nxidx=0
-		var oldVal = el[idx].value
-		var oldText = el[idx].text
-		el[idx].value = el[nxidx].value
-		el[idx].text = el[nxidx].text
-		el[nxidx].value = oldVal
-		el[nxidx].text = oldText
-		el.selectedIndex = nxidx
-	}
+    {
+    el = bab_fixOrderElement(el);
+    var idx = el.selectedIndex
+    if (idx !=-1 && idx != 0)
+    {
+        if( idx == 1 && bDir == true)
+            return;
+        if( idx == el.options.length-1 && bDir == false)
+            return;
+        var nxidx = idx + ( bDir ? - 1 : 1)
+        if ( nxidx<0 )
+            nxidx=el.length-1
+        if ( nxidx>=el.length) nxidx=0
+        var oldVal = el[idx].value
+        var oldText = el[idx].text
+        el[idx].value = el[nxidx].value
+        el[idx].text = el[nxidx].text
+        el[nxidx].value = oldVal
+        el[nxidx].text = oldText
+        el.selectedIndex = nxidx
+    }
 }
 
 function moveOptions(src,dest)
-{	 
-	srclen = src.options.length;
-	reslen = dest.options.length + srclen;
-	resopt = new Array(reslen);
-	destcnt = 1;
-	rescnt = 1;
-	nbsel = 0;
-	resopt[0] = new Option(dest.options[0].text,dest.options[0].value);
-	while(destcnt < dest.options.length)
-	{
-		resopt[rescnt] = new Option(dest.options[destcnt].text,dest.options[destcnt].value);
-		destcnt++;
-		rescnt++;
-	}
-	for(i = 1; i < srclen; i++)
-	{
-		while((i < srclen) && (src.options[i].selected == false))
-			i++;
-		if(i < srclen)
-		{
-			if(src.options[i].value != src.options[0].value)
-			{
-				nbsel++;
-				resopt[rescnt] = new Option(src.options[i].text,src.options[i].value);
-				src.options[i] = null;
-				i--;
-				srclen--;
-				rescnt++;
-			}
-		}
-	}
-	dest.options[0] = null;
-	dest.options[0] = resopt[0];
-	
-	for(i=0; i < nbsel;i++)
-	{
-		dest.options[i+1] = null;
-		dest.options[i+1] = resopt[rescnt - nbsel + i];
-	}
+{
+    srclen = src.options.length;
+    reslen = dest.options.length + srclen;
+    resopt = new Array(reslen);
+    destcnt = 1;
+    rescnt = 1;
+    nbsel = 0;
+    resopt[0] = new Option(dest.options[0].text,dest.options[0].value);
+    while(destcnt < dest.options.length)
+    {
+        resopt[rescnt] = new Option(dest.options[destcnt].text,dest.options[destcnt].value);
+        destcnt++;
+        rescnt++;
+    }
+    for(i = 1; i < srclen; i++)
+    {
+        while((i < srclen) && (src.options[i].selected == false))
+            i++;
+        if(i < srclen)
+        {
+            if(src.options[i].value != src.options[0].value)
+            {
+                nbsel++;
+                resopt[rescnt] = new Option(src.options[i].text,src.options[i].value);
+                src.options[i] = null;
+                i--;
+                srclen--;
+                rescnt++;
+            }
+        }
+    }
+    dest.options[0] = null;
+    dest.options[0] = resopt[0];
 
-	for(i=0; i < rescnt - nbsel - 1; i++)
-	{
-		dest.options[nbsel + 1 + i] = null;
-		dest.options[nbsel + 1 + i] = resopt[i + 1];
-	}
+    for(i=0; i < nbsel;i++)
+    {
+        dest.options[i+1] = null;
+        dest.options[i+1] = resopt[rescnt - nbsel + i];
+    }
+
+    for(i=0; i < rescnt - nbsel - 1; i++)
+    {
+        dest.options[nbsel + 1 + i] = null;
+        dest.options[nbsel + 1 + i] = resopt[i + 1];
+    }
 }
 
 function selectAll(list)
 {
-	list.options[0].selected = false;
-	for(i=1; i < list.options.length; i++)
-	{
-		list.options[i].selected = true;
-	}
+    list = bab_fixOrderElement(list);
+    list.options[0].selected = false;
+    for(i=1; i < list.options.length; i++)
+    {
+        list.options[i].selected = true;
+    }
 }
 //-->
 </script>
 <form method="post" name="dispforumfield" action="{ babPhpSelf }">
+<input type="hidden" name="babCsrfProtect" value="{ babCsrfProtect }" />
 <input type="hidden" name="tg" value="forums">
 <input type="hidden" name="idx" value="forumnotices">
 <input type="hidden" name="item" value="{ id }">
 <input type="hidden" name="update" value="forumnotices">
 <table  width="80%" border="0" cellspacing="0" cellpadding="2" align="center">
-<tr> 
-<td class="BabLoginCadreBackground"> 
+<tr>
+<td class="BabLoginCadreBackground">
 <table class="BabLoginMenuBackground" width="100%" border="0" cellspacing="0" cellpadding="5" align="center">
 
-<tr> 
+<tr>
 <td class="BabLoginMenuBackground" align="center" nowrap valign="middle" colspan="4">{ infotxt }:</td>
 </tr>
 
-<tr> 
-<td align="center" nowrap valign="middle"> 
+<tr>
+<td align="center" nowrap valign="middle">
 <select name="listfields1"  size="12" multiple="multiple">
   <option value="0">{ listftxt }</option>
-  <!--#in getnextf --> 
+  <!--#in getnextf -->
   <option value="{ fid }">{ fieldval }</option>
-  <!--#endin getnextf --> 
+  <!--#endin getnextf -->
 </select>
 </td>
 
 <td align="center"><a href="Javascript:moveOptions(document.dispforumfield.listfields1,document.dispforumfield.elements[5])"><img src="{ babSkinPath }images/Puces/PuceGoRight.gif" width="20" height="24" border=0 alt="Down"></a><br /><br /><a href="Javascript:moveOptions(document.dispforumfield.elements[5],document.dispforumfield.listfields1)" ><img src="{ babSkinPath }images/Puces/PuceGoLeft.gif" width="20" height="24" border=0 alt="Up"></a>
 </td>
 
-<td align="center"> 
+<td align="center">
 <select name="listfd[]"  size="12" multiple="multiple">
   <option value="0">{ listdftxt }</option>
-  <!--#in getnextdf --> 
+  <!--#in getnextdf -->
   <option value="{ fid }">{ fieldval }</option>
-  <!--#endin getnextdf --> 
+  <!--#endin getnextdf -->
 </select>
 </td>
 
-<td align="center" ><a href="Javascript:move(true, document.dispforumfield.elements[5])"><img src="{ babSkinPath }images/Puces/PuceGoTop.gif" width="22" height="18" border=0 alt="{ moveup }"></a> 
+<td align="center" ><a href="Javascript:move(true, document.dispforumfield.elements[5])"><img src="{ babSkinPath }images/Puces/PuceGoTop.gif" width="22" height="18" border=0 alt="{ moveup }"></a>
 <br>
 <br>
-<a href="Javascript:move(false, document.dispforumfield.elements[5])"> 
-<img src="{ babSkinPath }images/Puces/PuceGoDown.gif" width="22" height="18" border=0 alt="{ movedown }"></a> 
+<a href="Javascript:move(false, document.dispforumfield.elements[5])">
+<img src="{ babSkinPath }images/Puces/PuceGoDown.gif" width="22" height="18" border=0 alt="{ movedown }"></a>
 </td>
 
 </tr>
-<tr valign="middle"> 
-<td align="center" colspan="4"> 
+<tr valign="middle">
+<td align="center" colspan="4">
 <input type="submit" name="Submit" value="{ update }" onClick="selectAll(document.dispforumfield.elements[5]); document.dispforumfield.submit()">
 <br>
 <br>
 </td>
-<td>&nbsp; 
+<td>&nbsp;
 </td>
 </tr>
 

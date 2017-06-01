@@ -770,6 +770,7 @@ function saveFile($fmFiles, $id, $gr, $path, $description, $keywords, $readonly,
 
 
             $oFmFolder = null;
+            $iIdRootFolder = null;
             $access = BAB_FmFolderHelper::getInfoFromCollectivePath($oFileManagerEnv->sPath, $iIdRootFolder, $oFmFolder);
             if($access)
             {
@@ -1198,77 +1199,75 @@ function saveUpdateFile($idf, $fmFile, $fname, $description, $keywords, $readonl
  * Get file array and access rights on the file
  *
  */
-function fm_getFileAccess($idf)
+function fm_getFileAccess($idf, $testConfirmed = true)
 {
+
+    $bupdate = false;
+    $bdownload = false;
+    $lockauthor = 0;
+
+    $oFmFolder = null;
+    $oFolderFile = null;
+
+    $oFolderFileSet = new BAB_FolderFileSet();
+
+    $oId =& $oFolderFileSet->aField['iId'];
+    $oState =& $oFolderFileSet->aField['sState'];
+
+    $oCriteria = $oId->in($idf);
+    $oCriteria = $oCriteria->_and($oState->in(''));
+    $oFolderFile = $oFolderFileSet->get($oCriteria);
+
+    if(!is_null($oFolderFile))
     {
-        $bupdate = false;
-        $bdownload = false;
-        $lockauthor = 0;
-
-        $oFmFolder = null;
-        $oFolderFile = null;
-
-        $oFolderFileSet = new BAB_FolderFileSet();
-
-        $oId =& $oFolderFileSet->aField['iId'];
-        $oState =& $oFolderFileSet->aField['sState'];
-
-        $oCriteria = $oId->in($idf);
-        $oCriteria = $oCriteria->_and($oState->in(''));
-        $oFolderFile = $oFolderFileSet->get($oCriteria);
-
-        if(!is_null($oFolderFile))
+        if('Y' === $oFolderFile->getGroup() && (!$testConfirmed || 'Y' === $oFolderFile->getConfirmed()))
         {
-            if('Y' === $oFolderFile->getGroup() && 'Y' === $oFolderFile->getConfirmed())
+            $oFmFolderSet = new BAB_FmFolderSet();
+
+            $oId =& $oFmFolderSet->aField['iId'];
+            $oFmFolder = $oFmFolderSet->get($oId->in($oFolderFile->getOwnerId()));
+            if(!is_null($oFmFolder))
             {
-                $oFmFolderSet = new BAB_FmFolderSet();
-
-                $oId =& $oFmFolderSet->aField['iId'];
-                $oFmFolder = $oFmFolderSet->get($oId->in($oFolderFile->getOwnerId()));
-                if(!is_null($oFmFolder))
-                {
-                    if(bab_isAccessValid(BAB_FMMANAGERS_GROUPS_TBL, $oFmFolder->getId()) || bab_isAccessValid(BAB_FMUPDATE_GROUPS_TBL, $oFmFolder->getId()))
-                    {
-                        $bupdate = true;
-                        if('Y' === $oFmFolder->getVersioning() && 0 !== $oFolderFile->getFolderFileVersionId())
-                        {
-                            $oFolderFileVersionSet = new BAB_FolderFileVersionSet();
-
-                            $oId =& $oFmFolderSet->aField['iId'];
-                            $oFolderFileVersion = $oFolderFileVersionSet->get($oId->in($oFolderFile->getFolderFileVersionId()));
-                            if(!is_null($oFolderFileVersion))
-                            {
-                                $lockauthor = $oFolderFileVersion->getAuthorId();
-                            }
-                        }
-                    }
-
-                    if(bab_isAccessValid(BAB_FMDOWNLOAD_GROUPS_TBL, $oFmFolder->getId()))
-                    {
-                        $bdownload = true;
-                    }
-                }
-            }
-            else if('N' === $oFolderFile->getGroup())
-            {
-                if($GLOBALS['babBody']->ustorage && bab_isUserLogged() && (bab_getUserId() == $oFmFolder->getId()))
+                if(bab_isAccessValid(BAB_FMMANAGERS_GROUPS_TBL, $oFmFolder->getId()) || bab_isAccessValid(BAB_FMUPDATE_GROUPS_TBL, $oFmFolder->getId()))
                 {
                     $bupdate = true;
+                    if('Y' === $oFmFolder->getVersioning() && 0 !== $oFolderFile->getFolderFileVersionId())
+                    {
+                        $oFolderFileVersionSet = new BAB_FolderFileVersionSet();
+
+                        $oId =& $oFmFolderSet->aField['iId'];
+                        $oFolderFileVersion = $oFolderFileVersionSet->get($oId->in($oFolderFile->getFolderFileVersionId()));
+                        if(!is_null($oFolderFileVersion))
+                        {
+                            $lockauthor = $oFolderFileVersion->getAuthorId();
+                        }
+                    }
+                }
+
+                if(bab_isAccessValid(BAB_FMDOWNLOAD_GROUPS_TBL, $oFmFolder->getId()))
+                {
                     $bdownload = true;
                 }
             }
         }
+        else if('N' === $oFolderFile->getGroup())
+        {
+            if($GLOBALS['babBody']->ustorage && bab_isUserLogged() && (bab_getUserId() == $oFmFolder->getId()))
+            {
+                $bupdate = true;
+                $bdownload = true;
+            }
+        }
+    }
 
-        $result[$idf] = array(
+    return array(
         'oFolderFile' => $oFolderFile,
         'oFmFolder' => $oFmFolder,
         'bupdate' => $bupdate,
         'bdownload' => $bdownload,
         'lockauthor' => $lockauthor			// versionning only
-        );
-    }
+    );
 
-    return $result[$idf];
 }
 
 
@@ -1999,6 +1998,8 @@ class BAB_FileManagerEnv
 
             if (0 === $this->iIdObject && !empty($this->sPath))
             {
+                $iIdRootFolder = null;
+                $oFmFolder = null;
                 BAB_FmFolderHelper::getInfoFromCollectivePath($this->sPath, $iIdRootFolder, $oFmFolder);
                 $this->iIdObject = $iIdRootFolder;
             }
@@ -2910,7 +2911,7 @@ function canPasteFolder($iIdSrcRootFolder, $sSrcPath, $bSrcPathIsCollective, $iI
         $sFullParentPath 	= mb_substr($sFullCurrFolder, 0, mb_strlen($sFullPathToPaste));
 
 
-        //Est ce que dans le r�pertoire courant il y a un r�pertoire de m�me nom ?
+        //Est ce que dans le repertoire courant il y a un repertoire de meme nom ?
         $bSameDir = true;
         $sTrgFullPathName = $sRootFmPath . addEndSlash($sTrgPath) . getLastPath($sSrcPath);
         $sSrcFullPathName = $sRootFmPath . removeEndSlah($sSrcPath);
@@ -3087,7 +3088,7 @@ function haveRightOn($sPath, $sTableName, $oFileMgrEnv = null)
     }
 }
 
-/* A utiliser seulement pour les fonction haveRightxxx quand on est � la racine*/
+/* A utiliser seulement pour les fonction haveRightxxx quand on est a la racine*/
 function haveAdministratorRight()
 {
     if(0 === bab_getCurrentUserDelegation())

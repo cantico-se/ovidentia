@@ -2,25 +2,26 @@
 <!--#begin articleslist -->
 <script type="text/javascript">
 function submitCtrl() {
-	//}
-	var f = document.forms['listform'];
-	if (f.action.value == 'Deletea')
-		{
-		var nbart = 0;
-		var art = document.getElementById('bab_groups_tree').getElementsByTagName('ul')[0].getElementsByTagName('ul')[0].childNodes;
-		for (var i =0; i < art.length ; i++ ) {
-			if (art[i].nodeName == 'LI' && art[i].getElementsByTagName('div')[0].getElementsByTagName('input')[0].checked) {
-				nbart++;
-				}
-			}
-		if (nbart > 0 && !confirm('{ js_confirm_delete }')) {
-			return false;
-			}
-		}
-	return true;
+    //}
+    var f = document.forms['listform'];
+    if (f.action.value == 'Deletea')
+        {
+        var nbart = 0;
+        var art = document.getElementById('bab_groups_tree').getElementsByTagName('ul')[0].getElementsByTagName('ul')[0].childNodes;
+        for (var i =0; i < art.length ; i++ ) {
+            if (art[i].nodeName == 'LI' && art[i].getElementsByTagName('div')[0].getElementsByTagName('input')[0].checked) {
+                nbart++;
+                }
+            }
+        if (nbart > 0 && !confirm('{ js_confirm_delete }')) {
+            return false;
+            }
+        }
+    return true;
 }
 </script>
 <form method="post" action="{ babPhpSelf }" name="listform" onsubmit="return submitCtrl()">
+<input type="hidden" name="babCsrfProtect" value="{ babCsrfProtect }" />
 <input type="hidden" name="tg" value="topman" />
 <input type="hidden" name="idx" value="Articles" />
 <input type="hidden" name="item" value="{ item }" />
@@ -29,103 +30,103 @@ function submitCtrl() {
 
 <script type="text/javascript" src="{ babInstallPath }scripts/ul_tree.js"></script>
 <div id="bab_groups_tree" class="bab_tree BabLoginCadreBackground"  style="padding: 1px">
-	<p class="BabSiteAdminTitleFontBackground">
-	<a href="javascript:tree.expand();" class="expand">{ t_expand_all }</a> 
-	<a href="javascript:tree.collapse();" class="collapse">{ t_collapse_all }</a>
-	</p>
-	<div class="tree"  style="position: relative">
-	<ul class="first">
-	<li>
-		<div>
-			<input type="checkbox" onclick="tree_check_childs(this)" /> 
-			<img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" />
-			<strong>{ t_articles }</strong>
-		</div>
-		<ul>
-		<!--#in getnext -->
-		<li id="bab_art{ articleid }">
-			<div class="line">
-				
-				<input type="checkbox" name="articles[]" value="{ articleid }" />
-				
-				<!--#if bupdate -->
-				<a title="{ removedrafttxt }" href="{ removedrafturl }" onclick="return confirm('{ removedraftconfirm }');"><img src="{ babSkinPath }images/Puces/delete.png" alt="{ removedrafttxt }" /></a>
-				<em>{ status }</em> : 
-				<!--#else bupdate -->
-				<a title="{ propertiestxt }" href="{ propurl }" onclick="bab_popup(this.href);return false;"><img src="{ babSkinPath }images/Puces/edit.gif" alt="{ propertiestxt }" /></a>
-				<!--#endif bupdate -->
-				
-				<a href="{ urltitle }" title="{ t_view_article }" onclick="bab_popup(this.href,5,1);return false;">{ title }</a>
+    <p class="BabSiteAdminTitleFontBackground">
+    <a href="javascript:tree.expand();" class="expand">{ t_expand_all }</a>
+    <a href="javascript:tree.collapse();" class="collapse">{ t_collapse_all }</a>
+    </p>
+    <div class="tree"  style="position: relative">
+    <ul class="first">
+    <li>
+        <div>
+            <input type="checkbox" onclick="tree_check_childs(this)" />
+            <img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" />
+            <strong>{ t_articles }</strong>
+        </div>
+        <ul>
+        <!--#in getnext -->
+        <li id="bab_art{ articleid }">
+            <div class="line">
 
-				&nbsp;
+                <input type="checkbox" name="articles[]" value="{ articleid }" />
 
-				<!--#if homepage_public -->
-				&nbsp; <img src="{ babSkinPath }images/Puces/PuceUnregistered.png" alt="{ art0alt }" title="{ art0alt }" />
-				<!--#endif homepage_public -->
-				<!--#if homepage_private -->
-				&nbsp; <img src="{ babSkinPath }images/Puces/PuceRegistered.png" alt="{ art1alt }" title="{ art1alt }" />
-				<!--#endif homepage_private -->
-				<!--#if archive -->
-				&nbsp; <img src="{ babSkinPath }images/Puces/PuceArchive.png" alt="{ archivealt } : { datearchiving }" title="{ archivealt } : { datearchiving }" />
-				<!--#endif archive -->
-			</div>
+                <!--#if bupdate -->
+                <a title="{ removedrafttxt }" href="{ removedrafturl }" title="{ removedraftconfirm }" onclick="return bab_postLinkConfirm(this);"><img src="{ babSkinPath }images/Puces/delete.png" alt="{ removedrafttxt }" /></a>
+                <em>{ status }</em> :
+                <!--#else bupdate -->
+                <a title="{ propertiestxt }" href="{ propurl }" onclick="bab_popup(this.href);return false;"><img src="{ babSkinPath }images/Puces/edit.gif" alt="{ propertiestxt }" /></a>
+                <!--#endif bupdate -->
 
-			<!--#if filescomments -->
+                <a href="{ urltitle }" title="{ t_view_article }" onclick="bab_popup(this.href,5,1);return false;">{ title }</a>
 
-			<ul>
-				
-				<!--#if countfiles -->
-				<li>
-					<div>
-						<strong>{ t_files }</strong>
-					</div>
-				
-					<ul>
-					<!--#in getnextfile -->
-						<li>
-							<div>
-								<img src="{ babSkinPath }images/Puces/entryview.gif" alt="{ t_file }" /> 
-								{ filename }<!--#if index --> - <em>{ index_status }</em><!--#endif index -->
-							</div>
-						</li>
-					<!--#endin getnextfile -->
-					</ul>
+                &nbsp;
 
-				</li>
-				<!--#endif countfiles -->
+                <!--#if homepage_public -->
+                &nbsp; <img src="{ babSkinPath }images/Puces/PuceUnregistered.png" alt="{ art0alt }" title="{ art0alt }" />
+                <!--#endif homepage_public -->
+                <!--#if homepage_private -->
+                &nbsp; <img src="{ babSkinPath }images/Puces/PuceRegistered.png" alt="{ art1alt }" title="{ art1alt }" />
+                <!--#endif homepage_private -->
+                <!--#if archive -->
+                &nbsp; <img src="{ babSkinPath }images/Puces/PuceArchive.png" alt="{ archivealt } : { datearchiving }" title="{ archivealt } : { datearchiving }" />
+                <!--#endif archive -->
+            </div>
 
-				
-				
-				
-				
-				<!--#if countcom -->
-				<li>
-					<div>
-						<input type="checkbox" onclick="tree_check_childs(this)" /> <strong>{ t_comments }</strong>
-					</div>
+            <!--#if filescomments -->
 
-					<ul>
-					<!--#in getnextcom -->
-						<li>
-							<div>
-								<input type="checkbox" name="comments[]" value="{ com[id] }" />
-								<img src="{ babSkinPath }images/Puces/note.gif" alt="{ t_comment }" />
-								{ com[subject] } { t_by } { com[name] }
-							</div>
-						</li>
-					<!--#endin getnextcom -->
-					</ul>
+            <ul>
 
-				</li>
-				<!--#endif countcom -->
-			
-			</ul>
-			<!--#endif filescomments -->
-		<!--#endin getnext -->
-		</ul>
-		</li>
-	</ul>
-	</div>
+                <!--#if countfiles -->
+                <li>
+                    <div>
+                        <strong>{ t_files }</strong>
+                    </div>
+
+                    <ul>
+                    <!--#in getnextfile -->
+                        <li>
+                            <div>
+                                <img src="{ babSkinPath }images/Puces/entryview.gif" alt="{ t_file }" />
+                                { filename }<!--#if index --> - <em>{ index_status }</em><!--#endif index -->
+                            </div>
+                        </li>
+                    <!--#endin getnextfile -->
+                    </ul>
+
+                </li>
+                <!--#endif countfiles -->
+
+
+
+
+
+                <!--#if countcom -->
+                <li>
+                    <div>
+                        <input type="checkbox" onclick="tree_check_childs(this)" /> <strong>{ t_comments }</strong>
+                    </div>
+
+                    <ul>
+                    <!--#in getnextcom -->
+                        <li>
+                            <div>
+                                <input type="checkbox" name="comments[]" value="{ com[id] }" />
+                                <img src="{ babSkinPath }images/Puces/note.gif" alt="{ t_comment }" />
+                                { com[subject] } { t_by } { com[name] }
+                            </div>
+                        </li>
+                    <!--#endin getnextcom -->
+                    </ul>
+
+                </li>
+                <!--#endif countcom -->
+
+            </ul>
+            <!--#endif filescomments -->
+        <!--#endin getnext -->
+        </ul>
+        </li>
+    </ul>
+    </div>
 </div>
 
 <script type="text/javascript">
@@ -138,25 +139,25 @@ tree.expandToItem('bab_art{ articleid }');
 
 <table border="0" width="55%" cellpadding="2" cellspacing="0" align="center" class="BabLoginCadreBackground">
 <tr>
-<td> 
-	<table class="BabLoginMenuBackground" border="0" width="100%" cellpadding="6" cellspacing="0">
-	<tr>
-		<td align="center">
-			<p>{ t_with_selected } : </p>
-			
-			<select name="action">
-				<option value=""></option>
-				<option value="Deletea">{ t_delete }</option>
-				<option value="homepage0">{ t_homepage_public }</option>
-				<option value="homepage1">{ t_homepage_private }</option>
-				<option value="homepage">{ t_homepage_no }</option>
-				<option value="archive">{ t_archive }</option>
-			</select>
+<td>
+    <table class="BabLoginMenuBackground" border="0" width="100%" cellpadding="6" cellspacing="0">
+    <tr>
+        <td align="center">
+            <p>{ t_with_selected } : </p>
 
-			<input type="submit" value="{ t_update }" />
-		</td>
-	</tr>
-	</table>
+            <select name="action">
+                <option value=""></option>
+                <option value="Deletea">{ t_delete }</option>
+                <option value="homepage0">{ t_homepage_public }</option>
+                <option value="homepage1">{ t_homepage_private }</option>
+                <option value="homepage">{ t_homepage_no }</option>
+                <option value="archive">{ t_archive }</option>
+            </select>
+
+            <input type="submit" value="{ t_update }" />
+        </td>
+    </tr>
+    </table>
 </td>
 </tr>
 </table>
@@ -210,8 +211,8 @@ window.focus();
 </tr>
 <tr><td>
 <table  width="100%" border="0" cellspacing="0" cellpadding="2" align="center">
-<tr> 
-<td class="BabLoginMenuBackground"> 
+<tr>
+<td class="BabLoginMenuBackground">
 <table  width="100%" border="0" cellspacing="0" cellpadding="5" align="center">
 <!--#in getnextcom -->
 <!--#if altbg -->
@@ -232,7 +233,7 @@ window.focus();
 <td align="left">{ commentbody }&nbsp;
 </td>
 </tr>
-<!--#endin getnextcom --> 
+<!--#endin getnextcom -->
 </table>
 </td>
 </tr>
@@ -254,27 +255,28 @@ window.focus();
 
 <!--#begin oldarticleslist -->
 <form method="post" action="{ babPhpSelf }" name="listform">
+<input type="hidden" name="babCsrfProtect" value="{ babCsrfProtect }" />
 <input type="hidden" name="tg" value="topman">
 <input type="hidden" name="idx" value="list">
 <input type="hidden" name="item" value="{ item }">
 <input type="hidden" name="upart" value="articles">
 <table border="0" width="95%" cellpadding="1" cellspacing="0" align="center" class="BabLoginCadreBackground">
 <tr>
-<td> 
+<td>
 <table class="BabMailBackground" border="0" width="100%" cellpadding="2" cellspacing="0">
-<tr class="BabSiteAdminTitleFontBackground"> 
+<tr class="BabSiteAdminTitleFontBackground">
 <td width="1%"><a href="javascript:onCheckAll('aart', true)"><img src="{ babSkinPath }images/Puces/Pucecheked.gif" alt="{ checkall }" width="10" height="10" border="0"></a><a href="javascript:onCheckAll('aart', false)"><img src="{ babSkinPath }images/Puces/PuceUncheked.gif" alt="{ uncheckall }" width="10" height="10" border="0"></a></td>
             <td width="90%" align="left"><img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="1" height="1" border="0"></td>
 </tr>
 <!--#in getnext -->
-<tr align="center" valign="middle"> 
+<tr align="center" valign="middle">
 <td width="1%">
 <input width="2%" type="checkbox" name="aart[]" value="{ articleid }">
 </td>
 <td width="90%" align="left"><a href="{ urltitle }" onclick="Start(this.href, '', 'width=550,height=500,status=no,resizable=yes,top=200,left=200,scrollbars=yes');return false;">{ title }</a></td>
 <!--#endin getnext -->
 </tr>
-<tr class="BabSiteAdminTitleFontBackground"> 
+<tr class="BabSiteAdminTitleFontBackground">
 <td width="1%"><a href="javascript:submitForm('unarch', 'listform')"><img src="{ babSkinPath }images/Puces/PuceArchive.png" alt="{ archivealt }" border="0" align="absmiddle"></a></td>
             <td width="90%" align="left"><img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="1" height="1" border="0"></td>
 
@@ -287,11 +289,11 @@ window.focus();
 <br />
 <table border="0" width="95%" cellpadding="1" cellspacing="0" align="center" class="BabLoginCadreBackground">
 <tr>
-<td> 
+<td>
 <table class="BabMailBackground" border="0" width="100%" cellpadding="1" cellspacing="0">
 <tr class="BabSiteAdminTitleFontBackground">
-	<td>&nbsp;<img src="{ babSkinPath }images/Puces/PuceArchive.png" alt="{ archivealt }" border="0"></a></td>
-	<td>{ archivehelp }</td>
+    <td>&nbsp;<img src="{ babSkinPath }images/Puces/PuceArchive.png" alt="{ archivealt }" border="0"></a></td>
+    <td>{ archivehelp }</td>
 </tr>
 </table>
 </td></tr></table>
@@ -299,43 +301,44 @@ window.focus();
 
 <!--#begin articlesorder -->
 <form method="post" name="ordform" action="{ babPhpSelf }">
+<input type="hidden" name="babCsrfProtect" value="{ babCsrfProtect }" />
 <input type="hidden" name="tg" value="topman">
 <input type="hidden" name="idx" value="Articles">
 <input type="hidden" name="item" value="{ topicid }">
 <input type="hidden" name="update" value="order">
 
 <table  width="50%" border="0" cellspacing="0" cellpadding="2" align="center">
-<tr> 
-<td class="BabLoginCadreBackground" align="center" valign="middle"> 
+<tr>
+<td class="BabLoginCadreBackground" align="center" valign="middle">
 <table class="BabLoginMenuBackground" width="100%" border="0" cellspacing="0" cellpadding="5" align="center">
-<tr> 
-<td valign="middle" align="center"> 
+<tr>
+<td valign="middle" align="center">
 <select name="listarts[]" size=12 multiple>
   <option value="0">{ toplisttxt }</option>
-  <!--#in getnext --> 
+  <!--#in getnext -->
   <option value="{ articleid }">{ articletitle }</option>
-  <!--#endin getnext --> 
+  <!--#endin getnext -->
 </select>
 </td>
-<td valign="middle" align="center"><a 
-href="Javascript:move(true, document.ordform.elements[4])"><img src="{ babSkinPath }images/Puces/PuceGoTop.gif" 
+<td valign="middle" align="center"><a
+href="Javascript:move(true, document.ordform.elements[5])"><img src="{ babSkinPath }images/Puces/PuceGoTop.gif"
 width="22" height="18" border=0 alt="{ moveup }"></a> <br />
 <br />
-<a href="Javascript:move(false, document.ordform.elements[4])"> 
-<img src="{ babSkinPath }images/Puces/PuceGoDown.gif" width="22" height="18" border=0 alt="{ movedown }"></a> 
+<a href="Javascript:move(false, document.ordform.elements[5])">
+<img src="{ babSkinPath }images/Puces/PuceGoDown.gif" width="22" height="18" border=0 alt="{ movedown }"></a>
 <br /><br />
-<a href="Javascript:sortList('sortAA', document.ordform.elements[4])">
+<a href="Javascript:sortList('sortAA', document.ordform.elements[5])">
 <img src="{ babSkinPath }images/Puces/a-z.gif" border=0 alt="{ sorta }">
 </a>
 <br /><br />
-<a href="Javascript:sortList('sortAD', document.ordform.elements[4])">
+<a href="Javascript:sortList('sortAD', document.ordform.elements[5])">
 <img src="{ babSkinPath }images/Puces/z-a.gif" border=0 alt="{ sortd }">
 </a>
 </td>
 </tr>
-<tr> 
-<td align="center"> 
-<input type="submit" name="Submit" value="{ create }" onclick="selectAll(document.ordform.elements[4]); document.ordform.submit()" />
+<tr>
+<td align="center">
+<input type="submit" name="Submit" value="{ create }" onclick="selectAll(document.ordform.elements[5]); document.ordform.submit()" />
 <br />
 <br />
 </td>
@@ -356,38 +359,38 @@ width="22" height="18" border=0 alt="{ moveup }"></a> <br />
 
 function updateDates(elemDay, elemMonth, elemYear)
 {
-	ds = elemDay.selectedIndex;
-	timeA = new Date(elemYear.options[elemYear.selectedIndex].text, elemMonth.options[elemMonth.selectedIndex].value,1);
-	timeDifference = timeA - 86400000;
-	timeB = new Date(timeDifference);
-	var daysInMonth = timeB.getDate();
-	for (var i = 0; i < elemDay.length; i++)
-	{
-	elemDay.options[0] = null;
-	}
-	for (var i = 0; i < daysInMonth; i++)
-	{
-	elemDay.options[i] = new Option(i+1);
-	}
-	if( ds < daysInMonth )
-	elemDay.options[ds].selected = true;
-	else
-	elemDay.options[daysInMonth-1].selected = true;
+    ds = elemDay.selectedIndex;
+    timeA = new Date(elemYear.options[elemYear.selectedIndex].text, elemMonth.options[elemMonth.selectedIndex].value,1);
+    timeDifference = timeA - 86400000;
+    timeB = new Date(timeDifference);
+    var daysInMonth = timeB.getDate();
+    for (var i = 0; i < elemDay.length; i++)
+    {
+    elemDay.options[0] = null;
+    }
+    for (var i = 0; i < daysInMonth; i++)
+    {
+    elemDay.options[i] = new Option(i+1);
+    }
+    if( ds < daysInMonth )
+    elemDay.options[ds].selected = true;
+    else
+    elemDay.options[daysInMonth-1].selected = true;
 }
 
 function datePub(day, month, year)
 {
-	document.propform.elements['daypub'].options[day-1].selected = true;
-	document.propform.elements['monthpub'].options[month-1].selected = true;
-	document.propform.elements['yearpub'].options[year-{ yearpub }].selected = true;
+    document.propform.elements['daypub'].options[day-1].selected = true;
+    document.propform.elements['monthpub'].options[month-1].selected = true;
+    document.propform.elements['yearpub'].options[year-{ yearpub }].selected = true;
 
 }
 
 function dateEnd(day, month, year)
 {
-	document.propform.elements['dayend'].options[day-1].selected = true;
-	document.propform.elements['monthend'].options[month-1].selected = true;
-	document.propform.elements['yearend'].options[year-{ yearend }].selected = true;
+    document.propform.elements['dayend'].options[day-1].selected = true;
+    document.propform.elements['monthend'].options[month-1].selected = true;
+    document.propform.elements['yearend'].options[year-{ yearend }].selected = true;
 
 }
 
@@ -400,39 +403,39 @@ var checke = document.getElementById('idcde');
 if (checkp.checked && checke.checked)
 {
 if( fr.yearpub.selectedIndex > fr.yearend.selectedIndex )
-	{
-	ret = false;
-	}
+    {
+    ret = false;
+    }
 else if( fr.yearpub.selectedIndex == fr.yearend.selectedIndex )
-	{
-		if( fr.monthpub.selectedIndex > fr.monthend.selectedIndex )
-		{
-		ret = false;
-		}
-		else if( fr.monthpub.selectedIndex == fr.monthend.selectedIndex ) 
-		{
-		if( fr.daypub.selectedIndex > fr.dayend.selectedIndex )
-			{
-			ret = false;
-			}
-		else if( fr.daypub.selectedIndex == fr.dayend.selectedIndex ) 
-		{
-		if( fr.timepub.selectedIndex > fr.timeend.selectedIndex )
-			{
-			ret = false;
-			}
-		}
-		}
-	}
+    {
+        if( fr.monthpub.selectedIndex > fr.monthend.selectedIndex )
+        {
+        ret = false;
+        }
+        else if( fr.monthpub.selectedIndex == fr.monthend.selectedIndex )
+        {
+        if( fr.daypub.selectedIndex > fr.dayend.selectedIndex )
+            {
+            ret = false;
+            }
+        else if( fr.daypub.selectedIndex == fr.dayend.selectedIndex )
+        {
+        if( fr.timepub.selectedIndex > fr.timeend.selectedIndex )
+            {
+            ret = false;
+            }
+        }
+        }
+    }
 
 }
 
 if( ret == false)
-	{
-	var d1;
-	alert ('{ invaliddate }');
-	return false;
-	}
+    {
+    var d1;
+    alert ('{ invaliddate }');
+    return false;
+    }
 
 return true;
 }
@@ -440,180 +443,181 @@ return true;
 /* Hide the list of parent topic because javascript is activated and there is a better method
    to select the parent topic */
 function ovidentia_hideselectparenttopic() {
-	document.getElementById('ovidentia_listparenttopics').style.display = 'none';
-	document.getElementById('ovidentia_ancientfield_topicid').name = 'ancienttopicid';
-	document.getElementById('ovidentia_listparenttopics_bettermethod').style.display = 'block';
-	document.getElementById('ovidentia_field_topicid').name = 'topicid';
+    document.getElementById('ovidentia_listparenttopics').style.display = 'none';
+    document.getElementById('ovidentia_ancientfield_topicid').name = 'ancienttopicid';
+    document.getElementById('ovidentia_listparenttopics_bettermethod').style.display = 'block';
+    document.getElementById('ovidentia_field_topicid').name = 'topicid';
 }
 
 /* Open the tree view popup of topics for choose the parent topic : method used only if javascript is activated */
 function ovidentia_popuptreeviewselectparenttopic() {
-	bab_dialog.selectarticle (
-		function(selectedTopic) {
-			document.getElementById('ovidentia_field_topicid').value = selectedTopic['id'];
-			document.getElementById('ovidentia_field_topicname').innerHTML = selectedTopic['content'];
-		}, 'show_topics=1&selectable_topics=1&hide_delegations=1'
-	);
+    bab_dialog.selectarticle (
+        function(selectedTopic) {
+            document.getElementById('ovidentia_field_topicid').value = selectedTopic['id'];
+            document.getElementById('ovidentia_field_topicname').innerHTML = selectedTopic['content'];
+        }, 'show_topics=1&selectable_topics=1&hide_delegations=1'
+    );
 }
 
 //-->
 </script>
 <form name="propform" method="post" action="{ babPhpSelf }" >
-	<input type="hidden" name="tg" value="topman">
-	<input type="hidden" name="idx" value="unload">
-	<input type="hidden" name="item" value="{ item }">
-	<input type="hidden" name="idart" value="{ idart }">
-	<input type="hidden" name="ymax" value="{ yearmax }">
-	<input type="hidden" name="ymin" value="{ yearmin }">
-	<input type="hidden" name="update" value="propa">
-	<br />
-	
+<input type="hidden" name="babCsrfProtect" value="{ babCsrfProtect }" />
+    <input type="hidden" name="tg" value="topman">
+    <input type="hidden" name="idx" value="unload">
+    <input type="hidden" name="item" value="{ item }">
+    <input type="hidden" name="idart" value="{ idart }">
+    <input type="hidden" name="ymax" value="{ yearmax }">
+    <input type="hidden" name="ymin" value="{ yearmin }">
+    <input type="hidden" name="update" value="propa">
+    <br />
 
-	<table class="BabLoginCadreBackground" width="99%" border="0" cellspacing="0" cellpadding="2" align="center">
-		<tr> 
-			<td> 
-			<table class="BabLoginMenuBackground" width="100%" border="0" cellspacing="0" cellpadding="4" align="center">
-				<tr> 
-					<td align="center" valign="right">{ titletxt }:</td>
-					<td valign="left"><b>{ draftname }</b></td>
-				</tr>
-			</table>
-			</td>
-		</tr>
-	</table>
-	<br />
-	<table class="BabLoginCadreBackground" width="99%" border="0" cellspacing="0" cellpadding="2" align="center">
-	<tr> 
-	<td> 
-		<table class="BabLoginMenuBackground" width="100%" border="0" cellspacing="0" cellpadding="4" align="center">
-			<!--#if bshowtopics -->
-			<tr> 
-				<td align="center" valign="middle"><b>{ topictxt }:</b>&nbsp;&nbsp;
-					<div id="ovidentia_listparenttopics">
-						<select name="topicid" id="ovidentia_ancientfield_topicid">
-							<!--#in getnexttopic -->
-							<option value="{ idtopic }" { selected }>{ topicname }</option>
-							<!--#endin getnexttopic -->
-						</select>
-					</div>
-					<div id="ovidentia_listparenttopics_bettermethod" style="display: none">
-						<input type="hidden" name="topicid_2" value="{ idcurrentparenttopic }" id="ovidentia_field_topicid">
-						<span id="ovidentia_field_topicname">{ namecurrentparenttopic }</span>&nbsp;&nbsp;
-						<a href="#" onclick="ovidentia_popuptreeviewselectparenttopic();return false;">
-							<img title="" alt="" src="{ urlimgselecttopic }" class="icon"/>
-						</a>
-					</div>
-				</td>
-			</tr>
-				<!--#if warnfilemessage -->
-				<tr>
-				<td class="BabErrorMessage" align="center" valign="middle">{ warnfilemessage }
-				</td>
-				</tr>
-				<!--#endif warnfilemessage -->
-			<!--#endif bshowtopics -->
-		</table>
-	</td>
-	</tr>
-	</table>
-	<br />
-	
-	<table class="BabLoginCadreBackground" width="99%" border="0" cellspacing="0" cellpadding="2" align="center">
-	<tr> 
-	<td> 
-		<table class="BabLoginMenuBackground" width="100%" border="0" cellspacing="0" cellpadding="4" align="center">
-		<tr> 
-			<td align="left" valign="middle" colspan="6"><b>{ datepubtitle }:</b></td>
-		</tr>
-		<tr> 
-			<td align="right" valign="middle"><a href="javascript: Start('{ datepuburl }', 'CalendarWindow', 'width=250,height=250,status=no,resizable=no,top=200,left=200');">{ datepubtxt }</a>: </td>
-			<td valign="middle"> 
-			<input type="checkbox" id="idcdp" name="cdatep" value="Y" { cdatepcheck }></td>
-			<td valign="middle"> 
-			<select name="daypub">
-			  <!--#in getnextday -->
-			  <option value="{ dayid }" { selected }>{ dayid }</option>
-			  <!--#endin getnextday -->
-			</select>
-			</td>
-			<td valign="middle"> 
-			<select name="monthpub" onChange="updateDates(this.form.daypub, this.form.monthpub, this.form.yearpub);">
-			  <!--#in getnextmonth -->
-			  <option value="{ monthid }" { selected }>{ monthname }</option>
-			  <!--#endin getnextmonth -->
-			</select>
-			</td>
-			<td valign="middle"> 
-			<select name="yearpub" onChange="updateDates(this.form.daypub, this.form.monthpub, this.form.yearpub);">
-			  <!--#in getnextyear -->
-			  <option value="{ yearid }"  { selected }>{ yearidval }</option>
-			  <!--#endin getnextyear -->
-			</select>
-			</td>
-			<td valign="middle"> 
-			<select name="timepub">
-			<!--#in getnexttime -->
-			<option value="{ timeval }" { selected }>{ time }</option>
-			<!--#endin getnexttime -->
-			</select >
-			</td>
-		</tr>
-		<tr> 
-			<td align="right" valign="middle"><a href="javascript: Start('{ dateendurl }', 'CalendarWindow', 'width=250,height=250,status=no,resizable=no,top=200,left=200');">{ dateendtxt }</a>: </td>
-			<td valign="middle"> 
-			<input type="checkbox"  id="idcde" name="cdatee" value="Y" { cdateecheck }></td>
-			<td valign="middle"> 
-			<select name="dayend">
-			  <!--#in getnextday -->
-			  <option value="{ dayid }"  { selected }>{ dayid }</option>
-			  <!--#endin getnextday -->
-			</select >
-			</td>
-			<td valign="middle"> 
-			<select name="monthend" onChange="updateDates(this.form.dayend, this.form.monthend, this.form.yearend);">
-			  <!--#in getnextmonth -->
-			  <option value="{ monthid }"  { selected }>{ monthname }</option>
-			  <!--#endin getnextmonth -->
-			</select >
-			</td>
-			<td valign="middle"> 
-			<select name="yearend" onChange="updateDates(this.form.dayend, this.form.monthend, this.form.yearend);">
-			  <!--#in getnextyear -->
-			  <option value="{ yearid }" { selected }>{ yearidval }</option>
-			  <!--#endin getnextyear -->
-			</select >
-			</td>
-			<td valign="middle"> 
-			<select name="timeend">
-			<!--#in getnexttime -->
-			<option value="{ timeval }" { selected }>{ time }</option>
-			<!--#endin getnexttime -->
-			</select >
-			</td>
-		</tr>
-		<tr> 
-		<td colspan="6" valign="middle" align="right"> 
-		&nbsp;<br />
-		</td>
-		</tr>
-		</table>
-	</td>
-	</tr>
-	</table>
-	<br />
-	
 
-	<br />
-	<p align="center">
-		
-		<input type="submit" name="bupdate" value="{ submittxt }" onclick="validateForm(document.forms['propform']);"></td>
-	</p>
+    <table class="BabLoginCadreBackground" width="99%" border="0" cellspacing="0" cellpadding="2" align="center">
+        <tr>
+            <td>
+            <table class="BabLoginMenuBackground" width="100%" border="0" cellspacing="0" cellpadding="4" align="center">
+                <tr>
+                    <td align="center" valign="right">{ titletxt }:</td>
+                    <td valign="left"><b>{ draftname }</b></td>
+                </tr>
+            </table>
+            </td>
+        </tr>
+    </table>
+    <br />
+    <table class="BabLoginCadreBackground" width="99%" border="0" cellspacing="0" cellpadding="2" align="center">
+    <tr>
+    <td>
+        <table class="BabLoginMenuBackground" width="100%" border="0" cellspacing="0" cellpadding="4" align="center">
+            <!--#if bshowtopics -->
+            <tr>
+                <td align="center" valign="middle"><b>{ topictxt }:</b>&nbsp;&nbsp;
+                    <div id="ovidentia_listparenttopics">
+                        <select name="topicid" id="ovidentia_ancientfield_topicid">
+                            <!--#in getnexttopic -->
+                            <option value="{ idtopic }" { selected }>{ topicname }</option>
+                            <!--#endin getnexttopic -->
+                        </select>
+                    </div>
+                    <div id="ovidentia_listparenttopics_bettermethod" style="display: none">
+                        <input type="hidden" name="topicid_2" value="{ idcurrentparenttopic }" id="ovidentia_field_topicid">
+                        <span id="ovidentia_field_topicname">{ namecurrentparenttopic }</span>&nbsp;&nbsp;
+                        <a href="#" onclick="ovidentia_popuptreeviewselectparenttopic();return false;">
+                            <img title="" alt="" src="{ urlimgselecttopic }" class="icon"/>
+                        </a>
+                    </div>
+                </td>
+            </tr>
+                <!--#if warnfilemessage -->
+                <tr>
+                <td class="BabErrorMessage" align="center" valign="middle">{ warnfilemessage }
+                </td>
+                </tr>
+                <!--#endif warnfilemessage -->
+            <!--#endif bshowtopics -->
+        </table>
+    </td>
+    </tr>
+    </table>
+    <br />
+
+    <table class="BabLoginCadreBackground" width="99%" border="0" cellspacing="0" cellpadding="2" align="center">
+    <tr>
+    <td>
+        <table class="BabLoginMenuBackground" width="100%" border="0" cellspacing="0" cellpadding="4" align="center">
+        <tr>
+            <td align="left" valign="middle" colspan="6"><b>{ datepubtitle }:</b></td>
+        </tr>
+        <tr>
+            <td align="right" valign="middle"><a href="javascript: Start('{ datepuburl }', 'CalendarWindow', 'width=250,height=250,status=no,resizable=no,top=200,left=200');">{ datepubtxt }</a>: </td>
+            <td valign="middle">
+            <input type="checkbox" id="idcdp" name="cdatep" value="Y" { cdatepcheck }></td>
+            <td valign="middle">
+            <select name="daypub">
+              <!--#in getnextday -->
+              <option value="{ dayid }" { selected }>{ dayid }</option>
+              <!--#endin getnextday -->
+            </select>
+            </td>
+            <td valign="middle">
+            <select name="monthpub" onChange="updateDates(this.form.daypub, this.form.monthpub, this.form.yearpub);">
+              <!--#in getnextmonth -->
+              <option value="{ monthid }" { selected }>{ monthname }</option>
+              <!--#endin getnextmonth -->
+            </select>
+            </td>
+            <td valign="middle">
+            <select name="yearpub" onChange="updateDates(this.form.daypub, this.form.monthpub, this.form.yearpub);">
+              <!--#in getnextyear -->
+              <option value="{ yearid }"  { selected }>{ yearidval }</option>
+              <!--#endin getnextyear -->
+            </select>
+            </td>
+            <td valign="middle">
+            <select name="timepub">
+            <!--#in getnexttime -->
+            <option value="{ timeval }" { selected }>{ time }</option>
+            <!--#endin getnexttime -->
+            </select >
+            </td>
+        </tr>
+        <tr>
+            <td align="right" valign="middle"><a href="javascript: Start('{ dateendurl }', 'CalendarWindow', 'width=250,height=250,status=no,resizable=no,top=200,left=200');">{ dateendtxt }</a>: </td>
+            <td valign="middle">
+            <input type="checkbox"  id="idcde" name="cdatee" value="Y" { cdateecheck }></td>
+            <td valign="middle">
+            <select name="dayend">
+              <!--#in getnextday -->
+              <option value="{ dayid }"  { selected }>{ dayid }</option>
+              <!--#endin getnextday -->
+            </select >
+            </td>
+            <td valign="middle">
+            <select name="monthend" onChange="updateDates(this.form.dayend, this.form.monthend, this.form.yearend);">
+              <!--#in getnextmonth -->
+              <option value="{ monthid }"  { selected }>{ monthname }</option>
+              <!--#endin getnextmonth -->
+            </select >
+            </td>
+            <td valign="middle">
+            <select name="yearend" onChange="updateDates(this.form.dayend, this.form.monthend, this.form.yearend);">
+              <!--#in getnextyear -->
+              <option value="{ yearid }" { selected }>{ yearidval }</option>
+              <!--#endin getnextyear -->
+            </select >
+            </td>
+            <td valign="middle">
+            <select name="timeend">
+            <!--#in getnexttime -->
+            <option value="{ timeval }" { selected }>{ time }</option>
+            <!--#endin getnexttime -->
+            </select >
+            </td>
+        </tr>
+        <tr>
+        <td colspan="6" valign="middle" align="right">
+        &nbsp;<br />
+        </td>
+        </tr>
+        </table>
+    </td>
+    </tr>
+    </table>
+    <br />
+
+
+    <br />
+    <p align="center">
+
+        <input type="submit" name="bupdate" value="{ submittxt }" onclick="validateForm(document.forms['propform']);"></td>
+    </p>
 </form>
 
 <script type="text/javascript">
 //<![CDATA[
 
-	bab_initFunctions.push(ovidentia_hideselectparenttopic());
+    bab_initFunctions.push(ovidentia_hideselectparenttopic());
 
 //]]>
 </script>
@@ -623,56 +627,57 @@ function ovidentia_popuptreeviewselectparenttopic() {
 
 <!--#begin sitehomepage0 -->
 <form method="post" name="homeform" action="{ babPhpSelf }">
+<input type="hidden" name="babCsrfProtect" value="{ babCsrfProtect }" />
 <input type="hidden" name="tg" value="topman" />
 <input type="hidden" name="idx" value="modify" />
 <input type="hidden" name="item" value="{ id }" />
 <input type="hidden" name="updateh" value="homepage0" />
 
 <table  width="50%" border="0" cellspacing="0" cellpadding="2" align="center">
-<tr> 
-<td class="BabLoginCadreBackground" align="center" valign="middle"> 
+<tr>
+<td class="BabLoginCadreBackground" align="center" valign="middle">
 <table class="BabLoginMenuBackground" width="100%" border="0" cellspacing="0" cellpadding="5" align="center">
-	<tr> 
-		<td align="center" nowrap valign="middle"> 
-			<select name="listhome0" size=12 multiple>
-			  <option value="0">{ listhometxt }</option>
-			  <!--#in getnexthome0 --> 
-			  <option value="{ home0id }">{ home0val }</option>
-			  <!--#endin getnexthome0 --> 
-			</select>
-		</td>
-		<td>&nbsp;</td>
-	</tr>
-	<tr> 
-		<td valign="middle" align="center">
-			<a href="Javascript:moveOptions(document.homeform.listhome0,document.homeform.elements[5])"><img src="{ babSkinPath }images/Puces/PuceGoHandDown.gif" width="20" height="24" border=0 alt="Down"></a>&nbsp;&nbsp;&nbsp;&nbsp;<a href="Javascript:moveOptions(document.homeform.elements[5],document.homeform.listhome0)"><img src="{ babSkinPath }images/Puces/PuceGoHandTop.gif" width="20" height="24" border=0 alt="Up"></a> 
-		</td>
-		<td>&nbsp;</td>
-	</tr>
-	<tr> 
-		<td valign="middle" align="center"> 
-			<select name="listpage0[]"  size=12 multiple>
-			  <option value="0">{ listpagetxt }</option>
-			  <!--#in getnextpage0 --> 
-			  <option value="{ page0id }">{ page0val }</option>
-			  <!--#endin getnextpage0 --> 
-			</select>
-		</td>
-		<td valign="middle" align="center">
-			<a href="Javascript:move(true, document.homeform.elements[5])"><img src="{ babSkinPath }images/Puces/PuceGoTop.gif" width="22" height="18" border=0 alt="{ moveup }"></a> <br />
-			<br />
-			<a href="Javascript:move(false, document.homeform.elements[5])"> 
-			<img src="{ babSkinPath }images/Puces/PuceGoDown.gif" width="22" height="18" border=0 alt="{ movedown }"></a> 
-		</td>
-	</tr>
-	<tr> 
-		<td align="center"> 
-			<input type="submit" name="Submit" value="{ create }" onClick="selectAll(document.homeform.elements[5]); document.homeform.submit()" />
-			<br />
-			<br />
-		</td>
-		<td>&nbsp; </td>
-	</tr>
+    <tr>
+        <td align="center" nowrap valign="middle">
+            <select name="listhome0" size=12 multiple>
+              <option value="0">{ listhometxt }</option>
+              <!--#in getnexthome0 -->
+              <option value="{ home0id }">{ home0val }</option>
+              <!--#endin getnexthome0 -->
+            </select>
+        </td>
+        <td>&nbsp;</td>
+    </tr>
+    <tr>
+        <td valign="middle" align="center">
+            <a href="Javascript:moveOptions(document.homeform.listhome0,document.homeform.elements[5])"><img src="{ babSkinPath }images/Puces/PuceGoHandDown.gif" width="20" height="24" border=0 alt="Down"></a>&nbsp;&nbsp;&nbsp;&nbsp;<a href="Javascript:moveOptions(document.homeform.elements[5],document.homeform.listhome0)"><img src="{ babSkinPath }images/Puces/PuceGoHandTop.gif" width="20" height="24" border=0 alt="Up"></a>
+        </td>
+        <td>&nbsp;</td>
+    </tr>
+    <tr>
+        <td valign="middle" align="center">
+            <select name="listpage0[]"  size=12 multiple>
+              <option value="0">{ listpagetxt }</option>
+              <!--#in getnextpage0 -->
+              <option value="{ page0id }">{ page0val }</option>
+              <!--#endin getnextpage0 -->
+            </select>
+        </td>
+        <td valign="middle" align="center">
+            <a href="Javascript:move(true, document.homeform.elements[5])"><img src="{ babSkinPath }images/Puces/PuceGoTop.gif" width="22" height="18" border=0 alt="{ moveup }"></a> <br />
+            <br />
+            <a href="Javascript:move(false, document.homeform.elements[5])">
+            <img src="{ babSkinPath }images/Puces/PuceGoDown.gif" width="22" height="18" border=0 alt="{ movedown }"></a>
+        </td>
+    </tr>
+    <tr>
+        <td align="center">
+            <input type="submit" name="Submit" value="{ create }" onClick="selectAll(document.homeform.elements[5]); document.homeform.submit()" />
+            <br />
+            <br />
+        </td>
+        <td>&nbsp; </td>
+    </tr>
 </table>
 </td>
 </tr>
@@ -686,56 +691,63 @@ function ovidentia_popuptreeviewselectparenttopic() {
 
 <!--#begin sitehomepage1 -->
 <form method="post" name="homeform1" action="{ babPhpSelf }">
+<input type="hidden" name="babCsrfProtect" value="{ babCsrfProtect }" />
 <input type="hidden" name="tg" value="topman" />
 <input type="hidden" name="idx" value="modify" />
 <input type="hidden" name="item" value="{ id }" />
 <input type="hidden" name="updateh" value="homepage1" />
 
 <table  width="50%" border="0" cellspacing="0" cellpadding="2" align="center">
-<tr> 
-<td class="BabLoginCadreBackground"> 
+<tr>
+<td class="BabLoginCadreBackground">
 <table class="BabLoginMenuBackground" width="100%" border="0" cellspacing="0" cellpadding="5" align="center">
-	<tr> 
-		<td align="center" nowrap valign="middle"> 
-			<select name="listhome1"  size=12 multiple>
-			  <option value="0">{ listhometxt }</option>
-			  <!--#in getnexthome1 --> 
-			  <option value="{ home1id }">{ home1val }</option>
-			  <!--#endin getnexthome1 --> 
-			</select>
-		</td>
-		<td>&nbsp;</td>
-	</tr>
-	<tr> 
-		<td align="center">
-			<a href="Javascript:moveOptions(document.homeform1.listhome1,document.homeform1.elements[5])"><img src="{ babSkinPath }images/Puces/PuceGoHandDown.gif" width="20" height="24" border=0 alt="Down"></a>&nbsp;&nbsp;&nbsp;&nbsp;<a href="Javascript:moveOptions(document.homeform1.elements[5],document.homeform1.listhome1)" ><img src="{ babSkinPath }images/Puces/PuceGoHandTop.gif" width="20" height="24" border=0 alt="Up"></a>
-		</td>
-		<td>&nbsp;</td>
-	</tr>
-	<tr valign="middle"> 
-		<td align="center"> 
-			<select name="listpage1[]"  size=12 multiple>
-			  <option value="0">{ listpagetxt }</option>
-			  <!--#in getnextpage1 --> 
-			  <option value="{ page1id }">{ page1val }</option>
-			  <!--#endin getnextpage1 --> 
-			</select>
-		</td>
-		<td align="center" >
-			<a href="Javascript:move(true, document.homeform1.elements[5])"><img src="{ babSkinPath }images/Puces/PuceGoTop.gif" width="22" height="18" border=0 alt="{ moveup }"></a> 
-			<br />
-			<br />
-			<a href="Javascript:move(false, document.homeform1.elements[5])"><img src="{ babSkinPath }images/Puces/PuceGoDown.gif" width="22" height="18" border=0 alt="{ movedown }"></a> 
-		</td>
-	</tr>
-	<tr valign="middle"> 
-		<td align="center"> 
-			<input type="submit" name="Submit" value="{ create }" onClick="selectAll(document.homeform1.elements[5]); document.homeform1.submit()" />
-			<br />
-			<br />
-		</td>
-		<td>&nbsp;</td>
-	</tr>
+    <tr>
+        <td align="center" nowrap valign="middle">
+            <select name="listhome1"  size=12 multiple>
+              <option value="0">{ listhometxt }</option>
+              <!--#in getnexthome1 -->
+              <option value="{ home1id }">{ home1val }</option>
+              <!--#endin getnexthome1 -->
+            </select>
+        </td>
+        <td>&nbsp;</td>
+    </tr>
+    <tr>
+        <td align="center">
+            <a href="" onclick="moveOptions(document.homeform1.listhome1, document.getElementById('listpage1')); return false;">
+                <img src="{ babSkinPath }images/Puces/PuceGoHandDown.gif" width="20" height="24" border=0 alt="Down">
+            </a>
+            &nbsp;&nbsp;&nbsp;&nbsp;
+            <a href="" onclick="moveOptions(document.getElementById('listpage1'), document.homeform1.listhome1); return false;" >
+                <img src="{ babSkinPath }images/Puces/PuceGoHandTop.gif" width="20" height="24" border=0 alt="Up">
+            </a>
+        </td>
+        <td>&nbsp;</td>
+    </tr>
+    <tr valign="middle">
+        <td align="center">
+            <select id="listpage1" name="listpage1[]"  size=12 multiple>
+              <option value="0">{ listpagetxt }</option>
+              <!--#in getnextpage1 -->
+              <option value="{ page1id }">{ page1val }</option>
+              <!--#endin getnextpage1 -->
+            </select>
+        </td>
+        <td align="center" >
+            <a href="Javascript:move(true, document.getElementById('listpage1'))"><img src="{ babSkinPath }images/Puces/PuceGoTop.gif" width="22" height="18" border=0 alt="{ moveup }"></a>
+            <br />
+            <br />
+            <a href="Javascript:move(false, document.getElementById('listpage1'))"><img src="{ babSkinPath }images/Puces/PuceGoDown.gif" width="22" height="18" border=0 alt="{ movedown }"></a>
+        </td>
+    </tr>
+    <tr valign="middle">
+        <td align="center">
+            <input type="submit" name="Submit" value="{ create }" onClick="selectAll(document.getElementById('listpage1'));" />
+            <br />
+            <br />
+        </td>
+        <td>&nbsp;</td>
+    </tr>
 </table>
 </td>
 </tr>
@@ -753,31 +765,31 @@ function ovidentia_popuptreeviewselectparenttopic() {
 
 <br />
 <table width="95%" border="0" cellspacing="0" cellpadding="2" align="center">
-<tr> 
-<td class="BabLoginCadreBackground"> 
+<tr>
+<td class="BabLoginCadreBackground">
 <table width="100%" border="0" cellspacing="0" cellpadding="5" align="center">
-	<tr class="BabSiteAdminTitleFontBackground"> 
-		<td nowrap>{ authortxt }</td>
-		<td nowrap>{ datelocktxt }</td>
-		<td nowrap>{ actiontxt }</td>
-		<td>{ commenttxt }</td>
-	</tr> 
-	<!--#in getnextlog -->
-	<tr class="BabSiteAdminFontBackground"> 
-		<td valign="top">{ author }</td>
-		<td nowrap valign="top">{ datelock }</td>
-		<td nowrap valign="top">{ action }</td>
-		<td valign="top">{ comment }</td>
-	</tr>
-	<!--#endin getnextlog -->
-	<tr class="BabSiteAdminTitleFontBackground"> 
-		<td colspan="4">
-			<a href="{ topurl }">{ topname }</a>&nbsp;&nbsp;
-			<a href="{ prevurl }">{ prevname }</a>&nbsp;&nbsp;
-			<a href="{ nexturl }">{ nextname }</a>&nbsp;&nbsp;
-			<a href="{ bottomurl }">{ bottomname }</a>&nbsp;&nbsp;
-		</td>
-	</tr> 
+    <tr class="BabSiteAdminTitleFontBackground">
+        <td nowrap>{ authortxt }</td>
+        <td nowrap>{ datelocktxt }</td>
+        <td nowrap>{ actiontxt }</td>
+        <td>{ commenttxt }</td>
+    </tr>
+    <!--#in getnextlog -->
+    <tr class="BabSiteAdminFontBackground">
+        <td valign="top">{ author }</td>
+        <td nowrap valign="top">{ datelock }</td>
+        <td nowrap valign="top">{ action }</td>
+        <td valign="top">{ comment }</td>
+    </tr>
+    <!--#endin getnextlog -->
+    <tr class="BabSiteAdminTitleFontBackground">
+        <td colspan="4">
+            <a href="{ topurl }">{ topname }</a>&nbsp;&nbsp;
+            <a href="{ prevurl }">{ prevname }</a>&nbsp;&nbsp;
+            <a href="{ nexturl }">{ nextname }</a>&nbsp;&nbsp;
+            <a href="{ bottomurl }">{ bottomname }</a>&nbsp;&nbsp;
+        </td>
+    </tr>
 </table>
 </td>
 </tr>

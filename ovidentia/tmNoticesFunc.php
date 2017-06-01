@@ -22,7 +22,7 @@
  * USA.																	*
 ************************************************************************/
 	include "base.php";
-	require_once($babInstallPath . 'tmContext.php');
+	require_once($GLOBALS['babInstallPath'] . 'tmContext.php');
 	
 function displayNoticeEventForm()
 {
@@ -90,6 +90,7 @@ function displayNoticeEventForm()
 			
 			if(false != $datas)
 			{
+			    $iIdEvent = null;
 				$this->get_data('iIdEvent', $iIdEvent);
 				
 				$iProfil =& $datas['value'];

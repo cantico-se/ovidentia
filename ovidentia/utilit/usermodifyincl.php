@@ -24,6 +24,8 @@
 
 
 
+
+
 // for php < 5.4 (need allow_url_fopen)
 if (!function_exists('getimagesizefromstring')) {
     function getimagesizefromstring($string_data)
@@ -56,7 +58,7 @@ class bab_userModify {
             return false;
             }
 
-        if( empty($firstname) && empty($lastname))
+        if( empty($lastname) )
             {
             $error = bab_translate("Lastname is required");
             return false;
@@ -111,12 +113,16 @@ class bab_userModify {
     }
 
 
+
+
+
     /**
      * @static
      */
     public static function addUser($firstname, $lastname, $middlename, $email, $nickname, $password1, $password2, $isconfirmed, &$error, $bgroup) {
 
         global $babBody, $babLanguage, $babDB;
+        require_once dirname(__FILE__).'/password.class.php';
 
         if (!bab_userModify::testBeforeCreate($firstname, $lastname, $middlename, $email, $nickname, $password1, $password2, $error)) {
             return false;
@@ -124,7 +130,6 @@ class bab_userModify {
 
         $BAB_HASH_VAR = bab_getHashVar();
 
-        $password1=mb_strtolower($password1);
         $hash=md5($nickname.$BAB_HASH_VAR);
         if( $isconfirmed )
             {
@@ -138,13 +143,31 @@ class bab_userModify {
         $replace = array( " " => "", "-" => "");
         $hashname = md5(mb_strtolower(strtr($firstname.$middlename.$lastname, $replace)));
 
-        $sql="insert into ".BAB_USERS_TBL." (nickname, firstname, lastname, hashname, password,email,date,confirm_hash,is_confirmed,changepwd,lang, langfilter, datelog, lastlog) ".
-            "values (
+        $encPassword = bab_Password::hash($password1);
+
+        $sql="insert into ".BAB_USERS_TBL." (
+            nickname,
+            firstname,
+            lastname,
+            hashname,
+            password,
+            password_hash_function,
+            email,
+            date,
+            confirm_hash,
+            is_confirmed,
+            changepwd,
+            lang,
+            langfilter,
+            datelog,
+            lastlog
+         ) values (
             '". $babDB->db_escape_string($nickname)."',
             '".$babDB->db_escape_string($firstname)."',
             '".$babDB->db_escape_string($lastname)."',
             '".$babDB->db_escape_string($hashname)."',
-            '". md5($password1) ."',
+            '".$babDB->db_escape_string($encPassword->value)."',
+            '".$babDB->db_escape_string($encPassword->hashfunc)."',
             '".$babDB->db_escape_string($email)."',
              now(),
              '".$babDB->db_escape_string($hash)."',
@@ -154,7 +177,7 @@ class bab_userModify {
              '".$babDB->db_escape_string(bab_getInstance('babLanguageFilter')->getFilterAsInt())."',
               now(),
               now()
-              )";
+        )";
 
         $result=$babDB->db_query($sql);
         if ($result)
@@ -377,6 +400,16 @@ class bab_userModify {
             {
                 $arruq[] =  'is_confirmed=0';
             }
+        }
+
+        if( isset($info['validity_start']))
+        {
+                $arruq[] = 'validity_start=' . $babDB->quote($info['validity_start']);
+        }
+
+        if( isset($info['validity_end']))
+        {
+            $arruq[] = 'validity_end=' . $babDB->quote($info['validity_end']);
         }
 
         if( isset($info['email']))

@@ -29,20 +29,20 @@ bab_functionality::get('Widgets')->includePhpClass('Widget_Action');
 
 class bab_UnknownActionException extends Exception
 {
-	function __construct($action, $code = 0)
-	{
-		$message = 'Unknown method "' . $action->getController() . '::' . $action->getMethod() . '"';
-		parent::__construct($message, $code);
-	}
+    function __construct($action, $code = 0)
+    {
+        $message = 'Unknown method "' . $action->getController() . '::' . $action->getMethod() . '"';
+        parent::__construct($message, $code);
+    }
 }
 
 class bab_MissingActionParameterException extends Exception
 {
-	function __construct($action, $parameterName, $code = 0)
-	{
-		$message = 'Mandatory parameter "' . $parameterName . '" missing in ' . $action->getController() . '::' . $action->getMethod();
-		parent::__construct($message, $code);
-	}
+    function __construct($action, $parameterName, $code = 0)
+    {
+        $message = 'Mandatory parameter "' . $parameterName . '" missing in ' . $action->getController() . '::' . $action->getMethod();
+        parent::__construct($message, $code);
+    }
 }
 
 class bab_InvalidActionException extends Exception
@@ -59,11 +59,11 @@ class bab_InvalidActionException extends Exception
  */
 class bab_AccessException extends Exception
 {
-	/**
-	 * Require credential if not logged in
-	 * @var unknown_type
-	 */
-	public $require_credential = true;
+    /**
+     * Require credential if not logged in
+     * @var unknown_type
+     */
+    public $require_credential = true;
 }
 
 
@@ -75,15 +75,15 @@ class bab_AccessException extends Exception
  */
 class bab_SaveException extends Exception
 {
-	/**
-	 * true : redirect to failed action
-	 * false : execute failed action directly without redirect
-	 * 		(can be used to redirect ot the same form and populate
-	 * 		 fields with posted data)
-	 *
-	 * @var bool
-	 */
-	public $redirect = true;
+    /**
+     * true : redirect to failed action
+     * false : execute failed action directly without redirect
+     * 		(can be used to redirect ot the same form and populate
+     * 		 fields with posted data)
+     *
+     * @var bool
+     */
+    public $redirect = true;
 }
 
 /**
@@ -96,574 +96,636 @@ class bab_SaveErrorException extends bab_SaveException {}
 
 abstract class bab_Controller
 {
-	const PROXY_CLASS_SUFFIX = 'Proxy';
+    const PROXY_CLASS_SUFFIX = 'Proxy';
 
-	/**
-	 * The http request accepts json.
-	 * @var boolean
-	 */
-	protected static $acceptJson = null;
+    /**
+     * The http request accepts json.
+     * @var boolean
+     */
+    protected static $acceptJson = null;
 
-	/**
-	 * The http request accepts html.
-	 * @var boolean
-	 */
-	protected static $acceptHtml = null;
-
-
-
-	protected function initAccept()
-	{
-		self::$acceptJson = (strpos($_SERVER['HTTP_ACCEPT'], 'application/json') !== false);
-		self::$acceptHtml = (strpos($_SERVER['HTTP_ACCEPT'], 'application/xhtml+xml') !== false) || (strpos($_SERVER['HTTP_ACCEPT'], 'text/html') !== false);
-		return $this;
-	}
+    /**
+     * The http request accepts html.
+     * @var boolean
+     */
+    protected static $acceptHtml = null;
 
 
 
-
-	/**
-	 * The http request accepts json.
-	 * @return boolean
-	 */
-	protected static function acceptJson()
-	{
-		if (!isset(self::$acceptJson)) {
-			self::initAccept();
-		}
-		return self::$acceptJson;
-	}
-
-
-	/**
-	 * The http request accepts html.
-	 * @return boolean
-	 */
-	protected static function acceptHtml()
-	{
-		if (!isset(self::$acceptHtml)) {
-			self::initAccept();
-		}
-		return self::$acceptHtml;
-	}
-
-
-	/**
-	 * Generates php code of a 'proxy' class having the same method signatures as the class $classname.
-	 *
-	 * @param string               $proxyClassname   The classname of the proxy class.
-	 * @param string               $classname        The classname of the class to proxy.
-	 * @param ReflectionMethod[]   $methods          The methods of $classname.
-	 * @return string
-	 */
-	protected static function getClassCode($proxyClassname, $classname, Array $methods) {
-
-	    $classStr = 'class ' . $proxyClassname . ' extends ' . $classname . ' {' . "\n";
-
-	    foreach ($methods as $method) {
-	        if ($method->name === '__construct' || !$method->isPublic() || $method->isStatic() || $method->isFinal()) {
-	            continue;
-	        }
-
-	        $classStr .= '	public function ' . $method->name . '(';
-	        $parameters = $method->getParameters();
-	        $parametersStr = array();
-	        foreach ($parameters as $parameter) {
-
-	            $parameterString = '$' . $parameter->name;
-
-	            // If the parameter is typed adds the classname.
-	            $parameterClass = $parameter->getClass();
-	            if (isset($parameterClass)) {
-	                $parameterString = $parameterClass->name . ' ' . $parameterString;
-	            }
-
-	            // Adds default value.
-	            if ($parameter->isDefaultValueAvailable()) {
-	                $parameterString .= ' = ' . var_export($parameter->getDefaultValue(), true);
-	            }
-	            $parametersStr[] = $parameterString;
-	        }
-	        $classStr .= implode(', ', $parametersStr);
-	        $classStr .= ') {' . "\n";
-	        $classStr .= '		$args = func_get_args();' . "\n";
-	        $classStr .= '		return $this->getMethodAction(__FUNCTION__, $args);' . "\n";
-	        $classStr .= '	}' . "\n";
-	    }
-	    $classStr .= '}' . "\n";
-
-	    return $classStr;
-	}
+    protected function initAccept()
+    {
+        self::$acceptJson = (strpos($_SERVER['HTTP_ACCEPT'], 'application/json') !== false);
+        self::$acceptHtml = (strpos($_SERVER['HTTP_ACCEPT'], 'application/xhtml+xml') !== false) || (strpos($_SERVER['HTTP_ACCEPT'], 'text/html') !== false);
+        return $this;
+    }
 
 
 
-	/**
-	 * Dynamically creates a proxy class for this controller with all public, non-final and non-static functions
-	 * overriden so that they return an action (Widget_Action) corresponding to each of them.
-	 *
-	 * @param string $classname
-	 * @return bab_Controller
-	 */
-	protected static function getProxyInstance($classname)
-	{
-		$class = new ReflectionClass($classname);
-		$proxyClassname = $classname . self::PROXY_CLASS_SUFFIX;
-		if (!class_exists($proxyClassname)) {
 
-		    $methods = $class->getMethods();
-
-			// We define the proxy class
-			eval(self::getClassCode($proxyClassname, $classname, $methods));
-		}
-
-		return new $proxyClassname();
-	}
+    /**
+     * The http request accepts json.
+     * @return boolean
+     */
+    protected static function acceptJson()
+    {
+        if (!isset(self::$acceptJson)) {
+            self::initAccept();
+        }
+        return self::$acceptJson;
+    }
 
 
+    /**
+     * The http request accepts html.
+     * @return boolean
+     */
+    protected static function acceptHtml()
+    {
+        if (!isset(self::$acceptHtml)) {
+            self::initAccept();
+        }
+        return self::$acceptHtml;
+    }
 
-	/**
-	 * Dynamically creates a proxy class in the current namespace for this controller with all public, non-final and non-static functions
-	 * overriden so that they return an action (Widget_Action) corresponding to each of them.
-	 *
-	 * @param string $namespace
-	 * @param string $classname
-	 * @return bab_Controller
-	 */
-	protected static function getNsProxyInstance($namespace, $classname)
-	{
-	    $class = new ReflectionClass($namespace.'\\'.$classname);
-	    $proxyClassname = $classname . self::PROXY_CLASS_SUFFIX;
-	    if (!class_exists($namespace.'\\'.$proxyClassname)) {
 
-	        $methods = $class->getMethods();
+    /**
+     * Generates php code of a 'proxy' class having the same method signatures as the class $classname.
+     *
+     * @param string               $proxyClassname   The classname of the proxy class.
+     * @param string               $classname        The classname of the class to proxy.
+     * @param ReflectionMethod[]   $methods          The methods of $classname.
+     * @return string
+     */
+    protected static function getClassCode($proxyClassname, $classname, Array $methods) {
 
-	        // We define the proxy class
-	        eval('namespace '.$namespace.';'. "\n".self::getClassCode($proxyClassname, $classname, $methods));
-	    }
+        $classStr = 'class ' . $proxyClassname . ' extends ' . $classname . ' {' . "\n";
 
-	    $proxyClassname = $namespace.'\\'.$proxyClassname;
+        foreach ($methods as $method) {
+            if ($method->name === '__construct' || !$method->isPublic() || $method->isStatic() || $method->isFinal()) {
+                continue;
+            }
 
-	    return new $proxyClassname();
-	}
+            $classStr .= '	public function ' . $method->name . '(';
+            $parameters = $method->getParameters();
+            $parametersStr = array();
+            foreach ($parameters as $parameter) {
+
+                /* @var $parameter ReflectionParameter */
+
+                $parameterString = '$' . $parameter->name;
+
+                // If the parameter is typed adds the classname.
+                $prefix = null;
+                if (method_exists($parameter, 'getType')) { // PHP 7 only
+                    $reflectionType = $parameter->getType();
+                    if (isset($reflectionType)) {
+                        $prefix = $reflectionType->__toString();
+                    }
+                } else {
+                    $reflectionClass = $parameter->getClass(); // only class prefix (no type like Array)
+                    if (isset($reflectionClass)) {
+                        $prefix = $reflectionClass->name;
+                    }
+                }
+
+                if (isset($prefix)) {
+                    $parameterString =  $prefix. ' ' . $parameterString;
+                }
+
+                // Adds default value.
+                if ($parameter->isDefaultValueAvailable()) {
+                    $parameterString .= ' = ' . var_export($parameter->getDefaultValue(), true);
+                }
+                $parametersStr[] = $parameterString;
+            }
+            $classStr .= implode(', ', $parametersStr);
+            $classStr .= ') {' . "\n";
+            $classStr .= '		$args = func_get_args();' . "\n";
+            $classStr .= '		return $this->getMethodAction(__FUNCTION__, $args);' . "\n";
+            $classStr .= '	}' . "\n";
+        }
+        $classStr .= '}' . "\n";
+        return $classStr;
+    }
+
+
+
+    /**
+     * Dynamically creates a proxy class for this controller with all public, non-final and non-static functions
+     * overriden so that they return an action (Widget_Action) corresponding to each of them.
+     *
+     * @param string $classname
+     * @return bab_Controller
+     */
+    protected static function getProxyInstance($classname)
+    {
+        $class = new ReflectionClass($classname);
+        $proxyClassname = $classname . self::PROXY_CLASS_SUFFIX;
+        if (!class_exists($proxyClassname)) {
+
+            $methods = $class->getMethods();
+
+            // We define the proxy class
+            eval(self::getClassCode($proxyClassname, $classname, $methods));
+        }
+
+        return new $proxyClassname();
+    }
+
+
+
+    /**
+     * Dynamically creates a proxy class in the current namespace for this controller with all public, non-final and non-static functions
+     * overriden so that they return an action (Widget_Action) corresponding to each of them.
+     *
+     * @param string $namespace
+     * @param string $classname
+     * @return bab_Controller
+     */
+    protected static function getNsProxyInstance($namespace, $classname)
+    {
+        $class = new ReflectionClass($namespace.'\\'.$classname);
+        $proxyClassname = $classname . self::PROXY_CLASS_SUFFIX;
+        if (!class_exists($namespace.'\\'.$proxyClassname)) {
+
+            $methods = $class->getMethods();
+
+            // We define the proxy class
+            eval('namespace '.$namespace.';'. "\n".self::getClassCode($proxyClassname, $classname, $methods));
+        }
+
+        $proxyClassname = $namespace.'\\'.$proxyClassname;
+
+        return new $proxyClassname();
+    }
 
 
 
     /**
      * @return bab_Controller
      */
-	protected function proxy()
-	{
-	    $className = get_class($this);
-	    if (false === strpos($className, '\\')) {
-	        return self::getProxyInstance($className);
-	    }
+    protected function proxy()
+    {
+        $className = get_class($this);
+        if (false === strpos($className, '\\')) {
+            return self::getProxyInstance($className);
+        }
 
-	    $namespace = join('\\', array_slice(explode('\\', $className), 0, -1));
-	    $className = join('', array_slice(explode('\\', $className), -1));
+        $namespace = join('\\', array_slice(explode('\\', $className), 0, -1));
+        $className = join('', array_slice(explode('\\', $className), -1));
 
-		return self::getNsProxyInstance($namespace, $className);
-	}
-
-
-
-	/**
-	 * Instanciates a controller class.
-	 *
-	 * @return bab_Controller
-	 */
-	public static function ControllerProxy($className, $proxy = true)
-	{
-		if ($proxy) {
-			return self::getProxyInstance($className);
-		}
-
-		return new $className();
-	}
+        return self::getNsProxyInstance($namespace, $className);
+    }
 
 
 
-	/**
-	 * Instanciates a controller class.
-	 *
-	 * @param  string  $namespace  Namespace of your controller class
-	 * @param  string  $className  Class name without the namespace
-	 * @param  bool    get the proxy instance insead
-	 *
-	 * @return bab_Controller
-	 */
-	public static function nsControllerProxy($namespace, $className, $proxy = true)
-	{
-	    if ($proxy) {
-	        return self::getNsProxyInstance($namespace, $className);
-	    }
+    /**
+     * Instanciates a controller class.
+     *
+     * @return bab_Controller
+     */
+    public static function ControllerProxy($className, $proxy = true)
+    {
+        if ($proxy) {
+            return self::getProxyInstance($className);
+        }
 
-	    $className = $namespace.'\\'.$className;
-
-	    return new $className();
-	}
+        return new $className();
+    }
 
 
 
-	/**
-	 * Displays the list of available actions on this controller.
-	 *
-	 * @param Widget_Action $action
-	 * @return mixed
-	 */
-	public function listAvailableActions()
-	{
-		$object = new ReflectionObject($this);
-		$objectComment = $object->getDocComment();
+    /**
+     * Instanciates a controller class.
+     *
+     * @param  string  $namespace  Namespace of your controller class
+     * @param  string  $className  Class name without the namespace
+     * @param  bool    get the proxy instance insead
+     *
+     * @return bab_Controller
+     */
+    public static function nsControllerProxy($namespace, $className, $proxy = true)
+    {
+        if ($proxy) {
+            return self::getNsProxyInstance($namespace, $className);
+        }
 
-		$methods = $object->getMethods();
-		foreach ($methods as $method) {
-			if (!$method->isPublic() || $method->isStatic() || $method->isFinal()) {
-				continue;
-			}
-			echo "<pre>";
-			$actionMethod = $object->getMethod($method->getName());
-			echo "\t" . $actionMethod->getDocComment() . "\n";
+        $className = $namespace.'\\'.$className;
 
-			$methodName = $method->getName();
-			$actionParams = array();
-			$parameters = $actionMethod->getParameters();
-			foreach ($parameters as $parameter) {
-				if ($parameter->isDefaultValueAvailable()) {
-					$actionParams[$parameter->getName()] = $parameter->getDefaultValue();
-				} else {
-					$actionParams[$parameter->getName()] = '';
-				}
-			}
-
-			echo $methodName. "\n";
-			print_r($actionParams);
-			echo "</pre>";
-		}
-		die;
-
-	}
+        return new $className();
+    }
 
 
 
-	/**
-	 * Tries to execute the method corresponding to $action
-	 * on the current object.
-	 *
-	 * Called by bab_Controller::execute()
-	 *
-	 * @param Widget_Action 	$action
-	 * @return mixed
-	 */
-	protected function execAction(Widget_Action $action)
-	{
-		$methodStr = $action->getMethod();
+    /**
+     * Displays the list of available actions on this controller.
+     *
+     * @param Widget_Action $action
+     * @return mixed
+     */
+    public function listAvailableActions()
+    {
+        $object = new ReflectionObject($this);
+        $objectComment = $object->getDocComment();
 
-		list($objectName, $methodName) = explode('.', $methodStr);
+        $methods = $object->getMethods();
+        foreach ($methods as $method) {
+            if (!$method->isPublic() || $method->isStatic() || $method->isFinal()) {
+                continue;
+            }
+            echo "<pre>";
+            $actionMethod = $object->getMethod($method->getName());
+            echo "\t" . $actionMethod->getDocComment() . "\n";
 
-		if (!method_exists($this, $methodName)) {
-			header('HTTP/1.0 400 Bad Request');
-			throw new bab_UnknownActionException($action);
-		}
+            $methodName = $method->getName();
+            $actionParams = array();
+            $parameters = $actionMethod->getParameters();
+            foreach ($parameters as $parameter) {
+                if ($parameter->isDefaultValueAvailable()) {
+                    $actionParams[$parameter->getName()] = $parameter->getDefaultValue();
+                } else {
+                    $actionParams[$parameter->getName()] = '';
+                }
+            }
 
-		$method = new ReflectionMethod($this, $methodName);
-		$parameters = $method->getParameters();
-		$args = array();
-		foreach ($parameters as $parameter) {
-			$parameterName = $parameter->getName();
-			if ($action->parameterExists($parameter->getName())) {
-				$args[$parameterName] = $action->getParameter($parameterName);
-			} elseif ($parameter->isDefaultValueAvailable()) {
-				$args[$parameterName] = $parameter->getDefaultValue();
-			} else {
-				throw new bab_MissingActionParameterException($action, $parameterName);
-			}
-		}
-
-		return $method->invokeArgs($this, $args);
-	}
-
-
-	/**
-	 * Get tg value to use in URL
-	 * @return string
-	 */
-	abstract protected function getControllerTg();
-
-
-	/**
-	 * Get object name to use in URL from the controller classname
-	 * @param string $classname        Does not include the namespace
-	 * @return string
-	 */
-	protected function getObjectName($classname)
-	{
-	    return strtolower($classname);
-	}
+            echo $methodName. "\n";
+            print_r($actionParams);
+            echo "</pre>";
+        }
+        die;
+    }
 
 
 
-	/**
-	 * Returns the action object corresponding to the current object method $methodName
-	 * with the parameters $args.
-	 *
-	 * @param string $methodName
-	 * @param array $args
-	 * @return Widget_Action	Or null on error.
-	 */
-	protected function getMethodAction($methodName, $args)
-	{
+    /**
+     * Tries to execute the method corresponding to $action
+     * on the current object.
+     *
+     * Called by bab_Controller::execute()
+     *
+     * @param Widget_Action 	$action
+     * @return mixed
+     */
+    protected function execAction(Widget_Action $action)
+    {
+        $methodStr = $action->getMethod();
+
+        list(, $methodName) = explode('.', $methodStr);
+
+        if (!method_exists($this, $methodName)) {
+            header('HTTP/1.0 400 Bad Request');
+            throw new bab_UnknownActionException($action);
+        }
+
+        $method = new ReflectionMethod($this, $methodName);
+        $parameters = $method->getParameters();
+        $args = array();
+        foreach ($parameters as $parameter) {
+            $parameterName = $parameter->getName();
+            if ($action->parameterExists($parameter->getName())) {
+                $args[$parameterName] = $action->getParameter($parameterName);
+            } elseif ($parameter->isDefaultValueAvailable()) {
+                $args[$parameterName] = $parameter->getDefaultValue();
+            } else {
+                throw new bab_MissingActionParameterException($action, $parameterName);
+            }
+        }
+
+        return $method->invokeArgs($this, $args);
+    }
+
+
+    /**
+     * Get tg value to use in URL
+     * @return string
+     */
+    abstract protected function getControllerTg();
+
+
+    /**
+     * Get object name to use in URL from the controller classname
+     * @param string $classname        Does not include the namespace
+     * @return string
+     */
+    protected function getObjectName($classname)
+    {
+        return strtolower($classname);
+    }
+
+
+
+    /**
+     * Returns the action object corresponding to the current object method $methodName
+     * with the parameters $args.
+     *
+     * @param string $methodName
+     * @param array $args
+     * @return Widget_Action	Or null on error.
+     */
+    protected function getMethodAction($methodName, $args)
+    {
         $fullClassName = substr(get_class($this), 0, -strlen(self::PROXY_CLASS_SUFFIX));
-	    $className = join('', array_slice(explode('\\', $fullClassName), -1));
-		$classname = substr($className, 0, -strlen(self::PROXY_CLASS_SUFFIX));
-		if (!method_exists($fullClassName, $methodName)) {
-			throw new bab_InvalidActionException($fullClassName . '::' . $methodName);
-		}
-		$method = new ReflectionMethod($fullClassName, $methodName);
+        $className = join('', array_slice(explode('\\', $fullClassName), -1));
+        if (!method_exists($fullClassName, $methodName)) {
+        	throw new bab_InvalidActionException($fullClassName . '::' . $methodName);
+        }
+        $method = new ReflectionMethod($fullClassName, $methodName);
 
-		$objectName = $this->getObjectName($className);
-		$parameters = $method->getParameters();
-		$actionParams = array();
-		$argNumber = 0;
-		foreach ($parameters as $parameter) {
-			$parameterName = $parameter->getName();
-			if (isset($args[$argNumber])) {
-				$actionParams[$parameterName] = $args[$argNumber];
-			} elseif ($parameter->isDefaultValueAvailable()) {
-				$actionParams[$parameterName] = $parameter->getDefaultValue();
-			} else {
-				$actionParams[$parameterName] = null;
-			}
-			$argNumber++;
-		}
+        $objectName = $this->getObjectName($className);
+        $parameters = $method->getParameters();
+        $actionParams = array();
+        $argNumber = 0;
+        foreach ($parameters as $parameter) {
+            $parameterName = $parameter->getName();
+            if (isset($args[$argNumber])) {
+                $actionParams[$parameterName] = $args[$argNumber];
+            } elseif ($parameter->isDefaultValueAvailable()) {
+                $actionParams[$parameterName] = $parameter->getDefaultValue();
+            } else {
+                $actionParams[$parameterName] = null;
+            }
+            $argNumber++;
+        }
 
-		$action = new Widget_Action();
+        $action = new Widget_Action();
 
-		$action->setMethod($this->getControllerTg(), $objectName . '.' . $methodName, $actionParams);
+        $action->setMethod($this->getControllerTg(), $objectName . '.' . $methodName, $actionParams);
 
-		$docComment = $method->getDocComment();
-		if (strpos($docComment, '@ajax') !== false) {
-			$action->setAjax(true);
-		}
+        $docComment = $method->getDocComment();
+        if (strpos($docComment, '@ajax') !== false) {
+            $action->setAjax(true);
+        }
 
-		return $action;
-	}
-
+        return $action;
+    }
 
 
 
-	/**
-	 *
-	 * @param string $result   'success' or 'failed'
-	 * @param string $method
-	 * @return Widget_Action|NULL
-	 */
-	protected static function getRedirectAction($result, $method)
-	{
-	    // Check if the redirect url has been specified in the request for this method / result.
-	    if (isset($_REQUEST['_ctrl_' . $result][$method])) {
-	        return Widget_Action::fromUrl($_REQUEST['_ctrl_' . $result][$method]);
-	    }
 
-	    // Or we use the referer url if available.
-	    if (isset($_SERVER['HTTP_REFERER'])) {
+    /**
+     *
+     * @param string $result   'success' or 'failed'
+     * @param string $method
+     * @return Widget_Action|NULL
+     */
+    protected static function getRedirectAction($result, $method)
+    {
+        // Check if the redirect url has been specified in the request for this method / result.
+        if (isset($_REQUEST['_ctrl_' . $result][$method])) {
+            return Widget_Action::fromUrl($_REQUEST['_ctrl_' . $result][$method]);
+        }
+
+        // Or we use the referer url if available.
+        if (isset($_SERVER['HTTP_REFERER'])) {
             return Widget_Action::fromUrl($_SERVER['HTTP_REFERER']);
-	    }
+        }
 
-	    return null;
-	}
-
-
-
-
-	/**
-	 * Adds an error message to display on the page.
-	 * @param string $text
-	 * @since 8.2.0
-	 */
-	public function addError($text)
-	{
-	    $babBody = bab_getBody();
-	    $babBody->addError($text);
-	}
-
-
-
-	/**
-	 * Adds an information message to display on the page.
-	 * @param string $text
-	 * @since 8.2.0
-	 */
-	public function addMessage($text)
-	{
-	    $babBody = bab_getBody();
-	    $babBody->addMessage($text);
-	}
+        return null;
+    }
 
 
 
 
-	/**
-	 * Performs an http redirection to the specified action.
-	 * @param Widget_Action $action
-	 * @since 8.2.0
-	 */
-	public function redirect(Widget_Action $action)
-	{
-	    $babBody = bab_getBody();
-	    $errors = $babBody->errors;
-	    $messages = $babBody->messages;
-
-	    foreach ($errors as $error) {
-	        $babBody->addNextPageError($error);
-	    }
-	    foreach ($messages as $message) {
-	        $babBody->addNextPageMessage($message);
-	    }
-
-	    $action->location();
-	}
+    /**
+     * Adds an error message to display on the page.
+     * @param string $text
+     * @since 8.2.0
+     */
+    public function addError($text)
+    {
+        $babBody = bab_getBody();
+        $babBody->addError($text);
+    }
 
 
 
-	/**
-	 * Tries to dispatch the action to the correct sub-controller.
-	 *
-	 * @param Widget_Action 	$action
-	 * @return mixed
-	 */
-	public function execute(Widget_Action $action)
-	{
-		require_once dirname(__FILE__).'/urlincl.php';
-		require_once dirname(__FILE__).'/json.php';
-
-		$method = $action->getMethod();
-
-		if (!isset($method) || '' === $method) {
-			return false;
-		}
+    /**
+     * Adds an information message to display on the page.
+     * @param string $text
+     * @since 8.2.0
+     */
+    public function addMessage($text)
+    {
+        $babBody = bab_getBody();
+        $babBody->addMessage($text);
+    }
 
 
-		list($objectName, $methodName) = explode('.', $method);
+    /**
+     * Method to call before saving
+     * @since 8.4.91
+     * @return self
+     */
+    public function requireSaveMethod()
+    {
+        if ('GET' === $_SERVER['REQUEST_METHOD']) {
+            header($_SERVER["SERVER_PROTOCOL"]." 405 Method Not Allowed", true, 405);
+            throw new bab_SaveErrorException('Method not allowed');
+        }
 
-		$objectController = $this->{$objectName}(false);
-
-		if ( ! ($objectController instanceof bab_Controller)) {
-			return false;
-		}
-
-
-
-		try {
-			$returnedValue = $objectController->execAction($action);
-		} catch (bab_AccessException $e) {
-
-			if ($e->require_credential && !bab_isUserLogged())
-			{
-				bab_requireCredential($e->getMessage());
-			} else {
-				$this->addError($e->getMessage());
-				$returnedValue = bab_Widgets()->babPage();
-			}
-
-		} catch (bab_SaveException $e) {
-
-		    $failedAction = self::getRedirectAction('failed', $method);
-		    
-		    if (bab_isAjaxRequest()) {
-		        header($_SERVER['SERVER_PROTOCOL'] . ' 403 Forbidden', true, 403);
-		        header('Cache-Control: no-cache, must-revalidate');
-		        header('Expires: Mon, 26 Jul 1997 05:00:00 GMT');
-		        header('Content-type: application/json');
-		        die(bab_json_encode(array(
-		            'exception' => get_class($e),
-		            'message' => bab_convertStringFromDatabase($e->getMessage(), 'UTF-8')
-		        )));
-		    }
-
-		    
-		    if ($e instanceof bab_SaveErrorException) {
-		        $this->addError($e->getMessage());
-		    } else {
-		        $this->addMessage($e->getMessage());
-		    }
-
-		    if (!isset($failedAction)) {
-		        bab_debug(sprintf('Missing the failed action to redirect or execute action from %s', $method));
-		        return;
-		    }
-
-			if ($e->redirect) {
-			     return $this->redirect($failedAction);
-			}
+        return $this;
+    }
 
 
-		    if (0 == count($failedAction->getParameters())) {
-				throw new Exception('Error, incorrect action');
-			}
-			$returnedValue = $objectController->execAction($failedAction);
+    /**
+     * Method to call before deleting
+     * @since 8.4.91
+     * @return self
+     */
+    public function requireDeleteMethod()
+    {
+        return $this->requireSaveMethod();
+    }
 
-		}
 
 
-		if ($returnedValue instanceof Widget_Displayable_Interface) {
+    /**
+     * Performs an http redirection to the specified action.
+     * @param Widget_Action $action
+     * @since 8.2.0
+     */
+    public function redirect(Widget_Action $action)
+    {
+        $babBody = bab_getBody();
+        $errors = $babBody->errors;
+        $messages = $babBody->messages;
 
-			$W = bab_Widgets();
+        foreach ($errors as $error) {
+            $babBody->addNextPageError($error);
+        }
+        foreach ($messages as $message) {
+            $babBody->addNextPageMessage($message);
+        }
 
-		    if ($returnedValue instanceof Widget_BabPage && !bab_isAjaxRequest()) {
+        $action->location();
+    }
 
-				// If the action returned a page, we display it.
-				$returnedValue->displayHtml();
 
-			} else {
 
-				$htmlCanvas = $W->HtmlCanvas();
-				if (self::$acceptJson) {
-					$itemId = $returnedValue->getId();
-					$returnedArray = array($itemId => $returnedValue->display($htmlCanvas));
-					header('Cache-Control: no-cache, must-revalidate');
-					header('Expires: Mon, 26 Jul 1997 05:00:00 GMT');
-					header('Content-type: application/json');
-					die(bab_json_encode($returnedArray));
-				} else {
-					header('Cache-Control: no-cache, must-revalidate');
-					header('Expires: Mon, 26 Jul 1997 05:00:00 GMT');
-					header('Content-type: text/html');
+    /**
+     * Tries to dispatch the action to the correct sub-controller.
+     *
+     * @param Widget_Action 	$action
+     * @return mixed
+     */
+    public function execute(Widget_Action $action)
+    {
+        require_once dirname(__FILE__).'/urlincl.php';
+        require_once dirname(__FILE__).'/json.php';
 
-					// widgets >= 1.0.65
-					if ($returnedValue instanceof Widget_BabPage && method_exists($returnedValue, 'getPageTitle')) {
-					   header('X-Cto-PageTitle: '.bab_convertStringFromDatabase($returnedValue->getPageTitle(), 'ISO-8859-1'));
-					}
+        $method = $action->getMethod();
 
-					die($returnedValue->display($htmlCanvas));
-				}
-			}
+        if (!isset($method) || '' === $method) {
+            return false;
+        }
 
-		} else if (is_array($returnedValue)) {
 
-			$htmlCanvas = $W->HtmlCanvas();
-			$returnedArray = array();
-			foreach ($returnedValue as $id => &$item) {
-				if ($item instanceof Widget_Displayable_Interface) {
-					$returnedArray[$item->getId()] = $item->display($htmlCanvas);
-				}
-			}
-			header('Cache-Control: no-cache, must-revalidate');
-			header('Expires: Mon, 26 Jul 1997 05:00:00 GMT');
-			header('Content-type: application/json');
-			die(bab_json_encode($returnedArray));
+        list($objectName, ) = explode('.', $method);
 
-		} else if (true === $returnedValue) {
-			// If the method returns true, we redirect to the 'success' location defined in the button
+        $objectController = $this->{$objectName}(false);
 
-		    $successAction = self::getRedirectAction('success', $method);
-			if (!isset($successAction)) {
-				throw new Exception(sprintf('Missing the success action to redirect from %s', $method));
-			}
+        if ( ! ($objectController instanceof bab_Controller)) {
+            return false;
+        }
 
-			$this->redirect($successAction);
-		}
 
-		return $returnedValue;
-	}
+        $returnedValue = null;
+        try {
+            $returnedValue = $objectController->execAction($action);
+        } catch (bab_AccessException $e) {
 
+            if ($e->require_credential && !bab_isUserLogged()) {
+                bab_requireCredential($e->getMessage());
+            } else {
+                $this->addError($e->getMessage());
+                $returnedValue = bab_Widgets()->babPage();
+            }
+
+        } catch (bab_SaveException $e) {
+
+            $failedAction = self::getRedirectAction('failed', $method);
+
+            if (bab_isAjaxRequest()) {
+                header($_SERVER['SERVER_PROTOCOL'] . ' 403 Forbidden', true, 403);
+                header('Cache-Control: no-cache, must-revalidate');
+                header('Expires: Mon, 26 Jul 1997 05:00:00 GMT');
+                header('Content-type: application/json');
+                die(
+                    bab_json_encode(
+                        array(
+                            'exception' => get_class($e),
+                            'message' => bab_convertStringFromDatabase($e->getMessage(), 'UTF-8')
+                        )
+                    )
+                );
+            }
+
+
+            if ($e instanceof bab_SaveErrorException) {
+                $this->addError($e->getMessage());
+            } else {
+                $this->addMessage($e->getMessage());
+            }
+
+            if (!isset($failedAction)) {
+                bab_debug(sprintf('Missing the failed action to redirect or execute action from %s', $method));
+                return;
+            }
+
+            if ($e->redirect) {
+                 return $this->redirect($failedAction);
+            }
+
+
+            if (0 == count($failedAction->getParameters())) {
+                throw new Exception('Error, incorrect action');
+            }
+            $returnedValue = $objectController->execAction($failedAction);
+
+        }
+
+
+        if ($returnedValue instanceof Widget_Displayable_Interface) {
+
+            $W = bab_Widgets();
+
+            if ($returnedValue instanceof Widget_BabPage && !bab_isAjaxRequest()) {
+
+                // If the action returned a page, we display it.
+                $returnedValue->displayHtml();
+
+            } else {
+
+                $htmlCanvas = $W->HtmlCanvas();
+                if (self::$acceptJson) {
+                    $itemId = $returnedValue->getId();
+                    $returnedArray = array($itemId => $returnedValue->display($htmlCanvas));
+                    header('Cache-Control: no-cache, must-revalidate');
+                    header('Expires: Mon, 26 Jul 1997 05:00:00 GMT');
+                    header('Content-type: application/json');
+                    die(bab_json_encode($returnedArray));
+                } else {
+                    header('Cache-Control: no-cache, must-revalidate');
+                    header('Expires: Mon, 26 Jul 1997 05:00:00 GMT');
+                    header('Content-type: text/html');
+
+                    // widgets >= 1.0.65
+                    if ($returnedValue instanceof Widget_BabPage && method_exists($returnedValue, 'getPageTitle')) {
+                       header('X-Cto-PageTitle: '.bab_convertStringFromDatabase($returnedValue->getPageTitle(), 'ISO-8859-1'));
+                    }
+
+                    die($returnedValue->display($htmlCanvas));
+                }
+            }
+
+        } elseif (is_array($returnedValue)) {
+
+            $htmlCanvas = $W->HtmlCanvas();
+            $returnedArray = array();
+            foreach ($returnedValue as $key => &$item) {
+                if ($item instanceof Widget_Displayable_Interface) {
+                    $returnedArray[$item->getId()] = $item->display($htmlCanvas);
+                } else {
+                    $returnedArray[$key] = $item;
+                }
+            }
+            header('Cache-Control: no-cache, must-revalidate');
+            header('Expires: Mon, 26 Jul 1997 05:00:00 GMT');
+            header('Content-type: application/json');
+            die(bab_convertStringFromDatabase(bab_json_encode($returnedArray), bab_charset::UTF_8));
+
+        } elseif (true === $returnedValue) {
+            // If the method returns true, we redirect to the 'success' location defined in the button
+            if (bab_isAjaxRequest()) {
+
+                $body = bab_getBody();
+                $json = array();
+                $json['messages'] = array();
+                foreach ($body->messages as $message) {
+                    $json['messages'][] = array(
+                        'level' => 'info',
+                        'content' => $message
+                    );
+                }
+                foreach ($body->errors as $message) {
+                    $json['messages'][] = array(
+                        'level' => 'danger',
+                        'content' => $message
+                    );
+                }
+
+                echo bab_convertStringFromDatabase(bab_json_encode($json), 'UTF-8');
+                die;
+            }
+
+            $successAction = self::getRedirectAction('success', $method);
+            if (isset($successAction)) {
+                $this->redirect($successAction);
+            } else {
+                throw new Exception(sprintf('Missing the success action to redirect from %s', $method));
+            }
+        }
+
+        return $returnedValue;
+    }
 }

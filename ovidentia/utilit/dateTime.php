@@ -186,6 +186,8 @@ class BAB_DateTime
      */
     public static function fromICal($icaldatetime, $tzid = null)
     {
+        $m = null;
+
         if (preg_match('/^(?P<year>\d{4})(?P<month>\d{2})(?P<day>\d{2})T(?P<hours>\d{2})(?P<minutes>\d{2})(?P<seconds>\d{2})(?P<utc>Z)?$/', $icaldatetime, $m)) {
 
             $datetime = new BAB_DateTime($m['year'], $m['month'], $m['day'], $m['hours'], $m['minutes'], $m['seconds']);
@@ -551,6 +553,7 @@ class BAB_DateTime
                 break;
 
             case BAB_DATETIME_ICAL:
+                $m = null;
                 if (preg_match_all('/(?P<value>\d+)(?P<type>[DHMS]{1})/', $iNbUnits, $m, PREG_SET_ORDER)) {
 
                     $days = 0;
@@ -573,6 +576,8 @@ class BAB_DateTime
                 }
                 break;
         }
+
+        return $this;
     }
 
 
@@ -599,6 +604,8 @@ class BAB_DateTime
                 $this->init($this->_iYear, $this->_iMonth, $this->_iDay, $this->_iHours, $this->_iMinutes, ((int) $this->_iSeconds - $iNbUnits));
                 break;
         }
+
+        return $this;
     }
 
 
@@ -871,8 +878,9 @@ class BAB_DateTime
             $indexYear = mb_strpos($strDate, '00');
         }
         $d = array($indexDay => 1, $indexMonth => 2, $indexYear => 3);
-        bab_sort::ksort($d);
+        bab_Sort::ksort($d);
 
+        $matches = null;
         if (preg_match('`' . $strPattern . '`', $value, $matches) < 1)
         {
             return null;

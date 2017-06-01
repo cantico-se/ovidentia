@@ -1095,6 +1095,8 @@ function createGlobalActivityDashboard($start, $end)
 	for ($total = 0; $stat = $babDB->db_fetch_array($stats); $total += $stat['hits']) {
 		$r[$stat['stat_date']] = $stat['hits'];
 	}
+	
+	$row = array();
 	$row['label'] = bab_translate("Global hits");
 	$row += fillRow($r, $start, $end);
 	$row['total'] = $total;

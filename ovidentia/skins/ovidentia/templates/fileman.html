@@ -123,6 +123,7 @@ function remove_field()
 -->
 </script>
 <form name="ffileupload" id= "ffileupload" method="post" action="{ babPhpSelf }" enctype="multipart/form-data">
+<input type="hidden" name="babCsrfProtect" value="{ babCsrfProtect }" />
 	<input type="hidden" name="MAX_FILE_SIZE" value="{ maxfilesize }">
 	<input type="hidden" name="tg" value="fileman">
 	<input type="hidden" name="idx" value="list">
@@ -248,6 +249,7 @@ function hideDelegationSubmitBtn()
 </script>
 
 <form name="filesList" method="post" action="{ babPhpSelf }">
+<input type="hidden" name="babCsrfProtect" value="{ babCsrfProtect }" />
 	<input type="hidden" name="tg" value="fileman" />
 	<input type="hidden" name="idx" value="list" />
 	<input type="hidden" name="sAction" value="changeDelegation" />
@@ -395,7 +397,7 @@ function hideDelegationSubmitBtn()
 							<a href="{ sRightUrl }" title="{ sRight }"><img src="{ babSkinPath }images/Puces/access.png" border="0" alt="{ sRight }" align="middle"  /></a>
 						<!--#endif bCanSetRightOnFolder -->
 						<!--#if bCanCutFolder -->
-							<a href="{ sCutFolderUrl }" title="{ sCutFolder }"><img src="{ babSkinPath }images/Puces/cut.gif" alt="{ sCutFolder }" border="0" align="middle" /></a>
+							<a href="{ sCutFolderUrl }" onclick="return bab_postLinkConfirm(this);"><img src="{ babSkinPath }images/Puces/cut.gif" alt="{ sCutFolder }" border="0" align="middle" /></a>
 						<!--#endif bCanCutFolder -->
 							<a href="{ sFolderZipUrl }" title="{ sFolderZip }"><img src="{ babSkinPath }images/Puces/zip.gif" border="0" align="middle" alt="{ sFolderZip }"  /></a>&nbsp;
 							</td>
@@ -446,7 +448,7 @@ function hideDelegationSubmitBtn()
 						<!--#if bCanEditFolder -->
 							<a href="{ sFolderFormUrl }" title="{ sFolderFormEdit }"><img src="{ babSkinPath }images/Puces/edit.png" border="0" align="middle" alt="{ sFolderFormEdit }"  /></a>
 						<!--#endif bCanEditFolder -->
-							<a href="{ pasteurl }"><img src="{ babSkinPath }images/Puces/paste.gif" alt="{ paste }" title="{ paste }" border="0" align="middle" /></a>
+							<a href="{ pasteurl }" onclick="return bab_postLinkConfirm(this);"><img src="{ babSkinPath }images/Puces/paste.gif" alt="{ paste }" title="{ paste }" border="0" align="middle" /></a>
 							<a href="{ undopasteurl }"><img src="{ babSkinPath }images/Puces/backarrow.gif" alt="{ undo }" title="{ undo }" border="0" align="middle" /></a>
 							</td>
 						</tr>
@@ -525,11 +527,16 @@ function hideDelegationSubmitBtn()
 								
 							<!--#endif bDownload -->
 							<!--#if bUnZip -->
-							<a onclick="return confirm('{ unzipconfirmtxt }')" href="{ unzipurl }">
+							<a title="{ unzipconfirmtxt }" onclick="return bab_postLinkConfirm(this);" href="{ unzipurl }">
 								<img title="{ unziptxt }" src="{ babSkinPath }images/Puces/zip.gif" border="0" align="middle" />
 							<a/>
 							<!--#endif bUnZip -->
-							<!--#if bCanManageCurrentFolder --><a href="{ cuturl }" title="{ cuttxt }"><img src="{ babSkinPath }images/Puces/cut.gif" alt="{ cuttxt }" border="0" align="middle" /></a>&nbsp;<a href="{ delurl }" title="{ deltxt }"><img src="{ babSkinPath }images/Puces/del.gif" alt="{ deltxt }" border="0" align="middle" /></a><!--#endif bCanManageCurrentFolder -->
+							
+							<!--#if bCanManageCurrentFolder -->
+							<a href="{ cuturl }" onclick="return bab_postLinkConfirm(this);"><img src="{ babSkinPath }images/Puces/cut.gif" title="{ cuttxt }" alt="{ cuttxt }" border="0" align="middle" /></a>&nbsp;
+							<a href="{ delurl }" onclick="return bab_postLinkConfirm(this);" title="{ deltxt }"><img src="{ babSkinPath }images/Puces/del.gif" alt="{ deltxt }" border="0" align="middle" /></a>
+							<!--#endif bCanManageCurrentFolder -->
+							
 							<!--#if bDownload --><span class="bab-file-{ fileid }"></span><!--#endif bDownload -->
 							</td>
 						</tr>
@@ -566,8 +573,8 @@ function hideDelegationSubmitBtn()
 							<td nowrap="nowrap">
 								<a href="{ urlget }"><img src="{ babSkinPath }images/Puces/download.gif" alt="{ download }" border="0" align="middle" /></a>
 							<!--#if bCanManageCurrentFolder -->
-								<a href="{ cuturl }"><img src="{ babSkinPath }images/Puces/cut.gif" alt="{ cuttxt }" border="0" align="middle" /></a>
-								<a href="{ delurl }"><img src="{ babSkinPath }images/Puces/del.gif" alt="{ deltxt }" border="0" align="middle" /></a>
+								<a href="{ cuturl }" onclick="return bab_postLinkConfirm(this);"><img src="{ babSkinPath }images/Puces/cut.gif" alt="{ cuttxt }" border="0" align="middle" /></a>
+								<a href="{ delurl }" onclick="return bab_postLinkConfirm(this);"><img src="{ babSkinPath }images/Puces/del.gif" alt="{ deltxt }" border="0" align="middle" /></a>
 							<!--#endif bCanManageCurrentFolder -->
 							</td>
 						</tr>
@@ -605,7 +612,7 @@ function hideDelegationSubmitBtn()
 							<a href="{ urlget }"><img src="{ babSkinPath }images/Puces/download.gif" alt="{ download }" border="0" align="middle" /></a>
 						<!--#endif bDownload -->
 						<!--#if bCanManageCurrentFolder -->
-							<a href="{ pasteurl }"><img src="{ babSkinPath }images/Puces/paste.gif" alt="{ paste }" title="{ paste }" border="0" align="middle" /></a>
+							<a href="{ pasteurl }" onclick="return bab_postLinkConfirm(this);"><img src="{ babSkinPath }images/Puces/paste.gif" alt="{ paste }" title="{ paste }" border="0" align="middle" /></a>
 							<a href="{ undopasteurl }"><img src="{ babSkinPath }images/Puces/backarrow.gif" alt="{ undo }" title="{ undo }" border="0" align="middle" /></a>
 						<!--#endif bCanManageCurrentFolder -->
 							</td>
@@ -671,6 +678,7 @@ function hideDelegationSubmitBtn()
 <!--#begin trashfiles -->
 
 <form method="post" action="{ babPhpSelf }" name="listform">
+<input type="hidden" name="babCsrfProtect" value="{ babCsrfProtect }" />
 <input type="hidden" name="tg" value="fileman">
 <input type="hidden" name="idx" value="list">
 <input type="hidden" name="id" value="{ id }">
@@ -842,6 +850,7 @@ window.focus();
 </table>
 <br>
 <form method="post" name="fupdate" action="{ babPhpSelf }" enctype="multipart/form-data">
+<input type="hidden" name="babCsrfProtect" value="{ babCsrfProtect }" />
 <input type="hidden" name="MAX_FILE_SIZE" value="{ babMaxFileSize }" />
 <input type="hidden" name="tg" value="fileman" />
 <input type="hidden" name="idx" value="list" />
@@ -956,6 +965,7 @@ window.focus();
 
 <!--#if index -->
 <form method="post" name="fupdate" action="{ babPhpSelf }">
+<input type="hidden" name="babCsrfProtect" value="{ babCsrfProtect }" />
 <input type="hidden" name="tg" value="fileman" />
 <input type="hidden" name="idx" value="viewFile" />
 <input type="hidden" name="updf" value="updindex" />
@@ -1117,6 +1127,7 @@ function ovidentia_fileman_hide()
 </script>
 
 <form name="displayFolderForm" method="post" action="{ babPhpSelf }">
+<input type="hidden" name="babCsrfProtect" value="{ babCsrfProtect }" />
 	<input type="hidden" name="tg" value="{ m_datas[sTg] }" />
 	<input type="hidden" name="idx" value="{ m_datas[sIdx] }" />
 	<input type="hidden" name="sAction" value="{ m_datas[sAction] }" />
@@ -1413,6 +1424,7 @@ function on_cancel()
 </script>
 
 <form name="warningyesno" method="post" action="{ babPhpSelf }">
+<input type="hidden" name="babCsrfProtect" value="{ babCsrfProtect }" />
 	<input type="hidden" name="tg" value="{ m_datas[sTg] }" />
 	<input type="hidden" name="idx" value="{ m_datas[sIdx] }" />
 	<input type="hidden" name="sAction" value="{ m_datas[sAction] }" />

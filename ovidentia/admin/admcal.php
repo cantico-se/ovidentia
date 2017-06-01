@@ -27,9 +27,9 @@
 */
 
 include_once "base.php";
-require_once dirname(__FILE__).'/../utilit/registerglobals.php';
-include_once $babInstallPath."utilit/evtincl.php";
-include_once $babInstallPath."utilit/calincl.php";
+
+include_once $GLOBALS['babInstallPath']."utilit/evtincl.php";
+include_once $GLOBALS['babInstallPath']."utilit/calincl.php";
 
 function modifyCalendarCategory()
 	{
@@ -97,14 +97,14 @@ function modifyCalendarCategory()
 	}
 
 
-function modifyCalendarResource($idcal, $name, $desc, $idsa)
+function modifyCalendarResource($idcal, $name, $desc, $idsa, $bgcolor)
 	{
 	global $babBody;
 
 	class modifyCalendarResourceCls
 		{
 
-		function modifyCalendarResourceCls($idcal, $name, $desc, $idsa)
+		function modifyCalendarResourceCls($idcal, $name, $desc, $idsa, $bgcolor)
 			{
 			global $babBody, $babDB;
 			$this->nametxt = bab_translate("Name");
@@ -113,6 +113,7 @@ function modifyCalendarResource($idcal, $name, $desc, $idsa)
 			$this->approbationtxt = bab_translate("Approbation schema");
 			$this->t_availability_lock = bab_translate("The availability of the resource is mandatory to create an event");
 			$this->nonetxt = bab_translate("None");
+			$this->bgcolortxt = bab_translate("Agenda color");
 			$arr = $babDB->db_fetch_array($babDB->db_query("SELECT cpt.* from ".BAB_CAL_RESOURCES_TBL." cpt left join ".BAB_CALENDAR_TBL." ct on ct.owner=cpt.id where ct.id=".$babDB->quote($idcal)));
 			if( !empty($name))
 				{
@@ -138,8 +139,17 @@ function modifyCalendarResource($idcal, $name, $desc, $idsa)
 				{
 				$this->calidsa = bab_toHtml($arr['idsa']);
 				}
+		    if( !empty($bgcolor))
+    		    {
+    		    $this->bgcolor = bab_toHtml($bgcolor);
+    		    }
+    		else
+        		{
+        		$this->bgcolor = bab_toHtml($arr['bgcolor']);
+        		}
 				
 			$this->availability_lock = false;
+			$this->selctorurl = bab_toHtml($GLOBALS['babUrlScript']."?tg=selectcolor&idx=popup&callback=setColor");
 			
 			if (1 === (int) $arr['availability_lock']) {
 				$this->availability_lock = true;
@@ -182,18 +192,18 @@ function modifyCalendarResource($idcal, $name, $desc, $idsa)
 			}
 		}
 
-	$temp = new modifyCalendarResourceCls($idcal, $name, $desc, $idsa);
+	$temp = new modifyCalendarResourceCls($idcal, $name, $desc, $idsa, $bgcolor);
 	$babBody->babecho( bab_printTemplate($temp, "admcals.html", "calendaraddr"));
 	}
 
-function modifyCalendarPublic($idcal, $name, $desc, $idsa)
+function modifyCalendarPublic($idcal, $name, $desc, $idsa, $bgcolor)
 	{
 	global $babBody;
 
 	class modifyCalendarPublicCls
 		{
 
-		function modifyCalendarPublicCls($idcal, $name, $desc, $idsa)
+		function modifyCalendarPublicCls($idcal, $name, $desc, $idsa, $bgcolor)
 			{
 			global $babBody, $babDB;
 			$this->nametxt = bab_translate("Name");
@@ -201,6 +211,9 @@ function modifyCalendarPublic($idcal, $name, $desc, $idsa)
 			$this->addtxt = bab_translate("Modify");
 			$this->approbationtxt = bab_translate("Approbation schema");
 			$this->nonetxt = bab_translate("None");
+			$this->bgcolortxt = bab_translate("Agenda color");
+			$this->selctorurl = bab_toHtml($GLOBALS['babUrlScript']."?tg=selectcolor&idx=popup&callback=setColor");
+			$this->bgcolor = bab_toHtml($bgcolor);
 			$arr = $babDB->db_fetch_array($babDB->db_query("select cpt.* from ".BAB_CAL_PUBLIC_TBL." cpt left join ".BAB_CALENDAR_TBL." ct on ct.owner=cpt.id where ct.id=".$babDB->quote($idcal)));
 			if( !empty($name))
 				{
@@ -226,6 +239,14 @@ function modifyCalendarPublic($idcal, $name, $desc, $idsa)
 				{
 				$this->calidsa = bab_toHtml($arr['idsa']);
 				}
+			if( !empty($bgcolor))
+			{
+			    $this->bgcolor = bab_toHtml($bgcolor);
+			}
+			else
+			{
+			    $this->bgcolor = bab_toHtml($arr['bgcolor']);
+			}
 			$this->add = "modp";
 			$this->idcal = $arr['id'];
 			$this->tgval = 'admcal';
@@ -263,12 +284,12 @@ function modifyCalendarPublic($idcal, $name, $desc, $idsa)
 			}
 		}
 
-	$temp = new modifyCalendarPublicCls($idcal, $name, $desc, $idsa);
+	$temp = new modifyCalendarPublicCls($idcal, $name, $desc, $idsa, $bgcolor);
 	$babBody->babecho( bab_printTemplate($temp, "admcals.html", "calendaraddp"));
 	}
 
 
-function updateResourceCalendar($idcal, $calname, $caldesc, $calidsa)
+function updateResourceCalendar($idcal, $calname, $caldesc, $calidsa, $bgcolor)
 {
 	global $babDB, $babBody;
 
@@ -301,15 +322,14 @@ function updateResourceCalendar($idcal, $calname, $caldesc, $calidsa)
 	
 	$availability_lock = isset($_POST['availability_lock']) ? '1' : '0';
 	
-	
-
 	$babDB->db_query("
 		UPDATE ".BAB_CAL_RESOURCES_TBL." 
 		SET 
 			name='".$babDB->db_escape_string($calname)."', 
 			description='".$babDB->db_escape_string($caldesc)."', 
 			idsa='".$babDB->db_escape_string($calidsa)."',
-			availability_lock=".$babDB->quote($availability_lock)."
+			availability_lock=".$babDB->quote($availability_lock).",
+	        bgcolor=".$babDB->quote($bgcolor)."
 		WHERE 
 			id='".$babDB->db_escape_string($idcal)."'
 	");
@@ -318,7 +338,7 @@ function updateResourceCalendar($idcal, $calname, $caldesc, $calidsa)
 	exit;
 }
 
-function updatePublicCalendar($idcal, $calname, $caldesc, $calidsa)
+function updatePublicCalendar($idcal, $calname, $caldesc, $calidsa, $bgcolor)
 {
 	global $babDB, $babBody;
 
@@ -347,7 +367,7 @@ function updatePublicCalendar($idcal, $calname, $caldesc, $calidsa)
 		}		
 	}
 
-	$babDB->db_query("update ".BAB_CAL_PUBLIC_TBL." set name='".$babDB->db_escape_string($calname)."', description='".$babDB->db_escape_string($caldesc)."', idsa='".$babDB->db_escape_string($calidsa)."'  where id='".$babDB->db_escape_string($idcal)."'");
+	$babDB->db_query("update ".BAB_CAL_PUBLIC_TBL." set name='".$babDB->db_escape_string($calname)."', description='".$babDB->db_escape_string($caldesc)."', idsa='".$babDB->db_escape_string($calidsa)."', bgcolor=".$babDB->quote($bgcolor)."  where id='".$babDB->db_escape_string($idcal)."'");
 	Header("Location: ". $GLOBALS['babUrlScript']."?tg=admcals&idx=pub");
 	exit;
 }
@@ -375,12 +395,15 @@ if( !bab_isUserAdministrator() && !bab_isDelegated('calendars'))
 }
 
 $idx = bab_rp('idx', 'modp');
+$idcal = bab_rp('idcal');
 
-if( isset($addc))
+if( isset($_REQUEST['addc']))
 {
+    bab_requireSaveMethod();
+    
 	if( "modp" == bab_rp('addc') )
 	{
-		if( updatePublicCalendar(bab_rp('idcal'), bab_rp('calname'), bab_rp('caldesc'), bab_rp('calidsa')))
+		if( updatePublicCalendar(bab_rp('idcal'), bab_rp('calname'), bab_rp('caldesc'), bab_rp('calidsa'), bab_rp('bgcolor')))
 		{
 			$idx = "pub";
 		}
@@ -390,7 +413,7 @@ if( isset($addc))
 		}
 	}elseif( "modr" == bab_rp('addc') )
 	{
-		if( updateResourceCalendar(bab_rp('idcal'), bab_rp('calname'), bab_rp('caldesc'), bab_rp('calidsa')))
+		if( updateResourceCalendar(bab_rp('idcal'), bab_rp('calname'), bab_rp('caldesc'), bab_rp('calidsa'), bab_rp('bgcolor')))
 		{
 			$idx = "res";
 		}
@@ -402,18 +425,23 @@ if( isset($addc))
 }
 elseif("updcat" == bab_rp('add')  && bab_isUserAdministrator())
 {
-	updateCalendarCategory($idcat, $catname, $catdesc, $bgcolor);
+    $idcat = bab_rp('idcat');
+    $catname = bab_rp('catname');
+    $catdesc = bab_rp('catdesc');
+    $bgcolor = bab_rp('bgcolor');
+    
+	bab_requireSaveMethod() && updateCalendarCategory($idcat, $catname, $catdesc, $bgcolor);
 
-}elseif( isset($aclpub))
+}elseif( isset($_REQUEST['aclpub']))
 	{
-	include_once $babInstallPath."admin/acl.php";
+	include_once $GLOBALS['babInstallPath']."admin/acl.php";
 	maclGroups();
 	Header("Location: ". $GLOBALS['babUrlScript']."?tg=admcals&idx=pub");
 	exit;
 	}
-elseif( isset($aclres))
+elseif( isset($_REQUEST['aclres']))
 	{
-	include_once $babInstallPath."admin/acl.php";
+	include_once $GLOBALS['babInstallPath']."admin/acl.php";
 	maclGroups();
 	Header("Location: ". $GLOBALS['babUrlScript']."?tg=admcals&idx=res");
 	exit;
@@ -423,7 +451,7 @@ elseif( isset($aclres))
 switch($idx)
 	{
 	case "rigthsr":
-		include_once $babInstallPath."admin/acl.php";
+		include_once $GLOBALS['babInstallPath']."admin/acl.php";
 		$babBody->setTitle(bab_translate("Rights for resource calendar").": ".bab_getCalendarOwnerName($idcal, BAB_CAL_RES_TYPE));
 		$macl = new macl("admcal", "rightsp", $idcal, "aclres");
         $macl->addtable( BAB_CAL_RES_VIEW_GROUPS_TBL,bab_translate("Who can view this calendar"));
@@ -443,7 +471,7 @@ switch($idx)
 		$babBody->addItemMenu("cats", bab_translate("Categories"), $GLOBALS['babUrlScript']."?tg=admcals&idx=cats");
 		break;
 	case "rigthsp":
-		include_once $babInstallPath."admin/acl.php";
+		include_once $GLOBALS['babInstallPath']."admin/acl.php";
 		$babBody->setTitle(bab_translate("Rights for public calendar").": ".bab_getCalendarOwnerName($idcal, BAB_CAL_PUB_TYPE));
 		$macl = new macl("admcal", "rightsp", $idcal, "aclpub");
         $macl->addtable( BAB_CAL_PUB_VIEW_GROUPS_TBL,bab_translate("Who can view this calendar"));
@@ -473,7 +501,8 @@ switch($idx)
 		$calname = bab_rp('calname');
 		$caldesc = bab_rp('caldesc');
 		$calidsa = bab_rp('calidsa');
-		modifyCalendarResource($idcal, $calname, $caldesc, $calidsa);
+		$calbgcolor = bab_rp('calbgcolor');
+		modifyCalendarResource($idcal, $calname, $caldesc, $calidsa, $calbgcolor);
 		$babBody->setTitle(bab_translate("Resource calendar").": ".bab_getCalendarOwnerName($idcal, BAB_CAL_RES_TYPE));
 		$babBody->addItemMenu("pub", bab_translate("PublicCalendar"), $GLOBALS['babUrlScript']."?tg=admcals&idx=pub");
 		$babBody->addItemMenu("res", bab_translate("Resources"), $GLOBALS['babUrlScript']."?tg=admcals&idx=res");
@@ -485,7 +514,8 @@ switch($idx)
 		$calname = bab_rp('calname');
 		$caldesc = bab_rp('caldesc');
 		$calidsa = bab_rp('caldesc');
-		modifyCalendarPublic($idcal, $calname, $caldesc, $calidsa);
+		$bgcolor = bab_rp('bgcolor');
+		modifyCalendarPublic($idcal, $calname, $caldesc, $calidsa, $bgcolor);
 		$babBody->setTitle(bab_translate("Public calendar").": ".bab_getCalendarOwnerName($idcal, BAB_CAL_PUB_TYPE));
 		$babBody->addItemMenu("pub", bab_translate("PublicCalendar"), $GLOBALS['babUrlScript']."?tg=admcals&idx=pub");
 		$babBody->addItemMenu("modp", bab_translate("Modify"), $GLOBALS['babUrlScript']."?tg=admcal&idx=modp");

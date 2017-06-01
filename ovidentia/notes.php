@@ -25,7 +25,7 @@
 * @internal SEC1 NA 18/12/2006 FULL
 */
 include_once 'base.php';
-require_once dirname(__FILE__).'/utilit/registerglobals.php';
+
 
 function notesCreate()
 	{
@@ -172,7 +172,7 @@ $id = bab_rp('id', '');
 
 if( isset($_POST['create']))
 {
-	saveNotes();
+	bab_requireSaveMethod() && saveNotes();
 }
 
 switch($idx)
@@ -206,4 +206,3 @@ switch($idx)
 
 $babBody->setCurrentItemMenu($idx);
 bab_siteMap::setPosition('bab','UserNotes');
-?>

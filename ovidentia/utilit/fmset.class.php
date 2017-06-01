@@ -102,6 +102,7 @@ class BAB_BaseSet extends BAB_MySqlResultIterator
             if(false !== $aItem)
             {
                 $aInto[] = $aItem['value']->getName();
+                $iId = null;
                 $oObject->_get($aItem['key'], $iId);
                 $aValue[] = (is_null($iId)) ? '\'\'' : '\'' . $babDB->db_escape_string($iId) . '\'';
             }
@@ -112,11 +113,19 @@ class BAB_BaseSet extends BAB_MySqlResultIterator
                 $aInto[] = $sColName;
 
                 $sKey = $aItem['key'];
+                $sValue = null;
                 $oObject->_get($sKey, $sValue);
+                
+                if ('`path`' === $sColName && !empty($sValue) && '/' !== mb_substr($sValue,-1)) {
+                    // throw new Exception('Saving a file without endslash in path is not allowed');
+                    $sValue .= '/';
+                }
 
                 $sValue = '\'' . $babDB->db_escape_string($sValue) . '\'';
                 $aValue[] = $sValue;
                 $aOnDuplicateKey[] = $sColName . '= ' . $sValue;
+                
+                
             }
             reset($this->aField);
 
@@ -1126,6 +1135,8 @@ class BAB_FolderFileSet extends BAB_BaseSet
         $oFolderFileSet->select($oCriteria);
         while(null !== ($oFolderFile = $oFolderFileSet->next()))
         {
+            /*@var $oFolderFile BAB_FolderFile */
+            
             $sOldPathName = $oFolderFile->getPathName();
             $sNewPathName = $sNewRelativePath . mb_substr($sOldPathName, mb_strlen($sOldRelativePath));
 
@@ -1336,7 +1347,6 @@ class BAB_FmFolder extends BAB_FmFolderFile
 
     function setRelativePath($sRelativePath)
     {
-        BAB_FmFolderHelper::sanitizePathname($sPathname);
         $this->_set('sRelativePath', $sRelativePath);
     }
 
@@ -1595,7 +1605,6 @@ class BAB_FmFolderCliboard extends BAB_DbRecord
 
     function setRelativePath($sRelativePath)
     {
-        BAB_FmFolderHelper::sanitizePathname($sPathname);
         $this->_set('sRelativePath', $sRelativePath);
     }
 
@@ -1732,7 +1741,7 @@ class BAB_FolderFile extends BAB_FmFolderFile
      */
     function setPathName($sPathName)
     {
-        BAB_FmFolderHelper::sanitizePathname($sPathname);
+        BAB_FmFolderHelper::sanitizePathname($sPathName);
         $this->_set('sPathName', $sPathName);
     }
 

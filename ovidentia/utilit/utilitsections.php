@@ -29,16 +29,20 @@ include_once $GLOBALS['babInstallPath'].'utilit/delegincl.php';
 function bab_getAddonsMenus($row, $what)
 {
 	global $babDB;
+	$addon = bab_getAddonInfosInstance($row['title']);
 	$addon_urls = array();
-	$addonpath = $GLOBALS['babInstallPath'].'addons/'.$row['title'];
-	if( is_file($addonpath."/init.php" ))
+	$addonpath = $addon->getPhpPath();
+	if( is_file($addonpath."init.php" ))
 		{
 		bab_setAddonGlobals($row['id']);
 		
-		require_once( $addonpath."/init.php" );
+		require_once( $addonpath."init.php" );
 		$func = $row['title']."_".$what;
 		if( !empty($func) && function_exists($func))
 			{
+			$url = null;
+			$txt = null;
+			
 			while( $func($url, $txt))
 				{
 				$addon_urls[$txt] = $url;
@@ -224,16 +228,18 @@ function babAdminSection($close)
 			if ($babAdminSection) {
 				$babAdminSection->sortChildNodes();
 				$babAdminSection = $babAdminSection->firstChild();
-				do {
-					$item = $babAdminSection->getData();
-					
-					$this->links[] = array(
-						'url' 			=> $item->url,
-						'name' 			=> $item->name,
-						'description' 	=> $item->description
-					);
+				if (isset($babAdminSection)) {
+    				do {
+    					$item = $babAdminSection->getData();
+    					
+    					$this->links[] = array(
+    						'url' 			=> $item->url,
+    						'name' 			=> $item->name,
+    						'description' 	=> $item->description
+    					);
+    				}
+    				while($babAdminSection = $babAdminSection->nextSibling());
 				}
-				while($babAdminSection = $babAdminSection->nextSibling());
 			}
 			
 			$babAdminSectionAddons = $rootNode->getNodeById('babAdminSectionAddons');
@@ -241,16 +247,19 @@ function babAdminSection($close)
 			if ($babAdminSectionAddons) {
 				$babAdminSectionAddons->sortChildNodes();
 				$babAdminSectionAddons = $babAdminSectionAddons->firstChild();
-				do {
-					$item = $babAdminSectionAddons->getData();
 				
-					$this->addonlinks[] = array(
-							'url' 			=> $item->url,
-							'name' 			=> $item->name,
-							'description' 	=> $item->description
-					);
+				if (isset($babAdminSectionAddons)) {
+    				do {
+    					$item = $babAdminSectionAddons->getData();
+    				
+    					$this->addonlinks[] = array(
+    							'url' 			=> $item->url,
+    							'name' 			=> $item->name,
+    							'description' 	=> $item->description
+    					);
+    				}
+    				while($babAdminSectionAddons = $babAdminSectionAddons->nextSibling());
 				}
-				while($babAdminSectionAddons = $babAdminSectionAddons->nextSibling());
 			}
 		} else {
 			
@@ -719,8 +728,8 @@ function babTopicsSection($cat, $close)
 
 function topicsGetNext()
 	{
-	global $babDB, $babBody, $BAB_SESS_USERID, $babInstallPath;
-	include_once $babInstallPath."utilit/afincl.php";
+	global $babDB, $babBody, $BAB_SESS_USERID;
+	include_once $GLOBALS['babInstallPath']."utilit/afincl.php";
 	static $i = 0;
 	if( $i < $this->count)
 		{

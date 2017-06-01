@@ -716,6 +716,9 @@ class bab_arraytree
 		$k = 0;
 		while( $arr = $babDB->db_fetch_assoc($res))
 			{
+			    
+			$row = array();
+			    
 			if( $k == 0)
 				{
 				$this->rootid = $arr['id'];

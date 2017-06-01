@@ -79,36 +79,38 @@ class BabDirectoryFiltered extends FilterIterator
 
 
 function bab_recursive_cp_ls_a($wh){
-         if ($handle = opendir($wh)) {
-             while (false !== ($file = readdir($handle))) {
-				if ($file != "." && $file != ".." ) {
-						if(!isset($files)) {
-							$files="$file";
-						} else {
-							$files="$file\n$files";
-						}
-				   }
-              }
-               closedir($handle);
-         }
-		 if (!isset($files))
-			return array();
-        $arr=explode("\n",$files);
-        return $arr;
-    }
+    $files = null;
+     if ($handle = opendir($wh)) {
+         while (false !== ($file = readdir($handle))) {
+			if ($file != "." && $file != ".." ) {
+					if(!isset($files)) {
+						$files="$file";
+					} else {
+						$files="$file\n$files";
+					}
+			   }
+          }
+           closedir($handle);
+     }
+	 if (!isset($files))
+		return array();
+    $arr=explode("\n",$files);
+    return $arr;
+}
 
 
 /**
  * Recursive copy of a folder
  *
- * @param	string	$wf		origin folder
- * @param	string	$wto	destination folder
- *
+ * @param	string	$wf		      origin folder
+ * @param	string	$wto	      destination folder
+ * @param   bool    $recursive    allows the creation of nested directories
+ * 
  * @return	true | string	if the function return a string, this is the error message
  */
-function bab_recursive_cp($wf, $wto) {
+function bab_recursive_cp($wf, $wto, $recursive = false) {
 	  if (!is_dir($wto)) {
-		  if (!bab_mkdir($wto)) {
+		  if (!bab_mkdir($wto, '', $recursive)) {
 			return sprintf(bab_translate("Error : can't create directory : %s"), $wto);
 		  }
 		}
@@ -118,7 +120,7 @@ function bab_recursive_cp($wf, $wto) {
 			  $fl="$wf/$fn";
 			 $flto="$wto/$fn";
 			  if(is_dir($fl)) {
-					$return = bab_recursive_cp($fl,$flto);
+					$return = bab_recursive_cp($fl,$flto,$recursive);
 					if (true !== $return) {
 						return $return;
 					}
@@ -143,10 +145,10 @@ function bab_recursive_cp($wf, $wto) {
 
 
 /**
- * Copy addons forlders from one core to another
+ * Copy addons folders from one core to another
  *
- * @param	string		$from	source core folder
- * @param	string		$to		destination core folder
+ * @param	string		$from	source core folder name
+ * @param	string		$to		destination core folder name
  *
  * @return boolean
  */
@@ -154,9 +156,20 @@ function bab_cpaddons($from, $to, &$message)
 {
 	require_once dirname(__FILE__).'/path.class.php';
 
+	if (empty($from) || empty($to)) {
+	    throw new Exception('missing parameters');
+	}
+	
+	$from = str_replace(array('/', '\\'), '', $from);
+	$to = str_replace(array('/', '\\'), '', $to);
 
-	if (mb_substr($from,-1) != "/") $from.="/";
-	if (mb_substr($to,-1) != "/") $to.="/";
+	$from.="/";
+	$to.="/";
+	
+	if ($from === $to) {
+	    throw new Exception('origin and target must be differents');
+	}
+	
 	$loc = array(
 				"addons",
 				"lang/addons",
@@ -191,6 +204,7 @@ function bab_writeConfig($replace)
 	global $babBody;
 	function replace($txt, $var, $value)
 		{
+		$match = null;
 		preg_match('/'.preg_quote($var, '/')."\s*=\s*\"([^\"]*)\"/", $txt, $match);
 		if ($match[1] != $value)
 			{
@@ -240,21 +254,24 @@ function bab_writeConfig($replace)
 	}
 
 
+	
+	
+
+	
 
 
 /**
  * Ovidentia upgrade
  *
- * @param bool	$forceUpgrade		True to force upgrade process even if the database version is up-to-date.
+ * @param bool	$forceUpgrade		True to force upgrade process even if the database version 
+ *                                  is up-to-date. This work only for administrators
  *
  * @return boolean
  */
-function bab_upgrade($core_dir, &$ret, $forceUpgrade = false)
+function bab_upgrade($core_dir, &$ret, $forceUpgrade = true)
 {
 
 	global $babBody;
-	$db = $GLOBALS['babDB'];
-
 
 	function putVersion($version)
 	{
@@ -265,15 +282,17 @@ function bab_upgrade($core_dir, &$ret, $forceUpgrade = false)
 		$txt = fread($file, filesize($filename));
 		fclose($file);
 		$reg = "/babVersion[[:space:]]*=[[:space:]]*\"([^\"]*)\"/";
-		$res = preg_match($reg, $txt, $match);
-
-		$reg = "/babVersion[[:space:]]*=[[:space:]]*\"".$match[1]."\"/";
-		$out = preg_replace($reg, "babVersion = \"".$version."\"", $txt);
-		if (is_writable($filename)) {
-			$file = fopen($filename, "w");
-			fputs($file, $out);
-			fclose($file);
-			return $match[1];
+		
+		$match = null;
+		if (preg_match($reg, $txt, $match)) {
+    		$reg = "/babVersion[[:space:]]*=[[:space:]]*\"".$match[1]."\"/";
+    		$out = preg_replace($reg, "babVersion = \"".$version."\"", $txt);
+    		if (is_writable($filename)) {
+    			$file = fopen($filename, "w");
+    			fputs($file, $out);
+    			fclose($file);
+    			return $match[1];
+    		}
 		}
 		return false;
 	}
@@ -358,15 +377,21 @@ function bab_upgrade($core_dir, &$ret, $forceUpgrade = false)
 	if (true === ovidentia_upgrade($ver_from, $ini->getVersion())) {
 	    
 	    // upgrade for all active addons 
-	    foreach(bab_addonsInfos::getDbAddonsByName() as $addon) {
+	    // DISABLED: after install of addons are moved to the second request
+	    // do not create addons upgrade bug in ovidentia upgrade
+	    /*
+	    foreach (bab_addonsInfos::getDbAddonsByName() as $addon) {
 	        if ($addon->isInstalled() && !$addon->isDisabled()) {
 	            $addon->upgrade();
 	        }
 	    }
+	    */
+	    
 
 		// the core has been upgraded correctly
 		// update addons if necessary using the install/addons.ini file
-		bab_upgradeAddonsFromInstall(false, $ini->getVersion());
+		// DISABLED: this will be done in a second request
+		// bab_upgradeAddonsFromInstall(false, $ini->getVersion());
 		
 		
 
@@ -425,6 +450,27 @@ function bab_upgrade($core_dir, &$ret, $forceUpgrade = false)
 
 
 
+/**
+ * @return bool
+ */
+function bab_upgradeAddons(&$ret)
+{
+    
+    $ini = new bab_inifile();
+    $ini->inifile($GLOBALS['babInstallPath'].'version.inc');
+    
+    try {
+        bab_upgradeAddonsFromInstall(false, $ini->getVersion());
+        $ret = bab_translate('Addons installed without errors');
+    } catch (Exception $e) {
+        $ret = $e->getMessage();
+    }
+    
+    return true;
+}
+
+
+
 
 /**
  * Try to delete unused core folder
@@ -462,28 +508,22 @@ function bab_deleteOldCore($version, &$msgerror)
 }
 
 
-function bab_upgradeAddonsFromComposer() {
-    
-    if (!function_exists('json_decode')) {
-        // json_decode need php 5.2.0
-        // on older version, upgrades will be done manually
-        return true;
-    }
+/**
+ * Upgrade all addons in vendor/ovidentia
+ * 
+ */
+function bab_upgradeVendorAddons() {
     
     bab_addonsInfos::insertMissingAddonsInTable();
     
-    $composerFile = realpath('.').'/composer.json';
-    $json = file_get_contents($composerFile);
-    $composer = json_decode($json);
+    $rows = bab_addonsInfos::getDbRows();
     
-    foreach($composer->require as $name => $version) {
-        if (0 === mb_strpos($name, 'ovidentia/')) {
-            $addonName = mb_substr($name, 10);
-            
-            if ($addon = bab_getAddonInfosInstance($addonName)) {
-                if ($addon->getLocation() instanceof bab_AddonStandardLocation) {
-                    $addon->upgrade();
-                }
+    foreach ($rows as $arr) {
+        $addonName = $arr['title'];
+    
+        if ($addon = bab_getAddonInfosInstance($addonName)) {
+            if ($addon->getLocation() instanceof bab_AddonStandardLocation) {
+                $addon->upgrade();
             }
         }
     };
@@ -497,6 +537,8 @@ function bab_upgradeAddonsFromComposer() {
  *
  * @param	bool 			$install		test the install parameter of addons.ini file
  * @param	null | string	$upgrade		test the upgrade parameter of addons.ini file, contain the version number of ovidentia (after upgrade)
+ * 
+ * @return bool
  */
 function bab_upgradeAddonsFromInstall($install, $upgrade) {
 
@@ -652,7 +694,7 @@ function bab_newInstall() {
 	include_once $GLOBALS['babInstallPath'].'install.php';
 
 
-	if (bab_upgradeAddonsFromInstall(true, null) && bab_upgradeAddonsFromComposer())
+	if (bab_upgradeAddonsFromInstall(true, null)  && bab_upgradeVendorAddons()) 
 	{
 		$iniVersion = $ini->getVersion();
 		$arr = explode('.', $iniVersion);

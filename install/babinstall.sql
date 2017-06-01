@@ -308,7 +308,6 @@ CREATE TABLE `bab_groups` (
   `id` int(11) unsigned NOT NULL default '0',
   `name` varchar(255) NOT NULL default '',
   `description` varchar(255) NOT NULL default '',
-  `mail` enum('N','Y') default NULL,
   `manager` int(11) unsigned NOT NULL default '0',
   `ustorage` enum('N','Y') default NULL,
   `notes` enum('Y','N') default NULL,
@@ -326,10 +325,10 @@ CREATE TABLE `bab_groups` (
   KEY `id_parent` (`id_parent`,`lf`,`lr`)
 );
 
-INSERT INTO bab_groups (id, name, description, mail, ustorage, notes, contacts, directory, pcalendar, id_parent, lf, lr, nb_set) VALUES ( '0', 'Ovidentia users', '', NULL, NULL, NULL, NULL, NULL, NULL, NULL, '1', '8', '0');
-INSERT INTO bab_groups (id, name, description, mail, ustorage, notes, contacts, directory, pcalendar, id_parent, lf, lr, nb_set) VALUES ( '1', 'Registered users', 'All registered users', 'N', 'N', 'Y', 'Y', 'Y', 'Y', '0', '2', '5', '0');
-INSERT INTO bab_groups (id, name, description, mail, ustorage, notes, contacts, directory, pcalendar, id_parent, lf, lr, nb_set) VALUES ( '2', 'Anonymous users', 'all not registered users', NULL, NULL, NULL, NULL, NULL, NULL, '0', '6', '7', '0');
-INSERT INTO bab_groups (id, name, description, mail, ustorage, notes, contacts, directory, pcalendar, id_parent, lf, lr, nb_set) VALUES ( '3', 'Administrators', 'Manage the site', 'N', 'N', 'Y', 'Y', 'N', 'Y', '1', '3', '4', '0');
+INSERT INTO bab_groups (id, name, description, ustorage, notes, contacts, directory, pcalendar, id_parent, lf, lr, nb_set) VALUES ( '0', 'Ovidentia users', '', NULL, NULL, NULL, NULL, NULL, NULL, '1', '8', '0');
+INSERT INTO bab_groups (id, name, description, ustorage, notes, contacts, directory, pcalendar, id_parent, lf, lr, nb_set) VALUES ( '1', 'Registered users', 'All registered users', 'N', 'Y', 'Y', 'Y', 'Y', '0', '2', '5', '0');
+INSERT INTO bab_groups (id, name, description, ustorage, notes, contacts, directory, pcalendar, id_parent, lf, lr, nb_set) VALUES ( '2', 'Anonymous users', 'all not registered users', NULL, NULL, NULL, NULL, NULL, '0', '6', '7', '0');
+INSERT INTO bab_groups (id, name, description, ustorage, notes, contacts, directory, pcalendar, id_parent, lf, lr, nb_set) VALUES ( '3', 'Administrators', 'Manage the site', 'N', 'Y', 'Y', 'N', 'Y', '1', '3', '4', '0');
 
 
 
@@ -703,6 +702,7 @@ CREATE TABLE bab_users (
    email text,
    `date` datetime DEFAULT '0000-00-00 00:00:00',
    password text,
+   password_hash_function varchar(60) DEFAULT 'md5' NOT NULL,
    changepwd tinyint(1) DEFAULT '0' NOT NULL,
    remote_addr text,
    confirm_hash text,
@@ -801,6 +801,8 @@ CREATE TABLE bab_cal_resources (
   `id_dgowner` int(11) unsigned NOT NULL default '0',
   `idsa` int(11) unsigned NOT NULL default '0',
   `availability_lock` tinyint(1) unsigned default NULL,
+  bgcolor VARCHAR (6) NOT NULL default '',
+  
   PRIMARY KEY  (`id`),
   KEY `id_dgowner` (`id_dgowner`)
 );
@@ -917,63 +919,6 @@ CREATE TABLE bab_calaccess_users (
 );
 
 
-# --------------------------------------------------------
-#
-# Structure de la table 'bab_mail_domains'
-#
-
-CREATE TABLE bab_mail_domains (
-    id INT (11) UNSIGNED not null AUTO_INCREMENT,
-    name VARCHAR (254) not null,
-    description VARCHAR (224) not null,
-    outserver VARCHAR (224) not null,
-    inserver VARCHAR (224) not null,
-    outport VARCHAR (5) not null,
-    inport VARCHAR (5) not null,
-    access VARCHAR (10) not null,
-    bgroup enum('N','Y') DEFAULT 'N' NOT NULL,
-    owner INT (11) UNSIGNED not null,
-    id_dgowner int(11) unsigned NOT NULL default '0',
-    PRIMARY KEY (id),
-    KEY owner (owner)
-);
-
-
-# --------------------------------------------------------
-#
-# Structure de la table 'bab_mail_accounts'
-#
-
-CREATE TABLE bab_mail_accounts (
-    id INT (11) UNSIGNED not null AUTO_INCREMENT,
-    account_name VARCHAR (255) not null,
-    name VARCHAR (255) not null,
-    email VARCHAR (255) not null,
-    login VARCHAR (255) not null,
-    password blob not null,
-    domain INT (11) UNSIGNED not null,
-    owner INT (11) UNSIGNED not null,
-    maxrows TINYINT (2) not null,
-    prefered enum('N','Y') DEFAULT 'N' NOT NULL,
-    format VARCHAR (5) DEFAULT 'plain' NOT NULL,
-    PRIMARY KEY (id),
-    KEY owner (owner)
-);
-
-# --------------------------------------------------------
-#
-# Structure de la table 'bab_mail_signatures'
-#
-
-CREATE TABLE bab_mail_signatures (
-    id INT (11) UNSIGNED not null AUTO_INCREMENT,
-    name varchar(255) NOT NULL,
-    owner INT (11) UNSIGNED not null,
-    html enum('Y','N') DEFAULT 'N' NOT NULL,
-    text TEXT not null,
-    PRIMARY KEY (id),
-    KEY owner (owner)
-);
 
 # --------------------------------------------------------
 #
@@ -1025,6 +970,7 @@ CREATE TABLE `bab_sites` (
   `smtpserver` varchar(255) NOT NULL default '',
   `smtpport` varchar(20) NOT NULL default '25',
   `smtpsecurity` VARCHAR(10) NOT NULL default '',
+  `smtpnovalidation` tinyint(1) unsigned NOT NULL default '0',
   `imgsize` int(11) unsigned NOT NULL default '0',
   `idgroup` int(11) unsigned NOT NULL default '0',
   `smtpuser` varchar(255) NOT NULL default '',
@@ -1078,6 +1024,7 @@ CREATE TABLE `bab_sites` (
   `allday` enum('Y','N') NOT NULL default 'Y',
   `usebgcolor` enum('Y','N') NOT NULL default 'Y',
   `stat_log` enum('Y','N') NOT NULL default 'N',
+  `stat_keep_history` tinyint(3) NOT NULL default '0' COMMENT 'Number of days of detailled history in stats',
   `show_update_info` enum('Y','N') NOT NULL default 'Y',
   `show_onlydays_of_month` enum('N','Y') NOT NULL default 'N',
   `id_calendar_cat` int(11) unsigned NOT NULL default '0',
@@ -1088,11 +1035,14 @@ CREATE TABLE `bab_sites` (
   `mass_mailing` enum('Y','N') NOT NULL default 'N',
   `sitemap` varchar(255) NOT NULL default 'core',
   `auth_multi_session` tinyint(1) unsigned NOT NULL default '0',
+  `auth_fullscreen` tinyint(1) unsigned NOT NULL default '0',
   `quota_total` int(11) unsigned NOT NULL default '0',
   `quota_folder` int(11) unsigned NOT NULL default '0',
   `staticurl` varchar(255) NOT NULL default '',
   `ask_nickname` tinyint(1) unsigned NOT NULL default '1' COMMENT 'ask for nickname is the email password functionality',
   `calendar_notif_author` ENUM('N','Y') DEFAULT 'N' NOT NULL,
+  `auth_https` tinyint(1) unsigned NOT NULL default '0',
+  `usecatcolor` enum('Y','N') NOT NULL default 'Y',
   PRIMARY KEY  (`id`),
   KEY `name` (`name`)
 );
@@ -1826,7 +1776,6 @@ CREATE TABLE `bab_dg_groups` (
   `faqs` enum('N','Y') NOT NULL default 'N',
   `forums` enum('N','Y') NOT NULL default 'N',
   `calendars` enum('N','Y') NOT NULL default 'N',
-  `mails` enum('N','Y') NOT NULL default 'N',
   `directories` enum('N','Y') NOT NULL default 'N',
   `approbations` enum('N','Y') NOT NULL default 'N',
   `filemanager` enum('N','Y') NOT NULL default 'N',
@@ -2395,19 +2344,22 @@ CREATE TABLE bab_statsman_groups (
 # Table structure for table `bab_stats_events`
 #
 
-CREATE TABLE bab_stats_events (
-  id bigint(20) unsigned NOT NULL auto_increment,
-  evt_id_site tinyint(2) unsigned NOT NULL default '0',
-  evt_time datetime NOT NULL default '0000-00-00 00:00:00',
-  evt_tg varchar(255) NOT NULL default '',
-  evt_referer varchar(255) NOT NULL default '',
-  evt_ip varchar(15) NOT NULL default '',
-  evt_host varchar(255) NOT NULL default '',
-  evt_client varchar(255) NOT NULL default '',
-  evt_url varchar(255) NOT NULL default '',
-  evt_session_id varchar(32) NOT NULL default '',
-  evt_iduser int(11) unsigned NOT NULL default '0',
-  evt_info text,
+CREATE TABLE `bab_stats_events` (
+  `id` bigint(20) unsigned NOT NULL auto_increment,
+  `evt_id_site` tinyint(2) unsigned NOT NULL default '0',
+  `evt_time` datetime NOT NULL default '0000-00-00 00:00:00',
+  `evt_tg` varchar(255) NOT NULL default '',
+  `evt_referer` varchar(255) NOT NULL default '',
+  `evt_ip` varchar(15) NOT NULL default '',
+  `evt_host` varchar(255) NOT NULL default '',
+  `evt_client` varchar(255) NOT NULL default '',
+  `evt_url` varchar(255) NOT NULL default '',
+  `evt_sitemap_node` varchar(255) NOT NULL default '',
+  `evt_session_id` varchar(32) NOT NULL default '',
+  `evt_iduser` int(11) unsigned NOT NULL default '0',
+  `evt_info` text,
+  `previous` bigint(20) unsigned NOT NULL default '0',
+  `processed` tinyint(1) unsigned NOT NULL default '0',
   PRIMARY KEY  (id)
 );
 
@@ -2423,6 +2375,7 @@ CREATE TABLE bab_cal_public (
   description varchar(255) NOT NULL default '',
   id_dgowner int(11) unsigned NOT NULL default '0',
   idsa int(11) unsigned NOT NULL default '0',
+  bgcolor VARCHAR (6) NOT NULL default '',
   PRIMARY KEY  (id),
   KEY id_dgowner (id_dgowner)
 );
@@ -2561,6 +2514,7 @@ CREATE TABLE bab_cal_user_options (
   show_onlydays_of_month enum('N','Y') NOT NULL default 'N',
   iDefaultCalendarAccess SMALLINT( 2 ) DEFAULT NULL,
   calendar_backend varchar(100) NOT NULL default '',
+  usecatcolor enum('Y','N','D') NOT NULL default 'D',
   PRIMARY KEY  (id),
   KEY id_user (id_user)
 );
@@ -4093,6 +4047,100 @@ CREATE TABLE bab_sitemap_profile_versions (
    PRIMARY KEY (`id`),
    UNIQUE KEY `version` (`id_profile`,`root_function`,`levels`)
 );
+
+
+# Rights for sitemap nodes
+
+CREATE TABLE `bab_sitemap_node_create_groups` (
+  `id` int(11) unsigned         NOT NULL AUTO_INCREMENT,
+  `id_object` varchar(64)       NOT NULL default '',
+  `id_group` int(11) unsigned   NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `id_object` (`id_object`),
+  KEY `id_group` (`id_group`)
+);
+
+
+CREATE TABLE `bab_sitemap_node_read_groups` (
+  `id` int(11) unsigned         NOT NULL AUTO_INCREMENT,
+  `id_object` varchar(64)       NOT NULL default '',
+  `id_group` int(11) unsigned   NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `id_object` (`id_object`),
+  KEY `id_group` (`id_group`)
+);
+
+
+CREATE TABLE `bab_sitemap_node_update_groups` (
+  `id` int(11) unsigned         NOT NULL AUTO_INCREMENT,
+  `id_object` varchar(64)       NOT NULL default '',
+  `id_group` int(11) unsigned   NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `id_object` (`id_object`),
+  KEY `id_group` (`id_group`)
+);
+
+
+CREATE TABLE `bab_sitemap_node_delete_groups` (
+  `id` int(11) unsigned         NOT NULL AUTO_INCREMENT,
+  `id_object` varchar(64)       NOT NULL default '',
+  `id_group` int(11) unsigned   NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `id_object` (`id_object`),
+  KEY `id_group` (`id_group`)
+);
+
+
+
+
+
+
+# Default rights for the created subnodes
+
+
+CREATE TABLE `bab_sitemap_default_create_groups` (
+  `id` int(11) unsigned         NOT NULL AUTO_INCREMENT,
+  `id_object` varchar(64)       NOT NULL default '',
+  `id_group` int(11) unsigned   NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `id_object` (`id_object`),
+  KEY `id_group` (`id_group`)
+);
+
+
+CREATE TABLE `bab_sitemap_default_read_groups` (
+  `id` int(11) unsigned         NOT NULL AUTO_INCREMENT,
+  `id_object` varchar(64)       NOT NULL default '',
+  `id_group` int(11) unsigned   NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `id_object` (`id_object`),
+  KEY `id_group` (`id_group`)
+);
+
+
+CREATE TABLE `bab_sitemap_default_update_groups` (
+  `id` int(11) unsigned         NOT NULL AUTO_INCREMENT,
+  `id_object` varchar(64)       NOT NULL default '',
+  `id_group` int(11) unsigned   NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `id_object` (`id_object`),
+  KEY `id_group` (`id_group`)
+);
+
+
+CREATE TABLE `bab_sitemap_default_delete_groups` (
+  `id` int(11) unsigned         NOT NULL AUTO_INCREMENT,
+  `id_object` varchar(64)       NOT NULL default '',
+  `id_group` int(11) unsigned   NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `id_object` (`id_object`),
+  KEY `id_group` (`id_group`)
+);
+
+
+
+
+
 
 
 # --------------------------------------------------------

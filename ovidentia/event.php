@@ -28,11 +28,11 @@
 
 
 include_once 'base.php';
-require_once dirname(__FILE__).'/utilit/registerglobals.php';
-include_once $babInstallPath.'utilit/calincl.php';
-include_once $babInstallPath.'utilit/mcalincl.php';
-include_once $babInstallPath.'utilit/uiutil.php';
-include_once $babInstallPath.'utilit/evtincl.php';
+
+include_once $GLOBALS['babInstallPath'].'utilit/calincl.php';
+include_once $GLOBALS['babInstallPath'].'utilit/mcalincl.php';
+include_once $GLOBALS['babInstallPath'].'utilit/uiutil.php';
+include_once $GLOBALS['babInstallPath'].'utilit/evtincl.php';
 
 
 
@@ -1208,8 +1208,10 @@ function bab_getUpdateEventFromIdCal($idcal, $evtid, $dtstart)
 		return false;
 	}
 	
+	// copy hash to the new collection
+	$collection->hash = $event->getCollection()->hash;
 	
-	// force collection to overwrite de parent calendar
+	// force collection to overwrite the parent calendar
 	$event->setCollection($collection);
 	
 	return $event;
@@ -1573,12 +1575,13 @@ if (isset($_REQUEST['action']))
 	switch($_REQUEST['action'])
 		{
 		case 'yes':
-			confirmDeleteEvent($calid, bab_rp('bupdrec'), bab_rp('notify', 1));
+			bab_requireDeleteMethod() && confirmDeleteEvent($calid, bab_rp('bupdrec'), bab_rp('notify', 1));
 			$idx="unload";
 			break;
 
 		case 'addevent':
 			$message = '';
+			bab_requireSaveMethod();
 			if (addEvent($message))
 				{
 				$idx = "unload";
@@ -1592,6 +1595,7 @@ if (isset($_REQUEST['action']))
 		case 'modifyevent':
 			if( isset($_POST['Submit']) || isset($_POST['test_conflicts']))
 				{
+				bab_requireSaveMethod();
 				$message = '';
 				$updateMethod = (int)bab_pp('bupdrec', BAB_CAL_EVT_CURRENT);
 				if (updateEvent($message, $updateMethod))
@@ -1609,7 +1613,7 @@ if (isset($_REQUEST['action']))
 				$message = '';
 				$babBodyPopup = new babBodyPopup();
 				$babBodyPopup->msgerror = $message;
-				deleteEvent();
+				bab_requireDeleteMethod() && deleteEvent();
 				printBabBodyPopup();
 				exit;
 				}
@@ -1623,11 +1627,12 @@ if (isset($_REQUEST['action']))
 switch($idx)
 	{
 	case "unload":
-		include_once $babInstallPath."utilit/uiutil.php";
-		if( !isset($popupmessage)) {
+		include_once $GLOBALS['babInstallPath']."utilit/uiutil.php";
+		$popupmessage = bab_rp('popupmessage');
+		if(empty($popupmessage)) {
 			$popupmessage = bab_translate("Your event has been updated");
 		}
-		switch($view)
+		switch($_REQUEST['view'])
 		{
 			case 'viewd':
 				$refreshurl = $GLOBALS['babUrlScript']."?tg=calday&calid=".bab_rp('curcalids')."&date=".bab_rp('date');

@@ -1343,9 +1343,9 @@
 <string id="Password encryption type">Type de codage du mot de passe</string>
 <string id="Allow administrators to connect if LDAP authentification fails">Permettre aux administrateurs de se connecter si l'authentification par LDAP échoue</string>
 <string id="You must provide a login ID">Vous devez fournir un identifiant</string>
-<string id="LDAP connection failed. Please contact your administrator">La connexion LDAP a échoué. Contacter l'administrateur</string>
-<string id="LDAP authentification failed. Please verify your login ID and your password">L'authentification LDAP a échoué. Vérifier votre identifiant et votre mot de passe</string>
-<string id="LDAP bind failed. Please contact your administrator">La liaison LDAP a échoué. Contactez l'administrateur</string>
+<string id="Connection failed. Please contact your administrator">La connexion a échoué. Contacter l'administrateur</string>
+<string id="Authentification failed. Please verify your login ID and your password">L'authentification a échoué. Vérifier votre identifiant et votre mot de passe</string>
+<string id="Binding failed. Please contact your administrator">La liaison a échoué. Contactez l'administrateur</string>
 <string id="With/without introduction">Avec/sans introduction</string>
 <string id="With/without body">Avec/sans corps</string>
 <string id="Who can read posts?">Qui peut lire les contributions ?</string>
@@ -1933,16 +1933,16 @@
 <string id="Search engine">Moteur de recherche</string>
 <string id="Search2">Recherche</string>
 <string id="Search engine configuration">Configuration du moteur de recherche</string>
-<string id="Do you really want to delete the contact ?">Voulez-vous vraiment supprimer cette fiche d\'annuaire ?</string>
+<string id="Do you really want to delete the contact ?">Voulez-vous vraiment supprimer cette fiche d'annuaire ?</string>
 <string id="Don't display in file manager?">Ne pas afficher dans le gestionnaire de fichiers ?</string>
 <string id="Hidden">Caché</string>
 <string id="No mail account">Il n'y a pas de compte de messagerie</string>
 <string id="Your file is waiting for approval">Votre fichier est en attente d'approbation</string>
 <string id="Filter">Filtre</string>
 <string id="Cannot reset password !!">Impossible d'initialiser le mot de passe !</string>
-<string id="LDAP connection failed">Echec de la connexion LDAP</string>
-<string id="LDAP bind failed">Echec du bind LDAP</string>
-<string id="LDAP search failed">Echec de la recherche LDAP</string>
+<string id="Connection failed">Echec de la connexion</string>
+<string id="Binding failed">Echec de la liaison</string>
+<string id="User not found in the directory">Utilisateur non trouvé</string>
 <string id="Filter">Filtre</string>
 <string id="All users">Tout le personnel</string>
 <string id="Update selected elements">Mettre à jour les éléments sélectionnés</string>
@@ -2217,7 +2217,7 @@
 <string id="Users connections history:">Historique des connexions des utilisateurs :</string>
 <string id="Enabled">Activé</string>
 <string id="Disabled">Désactivé</string>
-<string id="Delete logs before (dd/mm/yyyy)">Effacer les historiques antérieurs au (jj/mm/aaaa)</string>
+<string id="Delete logs before">Effacer les historiques antérieurs au</string>
 <string id="Collective directories">Répertoires collectifs</string>
 <string id="File downloads">Téléchargements de fichiers</string>
 <string id="Article topics">Thèmes d'articles</string>
@@ -3454,10 +3454,9 @@ L'administrateur</string>
 <string id="Do you really want to accept the checked items?">Voulez-vous vraiment accepter les éléments cochés?</string>
 
 <string id="Password modification on active directory is not supported">La modification du mot de passe dans active directory n'est pas supportée</string>
-<string id="Failed to change password in LDAP">La modification du mot de passe dans LDAP a échouée</string>
-<string id="Failed to change password in LDAP because the admin DN or admin password are missing">La modification du mot de passe dans LDAP a échouée car le DN de l'administrateur ou le mot de passe de l'administrateur sont manquants</string>
-<string id="Failed to change password, LDAP bind failed">La modification du mot de passe a échouée, impossible de se connecter à l'annuaire LDAP</string>
-<string id="Failed to change password, LDAP search failed">La modification du mot de passe a échouée, la recherche dans l'annuaire LDAP n'a pas de résultats</string>
+<string id="Failed to change password">La modification du mot de passe dans a échouée</string>
+<string id="Failed to change password because the admin login or admin password are missing">La modification du mot de passe a échouée car l'identifiant ou le mot de passe de l'administrateur sont manquants</string>
+<string id="Failed to change password, binding failed">La modification du mot de passe a échouée, impossible de se connecter à l'annuaire</string>
 
 <string id="Registration is complete">Inscription terminée</string>
 <string id="At least one option must be selected on profile %s">Au moins une option doit être sélectionnée sur le profile %s</string>
@@ -3495,5 +3494,58 @@ L'administrateur</string>
 <string id="Can not unzip file: %s">Dézippage du fichier suivant impossible: %s</string>
 
 <string id="Determine automatically">Déterminer automatiquement</string>
+<string id="Install or update the addons provided in this package (optional)">Installer ou mettre à jour les modules fournis dans cette archive (optionnel)</string>
+<string id="Addons installed without errors">Les modules ont été installés sans erreurs</string>
+<string id="Do you really want to delete?">Voulez-vous vraiment supprimer?</string>
+<string id="Addon name">Nom du module</string>
+<string id="Copy addons from one folder to another">Copier les modules d'un dossier à un autre</string>
+<string id="Launch an addon upgrade program">Lancer le programme de mise à jour d'un module</string>
+<string id="Copy">Copier</string>
+<string id="Sources Version %s">Version du code source %s</string>
+<string id="Database Version %s">Version de la base de donnés %s</string>
+<string id="Switch to https">Basculer vers https</string>
+<string id="Continue to home page">Continuer vers la page d'accueil</string>
+<string id="Fullscreen authentication">Authentification en plein écran</string>
 
+<string id="Import into a directory">Import dans un annuaire</string>
+<string id="Start CSV file import">Import du fichier CSV</string>
+<string id="Import fail">Echec de l'import</string>
+<string id="The firstname is missing">Le prénom est manquant</string>
+<string id="The lastname is missing">Le nom est manquant</string>
+<string id="The nickname is missing">L'identifiant est manquant</string>
+<string id="The directory entry %s has been ignored because of nickname or lastname/firstname duplication">La fiche d'annuaire %s à été ignorée à cause d'une duplication de l'identifiant ou du nom/prénom</string>
+<string id="The directory entry %s has been updated">La fiche d'annuaire %s à été mise à jour</string>
+<string id="The directory entry %s has been ignored because of lastname/firstname duplication">La fiche d'annuaire %s à été ignorée à cause d'une duplication du nom/prénom</string>
+<string id="The directory entry %s has been created">La fiche d'annuaire %s à été crée</string>
+<string id="Line %d:">Ligne %d :</string>
+<string id="Do you really want to update Ovidentia from %s to %s?">Voulez-vous vraiment mettre à jour Ovidentia de %s à %s?</string>
+<string id="Package %s is not valid, please check dependencies">L'archive %s n'est pas valide, veuillez vérifier les dépendances</string>
+<string id="Edit article">Modifier l'article</string>
+<string id="Create article">Créer un article</string>
+<string id="Manage topic">Gérer le thème</string>
+
+<string id="Certificate validation">Validation des certificats</string>
+<string id="Validate certificates">Valider les certificats</string>
+<string id="Suppress certificate validation">Supprimer la validation des certificats</string>
+
+<string id="Please confirm your account %s">Veuillez confirmer votre compte %s</string>
+
+<string id="Use category color for events">Utiliser les couleurs de catégorie d'événements</string>
+<string id="Use default option">Utiliser l'option par défaut</string>
+<string id="Agenda color">Couleur de l'agenda</string>
+<string id="You are going to be redirected to an external site, please confirm">Vous allez être redirigé vers un site externe, veuillez confirmer</string>
+<string id="Delete logs before (dd/mm/yyyy)">Supprimer les logs avant (jj/mm/aaaa)</string>
+<string id="Used device:">Périphérique utilisé :</string>
+<string id="Total number of clicks: %d">Nombre total de clicks : %d</string>
+<string id="%d minute(s), %d seconds">%d minute(s), %d secondes</string>
+<string id="Anonymous (Ip address: %s)">Anonyme (Address Ip: %s)</string>
+<string id="Last visit">Dernier accès</string>
+<string id="View details">Voir les détails</string>
+<string id="%d seconds">%d secondes</string>
+<string id="History settings">Paramètres de l'historique</string>
+<string id="The second parameter allow to clean history of all generated statistics items (articles, files, faq, forums, etc...)">Le second paramètre permet denettoyer l'historique de toutes les statistiques générées (articles, fichiers, faq, forums, etc...)</string>
+<string id="Always keep detailed history for">Toujours conserver l'historique détaillé sur</string>
+<string id="The detailed history is used to build all the statistics, the history older than the limit set here is deleted by an automated task. Only the session tracking statistics need the detailed history.">L'historique détaillé est utilisé pour générer toutes les statistiques, l'historique plus vieux que la limite configurée ici est supprimé par une tâche planifiée. Seul les statisitiques des sessions nécéssite l'historique détaillé.</string>
+
+<string id="Last access: %s">Dernier accès : %s</string>
 </fr>

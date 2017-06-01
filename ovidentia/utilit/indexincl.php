@@ -344,7 +344,7 @@ class bab_indexObject {
 
 		$query = array();
 		foreach($files as $f) {
-			$query[] = $db->db_escape_string($f);
+			$query[] = $this->db->db_escape_string($f);
 		}
 
 		$this->db->db_query("DELETE FROM ".BAB_INDEX_ACCESS_TBL." WHERE file_path IN('".implode("','", $query)."')");

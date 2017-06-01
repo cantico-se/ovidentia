@@ -626,6 +626,7 @@ function bab_showAddressesWindow(sep)
 
 <br />
 <form name="eorgform" method="post" action="{ babPhpSelf }">
+<input type="hidden" name="babCsrfProtect" value="{ babCsrfProtect }" />
 <input type="hidden" name="tg" value="frchart" />
 <input type="hidden" name="idx" value="list" />
 <input type="hidden" name="disp" value="disp5" />
@@ -686,6 +687,7 @@ function bab_showAddressesWindow(sep)
 
 <td class="BabLoginCadreBackground">
 <form id="bab_member_list" name="mail" method="post"  action="{ babPhpSelf }">
+<input type="hidden" name="babCsrfProtect" value="{ babCsrfProtect }" />
 <input type="hidden" name="tg" value="composemail" />
 <input type="hidden" name="idx" value="compose" />
 <input type="hidden" name="popup" value="yes" />
@@ -779,6 +781,7 @@ function org_mm()
 <td class="BabLoginCadreBackground"> 
 
 <form name="eorgform" method="post" action="{ babPhpSelf }">
+<input type="hidden" name="babCsrfProtect" value="{ babCsrfProtect }" />
 <input type="hidden" name="tg" value="frchart">
 <input type="hidden" name="idx" value="browr">
 <input type="hidden" name="disp" value="disp4">

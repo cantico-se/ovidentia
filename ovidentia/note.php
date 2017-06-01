@@ -25,7 +25,7 @@
 * @internal SEC1 NA 18/12/2006 FULL
 */
 include_once 'base.php';
-require_once dirname(__FILE__).'/utilit/registerglobals.php';
+
 
 function notesModify($id)
 	{
@@ -71,6 +71,7 @@ function deleteNotes($id)
 	$query = "delete from ".BAB_NOTES_TBL." where id = '".$babDB->db_escape_string($id)."' and id_user='".$babDB->db_escape_string($BAB_SESS_USERID)."'";
 	$babDB->db_query($query);
 	Header("Location: ". $GLOBALS['babUrlScript']."?tg=notes&idx=List");
+	exit;
 	}
 
 function updateNotes($id, $content)
@@ -105,27 +106,27 @@ $item = bab_rp('item', 0);
 
 list($iduser) = $babDB->db_fetch_row($babDB->db_query("select id_user from ".BAB_NOTES_TBL." where id = '".$babDB->db_escape_string($item)."'"));
 
-if( isset($_POST['update']) && $iduser == $BAB_SESS_USERID)
+if( isset($_POST['update']) && $iduser == bab_getUserId())
 	{
-	updateNotes($item, bab_pp('content'));
+	bab_requireSaveMethod() && updateNotes($item, bab_pp('content'));
 	}
 
 switch($idx)
 	{
 	case 'Delete':
-		if( $iduser != $BAB_SESS_USERID )
+		if( $iduser != bab_getUserId() )
 			{
 			$babBody->msgerror = bab_translate("Access denied");
 			}
 		else
 			{
-			deleteNotes($item);
+			bab_requireDeleteMethod() && deleteNotes($item);
 			}
 		break;
 
 	default:
 	case 'Modify':
-		if( $iduser != $BAB_SESS_USERID )
+		if( $iduser != bab_getUserId() )
 			{
 			$babBody->msgerror = bab_translate("Access denied");
 			}
@@ -141,5 +142,3 @@ switch($idx)
 	}
 
 $babBody->setCurrentItemMenu($idx);
-
-?>
