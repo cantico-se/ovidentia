@@ -4142,10 +4142,10 @@ function pasteUserFolder()
 //		bab_debug($sFullSrcPath);
 //		bab_debug($sFullTrgPath);
 
-        //Nom du r�pertoire � coller
+        //Nom du repertoire a coller
         $sName = getLastPath($sSrcPath);
 
-        //Emplacement du r�pertoire � coller
+        //Emplacement du repertoire a coller
         $sSrcPathRelativePath = addEndSlash(removeLastPath($sSrcPath . '/'));
 
         if($sFullSrcPath === realpath((string) $sFullTrgPath . '/' . getLastPath($sSrcPath)))

@@ -675,8 +675,8 @@ function bab_getOrgChartRoleUsers($idroles)
  * Get superior in organizational chart
  * Before ovidentia 8.4.90 this function serach only in the superiors main roles
  * after 8.4.90, the function will get the superior also if not the main role
- * 
- * 
+ *
+ *
  * @param int	$iduser
  * @param int	$idoc
  * @return unknown_type
@@ -961,7 +961,7 @@ function bab_replace_get() {
 * 								used
 *
 * @since	6.7.0
-* @author	Z�bina Samuel
+* @author	Zebina Samuel
 *
 * @return	boolean	True if the session for the given user is in bab_user_logs,
 * 					false othewise

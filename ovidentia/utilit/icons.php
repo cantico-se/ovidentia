@@ -327,6 +327,10 @@ class Func_Icons extends bab_Functionality
 	const OBJECTS_RESOURCE_CATEGORY				= 'objects-resource-category';
 	const OBJECTS_WAITING_ITEM					= 'objects-waiting-item'; // waiting for approval
 	const OBJECTS_FACTORY						= 'objects-factory';
+	const OBJECTS_ADDRESS_BOOK					= 'objects-address-book';
+	const OBJECTS_PHONE							= 'objects-phone';
+	const OBJECTS_MOBILE						= 'objects-mobile';
+	const OBJECTS_MAP_MARKER					= 'objects-map-marker';
 
 
 	//-----------------------------------------------------------------------

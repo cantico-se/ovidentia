@@ -92,7 +92,7 @@ class bab_functionality {
     {
         $parentPath = dirname($path);
         
-        if ('.' !== $parentPath && '/' !== $parentPath && !empty($parentPath)) {
+        if ('.' !== $parentPath && '/' !== $parentPath && '\\' !== $parentPath && !empty($parentPath)) {
             self::includeOriginal($parentPath);
         }
         
