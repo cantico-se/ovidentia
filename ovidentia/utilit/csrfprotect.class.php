@@ -22,6 +22,62 @@
  */
 
 require_once dirname(__FILE__).'/session.class.php';
+require_once dirname(__FILE__).'/eventincl.php';
+
+
+class bab_eventCsrfTokenError extends bab_event
+{
+    /**
+     * Default request status on error
+     * status false will issue a 403
+     * status true will allow request
+     * @var boolean
+     */
+    public $status = false;
+}
+
+
+/**
+ * No token in POST
+ */
+class bab_eventCsrfInvalidPost extends bab_eventCsrfTokenError
+{
+    /**
+     * @var array
+     */
+    public $post;
+}
+
+
+/**
+ * No token in session
+ */
+class bab_eventCsrfNoSessionToken extends bab_eventCsrfTokenError
+{
+    /**
+     * @var string
+     */
+    public $postedToken;
+}
+
+/**
+ * Token missmatch
+ */
+class bab_eventCsrfInvalidToken extends bab_eventCsrfTokenError
+{
+    /**
+     * @var string
+     */
+    public $sessionToken;
+    
+    /**
+     * @var string
+     */
+    public $postedToken;
+}
+
+
+
 
 
 /**
@@ -74,16 +130,26 @@ class bab_CsrfProtect
         $token = bab_pp(self::FIELDNAME, null);
 
         if (!isset($token)) {
-            return false;
+            $event = new bab_eventCsrfInvalidPost();
+            $event->post = $_POST;
+            bab_fireEvent($event);
+            return $event->status;
         }
 
         $session = bab_getInstance('bab_Session');
         if (!isset($session->bab_CsrfProtectToken)) {
-            return false;
+            $event = new bab_eventCsrfNoSessionToken();
+            $event->postedToken = $token;
+            bab_fireEvent($event);
+            return $event->status;
         }
 
         if ($session->bab_CsrfProtectToken !== $token) {
-            return false;
+            $event = new bab_eventCsrfInvalidToken();
+            $event->sessionToken = $session->bab_CsrfProtectToken;
+            $event->postedToken = $token;
+            bab_fireEvent($event);
+            return $event->status;
         }
 
         // this unset force a new token for each post

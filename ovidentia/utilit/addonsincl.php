@@ -123,7 +123,7 @@ class bab_addonsInfos {
 
 		if (!$this->fullIndexById || !$this->fullIndexByName) {
 
-			global $babDB;
+			$babDB = bab_getInstance('babDatabase');
 
 			$res = $babDB->db_query("select * from bab_addons");
 			while( $arr = $babDB->db_fetch_array($res)) {
@@ -398,7 +398,7 @@ function bab_setAddonGlobals($id_addon) {
 
 		// in some cases, babUploadPath is not defined
 
-		global $babDB;
+		$babDB = bab_getInstance('babDatabase');
 
 		$req="SELECT uploadpath from ".BAB_SITES_TBL." where name='".$babDB->db_escape_string($GLOBALS['babSiteName'])."'";
 		$res = $babDB->db_query($req);
