@@ -583,7 +583,7 @@ class bab_charset
     {
         if(!isset(self::$sCharset))
         {
-            global $babDB;
+            $babDB = bab_getInstance('babDatabase');
             self::$sCharset = $babDB->db_character_set_name();
         }
         return self::$sCharset;

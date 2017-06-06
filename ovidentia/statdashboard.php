@@ -1204,10 +1204,10 @@ define('BAB_STAT_BCT_QUESTION',		8);
 
 function createBasketDashboard($basketId, $start, $end)
 {
-	global $babDB, $babBody;
+	global $babDB;
 	$admGroup = bab_getCurrentAdmGroup();
 
-	$sql = 	'SELECT * FROM ' . BAB_STATS_BASKETS_TBL . ' WHERE id=' . $basketId;
+	$sql = 	'SELECT * FROM ' . BAB_STATS_BASKETS_TBL . ' WHERE id=' . $babDB->quote($basketId);
 	$baskets = $babDB->db_query($sql);
 	$basket = $babDB->db_fetch_array($baskets);
 	
@@ -1216,7 +1216,7 @@ function createBasketDashboard($basketId, $start, $end)
 
 	$sqlDateFormat = getSqlDateFormat($start, $end);
 	
-	$sql = 	'SELECT * FROM ' . BAB_STATS_BASKET_CONTENT_TBL . ' WHERE basket_id=' . $basketId;
+	$sql = 	'SELECT * FROM ' . BAB_STATS_BASKET_CONTENT_TBL . ' WHERE basket_id=' . $babDB->quote($basketId);
 	$basketContents = $babDB->db_query($sql);
 	while ($basketContent = $babDB->db_fetch_array($basketContents)) {
 		switch ($basketContent['bc_type']) {
@@ -1226,8 +1226,8 @@ function createBasketDashboard($basketId, $start, $end)
 				$sql .= ' FROM ' . BAB_ARTICLES_TBL . ' AS article';
 				$sql .= ' LEFT JOIN ' . BAB_TOPICS_TBL . ' AS topic ON topic.id=article.id_topic';
 				$admGroup && $sql .= ' LEFT JOIN ' . BAB_TOPICS_CATEGORIES_TBL . ' category ON category.id=topic.id_cat';
-				$sql .= ' WHERE article.title IS NOT NULL AND topic.id=' . $basketContent['bc_id'];
-				$admGroup && $sql .= ' AND  category.id_dgowner=\'' . $admGroup . '\'';
+				$sql .= ' WHERE article.title IS NOT NULL AND topic.id=' . $babDB->quote($basketContent['bc_id']);
+				$admGroup && $sql .= ' AND  category.id_dgowner=' . $babDB->quote($admGroup);
 				$sql .= ' GROUP BY topic.id';
 				$topics = $babDB->db_query($sql);
 				$topic = $babDB->db_fetch_array($topics);
@@ -1239,8 +1239,8 @@ function createBasketDashboard($basketId, $start, $end)
 				$sql .= ' FROM ' . BAB_ARTICLES_TBL . ' AS article';
 				$sql .= ' LEFT JOIN ' . BAB_TOPICS_TBL . ' AS topic ON topic.id=article.id_topic';
 				$admGroup && $sql .= ' LEFT JOIN ' . BAB_TOPICS_CATEGORIES_TBL . ' category ON category.id=topic.id_cat';
-				$sql .= ' WHERE article.title IS NOT NULL AND article.id=' . $basketContent['bc_id'];
-				$admGroup && $sql .= ' AND  category.id_dgowner=\'' . $admGroup . '\'';
+				$sql .= ' WHERE article.title IS NOT NULL AND article.id=' . $babDB->quote($basketContent['bc_id']);
+				$admGroup && $sql .= ' AND  category.id_dgowner=' . $babDB->quote($admGroup );
 				$sql .= ' GROUP BY article.id';
 				$articles = $babDB->db_query($sql);
 				$article = $babDB->db_fetch_array($articles);
@@ -1250,8 +1250,8 @@ function createBasketDashboard($basketId, $start, $end)
 			case BAB_STAT_BCT_FOLDER:	// Collective folders
 				$sql = 'SELECT folder.id AS id, folder.folder AS title';
 				$sql .= ' FROM ' . BAB_FM_FOLDERS_TBL . ' AS folder';
-				$sql .= ' WHERE folder.folder IS NOT NULL AND folder.id=' . $basketContent['bc_id'];
-				$admGroup && $sql .= ' AND folder.id_dgowner=\'' . $admGroup . '\'';
+				$sql .= ' WHERE folder.folder IS NOT NULL AND folder.id=' . $babDB->quote($basketContent['bc_id']);
+				$admGroup && $sql .= ' AND folder.id_dgowner=' . $babDB->quote($admGroup);
 				$sql .= ' GROUP BY folder.id';
 				$folders = $babDB->db_query($sql);
 				$folder = $babDB->db_fetch_array($folders);
@@ -1262,8 +1262,8 @@ function createBasketDashboard($basketId, $start, $end)
 				$sql = 'SELECT file.id AS id, file.name AS title';
 				$sql .= ' FROM ' . BAB_FILES_TBL . ' file';
 				$sql .= ' LEFT JOIN ' . BAB_FM_FOLDERS_TBL . ' folder ON folder.id=file.id_owner';
-				$sql .= ' WHERE file.bgroup=\'Y\' AND file.id=' . $basketContent['bc_id'];
-				$admGroup && $sql .= ' AND folder.id_dgowner=\'' . $admGroup . '\'';
+				$sql .= ' WHERE file.bgroup=\'Y\' AND file.id=' . $babDB->quote($basketContent['bc_id']);
+				$admGroup && $sql .= ' AND folder.id_dgowner=' . $babDB->quote($admGroup);
 				$sql .= ' GROUP BY file.id';
 				$files = $babDB->db_query($sql);
 				$file = $babDB->db_fetch_array($files);
@@ -1274,7 +1274,7 @@ function createBasketDashboard($basketId, $start, $end)
 				$sql = 'SELECT forum.id AS id, forum.name AS title';
 				$sql .= ' FROM ' . BAB_FORUMS_TBL . ' AS forum';
 				$sql .= ' WHERE forum.id=' . $basketContent['bc_id'];
-				$admGroup && $sql .= ' AND forum.id_dgowner=\'' . $admGroup . '\'';
+				$admGroup && $sql .= ' AND forum.id_dgowner=' . $babDB->quote($admGroup );
 				$sql .= ' GROUP BY forum.id';
 				$forums = $babDB->db_query($sql);
 				$forum = $babDB->db_fetch_array($forums);
@@ -1286,8 +1286,8 @@ function createBasketDashboard($basketId, $start, $end)
 				$sql .= ' FROM ' . BAB_POSTS_TBL . ' AS post';
 				$sql .= ' LEFT JOIN ' . BAB_THREADS_TBL . ' AS thread ON thread.id=post.id_thread';
 				$sql .= ' LEFT JOIN ' . BAB_FORUMS_TBL . ' AS forum ON forum.id=thread.forum';
-				$sql .= ' WHERE post.id=' . $basketContent['bc_id'];
-				$admGroup && $sql .= ' AND forum.id_dgowner=\'' . $admGroup . '\'';
+				$sql .= ' WHERE post.id=' . $babDB->quote($basketContent['bc_id']);
+				$admGroup && $sql .= ' AND forum.id_dgowner=' . $babDB->quote($admGroup);
 				$sql .= ' GROUP BY post.id';
 				$posts = $babDB->db_query($sql);
 				$post = $babDB->db_fetch_array($posts);
@@ -1297,8 +1297,8 @@ function createBasketDashboard($basketId, $start, $end)
 			case BAB_STAT_BCT_FAQ:		// Faqs
 				$sql = 'SELECT faq.id AS id, faq.category AS title';
 				$sql .= ' FROM ' . BAB_FAQCAT_TBL . ' AS faq';
-				$sql .= ' WHERE faq.id=' . $basketContent['bc_id'];
-				$admGroup && $sql .= ' AND faq.id_dgowner=\'' . $admGroup . '\'';
+				$sql .= ' WHERE faq.id=' . $babDB->quote($basketContent['bc_id']);
+				$admGroup && $sql .= ' AND faq.id_dgowner=' . $babDB->quote($admGroup);
 				$sql .= ' GROUP BY faq.id';
 				$faqs = $babDB->db_query($sql);
 				$faq = $babDB->db_fetch_array($faqs);
@@ -1309,8 +1309,8 @@ function createBasketDashboard($basketId, $start, $end)
 				$sql = 'SELECT question.id AS id, question.question AS title';
 				$sql .= ' FROM ' . BAB_FAQQR_TBL . ' AS question';
 				$sql .= ' LEFT JOIN ' . BAB_FAQCAT_TBL . ' AS faq ON faq.id=question.idcat';
-				$sql .= ' WHERE question.id=' . $basketContent['bc_id'];
-				$admGroup && $sql .= ' AND faq.id_dgowner=\'' . $admGroup . '\'';
+				$sql .= ' WHERE question.id=' . $babDB->quote($basketContent['bc_id']);
+				$admGroup && $sql .= ' AND faq.id_dgowner=' . $babDB->quote($admGroup);
 				$sql .= ' GROUP BY question.id';
 				$questions = $babDB->db_query($sql);
 				$question = $babDB->db_fetch_array($questions);
