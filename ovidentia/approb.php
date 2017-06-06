@@ -55,16 +55,16 @@ class listWaitingItemsCls
 	var $url;
 	var $text;
 	var $description;
-	
+
 	public $display_submit_button = false;
 
 	public function __construct()
 	{
-		
+
 		$this->t_accept_or_refuse = bab_translate('Accept or reject');
 		$this->t_accept_checked = bab_translate('Accept checked items');
 		$this->t_confirm_checked = bab_translate('Do you really want to accept the checked items?');
-		
+
 		$event = new bab_eventBeforeWaitingItemsDisplayed();
 		bab_fireEvent($event);
 		$this->arrObjects = $event->objects;
@@ -76,15 +76,16 @@ class listWaitingItemsCls
 		include_once $GLOBALS['babInstallPath'].'utilit/addonsincl.php';
 		foreach(bab_addonsInfos::getRows() as $key => $row)
 		{
-			$addonpath = $GLOBALS['babInstallPath'].'addons/'.$row['title'];
-			if($row['access'] && is_file($addonpath."/init.php" ))
+		    $addon = bab_getAddonInfosInstance($row['title']);
+		    $addonpath = $addon->getPhpPath();
+			if ($row['access'] && is_file($addonpath . '/init.php'))
 			{
 				bab_setAddonGlobals($row['id']);
 				$call = $row['title']."_getWaitingItems";
-				
-				require_once( $addonpath."/init.php" );
 
-				if( function_exists($call) )
+				require_once($addonpath . 'init.php');
+
+				if (!empty($call) && function_exists($call))
 				{
 
 					trigger_error('The callback '.$call.' is deprecated, please use bab_addEventListener() instead');
@@ -106,7 +107,7 @@ class listWaitingItemsCls
 
 		bab_sort::ksort($this->arrObjects);
 	}
-	
+
 
 	public function getnextaddon()
 	{
@@ -122,9 +123,9 @@ class listWaitingItemsCls
 		}
 		return false;
 	}
-	
-	
-	
+
+
+
 
 	public function getnextitem()
 	{
@@ -153,7 +154,7 @@ class listWaitingItemsCls
 		else
 			return false;
 	}
-	
+
 }
 
 
@@ -197,7 +198,7 @@ class bab_confirmWaiting
 
 
 /**
- * 
+ *
  * @param unknown_type $idart
  */
 function confirmWaitingArticle($idart)
@@ -219,9 +220,9 @@ function confirmWaitingArticle($idart)
 				$arr = $babDB->db_fetch_array($res);
 				$arrschi = bab_getWaitingIdSAInstance($GLOBALS['BAB_SESS_USERID']);
 				if (count($arrschi) > 0  && in_array($arr['idfai'], $arrschi)) {
-					
+
 					$this->preview = bab_previewArticleDraft($idart);
-					
+
 					$this->idart = bab_toHtml($idart);
 					$this->arttxt = bab_translate("Article");
 					$this->pathtxt = bab_translate("Path");
@@ -344,7 +345,7 @@ function confirmWaitingComment($idcom)
 			global $babBody, $babDB;
 
 			$this->accessDenied = false;
-			
+
 			$this->preview = bab_previewComment($idcom);
 
 			$req = "select * from ".BAB_COMMENTS_TBL." where id='".$babDB->db_escape_string($idcom)."'";
@@ -396,9 +397,9 @@ function updateConfirmationWaitingArticle($idart, $bconfirm, $comment)
 	$res = $babDB->db_query("select id, idfai, id_author, id_article from ".BAB_ART_DRAFTS_TBL." where id='".$babDB->db_escape_string($idart)."'");
 	$draft = new bab_ArtDraft;
 	$draft->getFromIdDraft($idart);
-	
+
 	$arrschi = bab_getWaitingIdSAInstance($GLOBALS['BAB_SESS_USERID']);
-	if (count($arrschi) > 0 && in_array($draft->idfai,$arrschi)) 
+	if (count($arrschi) > 0 && in_array($draft->idfai,$arrschi))
 	{
 		$bret = $bconfirm == "Y"? true: false;
 
@@ -437,7 +438,7 @@ function updateConfirmationWaitingArticle($idart, $bconfirm, $comment)
 		bab_sitemap::clearAll();
 		return true;
 	}
-	
+
 	return false;
 }
 
@@ -493,9 +494,9 @@ function updateConfirmationWaitingComment($idcom, $action, $send, $message)
 		$msg = nl2br($message);
         notifyCommentAuthor($subject, $msg, $BAB_SESS_USERID, $arr['email']);
 	}
-	
-	
-	
+
+
+
 	return true;
 }
 
@@ -536,7 +537,7 @@ function updateConfirmationWaitingPost($thread, $post)
 		}
 
 	}
-	
+
 	bab_sitemap::clearAll();
 
 	return true;
@@ -548,12 +549,12 @@ function updateConfirmationWaitingPost($thread, $post)
 function bab_confirmCheckedItems()
 {
 	$confirm_items = bab_pp('confirm_items');
-	
+
 	$event = new bab_eventConfirmMultipleWaitingItems;
 	$event->setItems($confirm_items);
-	
+
 	bab_fireEvent($event);
-	
+
 	$url = bab_url::get_request('tg');
 	$url->location();
 }
@@ -568,7 +569,7 @@ $idx = bab_rp('idx', 'all');
 if( '' != ($conf = bab_rp('conf')))
 {
     bab_requireSaveMethod();
-    
+
 	if( $conf == 'art')
 	{
 		$bconfirm = bab_pp('bconfirm', 'N');
@@ -594,7 +595,7 @@ if( '' != ($conf = bab_rp('conf')))
 		}
 		$idx = 'unload';
 	}
-	
+
 }
 
 switch($idx)
@@ -603,7 +604,7 @@ switch($idx)
 		include_once $GLOBALS['babInstallPath']."utilit/uiutil.php";
 		popupUnload(bab_translate("Update done"), $GLOBALS['babUrlScript']."?tg=approb&idx=all");
 		exit;
-		
+
 	case "viewart":
 	case "confart":
 		confirmWaitingArticle(bab_gp('idart'));
@@ -620,11 +621,11 @@ switch($idx)
 		confirmWaitingPost(bab_gp('thread'), bab_gp('idpost'));
 		exit;
 		break;
-		
+
 	case 'confirm_checked':
 		bab_requireSaveMethod() && bab_confirmCheckedItems();
 		break;
-	
+
 
 	case "all":
 	default:
