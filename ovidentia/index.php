@@ -102,6 +102,8 @@ if (!isset($babUrl)) {
 
 require_once dirname(__FILE__).'/utilit/functionality.class.php';
 require_once dirname(__FILE__).'/utilit/addonapi.php';
+include_once dirname(__FILE__).'/utilit/defines.php';
+include_once dirname(__FILE__).'/utilit/dbutil.php';
 require_once dirname(__FILE__).'/utilit/csrfprotect.class.php';
 
 if(!bab_isAjaxRequest() && bab_getUserId()){
@@ -221,10 +223,9 @@ $babSiteName	= mb_substr($babSiteName, 0, 255);
 
 /* Controler */
 
-include_once $GLOBALS['babInstallPath'].'utilit/defines.php';
-include_once $GLOBALS['babInstallPath'].'utilit/dbutil.php';
-$babDB = new babDatabase();
-$babDB->db_setCharset();
+
+$babDB = bab_getInstance('babDatabase');
+
 include_once $GLOBALS['babInstallPath'].'utilit/statincl.php';
 $babWebStat =new bab_WebStatEvent();
 
