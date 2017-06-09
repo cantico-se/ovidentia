@@ -44,6 +44,7 @@ class babDatabase
     public function __construct()
         {
         $this->db_die_on_fail = true;
+        $this->db_setCharset();
         }
 
 

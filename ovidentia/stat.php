@@ -34,7 +34,7 @@ define('STAT_IT_YEAR', 7);
 define('STAT_IT_LASTYEAR', 8);
 define('STAT_IT_OTHER', 9);
 
-function updateStatPreferences()
+function updateStatPreferences(&$itwhat, &$sd, &$ed)
 {
     global $babDB;
     
@@ -55,19 +55,23 @@ function updateStatPreferences()
         $pref['exportchr'] = ",";
     }
     
-    if (! isset($GLOBALS['itwhat'])) {
-        $GLOBALS['itwhat'] = $pref['itwhat'];
-        $GLOBALS['sd'] = $pref['sd'];
-        $GLOBALS['ed'] = $pref['ed'];
-        $GLOBALS['exportchr'] = $pref['exportchr'];
+    if (! isset($itwhat)) {
+        $itwhat = $pref['itwhat'];
+        $sd = $pref['sd'];
+        $ed = $pref['ed'];
+        $exportchr = $pref['exportchr'];
     } else {
-        if ($GLOBALS['itwhat'] != STAT_IT_OTHER) {
-            $GLOBALS['sd'] = "";
-            $GLOBALS['ed'] = "";
+        if ($itwhat != STAT_IT_OTHER) {
+            $sd = "";
+            $ed = "";
         }
         
-        $GLOBALS['exportchr'] = $pref['exportchr'];
-        $babDB->db_query("update " . BAB_STATS_PREFERENCES_TBL . " set time_interval='" . $babDB->db_escape_string($GLOBALS['itwhat']) . "', begin_date='" . $babDB->db_escape_string($GLOBALS['sd']) . "', end_date='" . $babDB->db_escape_string($GLOBALS['ed']) . "' where id_user='" . $babDB->db_escape_string($GLOBALS['BAB_SESS_USERID']) . "'");
+        $exportchr = $pref['exportchr'];
+        $babDB->db_query("update " . BAB_STATS_PREFERENCES_TBL . " set 
+            time_interval='" . $babDB->db_escape_string($itwhat) . "', 
+            begin_date='" . $babDB->db_escape_string($sd) . "', 
+            end_date='" . $babDB->db_escape_string($ed) . "' 
+            where id_user='" . $babDB->db_escape_string($GLOBALS['BAB_SESS_USERID']) . "'");
     }
 }
 
@@ -572,6 +576,8 @@ if (bab_statisticsAccess() == - 1) {
 
 $idx = bab_rp('idx', '');
 
+$itwhat = bab_rp('itwhat', null);
+
 // Start date
 $sd = bab_rp('sd', '');
 $sd = validateDate($sd);
@@ -581,14 +587,14 @@ $ed = bab_rp('ed', '');
 $ed = validateDate($ed);
 
 displayStatisticPanel($idx);
-updateStatPreferences();
+updateStatPreferences($itwhat, $sd, $ed);
 
 if ($idx != 'connection') {
     $stat_params = array();
     if ($reqvars = bab_rp('reqvars')) {
         parse_str($reqvars, $stat_params);
     }
-    displayTimeInterval(bab_rp('itwhat'), $sd, $ed, $idx, isset($stat_params) ? $stat_params : bab_rp('stat_params', null));
+    displayTimeInterval($itwhat, $sd, $ed, $idx, isset($stat_params) ? $stat_params : bab_rp('stat_params', null));
 }
 
 switch ($idx) {
@@ -613,7 +619,7 @@ switch ($idx) {
             if ($reqvars = bab_rp('reqvars')) {
                 parse_str($reqvars, $stat_params);
             }
-            displayTimeInterval(bab_rp('itwhat'), $sd, $ed, $idx, $stat_params + array(
+            displayTimeInterval($itwhat, $sd, $ed, $idx, $stat_params + array(
                 'item' => bab_rp('item')
             ));
             detailConnections(bab_rp('col', 'connection'), bab_rp('order', 'asc'), bab_rp('pos', 0), $sd, $ed, bab_rp('item'));
@@ -904,7 +910,7 @@ switch ($idx) {
             include_once $GLOBALS['babInstallPath'] . "utilit/uiutil.php";
             include_once $GLOBALS['babInstallPath'] . "statdashboard.php";
             $GLOBALS['babBodyPopup'] = new babBodyPopup();
-            displayTimeIntervalInPopup(bab_rp('itwhat'), $sd, $ed, $idx, $GLOBALS['babBodyPopup']);
+            displayTimeIntervalInPopup($itwhat, $sd, $ed, $idx, $GLOBALS['babBodyPopup']);
             showDashboard($sd, $ed);
             printBabBodyPopup();
             exit();
@@ -928,7 +934,7 @@ switch ($idx) {
             include_once $GLOBALS['babInstallPath'] . "utilit/uiutil.php";
             include_once $GLOBALS['babInstallPath'] . "statdashboard.php";
             $GLOBALS['babBodyPopup'] = new babBodyPopup();
-            displayTimeIntervalInPopup(bab_rp('itwhat'), $sd, $ed, $idx, $GLOBALS['babBodyPopup']);
+            displayTimeIntervalInPopup($itwhat, $sd, $ed, $idx, $GLOBALS['babBodyPopup']);
             showDelegationDashboard($sd, $ed);
             printBabBodyPopup();
             exit();
@@ -939,7 +945,7 @@ switch ($idx) {
         include_once $GLOBALS['babInstallPath'] . "statdashboard.php";
         $GLOBALS['babBodyPopup'] = new babBodyPopup();
         $idbasket = bab_rp('idbasket');
-        displayTimeIntervalInPopup(bab_rp('itwhat'), $sd, $ed, $idx, $GLOBALS['babBodyPopup'], $idbasket);
+        displayTimeIntervalInPopup($itwhat, $sd, $ed, $idx, $GLOBALS['babBodyPopup'], $idbasket);
         showBasket($idbasket, $sd, $ed);
         printBabBodyPopup();
         exit();

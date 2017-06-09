@@ -250,7 +250,7 @@ function bab_isEventFileValid($filepath)
  * @see	bab_addEventListener
  * @param	bab_Event	$event_obj
  */
-function bab_fireEvent(bab_Event $event_obj)
+function bab_fireEvent(bab_event $event_obj)
 {
     //echo "<script type=\"text/javascript\">alert(\"" . get_class($event_obj) . "\")</script>";
     //static $arrayEvent = array();
@@ -258,7 +258,7 @@ function bab_fireEvent(bab_Event $event_obj)
     //bab_debug($arrayEvent);
     include_once $GLOBALS['babInstallPath'].'utilit/addonsincl.php';
 
-    global $babDB;
+    $babDB = bab_getInstance('babDatabase');
 
     $obj = new bab_fireEvent_Obj;
     $obj->push_obj($event_obj);

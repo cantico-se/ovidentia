@@ -130,8 +130,9 @@ class bab_Groups
 	 */
 	private static function updateUserSettings()
 	{
-		global $babDB, $BAB_SESS_USERID;
+		global $BAB_SESS_USERID;
 		
+		$babDB = bab_getInstance('babDatabase');
 
 		$_SESSION['bab_groupAccess']['ovgroups'] = array();
 		$_SESSION['bab_groupAccess']['usergroups'] = array();
