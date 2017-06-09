@@ -59,7 +59,7 @@ class bab_UserPeriods implements Countable, seekableIterator {
 
 
     /**
-     * @var array	<bab_EventCalendar>
+     * @var bab_EventCalendar[]
      */
     public $calendars = null;
 
@@ -893,12 +893,12 @@ class bab_UserPeriods implements Countable, seekableIterator {
 
             $nb_unAvailable = 0;
             foreach($events as $event) {
-                
+
                 if ('CANCELLED' === $event->getProperty('STATUS')) {
                     // Ignore cancelled events
                     continue;
                 }
-                
+
                 if ($event->ts_end > $test_begin && $event->ts_begin < $test_end) {
                     if (!$event->isTransparent()) {
 
