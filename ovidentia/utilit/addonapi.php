@@ -1766,7 +1766,7 @@ function bab_getUserIdObjects($table)
     require_once dirname(__FILE__).'/groupsincl.php';
     require_once $GLOBALS['babInstallPath'].'utilit/session.class.php';
 
-    global $babDB;
+    $babDB = bab_getInstance('babDatabase');
     $session = bab_getInstance('bab_Session');
 
     if (!isset($session->bab_groupAccess))

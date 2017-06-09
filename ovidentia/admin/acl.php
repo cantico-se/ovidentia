@@ -506,8 +506,9 @@ function aclGetAccessUsers($table, $id_object, $activeOrderBy=NULL, $returnDisab
 	$groups = aclGetAccessGroups($table, $id_object);
 	$query = '';
 
-
-	if (isset($groups[BAB_REGISTERED_GROUP]) || isset($groups[BAB_ALLUSERS_GROUP])) {
+	if (empty($groups)) {
+		return array();
+	} elseif (isset($groups[BAB_REGISTERED_GROUP]) || isset($groups[BAB_ALLUSERS_GROUP])) {
 
 		$where = bab_userInfos::queryAllowedUsers(null, $returnNonConfirmedUsers, $returnDisabledUsers);
 
