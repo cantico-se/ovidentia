@@ -325,7 +325,7 @@ class babDatabase
 
                 foreach($param as &$value) {
                     if (null === $value) {
-                        trigger_error('NULL is not allowed in the quote() method, use quoteOrNull()');
+                        bab_debug('NULL is not allowed in the quote() method, use quoteOrNull()', DBG_ERROR);
                     }
 
                     if (false === $value) {
@@ -340,7 +340,7 @@ class babDatabase
             } else {
 
                 if (null === $param) {
-                   // trigger_error('NULL is not allowed in the quote() method, use quoteOrNull()');
+                   bab_debug('NULL is not allowed in the quote() method, use quoteOrNull()', DBG_ERROR);
                 }
 
                 if (false === $param) {
