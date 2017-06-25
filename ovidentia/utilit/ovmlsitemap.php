@@ -190,6 +190,10 @@ abstract class Ovml_Container_Sitemap extends Func_Ovml_Container
             $this->idx = $this->limitOffset;
             return false;
         }
+        
+        if (!isset($this->IdEntries[$this->idx])) {
+            return false;
+        }
 
         $entry = $this->IdEntries[$this->idx];
 
