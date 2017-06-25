@@ -204,6 +204,7 @@ abstract class Ovml_Container_Sitemap extends Func_Ovml_Container
         $this->ctx->curctx->push('SitemapEntryId'                  , $entry['id']);
         $this->ctx->curctx->push('SitemapEntryOnclick'             , $entry['onclick']);
         $this->ctx->curctx->push('SitemapEntryFolder'              , $entry['folder'] ? '1' : '0');
+        $this->ctx->curctx->push('SitemapEntryHasChildNodes'       , $entry['hasChildNodes'] ? '1' : '0');
         $this->ctx->curctx->push('SitemapEntryPageTitle'           , $entry['pageTitle']);
         $this->ctx->curctx->push('SitemapEntryPageDescription'     , $entry['pageDescription']);
         $this->ctx->curctx->push('SitemapEntryPageKeywords'        , $entry['pageKeywords']);
@@ -320,6 +321,7 @@ class Func_Ovml_Container_SitemapEntry extends Ovml_Container_Sitemap
                 $tmp['id'] = $item->id_function;
                 $tmp['onclick'] = $item->onclick;
                 $tmp['folder'] = $item->folder;
+                $tmp['hasChildNodes'] = $item->hasChildNodes(); 	// has childnodes in sitemap
                 $tmp['pageTitle'] = $item->getPageTitle();
                 $tmp['pageDescription'] = $item->getPageDescription();
                 $tmp['pageKeywords'] = $item->getPageKeywords();
@@ -398,6 +400,7 @@ class Func_Ovml_Container_SitemapCustomNode extends Ovml_Container_Sitemap
                 $tmp['id'] = $item->id_function;
                 $tmp['onclick'] = $item->onclick;
                 $tmp['folder'] = $item->folder;
+                $tmp['hasChildNodes'] = $item->hasChildNodes(); 	// has childnodes in sitemap
                 $tmp['pageTitle'] = $item->getPageTitle();
                 $tmp['pageDescription'] = $item->getPageDescription();
                 $tmp['pageKeywords'] = $item->getPageKeywords();
@@ -521,6 +524,7 @@ class Func_Ovml_Container_SitemapPath extends Ovml_Container_Sitemap
                     }
                     $tmp['onclick'] = $item->onclick;
                     $tmp['folder'] = $item->folder;
+                    $tmp['hasChildNodes'] = $item->hasChildNodes(); 	// has childnodes in sitemap
                     $tmp['pageTitle'] = $item->getPageTitle();
                     $tmp['pageDescription'] = $item->getPageDescription();
                     $tmp['pageKeywords'] = $item->getPageKeywords();
