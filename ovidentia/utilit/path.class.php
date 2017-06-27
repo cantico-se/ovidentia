@@ -804,6 +804,48 @@ class bab_Path implements SeekableIterator, Countable {
 		throw new ErrorException(sprintf(bab_translate('The file %s does not exists'), $this->getBasename()));
 		return false;
 	}
+
+
+
+
+    /**
+     * Download the file to user
+     * @since 8.5.98
+     * @param	bool	$inline
+     *
+     * @return mixed
+     */
+    public function download($inline = true)
+    {
+        $fullPathName = $this->toString();
+
+        $fp = fopen($fullPathName, 'rb');
+        if ($fp) {
+            bab_setTimeLimit(3600);
+
+            if (mb_strtolower(bab_browserAgent()) == 'msie') {
+                header('Cache-Control: public');
+            }
+
+            if ($inline) {
+                header('Content-Disposition: inline; filename="' . self::decode($this->getBaseName()) . '"' . "\n");
+            } else {
+                header('Content-Disposition: attachment; filename="' . self::decode($this->getBaseName()) . '"' . "\n");
+            }
+
+            $mime = bab_getFileMimeType($fullPathName);
+            $fsize = filesize($fullPathName);
+            header('Content-Type: '.$mime."\n");
+            header('Content-Length: '.$fsize."\n");
+            header('Content-transfert-encoding: binary'."\n");
+
+            while (!feof($fp)) {
+                print fread($fp, 8192);
+            }
+            fclose($fp);
+            exit;
+        }
+    }
 }
 
 /**
