@@ -326,7 +326,6 @@ abstract class bab_Controller
     public function listAvailableActions()
     {
         $object = new ReflectionObject($this);
-        $objectComment = $object->getDocComment();
 
         $methods = $object->getMethods();
         foreach ($methods as $method) {
@@ -714,7 +713,8 @@ abstract class bab_Controller
                     );
                 }
 
-                echo bab_convertStringFromDatabase(bab_json_encode($json), 'UTF-8');
+                //echo bab_convertStringFromDatabase(bab_json_encode($json), 'UTF-8');
+                echo bab_json_encode($json);
                 die;
             }
 
