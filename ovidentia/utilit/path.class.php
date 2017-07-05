@@ -72,6 +72,20 @@ function bab_Path_encodeQuotedPrintable($str)
 
 
 /**
+ * @param string $str
+ * @return string
+ */
+function bab_Path_encodeUrl($str)
+{
+    $encodedStr = urlencode($str);
+    if ($encodedStr === $str) {
+        return $str;
+    }
+    return bab_Path::URLENC . $encodedStr;
+}
+
+
+/**
  * Path object
  *
  */
@@ -120,8 +134,9 @@ class bab_Path implements SeekableIterator, Countable {
 
 
 	const PREFIX_LENGTH = 6;
-	const BASE64 	= 'BASE64';
-	const QPRINT 	= 'QPRINT';
+	const BASE64 = 'BASE64';
+	const QPRINT = 'QPRINT';
+	const URLENC =    'URLENC';
 	const NONE		= '______';
 
 	static private $encodingFunction = null;
@@ -154,6 +169,9 @@ class bab_Path implements SeekableIterator, Countable {
 			case self::QPRINT:
 				return quoted_printable_decode($value);
 
+			case self::URLENC:
+			    return urldecode($value);
+
 			case self::NONE:
 				return $value;
 		}
@@ -171,13 +189,14 @@ class bab_Path implements SeekableIterator, Countable {
 	{
 		if (!isset(self::$encodingFunction)) {
 			// autodetect best encoding method
-			if (function_exists('quoted_printable_encode')) {
-				self::$encodingFunction = 'bab_Path_encodeQuotedPrintable';
-			} else if (function_exists('imap_8bit')) {
-				self::$encodingFunction = 'bab_Path_encodeImap8Bit';
-			} else {
-				self::$encodingFunction = 'bab_Path_encodeBase64';
-			}
+		    self::$encodingFunction = 'bab_Path_encodeUrl';
+// 			if (function_exists('quoted_printable_encode')) {
+// 				self::$encodingFunction = 'bab_Path_encodeQuotedPrintable';
+// 			} else if (function_exists('imap_8bit')) {
+// 				self::$encodingFunction = 'bab_Path_encodeImap8Bit';
+// 			} else {
+// 				self::$encodingFunction = 'bab_Path_encodeBase64';
+// 			}
 		}
 
 		$encodingFunction = self::$encodingFunction;
