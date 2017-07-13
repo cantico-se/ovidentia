@@ -61,110 +61,100 @@ function modifyUser($userId, $pos, $grp)
         return;
     }
 
-    class ModifyUser_Temp
-    {
-        var $changepassword;
-        var $isconfirmed;
-        var $primarygroup;
-        var $groupname;
-        var $groupid;
-        var $none;
-
-        var $isdisabled;
-        var $modify;
-        var $yes;
-        var $no;
-
-        var $arr = array();
-        var $arrgroups = array();
-        var $db;
-        var $count;
-        var $res;
-        var $userId;
-        var $showprimary;
-
-        function ModifyUser_Temp($userId, $pos, $grp)
-        {
-            global $babBody, $babDB;
-
-            $this->showprimary = false;
-            $this->changepassword = bab_translate("Can user change password ?");
-            $this->isconfirmed = bab_translate("Account confirmed ?");
-            $this->isdisabled = bab_translate("Account disabled ?");
-            $this->primarygroup = bab_translate("Primary group");
-            $this->forcepasswordchange = bab_translate("Force password change in the next loggin ?");
-            $this->displayforcepwdchange = 1;
-            $this->none = bab_translate("None");
-            $this->modify = bab_translate("Modify");
-            $this->delete = bab_translate("Delete");
-            $this->yes = bab_translate("Yes");
-            $this->no = bab_translate("No");
-
-            $this->validity_period = bab_translate("Account validity period:");
-            $this->from = bab_translate("From");
-            $this->to = bab_translate("to");
-            $this->site_option = bab_translate("Defined in site options");
-
-            $req = 'SELECT * FROM ' . BAB_USERS_TBL . ' WHERE id=' . $babDB->quote($userId);
-            $this->res = $babDB->db_query($req);
-            $this->arr = $babDB->db_fetch_assoc($this->res);
-
-            $this->validity_start = formatInputDate($this->arr['validity_start']);
-            $this->validity_end = formatInputDate($this->arr['validity_end']);
-            $this->id = $userId;
-            $this->pos = $pos;
-            $this->grp = $grp;
-
-            $this->bshowauthtype = false;
-
-            if ($babBody->babsite['authentification'] != BAB_AUTHENTIFICATION_OVIDENTIA) {
-                $this->bshowauthtype = true;
-                $this->authentificationtxt = bab_translate("Which authentication method must be used for this user");
-                $this->ovidentiaauthtxt = bab_translate("Ovidentia");
-                $this->siteauthtxt = bab_translate("As defined in site configuration");
-                if ($this->arr['db_authentification'] == 'Y') {
-                    $this->yselected = 'selected';
-                    $this->nselected = '';
-                } else {
-                    $this->displayforcepwdchange = 0;
-                    $this->yselected = '';
-                    $this->nselected = 'selected';
-                }
-            }
-
-            /* If the current user is admin of a delegation, he can't delete the user */
-            if (bab_getCurrentAdmGroup() != 0) {
-                $this->bdelete = false;
-            } else {
-                $this->bdelete = true;
-            }
-
-            $req = 'SELECT * FROM '  .BAB_USERS_GROUPS_TBL . ' WHERE id_object=' . $babDB->quote($userId);
-            $this->res = $babDB->db_query($req);
+    global $babBody, $babDB;
+    $req = 'SELECT * FROM ' . BAB_USERS_TBL . ' WHERE id=' . $babDB->quote($userId);
+    $res = $babDB->db_query($req);
+    $arr = $babDB->db_fetch_assoc($res);
+	
+	$bshowauthtype = false;
+	$displayforcepwdchange = true;
+	
+    if ($babBody->babsite['authentification'] != BAB_AUTHENTIFICATION_OVIDENTIA) {
+        $bshowauthtype = true;
+        if ($arr['db_authentification'] != 'Y') {
+            $displayforcepwdchange = false;
         }
-
-
-        function getNextGroup()
-        {
-            global $babDB;
-
-            if ($this->arrgroups = $babDB->db_fetch_assoc($this->res)) {
-                if( $this->arrgroups['isprimary'] == 'Y') {
-                    $this->selected = 'selected';
-                } else {
-                    $this->selected = '';
-                }
-                $this->groupname = bab_getGroupName($this->arrgroups['id_group']);
-                $this->groupid = $this->arrgroups['id_group'];
-                return true;
-            }
-            return false;
-        }
-
     }
 
-    $temp = new ModifyUser_Temp($userId, $pos, $grp);
-    $babBody->babEcho(bab_printTemplate($temp, 'users.html', 'usersmodify'));
+	$W = bab_Widgets();
+	
+	$form = $W->Form()->addItem($tableView = $W->TableView());
+	$form->setHiddenValue('tg', 'user');
+	$form->setHiddenValue('idx', 'Modify');
+	$form->setHiddenValue('item', $arr['id']);
+	$form->setHiddenValue('modify', 'modify');
+	$form->setHiddenValue('pos', $pos);
+	$form->setHiddenValue('grp', $grp);
+	
+	$tableView->setSizePolicy('widget-70pc widget-centered BabLoginMenuBackground widget-bordered '.Func_Icons::ICON_LEFT_16);
+	$tableView->addColumnClass(0, 'widget-50pc');
+	$tableView->addColumnClass(1, 'widget-50pc');
+	$i = 0;
+	
+	$changePasswordOptions = array(
+		'0' => bab_translate("No"),
+		'1' => bab_translate("Defined in site options")
+	);
+	$tableView->addItem($tmpLbl = $W->Label(bab_translate("Can user change password ?"))->setSizePolicy('widget-column-right'), $i,0);
+	$tableView->addItem($W->Select()->setAssociatedLabel($tmpLbl)->setName('changepwd')->setOptions($changePasswordOptions)->setValue($arr['changepwd']), $i, 1);
+	$i++;
+	
+	$yesNoOptions = array(
+		'0' => bab_translate("No"),
+		'1' => bab_translate("Yes")
+	);
+	$tableView->addItem($tmpLbl = $W->Label(bab_translate("Account confirmed ?"))->setSizePolicy('widget-column-right'),$i,0);
+	$isIconfirmedItem = $W->Select()->setAssociatedLabel($tmpLbl)->setName('is_confirmed')->setOptions($yesNoOptions)->setValue($arr['is_confirmed']);
+	if(!$arr['is_confirmed']) {
+		$confirmedMailItem = $W->LabelledWidget(bab_translate('Send the confirmation email'), $W->CheckBox()->setCheckedValue('1')->setValue('1'), 'confirmed_email');
+		$isIconfirmedItem = $W->HBoxItems(
+			$isIconfirmedItem->setAssociatedDisplayable($confirmedMailItem, array('1')),
+			$confirmedMailItem
+		)->setHorizontalSpacing(.5, 'em');
+	}
+	$tableView->addItem($isIconfirmedItem, $i, 1);
+	$i++;
+	
+	
+	$tableView->addItem($tmpLbl = $W->Label(bab_translate("Account disabled ?"))->setSizePolicy('widget-column-right'),$i,0);
+	$tableView->addItem($W->Select()->setAssociatedLabel($tmpLbl)->setName('disabled')->setOptions($yesNoOptions)->setValue($arr['disabled']), $i, 1);
+	$i++;
+	
+	if ($displayforcepwdchange) {
+		$tableView->addItem($tmpLbl = $W->Label(bab_translate("Force password change in the next loggin ?"))->setSizePolicy('widget-column-right'),$i,0);
+		$tableView->addItem($W->Select()->setAssociatedLabel($tmpLbl)->setName('force_pwd_change')->setOptions($yesNoOptions)->setValue($arr['force_pwd_change']), $i, 1);
+		$i++;
+	}
+	
+	$tableView->addItem($tmpLbl = $W->Label(bab_translate("Account validity period:"))->setSizePolicy('widget-column-right'),$i,0);
+	$tableView->addItem(
+		$W->FlowItems(
+			$W->Label(bab_translate("From")),
+			$startDate = $W->DatePicker()->setValue($arr['validity_start'])->setName('validity_start'),
+			$W->Label(bab_translate("to")),
+			$W->DatePicker()->setMinDate($startDate)->setValue($arr['validity_end'])->setName('validity_end')
+		)->setHorizontalSpacing(.5 , 'em'),
+		$i, 1
+	);
+	$i++;
+	
+	if ($bshowauthtype) {
+		$authOptions = array(
+			'N' => bab_translate("As defined in site configuration"),
+			'Y' => bab_translate("Ovidentia")
+		);
+		
+		$tableView->addItem($tmpLbl = $W->Label(bab_translate("Which authentication method must be used for this user"))->setSizePolicy('widget-column-right'),$i,0);
+		$tableView->addItem($W->Select()->setAssociatedLabel($tmpLbl)->setName('authtype')->setOptions($authOptions)->setValue($arr['db_authentification']), $i, 1);
+		$i++;
+	}
+	
+	
+	$tableView->addItem($W->SubmitButton()->setName('bupdate')->setLabel(bab_translate("Modify"))->setSizePolicy('widget-column-right'),$i,0);
+	$tableView->addItem($W->Link($W->Icon(bab_translate("Delete"), Func_Icons::ACTIONS_EDIT_DELETE), '?tg=user&idx=Delete&item='.$arr['id'].'&pos='.$pos.'&grp='.$grp), $i, 1);
+	
+	
+	$babBody->babEcho($form->display($W->HtmlCanvas()));
 }
 
 
@@ -372,8 +362,9 @@ function updateGroups($userId)
  * @param string	$authtype
  * @param int		$primaryGroupId		The user primary group
  * @param int		$force_pwd_change	1 => User is prompt to change his password, 0 => nothing will be done
+ * @param int		$confirmedEmail 	1 => User will received the confirmation mail, 0 => nothing will be done
  */
-function updateUser($userId, $changepwd, $isConfirmed, $disabled, $validityStart, $validityEnd, $authtype, $primaryGroupId, $force_pwd_change)
+function updateUser($userId, $changepwd, $isConfirmed, $disabled, $validityStart, $validityEnd, $authtype, $primaryGroupId, $force_pwd_change, $confirmedEmail)
 {
     require_once $GLOBALS['babInstallPath'] . '/utilit/dateTime.php';
     global $babBody, $babDB;
@@ -445,7 +436,9 @@ function updateUser($userId, $changepwd, $isConfirmed, $disabled, $validityStart
         if ($babBody->babsite['idgroup'] != 0) {
             bab_addUserToGroup($userId, $babBody->babsite['idgroup']);
         }
-        notifyUserconfirmation(bab_composeUserName($user['firstname'] , $user['lastname']), $user['email']);
+		if ($confirmedEmail) {
+        	notifyUserconfirmation(bab_composeUserName($user['firstname'] , $user['lastname']), $user['email']);
+		}
     }
 
     require_once $GLOBALS['babInstallPath'] . 'utilit/eventdirectory.php';
@@ -577,14 +570,14 @@ if (isset($modify)) {
     if (isset($bupdate)) {
         $changepwd = bab_rp('changepwd');
         $isConfirmed = bab_rp('is_confirmed');
+		$confirmedEmail = bab_rp('confirmed_email');
         $disabled = bab_rp('disabled');
         $authType = bab_rp('authtype');
         $group = bab_rp('group');
         $force_pwd_change = bab_rp('force_pwd_change');
         $validityStart = bab_rp('validity_start');
         $validityEnd = bab_rp('validity_end');
-        bab_requireSaveMethod() && updateUser(
-            $item, $changepwd, $isConfirmed, $disabled, $validityStart, $validityEnd, $authType, $group, $force_pwd_change);
+        bab_requireSaveMethod() && updateUser($item, $changepwd, $isConfirmed, $disabled, $validityStart, $validityEnd, $authType, $group, $force_pwd_change, $confirmedEmail);
         
     } else if(isset($bdelete)) {
         $idx = 'Delete';

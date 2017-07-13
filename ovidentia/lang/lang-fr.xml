@@ -22,6 +22,7 @@
 <string id="Access">Accès</string>
 <string id="Account confirmed ?">Compte confirmé ?</string>
 <string id="Account disabled ?">Compte désactivé ?</string>
+<string id="Send the confirmation email">Envoyer l'email de confirmation</string>
 <string id="Invalid validity start date">La date de début de validité est incorrecte</string>
 <string id="Invalid validity end date">La date de fin de validité est incorrecte</string>
 <string id="Accounts">Comptes</string>
