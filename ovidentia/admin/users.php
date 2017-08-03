@@ -871,7 +871,7 @@ switch($idx)
 
                 $babBody->title = bab_translate("Notices");
                 $macl = new macl("users", "notif", 1, "aclnotif");
-                $macl->addtable(BAB_LDAP_LOGGIN_NOTIFY_GROUPS_TBL, bab_translate("Who is notified when an account is created when a user first loggin on a LDAP directory?"));
+                $macl->addtable(BAB_LDAP_LOGGIN_NOTIFY_GROUPS_TBL, bab_translate("Who is notified when an account is created when a user first loggin on a LDAP directory or aactive directory or when a new user register?"));
                 $macl->filter(0,0,0,1,0);
                 $macl->babecho();
 

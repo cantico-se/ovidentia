@@ -1835,6 +1835,9 @@ function bab_setUserSessionInfo($iIdUser)
     if($aUser)
     {
 
+        $GLOBALS['BAB_SESS_LOGGED'] = null;
+        
+
         $session->BAB_SESS_NICKNAME		= $aUser['nickname'];
         $session->BAB_SESS_USER			= bab_composeUserName($aUser['firstname'], $aUser['lastname']);
         $session->BAB_SESS_FIRSTNAME 	= $aUser['firstname'];

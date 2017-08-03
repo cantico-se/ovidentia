@@ -454,6 +454,12 @@ abstract class bab_Controller
         if (strpos($docComment, '@ajax') !== false) {
             $action->setAjax(true);
         }
+        if (strpos($docComment, '@requireSaveMethod') !== false && method_exists($action, 'setRequireSaveMethod')) {
+            $action->setRequireSaveMethod(true);
+        }
+        if (strpos($docComment, '@requireDeleteMethod') !== false && method_exists($action, 'setRequireDeleteMethod')) {
+            $action->setRequireDeleteMethod(true);
+        }
 
         return $action;
     }

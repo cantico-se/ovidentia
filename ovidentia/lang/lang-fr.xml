@@ -22,6 +22,7 @@
 <string id="Access">Accès</string>
 <string id="Account confirmed ?">Compte confirmé ?</string>
 <string id="Account disabled ?">Compte désactivé ?</string>
+<string id="Send the confirmation email">Envoyer l'email de confirmation</string>
 <string id="Invalid validity start date">La date de début de validité est incorrecte</string>
 <string id="Invalid validity end date">La date de fin de validité est incorrecte</string>
 <string id="Accounts">Comptes</string>
@@ -3388,7 +3389,7 @@ Attention, les corbeilles de votre répertoire personnel vont bientôt être pur
 Cordialement,
 
 L'administrateur</string>
-<string id="Who is notified when an account is created when a user first loggin on a LDAP directory?">Qui est notifiés à la création d'un compte lors de la première authentification sur un annuaire LDAP ?</string>
+<string id="Who is notified when an account is created when a user first loggin on a LDAP directory or aactive directory or when a new user register?">Qui est notifiés à la création d'un compte lors de la première authentification sur un annuaire LDAP ou active directory ou lors de l'inscription d'un nouvelle utilisateur ?</string>
 <string id="(View selected group)">(Voir les groupes sélectionnés)</string>
 <string id="Domains">Domaines</string>
 <string id="Add a domain">Ajouter un domaine</string>

@@ -56,6 +56,9 @@ if (isset($_COOKIE['c_password']))
 			{
 				
 				bab_setUserSessionInfo($iIdUser);
+				if (!bab_isUserLogged()) {
+				    throw new Exception('Cookie authentication failed');
+				}
 			}
 			else 
 			{
