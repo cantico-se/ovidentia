@@ -312,7 +312,11 @@ function bab_directoryImportOneEntry($idgroup, Array $arr, Array $post, Array $a
                         " " => "",
                         "-" => ""
                     );
-                    $hashname = md5(mb_strtolower(strtr($arr[$post['givenname']] . $arr[$post['mn']] . $arr[$post['sn']], $replace)));
+					$mn = '';
+					if(isset($post['mn']) && isset($arr[$post['mn']])) {
+						$mn = $arr[$post['mn']];
+					}
+                    $hashname = md5(mb_strtolower(strtr($arr[$post['givenname']] . $mn . $arr[$post['sn']], $replace)));
                     $hash = md5($arr[$post['nickname']] . bab_getHashVar());
     
                     $query = "update " . BAB_USERS_TBL . " set
@@ -428,8 +432,12 @@ function bab_directoryImportOneEntry($idgroup, Array $arr, Array $post, Array $a
                 if ($idgroup > 0) {
                     
                     $replace = array( " " => "", "-" => "");
-                    $hashname = md5(mb_strtolower(strtr($arr[$_POST['givenname']].$arr[$_POST['mn']].$arr[$_POST['sn']], $replace)));
-                    $hash=md5($arr[$_POST['nickname']].bab_getHashVar());
+					$mn = '';
+					if(isset($post['mn']) && isset($arr[$post['mn']])) {
+						$mn = $arr[$post['mn']];
+					}
+                    $hashname = md5(mb_strtolower(strtr($arr[$post['givenname']].$mn.$arr[$post['sn']], $replace)));
+                    $hash=md5($arr[$post['nickname']].bab_getHashVar());
                     if( bab_rp('password3') !== '' && mb_strlen($arr[bab_rp('password3')]) >= 6)
                         {
                         $pwd = mb_strtolower($arr[bab_rp('password3')]);
@@ -440,10 +448,10 @@ function bab_directoryImportOneEntry($idgroup, Array $arr, Array $post, Array $a
                         }
 
                     $babDB->db_query("insert into ".BAB_USERS_TBL." set 
-                        nickname='".$babDB->db_escape_string($arr[$_POST['nickname']])."', 
-                        firstname='".$babDB->db_escape_string($arr[$_POST['givenname']])."', 
-                        lastname='".$babDB->db_escape_string($arr[$_POST['sn']])."', 
-                        email='".$babDB->db_escape_string($arr[$_POST['email']])."', 
+                        nickname='".$babDB->db_escape_string($arr[$post['nickname']])."', 
+                        firstname='".$babDB->db_escape_string($arr[$post['givenname']])."', 
+                        lastname='".$babDB->db_escape_string($arr[$post['sn']])."', 
+                        email='".$babDB->db_escape_string($arr[$post['email']])."', 
                         hashname='".$hashname."', 
                         password='".$babDB->db_escape_string(md5($pwd))."', 
                         confirm_hash='".$babDB->db_escape_string($hash)."', 
