@@ -1353,6 +1353,7 @@ if( isset($add) && $add == 'addreply' && bab_isAccessValid(BAB_FORUMSREPLY_GROUP
 $update = bab_rp('update', '');
 if( $update == 'updatereply' )
 	{
+	$subject = bab_pp('subject', '');
 	bab_requireSaveMethod() && updateReply($forum, $thread, $subject, $post);
 	}
 
