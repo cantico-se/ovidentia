@@ -2862,7 +2862,7 @@ function bab_debug($data, $severity = DBG_TRACE, $category = '', $shiftdebug = 1
         }
     }
 
-    $debugFilename = 'bab_debug.txt';
+    $debugFilename = realpath('.').'/bab_debug.txt';
     // We immediately log in the bab_debug.txt file.
     if ( (!isset($GLOBALS['babDebugLogMinSeverity']) || ($GLOBALS['babDebugLogMinSeverity'] <= $severity))
          && file_exists($debugFilename) && is_writable($debugFilename)) {
