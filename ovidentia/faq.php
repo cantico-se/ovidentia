@@ -1297,7 +1297,7 @@ switch($idx)
 {
     case "questions":
         $babBody->title = bab_translate("Management");
-        if( bab_isAccessValid(BAB_FAQCAT_GROUPS_TBL, $item) || bab_isAccessValid(BAB_FAQMANAGERS_GROUPS_TBL, $item))
+        if(bab_isAccessValid(BAB_FAQMANAGERS_GROUPS_TBL, $item))
         {
             $GLOBALS['babWebStat']->addFaq($item);
             FaqTableOfContents($item);
