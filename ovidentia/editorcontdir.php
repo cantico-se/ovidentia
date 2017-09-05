@@ -144,6 +144,7 @@ function directory($id, $pos, $xf, $badd)
 			$this->addurl = $GLOBALS['babUrlScript']."?tg=editorcontdir&idx=directory&id=".$id;
 			$this->count = 0;
 			$arr = $babDB->db_fetch_array($babDB->db_query("select id_group from ".BAB_DB_DIRECTORIES_TBL." where id='".$babDB->db_escape_string($id)."'"));
+			
 			if(bab_isAccessValid(BAB_DBDIRVIEW_GROUPS_TBL, $id))
 				{
 				$this->idgroup = $arr['id_group'];
@@ -400,9 +401,15 @@ switch($idx)
 	    
 	    $xf = bab_rp('xf');
         
-		if ($badd) directory($id, $pos, $xf, $badd);
-		elseif (isset($id) && !$badd ) directory($id, $pos, $xf, $badd);
-		else dirlist();
+		if ($badd) {
+		    directory($id, $pos, $xf, $badd);
+		}
+		elseif ($id > 0 && !$badd ) {
+		    directory($id, $pos, $xf, $badd);
+		}
+		else {
+		    dirlist();
+		}
 		exit;
 		break;
 	default:
