@@ -650,13 +650,14 @@ function ovidentia_popuptreeviewselectparenttopic() {
     </tr>
     <tr>
         <td valign="middle" align="center">
-            <a href="Javascript:moveOptions(document.homeform.listhome0,document.homeform.elements[5])"><img src="{ babSkinPath }images/Puces/PuceGoHandDown.gif" width="20" height="24" border=0 alt="Down"></a>&nbsp;&nbsp;&nbsp;&nbsp;<a href="Javascript:moveOptions(document.homeform.elements[5],document.homeform.listhome0)"><img src="{ babSkinPath }images/Puces/PuceGoHandTop.gif" width="20" height="24" border=0 alt="Up"></a>
+            <a href="Javascript:moveOptions(document.homeform.listhome0, document.getElementById('listpage0'))"><img src="{ babSkinPath }images/Puces/PuceGoHandDown.gif" width="20" height="24" border=0 alt="Down"></a>&nbsp;&nbsp;&nbsp;&nbsp;
+            <a href="Javascript:moveOptions(document.getElementById('listpage0'), document.homeform.listhome0)"><img src="{ babSkinPath }images/Puces/PuceGoHandTop.gif" width="20" height="24" border=0 alt="Up"></a>
         </td>
         <td>&nbsp;</td>
     </tr>
     <tr>
         <td valign="middle" align="center">
-            <select name="listpage0[]"  size=12 multiple>
+            <select id="listpage0" name="listpage0[]"  size=12 multiple>
               <option value="0">{ listpagetxt }</option>
               <!--#in getnextpage0 -->
               <option value="{ page0id }">{ page0val }</option>
@@ -664,15 +665,16 @@ function ovidentia_popuptreeviewselectparenttopic() {
             </select>
         </td>
         <td valign="middle" align="center">
-            <a href="Javascript:move(true, document.homeform.elements[5])"><img src="{ babSkinPath }images/Puces/PuceGoTop.gif" width="22" height="18" border=0 alt="{ moveup }"></a> <br />
+            <a href="Javascript:move(true, document.getElementById('listpage0'))"><img src="{ babSkinPath }images/Puces/PuceGoTop.gif" width="22" height="18" border=0 alt="{ moveup }"></a> <br />
             <br />
-            <a href="Javascript:move(false, document.homeform.elements[5])">
-            <img src="{ babSkinPath }images/Puces/PuceGoDown.gif" width="22" height="18" border=0 alt="{ movedown }"></a>
+            <a href="Javascript:move(false, document.getElementById('listpage0'))">
+                <img src="{ babSkinPath }images/Puces/PuceGoDown.gif" width="22" height="18" border=0 alt="{ movedown }">
+            </a>
         </td>
     </tr>
     <tr>
         <td align="center">
-            <input type="submit" name="Submit" value="{ create }" onClick="selectAll(document.homeform.elements[5]); document.homeform.submit()" />
+            <input type="submit" name="Submit" value="{ create }" onClick="selectAll(document.getElementById('listpage0')); document.homeform.submit()" />
             <br />
             <br />
         </td>
