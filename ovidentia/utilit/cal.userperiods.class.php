@@ -32,7 +32,7 @@ require_once dirname(__FILE__).'/cal.criteria.class.php';
  * Manage working and non-working hours
  * browse periods with working hours and non-working days
  */
-class bab_UserPeriods implements Countable, seekableIterator {
+class bab_UserPeriods implements Countable, SeekableIterator {
 
     /**
      * @var BAB_DateTime
