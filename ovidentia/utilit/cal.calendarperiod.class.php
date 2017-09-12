@@ -607,17 +607,14 @@ class bab_CalendarPeriod extends bab_ICalendarObject {
         {
             $p = new bab_ICalendarProperty($property);
 
-            $paramlist = '';
+            $paramlist = array();
 
-            if (!empty($p->parameters))
-            {
+            if (!empty($p->parameters)) {
                 foreach($p->parameters as $parameter) {
-
                     $paramlist[] = sprintf('<span style="color:green">%s</span>=<span style="color:blue">%s</span>',$parameter['name'], $parameter['value']);
-
                 }
-                $paramlist = implode(';', $paramlist);
             }
+            $paramlist = implode(';', $paramlist);
 
             $html .= '<tr>';
             $html .= '<th>'.bab_toHtml($p->name).'</th>';
