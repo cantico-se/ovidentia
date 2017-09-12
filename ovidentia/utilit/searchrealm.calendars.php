@@ -100,6 +100,7 @@ class bab_SearchRealmCalendars extends bab_SearchRealm {
 			$this->createField('class'				, bab_translate('Class property')) 					->searchable(false),
 			$this->createField('color'				, bab_translate('Color')) 							->searchable(false),
 			$this->createField('id_dgowner'			, bab_translate('Delegation numeric identifier')) 	->searchable(false),
+		    $this->createField('status'             , bab_translate('Status'))
 		);
 	}
 
@@ -119,7 +120,10 @@ class bab_SearchRealmCalendars extends bab_SearchRealm {
 		$calendars = bab_getICalendars()->getCalendars();
 		$calendars = array_keys($calendars);
 		
-		return $this->calendar->in($calendars)->_AND_($this->collection->is('bab_CalendarEventCollection'));
+		return $this->calendar->in($calendars)
+		  ->_AND_($this->collection->is('bab_CalendarEventCollection')
+		  ->_AND_($this->status->in(array('CONFIRMED', 'TENTATIVE')))
+		);
 	}
 
 
@@ -221,6 +225,7 @@ class bab_SearchCalendarsResult extends bab_SearchResult {
 		$record->description = $calendarPeriod->getProperty('DESCRIPTION');
 		$record->class = $calendarPeriod->getProperty('CLASS');
 		$record->color = $calendarPeriod->getProperty('X-CTO-COLOR');
+		$record->status = $calendarPeriod->getProperty('STATUS');
 		
 		$collection = $calendarPeriod->getCollection();
 		

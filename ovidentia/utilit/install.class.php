@@ -103,6 +103,7 @@ class bab_InstallRepository {
                         $installRepositoryFile = new bab_InstallRepositoryFile($name, $data['relativePath'], $data['version'], $data['description'], $data['dependencies']);
                         $installRepositoryFile->license = $data['license'];
                         $installRepositoryFile->descriptions = $data['descriptions'];
+						$installRepositoryFile->date = $data['date'];
 
 
                         if (isset($data['longDescriptions'])) {
@@ -274,6 +275,7 @@ class bab_InstallRepositoryFile
     public $version;
     public $license;
     public $description;
+    public $date = '0000-00-00 00:00:00';
     public $dependencies = array();
     public $descriptions = array();
     public $longDescriptions = array();

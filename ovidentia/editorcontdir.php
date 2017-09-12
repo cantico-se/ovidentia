@@ -136,6 +136,7 @@ function directory($id, $pos, $xf, $badd)
                 $this->ord = "-";
                 }
 
+
             if( empty($pos))
                 $this->allselected = 1;
             else
@@ -155,6 +156,7 @@ function directory($id, $pos, $xf, $badd)
                 $this->countcol = 0;
                 $this->count = 0;
                 }
+
 
             /* find prefered mail account */
             $this->accid = 0;
@@ -397,19 +399,24 @@ if(!isset($idx))
 
 
 switch($idx)
-    {
-    case "directory":
-
-        $xf = bab_rp('xf');
-
-        if ($badd) directory($id, $pos, $xf, $badd);
-        elseif (isset($id) && !$badd ) directory($id, $pos, $xf, $badd);
-        else dirlist();
-        exit;
-        break;
-    default:
-    case "contact":
-        editorcont();
-        exit;
-    }
-?>
+	{
+	case "directory":
+	    
+	    $xf = bab_rp('xf');
+        
+		if ($badd) {
+		    directory($id, $pos, $xf, $badd);
+		}
+		elseif ($id > 0 && !$badd ) {
+		    directory($id, $pos, $xf, $badd);
+		}
+		else {
+		    dirlist();
+		}
+		exit;
+		break;
+	default:
+	case "contact":
+		editorcont();
+		exit;
+	}

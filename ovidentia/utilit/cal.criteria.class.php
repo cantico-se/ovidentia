@@ -154,6 +154,40 @@ class bab_PeriodCriteriaDelegation extends bab_PeriodCriteria
 }
 
 
+
+
+
+
+class bab_PeriodCriteriaStatus extends bab_PeriodCriteria
+{
+    /**
+     * @var array
+     */
+    private $status = null;
+    
+    public function __construct($status)
+    {
+        if (is_array($status)) {
+            $this->status = $status;
+        } else {
+            $this->status = array($status);
+        }
+    }
+    
+    /**
+     * Add criteria
+     * @param bab_UserPeriods $userperiods
+     * @return unknown_type
+     */
+    public function process(bab_UserPeriods $userperiods)
+    {
+        $userperiods->filterByICalProperty('STATUS', $this->status, false);
+    }
+}
+
+
+
+
 /**
  * Criteria on collection
  * create a filter by type or if the collection contains a hash property, filter by hash
@@ -476,6 +510,18 @@ class bab_PeriodCriteriaFactory
 	{
 		return new bab_PeriodCriteriaCollection($collection);
 	}
+	
+	
+	/**
+	 *
+	 * @param array | string $status
+	 * @return bab_PeriodCriteriaCollection
+	 */
+	public function Status($status)
+	{
+	    return new bab_PeriodCriteriaStatus($status);
+	}
+	
 	
 	/**
 	 * 

@@ -1440,6 +1440,7 @@ class bab_cal_OviEventSelect
             case 'LOCATION':			$colname = 'ce.location';		break;
             case 'DESCRIPTION':			$colname = 'ce.description';	break;
             case 'CATEGORIES':			$colname = 'ca.name';			break;
+            case 'STATUS':              $colname = 'ce.status';			break;
         }
 
         if (!isset($colname))
