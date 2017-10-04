@@ -1141,14 +1141,18 @@ function bab_logout($bRedirect = true)
 
 class displayLogin_Template
 {
-    var $nickname;
-    var $password;
+    public $nickname;
+    public $password;
+    public $login;
+    public $isAjaxRequest;
 
     function displayLogin_Template($url)
     {
         $this->nickname = bab_translate("Login ID");
         $this->password = bab_translate("Password");
         $this->login = bab_translate("Login");
+        
+        $this->isAjaxRequest = bab_isAjaxRequest();
 
         // verify and buid url
         $params = array();
