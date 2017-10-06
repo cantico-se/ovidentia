@@ -1141,14 +1141,18 @@ function bab_logout($bRedirect = true)
 
 class displayLogin_Template
 {
-    var $nickname;
-    var $password;
+    public $nickname;
+    public $password;
+    public $login;
+    public $isAjaxRequest;
 
     function displayLogin_Template($url)
     {
         $this->nickname = bab_translate("Login ID");
         $this->password = bab_translate("Password");
         $this->login = bab_translate("Login");
+        
+        $this->isAjaxRequest = bab_isAjaxRequest();
 
         // verify and buid url
         $params = array();
@@ -1229,7 +1233,22 @@ function bab_displayLoginPage($htmlform, $ovmlTemplate)
  */
 function displayAuthenticationForm($title, $errorMessages)
 {
-
+	if(!isset($_REQUEST['referer']))
+	{
+		$referer = '';
+	}
+	else
+	{
+		$referer = $_REQUEST['referer'];
+	}
+	
+	$temp = new displayLogin_Template($referer);
+	$html =	bab_printTemplate($temp, 'login.html', 'login');
+	
+	if (bab_isAjaxRequest()) {
+		echo $html;
+		die();
+	}
 
     $settings = bab_getInstance('bab_Settings');
     $site = $settings->getSiteSettings();
@@ -1253,18 +1272,6 @@ function displayAuthenticationForm($title, $errorMessages)
     {
         $babBody->addItemMenu('emailpwd', bab_translate("Lost Password"), $GLOBALS['babUrlScript'].'?tg=login&cmd=emailpwd');
     }
-
-    if(!isset($_REQUEST['referer']))
-    {
-        $referer = '';
-    }
-    else
-    {
-        $referer = $_REQUEST['referer'];
-    }
-
-    $temp = new displayLogin_Template($referer);
-    $html =	bab_printTemplate($temp, 'login.html', 'login');
 
     bab_displayLoginPage($html, 'signon.html');
 }
