@@ -119,6 +119,22 @@ class Func_PortalAuthentication extends bab_functionality
     {
         $this->errorMessages = array();
     }
+    
+    /**
+     * @return array
+     */
+    public function getJsonErrors()
+    {
+        $messages = array();
+        foreach ($this->errorMessages as $str) {
+            $messages[] = array(
+                'level' => 'danger',
+                'content' => $str
+            );
+        }
+        
+        return array('messages' => $messages);
+    }
 
     /**
      * Checks whether the specified ovidentia user has reached the maximum number of unsuccessful connection attempts.
@@ -369,6 +385,13 @@ class Func_PortalAuthentication_AuthOvidentia extends Func_PortalAuthentication
 
                 return true;
             }
+            
+            if (bab_isAjaxRequest() && count($this->errorMessages) > 0) {
+                header($_SERVER['SERVER_PROTOCOL'] . ' 500 Internal Server Error', true, 500);
+                echo bab_json_encode($this->getJsonErrors());
+                die();
+            }
+            
         }
         else if ($sLogin === '' || $sPassword === '')
         {
@@ -929,11 +952,12 @@ function bab_doRequireCredential($sLoginMessage, $sAuthType)
             exit;
         }
 
-
+        
         if ($oAuthObject->errorMessages) {
             loginRedirect($oAuthObject->getLoginFormUrl());
         }
-
+        
+        
         // failed authentication without error message
         die(bab_translate("Failed authentication"));
     }
@@ -1254,7 +1278,7 @@ function displayAuthenticationForm($title, $errorMessages)
 	}
 	
 	if (bab_rp('restricted')) {
-	    header('HTTP/1.0 401 Unauthorized', true, 401);
+	    header($_SERVER['SERVER_PROTOCOL'].' 401 Unauthorized', true, 401);
 	}
 	
 	
