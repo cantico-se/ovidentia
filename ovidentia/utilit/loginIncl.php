@@ -38,7 +38,11 @@ class Func_PortalAuthentication extends bab_functionality
     var $loginMessage = '';
     public $errorMessages = array();
 
-
+    /**
+     * If the requested page is a restricted area
+     * the login form page will be with a 401 HTTP code
+     */
+    public $restrictedArea = false;
 
     public function getDescription()
     {
@@ -370,6 +374,7 @@ class Func_PortalAuthentication_AuthOvidentia extends Func_PortalAuthentication
         {
             $this->addError(bab_translate("You must complete all fields !!"));
         }
+        
         header('location:'.$this->getLoginFormUrl());
         return false;
     }
@@ -382,6 +387,10 @@ class Func_PortalAuthentication_AuthOvidentia extends Func_PortalAuthentication
     {
         $url = $GLOBALS['babUrlScript'] . '?tg=login&cmd=authform&msg=' . urlencode($this->loginMessage) . '&err=' . urlencode(implode("\n", $this->errorMessages));
 
+        if ($this->restrictedArea) {
+            $url .= '&restricted=1';
+        }
+        
         $settings = bab_getInstance('bab_Settings');
         /*@var $settings bab_Settings */
         $site = $settings->getSiteSettings();
@@ -912,6 +921,8 @@ function bab_doRequireCredential($sLoginMessage, $sAuthType)
             bab_storeHttpContext();
         }
         $oAuthObject->setLoginMessage($sLoginMessage);
+        $oAuthObject->restrictedArea = true;
+        
         if(true === $oAuthObject->login())
         {
             loginRedirect($GLOBALS['babUrlScript'] . '?babHttpContext=restore');
@@ -1241,6 +1252,11 @@ function displayAuthenticationForm($title, $errorMessages)
 	{
 		$referer = $_REQUEST['referer'];
 	}
+	
+	if (bab_rp('restricted')) {
+	    header('HTTP/1.0 401 Unauthorized', true, 401);
+	}
+	
 	
 	$temp = new displayLogin_Template($referer);
 	$html =	bab_printTemplate($temp, 'login.html', 'login');

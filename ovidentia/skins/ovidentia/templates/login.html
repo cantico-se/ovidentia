@@ -52,29 +52,6 @@
 </form>
 
 
-<!--#if isAjaxRequest -->
-<script type="text/javascript">
-	// Do login by ajax post then refresh the current dialog
-	
-	(function() {
-		var f = jQuery('.bab-login-form');
-		f.submit(function(event) {
-			var $inputs = jQuery('.bab-login-form :input');
-			var values = {};
-		    $inputs.each(function() {
-		        values[this.name] = jQuery(this).val();
-		    });
-			jQuery.post(f.attr('action'), values, function() {
-				// reload dialog content
-				window.babAddonWidgets.reload(f.get(0));
-			});
-			event.preventDefault();
-		});
-	})();
-</script>
-<!--#endif isAjaxRequest -->
-
-
 <!--#end login -->
 
 
