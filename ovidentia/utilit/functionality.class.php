@@ -58,11 +58,12 @@ class bab_functionality {
         if (file_exists($pathname))  {
             $include_result = include $pathname;
         }
-
+        /*
         if (false === $include_result) {
             bab_debug(sprintf('The functionality %s is not available', $path), DBG_ERROR, __CLASS__);
+            bab_debug_print_backtrace();
         }
-
+        */
         return $include_result;
     }
 
