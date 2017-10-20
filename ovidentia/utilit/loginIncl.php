@@ -43,6 +43,9 @@ class Func_PortalAuthentication extends bab_functionality
      * the login form page will be with a 401 HTTP code
      */
     public $restrictedArea = false;
+    
+
+    
 
     public function getDescription()
     {
@@ -86,6 +89,18 @@ class Func_PortalAuthentication extends bab_functionality
     {
         return null;
     }
+    
+    
+    /**
+     * If authentication use ovidentia database
+     * This is used by the emailpassword functionality and administrator users list
+     * @var string
+     */
+    public function getLoginIdField() {
+        return 'nickname';
+    }
+    
+    
 
     /**
      * Sets the message that will be displayed to the user when asked for his credentials.

@@ -67,7 +67,10 @@ function bab_userListShowHideFilter()
         <table width="100%" border="0" cellspacing="0" cellpadding="2" align="center">
         <tfoot>
             <tr class="BabSiteAdminTitleFontBackground">
-                <td colspan="5">&nbsp;</td>
+                <td colspan="4">&nbsp;</td>
+                <!--#if displayNickname -->
+                <td>&nbsp;</td>
+                <!--#endif displayNickname -->
                 <td align="center">
                 <!--#if bshowform -->
                     <a href="javascript:onCheckAll('users', true)"><img src="{ babSkinPath }images/Puces/Pucecheked.gif" alt="{ checkall }" width="10" height="10" border="0" /></a><a href="javascript:onCheckAll('users', false)"><img src="{ babSkinPath }images/Puces/PuceUncheked.gif" alt="{ uncheckall }" width="10" height="10" border="0" /></a>
@@ -77,13 +80,18 @@ function bab_userListShowHideFilter()
         </tfoot>
 
         <tr>
-            <td colspan="6" nowrap="nowrap" class="BabLetterlists"><!--#if allselected "== 1" -->{ allname }<img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="5" height="1" border="0" /><!--#else allselected --><a class="BabAlphabetLink" href="{ allurl }">{ allname }</a><img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="5" height="1" border="0" /><!--#endif allselected --><!--#in getnextselect --><!--#if selected "== 1" -->{ selectname }<img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="5" height="1" border="0" /><!--#else selected --><a class="BabAlphabetLink" href="{ selecturl }">{ selectname }</a><img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="5" height="1" border="0" /><!--#endif selected --><!--#endin getnextselect --></td>
+            <td colspan="5" nowrap="nowrap" class="BabLetterlists"><!--#if allselected "== 1" -->{ allname }<img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="5" height="1" border="0" /><!--#else allselected --><a class="BabAlphabetLink" href="{ allurl }">{ allname }</a><img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="5" height="1" border="0" /><!--#endif allselected --><!--#in getnextselect --><!--#if selected "== 1" -->{ selectname }<img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="5" height="1" border="0" /><!--#else selected --><a class="BabAlphabetLink" href="{ selecturl }">{ selectname }</a><img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="5" height="1" border="0" /><!--#endif selected --><!--#endin getnextselect --></td>
+            <!--#if displayNickname -->
+            <td>&nbsp;</td>
+            <!--#endif displayNickname -->
         </tr>
 
         <tr class="BabSiteAdminTitleFontBackground">
             <td width="1%" align="right" nowrap="nowrap" valign="middle">&nbsp;</td>
             <td><a class="BabSiteAdminListLink" href="{ fullnameurl }">{ fullname }</a></td>
+            <!--#if displayNickname -->
             <td>{ nickname }</td>
+            <!--#endif displayNickname -->
             <td>{ email }</td>
             <td>{ t_lastlogin }</td>
             <td align="center"><!--#if bshowform -->
@@ -116,7 +124,9 @@ function bab_userListShowHideFilter()
                 { urlname }
                 <!--#endif bmodname -->
             </td>
+            <!--#if displayNickname -->
             <td>{ usersInfo[nickname] }</td>
+            <!--#endif displayNickname -->
             <td><a class="BabNameEmailLink" href="mailto:{ usersInfo[email] }">{ usersInfo[email] }</a></td>
             <td>{ lastlogin }</td>
             <td align="center"><!--#if bshowform --><input type="checkbox" name="users[]" value="{ userid }" { checked } /><!--#endif bshowform --></td>

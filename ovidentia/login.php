@@ -33,7 +33,6 @@ include_once dirname(__FILE__).'/utilit/settings.class.php';
 
 function emailPassword()
     {
-    global $babBody;
     class temp
         {
         var $nickname;

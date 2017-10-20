@@ -77,6 +77,9 @@ function listUsers($pos, $grp, $deleteAction)
         private $baseurl;
 
         private $bUseInnerJoin;
+        
+        public $displayNickname = true;
+        
 
         function temp($pos, $grp, $deleteAction)
             {
@@ -215,6 +218,12 @@ function listUsers($pos, $grp, $deleteAction)
                 {
                 $this->bshowform = true;
                 }
+                
+                
+            // hide nickname column if default authentication use email
+            $defaultAuth = bab_functionality::get('PortalAuthentication');
+            /* @var $defaultAuth Func_PortalAuthentication */
+            $this->displayNickname = ('nickname' === $defaultAuth->getLoginIdField());
 
             //The toolbar call bab_toHtml
             $sCreateUserUrl = $GLOBALS['babUrlScript'].'?tg=users&idx=Create&pos='.urlencode($pos).'&grp='.urlencode($grp);
@@ -257,7 +266,7 @@ function listUsers($pos, $grp, $deleteAction)
 
             $this->sHtmlToolBarData = $oToolbar->printTemplate();
 
-            }
+        }
 
 
 

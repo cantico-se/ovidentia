@@ -410,7 +410,7 @@ function destroyAuthCookie() {
  */
 function sendPassword($nickname, $email)
     {
-    global $babBody, $babDB, $BAB_HASH_VAR, $babAdminEmail;
+    global $babBody, $babDB;
     require_once $GLOBALS['babInstallPath'].'utilit/settings.class.php';
 
 
@@ -475,8 +475,19 @@ function sendPassword($nickname, $email)
         $babBody->msgerror = $error;
         return false;
     }
-
-    notifyUserPassword($new_pass, $arr['email'], $arr['nickname']);
+    
+    $defaultAuth = bab_functionality::get('PortalAuthentication');
+    /* @var $defaultAuth Func_PortalAuthentication */
+    
+    $loginIdField = $defaultAuth->getLoginIdField();
+    
+    if (!isset($arr[$loginIdField])) {
+        $loginIdField = 'nickname';
+    }
+    
+    $loginId = $arr[$loginIdField];
+    
+    notifyUserPassword($new_pass, $arr['email'], $loginId);
     $babBody->addError(bab_translate("Your new password has been emailed to you.") ." <".$arr['email'].">");
     return true;
 
