@@ -34,7 +34,7 @@ define('STAT_IT_YEAR', 7);
 define('STAT_IT_LASTYEAR', 8);
 define('STAT_IT_OTHER', 9);
 
-function updateStatPreferences(&$itwhat, &$sd, &$ed)
+function updateStatPreferences(&$itwhat, &$sd, &$ed, &$exportchr)
 {
     global $babDB;
     
@@ -48,7 +48,10 @@ function updateStatPreferences(&$itwhat, &$sd, &$ed)
         $pref['ed'] = $arr['time_interval'] == STAT_IT_OTHER ? $arr['end_date'] : '';
         $pref['exportchr'] = chr($arr['separatorchar']);
     } else {
-        $babDB->db_query("insert into " . BAB_STATS_PREFERENCES_TBL . " (id_user, time_interval, begin_date, end_date, separatorchar) values ('" . $babDB->db_escape_string($GLOBALS['BAB_SESS_USERID']) . "', '" . STAT_IT_TOTAL . "', '', '', '" . ord(",") . "')");
+        $babDB->db_query("insert into " . BAB_STATS_PREFERENCES_TBL . " 
+            (id_user, time_interval, begin_date, end_date, separatorchar) 
+            values 
+            ('" . $babDB->db_escape_string($GLOBALS['BAB_SESS_USERID']) . "', '" . STAT_IT_TOTAL . "', '', '', '" . ord(",") . "')");
         $pref['itwhat'] = STAT_IT_TOTAL;
         $pref['sd'] = '';
         $pref['ed'] = '';
@@ -569,6 +572,10 @@ function validateDate($inputDate)
 }
 
 /* main */
+
+$babBody = bab_getBody();
+
+
 if (bab_statisticsAccess() == - 1) {
     $babBody->msgerror = bab_translate("Access denied");
     return;
@@ -586,8 +593,11 @@ $sd = validateDate($sd);
 $ed = bab_rp('ed', '');
 $ed = validateDate($ed);
 
+// export
+$exportchr = ',';
+
 displayStatisticPanel($idx);
-updateStatPreferences($itwhat, $sd, $ed);
+updateStatPreferences($itwhat, $sd, $ed, $exportchr);
 
 if ($idx != 'connection') {
     $stat_params = array();
