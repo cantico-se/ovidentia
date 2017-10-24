@@ -102,7 +102,7 @@ function summaryConnections($col, $order, $pos, $startday, $endday)
 			$this->ptotalconnections = 0;
 			$this->arrinfo = array();
 			for ($i = 0; $arr = $babDB->db_fetch_array($res); $i++) {
-				if ((isset($GLOBALS['export']) && $GLOBALS['export'] == 1) || ($i >= $pos && $i < $pos + BAB_STAT_MAX_ROWS)) {
+				if (bab_statExport() || ($i >= $pos && $i < $pos + BAB_STAT_MAX_ROWS)) {
 					$tmparr = array();
 					$tmparr['id_user'] = $arr['id_user'];
 					$tmparr['user'] = $arr['lastname'] . ' ' . $arr['firstname'];
@@ -160,7 +160,7 @@ function summaryConnections($col, $order, $pos, $startday, $endday)
 		
 	$temp = new summaryConnectionsCls($col, $order, $pos, $startday, $endday);
 
-	if (isset($GLOBALS['export']) && $GLOBALS['export'] == 1) {
+	if bab_statExport() {
 		$output = bab_translate("Connections");
 		if (!empty($startday) && !empty($endday)) {
 			$output .= ' (' . bab_strftime(bab_mktime($startday . ' 00:00:00'), false) . ' - ' . bab_strftime(bab_mktime($endday . ' 00:00:00'), false) . ')';
@@ -176,7 +176,7 @@ function summaryConnections($col, $order, $pos, $startday, $endday)
 			$output .= $temp->user_name . $GLOBALS['exportchr'] . $temp->nb_connections . $GLOBALS['exportchr'] . $temp->nb_connectionspc . "\n";
 		}
 		header('Content-Disposition: attachment; filename="export.csv"' . "\n");
-		header('Content-Type: text/plain' . "\n");
+		header('Content-Type: text/csv' . "\n");
 		header('Content-Length: ' . mb_strlen($output) . "\n");
 		header('Content-transfert-encoding: binary' . "\n");
 		print $output;
@@ -276,7 +276,7 @@ function detailConnections($col, $order, $pos, $startday, $endday, $userId)
 			$this->ptotalduration = 0;
 			$this->arrinfo = array();
 			for ($i = 0; $arr = $babDB->db_fetch_array($res); $i++) {
-				if ((isset($GLOBALS['export']) && $GLOBALS['export'] == 1) || ($i >= $pos && $i < $pos + BAB_STAT_MAX_ROWS)) {
+				if (bab_statExport() || ($i >= $pos && $i < $pos + BAB_STAT_MAX_ROWS)) {
 					$tmparr = array();
 					$tmparr['connection'] = $arr['login_time'];
 					$tmparr['login_time'] = bab_shortDate(bab_mktime($arr['login_time']));
@@ -350,7 +350,7 @@ function detailConnections($col, $order, $pos, $startday, $endday, $userId)
 		
 	$temp = new detailConnectionsCls($col, $order, $pos, $startday, $endday, $userId);
 
-	if (isset($GLOBALS['export']) && $GLOBALS['export'] == 1) {
+	if bab_statExport() {
 		$output = bab_translate("Connections");
 		if (!empty($startday) && !empty($endday)) {
 			$output .= ' (' . bab_strftime(bab_mktime($startday . ' 00:00:00'), false) . ' - ' . bab_strftime(bab_mktime($endday . ' 00:00:00'), false) . ')';
@@ -366,7 +366,7 @@ function detailConnections($col, $order, $pos, $startday, $endday, $userId)
 			$output .= $temp->login_time . $GLOBALS['exportchr'] . $temp->connection_duration . "\n";
 		}
 		header('Content-Disposition: attachment; filename="export.csv"' . "\n");
-		header('Content-Type: text/plain' . "\n");
+		header('Content-Type: text/csv' . "\n");
 		header('Content-Length: ' . mb_strlen($output) . "\n");
 		header('Content-transfert-encoding: binary' . "\n");
 		print $output;

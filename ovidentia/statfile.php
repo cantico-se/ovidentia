@@ -183,7 +183,7 @@ function summaryFileManager($col, $order)
 		}
 
 	$temp = new summaryFileManagerCls($col, $order);
-	if( isset($GLOBALS['export']) && $GLOBALS['export'] == 1 )
+	if( bab_statExport() )
 		{
 		$output = $temp->fullname.$GLOBALS['exportchr'].$temp->dgtxt.$GLOBALS['exportchr'].$temp->diskspacetxt.$GLOBALS['exportchr'].$temp->filestxt.$GLOBALS['exportchr'].$temp->versionstxt."\n";
 		while($temp->getnext())
@@ -191,7 +191,7 @@ function summaryFileManager($col, $order)
 			$output .= $temp->urlname.$GLOBALS['exportchr'].$temp->dgname.$GLOBALS['exportchr'].$temp->diskspace.$GLOBALS['exportchr'].$temp->nbfiles.$GLOBALS['exportchr'].$temp->nbfilesv."\n";
 			}
 		header("Content-Disposition: attachment; filename=\"export.csv\""."\n");
-		header("Content-Type: text/plain"."\n");
+		header("Content-Type: text/csv"."\n");
 		header("Content-Length: ". mb_strlen($output)."\n");
 		header("Content-transfert-encoding: binary"."\n");
 		print $output;
@@ -378,7 +378,7 @@ function summaryFmDownloads($col, $order, $pos, $startday, $endday)
 			$i = 0;
 			while($arr = $babDB->db_fetch_array($res))
 				{
-				if( (isset($GLOBALS['export']) && $GLOBALS['export'] == 1) || ( $i >= $pos && $i < $pos + BAB_STAT_MAX_ROWS ) )
+				if( bab_statExport() || ( $i >= $pos && $i < $pos + BAB_STAT_MAX_ROWS ) )
 					{
 					$tmparr = array();
 					$tmparr['module'] = $arr['name'];
@@ -448,7 +448,7 @@ function summaryFmDownloads($col, $order, $pos, $startday, $endday)
 			}
 		}
 	$temp = new summaryFmDownloadsCls($col, $order, $pos, $startday, $endday);
-	if( isset($GLOBALS['export']) && $GLOBALS['export'] == 1 )
+	if( bab_statExport() )
 		{
 		$output = bab_translate("Downloads");
 		if( !empty($startday) && !empty($endday))
@@ -471,7 +471,7 @@ function summaryFmDownloads($col, $order, $pos, $startday, $endday)
 			$output .= $temp->modulename.$GLOBALS['exportchr'].$temp->foldername.$GLOBALS['exportchr'].$temp->pathname.$GLOBALS['exportchr'].$temp->nbhitspc."\n";
 			}
 		header("Content-Disposition: attachment; filename=\"export.csv\""."\n");
-		header("Content-Type: text/plain"."\n");
+		header("Content-Type: text/csv"."\n");
 		header("Content-Length: ". mb_strlen($output)."\n");
 		header("Content-transfert-encoding: binary"."\n");
 		print $output;
@@ -558,7 +558,7 @@ function summaryFmFolders($col, $order, $pos, $startday, $endday)
 			$i = 0;
 			while($arr = $babDB->db_fetch_array($res))
 				{
-				if( (isset($GLOBALS['export']) && $GLOBALS['export'] == 1) || ( $i >= $pos && $i < $pos + BAB_STAT_MAX_ROWS ) )
+				if( bab_statExport() || ( $i >= $pos && $i < $pos + BAB_STAT_MAX_ROWS ) )
 					{
 					$tmparr = array();
 					$tmparr['module'] = $arr['folder'];
@@ -622,7 +622,7 @@ function summaryFmFolders($col, $order, $pos, $startday, $endday)
 			}
 		}
 	$temp = new summaryFmFoldersCls($col, $order, $pos, $startday, $endday);
-	if( isset($GLOBALS['export']) && $GLOBALS['export'] == 1 )
+	if( bab_statExport() )
 		{
 		$output = bab_translate("Folders");
 		if( !empty($startday) && !empty($endday))
@@ -644,7 +644,7 @@ function summaryFmFolders($col, $order, $pos, $startday, $endday)
 			$output .= $temp->modulename.$GLOBALS['exportchr'].$temp->nbhits.$GLOBALS['exportchr'].$temp->nbhitspc."\n";
 			}
 		header("Content-Disposition: attachment; filename=\"export.csv\""."\n");
-		header("Content-Type: text/plain"."\n");
+		header("Content-Type: text/csv"."\n");
 		header("Content-Length: ". mb_strlen($output)."\n");
 		header("Content-transfert-encoding: binary"."\n");
 		print $output;
@@ -795,7 +795,7 @@ function showStatFmDownloads($id, $date)
 
 		}
 	$temp = new showStatFmDownloadsCls($id, $date);
-	if( isset($GLOBALS['export']) && $GLOBALS['export'] == 1 )
+	if( bab_statExport() )
 		{
 		$output = bab_translate("File").": ".$babBodyPopup->title;
 		$output .= "\n";
@@ -826,7 +826,7 @@ function showStatFmDownloads($id, $date)
 			}
 
 		header("Content-Disposition: attachment; filename=\"export.csv\""."\n");
-		header("Content-Type: text/plain"."\n");
+		header("Content-Type: text/csv"."\n");
 		header("Content-Length: ". mb_strlen($output)."\n");
 		header("Content-transfert-encoding: binary"."\n");
 		print $output;

@@ -117,7 +117,7 @@ function summaryPages($col, $order, $startday, $endday)
 			}
 		}
 	$temp = new summaryPagesCls($col, $order, $startday, $endday);
-	if( isset($GLOBALS['export']) && $GLOBALS['export'] == 1 )
+	if( bab_statExport() )
 		{
 		$output = bab_translate("Pages");
 		if( !empty($startday) && !empty($endday))
@@ -140,7 +140,7 @@ function summaryPages($col, $order, $startday, $endday)
 			$output .= $temp->modulename.$GLOBALS['exportchr'].$temp->nbhits.$GLOBALS['exportchr'].$temp->nbhitspc."\n";
 			}
 		header("Content-Disposition: attachment; filename=\"export.csv\""."\n");
-		header("Content-Type: text/plain"."\n");
+		header("Content-Type: text/csv"."\n");
 		header("Content-Length: ". mb_strlen($output)."\n");
 		header("Content-transfert-encoding: binary"."\n");
 		print $output;

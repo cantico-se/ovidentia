@@ -158,7 +158,7 @@ function summaryDelegatList($col, $order)
 		}
 
 	$temp = new summaryDelegatListCls($col, $order);
-	if( isset($GLOBALS['export']) && $GLOBALS['export'] == 1 )
+	if( bab_statExport() )
 		{
 		$output = $temp->grouptxt." (".$temp->delegtxt.")";
 
@@ -178,7 +178,7 @@ function summaryDelegatList($col, $order)
 			$output .= "\n";
 			}
 		header("Content-Disposition: attachment; filename=\"export.csv\""."\n");
-		header("Content-Type: text/plain"."\n");
+		header("Content-Type: text/csv"."\n");
 		header("Content-Length: ". mb_strlen($output)."\n");
 		header("Content-transfert-encoding: binary"."\n");
 		print $output;
@@ -419,7 +419,7 @@ function summarySections($col, $order)
 		}
 
 	$temp = new summarySectionsCls($col, $order);
-	if( isset($GLOBALS['export']) && $GLOBALS['export'] == 1 )
+	if( bab_statExport() )
 		{
 		$output = $temp->sectiontxt.$GLOBALS['exportchr'].$temp->delegattxt.$GLOBALS['exportchr']."%\n";
 		while($temp->getnext())
@@ -427,7 +427,7 @@ function summarySections($col, $order)
 			$output .= $temp->sectionname.$GLOBALS['exportchr'].$temp->delegation.$GLOBALS['exportchr'].$temp->total."\n";
 			}
 		header("Content-Disposition: attachment; filename=\"export.csv\""."\n");
-		header("Content-Type: text/plain"."\n");
+		header("Content-Type: text/csv"."\n");
 		header("Content-Length: ". mb_strlen($output)."\n");
 		header("Content-transfert-encoding: binary"."\n");
 		print $output;
