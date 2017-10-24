@@ -35,6 +35,21 @@ define('STAT_IT_YEAR',		7);
 define('STAT_IT_LASTYEAR',	8);
 define('STAT_IT_OTHER',		9);
 
+
+
+
+/**
+ * @return boolean
+ */
+function bab_statExport()
+{
+    return (1 === (int) bab_rp('export'));
+}
+
+
+
+
+
 function updateStatPreferences(&$itwhat, &$sd, &$ed, &$exportchr)
 {
 	global $babDB;
@@ -252,18 +267,7 @@ function displayStatisticPanel($idx)
                 }
 				}
 
-            if ($site['stat_keep_history'] > 0) {
-                $faq_session_row[] = array(
-                    'idx' => 'sessions',
-                    'item' => bab_translate("Sessions"),
-                    'url' => $GLOBALS['babUrlScript'] . "?tg=stat&idx=sessions"
-                );
-                
-                if (empty($this->current)) {
-                    $this->current = 'sessions';
-                }
-				}
-
+            
             $this->itemarray[] = $faq_session_row;
             
 

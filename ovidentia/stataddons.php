@@ -94,7 +94,7 @@ function summaryAddons($col, $order, $pos, $startday, $endday)
 			$i = 0;
 			while($arr = $babDB->db_fetch_array($res))
 				{
-				if( (isset($GLOBALS['export']) && $GLOBALS['export'] == 1) || ( $i >= $pos && $i < $pos + BAB_STAT_MAX_ROWS ) )
+				if( bab_statExport() || ( $i >= $pos && $i < $pos + BAB_STAT_MAX_ROWS ) )
 					{
 					$tmparr = array();
 					$tmparr['module'] = $arr['st_addon'];
@@ -157,7 +157,7 @@ function summaryAddons($col, $order, $pos, $startday, $endday)
 			}
 		}
 	$temp = new summaryAddonsCls($col, $order, $pos, $startday, $endday);
-	if( isset($GLOBALS['export']) && $GLOBALS['export'] == 1 )
+	if( bab_statExport() )
 		{
 		$output = bab_translate("Add-ons");
 		if( !empty($startday) && !empty($endday))
@@ -262,7 +262,7 @@ function showStatAddon($id, $date)
 
 		}
 	$temp = new showStatForumCls($id, $date);
-	if( isset($GLOBALS['export']) && $GLOBALS['export'] == 1 )
+	if( bab_statExport() )
 		{
 		$output = bab_translate("Addon").": ".$babBodyPopup->title;
 		$output .= "\n";
@@ -293,7 +293,7 @@ function showStatAddon($id, $date)
 			}
 
 		header("Content-Disposition: attachment; filename=\"export.csv\""."\n");
-		header("Content-Type: text/plain"."\n");
+		header("Content-Type: text/csv"."\n");
 		header("Content-Length: ". mb_strlen($output)."\n");
 		header("Content-transfert-encoding: binary"."\n");
 		print $output;

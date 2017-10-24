@@ -103,7 +103,7 @@ function summaryArticles($col, $order, $pos, $startday, $endday)
 			$i = 0;
 			while($arr = $babDB->db_fetch_array($res))
 				{
-				if( (isset($GLOBALS['export']) && $GLOBALS['export'] == 1) || ( $i >= $pos && $i < $pos + BAB_STAT_MAX_ROWS ))
+				if( bab_statExport() || ( $i >= $pos && $i < $pos + BAB_STAT_MAX_ROWS ))
 					{
 					$tmparr = array();
 					$tmparr['article'] = $arr['title'];
@@ -168,7 +168,7 @@ function summaryArticles($col, $order, $pos, $startday, $endday)
 			}
 		}
 	$temp = new summaryArticlesCls($col, $order, $pos, $startday, $endday);
-	if( isset($GLOBALS['export']) && $GLOBALS['export'] == 1 )
+	if( bab_statExport() )
 		{
 		$output = bab_translate("Articles");
 		if( !empty($startday) && !empty($endday))
@@ -191,7 +191,7 @@ function summaryArticles($col, $order, $pos, $startday, $endday)
 			$output .= $temp->modulename.$GLOBALS['exportchr'].$temp->nbhits.$GLOBALS['exportchr'].$temp->nbhitspc."\n";
 			}
 		header("Content-Disposition: attachment; filename=\"export.csv\""."\n");
-		header("Content-Type: text/plain"."\n");
+		header("Content-Type: text/csv"."\n");
 		header("Content-Length: ". mb_strlen($output)."\n");
 		header("Content-transfert-encoding: binary"."\n");
 		print $output;
@@ -265,7 +265,7 @@ function showReferentsArticle($col, $order, $pos, $item, $date)
 			$i = 0;
 			while($arr = $babDB->db_fetch_array($res))
 				{
-				if( (isset($GLOBALS['export']) && $GLOBALS['export'] == 1) || ( $i >= $pos && $i < $pos + BAB_STAT_MAX_ROWS ))
+				if( bab_statExport() || ( $i >= $pos && $i < $pos + BAB_STAT_MAX_ROWS ))
 					{
 					$tmparr = array();
 					$tmparr['module'] = $arr['module_name'];
@@ -409,7 +409,7 @@ function summaryTopicsArticles($col, $order, $pos, $startday, $endday)
 			$i = 0;
 			while($arr = $babDB->db_fetch_array($res))
 				{
-				if( (isset($GLOBALS['export']) && $GLOBALS['export'] == 1) || ( $i >= $pos && $i < $pos + BAB_STAT_MAX_ROWS ) )
+				if( bab_statExport() || ( $i >= $pos && $i < $pos + BAB_STAT_MAX_ROWS ) )
 					{
 					$tmparr = array();
 					$tmparr['article'] = $arr['category'];
@@ -473,7 +473,7 @@ function summaryTopicsArticles($col, $order, $pos, $startday, $endday)
 			}
 		}
 	$temp = new summaryTopicsArticlesCls($col, $order, $pos, $startday, $endday);
-	if( isset($GLOBALS['export']) && $GLOBALS['export'] == 1 )
+	if( bab_statExport() )
 		{
 		$output = bab_translate("Articles topics");
 		if( !empty($startday) && !empty($endday))
@@ -497,7 +497,7 @@ function summaryTopicsArticles($col, $order, $pos, $startday, $endday)
 			$output .= $temp->modulename.$GLOBALS['exportchr'].$temp->nbhits.$GLOBALS['exportchr'].$temp->nbhitspc."\n";
 			}
 		header("Content-Disposition: attachment; filename=\"export.csv\""."\n");
-		header("Content-Type: text/plain"."\n");
+		header("Content-Type: text/csv"."\n");
 		header("Content-Length: ". mb_strlen($output)."\n");
 		header("Content-transfert-encoding: binary"."\n");
 		print $output;
@@ -584,7 +584,7 @@ function summaryTopicCategoryArticles($col, $order, $pos, $startday, $endday)
 			$i = 0;
 			while($arr = $babDB->db_fetch_array($res))
 				{
-				if( (isset($GLOBALS['export']) && $GLOBALS['export'] == 1) || ( $i >= $pos && $i < $pos + BAB_STAT_MAX_ROWS ) )
+				if( bab_statExport() || ( $i >= $pos && $i < $pos + BAB_STAT_MAX_ROWS ) )
 					{
 					$tmparr = array();
 					$tmparr['article'] = $arr['title'];
@@ -648,7 +648,7 @@ function summaryTopicCategoryArticles($col, $order, $pos, $startday, $endday)
 			}
 		}
 	$temp = new summaryTopicCategoryArticlesCls($col, $order, $pos, $startday, $endday);
-	if( isset($GLOBALS['export']) && $GLOBALS['export'] == 1 )
+	if( bab_statExport() )
 		{
 		$output = bab_translate("Topics categories");
 		if( !empty($startday) && !empty($endday))
@@ -671,7 +671,7 @@ function summaryTopicCategoryArticles($col, $order, $pos, $startday, $endday)
 			$output .= $temp->modulename.$GLOBALS['exportchr'].$temp->nbhits.$GLOBALS['exportchr'].$temp->nbhitspc."\n";
 			}
 		header("Content-Disposition: attachment; filename=\"export.csv\""."\n");
-		header("Content-Type: text/plain"."\n");
+		header("Content-Type: text/csv"."\n");
 		header("Content-Length: ". mb_strlen($output)."\n");
 		header("Content-transfert-encoding: binary"."\n");
 		print $output;
@@ -751,7 +751,7 @@ function showStatArticle($idart, $date)
 
 	$temp = new showStatArticleCls($idart, $date);
 
-	if( isset($GLOBALS['export']) && $GLOBALS['export'] == 1 )
+	if( bab_statExport() )
 		{
 		$output = bab_translate("Article").": ".$babBodyPopup->title;
 		$output .= "\n";
@@ -782,7 +782,7 @@ function showStatArticle($idart, $date)
 			}
 
 		header("Content-Disposition: attachment; filename=\"export.csv\""."\n");
-		header("Content-Type: text/plain"."\n");
+		header("Content-Type: text/csv"."\n");
 		header("Content-Length: ". mb_strlen($output)."\n");
 		header("Content-transfert-encoding: binary"."\n");
 		print $output;
@@ -864,7 +864,7 @@ function showStatTopic($idtopic, $date)
 		}
 
 	$temp = new showStatTopicCls($idtopic, $date);
-	if( isset($GLOBALS['export']) && $GLOBALS['export'] == 1 )
+	if( bab_statExport() )
 		{
 		$output = bab_translate("Topic").": ".$babBodyPopup->title;
 		$output .= "\n";
@@ -895,7 +895,7 @@ function showStatTopic($idtopic, $date)
 			}
 
 		header("Content-Disposition: attachment; filename=\"export.csv\""."\n");
-		header("Content-Type: text/plain"."\n");
+		header("Content-Type: text/csv"."\n");
 		header("Content-Length: ". mb_strlen($output)."\n");
 		header("Content-transfert-encoding: binary"."\n");
 		print $output;
@@ -976,7 +976,7 @@ function showStatTopicCategory($idtopcat, $date)
 		}
 
 	$temp = new showStatTopicCategoryCls($idtopcat, $date);
-	if( isset($GLOBALS['export']) && $GLOBALS['export'] == 1 )
+	if( bab_statExport() )
 		{
 		$output = bab_translate("Topic category").": ".$babBodyPopup->title;
 		$output .= "\n";
@@ -1007,7 +1007,7 @@ function showStatTopicCategory($idtopcat, $date)
 			}
 
 		header("Content-Disposition: attachment; filename=\"export.csv\""."\n");
-		header("Content-Type: text/plain"."\n");
+		header("Content-Type: text/csv"."\n");
 		header("Content-Length: ". mb_strlen($output)."\n");
 		header("Content-transfert-encoding: binary"."\n");
 		print $output;

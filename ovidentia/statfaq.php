@@ -98,7 +98,7 @@ function summaryFaqs($col, $order, $pos, $startday, $endday)
 			$i = 0;
 			while($arr = $babDB->db_fetch_array($res))
 				{
-				if( (isset($GLOBALS['export']) && $GLOBALS['export'] == 1) || ( $i >= $pos && $i < $pos + BAB_STAT_MAX_ROWS ) )
+				if( bab_statExport() || ( $i >= $pos && $i < $pos + BAB_STAT_MAX_ROWS ) )
 					{
 					$tmparr = array();
 					$tmparr['module'] = $arr['category'];
@@ -162,7 +162,7 @@ function summaryFaqs($col, $order, $pos, $startday, $endday)
 			}
 		}
 	$temp = new summaryFasCls($col, $order, $pos, $startday, $endday);
-	if( isset($GLOBALS['export']) && $GLOBALS['export'] == 1 )
+	if( bab_statExport() )
 		{
 		$output = bab_translate("Faqs");
 		if( !empty($startday) && !empty($endday))
@@ -185,7 +185,7 @@ function summaryFaqs($col, $order, $pos, $startday, $endday)
 			$output .= $temp->modulename.$GLOBALS['exportchr'].$temp->nbhits.$GLOBALS['exportchr'].$temp->nbhitspc."\n";
 			}
 		header("Content-Disposition: attachment; filename=\"export.csv\""."\n");
-		header("Content-Type: text/plain"."\n");
+		header("Content-Type: text/csv"."\n");
 		header("Content-Length: ". mb_strlen($output)."\n");
 		header("Content-transfert-encoding: binary"."\n");
 		print $output;
@@ -273,7 +273,7 @@ function summaryQuestionsFaqs($col, $order, $pos, $startday, $endday)
 			$i = 0;
 			while($arr = $babDB->db_fetch_array($res))
 				{
-				if( (isset($GLOBALS['export']) && $GLOBALS['export'] == 1) || ( $i >= $pos && $i < $pos + BAB_STAT_MAX_ROWS ) )
+				if( bab_statExport() || ( $i >= $pos && $i < $pos + BAB_STAT_MAX_ROWS ) )
 					{
 					$tmparr = array();
 					$tmparr['module'] = $arr['question'];
@@ -340,7 +340,7 @@ function summaryQuestionsFaqs($col, $order, $pos, $startday, $endday)
 			}
 		}
 	$temp = new summaryQuestionsFaqsCls($col, $order, $pos, $startday, $endday);
-	if( isset($GLOBALS['export']) && $GLOBALS['export'] == 1 )
+	if( bab_statExport() )
 		{
 		$output = bab_translate("Faqs questions");
 		if( !empty($startday) && !empty($endday))
@@ -363,7 +363,7 @@ function summaryQuestionsFaqs($col, $order, $pos, $startday, $endday)
 			$output .= $temp->modulename.$GLOBALS['exportchr'].$temp->nbhits.$GLOBALS['exportchr'].$temp->nbhitspc."\n";
 			}
 		header("Content-Disposition: attachment; filename=\"export.csv\""."\n");
-		header("Content-Type: text/plain"."\n");
+		header("Content-Type: text/csv"."\n");
 		header("Content-Length: ". mb_strlen($output)."\n");
 		header("Content-transfert-encoding: binary"."\n");
 		print $output;
@@ -444,7 +444,7 @@ function showStatFaq($id, $date)
 		}
 	$temp = new showStatFaqCls($id, $date);
 
-	if( isset($GLOBALS['export']) && $GLOBALS['export'] == 1 )
+	if( bab_statExport() )
 		{
 		$output = bab_translate("Faq").": ".$babBodyPopup->title;
 		$output .= "\n";
@@ -475,7 +475,7 @@ function showStatFaq($id, $date)
 			}
 
 		header("Content-Disposition: attachment; filename=\"export.csv\""."\n");
-		header("Content-Type: text/plain"."\n");
+		header("Content-Type: text/csv"."\n");
 		header("Content-Length: ". mb_strlen($output)."\n");
 		header("Content-transfert-encoding: binary"."\n");
 		print $output;
@@ -554,7 +554,7 @@ function showStatFaqQuestion($id, $date)
 
 		}
 	$temp = new showStatFaqQuestionCls($id, $date);
-	if( isset($GLOBALS['export']) && $GLOBALS['export'] == 1 )
+	if( bab_statExport() )
 		{
 		$output = bab_translate("Question").": ".$babBodyPopup->title;
 		$output .= "\n";
@@ -585,7 +585,7 @@ function showStatFaqQuestion($id, $date)
 			}
 
 		header("Content-Disposition: attachment; filename=\"export.csv\""."\n");
-		header("Content-Type: text/plain"."\n");
+		header("Content-Type: text/csv"."\n");
 		header("Content-Length: ". mb_strlen($output)."\n");
 		header("Content-transfert-encoding: binary"."\n");
 		print $output;

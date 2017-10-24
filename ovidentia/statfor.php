@@ -107,7 +107,7 @@ function summaryForums($col, $order, $pos, $startday, $endday)
 			$i = 0;
 			while($arr = $babDB->db_fetch_array($res))
 				{
-				if( (isset($GLOBALS['export']) && $GLOBALS['export'] == 1) || ( $i >= $pos && $i < $pos + BAB_STAT_MAX_ROWS ) )
+				if( bab_statExport() || ( $i >= $pos && $i < $pos + BAB_STAT_MAX_ROWS ) )
 					{
 					$tmparr = array();
 					$tmparr['forum'] = $arr['name'];
@@ -211,7 +211,7 @@ function summaryForums($col, $order, $pos, $startday, $endday)
 			}
 		}
 	$temp = new summaryForumsCls($col, $order, $pos, $startday, $endday);
-	if( isset($GLOBALS['export']) && $GLOBALS['export'] == 1 )
+	if( bab_statExport() )
 		{
 		$output = bab_translate("Forums");
 		if( !empty($startday) && !empty($endday))
@@ -234,7 +234,7 @@ function summaryForums($col, $order, $pos, $startday, $endday)
 			$output .= $temp->modulename.$GLOBALS['exportchr'].$temp->nbthreads.$GLOBALS['exportchr'].$temp->nbposts.$GLOBALS['exportchr'].$temp->nbhits.$GLOBALS['exportchr'].$temp->nbhitspc."\n";
 			}
 		header("Content-Disposition: attachment; filename=\"export.csv\""."\n");
-		header("Content-Type: text/plain"."\n");
+		header("Content-Type: text/csv"."\n");
 		header("Content-Length: ". mb_strlen($output)."\n");
 		header("Content-transfert-encoding: binary"."\n");
 		print $output;
@@ -323,7 +323,7 @@ function summaryThreads($col, $order, $pos, $startday, $endday)
 			$i = 0;
 			while($arr = $babDB->db_fetch_array($res))
 				{
-				if( (isset($GLOBALS['export']) && $GLOBALS['export'] == 1) || ( $i >= $pos && $i < $pos + BAB_STAT_MAX_ROWS ) )
+				if( bab_statExport() || ( $i >= $pos && $i < $pos + BAB_STAT_MAX_ROWS ) )
 					{
 					$tmparr = array();
 					$tmparr['module'] = $arr['subject'];
@@ -390,7 +390,7 @@ function summaryThreads($col, $order, $pos, $startday, $endday)
 			}
 		}
 	$temp = new summaryThreadsCls($col, $order, $pos, $startday, $endday);
-	if( isset($GLOBALS['export']) && $GLOBALS['export'] == 1 )
+	if( bab_statExport() )
 		{
 		$output = bab_translate("Threads");
 		if( !empty($startday) && !empty($endday))
@@ -413,7 +413,7 @@ function summaryThreads($col, $order, $pos, $startday, $endday)
 			$output .= $temp->modulename.$GLOBALS['exportchr'].$temp->forumname.$GLOBALS['exportchr'].$temp->nbhits.$GLOBALS['exportchr'].$temp->nbhitspc."\n";
 			}
 		header("Content-Disposition: attachment; filename=\"export.csv\""."\n");
-		header("Content-Type: text/plain"."\n");
+		header("Content-Type: text/csv"."\n");
 		header("Content-Length: ". mb_strlen($output)."\n");
 		header("Content-transfert-encoding: binary"."\n");
 		print $output;
@@ -509,7 +509,7 @@ function summaryPosts($col, $order, $pos, $startday, $endday)
 			$i = 0;
 			while($arr = $babDB->db_fetch_array($res))
 				{
-				if((isset($GLOBALS['export']) && $GLOBALS['export'] == 1) || ( $i >= $pos && $i < $pos + BAB_STAT_MAX_ROWS ) )
+				if(bab_statExport() || ( $i >= $pos && $i < $pos + BAB_STAT_MAX_ROWS ) )
 					{
 					$tmparr = array();
 					$tmparr['module'] = $arr['subject'];
@@ -584,7 +584,7 @@ function summaryPosts($col, $order, $pos, $startday, $endday)
 			}
 		}
 	$temp = new summaryPostsCls($col, $order, $pos, $startday, $endday);
-	if( isset($GLOBALS['export']) && $GLOBALS['export'] == 1 )
+	if( bab_statExport() )
 		{
 		$output = bab_translate("Posts");
 		if( !empty($startday) && !empty($endday))
@@ -607,7 +607,7 @@ function summaryPosts($col, $order, $pos, $startday, $endday)
 			$output .= $temp->modulename.$GLOBALS['exportchr'].$temp->forumname.$GLOBALS['exportchr'].$temp->threadname.$GLOBALS['exportchr'].$temp->nbhits.$GLOBALS['exportchr'].$temp->nbhitspc."\n";
 			}
 		header("Content-Disposition: attachment; filename=\"export.csv\""."\n");
-		header("Content-Type: text/plain"."\n");
+		header("Content-Type: text/csv"."\n");
 		header("Content-Length: ". mb_strlen($output)."\n");
 		header("Content-transfert-encoding: binary"."\n");
 		print $output;
@@ -688,7 +688,7 @@ function showStatForum($id, $date)
 
 		}
 	$temp = new showStatForumCls($id, $date);
-	if( isset($GLOBALS['export']) && $GLOBALS['export'] == 1 )
+	if( bab_statExport() )
 		{
 		$output = bab_translate("Forum").": ".$babBodyPopup->title;
 		$output .= "\n";
@@ -719,7 +719,7 @@ function showStatForum($id, $date)
 			}
 
 		header("Content-Disposition: attachment; filename=\"export.csv\""."\n");
-		header("Content-Type: text/plain"."\n");
+		header("Content-Type: text/csv"."\n");
 		header("Content-Length: ". mb_strlen($output)."\n");
 		header("Content-transfert-encoding: binary"."\n");
 		print $output;
@@ -798,7 +798,7 @@ function showStatThread($id, $date)
 
 		}
 	$temp = new showStatThreadCls($id, $date);
-	if( isset($GLOBALS['export']) && $GLOBALS['export'] == 1 )
+	if( bab_statExport() )
 		{
 		$output = bab_translate("Thread").": ".$babBodyPopup->title;
 		$output .= "\n";
@@ -829,7 +829,7 @@ function showStatThread($id, $date)
 			}
 
 		header("Content-Disposition: attachment; filename=\"export.csv\""."\n");
-		header("Content-Type: text/plain"."\n");
+		header("Content-Type: text/csv"."\n");
 		header("Content-Length: ". mb_strlen($output)."\n");
 		header("Content-transfert-encoding: binary"."\n");
 		print $output;
@@ -909,7 +909,7 @@ function showStatPost($id, $date)
 		}
 	$temp = new showStatPostCls($id, $date);
 
-	if( isset($GLOBALS['export']) && $GLOBALS['export'] == 1 )
+	if( bab_statExport() )
 		{
 		$output = bab_translate("Post").": ".$babBodyPopup->title;
 		$output .= "\n";
@@ -940,7 +940,7 @@ function showStatPost($id, $date)
 			}
 
 		header("Content-Disposition: attachment; filename=\"export.csv\""."\n");
-		header("Content-Type: text/plain"."\n");
+		header("Content-Type: text/csv"."\n");
 		header("Content-Length: ". mb_strlen($output)."\n");
 		header("Content-transfert-encoding: binary"."\n");
 		print $output;
