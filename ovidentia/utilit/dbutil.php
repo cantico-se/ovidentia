@@ -326,10 +326,12 @@ class babDatabase
                 foreach($param as &$value) {
                     if (null === $value) {
                         $value = 'NULL';
+                        continue;
                     }
 
                     if (false === $value) {
                         $value = "'0'";
+                        continue;
                     }
 
                     $value = "'".$this->db_escape_string($value)."'";
