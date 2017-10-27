@@ -325,18 +325,18 @@ class babDatabase
 
                 foreach($param as &$value) {
                     if (null === $value) {
-                        bab_debug('NULL is not allowed in the quote() method, use quoteOrNull()', DBG_ERROR);
+                        $value = 'NULL';
                     }
 
                     if (false === $value) {
-                        $value = '0';
+                        $value = "'0'";
                     }
 
-                    $value = $this->db_escape_string($value);
+                    $value = "'".$this->db_escape_string($value)."'";
                 }
                 unset($value);
 
-                return "'".implode("','",$param)."'";
+                return implode(",",$param);
             } else {
 
                 if (null === $param) {
