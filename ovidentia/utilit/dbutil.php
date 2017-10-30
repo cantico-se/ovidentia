@@ -337,6 +337,10 @@ class babDatabase
                     $value = "'".$this->db_escape_string($value)."'";
                 }
                 unset($value);
+                
+                if (empty($param)) {
+                    return "''";
+                }
 
                 return implode(",",$param);
             } else {
