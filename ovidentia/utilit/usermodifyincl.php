@@ -65,19 +65,19 @@ class bab_userModify {
             }
 
 
-        if( empty($nickname) )
+        if( empty(trim($nickname)) )
             {
             $error = bab_translate( "Login ID is required");
             return false;
             }
 
-        if( empty($password1) || empty($password2))
+        if( empty(trim($password1)) || empty(trim($password2)))
             {
             $error = bab_translate( "Passwords not match !!");
             return false;
             }
 
-        if( $password1 != $password2)
+        if( trim($password1) != trim($password2))
             {
             $error = bab_translate("Passwords not match !!");
             return false;
@@ -89,7 +89,7 @@ class bab_userModify {
             return false;
         }
 
-        $query = "select id from ".BAB_USERS_TBL." where nickname='".$babDB->db_escape_string($nickname)."'";
+        $query = "select id from ".BAB_USERS_TBL." where nickname='".$babDB->db_escape_string(trim($nickname))."'";
         $res = $babDB->db_query($query);
         if( $babDB->db_num_rows($res) > 0)
             {
@@ -162,13 +162,13 @@ class bab_userModify {
             datelog,
             lastlog
          ) values (
-            '". $babDB->db_escape_string($nickname)."',
+            '". $babDB->db_escape_string(trim($nickname))."',
             '".$babDB->db_escape_string($firstname)."',
             '".$babDB->db_escape_string($lastname)."',
             '".$babDB->db_escape_string($hashname)."',
             '".$babDB->db_escape_string($encPassword->value)."',
             '".$babDB->db_escape_string($encPassword->hashfunc)."',
-            '".$babDB->db_escape_string($email)."',
+            '".$babDB->db_escape_string(trim($email))."',
              now(),
              '".$babDB->db_escape_string($hash)."',
              '".$babDB->db_escape_string($isconfirmed)."',
@@ -192,7 +192,7 @@ class bab_userModify {
                 ('".$babDB->db_escape_string($firstname)."',
                 '".$babDB->db_escape_string($middlename)."',
                 '".$babDB->db_escape_string($lastname)."',
-                '".$babDB->db_escape_string($email)."',
+                '".$babDB->db_escape_string(trim($email))."',
                 '0',
                 '".$id."'
                 )");
@@ -363,7 +363,7 @@ class bab_userModify {
             $arruq[] = 'nickname=\''.$babDB->db_escape_string($info['nickname']).'\'';
         }
 
-        if( isset($info['password']) && empty($info['password']) )
+        if( isset($info['password']) && empty(trim($info['password'])) )
         {
             $error = bab_translate("Empty password");
             return false;
@@ -412,9 +412,9 @@ class bab_userModify {
             $arruq[] = 'validity_end=' . $babDB->quote($info['validity_end']);
         }
 
-        if( isset($info['email']))
+        if( isset($info['email']) && !empty(trim($info['email'])))
         {
-            $arruq[] =  'email=\''.$babDB->db_escape_string($info['email']).'\'';
+            $arruq[] =  'email=\''.$babDB->db_escape_string(trim($info['email'])).'\'';
         }
 
 

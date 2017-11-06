@@ -244,7 +244,7 @@ function bab_directoryImportOneEntry($idgroup, Array $arr, Array $post, Array $a
     }
     
     if ($idgroup > 0) {
-        if (empty($arr[$post['nickname']])) {
+        if (empty(trim($arr[$post['nickname']]))) {
             throw new bab_DirImportEntryException(bab_translate('The nickname is missing'));
         }
     }
@@ -254,7 +254,7 @@ function bab_directoryImportOneEntry($idgroup, Array $arr, Array $post, Array $a
         case 2: // Do not import duplicates
             if ($idgroup > 0) {
                 $query = "select id from " . BAB_USERS_TBL . " where
-                            nickname='" . $babDB->db_escape_string($arr[$post['nickname']]) . "'
+                            nickname='" . $babDB->db_escape_string(trim($arr[$post['nickname']])) . "'
                             OR (firstname LIKE '" . $babDB->db_escape_like($arr[$post['givenname']]) . "'
                                 AND lastname LIKE '" . $babDB->db_escape_like($arr[$post['sn']]) . "')";
     
@@ -270,7 +270,11 @@ function bab_directoryImportOneEntry($idgroup, Array $arr, Array $post, Array $a
     
                     for ($k = 0; $k < count($arrnamef); $k ++) {
                         if (isset($post[$arrnamef[$k]]) && $post[$arrnamef[$k]] != "") {
-                            $req .= $arrnamef[$k] . "='" . $babDB->db_escape_string($arr[$post[$arrnamef[$k]]]) . "',";
+							if($arrnamef[$k] == 'email') {
+								$req .= $arrnamef[$k] . "='" . $babDB->db_escape_string(trim($arr[$post[$arrnamef[$k]]])) . "',";
+							} else {
+                            	$req .= $arrnamef[$k] . "='" . $babDB->db_escape_string($arr[$post[$arrnamef[$k]]]) . "',";
+                        	}
                         }
                     }
     
@@ -317,18 +321,18 @@ function bab_directoryImportOneEntry($idgroup, Array $arr, Array $post, Array $a
 						$mn = $arr[$post['mn']];
 					}
                     $hashname = md5(mb_strtolower(strtr($arr[$post['givenname']] . $mn . $arr[$post['sn']], $replace)));
-                    $hash = md5($arr[$post['nickname']] . bab_getHashVar());
+                    $hash = md5(trim($arr[$post['nickname']]) . bab_getHashVar());
     
                     $query = "update " . BAB_USERS_TBL . " set
-                                nickname='" . $babDB->db_escape_string($arr[$post['nickname']]) . "',
+                                nickname='" . $babDB->db_escape_string(trim($arr[$post['nickname']])) . "',
                                 firstname='" . $babDB->db_escape_string($arr[$post['givenname']]) . "',
                                 lastname='" . $babDB->db_escape_string($arr[$post['sn']]) . "',
-                                email='" . $babDB->db_escape_string($arr[$post['email']]) . "',
+                                email='" . $babDB->db_escape_string(trim($arr[$post['email']])) . "',
                                 hashname='" . $babDB->db_escape_string($hashname) . "',
                                 confirm_hash='" . $babDB->db_escape_string($hash) . "' ";
     
                     if (false !== $pwd) {
-                        $query .= ", password='" . $babDB->db_escape_string(md5($pwd)) . "' ";
+                        $query .= ", password='" . $babDB->db_escape_string(md5(trim($pwd))) . "' ";
                     }
     
                     $query .= " where id='" . $babDB->db_escape_string($rrr['id']) . "'";
@@ -344,7 +348,7 @@ function bab_directoryImportOneEntry($idgroup, Array $arr, Array $post, Array $a
     
     
                     $emailpwd = ($pwd && 'Y' === $post['sendpwd']) ? $pwd : null;
-                    $monitor->addUser($rrr['id'], $pwd);
+                    $monitor->addUser($rrr['id'], trim($pwd));
     
                     bab_installWindow::message(bab_toHtml(sprintf(bab_translate('The directory entry %s has been updated'), $arr[$post['sn']].' '.$arr[$post['givenname']])));
                     break;
@@ -414,6 +418,9 @@ function bab_directoryImportOneEntry($idgroup, Array $arr, Array $post, Array $a
                 if (isset($post[$arrnamef[$k]]) && $post[$arrnamef[$k]] != "") {
                     $req .= $arrnamef[$k] . ",";
                     $val = isset($arr[$post[$arrnamef[$k]]]) ? $arr[$post[$arrnamef[$k]]] : '';
+					if($arrnamef[$k] == 'email') {
+						$val = trim($val);
+					}
                     array_push($arrv, $val);
                 }
             }
@@ -437,7 +444,7 @@ function bab_directoryImportOneEntry($idgroup, Array $arr, Array $post, Array $a
 						$mn = $arr[$post['mn']];
 					}
                     $hashname = md5(mb_strtolower(strtr($arr[$post['givenname']].$mn.$arr[$post['sn']], $replace)));
-                    $hash=md5($arr[$post['nickname']].bab_getHashVar());
+                    $hash=md5(trim($arr[$post['nickname']]).bab_getHashVar());
                     if( bab_rp('password3') !== '' && mb_strlen($arr[bab_rp('password3')]) >= 6)
                         {
                         $pwd = mb_strtolower($arr[bab_rp('password3')]);
@@ -448,12 +455,12 @@ function bab_directoryImportOneEntry($idgroup, Array $arr, Array $post, Array $a
                         }
 
                     $babDB->db_query("insert into ".BAB_USERS_TBL." set 
-                        nickname='".$babDB->db_escape_string($arr[$post['nickname']])."', 
+                        nickname='".$babDB->db_escape_string(trim($arr[$post['nickname']]))."', 
                         firstname='".$babDB->db_escape_string($arr[$post['givenname']])."', 
                         lastname='".$babDB->db_escape_string($arr[$post['sn']])."', 
-                        email='".$babDB->db_escape_string($arr[$post['email']])."', 
+                        email='".$babDB->db_escape_string(trim($arr[$post['email']]))."', 
                         hashname='".$hashname."', 
-                        password='".$babDB->db_escape_string(md5($pwd))."', 
+                        password='".$babDB->db_escape_string(md5(trim($pwd)))."', 
                         confirm_hash='".$babDB->db_escape_string($hash)."', 
                         date=now(), 
                         is_confirmed='1', 

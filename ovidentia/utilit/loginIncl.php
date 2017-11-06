@@ -1009,7 +1009,7 @@ function bab_getUserByEmailPassword($email, $sPassword)
     $sQuery = '
     SELECT id
     FROM ' . BAB_USERS_TBL . '
-    WHERE email = ' . $babDB->quote($email) . ' LIMIT 0,10'; // 10 match max are tested
+    WHERE email = ' . $babDB->quote(trim($email)) . ' LIMIT 0,10'; // 10 match max are tested
 
     $oResult = $babDB->db_query($sQuery);
     if(false !== $oResult)
@@ -1093,7 +1093,7 @@ function bab_getUserByNickname($sNickname)
     $sQuery = '
         SELECT *
         FROM ' . BAB_USERS_TBL . '
-        WHERE nickname = ' . $babDB->quote($sNickname);
+        WHERE nickname = ' . $babDB->quote(trim($sNickname));
 
     $oResult = $babDB->db_query($sQuery);
     if(false != $oResult)
