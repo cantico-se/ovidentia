@@ -304,6 +304,8 @@ if (isset($_GET['babrw']))
         $_GET += $arr;
         $_REQUEST += $arr;
         
+    } elseif (!bab_isUserLogged()) {
+        bab_requireCredential();
     } else {
         bab_pageNotFound();
     }
