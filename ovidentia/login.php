@@ -324,7 +324,7 @@ switch($cmd)
         break;
 
     case "emailpwd":
-        $babBody->title = bab_translate("Email a new password");
+        $babBody->setTitle(bab_translate("Email a new password"));
         $babBody->addItemMenu("signon", bab_translate("Login"), $GLOBALS['babUrlScript']."?tg=login&cmd=signon");
         if( $babBody->babsite['registration'] == 'Y')
             $babBody->addItemMenu("register", bab_translate("Register"), $GLOBALS['babUrlScript']."?tg=login&cmd=register");

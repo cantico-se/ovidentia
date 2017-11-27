@@ -1241,6 +1241,9 @@ class displayLogin_Template
         $this->onemonth = bab_translate("one month");
         $this->oneyear = bab_translate("one year");
         $this->infinite = bab_translate("unlimited");
+        
+        $this->emailPwdUrl = bab_toHtml('?tg=login&cmd=emailpwd');
+        $this->emailPwdTxt = bab_translate('Lost Password');
 
         $this->c_nickname = isset($_COOKIE['c_nickname']) ? bab_toHtml($_COOKIE['c_nickname']) : '';
     }
