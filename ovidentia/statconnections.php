@@ -160,7 +160,7 @@ function summaryConnections($col, $order, $pos, $startday, $endday)
 		
 	$temp = new summaryConnectionsCls($col, $order, $pos, $startday, $endday);
 
-	if bab_statExport() {
+	if (bab_statExport()) {
 		$output = bab_translate("Connections");
 		if (!empty($startday) && !empty($endday)) {
 			$output .= ' (' . bab_strftime(bab_mktime($startday . ' 00:00:00'), false) . ' - ' . bab_strftime(bab_mktime($endday . ' 00:00:00'), false) . ')';
@@ -350,7 +350,7 @@ function detailConnections($col, $order, $pos, $startday, $endday, $userId)
 		
 	$temp = new detailConnectionsCls($col, $order, $pos, $startday, $endday, $userId);
 
-	if bab_statExport() {
+	if (bab_statExport()) {
 		$output = bab_translate("Connections");
 		if (!empty($startday) && !empty($endday)) {
 			$output .= ' (' . bab_strftime(bab_mktime($startday . ' 00:00:00'), false) . ' - ' . bab_strftime(bab_mktime($endday . ' 00:00:00'), false) . ')';
