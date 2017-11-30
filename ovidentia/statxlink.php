@@ -122,7 +122,7 @@ function summaryXlinks($col, $order, $startday, $endday)
 	}
 
 	$temp = new summaryXlinksCls($col, $order, $startday, $endday);
-	if bab_statExport() {
+	if (bab_statExport()) {
 		$output = bab_translate("External links");
 		if (!empty($startday) && !empty($endday)) {
 			$output .= " (".bab_strftime(bab_mktime($startday." 00:00:00"), false)." - ".bab_strftime(bab_mktime($endday." 00:00:00"), false).")";
