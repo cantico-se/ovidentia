@@ -46,11 +46,11 @@ class bab_Password
     
         switch(BAB_PASSWORD_HASH_FUNCTION) {
             case 'md5': // case insensitive
-                $encPassword->value = md5(mb_strtolower($password));
+                $encPassword->value = md5(mb_strtolower(trim($password)));
                 break;
     
             case 'password_hash': // PHP 5 >= 5.5.0
-                $encPassword->value = password_hash($password, PASSWORD_DEFAULT);
+                $encPassword->value = password_hash(trim($password), PASSWORD_DEFAULT);
                 break;
     
     
@@ -71,10 +71,10 @@ class bab_Password
         switch($password_hash_function) {
             default:
             case 'md5':
-                return ($hash === md5(mb_strtolower($password)));
+                return ($hash === md5(mb_strtolower(trim($password))));
     
             case 'password_hash':
-                return password_verify($password, $hash);
+                return password_verify(trim($password), $hash);
         }
     }
 }

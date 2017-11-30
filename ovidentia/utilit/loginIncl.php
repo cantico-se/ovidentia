@@ -1009,7 +1009,7 @@ function bab_getUserByEmailPassword($email, $sPassword)
     $sQuery = '
     SELECT id
     FROM ' . BAB_USERS_TBL . '
-    WHERE email = ' . $babDB->quote($email) . ' LIMIT 0,10'; // 10 match max are tested
+    WHERE email = ' . $babDB->quote(trim($email)) . ' LIMIT 0,10'; // 10 match max are tested
 
     $oResult = $babDB->db_query($sQuery);
     if(false !== $oResult)
@@ -1093,7 +1093,7 @@ function bab_getUserByNickname($sNickname)
     $sQuery = '
         SELECT *
         FROM ' . BAB_USERS_TBL . '
-        WHERE nickname = ' . $babDB->quote($sNickname);
+        WHERE nickname = ' . $babDB->quote(trim($sNickname));
 
     $oResult = $babDB->db_query($sQuery);
     if(false != $oResult)
@@ -1241,6 +1241,9 @@ class displayLogin_Template
         $this->onemonth = bab_translate("one month");
         $this->oneyear = bab_translate("one year");
         $this->infinite = bab_translate("unlimited");
+        
+        $this->emailPwdUrl = bab_toHtml('?tg=login&cmd=emailpwd');
+        $this->emailPwdTxt = bab_translate('Lost Password');
 
         $this->c_nickname = isset($_COOKIE['c_nickname']) ? bab_toHtml($_COOKIE['c_nickname']) : '';
     }
