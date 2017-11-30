@@ -472,7 +472,7 @@ class bab_Registry
      *
      * @param string $path
      *
-     * @since 8.5.94
+     * @since 8.5.96
      */
     public static function get($path, $defaultValue = null)
     {
