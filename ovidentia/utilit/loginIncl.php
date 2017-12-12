@@ -25,6 +25,7 @@ include_once $GLOBALS['babInstallPath'].'admin/register.php';
 require_once dirname(__FILE__).'/userinfosincl.php';
 require_once dirname(__FILE__).'/password.class.php';
 require_once dirname(__FILE__).'/settings.class.php';
+require_once dirname(__FILE__).'/usermodifyincl.php';
 
 require_once $GLOBALS['babInstallPath'].'utilit/functionalityincl.php';
 
@@ -1572,7 +1573,8 @@ function bab_ldapEntryToOvEntry($oLdap, $iIdUser, $sPassword, $aEntries, $aUpdat
             switch($key)
             {
                 case 'jpegphoto':
-                    $sQuery .= ', photo_data=\'' . $babDB->db_escape_string($ldapvalue) . '\'';
+                    $resize = bab_userModify::resizeBinary($ldapvalue);
+                    $sQuery .= ', photo_data=\'' . $babDB->db_escape_string($resize) . '\'';
                     break;
 
                 case 'mail':

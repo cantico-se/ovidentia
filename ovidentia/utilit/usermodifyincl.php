@@ -447,7 +447,7 @@ class bab_userModify {
 
                 if (isset($ims['mime']))
                 {
-                    $arrdq[] = "photo_data=".$babDB->quote($info['jpegphoto']);
+                    $arrdq[] = "photo_data=".$babDB->quote(bab_userModify::resizeBinary($info['jpegphoto']));
                     $arrdq[] = "photo_type=".$babDB->quote($ims['mime']);
                 }
             }
@@ -572,6 +572,29 @@ class bab_userModify {
         bab_fireEvent($event);
 
         return true;
+    }
+    
+    /**
+     * Get the thumbnailed data binary of the data binary passed in parameter if the functionality Thumbnailer is available.
+     * Return the original data if the functionality Thumbnailer is unavailable.
+     *
+     * @param string $binary   The binary of the image to be resized
+     * @param integer $width   The width in pixel to resize the image to (default 300)
+     * @param integer $height  The height in pixel to resize the image to (default 300)
+     * @return string
+     */
+    public static function resizeBinary($binary, $width = 300, $height = 300)
+    {
+        /*@var $T Func_Thumbnailer */
+        $T = bab_functionality::get('Thumbnailer');
+        if ($T) {
+            $now = new DateTime('NOW');
+            $T->setSourceBinary($binary, $now->format('Y-m-d H:i:s'));
+    
+            $resizedFile = bab_getBabUrl().$T->getThumbnail($width, $height);
+            return file_get_contents($resizedFile);
+        }
+        return $binary;
     }
 }
 

@@ -11,6 +11,12 @@ if (file_exists($_SERVER["DOCUMENT_ROOT"] . $__path)) {
     return false;
 }
 
+
+if ('/' !== substr($__path, -1) && substr_count($__path, '/') > 1) {
+    header('location:'.$_SERVER["REQUEST_URI"].'/');
+    exit;
+}
+
 $_SERVER['SCRIPT_NAME'] = '/index.php';
 
 
