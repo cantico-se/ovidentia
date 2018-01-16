@@ -86,6 +86,7 @@ function modifyUser($userId, $pos, $grp)
 	$form->setHiddenValue('pos', $pos);
 	$form->setHiddenValue('grp', $grp);
 	
+	bab_functionality::includeOriginal('Icons');
 	$tableView->setSizePolicy('widget-70pc widget-centered BabLoginMenuBackground widget-bordered '.Func_Icons::ICON_LEFT_16);
 	$tableView->addColumnClass(0, 'widget-50pc');
 	$tableView->addColumnClass(1, 'widget-50pc');
