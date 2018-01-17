@@ -588,11 +588,12 @@ class bab_userModify {
         /*@var $T Func_Thumbnailer */
         $T = bab_functionality::get('Thumbnailer');
         if ($T) {
-            $now = new DateTime('NOW');
-            $T->setSourceBinary($binary, $now->format('Y-m-d H:i:s'));
+            $T->setSourceBinary($binary, date('Y-m-d H:i:s'));
 
-            $resizedFile = bab_getBabUrl().$T->getThumbnail($width, $height);
-            return file_get_contents($resizedFile);
+            $path = $T->getThumbnailPath($width, $height);
+            if ($path instanceof bab_Path) {
+                return file_get_contents($path->tostring());
+            }
         }
         return $binary;
     }
