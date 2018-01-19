@@ -5284,23 +5284,62 @@ class Func_Ovml_Container_CalendarEvents extends Func_Ovml_Container
 
 
     /**
-      * Get available calendar without filter
+     *
+     * @return bab_EventCalendar[]
      */
-    public function getCalendars($calendarid) {
+    protected function getAllNonPersonalCalendars()
+    {
+        global $babDB;
 
-        if (empty($calendarid)) {
-            trigger_error('filter=NO must be used with calendarid');
-            return;
+        $backend = bab_functionality::get('CalendarBackend/Ovi');
+        /*@var $backend Func_CalendarBackend_Ovi */
+
+        $query = "SELECT cpt.*, ct.id as idcal, ct.type as type
+            FROM " . BAB_CAL_PUBLIC_TBL . " cpt
+            LEFT JOIN " . BAB_CALENDAR_TBL . " ct on ct.owner=cpt.id
+            WHERE
+                ct.type IN('" . BAB_CAL_PUB_TYPE . "', '" . BAB_CAL_RES_TYPE . "')
+                AND ct.actif='Y'
+        ";
+        $res = $babDB->db_query($query);
+
+        $return = array();
+        while ($arr = $babDB->db_fetch_assoc($res)) {
+            switch ($arr['type']) {
+                case BAB_CAL_RES_TYPE:
+                    $calendar = $backend->ResourceCalendar();
+                    break;
+                case BAB_CAL_PUB_TYPE:
+                    $calendar = $backend->PublicCalendar();
+                    break;
+            }
+
+            $calendar->init(0, $arr);
+            $return[] = $calendar;
         }
 
+        return $return;
+    }
+
+
+    /**
+     * Get available calendar without filter
+     * @return bab_EventCalendar[]
+     */
+    public function getCalendars($calendarid)
+    {
         require_once dirname(__FILE__).'/cal.ovicalendar.class.php';
 
+        if (empty($calendarid)) {
+            return $this->getAllNonPersonalCalendars();
+        }
         $public = bab_cal_getPublicCalendars(0, $calendarid);
         $resource = bab_cal_getResourceCalendars(0, $calendarid);
         $personal = bab_cal_getPersonalCalendars(0, $calendarid);
 
         return array_merge($public, $resource, $personal);
     }
+
 
     /**
       * Get available calendar with filter
