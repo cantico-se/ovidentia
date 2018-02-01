@@ -33,6 +33,6 @@ $babSoapServer->configureWSDL('babsoap', $babSoapServer->namespace, $GLOBALS['ba
 $babSoapServer->registerLogin();
 $babSoapServer->registerOvml();
 
-$HTTP_RAW_POST_DATA = isset($HTTP_RAW_POST_DATA)? $HTTP_RAW_POST_DATA : '';
-$babSoapServer->service($HTTP_RAW_POST_DATA);
+$http_raw_post_data = file_get_contents('php://input');
+$babSoapServer->service($http_raw_post_data);
 exit;
