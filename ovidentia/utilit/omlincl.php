@@ -9474,3 +9474,40 @@ class Func_Ovml_Function_GetCurrentAdmGroup extends Func_Ovml_Function {
         return bab_getCurrentAdmGroup();
     }
 }
+
+
+
+/**
+ *  Ensures that the user is logged in.
+ */
+class Func_Ovml_Function_RequireCredentials extends Func_Ovml_Function
+{
+
+    /**
+     * @return string
+     */
+    public function toString()
+    {
+        $args = $this->args;
+        $authType = '';
+        $message = '';
+
+        if (count($args) === 0) {
+            return '';
+        }
+        foreach ($args as $p => $value) {
+            switch (mb_strtolower(trim($p))) {
+                case 'authType':
+                    $authType = $value;
+                    unset($args[$p]);
+                    break;
+                case 'message':
+                    $message = $value;
+                    unset($args[$p]);
+                    break;
+            }
+        }
+
+        return bab_requireCredential($message, $authType);
+    }
+}
