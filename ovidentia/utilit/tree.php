@@ -1830,12 +1830,9 @@ class bab_FileTreeView extends bab_TreeView
      */
     protected function _addCollectiveFiles($folderId = null, $path = '')
     {
-        global $babDB, $babBody;
+        global $babDB;
 
         $sEndSlash = (mb_strlen(trim($path)) > 0) ? '/' : '';
-
-
-        // $rootPath = '';
 
         $folders = new BAB_FmFolderSet();
         $oId = $folders->aField['iId'];
@@ -1843,7 +1840,6 @@ class bab_FileTreeView extends bab_TreeView
         if ($folderId !== null) {
             $oFolder = $folders->get($oId->in($folderId));
             if (is_a($oFolder, 'BAB_FmFolder')) {
-                // $rootPath .= $oFolder->getName() . '/';
                 $idDgOwner = $oFolder->getDelegationOwnerId();
             }
         } elseif (bab_getCurrentAdmGroup() != 0 && ($this->hasAttributes(self::SHOW_ONLY_ADMINISTERED_DELEGATION))) {
@@ -1909,7 +1905,6 @@ class bab_FileTreeView extends bab_TreeView
             }
 
             $filePath = removeFirstPath($file['path']);
-            // $filePath = $file['path'];
             $subdirs = explode('/', $filePath);
 
             $fileId = 'g' . self::ID_SEPARATOR . $file['id'];
@@ -2010,7 +2005,13 @@ class bab_FileTreeView extends bab_TreeView
 	}
 
 
-
+    /**
+     * Comparison function for sorting files by name with folders first.
+     *
+     * @param bab_FileInfo $file1
+     * @param bab_FileInfo $file2
+     * @return number
+     */
     protected static function compareFilesByNameDirFirst(bab_FileInfo $file1, bab_FileInfo $file2)
     {
         if ($file1->isDir() && ! $file2->isDir()) {
