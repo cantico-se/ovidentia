@@ -321,23 +321,24 @@ function notifyUserPassword($passw, $email, $nickname='')
 
 
 class bab_notifyAdminUserRegistrationCls
-    {
+{
     public $sitename;
     public $linkurl;
     public $linkname;
     public $username;
     public $message;
+    public $nickname;
+    public $pwd = '';
 
 
-    public function __construct($name, $msg)
-        {
+    public function __construct($name, $msg) {
         global $babSiteName;
         $this->linkname = bab_translate("link");
         $this->username = $name;
         $this->sitename = $babSiteName;
         $this->message = $msg;
-        }
     }
+}
 
 
 /**
@@ -350,36 +351,43 @@ class bab_notifyAdminUserRegistrationCls
  */
 function notifyAdminUserRegistration($name, $email, $nickname, $pwd)
 {
-    global $babBody, $babAdminEmail;
+    global $babAdminEmail, $babAdminName;
 
     $mail = bab_mail();
-    if( $mail == false ) {
+    if ($mail == false) {
         return;
     }
     $mail->mailTo($email, $name);
-    $mail->mailFrom($babAdminEmail, $GLOBALS['babAdminName']);
+    $mail->mailFrom($babAdminEmail, $babAdminName);
     $mail->mailSubject(bab_translate("Registration Confirmation"));
 
     $message = bab_translate("You have been registered on our site") ."<br>";
     $message .= bab_translate("Login ID") .": ". $nickname;
-    if( !empty($pwd))
-    {
+    if (!empty($pwd)) {
         $message .= " / ". bab_translate("Password") .": ". bab_toHtml($pwd);
     }
 
     $tempa = new bab_notifyAdminUserRegistrationCls($name, $message);
-    $message = $mail->mailTemplate(bab_printTemplate($tempa,"mailinfo.html", "userregistration2"));
+    $tempa->nickname = $nickname;
+    if (!empty($pwd)) {
+        $tempa->pwd = $pwd;
+    }
+    $message = $mail->mailTemplate(bab_printTemplate($tempa, "mailinfo.html", "userregistration2"));
 
     $mail->mailBody($message, "html");
 
     $message = bab_translate("You have been registered on our site")."\n";
     $message .= bab_translate("Nickname") .": ". $nickname;
-    if( !empty($pwd))
-    {
+    if (!empty($pwd)) {
         $message .= " / ". bab_translate("Password") .": ". $pwd;
     }
 
     $tempa = new bab_notifyAdminUserRegistrationCls($name, $message);
+    $tempa->nickname = $nickname;
+    if (!empty($pwd)) {
+        $tempa->pwd = $pwd;
+    }
+
     $message = bab_printTemplate($tempa,"mailinfo.html", "userregistrationtxt2");
 
     $mail->mailAltBody($message);
@@ -475,18 +483,18 @@ function sendPassword($nickname, $email)
         $babBody->msgerror = $error;
         return false;
     }
-    
+
     $defaultAuth = bab_functionality::get('PortalAuthentication');
     /* @var $defaultAuth Func_PortalAuthentication */
-    
+
     $loginIdField = $defaultAuth->getLoginIdField();
-    
+
     if (!isset($arr[$loginIdField])) {
         $loginIdField = 'nickname';
     }
-    
+
     $loginId = $arr[$loginIdField];
-    
+
     notifyUserPassword($new_pass, $arr['email'], $loginId);
     $babBody->addError(bab_translate("Your new password has been emailed to you.") ." <".$arr['email'].">");
     return true;
