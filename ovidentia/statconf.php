@@ -38,7 +38,7 @@ define("BAB_STAT_BCT_QUESTION",		8);
 function statBaskets($baskname, $baskdesc)
 {
 	global $babBody;
-	
+
 	class statBasketsCls
 		{
 		var $updatetxt;
@@ -65,7 +65,7 @@ function statBaskets($baskname, $baskdesc)
 
 			list($this->max) = $babDB->db_fetch_array($babDB->db_query("SELECT COUNT(*) FROM ".BAB_STATS_BASKETS_TBL." where id_dgowner=" . $babDB->quote(bab_getCurrentAdmGroup())));
 
-			
+
 			$this->baskdescval = $baskdesc;
 			$this->basknameval = $baskname;
 			$this->altbg = true;
@@ -120,7 +120,7 @@ function statBaskets($baskname, $baskdesc)
 function statModifyBasket()
 {
 	global $babBody;
-	
+
 	class statModifyBasketsCls
 		{
 		var $updatetxt;
@@ -152,7 +152,7 @@ function statModifyBasket()
 function statUpdateContentBasket()
 {
 	global $babBody;
-	
+
 	class statUpdateContentBasketCls
 		{
 		var $updatetxt;
@@ -168,9 +168,9 @@ function statUpdateContentBasket()
 
 			$this->baskid = $_GET['baskid'];
 			$this->itemid = $_GET['itemid'];
-			
+
 			$req = 'select bc_description, bc_type, bc_id from '.BAB_STATS_BASKET_CONTENT_TBL.' where id=' . $babDB->quote($_GET['itemid']);
-			
+
 			$arr = $babDB->db_fetch_array($babDB->db_query($req));
 			$this->ibcdescriptionval = $arr['bc_description'];
 			switch($arr['bc_type'])
@@ -224,7 +224,7 @@ function statUpdateContentBasket()
 function statBrowseBasketItem()
 {
 	global $babBody;
-	
+
 	class statBrowseBasketItemCls
 		{
 		var $updatetxt;
@@ -293,7 +293,7 @@ function statBrowseBasketItem()
 function statAddContentBasket()
 {
 	global $babBody;
-	
+
 	class statAddContentBasketCls
 	{
 		var $updatetxt;
@@ -325,7 +325,7 @@ function statAddContentBasket()
 				case 'fold':
 					$this->t_what = 'file';
 					$this->t_name = bab_translate("Folders");
-					$this->t_dialog_attributes = 'show_collective_directories=1&selectable_collective_directories=1';
+					$this->t_dialog_attributes = 'show_collective_folders=1&selectable_collective_folders=1';
 					break;
 				case 'file':
 					$this->t_what = 'file';
@@ -361,7 +361,7 @@ function statAddContentBasket()
 			$this->ibcnameval = '';
 			$this->ibcdescriptionval = '';
 		}
-			
+
 	}
 
 	$temp = new statAddContentBasketCls();
@@ -371,7 +371,7 @@ function statAddContentBasket()
 function statContentBasket($baskid)
 {
 	global $babBody;
-	
+
 	class statContentBasketCls
 		{
 		var $updatetxt;
@@ -488,7 +488,7 @@ function statContentBasket($baskid)
 function statDeleteBasket($id)
 	{
 	global $babBody;
-	
+
 	class statDeleteBasketCls
 		{
 		var $warning;
@@ -521,7 +521,7 @@ function statDeleteBasket($id)
 function statPages($url, $page)
 {
 	global $babBody;
-	
+
 	class temp
 		{
 
@@ -573,7 +573,7 @@ function statPages($url, $page)
 function statPreferences()
 {
 	global $babBody;
-	
+
 	class statPreferencesCls
 		{
 		var $updatetxt;
@@ -697,13 +697,13 @@ function addStatBasket($baskname, $baskdesc)
 		return false;
 		}
 
-	$babDB->db_query("insert into ".BAB_STATS_BASKETS_TBL." 
-	(basket_name, basket_desc, basket_author, basket_datetime, id_dgowner) 
+	$babDB->db_query("insert into ".BAB_STATS_BASKETS_TBL."
+	(basket_name, basket_desc, basket_author, basket_datetime, id_dgowner)
 	values (
 		'".$babDB->db_escape_string($baskname)."',
 		'".$babDB->db_escape_string($baskdesc)."',
 		'".$babDB->db_escape_string($GLOBALS['BAB_SESS_USERID'])."',
-		now(), 
+		now(),
 		'".$babDB->db_escape_string(bab_getCurrentAdmGroup())."'
 		)
 	");
@@ -720,10 +720,10 @@ function updateStatBasket($baskid, $baskname, $baskdesc)
 		}
 
 
-	$babDB->db_query("update ".BAB_STATS_BASKETS_TBL." set 
+	$babDB->db_query("update ".BAB_STATS_BASKETS_TBL." set
 		basket_name='".$babDB->db_escape_string($baskname)."',
-		basket_desc='".$babDB->db_escape_string($baskdesc)."' 
-	where 
+		basket_desc='".$babDB->db_escape_string($baskdesc)."'
+	where
 		id='".$babDB->db_escape_string($baskid)."'");
 }
 
@@ -790,7 +790,7 @@ function addStatBasketContentItem()
 				return false;
 			}
 
-			
+
 			$ibcdesc = $_POST['ibcdesc'];
 
 			$babDB->db_query("insert into ".BAB_STATS_BASKET_CONTENT_TBL." (basket_id, bc_description, bc_author, bc_datetime, bc_type, bc_id ) values (
@@ -853,13 +853,13 @@ if( isset($action))
     			$desc = '';
     		}
 			break;
-			
+
 		case 'apref':
 		    bab_requireSaveMethod() && updateStatPreferences(bab_rp('wsepar'), bab_rp('separ'));
 		    Header("Location: ". $GLOBALS['babUrlScript']."?tg=stat");
 		    exit;
 			break;
-			
+
 		case 'abask':
 			bab_requireSaveMethod() && addStatBasket(bab_rp('baskname'), bab_rp('baskdesc'));
 			Header("Location: ". $GLOBALS['babUrlScript']."?tg=statconf&idx=bask");
@@ -992,7 +992,7 @@ case 'baskrights':
 		$babBody->addItemMenu("stat", bab_translate("Statistics"), $GLOBALS['babUrlScript']."?tg=stat");
 		$babBody->addItemMenu("pages", bab_translate("Pages"), $GLOBALS['babUrlScript']."?tg=statconf&idx=pages");
 		$babBody->addItemMenu("pref", bab_translate("Preferences"), $GLOBALS['babUrlScript']."?tg=statconf&idx=pref");
-		$babBody->addItemMenu("bask", bab_translate("Baskets"), $GLOBALS['babUrlScript']."?tg=statconf&idx=bask");		
+		$babBody->addItemMenu("bask", bab_translate("Baskets"), $GLOBALS['babUrlScript']."?tg=statconf&idx=bask");
 		if( !isset($url)) { $url = ""; }
 		if( !isset($desc)) { $desc = ""; }
 		statPages($url, $desc);
@@ -1007,7 +1007,7 @@ case 'baskrights':
 		$babBody->addItemMenu("stat", bab_translate("Statistics"), $GLOBALS['babUrlScript']."?tg=stat");
 		$babBody->addItemMenu("pages", bab_translate("Pages"), $GLOBALS['babUrlScript']."?tg=statconf&idx=pages");
 		$babBody->addItemMenu("pref", bab_translate("Preferences"), $GLOBALS['babUrlScript']."?tg=statconf&idx=pref");
-		$babBody->addItemMenu("bask", bab_translate("Baskets"), $GLOBALS['babUrlScript']."?tg=statconf&idx=bask");	
+		$babBody->addItemMenu("bask", bab_translate("Baskets"), $GLOBALS['babUrlScript']."?tg=statconf&idx=bask");
 		break;
 	}
 
