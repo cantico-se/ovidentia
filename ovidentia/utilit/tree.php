@@ -1647,26 +1647,23 @@ class bab_FileTreeView extends bab_TreeView
 	 */
 	protected function _addVisibleDelegations()
 	{
-		global $babBody;
-
 		$this->_visibleDelegations = bab_getUserFmVisibleDelegations();
-
 
 		// When the tree is displayed for administrative purpose, we only
 		// display the currently administered delegation.
-		if ($this->hasAttributes(self::SHOW_ONLY_ADMINISTERED_DELEGATION))
-		{
+		if ($this->hasAttributes(self::SHOW_ONLY_ADMINISTERED_DELEGATION)) {
 			$this->_visibleDelegations = array(bab_getCurrentAdmGroup() => $this->_visibleDelegations[bab_getCurrentAdmGroup()]);
 		}
 
 		// We create a first-level node for each visible delegation.
-		foreach ($this->_visibleDelegations as $delegationId => $delegationName)
-		{
-			$element = $this->createElement('d' . $delegationId,
-											 'foldercategory',
-											 $delegationName,
-											 '',
-											 '');
+		foreach ($this->_visibleDelegations as $delegationId => $delegationName) {
+			$element = $this->createElement(
+			    'd' . $delegationId,
+				'foldercategory',
+				$delegationName,
+				'',
+				''
+			);
 			$element->setIcon($GLOBALS['babSkinPath'] . 'images/nodetypes/collective_folder.png');
 			$this->appendElement($element, null);
 		}
@@ -1679,9 +1676,7 @@ class bab_FileTreeView extends bab_TreeView
 	protected function _addPersonalFiles()
 	{
 		require_once $GLOBALS['babInstallPath'].'utilit/fileincl.php';
-		global $babDB, $babBody;
-
-		$rootPath = '';
+		global $babDB;
 
 		$sql = 'SELECT file.id, file.path, file.name, file.id_owner, file.bgroup '
 			 . ' FROM ' . BAB_FILES_TBL . ' file'
@@ -1704,9 +1699,6 @@ class bab_FileTreeView extends bab_TreeView
 
 		$folders = new BAB_FmFolderSet();
 
-		$oRelativePath = $folders->aField['sRelativePath'];
-		$oName = $folders->aField['sName'];
-
 		while ($file = $babDB->db_fetch_array($files)) {
 
 			$filePath = $file['path'];
@@ -1716,11 +1708,13 @@ class bab_FileTreeView extends bab_TreeView
 			$fileType = $personalFileType;
 			$rootId = 'pd' . self::ID_SEPARATOR . $file['id_owner'];
 			if (is_null($this->getRootNode()->getNodeById($rootId))) {
-				$element = $this->createElement($rootId,
-												 'foldercategory',
-												 bab_translate("Personal folders"),
-												 '',
-												 '');
+				$element = $this->createElement(
+				    $rootId,
+					'foldercategory',
+					bab_translate("Personal folders"),
+					'',
+					''
+				);
 				$element->setIcon($GLOBALS['babSkinPath'] . 'images/nodetypes/personal_folder.png');
 				$this->appendElement($element, null);
 			}
@@ -1730,11 +1724,12 @@ class bab_FileTreeView extends bab_TreeView
 			foreach ($subdirs as $subdir) {
 				if (trim($subdir) !== '') {
 					if (is_null($this->getRootNode()->getNodeById($rootId . $parentId . ':' . $subdir))) {
-						$element = $this->createElement($rootId . $parentId . ':' . $subdir,
-														 $directoryType,
-														 $subdir,
-														 '',
-														 '');
+						$element = $this->createElement(
+						    $rootId . $parentId . ':' . $subdir,
+							$directoryType,
+							$subdir,
+							'',
+							'');
 						$element->setIcon($GLOBALS['babSkinPath'] . 'images/nodetypes/folder.png');
 						if (($this->hasAttributes(self::SELECTABLE_SUB_FOLDERS))
 						&& ($this->hasAttributes(self::MULTISELECT))) {
@@ -1745,11 +1740,13 @@ class bab_FileTreeView extends bab_TreeView
 					$parentId .= ':' . $subdir;
 				}
 			}
-			$element = $this->createElement($fileId,
-											 $fileType,
-											 bab_toHtml($file['name']),
-											 '',
-											 '');
+			$element = $this->createElement(
+			    $fileId,
+				$fileType,
+				bab_toHtml($file['name']),
+				'',
+				''
+			);
 			$element->setIcon($GLOBALS['babSkinPath'] . 'images/nodetypes/file.png');
 			if (($this->hasAttributes(self::SELECTABLE_FILES))
 			&& ($this->hasAttributes(self::MULTISELECT))) {
@@ -1766,7 +1763,7 @@ class bab_FileTreeView extends bab_TreeView
 	 */
 	protected function _addCollectiveDirectories($folderId = null)
 	{
-		global $babDB, $babBody;
+		global $babDB;
 
 		$folders = new BAB_FmFolderSet();
 
