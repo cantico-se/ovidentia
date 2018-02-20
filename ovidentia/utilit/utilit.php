@@ -118,9 +118,6 @@ function bab_formatAuthor($format, $id)
     return $txt;
 }
 
-function bab_stripDomainName($txt) {
-    return eregi_replace("((href|src)=['\"]?)".$GLOBALS['babUrl'], '\\1', $txt);
-    }
 
 function bab_isEmailValid($email)
     {

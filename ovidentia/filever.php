@@ -888,38 +888,41 @@ if(isset($_REQUEST['idf']))
 
     if(!is_null($oFolderFile) && !is_null($oFmFolder))
     {
-        if(isset($_POST['afile']) && $fm_file['bupdate'] == true)
+        if(isset($_POST['afile']))
         {
-            switch($_POST['afile'])
+            if ($fm_file['bupdate'] == true)
             {
-                case 'lock':
-                    bab_requireSaveMethod() && fm_lockFile($idf, $_POST['comment']);
-                    break;
+                switch($_POST['afile'])
+                {
+                    case 'lock':
+                        bab_requireSaveMethod() && fm_lockFile($idf, $_POST['comment']);
+                        break;
 
-                case 'unlock':
-                    bab_requireSaveMethod() && fm_unlockFile($idf, $_POST['comment']);
-                    break;
+                    case 'unlock':
+                        bab_requireSaveMethod() && fm_unlockFile($idf, $_POST['comment']);
+                        break;
 
-                case 'commit':
-                    bab_requireSaveMethod();
-                    if(false === fm_commitFile($idf, $_POST['comment'], $_POST['vermajor'], bab_fmFile::upload('uploadf')))
-                    {
-                            $idx = 'commit';
-                    }
-                    break;
+                    case 'commit':
+                        bab_requireSaveMethod();
+                        if(false === fm_commitFile($idf, $_POST['comment'], $_POST['vermajor'], bab_fmFile::upload('uploadf')))
+                        {
+                                $idx = 'commit';
+                        }
+                        break;
 
-                case 'delv':
-                    if(bab_isAccessValid(BAB_FMMANAGERS_GROUPS_TBL, $oFmFolder->getId()))
-                    {
-                        bab_requireDeleteMethod() && deleteFileVersions($idf, bab_pp('versions', array()));
-                    }
-                    break;
+                    case 'delv':
+                        if(bab_isAccessValid(BAB_FMMANAGERS_GROUPS_TBL, $oFmFolder->getId()))
+                        {
+                            bab_requireDeleteMethod() && deleteFileVersions($idf, bab_pp('versions', array()));
+                        }
+                        break;
 
-                case 'cleanlog':
-                    if(bab_isAccessValid(BAB_FMMANAGERS_GROUPS_TBL, $oFmFolder->getId()))
-                    {
-                        bab_requireSaveMethod() && cleanFileLog($idf, bab_pp('date'));
-                    }
+                    case 'cleanlog':
+                        if(bab_isAccessValid(BAB_FMMANAGERS_GROUPS_TBL, $oFmFolder->getId()))
+                        {
+                            bab_requireSaveMethod() && cleanFileLog($idf, bab_pp('date'));
+                        }
+                }
             }
 
             if($_POST['afile'] == 'confirm')

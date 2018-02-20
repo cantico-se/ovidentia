@@ -685,6 +685,8 @@ abstract class bab_Controller
 
         } elseif (is_array($returnedValue)) {
 
+            $W = bab_Widgets();
+
             $htmlCanvas = $W->HtmlCanvas();
             $returnedArray = array();
             foreach ($returnedValue as $key => &$item) {

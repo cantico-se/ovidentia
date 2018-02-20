@@ -69,7 +69,7 @@ class bab_eventCsrfInvalidToken extends bab_eventCsrfTokenError
      * @var string
      */
     public $sessionToken;
-    
+
     /**
      * @var string
      */
@@ -98,7 +98,7 @@ class bab_CsrfProtect
      * Get token to put in forms hidden fields
      * @return string
      */
-    public function getToken()
+    public static function getToken()
     {
         $session = bab_getInstance('bab_Session');
         if (!isset($session->bab_CsrfProtectToken)) {

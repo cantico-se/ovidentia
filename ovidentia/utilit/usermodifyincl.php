@@ -65,19 +65,19 @@ class bab_userModify {
             }
 
 
-        if( empty(trim($nickname)) )
+        if( trim($nickname) === '' )
             {
             $error = bab_translate( "Login ID is required");
             return false;
             }
 
-        if( empty(trim($password1)) || empty(trim($password2)))
+        if( trim($password1) === '' || trim($password2) === '' )
             {
             $error = bab_translate( "Passwords not match !!");
             return false;
             }
 
-        if( trim($password1) != trim($password2))
+        if( trim($password1) !== trim($password2))
             {
             $error = bab_translate("Passwords not match !!");
             return false;
@@ -363,7 +363,7 @@ class bab_userModify {
             $arruq[] = 'nickname=\''.$babDB->db_escape_string($info['nickname']).'\'';
         }
 
-        if( isset($info['password']) && empty(trim($info['password'])) )
+        if( isset($info['password']) && trim($info['password']) === '' )
         {
             $error = bab_translate("Empty password");
             return false;
@@ -412,7 +412,7 @@ class bab_userModify {
             $arruq[] = 'validity_end=' . $babDB->quote($info['validity_end']);
         }
 
-        if( isset($info['email']) && !empty(trim($info['email'])))
+        if( isset($info['email']) && trim($info['email']) !== '' )
         {
             $arruq[] =  'email=\''.$babDB->db_escape_string(trim($info['email'])).'\'';
         }
@@ -573,7 +573,7 @@ class bab_userModify {
 
         return true;
     }
-    
+
     /**
      * Get the thumbnailed data binary of the data binary passed in parameter if the functionality Thumbnailer is available.
      * Return the original data if the functionality Thumbnailer is unavailable.
@@ -588,11 +588,12 @@ class bab_userModify {
         /*@var $T Func_Thumbnailer */
         $T = bab_functionality::get('Thumbnailer');
         if ($T) {
-            $now = new DateTime('NOW');
-            $T->setSourceBinary($binary, $now->format('Y-m-d H:i:s'));
-    
-            $resizedFile = bab_getBabUrl().$T->getThumbnail($width, $height);
-            return file_get_contents($resizedFile);
+            $T->setSourceBinary($binary, date('Y-m-d H:i:s'));
+
+            $path = $T->getThumbnailPath($width, $height);
+            if ($path instanceof bab_Path) {
+                return file_get_contents($path->tostring());
+            }
         }
         return $binary;
     }

@@ -44,9 +44,9 @@ class Func_PortalAuthentication extends bab_functionality
      * the login form page will be with a 401 HTTP code
      */
     public $restrictedArea = false;
-    
 
-    
+
+
 
     public function getDescription()
     {
@@ -90,8 +90,8 @@ class Func_PortalAuthentication extends bab_functionality
     {
         return null;
     }
-    
-    
+
+
     /**
      * If authentication use ovidentia database
      * This is used by the emailpassword functionality and administrator users list
@@ -100,8 +100,8 @@ class Func_PortalAuthentication extends bab_functionality
     public function getLoginIdField() {
         return 'nickname';
     }
-    
-    
+
+
 
     /**
      * Sets the message that will be displayed to the user when asked for his credentials.
@@ -135,7 +135,7 @@ class Func_PortalAuthentication extends bab_functionality
     {
         $this->errorMessages = array();
     }
-    
+
     /**
      * @return array
      */
@@ -148,7 +148,7 @@ class Func_PortalAuthentication extends bab_functionality
                 'content' => $str
             );
         }
-        
+
         return array('messages' => $messages);
     }
 
@@ -401,19 +401,19 @@ class Func_PortalAuthentication_AuthOvidentia extends Func_PortalAuthentication
 
                 return true;
             }
-            
+
             if (bab_isAjaxRequest() && count($this->errorMessages) > 0) {
                 header($_SERVER['SERVER_PROTOCOL'] . ' 500 Internal Server Error', true, 500);
                 echo bab_json_encode($this->getJsonErrors());
                 die();
             }
-            
+
         }
         else if ($sLogin === '' || $sPassword === '')
         {
             $this->addError(bab_translate("You must complete all fields !!"));
         }
-        
+
         header('location:'.$this->getLoginFormUrl());
         return false;
     }
@@ -429,7 +429,7 @@ class Func_PortalAuthentication_AuthOvidentia extends Func_PortalAuthentication
         if ($this->restrictedArea) {
             $url .= '&restricted=1';
         }
-        
+
         $settings = bab_getInstance('bab_Settings');
         /*@var $settings bab_Settings */
         $site = $settings->getSiteSettings();
@@ -961,19 +961,19 @@ function bab_doRequireCredential($sLoginMessage, $sAuthType)
         }
         $oAuthObject->setLoginMessage($sLoginMessage);
         $oAuthObject->restrictedArea = true;
-        
+
         if(true === $oAuthObject->login())
         {
             loginRedirect($GLOBALS['babUrlScript'] . '?babHttpContext=restore');
             exit;
         }
 
-        
+
         if ($oAuthObject->errorMessages) {
             loginRedirect($oAuthObject->getLoginFormUrl());
         }
-        
-        
+
+
         // failed authentication without error message
         die(bab_translate("Failed authentication"));
     }
@@ -1202,7 +1202,7 @@ class displayLogin_Template
         $this->nickname = bab_translate("Login ID");
         $this->password = bab_translate("Password");
         $this->login = bab_translate("Login");
-        
+
         $this->isAjaxRequest = bab_isAjaxRequest();
 
         // verify and buid url
@@ -1242,7 +1242,7 @@ class displayLogin_Template
         $this->onemonth = bab_translate("one month");
         $this->oneyear = bab_translate("one year");
         $this->infinite = bab_translate("unlimited");
-        
+
         $this->emailPwdUrl = bab_toHtml('?tg=login&cmd=emailpwd');
         $this->emailPwdTxt = bab_translate('Lost Password');
 
@@ -1295,15 +1295,15 @@ function displayAuthenticationForm($title, $errorMessages)
 	{
 		$referer = $_REQUEST['referer'];
 	}
-	
+
 	if (bab_rp('restricted')) {
 	    header($_SERVER['SERVER_PROTOCOL'].' 401 Unauthorized', true, 401);
 	}
-	
-	
+
+
 	$temp = new displayLogin_Template($referer);
 	$html =	bab_printTemplate($temp, 'login.html', 'login');
-	
+
 	if (bab_isAjaxRequest()) {
 		echo $html;
 		die();
@@ -1573,6 +1573,7 @@ function bab_ldapEntryToOvEntry($oLdap, $iIdUser, $sPassword, $aEntries, $aUpdat
             switch($key)
             {
                 case 'jpegphoto':
+                case 'thumbnailphoto':
                     $resize = bab_userModify::resizeBinary($ldapvalue);
                     $sQuery .= ', photo_data=\'' . $babDB->db_escape_string($resize) . '\'';
                     break;
@@ -1903,7 +1904,7 @@ function bab_setUserSessionInfo($iIdUser)
     {
 
         $GLOBALS['BAB_SESS_LOGGED'] = null;
-        
+
 
         $session->BAB_SESS_NICKNAME		= $aUser['nickname'];
         $session->BAB_SESS_USER			= bab_composeUserName($aUser['firstname'], $aUser['lastname']);
