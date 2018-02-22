@@ -1804,7 +1804,7 @@ class bab_FileTreeView extends bab_TreeView
                     ''
                 );
                 if ($this->_updateBaseUrl) {
-                    $element->setFetchContentScript(bab_toHtml("bab_loadSubTree(document.getElementById('li" . $this->_id . '.' . $element->_id .  "'), '" . $this->_updateBaseUrl . "&start=" . $folder->getId().':'.bab_toHtml(urlencode($folder->getName())) . "')"));
+                    $element->setFetchContentScript(bab_toHtml("bab_loadSubTree(document.getElementById('li" . $this->_id . '.' . $element->_id .  "'), '" . $this->_updateBaseUrl . "&start=" . bab_toHtml(urlencode($folder->getId() . ':' . $folder->getName())) . "')"));
                 }
                 $element->setIcon($GLOBALS['babSkinPath'] . 'images/nodetypes/folder.png');
                 if (($this->hasAttributes(self::SELECTABLE_COLLECTIVE_FOLDERS)) && ($this->hasAttributes(self::MULTISELECT))) {
@@ -2098,7 +2098,7 @@ class bab_FileTreeView extends bab_TreeView
                     $element->addCheckBox('select');
                 }
                 if ($this->_updateBaseUrl) {
-                    $element->setFetchContentScript(bab_toHtml("bab_loadSubTree(document.getElementById('li" . $this->_id . '.' . $element->_id . "'), '" . $this->_updateBaseUrl . "&start=" . substr($rootId, 3) . ':' . bab_toHtml(urlencode($filename)) . "')"));
+                    $element->setFetchContentScript(bab_toHtml("bab_loadSubTree(document.getElementById('li" . $this->_id . '.' . $element->_id . "'), '" . $this->_updateBaseUrl . "&start=" . bab_toHtml(urlencode(substr($rootId, 3) . ':' . $filename)) . "')"));
                 }
             } elseif ($this->hasAttributes(self::SHOW_FILES)) {
                 $fmFile = $file->getFmFile();
