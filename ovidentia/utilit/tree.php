@@ -1501,323 +1501,319 @@ class bab_ArticleTreeView extends bab_TreeView
  * DEPRECATED ** Use bab_FileTreeView::SHOW_COLLECTIVE_FOLDERS
  * @deprecated by bab_FileTreeView::SHOW_COLLECTIVE_FOLDERS
  */
-define('BAB_FILE_TREE_VIEW_SHOW_COLLECTIVE_DIRECTORIES',		 0);
+define('BAB_FILE_TREE_VIEW_SHOW_COLLECTIVE_DIRECTORIES',        0);
 /**
  * DEPRECATED ** Use bab_FileTreeView::SHOW_SUB_FOLDERS
  * @deprecated by bab_FileTreeView::SHOW_SUB_FOLDERS
  */
-define('BAB_FILE_TREE_VIEW_SHOW_SUB_DIRECTORIES',				 1);
+define('BAB_FILE_TREE_VIEW_SHOW_SUB_DIRECTORIES',               1);
 /**
  * DEPRECATED ** Use bab_FileTreeView::SHOW_FILES
  * @deprecated by bab_FileTreeView::SHOW_FILES
  */
-define('BAB_FILE_TREE_VIEW_SHOW_FILES',							 2);
+define('BAB_FILE_TREE_VIEW_SHOW_FILES',                         2);
 /**
  * DEPRECATED ** Use bab_FileTreeView::SHOW_PERSONAL_FOLDERS
  * @deprecated by bab_FileTreeView::SHOW_PERSONAL_FOLDERS
  */
-define('BAB_FILE_TREE_VIEW_SHOW_PERSONAL_DIRECTORIES',		 	 4);
+define('BAB_FILE_TREE_VIEW_SHOW_PERSONAL_DIRECTORIES',          4);
 /**
  * DEPRECATED ** Use bab_FileTreeView::SELECTABLE_COLLECTIVE_FOLDERS
  * @deprecated by bab_FileTreeView::SELECTABLE_COLLECTIVE_FOLDERS
  */
-define('BAB_FILE_TREE_VIEW_SELECTABLE_COLLECTIVE_DIRECTORIES',	 8);
+define('BAB_FILE_TREE_VIEW_SELECTABLE_COLLECTIVE_DIRECTORIES',  8);
 /**
  * DEPRECATED ** Use bab_FileTreeView::SELECTABLE_SUB_FOLDERS
  * @deprecated by bab_FileTreeView::SELECTABLE_SUB_FOLDERS
  */
-define('BAB_FILE_TREE_VIEW_SELECTABLE_SUB_DIRECTORIES',	 		16);
+define('BAB_FILE_TREE_VIEW_SELECTABLE_SUB_DIRECTORIES',         16);
 /**
  * DEPRECATED ** Use bab_FileTreeView::SELECTABLE_FILES
  * @deprecated by bab_FileTreeView::SELECTABLE_FILES
  */
-define('BAB_FILE_TREE_VIEW_SELECTABLE_FILES',					32);
+define('BAB_FILE_TREE_VIEW_SELECTABLE_FILES',                   32);
 /**
  *  DEPRECATED ** Use bab_FileTreeView::SHOW_ONLY_ADMINISTERED_DELEGATION
  *  @deprecated by bab_FileTreeView::SHOW_ONLY_ADMINISTERED_DELEGATION
  */
-define('BAB_FILE_TREE_VIEW_SHOW_ONLY_DELEGATION',			   128);
+define('BAB_FILE_TREE_VIEW_SHOW_ONLY_DELEGATION',               128);
 
 /**
  * A Treeview populated with folders/files from the file manager.
  */
 class bab_FileTreeView extends bab_TreeView
 {
-	/**#@+
-	 * Constant used for add/set/get/removeAttributes methods.
-	 */
-	/**
-	 * Show collective folder node in the treeview.
-	 */
-	const SHOW_COLLECTIVE_FOLDERS			=    0;
-
-	/**
-	 * Show sub-folders (i.e. not first-level collective folders) nodes
-	 * in the treeview.
-	 */
-	const SHOW_SUB_FOLDERS					=    1;
-
-	/**
-	 * Show file nodes in the treeview.
-	 */
-	const SHOW_FILES						=    2;
-
-	/**
-	 * Show the user personal folder node in the treeview.
-	 */
-	const SHOW_PERSONAL_FOLDERS				=    4;
-
-	/**
-	 * Make collective folders selectable.
-	 */
-	const SELECTABLE_COLLECTIVE_FOLDERS		=    8;
-
-	/**
-	 * Make sub-folders selectable.
-	 */
-	const SELECTABLE_SUB_FOLDERS			=   16;
-
-	/**
-	 * Make files selectable.
-	 */
-	const SELECTABLE_FILES					=   32;
-
-	/**
-	 * When the tree is displayed for administrative purpose and this
-	 * attribute is set the treeview will only display the currently
-	 * administered delegation.
-	 */
-	const SHOW_ONLY_ADMINISTERED_DELEGATION	=  128;
-	/**#@-*/
-
-	/**#@+
-	 * @access private
-	 */
-	var $_adminView;
-
-	var $_startFolderId;
-	var $_startPath;
-	var $_updateBaseUrl;
-
-	/**
-	 * @var array _visibleDelegations
+    /**#@+
+     * Constant used for add/set/get/removeAttributes methods.
      */
-	var $_visibleDelegations;
+    /**
+     * Show collective folder node in the treeview.
+     */
+    const SHOW_COLLECTIVE_FOLDERS           =    0;
 
-	var $_directories;
-	/**#@-*/
+    /**
+     * Show sub-folders (i.e. not first-level collective folders) nodes
+     * in the treeview.
+     */
+    const SHOW_SUB_FOLDERS                  =    1;
 
+    /**
+     * Show file nodes in the treeview.
+     */
+    const SHOW_FILES                        =    2;
 
+    /**
+     * Show the user personal folder node in the treeview.
+     */
+    const SHOW_PERSONAL_FOLDERS             =    4;
 
-	public function __construct($id, $adminView = true)
-	{
-		require_once $GLOBALS['babInstallPath'].'utilit/fileincl.php';
-		require_once $GLOBALS['babInstallPath'].'utilit/delegincl.php';
-		parent::__construct($id);
+    /**
+     * Make collective folders selectable.
+     */
+    const SELECTABLE_COLLECTIVE_FOLDERS     =    8;
 
-		$this->addAttributes(self::SHOW_FILES);
+    /**
+     * Make sub-folders selectable.
+     */
+    const SELECTABLE_SUB_FOLDERS            =   16;
 
-		$this->_adminView = $adminView;
+    /**
+     * Make files selectable.
+     */
+    const SELECTABLE_FILES                  =   32;
 
-		$this->setStartPath(null, '');
-		$this->setUpdateBaseUrl('');
+    /**
+     * When the tree is displayed for administrative purpose and this
+     * attribute is set the treeview will only display the currently
+     * administered delegation.
+     */
+    const SHOW_ONLY_ADMINISTERED_DELEGATION	=  128;
+    /**#@-*/
 
-		$this->t_warnzone = bab_translate('Warning: Only non-empty folders are displayed.');
+    /**#@+
+     * @access private
+     */
+    var $_adminView;
 
-		$this->_directories = array();
-	}
+    var $_startFolderId;
+    var $_startPath;
+    var $_updateBaseUrl;
 
+    /**
+     * @var array _visibleDelegations
+     */
+    var $_visibleDelegations;
 
-
-	public function setStartPath($folderId, $path)
-	{
-		$this->_startFolderId = $folderId;
-		$this->_startPath = $path;
-	}
-
-
-	public function setUpdateBaseUrl($url)
-	{
-		$this->_updateBaseUrl = $url;
-	}
-
-
-	/**
-	 *
-	 */
-	protected function _addVisibleDelegations()
-	{
-		$this->_visibleDelegations = bab_getUserFmVisibleDelegations();
-
-		// When the tree is displayed for administrative purpose, we only
-		// display the currently administered delegation.
-		if ($this->hasAttributes(self::SHOW_ONLY_ADMINISTERED_DELEGATION)) {
-			$this->_visibleDelegations = array(bab_getCurrentAdmGroup() => $this->_visibleDelegations[bab_getCurrentAdmGroup()]);
-		}
-
-		// We create a first-level node for each visible delegation.
-		foreach ($this->_visibleDelegations as $delegationId => $delegationName) {
-			$element = $this->createElement(
-			    'd' . $delegationId,
-				'foldercategory',
-				$delegationName,
-				'',
-				''
-			);
-			$element->setIcon($GLOBALS['babSkinPath'] . 'images/nodetypes/collective_folder.png');
-			$this->appendElement($element, null);
-		}
-	}
-
-
-	/**
-	 * Add files and subdirectories for the personal folder.
-	 */
-	protected function _addPersonalFiles()
-	{
-		require_once $GLOBALS['babInstallPath'].'utilit/fileincl.php';
-		global $babDB;
-
-		$sql = 'SELECT file.id, file.path, file.name, file.id_owner, file.bgroup '
-			 . ' FROM ' . BAB_FILES_TBL . ' file'
-			 . ' WHERE file.bgroup=\'N\' AND file.id_owner=' . $babDB->quote($GLOBALS['BAB_SESS_USERID'])
-			 . ' AND file.state <> \'D\''
-			 . ' ORDER BY file.name';
-
-		$directoryType = 'personnalfolder';
-		if (!($this->hasAttributes(self::MULTISELECT))
-		&& $this->hasAttributes(self::SELECTABLE_SUB_FOLDERS)) {
-			$directoryType .= ' clickable';
-		}
-		$personalFileType = 'pfile';
-		if (!($this->hasAttributes(self::MULTISELECT))
-		&& $this->hasAttributes(self::SELECTABLE_FILES)) {
-			$personalFileType .= ' clickable';
-		}
-		$files = $babDB->db_query($sql);
-
-
-		$folders = new BAB_FmFolderSet();
-
-		while ($file = $babDB->db_fetch_array($files)) {
-
-			$filePath = $file['path'];
-			$subdirs = explode('/', $filePath);
-
-			$fileId = 'p' . self::ID_SEPARATOR . $file['id'];
-			$fileType = $personalFileType;
-			$rootId = 'pd' . self::ID_SEPARATOR . $file['id_owner'];
-			if (is_null($this->getRootNode()->getNodeById($rootId))) {
-				$element = $this->createElement(
-				    $rootId,
-					'foldercategory',
-					bab_translate("Personal folders"),
-					'',
-					''
-				);
-				$element->setIcon($GLOBALS['babSkinPath'] . 'images/nodetypes/personal_folder.png');
-				$this->appendElement($element, null);
-			}
-
-			$parentId = '';
-
-			foreach ($subdirs as $subdir) {
-				if (trim($subdir) !== '') {
-					if (is_null($this->getRootNode()->getNodeById($rootId . $parentId . ':' . $subdir))) {
-						$element = $this->createElement(
-						    $rootId . $parentId . ':' . $subdir,
-							$directoryType,
-							$subdir,
-							'',
-							'');
-						$element->setIcon($GLOBALS['babSkinPath'] . 'images/nodetypes/folder.png');
-						if (($this->hasAttributes(self::SELECTABLE_SUB_FOLDERS))
-						&& ($this->hasAttributes(self::MULTISELECT))) {
-							$element->addCheckBox('select');
-						}
-						$this->appendElement($element, $rootId . $parentId);
-					}
-					$parentId .= ':' . $subdir;
-				}
-			}
-			$element = $this->createElement(
-			    $fileId,
-				$fileType,
-				bab_toHtml($file['name']),
-				'',
-				''
-			);
-			$element->setIcon($GLOBALS['babSkinPath'] . 'images/nodetypes/file.png');
-			if (($this->hasAttributes(self::SELECTABLE_FILES))
-			&& ($this->hasAttributes(self::MULTISELECT))) {
-				$element->addCheckBox('select');
-			}
-			$this->appendElement($element, $rootId . $parentId);
-		}
-	}
+    var $_directories;
+    /**#@-*/
 
 
 
-	/**
-	 * Add collective folders.
-	 */
-	protected function _addCollectiveDirectories($folderId = null)
-	{
-		global $babDB;
+    public function __construct($id, $adminView = true)
+    {
+        require_once $GLOBALS['babInstallPath'].'utilit/fileincl.php';
+        require_once $GLOBALS['babInstallPath'].'utilit/delegincl.php';
+        parent::__construct($id);
 
-		$folders = new BAB_FmFolderSet();
+        $this->addAttributes(self::SHOW_FILES);
 
-		$oRelativePath = $folders->aField['sRelativePath'];
-		$oIdDgOwner = $folders->aField['iIdDgOwner'];
-		$oActive = $folders->aField['sActive'];
-		$oHide = $folders->aField['sHide'];
-		$oId = $folders->aField['iId'];
+        $this->_adminView = $adminView;
 
-		$oCriteria = $oRelativePath->in($babDB->db_escape_like(''));
-		$oCriteria = $oCriteria->_and($oIdDgOwner->in(array_keys($this->_visibleDelegations)));
+        $this->setStartPath(null, '');
+        $this->setUpdateBaseUrl('');
 
-		$oCriteria = $oCriteria->_and($oActive->in('Y'));
+        $this->t_warnzone = bab_translate('Warning: Only non-empty folders are displayed.');
 
-		// hidden directories must be visibles in popup
-		// this functionality allow users to publish files throw articles while the real file in file manager is not visible
-		// $oCriteria = $oCriteria->_and($oHide->in('N'));
+        $this->_directories = array();
+    }
 
-		if (!is_null($folderId)) {
-			$oCriteria = $oCriteria->_and($oId->in($folderId));
-		}
-		$folders->select($oCriteria, array('sName' => 'ASC'));
 
-		$elementType = 'folder';
-		if (!($this->hasAttributes(self::MULTISELECT))
-		&& $this->hasAttributes(self::SELECTABLE_COLLECTIVE_FOLDERS)) {
-			$elementType .= ' clickable';
-		}
 
-		while (null !== ($folder = $folders->next()))
-		{
-			$bManager = bab_isAccessValid(BAB_FMMANAGERS_GROUPS_TBL, $folder->getId());
-			$bDownload = bab_isAccessValid(BAB_FMDOWNLOAD_GROUPS_TBL, $folder->getId());
+    public function setStartPath($folderId, $path)
+    {
+        $this->_startFolderId = $folderId;
+        $this->_startPath = $path;
+    }
 
-			if($this->_adminView || $bManager || $bDownload)
-			{
-				$element = $this->createElement('d' . self::ID_SEPARATOR . $folder->getId().':'.bab_toHtml($folder->getName()),
-					 $elementType,
-												 bab_toHtml($folder->getName()),
-												 '',
-												 '');
-				if ($this->_updateBaseUrl)
-				{
-					$element->setFetchContentScript(bab_toHtml("bab_loadSubTree(document.getElementById('li" . $this->_id . '.' . $element->_id .  "'), '" . $this->_updateBaseUrl . "&start=" . $folder->getId().':'.bab_toHtml(urlencode($folder->getName())) . "')"));
-				}
-				$element->setIcon($GLOBALS['babSkinPath'] . 'images/nodetypes/folder.png');
-				if (($this->hasAttributes(self::SELECTABLE_COLLECTIVE_FOLDERS))
-				&& ($this->hasAttributes(self::MULTISELECT))) {
-					$element->addCheckBox('select');
-				}
-				$this->appendElement($element, 'd' . $folder->getDelegationOwnerId());
-			}
-		}
-	}
+
+    public function setUpdateBaseUrl($url)
+    {
+        $this->_updateBaseUrl = $url;
+    }
+
+
+    /**
+     *
+     */
+    protected function _addVisibleDelegations()
+    {
+        $this->_visibleDelegations = bab_getUserFmVisibleDelegations();
+
+        // When the tree is displayed for administrative purpose, we only
+        // display the currently administered delegation.
+        if ($this->hasAttributes(self::SHOW_ONLY_ADMINISTERED_DELEGATION)) {
+            $this->_visibleDelegations = array(bab_getCurrentAdmGroup() => $this->_visibleDelegations[bab_getCurrentAdmGroup()]);
+        }
+
+        // We create a first-level node for each visible delegation.
+        foreach ($this->_visibleDelegations as $delegationId => $delegationName) {
+            $element = $this->createElement(
+                'd' . $delegationId,
+                'foldercategory',
+                $delegationName,
+                '',
+                ''
+            );
+            $element->setIcon($GLOBALS['babSkinPath'] . 'images/nodetypes/collective_folder.png');
+            $this->appendElement($element, null);
+        }
+    }
+
+
+    /**
+     * Add files and subdirectories for the personal folder.
+     */
+    protected function _addPersonalFiles()
+    {
+        require_once $GLOBALS['babInstallPath'].'utilit/fileincl.php';
+        global $babDB;
+
+        $sql = 'SELECT file.id, file.path, file.name, file.id_owner, file.bgroup '
+             . ' FROM ' . BAB_FILES_TBL . ' file'
+             . ' WHERE file.bgroup=\'N\' AND file.id_owner=' . $babDB->quote($GLOBALS['BAB_SESS_USERID'])
+             . ' AND file.state <> \'D\''
+             . ' ORDER BY file.name';
+
+        $directoryType = 'personnalfolder';
+        if (!($this->hasAttributes(self::MULTISELECT))
+        && $this->hasAttributes(self::SELECTABLE_SUB_FOLDERS)) {
+            $directoryType .= ' clickable';
+        }
+        $personalFileType = 'pfile';
+        if (!($this->hasAttributes(self::MULTISELECT))
+        && $this->hasAttributes(self::SELECTABLE_FILES)) {
+            $personalFileType .= ' clickable';
+        }
+        $files = $babDB->db_query($sql);
+
+
+        $folders = new BAB_FmFolderSet();
+
+        while ($file = $babDB->db_fetch_array($files)) {
+            $filePath = $file['path'];
+            $subdirs = explode('/', $filePath);
+
+            $fileId = 'p' . self::ID_SEPARATOR . $file['id'];
+            $fileType = $personalFileType;
+            $rootId = 'pd' . self::ID_SEPARATOR . $file['id_owner'];
+            if (is_null($this->getRootNode()->getNodeById($rootId))) {
+                $element = $this->createElement(
+                    $rootId,
+                    'foldercategory',
+                    bab_translate("Personal folders"),
+                    '',
+                    ''
+                );
+                $element->setIcon($GLOBALS['babSkinPath'] . 'images/nodetypes/personal_folder.png');
+                $this->appendElement($element, null);
+            }
+
+            $parentId = '';
+
+            foreach ($subdirs as $subdir) {
+                if (trim($subdir) !== '') {
+                    if (is_null($this->getRootNode()->getNodeById($rootId . $parentId . ':' . $subdir))) {
+                        $element = $this->createElement(
+                            $rootId . $parentId . ':' . $subdir,
+                            $directoryType,
+                            $subdir,
+                            '',
+                            '');
+                        $element->setIcon($GLOBALS['babSkinPath'] . 'images/nodetypes/folder.png');
+                        if (($this->hasAttributes(self::SELECTABLE_SUB_FOLDERS))
+                        && ($this->hasAttributes(self::MULTISELECT))) {
+                        	$element->addCheckBox('select');
+                        }
+                        $this->appendElement($element, $rootId . $parentId);
+                    }
+                    $parentId .= ':' . $subdir;
+                }
+            }
+            $element = $this->createElement(
+                $fileId,
+                $fileType,
+                bab_toHtml($file['name']),
+                '',
+                ''
+            );
+            $element->setIcon($GLOBALS['babSkinPath'] . 'images/nodetypes/file.png');
+            if (($this->hasAttributes(self::SELECTABLE_FILES))
+            && ($this->hasAttributes(self::MULTISELECT))) {
+            	$element->addCheckBox('select');
+            }
+            $this->appendElement($element, $rootId . $parentId);
+        }
+    }
+
+
+
+    /**
+     * Add collective folders.
+     */
+    protected function _addCollectiveDirectories($folderId = null)
+    {
+        global $babDB;
+
+        $folders = new BAB_FmFolderSet();
+
+        $oRelativePath = $folders->aField['sRelativePath'];
+        $oIdDgOwner = $folders->aField['iIdDgOwner'];
+        $oActive = $folders->aField['sActive'];
+        $oId = $folders->aField['iId'];
+
+        $oCriteria = $oRelativePath->in($babDB->db_escape_like(''));
+        $oCriteria = $oCriteria->_and($oIdDgOwner->in(array_keys($this->_visibleDelegations)));
+
+        $oCriteria = $oCriteria->_and($oActive->in('Y'));
+
+        // hidden directories must be visibles in popup
+        // this functionality allow users to publish files throw articles while the real file in file manager is not visible
+        // $oCriteria = $oCriteria->_and($oHide->in('N'));
+
+        if (!is_null($folderId)) {
+            $oCriteria = $oCriteria->_and($oId->in($folderId));
+        }
+        $folders->select($oCriteria, array('sName' => 'ASC'));
+
+        $elementType = 'folder';
+        if (!($this->hasAttributes(self::MULTISELECT))
+        && $this->hasAttributes(self::SELECTABLE_COLLECTIVE_FOLDERS)) {
+            $elementType .= ' clickable';
+        }
+
+        while (null !== ($folder = $folders->next()))
+        {
+            $bManager = bab_isAccessValid(BAB_FMMANAGERS_GROUPS_TBL, $folder->getId());
+            $bDownload = bab_isAccessValid(BAB_FMDOWNLOAD_GROUPS_TBL, $folder->getId());
+
+            if($this->_adminView || $bManager || $bDownload) {
+                $element = $this->createElement('d' . self::ID_SEPARATOR . $folder->getId().':'.bab_toHtml($folder->getName()),
+                    $elementType,
+                    bab_toHtml($folder->getName()),
+                    '',
+                    ''
+                );
+                if ($this->_updateBaseUrl) {
+                    $element->setFetchContentScript(bab_toHtml("bab_loadSubTree(document.getElementById('li" . $this->_id . '.' . $element->_id .  "'), '" . $this->_updateBaseUrl . "&start=" . $folder->getId().':'.bab_toHtml(urlencode($folder->getName())) . "')"));
+                }
+                $element->setIcon($GLOBALS['babSkinPath'] . 'images/nodetypes/folder.png');
+                if (($this->hasAttributes(self::SELECTABLE_COLLECTIVE_FOLDERS)) && ($this->hasAttributes(self::MULTISELECT))) {
+                    $element->addCheckBox('select');
+                }
+                $this->appendElement($element, 'd' . $folder->getDelegationOwnerId());
+            }
+        }
+    }
 
 
 
@@ -1955,53 +1951,53 @@ class bab_FileTreeView extends bab_TreeView
 
 
 
-	/**
-	 * Fill the 'info' of each element with the number of hits from the statistics.
-	 *
-	 * @param string $start		An iso formatted date 'yyyy-mm-dd'.
-	 * @param string $end		An iso formatted date 'yyyy-mm-dd'.
-	 */
-	public function addStatistics($start, $end)
-	{
-		global $babDB;
+    /**
+     * Fill the 'info' of each element with the number of hits from the statistics.
+     *
+     * @param string $start		An iso formatted date 'yyyy-mm-dd'.
+     * @param string $end		An iso formatted date 'yyyy-mm-dd'.
+     */
+    public function addStatistics($start, $end)
+    {
+        global $babDB;
 
-		$this->_updateTree();
-		// Init stats at 0
-		$iterator = $this->getRootNode()->createNodeIterator($this->getRootNode());
-		$iterator->nextNode();
-		while ($node = $iterator->nextNode()) {
-			(!is_null($node)) && $node->_data->setInfo('0');
-		}
+        $this->_updateTree();
+        // Init stats at 0
+        $iterator = $this->getRootNode()->createNodeIterator($this->getRootNode());
+        $iterator->nextNode();
+        while ($node = $iterator->nextNode()) {
+            (!is_null($node)) && $node->_data->setInfo('0');
+        }
 
-		$sql = 'SELECT st_fmfile_id AS id, SUM(st_hits) AS hits FROM ' . BAB_STATS_FMFILES_TBL;
-		if ($start || $end) {
-			$sql .= ' WHERE ';
-			$where = array();
-			$start && $where[] = 'st_date >= ' . $babDB->quote($start);
-			$end && $where[] = 'st_date <= ' .$babDB->quote($end . ' 23:59:59');
-			$sql .= implode(' AND ', $where);
-		}
-		$sql .= ' GROUP BY id';
+        $sql = 'SELECT st_fmfile_id AS id, SUM(st_hits) AS hits FROM ' . BAB_STATS_FMFILES_TBL;
+        if ($start || $end) {
+            $sql .= ' WHERE ';
+            $where = array();
+            $start && $where[] = 'st_date >= ' . $babDB->quote($start);
+            $end && $where[] = 'st_date <= ' .$babDB->quote($end . ' 23:59:59');
+            $sql .= implode(' AND ', $where);
+        }
+        $sql .= ' GROUP BY id';
 
-		$files = $babDB->db_query($sql);
-		while ($file = $babDB->db_fetch_array($files)) {
-			$node = $this->getRootNode()->getNodeById('g' . self::ID_SEPARATOR . $file['id']);
-			if (!is_null($node)) {
-				$element = $node->getData();
-				$element->setInfo($file['hits']);
-				$element->setRank((int)$file['hits']);
-				$node = $node->parentNode();
-				while (!is_null($node)) {
-					$element = $node->getData();
-					if ($element) {
-						$element->setInfo((int)$element->_info + (int)$file['hits']);
-						$element->setRank((int)$element->_rank + (int)$file['hits']);
-					}
-					$node = $node->parentNode();
-				}
-			}
-		}
-	}
+        $files = $babDB->db_query($sql);
+        while ($file = $babDB->db_fetch_array($files)) {
+            $node = $this->getRootNode()->getNodeById('g' . self::ID_SEPARATOR . $file['id']);
+            if (!is_null($node)) {
+                $element = $node->getData();
+                $element->setInfo($file['hits']);
+                $element->setRank((int)$file['hits']);
+                $node = $node->parentNode();
+                while (!is_null($node)) {
+                    $element = $node->getData();
+                    if ($element) {
+                        $element->setInfo((int)$element->_info + (int)$file['hits']);
+                        $element->setRank((int)$element->_rank + (int)$file['hits']);
+                    }
+                    $node = $node->parentNode();
+                }
+            }
+        }
+    }
 
 
     /**
