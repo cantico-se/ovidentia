@@ -167,10 +167,10 @@ class bab_FileInfo extends SplFileInfo
 
 		$file = $files->next();
 		while ($file) {
-		    if ($this->getFilename() !== $file->getName()) {
-		        $file = $files->next();
+		    if ($this->getFilename() === $file->getName()) {
+		        return $file;
 		    }
-		    return $file;
+		    $file = $files->next();
 		}
 
 		return null;
