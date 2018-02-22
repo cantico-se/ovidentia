@@ -1822,6 +1822,8 @@ class bab_FileTreeView extends bab_TreeView
 
 
 
+
+
     /**
      * Add files and subdirectories for a specific collective folder.
      */
@@ -2105,6 +2107,10 @@ class bab_FileTreeView extends bab_TreeView
             } elseif ($this->hasAttributes(self::SHOW_FILES)) {
                 $fmFile = $file->getFmFile();
                 if (!isset($fmFile)) {
+                    continue;
+                }
+                $state = $fmFile->getState();
+                if ($state === 'D') {
                     continue;
                 }
                 $fileId = 'g' . self::ID_SEPARATOR . $fmFile->getId();
