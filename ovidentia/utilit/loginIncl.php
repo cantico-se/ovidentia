@@ -273,17 +273,25 @@ class Func_PortalAuthentication extends bab_functionality
         {
             case BAB_AUTHENTIFICATION_OVIDENTIA:
                 $return = $AuthOvidentia->authenticateUserByLoginPassword($sLogin, $sPassword);
+                // copy errors messages to original object
+                $this->errorMessages = $AuthOvidentia->errorMessages;
                 break;
             case BAB_AUTHENTIFICATION_LDAP:
                 $return = $AuthOvidentia->authenticateUserByLDAP($sLogin, $sPassword);
+                // copy errors messages to original object
+                $this->errorMessages = $AuthOvidentia->errorMessages;
                 break;
             case BAB_AUTHENTIFICATION_AD:
                 $return = $AuthOvidentia->authenticateUserByActiveDirectory($sLogin, $sPassword);
+                // copy errors messages to original object
+                $this->errorMessages = $AuthOvidentia->errorMessages;
+                break;
+            case BAB_AUTHENTIFICATION_LDAP_OR_AD:
+                $AuthLdapAuthentication = bab_functionality::get('AuthldapAuthentication');
+                $return = $AuthLdapAuthentication->authenticateUser($babsite, $sLogin, $sPassword);
+                $this->errorMessages = $AuthLdapAuthentication->getErrors();
                 break;
         }
-
-        // copy errors messages to original object
-        $this->errorMessages = $AuthOvidentia->errorMessages;
 
         return $return;
     }

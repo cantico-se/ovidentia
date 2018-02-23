@@ -1024,6 +1024,12 @@ function siteAuthentification($id)
             $this->res = $babDB->db_query($req);
             if( $babDB->db_num_rows($this->res) > 0 )
                 {
+                $ldapeditor = bab_functionality::get('LdapEditorAuthldap');
+                /**
+                 * @var $ldapeditor Func_LdapEditor
+                 */
+                $W = bab_Widgets();
+                $this->authldapformhtml = $ldapeditor->getAsPage(bab_rp('item'))->display($W->HtmlCanvas());
                 $this->showform = true;
                 $arr = $babDB->db_fetch_array($this->res);
                 $this->modify = bab_translate("Modify");
@@ -1049,7 +1055,7 @@ function siteAuthentification($id)
                 $this->decodetypetxt = bab_translate("Server charset");
 
                 $this->authentificationtxt = bab_translate("Authentification");
-                $this->arrayauth = array(BAB_AUTHENTIFICATION_OVIDENTIA => "OVIDENTIA", BAB_AUTHENTIFICATION_LDAP => "LDAP", BAB_AUTHENTIFICATION_AD => "ACTIVE DIRECTORY");
+                $this->arrayauth = array(BAB_AUTHENTIFICATION_OVIDENTIA => "OVIDENTIA", BAB_AUTHENTIFICATION_LDAP => "LDAP", BAB_AUTHENTIFICATION_AD => "ACTIVE DIRECTORY", BAB_AUTHENTIFICATION_LDAP_OR_AD => "LDAP / ACTIVE DIRECTORY");
 
                 $this->fieldrequiredtxt = bab_translate("Those fields are required");
                 $this->domainnametxt = bab_translate("Domain name");
@@ -1149,6 +1155,10 @@ function siteAuthentification($id)
             if( $i < count($this->arrayauth))
                 {
                 $this->authval = $i;
+                $this->displayOption = true;
+                if($i === BAB_AUTHENTIFICATION_AD || $i === BAB_AUTHENTIFICATION_LDAP){
+                    $this->displayOption = false;
+                }
                 $this->authname = $this->arrayauth[$i];
                 if( $this->authsite == $this->authval )
                     {
@@ -2460,6 +2470,14 @@ function siteUpdate_authentification($id, $authtype, $host, $hostname, $ldpapchk
             return false;
             }
 
+        if($authtype == BAB_AUTHENTIFICATION_LDAP_OR_AD){
+            $req = "update ".BAB_SITES_TBL." set authentification='".$babDB->db_escape_string($authtype)."'";
+            $req .= " where id='".$babDB->db_escape_string($id)."'";
+            $babDB->db_query($req);
+            Header("Location: ". $GLOBALS['babUrlScript']."?tg=site&item=".$id);
+            exit;
+        }
+        
         if( empty($host))
             {
             $babBody->msgerror = bab_translate("ERROR: You must provide a host address !!");
@@ -2757,8 +2775,9 @@ switch ($_POST['action'])
             $hostname = isset($_POST['hostname']) ? $_POST['hostname'] : '';
             $ldpapchkcnx = isset($_POST['ldpapchkcnx']) ? $_POST['ldpapchkcnx'] : 'N';
             $searchdn = isset($_POST['searchdn']) ? $_POST['searchdn'] : '';
+            $host = isset($_POST['host']) ? $_POST['host'] : '';
 
-            if(!siteUpdate_authentification($_POST['item'], $_POST['authtype'], $_POST['host'], $hostname, $ldpapchkcnx, $searchdn))
+            if(!siteUpdate_authentification($_POST['item'], $_POST['authtype'], $host, $hostname, $ldpapchkcnx, $searchdn))
                 $idx = "menu8";
             }
         break;
