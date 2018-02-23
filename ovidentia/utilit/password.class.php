@@ -68,6 +68,7 @@ class bab_Password
      */
     public static function verify($password, $hash, $password_hash_function)
     {
+    	
         switch($password_hash_function) {
             default:
             case 'md5':

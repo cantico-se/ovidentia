@@ -255,16 +255,11 @@ bab_dialog.selectforum = function(action, attributes) {
  * <ul>
  * <li>toolbar: show a toolbar with collapse/expand and a search field</li>
  * <li>memorize: the treeview will memorize open nodes in a cookie</li>
- * <li>show_collective_directories: show collective folders (first level folders)</li>
  * <li>show_collective_folders: show collective folders (first level folders)</li>
- * <li>show_personal_directories: show personal directories</li>
  * <li>show_personal_folders: show the personal folder</li>
- * <li>show_sub_directories: show sub-directories</li>
  * <li>show_sub_folders: show sub-folders</li>
  * <li>show_files: show files (implies show_sub_folders)</li>
- * <li>selectable_collective_directories: collective directories can be selected</li>
  * <li>selectable_collective_folders: collective folders can be selected</li>
- * <li>selectable_sub_directories: sub-directories can be selected</li>
  * <li>selectable_sub_folders: sub-folders can be selected</li>
  * <li>selectable_files: files can be selected</li>
  * <li>multi: more than 1 item can be selected (there will be checkboxes and a "select" button)</li>

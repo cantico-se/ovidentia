@@ -63,7 +63,7 @@ function selectArticles()
 		'memorize' => bab_TreeView::MEMORIZE_OPEN_NODES
 	);
 
-	list($attributes, $urlAttributes) = getAttributesFromRp($params);
+	list($attributes, ) = getAttributesFromRp($params);
 
 	$ignoredCategories = bab_rp('ignored_categories', '');
 	$ignoredCategories = explode(',', $ignoredCategories);
@@ -98,7 +98,7 @@ function selectFaqs()
 		'memorize' => bab_TreeView::MEMORIZE_OPEN_NODES
 	);
 
-	list($attributes, $urlAttributes) = getAttributesFromRp($params);
+	list($attributes, ) = getAttributesFromRp($params);
 
 	$treeView = new bab_FaqTreeView('bab_tv_faq');
 	$treeView->setAttributes($attributes);
@@ -127,7 +127,7 @@ function selectForums()
 		'memorize' => bab_TreeView::MEMORIZE_OPEN_NODES
 	);
 
-	list($attributes, $urlAttributes) = getAttributesFromRp($params);
+	list($attributes, ) = getAttributesFromRp($params);
 
 	$treeView = new bab_ForumTreeView('bab_tv_forum');
 	$treeView->setAttributes($attributes);
@@ -156,19 +156,13 @@ function selectFiles($folderId = null, $path = '')
 	global $babBody;
 
 	$params = array(
-/* DEPRECATED */		'show_collective_directories' => bab_FileTreeView::SHOW_COLLECTIVE_FOLDERS, /* DEPRECATED */
-/* DEPRECATED */		'show_personal_directories' => bab_FileTreeView::SHOW_PERSONAL_FOLDERS, /* DEPRECATED */
-/* DEPRECATED */		'show_sub_directories' => bab_FileTreeView::SHOW_SUB_FOLDERS, /* DEPRECATED */
 		'show_collective_folders' => bab_FileTreeView::SHOW_COLLECTIVE_FOLDERS,
 		'show_personal_folders' => bab_FileTreeView::SHOW_PERSONAL_FOLDERS,
 		'show_sub_folders' => bab_FileTreeView::SHOW_SUB_FOLDERS,
 		'show_files' => bab_FileTreeView::SHOW_FILES,
-/* DEPRECATED */		'selectable_collective_directories' => bab_FileTreeView::SELECTABLE_COLLECTIVE_FOLDERS, /* DEPRECATED */
-/* DEPRECATED */		'selectable_sub_directories' => bab_FileTreeView::SELECTABLE_SUB_FOLDERS, /* DEPRECATED */
 		'selectable_collective_folders' => bab_FileTreeView::SELECTABLE_COLLECTIVE_FOLDERS,
 		'selectable_sub_folders' => bab_FileTreeView::SELECTABLE_SUB_FOLDERS,
 		'selectable_files' => bab_FileTreeView::SELECTABLE_FILES,
-/* DEPRECATED */		'show_only_delegation' => bab_FileTreeView::SHOW_ONLY_ADMINISTERED_DELEGATION, /* DEPRECATED */
 		'show_only_administered_delegation' => bab_ArticleTreeView::SHOW_ONLY_ADMINISTERED_DELEGATION,
 		'multi' => bab_TreeView::MULTISELECT,
 		'toolbar' => bab_TreeView::SHOW_TOOLBAR,
@@ -186,7 +180,6 @@ function selectFiles($folderId = null, $path = '')
 		// so we return only its sub folders tree.
 		$treeView->setStartPath($folderId, $path);
 		$treeView->setAttributes($attributes);
-//		header('Content-type: text/html; charset=' . bab_charset::getIso());
 		echo($treeView->printSubTree());
 		die();
 	}
@@ -214,7 +207,7 @@ function selectGroups()
 
 	);
 
-	list($attributes, $urlAttributes) = getAttributesFromRp($params);
+	list($attributes, ) = getAttributesFromRp($params);
 
 	$treeView = new bab_GroupTreeView('bab_tv_groups');
 	$treeView->setAttributes($attributes);
