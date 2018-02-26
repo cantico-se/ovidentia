@@ -55,6 +55,7 @@ $functionalities->register('ContextActions/ArticleTopic', $GLOBALS['babInstallPa
 $functionalities->register('Home'		                , $GLOBALS['babInstallPath'].'utilit/home.class.php');
 $functionalities->register('Home/Ovidentia'		        , $GLOBALS['babInstallPath'].'utilit/home.ovidentia.class.php');
 $functionalities->register('LdapEditor'					, $GLOBALS['babInstallPath'].'utilit/ldapeditor.php');
+$functionalities->register('LdapEditor/Ovidentia'					, $GLOBALS['babInstallPath'].'utilit/ldapeditor.php');
 
 
 
