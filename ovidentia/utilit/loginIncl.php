@@ -276,20 +276,10 @@ class Func_PortalAuthentication extends bab_functionality
                 // copy errors messages to original object
                 $this->errorMessages = $AuthOvidentia->errorMessages;
                 break;
-            case BAB_AUTHENTIFICATION_LDAP:
-                $return = $AuthOvidentia->authenticateUserByLDAP($sLogin, $sPassword);
-                // copy errors messages to original object
-                $this->errorMessages = $AuthOvidentia->errorMessages;
-                break;
-            case BAB_AUTHENTIFICATION_AD:
-                $return = $AuthOvidentia->authenticateUserByActiveDirectory($sLogin, $sPassword);
-                // copy errors messages to original object
-                $this->errorMessages = $AuthOvidentia->errorMessages;
-                break;
             case BAB_AUTHENTIFICATION_LDAP_OR_AD:
-                $AuthLdapAuthentication = bab_functionality::get('AuthldapAuthentication');
-                $return = $AuthLdapAuthentication->authenticateUser($babsite, $sLogin, $sPassword);
-                $this->errorMessages = $AuthLdapAuthentication->getErrors();
+                $return = $AuthOvidentia->authenticateUserByLDAPOrAD($sLogin, $sPassword);
+                // copy errors messages to original object
+                $this->errorMessages = $AuthOvidentia->errorMessages;
                 break;
         }
 
@@ -358,6 +348,18 @@ class Func_PortalAuthentication extends bab_functionality
         die(bab_translate("Func_PortalAuthentication::logout must not be called directly"));
     }
 
+    public function getConfigForm()
+    {
+        return '';
+    }
+    
+    public function isConfigured()
+    {
+        if($this->getConfigForm() != ''){
+            return false;
+        }
+        return true;
+    }
 }
 
 
@@ -777,7 +779,20 @@ class Func_PortalAuthentication_AuthOvidentia extends Func_PortalAuthentication
 
 
 
-
+    public function authenticateUserByLDAPOrAD($sLogin, $sPassword)
+    {
+        global $babBody;
+        switch ($babBody->babsite['ldap_type']){
+            case 'ldap':
+                $this->authenticateUserByLDAP($sLogin, $sPassword);
+                break;
+            case 'ad':
+                $this->authenticateUserByActiveDirectory($sLogin, $sPassword);
+                break;
+            default:
+                die('LDAP type not found');
+        }
+    }
 
 
     /**
@@ -927,7 +942,6 @@ function bab_doRequireCredential($sLoginMessage, $sAuthType)
     {
         return true;
     }
-
     if ($sAuthType === '') {
         // Check if an AuthType has been specified by the url.
         $sAuthType = bab_getAuthType();
