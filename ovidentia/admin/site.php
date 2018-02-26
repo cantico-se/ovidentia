@@ -1010,21 +1010,115 @@ function site_menu13($id)
 
 
 function siteAuthentification($id)
-    {
-
+{
+    $W = bab_Widgets();
+    $page = $W->BabPage();
+    
+    global $babDB, $bab_ldapAttributes;
+    $req = "select *, DECODE(smtppassword, \"".$GLOBALS['BAB_HASH_VAR']."\") as smtppass, DECODE(ldap_adminpassword, \"".$GLOBALS['BAB_HASH_VAR']."\") as ldapadminpwd from ".BAB_SITES_TBL." where id='".$babDB->db_escape_string($id)."'";
+    $res = $babDB->db_query($req);
+    $res = $babDB->db_fetch_array($res);
+    
+    $form = $W->Form();
+    $form->setHiddenValue('tg', 'site');
+    $form->setHiddenValue('idx', 'modify');
+    $form->setHiddenValue('item', $id);
+    $form->setHiddenValue('action', 'menu8');
+    
+    $funcs = bab_functionality::getFunctionalities('PortalAuthentication');
+    
+    $authTypeItem = $W->Select();
+    
+    $configuration = $W->VBoxItems();
+    $configurationOptions = array();
+    foreach ($funcs as $func){
+        $currentFunc = bab_functionality::get('PortalAuthentication/'.$func);
+        $authTypeItem->addOption($func, $func. ': ' .$currentFunc->getDescription());
+        $configuration->addItem($displayable = $W->Html($currentFunc->getConfigForm()));
+        $authTypeItem->setAssociatedDisplayable($displayable, array($func));
+    }
+    
+    $form->addItem(
+        $W->VBoxItems(
+            $W->LabelledWidget(
+                bab_translate("Switch to https"),
+                $W->CheckBox(),
+                'auth_https'
+            ),
+            $W->LabelledWidget(
+                bab_translate("Fullscreen authentication"),
+                $W->CheckBox(),
+                'auth_fullscreen'
+            ),
+            $W->LabelledWidget(
+                bab_translate("Allow multiple connexions for all accounts"),
+                $W->CheckBox(),
+                'auth_multi_session'
+            ),
+            $W->LabelledWidget(
+                bab_translate("Automatic connection"),
+                $W->Select()->addOptions(
+                    array(
+                        'Y' => bab_translate("Yes"),
+                        'N' => bab_translate("No"),
+                        'L' => bab_translate('Login ID only')
+                    ) 
+                 ),
+                'remember_login'
+            ),
+            $W->LabelledWidget(
+                bab_translate("Display option 'Lost Password'"),
+                $W->Select()->addOptions(
+                    array(
+                        'Y' => bab_translate("Yes"),
+                        'N' => bab_translate("No"),
+                    )
+                ),
+                'email_password'
+            ),
+            $W->LabelledWidget(
+                bab_translate("Ask for the nickname to send a new password by email"),
+                $W->Select()->addOptions(
+                    array(
+                        '1' => bab_translate("Yes"),
+                        '0' => bab_translate("No"),
+                    )
+                ),
+                'ask_nickname'
+            ),
+            $W->LabelledWidget(
+                bab_translate("Authentication"),
+                $authTypeItem,
+                'authtype'
+            )
+        )->setVerticalSpacing(1, 'em')
+    );
+    
+    $form->setValues($res);
+    
+    $form->addItem(
+        $W->SubmitButton()->setName('Submit')->setLabel(bab_translate('Save'))
+    );
+    
+    $page->addItem($form);
+    
+    $page->addItem($configuration);
+    
+    $page->pageEcho($W->HtmlCanvas());
+    
     global $babBody;
     class clsSiteAuthentification
-        {
+    {
 
         function clsSiteAuthentification($id)
-            {
+        {
             global $babDB, $bab_ldapAttributes;
             $this->id = $id;
             $req = "select *, DECODE(smtppassword, \"".$GLOBALS['BAB_HASH_VAR']."\") as smtppass, DECODE(ldap_adminpassword, \"".$GLOBALS['BAB_HASH_VAR']."\") as ldapadminpwd from ".BAB_SITES_TBL." where id='".$babDB->db_escape_string($id)."'";
             $this->res = $babDB->db_query($req);
             if( $babDB->db_num_rows($this->res) > 0 )
-                {
-                $ldapeditor = bab_functionality::get('LdapEditorAuthldap');
+            {
+                $ldapeditor = bab_functionality::get('LdapEditor');
                 /**
                  * @var $ldapeditor Func_LdapEditor
                  */
@@ -1055,7 +1149,7 @@ function siteAuthentification($id)
                 $this->decodetypetxt = bab_translate("Server charset");
 
                 $this->authentificationtxt = bab_translate("Authentification");
-                $this->arrayauth = array(BAB_AUTHENTIFICATION_OVIDENTIA => "OVIDENTIA", BAB_AUTHENTIFICATION_LDAP => "LDAP", BAB_AUTHENTIFICATION_AD => "ACTIVE DIRECTORY", BAB_AUTHENTIFICATION_LDAP_OR_AD => "LDAP / ACTIVE DIRECTORY");
+                $this->arrayauth = bab_functionality::getFunctionalities('PortalAuthentication');
 
                 $this->fieldrequiredtxt = bab_translate("Those fields are required");
                 $this->domainnametxt = bab_translate("Domain name");
@@ -1150,30 +1244,29 @@ function siteAuthentification($id)
             }
 
         function getnextauth()
-            {
-            static $i = 0;
-            if( $i < count($this->arrayauth))
-                {
-                $this->authval = $i;
-                $this->displayOption = true;
-                if($i === BAB_AUTHENTIFICATION_AD || $i === BAB_AUTHENTIFICATION_LDAP){
-                    $this->displayOption = false;
-                }
-                $this->authname = $this->arrayauth[$i];
-                if( $this->authsite == $this->authval )
-                    {
-                    $this->authselected = "selected";
-                    }
-                else
-                    {
-                    $this->authselected = "";
-                    }
-                $i++;
-                return true;
-                }
-            else
+        {
+            static $value = true;
+            if($value === true){
+                reset($this->arrayauth);
+            }
+            if($value === false){
                 return false;
             }
+            $current = key($this->arrayauth);
+
+            $this->authval = $current;
+            $this->authname = $this->arrayauth[$current];
+            if( $this->authsite == $this->authval )
+                {
+                $this->authselected = "selected";
+                }
+            else
+                {
+                $this->authselected = "";
+                }
+            $value = next($this->arrayauth);
+            return true;
+        }
 
         function getnextfield()
             {
@@ -1336,10 +1429,7 @@ function siteAuthentification($id)
                 return false;
             }
         }
-
-    $temp = new clsSiteAuthentification($id);
-    $babBody->babecho(	bab_printTemplate($temp, "sites.html", "menu8"));
-    }
+}
 
 
 function sectionDelete($id)
@@ -2431,7 +2521,7 @@ function siteUpdate_menu13($item)
     }
 
 function siteUpdate_authentification($id, $authtype, $host, $hostname, $ldpapchkcnx, $searchdn)
-    {
+{
     global $babBody, $babDB, $bab_ldapAttributes;
 
     $nickname = bab_pp('nickname', '');
@@ -2456,53 +2546,34 @@ function siteUpdate_authentification($id, $authtype, $host, $hostname, $ldpapchk
     $ldap_groups_remove = bab_pp('ldap_groups_remove', '0');
     $ldap_usercreate_test = bab_pp('ldap_usercreate_test', '0');
 
-    if( $authtype != BAB_AUTHENTIFICATION_OVIDENTIA )
-        {
-        if (!function_exists('ldap_connect'))
-            {
-            $babBody->msgerror = bab_translate("You must have LDAP enabled on the server");
-            return false;
-            }
+    if(!bab_functionality::get('PortalAuthentication/'.$authtype)->isConfigured() )
+    {
 
-        if (!function_exists('utf8_decode'))
-            {
-            $babBody->msgerror = bab_translate("You must have XML enabled on the server");
-            return false;
-            }
-
-        if($authtype == BAB_AUTHENTIFICATION_LDAP_OR_AD){
-            $req = "update ".BAB_SITES_TBL." set authentification='".$babDB->db_escape_string($authtype)."'";
-            $req .= " where id='".$babDB->db_escape_string($id)."'";
-            $babDB->db_query($req);
-            Header("Location: ". $GLOBALS['babUrlScript']."?tg=site&item=".$id);
-            exit;
-        }
-        
         if( empty($host))
-            {
+        {
             $babBody->msgerror = bab_translate("ERROR: You must provide a host address !!");
             return false;
-            }
+        }
 
         if( $authtype == BAB_AUTHENTIFICATION_LDAP )
-            {
+        {
             if( (!isset($nickname) || empty($nickname)) && (!isset($i_nickname) || empty($i_nickname)))
-                {
+            {
                 $babBody->msgerror = bab_translate("You must provide a nickname");
                 return false;
-                }
+            }
 
             if( !empty($adminpwd1) || !empty($adminpwd2))
+            {
+            $adminpwd1 = trim($adminpwd1);
+            $adminpwd2 = trim($adminpwd2);
+            if( $adminpwd1 != $adminpwd2 )
                 {
-                $adminpwd1 = trim($adminpwd1);
-                $adminpwd2 = trim($adminpwd2);
-                if( $adminpwd1 != $adminpwd2 )
-                    {
-                    $babBody->msgerror = bab_translate("Passwords not match !!");
-                    return false;
-                    }
+                $babBody->msgerror = bab_translate("Passwords not match !!");
+                return false;
                 }
             }
+        }
 
         $ldapattr = empty($nickname) ? $i_nickname: $nickname;
 
@@ -2769,17 +2840,17 @@ switch ($_POST['action'])
 
 
     case 'menu8':
-        $Submit = bab_rp('Submit');
-        if( !empty($Submit))
-            {
-            $hostname = isset($_POST['hostname']) ? $_POST['hostname'] : '';
-            $ldpapchkcnx = isset($_POST['ldpapchkcnx']) ? $_POST['ldpapchkcnx'] : 'N';
-            $searchdn = isset($_POST['searchdn']) ? $_POST['searchdn'] : '';
-            $host = isset($_POST['host']) ? $_POST['host'] : '';
 
-            if(!siteUpdate_authentification($_POST['item'], $_POST['authtype'], $host, $hostname, $ldpapchkcnx, $searchdn))
-                $idx = "menu8";
-            }
+        $hostname = isset($_POST['hostname']) ? $_POST['hostname'] : '';
+        $ldpapchkcnx = isset($_POST['ldpapchkcnx']) ? $_POST['ldpapchkcnx'] : 'N';
+        $searchdn = isset($_POST['searchdn']) ? $_POST['searchdn'] : '';
+        $host = isset($_POST['host']) ? $_POST['host'] : '';
+
+        if(!siteUpdate_authentification($_POST['item'], $_POST['authtype'], $host, $hostname, $ldpapchkcnx, $searchdn)){
+            $idx = "menu8";
+        }
+        
+
         break;
 
     case 'menu9':
