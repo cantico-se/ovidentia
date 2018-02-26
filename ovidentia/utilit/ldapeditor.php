@@ -23,10 +23,10 @@
 
 require_once dirname(__FILE__).'/dirincl.php';
 
-class Func_LdapEditor extends bab_functionality {
+class Func_LdapEditor_Ovidentia extends Func_LdapEditor {
     
     public function getDescription() {
-        return bab_translate('Default create/modify form for the ldap configuration');
+        return bab_translate('Default create/modify ldap/ad configuration');
     }
     /**
      * Get editor as a babPage widget
@@ -74,5 +74,30 @@ class Func_LdapEditor extends bab_functionality {
         $form->addItem($W->Label(4654136846384));
         
         return $form;
+    }
+}
+
+class Func_LdapEditor extends bab_functionality {
+    public function getDescription() {
+        return bab_translate('Create/modify ldap/ad configuration');
+    }
+    /**
+     * Get editor as a babPage widget
+     * @param 	int			$id_user
+     * @param	bab_url		$backurl
+     *
+     * @return Widget_BabPage
+     */
+    public function getAsPage($id_site)
+    {
+        return null;
+    }
+    
+    /**
+     * @return Widget_Form
+     */
+    public function getForm($site)
+    {
+        return null;
     }
 }
