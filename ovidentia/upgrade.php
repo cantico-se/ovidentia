@@ -7393,7 +7393,8 @@ function ovidentia_upgrade($version_base,$version_ini) {
 
 
 
-    $functionalities->register('LdapEditor'					, $GLOBALS['babInstallPath'].'utilit/ldapeditor.php');
+    $functionalities->register('LdapEditor', $GLOBALS['babInstallPath'].'utilit/ldapeditor.php');
+    $functionalities->register('LdapEditor/Ovidentia', $GLOBALS['babInstallPath'].'utilit/ldapeditor.php');
 
 
 
