@@ -7399,9 +7399,6 @@ function ovidentia_upgrade($version_base,$version_ini) {
 
 
 
-
-
-
     return true;
 
 
