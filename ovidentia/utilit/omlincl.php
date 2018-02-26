@@ -1485,13 +1485,14 @@ class Func_Ovml_Container_Articles extends Func_Ovml_Container
 
         $articleSql = '';
         if ($articleid) {
-            $articleSql = " AND at.id = " . $babDB->quote($articleid) . " ";
+            $articleid = explode(',', $articleid);
+            $articleSql = " AND at.id IN(" . $babDB->quote($articleid) . ") ";
         }
 
         $topicIds = array();
         if ($topcatid === false || $topcatid === '') {
             if ($topicid === false || $topicid === '') {
-                $topicIds= bab_getUserIdObjects(BAB_TOPICSVIEW_GROUPS_TBL);
+                $topicIds = bab_getUserIdObjects(BAB_TOPICSVIEW_GROUPS_TBL);
             } else {
                 $topicIds = array_intersect(array_keys(bab_getUserIdObjects(BAB_TOPICSVIEW_GROUPS_TBL)), explode(',', $topicid));
             }
