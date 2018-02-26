@@ -66,15 +66,8 @@ function modifyUser($userId, $pos, $grp)
     $res = $babDB->db_query($req);
     $arr = $babDB->db_fetch_assoc($res);
 	
-	$bshowauthtype = false;
 	$displayforcepwdchange = true;
 	
-    if ($babBody->babsite['authentification'] != BAB_AUTHENTIFICATION_OVIDENTIA) {
-        $bshowauthtype = true;
-        if ($arr['db_authentification'] != 'Y') {
-            $displayforcepwdchange = false;
-        }
-    }
 
 	$W = bab_Widgets();
 	
@@ -138,24 +131,35 @@ function modifyUser($userId, $pos, $grp)
 		$i, 1
 	);
 	$i++;
-	
-	if ($bshowauthtype) {
-		$authOptions = array(
-			'N' => bab_translate("As defined in site configuration"),
-			'Y' => bab_translate("Ovidentia")
-		);
 		
-		$tableView->addItem($tmpLbl = $W->Label(bab_translate("Which authentication method must be used for this user"))->setSizePolicy('widget-column-right'),$i,0);
-		$tableView->addItem($W->Select()->setAssociatedLabel($tmpLbl)->setName('authtype')->setOptions($authOptions)->setValue($arr['db_authentification']), $i, 1);
-		$i++;
-	}
-	
-	
 	$tableView->addItem($W->SubmitButton()->setName('bupdate')->setLabel(bab_translate("Modify"))->setSizePolicy('widget-column-right'),$i,0);
 	$tableView->addItem($W->Link($W->Icon(bab_translate("Delete"), Func_Icons::ACTIONS_EDIT_DELETE), '?tg=user&idx=Delete&item='.$arr['id'].'&pos='.$pos.'&grp='.$grp), $i, 1);
 	
 	
 	$babBody->babEcho($form->display($W->HtmlCanvas()));
+}
+
+function bab_addAuthTypeForm($userId, $pos, $grp)
+{
+    global $babBody;
+
+    if (!isset($userId)) {
+        $babBody->msgerror = bab_translate("ERROR: You must choose a valid user !!");
+        return;
+    }
+
+    global $babBody, $babDB;
+    $req = 'SELECT * FROM ' . BAB_USERS_TBL . ' WHERE id=' . $babDB->quote($userId);
+    $res = $babDB->db_query($req);
+    $arr = $babDB->db_fetch_assoc($res);
+    
+    $func = bab_functionality::get('PortalAuthentication');
+    $form = $func->getUserForm($userId, $pos, $grp);
+    
+    if($form){
+        $W = bab_Widgets();
+        $babBody->babEcho($form->display($W->HtmlCanvas()));
+    }
 }
 
 
@@ -732,6 +736,7 @@ switch($idx) {
              * $grp : filter for the list of the users when you attach a user in a group (id of a group or nothing)
              */
             modifyUser($item, $pos, $grp);
+            bab_addAuthTypeForm($item, $pos, $grp);
 
 
             $babBody->addItemMenu('List', bab_translate("Users"), $GLOBALS['babUrlScript']."?tg=users&idx=List&pos=".$pos."&grp=".$grp);
