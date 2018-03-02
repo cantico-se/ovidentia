@@ -1104,6 +1104,10 @@ function siteAuthentification($id)
     
     $page->addItem($configuration);
     
+
+    $page->setSizePolicy('BabLoginCadreBackground');
+    $page->addClass('BabLoginMenuBackground');
+    
     $page->pageEcho($W->HtmlCanvas());
     
     global $babBody;
