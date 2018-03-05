@@ -50,7 +50,7 @@ class bab_addonInfos {
      * @var array
      */
     private $tags;
-    
+
     /**
      * @var bab_AddonLocation
      */
@@ -70,7 +70,7 @@ class bab_addonInfos {
     public function setAddonName($addonname, $access_rights = true) {
 
         $addonname = mb_strtolower($addonname);
-        
+
         $id_addon = bab_addonsInfos::getAddonIdByName($addonname, $access_rights);
 
         if (false === $id_addon) {
@@ -82,27 +82,27 @@ class bab_addonInfos {
                 return false;
             }
         }
-        
+
         $addonsCache = bab_addonsInfos::getDbRowsByName();
 
         $this->id_addon = $id_addon;
         $this->addonname = $addonsCache[$addonname]['title'];
-        	
+
         return true;
     }
-    
-    
+
+
     /**
      * Get addon location paths
      * @return bab_AddonLocation
      */
     public function getLocation() {
         if (!isset($this->location)) {
-            
+
             if (!isset($this->addonname)) {
                 throw new Exception('The addonname must be set');
             }
-            
+
             $standard = new bab_AddonStandardLocation($this->addonname);
 
             if (file_exists($standard->getIniFilePath())) {
@@ -110,19 +110,19 @@ class bab_addonInfos {
                 $this->location = $standard;
                 return $this->location;
             }
-            
+
             $standard = new bab_AddonStandardLocation(mb_strtolower($this->addonname));
             if (file_exists($standard->getIniFilePath())) {
                 // addon in vendor/ lowercased as in git or composer package
                 $this->location = $standard;
                 return $this->location;
             }
-            
-            
+
+
             $this->location = new bab_AddonInCoreLocation($this->addonname);
-            
+
         }
-        
+
         return $this->location;
     }
 
@@ -240,7 +240,7 @@ class bab_addonInfos {
     public function getLangPath() {
         return $this->getLocation()->getLangPath();
     }
-    
+
     /**
      * Get path to the version ini file
      * relative to the ovidentia root folder (config.php)
@@ -251,8 +251,8 @@ class bab_addonInfos {
     {
         return $this->getLocation()->getIniFilePath();
     }
-    
-    
+
+
     /**
      * Get path to the version ini file in the package, repository or zip archive
      * relative to the addon root folder or archive root folder
@@ -263,8 +263,8 @@ class bab_addonInfos {
     {
         return $this->getLocation()->getPackageIniFilePath();
     }
-    
-    
+
+
     /**
      * Get theme path
      * relative to the ovidentia root folder (config.php)
@@ -275,8 +275,8 @@ class bab_addonInfos {
     {
         return $this->getLocation()->getThemePath();
     }
-    
-    
+
+
     /**
      * Get a template full path from a file name
      *
@@ -289,7 +289,7 @@ class bab_addonInfos {
     {
         return $this->getTemplatePath().$filename;
     }
-    
+
     /**
      * Convert template to html
      *
@@ -306,13 +306,13 @@ class bab_addonInfos {
         $tpl = new bab_Template();
         return $tpl->printTemplate($class, $this->getTemplate($filename), $section);
     }
-    
-    
-    
+
+
+
     /**
      * Get path for events managment
-     * 
-     * 
+     *
+     *
      * @param	string	$requireFile			file path relative to addon php path, the file where $function_name is declared, this can be an empty string if function exists in global scope
      * @return string
      */
@@ -320,18 +320,18 @@ class bab_addonInfos {
     {
         // filepath from ovidentia root folder
         $filepath = $this->getPhpPath().$requireFile;
-        
+
         if ($this->getLocation() instanceof bab_AddonInCoreLocation) {
             // if addon is in core do not include the core folder name in the database
             // because it may be changed
-        
+
             $filepath = $this->getRelativePath().$requireFile;
         }
-        
+
         return $filepath;
     }
-    
-    
+
+
     /**
      * Add event listener
      * Register an addon function on an event listener
@@ -352,10 +352,10 @@ class bab_addonInfos {
     public function addEventListener($eventClassName, $functionName, $requireFile, $priority = 0)
     {
         require_once dirname(__FILE__).'/eventincl.php';
-        
-        
-        
-        
+
+
+
+
         return bab_addEventListener(
             $eventClassName,
             $functionName,
@@ -364,7 +364,7 @@ class bab_addonInfos {
             $priority
         );
     }
-    
+
     /**
      * Remove event listener
      * @see		bab_addEventListener()
@@ -374,22 +374,22 @@ class bab_addonInfos {
      *
      * @since 8.1.98
      * @since 8.4.98 fixed and with a return value
-     * 
+     *
      * @return bool
      */
     public function removeEventListener($eventClassName, $functionName, $requireFile)
     {
         require_once dirname(__FILE__).'/eventincl.php';
-        
+
         return bab_removeEventListener(
             $eventClassName,
             $functionName,
             $this->getRequireFile($requireFile)
         );
     }
-    
-    
-    
+
+
+
     /**
      * Removes all event listeners on this addon.
      *
@@ -401,8 +401,8 @@ class bab_addonInfos {
     {
         bab_removeAddonEventListeners($this->getName());
     }
-    
-    
+
+
     /**
      * Registers the specified functionality path into the functionality tree.
      * Duplicate registration link into parent directories while nothing is registered.
@@ -417,17 +417,17 @@ class bab_addonInfos {
     public function registerFunctionality($path, $file)
     {
         require_once dirname(__FILE__).'/functionalityincl.php';
-        
+
         $functionalities = new bab_functionalities();
-        
+
         if ('Func_' === substr($path, 0, 5)) {
             return $functionalities->registerClass($path, $this->getPhpPath() . $file);
         }
-        
+
         return $functionalities->register($path, $this->getPhpPath() . $file);
     }
-    
-    
+
+
     /**
      * Unregister a functionality.
      * If the functionality is not registered, this method return true
@@ -442,16 +442,16 @@ class bab_addonInfos {
     public function unregisterFunctionality($path)
     {
         require_once dirname(__FILE__).'/functionalityincl.php';
-        
+
         $functionalities = new bab_functionalities();
-        
+
         if ('Func_' === substr($path, 0, 5)) {
             return $functionalities->unregisterClass($path);
         }
-        
+
         return $functionalities->unregister($path);
     }
-    
+
 
 
     /**
@@ -463,11 +463,11 @@ class bab_addonInfos {
             include_once $GLOBALS['babInstallPath'].'utilit/inifileincl.php';
             $this->ini = new bab_inifile();
             $inifile = $this->getIniFilePath();
-            	
+
             if (!is_readable($inifile)) {
                 throw new Exception(sprintf('Error, the file %s must be readable', $inifile));
             }
-            	
+
             if (!$this->ini->inifile($inifile)) {
                 throw new Exception(sprintf('Error, the file %s is missing or has syntax errors', $inifile));
             }
@@ -740,9 +740,9 @@ class bab_addonInfos {
         $func_name = $this->getName().'_upgrade';
 
         if (!function_exists($func_name)) {
-            	
+
             $this->setDbVersion($this->getIniVersion());
-            	
+
         } else {
             if ($this->isInstalled()) {
                 $babDB->db_query("UPDATE ".BAB_ADDONS_TBL." set installed='N' WHERE id=".$babDB->quote($this->id_addon));
@@ -798,7 +798,7 @@ class bab_addonInfos {
             !empty($ini->inifile['db_prefix'])
             && mb_strlen($ini->inifile['db_prefix']) >= 3
             && mb_substr($ini->inifile['db_prefix'],0,3) != 'bab') {
-                	
+
                 $res = $babDB->db_query("SHOW TABLES LIKE '".$babDB->db_escape_like($ini->inifile['db_prefix'])."%'");
                 while(list($tbl) = $babDB->db_fetch_array($res)) {
                     $tbllist[] = $tbl;
@@ -869,13 +869,13 @@ class bab_addonInfos {
 
         return $imgpath;
     }
-    
-    
+
+
     protected function upgradeDependencies()
     {
         $ini = new bab_inifile();
         $ini->inifile($this->getIniFilePath());
-        
+
         // this method do upgrade() if addon is upgradable
         $ini->getAddonsRequirements();
     }
@@ -890,12 +890,12 @@ class bab_addonInfos {
         include_once $GLOBALS['babInstallPath'].'utilit/upgradeincl.php';
 
         if (!is_file($this->getPhpPath().'init.php')) {
-            
+
             trigger_error(sprintf('init.php file not found for addon %s in %s', $this->getName(), $this->getPhpPath()));
             return false;
         }
-        
-        
+
+
         $this->upgradeDependencies();
 
 
@@ -934,7 +934,7 @@ class bab_addonInfos {
                 bab_siteMap::clearAll();
                 return true;
             }
-            	
+
             if ($vdb === $vini) {
 
                 $event = new bab_eventAddonUpgraded($this->addonname);
@@ -944,7 +944,7 @@ class bab_addonInfos {
                 return true;
             }
         }
-        	
+
         trigger_error(sprintf('failed processing the addon upgrade %s()', $func_name));
         return false;
     }
@@ -1009,12 +1009,12 @@ class bab_addonInfos {
 
         if (!$ini->fileExists()) {
             $deleteInTables = $this->deleteInTables();
-            	
+
             if ($deleteInTables) {
                 $event = new bab_eventAddonDeleted($this->addonname);
                 bab_fireEvent($event);
             }
-            	
+
             return $deleteInTables;
         }
 
@@ -1026,7 +1026,7 @@ class bab_addonInfos {
 
 
         bab_removeAddonEventListeners($this->addonname);
-        	
+
         // if addon return true, the addon is uninstalled in the table.
         $babDB->db_query("UPDATE ".BAB_ADDONS_TBL." SET installed='N' where id=".$babDB->quote($this->getId()));
 
@@ -1041,7 +1041,7 @@ class bab_addonInfos {
                 }
             }
         }
-        	
+
         if (count($tbllist) > 0) {
             foreach($tbllist as $tbl) {
                 $babDB->db_query("DROP TABLE ".$babDB->backTick($tbl));
@@ -1049,8 +1049,8 @@ class bab_addonInfos {
         }
 
         $deleteInTables = $this->deleteInTables();
-        
-        
+
+
 
         if ($deleteInTables) {
             $event = new bab_eventAddonDeleted($this->addonname);
@@ -1109,7 +1109,7 @@ class bab_addonInfos {
         include_once $GLOBALS['babInstallPath'].'utilit/treebase.php';
 
         $node = $root->createNode($this, $nodeId);
-        	
+
         if (null === $node) {
             return false;
         }
@@ -1146,7 +1146,7 @@ class bab_addonInfos {
                 $this->browseRecursiveDependencies($stack, $child);
             } while($child = $child->nextSibling());
         }
-        	
+
         if ($addon) {
             $stack[$addon->getName()] = $addon->getName();
         }
@@ -1194,7 +1194,7 @@ class bab_addonInfos {
                     $return[$addonname] = $addonname;
                 }
             }
-            	
+
             if (!empty($return))
             {
                 $return[$this->getName()] = $this->getName();
@@ -1241,15 +1241,15 @@ class bab_addonInfos {
         if (!isset($this->tags))
         {
             $this->tags = array();
-            	
+
             $ini = $this->getIni();
             if (isset($ini->inifile['tags'])) {
 
                 return array();
             }
-            	
+
             $tags = preg_split('/\s*,\s*/', $ini->inifile['tags']);
-            	
+
             foreach($tags as $name)
             {
                 $name = mb_strtolower($name);
@@ -1259,6 +1259,7 @@ class bab_addonInfos {
 
         return $this->tags;
     }
+
 
     /**
      * Test if a tag exists in addon
@@ -1285,5 +1286,25 @@ class bab_addonInfos {
         }
 
         return true;
+    }
+
+
+    /**
+     * Returns the configuration for the specified path key
+     *
+     * @since 8.6.95
+     *
+     * @param string    $path           The full path with the key
+     * @param mixed     $defaultValue   The value returned if the specified path key is not set
+     * @return mixed
+     */
+    public function getConf($path, $defaultValue = null)
+    {
+        if (substr($path, 0, 1) !== '/') {
+            $path = '/' . $path;
+        }
+        $path = '/' . $this->getName() . $path;
+
+        return bab_Registry::get($path, $defaultValue);
     }
 }
