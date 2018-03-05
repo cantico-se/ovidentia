@@ -767,6 +767,8 @@ class Func_Ovml_Container_ArticlesHomePages extends Func_Ovml_Container
             $this->ctx->curctx->push('ArticleDatePublication', bab_mktime($arr['date_publication']));
             $this->ctx->curctx->push('ArticleDateCreation', bab_mktime($arr['date']));
             $this->ctx->curctx->push('ArticleTopicId', $arr['id_topic']);
+            $topic = bab_getTopicArray($arr['id_topic']);
+            $this->ctx->curctx->push('ArticleCategoryId', $topic['id_cat']);
             $this->ctx->curctx->push('ArticleLanguage', $arr['lang']);
             $this->ctx->curctx->push('ArticleFiles', $arr['nfiles']);
             list($topictitle) = $babDB->db_fetch_array($babDB->db_query("select category from ".BAB_TOPICS_TBL." where id='".$babDB->db_escape_string($arr['id_topic'])."'"));
@@ -1430,6 +1432,8 @@ class Func_Ovml_Container_Articles extends Func_Ovml_Container
         $articleid = $ctx->curctx->getAttribute('articleid');
         $topicid = $ctx->curctx->getAttribute('topicid');
         $topcatid = $ctx->curctx->getAttribute('categoryid');
+        $this->excludetopicid = $ctx->curctx->getAttribute('excludetopicid');
+        $excludetopcatid = $ctx->curctx->getAttribute('excludecategoryid');
         $delegationid = (int) $ctx->curctx->getAttribute('delegationid');
         $homepage = $ctx->curctx->getAttribute('homepage');
 
@@ -1501,10 +1505,16 @@ class Func_Ovml_Container_Articles extends Func_Ovml_Container
         }
 
         if (count($topicIds) > 0) {
-            $this->excludetopicid = $ctx->curctx->getAttribute('excludetopicid');
             if ($this->excludetopicid !== false && $this->excludetopicid !== '') {
                 $topicIds = array_diff($topicIds, explode(',', $this->excludetopicid));
             }
+
+            if ($excludetopcatid !== false && $excludetopcatid !== '') {
+                $excludeTopicIds = array();
+                $this->getTopicIds($excludetopcatid, $excludeTopicIds);
+                $topicIds = array_diff($topicIds, $excludeTopicIds);
+            }
+
 
             $archive = $ctx->curctx->getAttribute('archive');
             if ($archive === false || $archive === '') {
@@ -1522,7 +1532,6 @@ class Func_Ovml_Container_Articles extends Func_Ovml_Container
                     $archiveSql = '';
                     break;
             }
-
 
             $minRating = $ctx->curctx->getAttribute('minrating');
             if (!is_numeric($minRating)) {
@@ -1647,6 +1656,8 @@ class Func_Ovml_Container_Articles extends Func_Ovml_Container
 
             setArticleAssociatedImageInfo($this->ctx, $this->imageheightmax, $this->imagewidthmax, $arr['id']);
 
+
+
             $this->ctx->curctx->push('CIndex', $this->idx);
             $this->ctx->curctx->push('ArticleTitle', $arr['title']);
             $this->pushEditor('ArticleHead', $arr['head'], $arr['head_format'], 'bab_article_head');
@@ -1670,6 +1681,8 @@ class Func_Ovml_Container_Articles extends Func_Ovml_Container
             $this->ctx->curctx->push('ArticleDateModification', bab_mktime($arr['date_modification']));
             $this->ctx->curctx->push('ArticleDatePublication', bab_mktime($arr['date_publication']));
             $this->ctx->curctx->push('ArticleTopicId', $arr['id_topic']);
+            $topic = bab_getTopicArray($arr['id_topic']);
+            $this->ctx->curctx->push('ArticleCategoryId', $topic['id_cat']);
             $this->ctx->curctx->push('ArticleLanguage', $arr['lang']);
             $this->ctx->curctx->push('ArticleFiles', $arr['nfiles']);
             if (bab_isAccessValid(BAB_TOPICSMOD_GROUPS_TBL, $arr['id_topic'])) {
@@ -1764,6 +1777,8 @@ class Func_Ovml_Container_Article extends Func_Ovml_Container
             $this->ctx->curctx->push('ArticleDateModification', bab_mktime($arr['date_modification']));
             $this->ctx->curctx->push('ArticleDatePublication', bab_mktime($arr['date_publication']));
             $this->ctx->curctx->push('ArticleTopicId', $arr['id_topic']);
+            $topic = bab_getTopicArray($arr['id_topic']);
+            $this->ctx->curctx->push('ArticleCategoryId', $topic['id_cat']);
             $this->ctx->curctx->push('ArticleLanguage', $arr['lang']);
             $this->ctx->curctx->push('ArticleFiles', $arr['nfiles']);
             if( bab_isAccessValid(BAB_TOPICSMOD_GROUPS_TBL, $arr['id_topic']) )
@@ -3464,6 +3479,8 @@ class Func_Ovml_Container_RecentArticles extends Func_Ovml_Container
             $this->ctx->curctx->push('ArticleUrl', bab_siteMap::url('babArticle_'.$arr['id'], $GLOBALS['babUrl'].bab_getSelf()."?tg=articles&idx=More&topics=".$arr['id_topic']."&article=".$arr['id']));
             $this->ctx->curctx->push('ArticlePopupUrl', $GLOBALS['babUrl'].bab_getSelf()."?tg=articles&idx=viewa&topics=".$arr['id_topic']."&article=".$arr['id']);
             $this->ctx->curctx->push('ArticleTopicId', $arr['id_topic']);
+            $topic = bab_getTopicArray($arr['id_topic']);
+            $this->ctx->curctx->push('ArticleCategoryId', $topic['id_cat']);
             $this->ctx->curctx->push('ArticleLanguage', $arr['lang']);
             $this->ctx->curctx->push('ArticleFiles', $arr['nfiles']);
             $this->ctx->curctx->push('ArticleDelegationId', $arr['id_dgowner']);
@@ -4195,6 +4212,8 @@ class Func_Ovml_Container_WaitingArticles extends Func_Ovml_Container
             $this->ctx->curctx->push('ArticleAuthor', $arr['id_author']);
             $this->ctx->curctx->push('ArticleDate', bab_mktime($arr['date_submission']));
             $this->ctx->curctx->push('ArticleTopicId', $arr['id_topic']);
+            $topic = bab_getTopicArray($arr['id_topic']);
+            $this->ctx->curctx->push('ArticleCategoryId', $topic['id_cat']);
             $this->ctx->curctx->push('ArticleLanguage', $arr['lang']);
             $this->ctx->curctx->push('ArticleFiles', $arr['nfiles']);
             $this->ctx->curctx->push('ArticleUrl', $GLOBALS['babUrl'].bab_getSelf()."?tg=approb");
