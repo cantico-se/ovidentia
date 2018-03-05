@@ -477,15 +477,16 @@ class bab_Registry
     public static function get($path, $defaultValue = null)
     {
         static $registry = null;
-        if (!isset($registry)) {
-            $registry = bab_getRegistry();
-        }
 
         if (substr($path, 0, 1) !== '/') {
             $path = '/' . $path;
         }
         if (defined($path)) {
             return constant($path);
+        }
+
+        if (!isset($registry)) {
+            $registry = bab_getRegistry();
         }
 
         $elements = explode('/', $path);
