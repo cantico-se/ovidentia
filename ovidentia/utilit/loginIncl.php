@@ -1409,8 +1409,10 @@ function bab_ldapEntryToOvEntry($oLdap, $iIdUser, $sPassword, $aEntries, $aUpdat
             {
                 case 'jpegphoto':
                 case 'thumbnailphoto':
-                    $resize = bab_userModify::resizeBinary($ldapvalue);
-                    $sQuery .= ', photo_data=\'' . $babDB->db_escape_string($resize) . '\'';
+                    if(!empty($ldapvalue)){
+                        $resize = bab_userModify::resizeBinary($ldapvalue);
+                        $sQuery .= ', photo_data=\'' . $babDB->db_escape_string($resize) . '\'';
+                    }
                     break;
 
                 case 'mail':
