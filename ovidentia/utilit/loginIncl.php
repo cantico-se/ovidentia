@@ -1360,8 +1360,10 @@ function bab_isEmailPassword()
 function bab_ldapEntryToOvEntry($oLdap, $iIdUser, $sPassword, $aEntries, $aUpdateAttributes, $aExtraFieldId)
 {
     global $babDB;
+    require_once dirname(__FILE__).'/password.class.php';
+    $password = bab_Password::hash($sPassword);
 
-    $sQuery = 'update ' . BAB_USERS_TBL . ' set password=\'' . md5(mb_strtolower($sPassword)) . '\'';
+    $sQuery = 'update ' . BAB_USERS_TBL . ' set password=\'' . $password->value . '\'';
     reset($aUpdateAttributes);
     while(list($key, $val) = each($aUpdateAttributes))
     {
