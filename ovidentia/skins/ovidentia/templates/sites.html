@@ -597,7 +597,7 @@ function validateNum(field)
         <tr>
             <td>{ imgsize_title }</td>
             <td>
-                <input type="text" name="imgsize" size="30" maxlength="255" value="{ arr[imgsize] }" />
+                <input type="text" name="imgsize" size="20" maxlength="10" value="{ arr[imgsize] }" /> { t_kb }
             </td>
         </tr>
 
@@ -606,6 +606,11 @@ function validateNum(field)
             <td>
                 <input type="text" name="uploadpath" size="30" maxlength="255" value="{ arr[uploadpath] }" />
             </td>
+        </tr>
+        
+        <tr>
+            <td>{ disk_free_space_title }</td>
+            <td><b>{ disk_free_space }</b></td>
         </tr>
 
 

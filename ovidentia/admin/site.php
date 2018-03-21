@@ -405,14 +405,13 @@ function site_menu3($id)
 
 
 function site_menu4($id)
-    {
-
+{
     global $babBody;
-    class temp extends site_configuration_cls
-        {
 
-        function temp($id)
-            {
+    class bab_site_menu4_cls extends site_configuration_cls
+    {
+        function __construct($id)
+        {
             $this->imgsize_title = bab_translate("Max image size ( Kb )");
             $this->uploadpath_title = bab_translate("Upload path");
             $this->maxfilesize_title = bab_translate("Upload max file size");
@@ -423,18 +422,24 @@ function site_menu4($id)
             $this->total_diskspace_title = bab_translate("File manager max total size");
             $this->notif_quota_total = bab_translate("Notification when this quota is exceeded for the file manager");
             $this->notif_quota_folder = bab_translate("Notification when this quota is exceeded for group directory");
+            $this->t_kb = bab_translate("Kb");
             $this->t_mb = bab_translate("Mb");
+            $this->t_gb = bab_translate("Gb");
             $this->t_pc = '%';
 
+            $settings = bab_getInstance('bab_Settings');
+            $uploadPath = $settings->getUploadPath();
+            $disk_free_space = (disk_free_space($uploadPath) / (1024 * 1024));
+
+            $this->disk_free_space_title = bab_translate('Free disk space');
+            $this->disk_free_space = number_format($disk_free_space, 2, ',', ' ') . ' ' . bab_translate('Mb');
             $this->site_configuration_cls($id);
-            }
-
-
-        } // class temp
-
-    $temp = new temp($id);
-    $babBody->babecho(	bab_printTemplate($temp, "sites.html", "menu4"));
+        }
     }
+
+    $temp = new bab_site_menu4_cls($id);
+    $babBody->babecho(bab_printTemplate($temp, "sites.html", "menu4"));
+}
 
 
 function site_menu5($id)
@@ -612,18 +617,18 @@ function site_menu6($id)
                 $this->nusebgcolor = 'selected';
                 $this->yusebgcolor = '';
                 }
-            
+
             if( $site['usecatcolor'] == 'Y')
                 {
                 $this->yusecatcolor = 'selected';
                 $this->nusecatcolor = '';
                 }
-            else 
+            else
                 {
                 $this->nusecatcolor = 'selected';
                 $this->yusecatcolor = '';
                 }
-                
+
             if( $site['show_update_info'] ==  'Y')
                 {
                 $this->yshowupdateinfo = 'selected';
@@ -1013,22 +1018,22 @@ function siteAuthentification($id)
 {
     $W = bab_Widgets();
     $page = $W->BabPage();
-    
+
     global $babDB, $bab_ldapAttributes;
     $req = "select *, DECODE(smtppassword, \"".$GLOBALS['BAB_HASH_VAR']."\") as smtppass, DECODE(ldap_adminpassword, \"".$GLOBALS['BAB_HASH_VAR']."\") as ldapadminpwd from ".BAB_SITES_TBL." where id='".$babDB->db_escape_string($id)."'";
     $res = $babDB->db_query($req);
     $res = $babDB->db_fetch_array($res);
-    
+
     $form = $W->Form();
     $form->setHiddenValue('tg', 'site');
     $form->setHiddenValue('idx', 'modify');
     $form->setHiddenValue('item', $id);
     $form->setHiddenValue('action', 'menu8');
-    
+
     $funcs = bab_functionality::getFunctionalities('PortalAuthentication');
-    
+
     $authTypeItem = $W->Select();
-    
+
     $configuration = $W->VBoxItems();
     $configurationOptions = array();
     foreach ($funcs as $func){
@@ -1037,7 +1042,7 @@ function siteAuthentification($id)
         $configuration->addItem($displayable = $W->Html($currentFunc->getConfigForm()));
         $authTypeItem->setAssociatedDisplayable($displayable, array($func));
     }
-    
+
     $form->addItem(
         $W->VBoxItems(
             $W->LabelledWidget(
@@ -1062,7 +1067,7 @@ function siteAuthentification($id)
                         'Y' => bab_translate("Yes"),
                         'N' => bab_translate("No"),
                         'L' => bab_translate('Login ID only')
-                    ) 
+                    )
                  ),
                 'remember_login'
             ),
@@ -1093,23 +1098,23 @@ function siteAuthentification($id)
             )
         )->setVerticalSpacing(1, 'em')
     );
-    
+
     $form->setValues($res);
-    
+
     $form->addItem(
         $W->SubmitButton()->setName('Submit')->setLabel(bab_translate('Save'))
     );
-    
+
     $page->addItem($form);
-    
+
     $page->addItem($configuration);
-    
+
 
     $page->setSizePolicy('BabLoginCadreBackground');
     $page->addClass('BabLoginMenuBackground');
-    
+
     $page->pageEcho($W->HtmlCanvas());
-    
+
     global $babBody;
     class clsSiteAuthentification
     {
@@ -2276,9 +2281,9 @@ function siteUpdate_menu6($item)
 
     if (isset($_POST['usecatcolor']) )
         {
-        $reqarr[] = "usecatcolor='".$babDB->db_escape_string($_POST['usecatcolor'])."'";  
+        $reqarr[] = "usecatcolor='".$babDB->db_escape_string($_POST['usecatcolor'])."'";
         }
-        
+
     if (isset($_POST['elapstime']) )
         {
         $reqarr[] = "elapstime='".$babDB->db_escape_string($_POST['elapstime'])."'";
@@ -2719,7 +2724,7 @@ switch ($_POST['action'])
         if(!siteUpdate_authentification($_POST['item'], $_POST['authtype'], $host, $hostname, $ldpapchkcnx, $searchdn)){
             $idx = "menu8";
         }
-        
+
 
         break;
 
