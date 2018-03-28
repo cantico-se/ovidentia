@@ -352,7 +352,7 @@ class Func_PortalAuthentication_AuthOvidentia extends Func_PortalAuthentication
 
     public function getDescription()
     {
-        return bab_translate("Authentication methods: Form, LDAP, Active directory, Cookie");
+        return bab_translate("Authentication methods: Form, Cookie");
     }
 
     /**
