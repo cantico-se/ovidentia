@@ -52,6 +52,11 @@ class Func_PortalAuthentication extends bab_functionality
     {
         return bab_translate("Authentication functionality");
     }
+    
+    public function getAuthenticationType()
+    {
+        return BAB_AUTHENTIFICATION_OVIDENTIA;
+    }
 
 
     /**
