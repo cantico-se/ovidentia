@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software			*
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307,*
  * USA.																	*
-************************************************************************/
+ ************************************************************************/
 
 include_once $GLOBALS['babInstallPath'].'utilit/eventincl.php';
 include_once $GLOBALS['babInstallPath'].'utilit/treeincl.php';
@@ -1015,7 +1015,7 @@ class bab_siteMap_insertTree
                                 $this->nodeList[$id_function],
                                 0,
                                 0
-                            );
+                                );
                         }
 
                         $addFuncToProfile->add($id_function, $id_profile);
@@ -1167,7 +1167,7 @@ class bab_siteMap_insertTree
                 WHERE
                     pv.id_profile = p.id
                     AND pv.uid_functions = '.$babDB->quote($crc)
-            );
+                );
 
             if ($arr = $babDB->db_fetch_assoc($res)) {
                 $id_profile = $arr['id'];
@@ -1539,7 +1539,7 @@ function bab_getUserAddonsUrls() {
     $addons = bab_addonsInfos::getRows();
 
     foreach( $addons as $row )
-        {
+    {
         if($row['access']) {
 
             $arr = bab_getAddonsMenus($row, 'getUserSectionMenus');
@@ -1554,10 +1554,10 @@ function bab_getUserAddonsUrls() {
                     'label' => $txt,
                     'url' => $url,
                     'uid' => $row['title'].sprintf('_%u',crc32($url))
-                    );
-                }
+                );
             }
         }
+    }
 
     return $addon_urls;
 }
@@ -1594,28 +1594,28 @@ function bab_getUserDelegationUrls($id_delegation, $deleg, $dg_prefix) {
     $bemail = false;
     $idcal = 0;
     if( !empty($GLOBALS['BAB_SESS_USER']))
-        {
+    {
 
         $bemail = bab_mailAccessLevel();
         if( $bemail == 1 || $bemail == 2)
             $bemail = true;
-        }
+    }
 
 
     $url = $GLOBALS['babUrl'].bab_getSelf();
 
 
     if( !empty($GLOBALS['BAB_SESS_USER']))
-        {
+    {
         if( bab_isArticleEditAccess() )
-            {
+        {
             $array_urls[] = array(
                 'label' => bab_translate("Publication"),
                 'url' => $url."?tg=artedit",
                 'uid' => $dg_prefix.'UserPublication',
                 'icon'	=> 'apps-articles'
-                );
-            }
+            );
+        }
 
 
         $array_urls[] = array(
@@ -1624,23 +1624,23 @@ function bab_getUserDelegationUrls($id_delegation, $deleg, $dg_prefix) {
             'uid' => $dg_prefix.'UserApprob',
             'desc' => bab_translate("Validate waiting items"),
             'icon' => 'apps-approbations'
-            );
-        }
+        );
+    }
 
 
     if( count(bab_getUserIdObjects(BAB_TOPICSMAN_GROUPS_TBL)) > 0 || bab_isAccessValid(BAB_SITES_HPMAN_GROUPS_TBL, $site['id'])|| bab_isAccessValid(BAB_TAGSMAN_GROUPS_TBL, 1))
-        {
+    {
         $array_urls[] = array(
-                'label' => bab_translate("Articles management"),
-                'url' 	=> $url."?tg=topman",
-                'uid' 	=> $dg_prefix.'UserArticlesMan',
-                'desc' 	=> bab_translate("List article topics where i am manager"),
-                'icon'	=> 'apps-articles'
-                );
-        }
+            'label' => bab_translate("Articles management"),
+            'url' 	=> $url."?tg=topman",
+            'uid' 	=> $dg_prefix.'UserArticlesMan',
+            'desc' 	=> bab_translate("List article topics where i am manager"),
+            'icon'	=> 'apps-articles'
+        );
+    }
 
     if( !empty($GLOBALS['BAB_SESS_USER']))
-        {
+    {
 
         $array_urls[] = array(
             'label' => bab_translate("Options"),
@@ -1656,70 +1656,70 @@ function bab_getUserDelegationUrls($id_delegation, $deleg, $dg_prefix) {
                 'uid' => $dg_prefix.'UserNotes',
                 'icon'	=> 'apps-notes'
             );
-        }
+    }
 
     include_once dirname(__FILE__).'/faqincl.php';
     if(bab_getFaqDgNumber($deleg['id']))
-        {
+    {
         $array_urls[] = array(
             'label' => bab_translate("Faq"),
             'url' => $url."?tg=faq",
             'uid' => $dg_prefix.'UserFaq',
             'desc' => bab_translate("Frequently Asked Questions"),
             'icon' => 'apps-faqs'
-            );
-        }
+        );
+    }
 
 
 
 
     if( bab_getICalendars()->calendarAccess())
-        {
+    {
         $array_urls[] = array(
             'label' => bab_translate("Calendar"),
             'url' =>  $url."?tg=calendar",
             'uid' => $dg_prefix.'UserCal',
             'icon' => 'apps-calendar'
-            );
-        }
+        );
+    }
 
     if( $bemail )
-        {
+    {
         $array_urls[] = array(
             'label' => bab_translate("Mail"),
             'url' =>  $url."?tg=inbox",
             'uid' => $dg_prefix.'UserMail',
             'icon'	=> 'apps-mail'
-            );
-        }
+        );
+    }
     if( !empty($GLOBALS['BAB_SESS_USER']) && bab_contactsAccess())
-        {
+    {
         $array_urls[] = array(
             'label' => bab_translate("Contacts"),
             'url' =>  $url."?tg=contacts",
             'uid' => $dg_prefix.'UserContacts',
             'icon'	=> 'apps-contacts'
-            );
-        }
+        );
+    }
 
 
     require_once $GLOBALS['babInstallPath'].'utilit/fileincl.php';
     if(userHavePersonnalStorage() || userHaveRightOnCollectiveFolder(true))
-        {
+    {
         $array_urls[] = array(
             'label' 	=> bab_translate("File manager"),
             'url' 		=>  $url."?tg=fileman",
             'uid' 		=> $dg_prefix.'UserFm',
             'desc' 		=> bab_translate("Access to file manager"),
             'icon'		=> 'apps-file-manager'
-            );
-        }
+        );
+    }
 
     require_once $GLOBALS['babInstallPath'].'utilit/dirincl.php';
     $directories 		= getUserDirectoriesMixed(true, $deleg['id']);
 
     if( $directories )
-        {
+    {
 
         $array_urls[] = array(
             'label' 	=> bab_translate("Directories"),
@@ -1727,94 +1727,94 @@ function bab_getUserDelegationUrls($id_delegation, $deleg, $dg_prefix) {
             'uid' 		=> $dg_prefix.'UserDir',
             'folder' 	=> true,
             'icon' 		=> 'apps-directories'
-            );
+        );
 
 
 
         foreach($directories as $arr_directory) {
-                $array_urls[] = array(
-                    'label' 	=> $arr_directory['name'],
-                    'url' 		=> $arr_directory['url'],
-                    'uid' 		=> $arr_directory['uid'],
-                    'desc' 		=> $arr_directory['description'],
-                    'position' 	=> array('root', $id_delegation, $dg_prefix.'User',$dg_prefix.'UserSection', $dg_prefix.'UserDir')
-                );
-            }
+            $array_urls[] = array(
+                'label' 	=> $arr_directory['name'],
+                'url' 		=> $arr_directory['url'],
+                'uid' 		=> $arr_directory['uid'],
+                'desc' 		=> $arr_directory['description'],
+                'position' 	=> array('root', $id_delegation, $dg_prefix.'User',$dg_prefix.'UserSection', $dg_prefix.'UserDir')
+            );
         }
+    }
 
     /*
      * replaced by the orgchart addon
      *
-    if( bab_orgchartAccess() )
-        {
-        $array_urls[] = array(
-            'label' => bab_translate("Charts"),
-            'url' =>  $url."?tg=charts",
-            'uid' => $dg_prefix.'UserCharts',
-            'icon'	=> 'apps-orgcharts'
-            );
-        }
-    */
+     if( bab_orgchartAccess() )
+     {
+     $array_urls[] = array(
+     'label' => bab_translate("Charts"),
+     'url' =>  $url."?tg=charts",
+     'uid' => $dg_prefix.'UserCharts',
+     'icon'	=> 'apps-orgcharts'
+     );
+     }
+     */
 
     if ( bab_statisticsAccess() != -1 )
-        {
+    {
         $array_urls[] = array(
             'label' => bab_translate("Statistics"),
             'url' =>  $url."?tg=stat",
             'uid' => $dg_prefix.'UserStats',
             'icon'	=> 'apps-statistics'
-            );
-        }
+        );
+    }
 
     /*
-    require_once($GLOBALS['babInstallPath'] . 'tmContext.php');
+     require_once($GLOBALS['babInstallPath'] . 'tmContext.php');
 
-    $context =& getTskMgrContext();
+     $context =& getTskMgrContext();
 
-    $bIsAccessValid = ($context->isUserProjectVisualizer() || $context->isUserCanCreateProject() || $context->isUserProjectManager()
-        || $context->isUserSuperviseProject() || $context->isUserManageTask() || $context->isUserPersonnalTaskOwner());
+     $bIsAccessValid = ($context->isUserProjectVisualizer() || $context->isUserCanCreateProject() || $context->isUserProjectManager()
+     || $context->isUserSuperviseProject() || $context->isUserManageTask() || $context->isUserPersonnalTaskOwner());
 
-    if($bIsAccessValid)
-        {
-            $array_urls[] = array(
-                'label' => bab_translate("Task Manager"),
-                'url' 	=> $url.'?tg=usrTskMgr',
-                'uid' 	=> $dg_prefix.'UserTm',
-                'icon'	=> 'apps-task-manager',
-                'folder' => true
-            );
+     if($bIsAccessValid)
+     {
+     $array_urls[] = array(
+     'label' => bab_translate("Task Manager"),
+     'url' 	=> $url.'?tg=usrTskMgr',
+     'uid' 	=> $dg_prefix.'UserTm',
+     'icon'	=> 'apps-task-manager',
+     'folder' => true
+     );
 
-            $projects = array();
+     $projects = array();
 
-            foreach($context->getVisualisedIdProjectSpace() as $id_projectSpace => $dummy) {
-                $projectSpace = bab_selectProjectSpace($id_projectSpace);
+     foreach($context->getVisualisedIdProjectSpace() as $id_projectSpace => $dummy) {
+     $projectSpace = bab_selectProjectSpace($id_projectSpace);
 
-                if (false === $deleg['id'] || (int) $deleg['id'] === (int) $projectSpace['idDelegation']) {
+     if (false === $deleg['id'] || (int) $deleg['id'] === (int) $projectSpace['idDelegation']) {
 
-                    $res = bab_selectProjectList($id_projectSpace);
-                    while ($project = $babDB->db_fetch_assoc($res))
-                    {
-                        if (bab_isAccessValid(BAB_TSKMGR_PROJECTS_VISUALIZERS_GROUPS_TBL, $project['id']))
-                        {
-                            $projects[] = $project;
-                        }
-                    }
-                }
-            }
+     $res = bab_selectProjectList($id_projectSpace);
+     while ($project = $babDB->db_fetch_assoc($res))
+     {
+     if (bab_isAccessValid(BAB_TSKMGR_PROJECTS_VISUALIZERS_GROUPS_TBL, $project['id']))
+     {
+     $projects[] = $project;
+     }
+     }
+     }
+     }
 
-            bab_sort::asort($projects, 'name', bab_sort::CASE_INSENSITIVE);
+     bab_sort::asort($projects, 'name', bab_sort::CASE_INSENSITIVE);
 
-            foreach($projects as $project) {
-                $array_urls[] = array(
-                    'label' => $project['name'],
-                    'url' =>  $url.'?tg=usrTskMgr&idx=displayMyTaskList&iIdProjectSpace='.$project['idProjectSpace'].'&isProject=1&iIdProject='.$project['id'],
-                    'uid' => $dg_prefix.'UserTm'.$project['id'],
-                    'desc' => $project['description'],
-                    'position' => array('root', $id_delegation, $dg_prefix.'User',$dg_prefix.'UserSection', $dg_prefix.'UserTm')
-                );
-            }
-        }
-    */
+     foreach($projects as $project) {
+     $array_urls[] = array(
+     'label' => $project['name'],
+     'url' =>  $url.'?tg=usrTskMgr&idx=displayMyTaskList&iIdProjectSpace='.$project['idProjectSpace'].'&isProject=1&iIdProject='.$project['id'],
+     'uid' => $dg_prefix.'UserTm'.$project['id'],
+     'desc' => $project['description'],
+     'position' => array('root', $id_delegation, $dg_prefix.'User',$dg_prefix.'UserSection', $dg_prefix.'UserTm')
+     );
+     }
+     }
+     */
 
 
     include_once dirname(__FILE__).'/forumincl.php';
@@ -1844,14 +1844,14 @@ function bab_getUserDelegationUrls($id_delegation, $deleg, $dg_prefix) {
 
 
     if( bab_isAccessValid(BAB_TAGSMAN_GROUPS_TBL, 1) )
-        {
+    {
         $array_urls[] = array(
             'label' => bab_translate("Thesaurus"),
             'url' 	=>  $url.'?tg=thesaurus',
             'uid' 	=> $dg_prefix.'UserThesaurus',
             'icon'	=> 'apps-thesaurus'
-            );
-        }
+        );
+    }
 
 
     return $array_urls;
@@ -1861,16 +1861,80 @@ function bab_getUserDelegationUrls($id_delegation, $deleg, $dg_prefix) {
 
 
 
+/**
+ * @param	bab_eventBeforeSiteMapCreated $event
+ */
+function bab_sitemap_mergedUserSection($event)
+{
+    $delegations = bab_getUserSitemapDelegations();
+
+    foreach ($delegations as $id_delegation => $deleg) {
+
+        $dg_prefix = false === $deleg['id'] ? 'bab' : 'babDG'.$deleg['id'];
+
+        if ($event->loadChildNodes(array('root', $id_delegation))) {
+
+            $item = $event->createItem($dg_prefix.'User');
+            $item->setLabel(bab_translate("User's section"));
+            $item->setPosition(array('root', $id_delegation));
+            $item->addIconClassname(Func_Icons::PLACES_USER_HOME);
+            $event->addFolder($item);
+
+            $position = array('root', $id_delegation, $dg_prefix.'User');
+
+            if ($event->loadChildNodes($position)) {
+
+                $delegation_urls = bab_getUserDelegationUrls($id_delegation, $deleg, $dg_prefix);
+
+                foreach($delegation_urls as $arr) {
+                    $item = $event->createItem($arr['uid']);
+                    $item->setLabel($arr['label']);
+                    $item->setLink($arr['url']);
+                    $position = isset($arr['position']) ? $arr['position'] : array('root', $id_delegation, $dg_prefix.'User');
+                    $item->setPosition($position);
+
+                    if (isset($arr['desc'])) {
+                        $item->setDescription($arr['desc']);
+                    }
+
+                    if (isset($arr['folder'])) {
+                        $item->progress = true;
+                        $event->addFolder($item);
+                    } else {
+                        $event->addFunction($item);
+                    }
+
+                    if (isset($arr['icon'])) {
+                        $item->addIconClassname($arr['icon']);
+                    }
+                }
+
+                $position = array('root', $id_delegation, $dg_prefix.'User');
+
+                if ($event->loadChildNodes($position)) {
+
+                    $addon_urls = bab_getUserAddonsUrls();
+
+                    foreach($addon_urls as $arr) {
+                        $link = $event->createItem($dg_prefix.$arr['uid']);
+                        $link->setLabel($arr['label']);
+                        $link->setLink($arr['url']);
+                        $link->setPosition($position);
+                        $event->addFunction($link);
+                    }
+                }
+            }
+        }
+    }
+}
+
 
 
 /**
  * @param	bab_eventBeforeSiteMapCreated $event
  */
-function bab_sitemap_userSection($event) {
-
-    global $babBody, $babDB;
-
-
+function bab_sitemap_userSection($event)
+{
     $delegations = bab_getUserSitemapDelegations();
 
     foreach($delegations as $id_delegation => $deleg) {
@@ -1903,7 +1967,7 @@ function bab_sitemap_userSection($event) {
                         $item = $event->createItem($arr['uid']);
                         $item->setLabel($arr['label']);
                         $item->setLink($arr['url']);
-                        $position = isset($arr['position']) ? $arr['position'] : array('root', $id_delegation, $dg_prefix.'User',$dg_prefix.'UserSection');
+                        $position = isset($arr['position']) ? $arr['position'] : array('root', $id_delegation, $dg_prefix.'User', $dg_prefix.'UserSection');
                         $item->setPosition($position);
 
                         if (isset($arr['desc'])) {
@@ -1921,9 +1985,7 @@ function bab_sitemap_userSection($event) {
                             $item->addIconClassname($arr['icon']);
                         }
                     }
-
                 }
-
 
 
                 $position = array('root', $id_delegation, $dg_prefix.'User');
@@ -1931,11 +1993,11 @@ function bab_sitemap_userSection($event) {
                 $item = $event->createItem($dg_prefix.'UserSectionAddons');
                 $item->setLabel(bab_translate("Add-ons links"));
                 $item->setPosition($position);
-                $item->addIconClassname(FUnc_Icons::PLACES_USER_APPLICATIONS);
+                $item->addIconClassname(Func_Icons::PLACES_USER_APPLICATIONS);
                 $event->addFolder($item);
 
 
-                $position = array('root', $id_delegation, $dg_prefix.'User',$dg_prefix.'UserSectionAddons');
+                $position = array('root', $id_delegation, $dg_prefix.'User', $dg_prefix.'UserSectionAddons');
 
                 if ($event->loadChildNodes($position)) {
 
@@ -2040,26 +2102,26 @@ function bab_sitemap_articlesCategoryLevel($id_category, $position, bab_eventBef
 
 
     /*
-    $res = bab_getArticleTopicsRes(array($id_category), $id_delegation);
+     $res = bab_getArticleTopicsRes(array($id_category), $id_delegation);
 
-    if (false !== $res) {
-        while ($arr = $babDB->db_fetch_assoc($res)) {
+     if (false !== $res) {
+     while ($arr = $babDB->db_fetch_assoc($res)) {
 
-            $dg = false === $id_delegation ? '' : 'DG'.$id_delegation;
+     $dg = false === $id_delegation ? '' : 'DG'.$id_delegation;
 
-            $uid = 'bab'.$dg.'ArticleTopic_'.$arr['id'];
+     $uid = 'bab'.$dg.'ArticleTopic_'.$arr['id'];
 
-            $item = $event->createItem($uid);
-            $item->setLabel($arr['category']);
-            $item->setDescription(strip_tags($arr['description']));
-            $item->setPosition($position);
-            $item->setLink($GLOBALS['babUrlScript']."?tg=articles&topics=".$arr['id']);
-            $item->setFunctionality('Topic');
-            $item->addIconClassname(Func_Icons::OBJECTS_PUBLICATION_TOPIC);
-            $event->addFunction($item);
-        }
-    }
-    */
+     $item = $event->createItem($uid);
+     $item->setLabel($arr['category']);
+     $item->setDescription(strip_tags($arr['description']));
+     $item->setPosition($position);
+     $item->setLink($GLOBALS['babUrlScript']."?tg=articles&topics=".$arr['id']);
+     $item->setFunctionality('Topic');
+     $item->addIconClassname(Func_Icons::OBJECTS_PUBLICATION_TOPIC);
+     $event->addFunction($item);
+     }
+     }
+     */
 }
 
 
@@ -2192,16 +2254,26 @@ function bab_sitemap_faq($event) {
  */
 function bab_onBeforeSiteMapCreated(bab_eventBeforeSiteMapCreated $event) {
 
-    global $babBody, $BAB_SESS_LOGGED;
+    global $BAB_SESS_LOGGED;
     require_once dirname(__FILE__).'/icons.php';
 
+    $simpleUserMenu = bab_Registry::get('/core/sitemap/mergeAddonsMenu', false);
+
     // build user node
-    bab_sitemap_userSection($event);
+    if ($simpleUserMenu) {
+        bab_sitemap_mergedUserSection($event);
+    } else {
+        bab_sitemap_userSection($event);
+    }
 
     // build admin node
     if( isset($BAB_SESS_LOGGED) && $BAB_SESS_LOGGED && (bab_isUserAdministrator() || bab_getCurrentAdmGroup() != 0)) {
         include_once $GLOBALS['babInstallPath'].'admin/admmenu.php';
-        bab_sitemap_adminSection($event);
+        if ($simpleUserMenu) {
+            bab_sitemap_mergedAdminSection($event);
+        } else {
+            bab_sitemap_adminSection($event);
+        }
     }
 
     // articles
