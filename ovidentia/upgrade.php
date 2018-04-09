@@ -7390,6 +7390,40 @@ function ovidentia_upgrade($version_base,$version_ini) {
             )
         ");
     }
+    
+    if (bab_isTable('bab_sites')) {
+        //Get the authentication method for every sites
+        $res = $babDB->db_query("SELECT id, authentification FROM bab_sites");
+        $sitesConfig = array();
+        while($arr = $babDB->db_fetch_array($res))
+        {
+            $sitesConfig[$arr['id']] = $arr['authentification']; 
+        }
+        //Set the new type
+        $babDB->db_query("ALTER TABLE `bab_sites` MODIFY `authentification` VARCHAR(255)");
+        
+        //Set the new authentication value based on what was previously recovered
+        
+        foreach ($sitesConfig as $siteId => $authenticationValue){
+            $funcPath = '';
+            switch ($authenticationValue){
+                case BAB_AUTHENTIFICATION_OVIDENTIA:
+                    $func = bab_functionality::get('PortalAuthentication/AuthOvidentia');
+                    if($func){
+                        $funcPath = $func->getPath();
+                    }
+                    break;
+                case BAB_AUTHENTIFICATION_LDAP:
+                case BAB_AUTHENTIFICATION_AD:
+                    $func = bab_functionality::get('PortalAuthentication/AuthLdap');
+                    if($func){
+                        $funcPath = $func->getPath();
+                    }
+                    break;
+            }
+            $babDB->db_query('UPDATE bab_sites SET authentification='.$babDB->quote($funcPath).' WHERE id='.$babDB->quote($siteId));
+        }
+    }
 
 
 
