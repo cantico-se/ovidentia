@@ -1041,7 +1041,7 @@ function siteAuthentification($id)
         $authTypeItem->addOption($func, $func. ': ' .$currentFunc->getDescription());
         $configuration->addItem($displayable = $W->Html($currentFunc->getConfigForm()));
         $authTypeItem->setAssociatedDisplayable($displayable, array($func));
-        if($res['authentification'] == $currentFunc->getAuthenticationType()){
+        if($res['authentification'] == $currentFunc->getPath()){
             $res['authtype'] = $func;
         }
     }
@@ -2422,7 +2422,7 @@ function siteUpdate_authentification($id, $authtype, $host, $hostname, $ldpapchk
             email_password=".$babDB->quote($email_password).",
             ask_nickname=".$babDB->quote($ask_nickname).",
             remember_login=".$babDB->quote($remember_login).",
-            authentification='".$babDB->db_escape_string(bab_functionality::get('PortalAuthentication/'.$authtype)->getAuthenticationType())."',
+            authentification='".$babDB->db_escape_string(bab_functionality::get('PortalAuthentication/'.$authtype)->getPath())."',
             auth_multi_session=".$babDB->quote($auth_multi_session).",
             auth_https=".$babDB->quote($auth_https).",
             auth_fullscreen=".$babDB->quote($auth_fullscreen)."
