@@ -481,8 +481,8 @@ class bab_Registry
         if (substr($path, 0, 1) !== '/') {
             $path = '/' . $path;
         }
-        if (defined($path)) {
-            return constant($path);
+        if (defined('!' . $path)) {
+            return constant('!' . $path);
         }
 
         if (!isset($registry)) {
@@ -491,10 +491,18 @@ class bab_Registry
 
         $elements = explode('/', $path);
         $key = array_pop($elements);
-        $path = implode('/', $elements);
-        $registry->changeDirectory($path);
-        $value = $registry->getValue($key, $defaultValue);
+        $registryPath = implode('/', $elements);
+        $registry->changeDirectory($registryPath);
+        $value = $registry->getValue($key);
 
-        return $value;
+        if (isset($value)) {
+            return $value;
+        }
+
+        if (defined($path)) {
+            return constant($path);
+        }
+
+        return null;
     }
 }
