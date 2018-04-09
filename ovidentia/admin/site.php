@@ -2400,18 +2400,8 @@ function siteUpdate_menu13($item)
 
 function siteUpdate_authentification($id, $authtype, $host, $hostname, $ldpapchkcnx, $searchdn)
 {
-    global $babBody, $babDB, $bab_ldapAttributes;
+    global $babBody, $babDB;
 
-    $nickname = bab_pp('nickname', '');
-    $i_nickname = bab_pp('i_nickname', '');
-    $crypttype = bab_pp('crypttype', '');
-    $ldapfilter = bab_pp('ldapfilter', '');
-    $admindn = bab_pp('admindn', '');
-    $adminpwd1 = bab_pp('adminpwd1', '');
-    $adminpwd2 = bab_pp('adminpwd2', '');
-    $decodetype = bab_pp('decodetype', '0');
-    $userdn = bab_pp('userdn', '');
-    $ldpapchknotif = bab_pp('ldpapchknotif', 'N');
     $auth_multi_session = (int) bab_pp('auth_multi_session', 0);
     $auth_https = (int) bab_pp('auth_https', 0);
     $auth_fullscreen = (int) bab_pp('auth_fullscreen', 0);
@@ -2419,124 +2409,13 @@ function siteUpdate_authentification($id, $authtype, $host, $hostname, $ldpapchk
     $email_password = bab_pp('email_password', 'N');
     $ask_nickname = (int) bab_pp('ask_nickname', 0);
 
-    $ldap_groups = bab_pp('ldap_groups');
-    $ldap_groups_create = bab_pp('ldap_groups_create', '0');
-    $ldap_groups_remove = bab_pp('ldap_groups_remove', '0');
-    $ldap_usercreate_test = bab_pp('ldap_usercreate_test', '0');
-
     if(!bab_functionality::get('PortalAuthentication/'.$authtype)->isConfigured() )
     {
-
-        if( empty($host))
-        {
-            $babBody->msgerror = bab_translate("ERROR: You must provide a host address !!");
-            return false;
+        $errors = $babBody->errors;
+        foreach ($errors as $error){
+            $babBody->addNextPageError($error);
         }
-
-        if( $authtype == BAB_AUTHENTIFICATION_LDAP )
-        {
-            if( (!isset($nickname) || empty($nickname)) && (!isset($i_nickname) || empty($i_nickname)))
-            {
-                $babBody->msgerror = bab_translate("You must provide a nickname");
-                return false;
-            }
-
-            if( !empty($adminpwd1) || !empty($adminpwd2))
-            {
-            $adminpwd1 = trim($adminpwd1);
-            $adminpwd2 = trim($adminpwd2);
-            if( $adminpwd1 != $adminpwd2 )
-                {
-                $babBody->msgerror = bab_translate("Passwords not match !!");
-                return false;
-                }
-            }
-        }
-
-        $ldapattr = empty($nickname) ? $i_nickname: $nickname;
-
-        if( $authtype == BAB_AUTHENTIFICATION_AD )
-            {
-            $crypttype = '';
-            $admindn = '';
-            $adminpwd1 = '';
-            $adminpwd2 = '';
-            }
-
-        $ldapfilter = trim($ldapfilter);
-        if( empty($ldapfilter))
-            {
-            switch($authtype)
-                {
-                case BAB_AUTHENTIFICATION_AD:
-                    $ldapfilter = '(|(samaccountname=%NICKNAME))';
-                    break;
-                default:
-                    $ldapfilter = '(|(%UID=%NICKNAME))';
-                    break;
-                }
-            }
-
-        $req = "update ".BAB_SITES_TBL." set
-            email_password=".$babDB->quote($email_password).",
-            ask_nickname=".$babDB->quote($email_password).",
-            remember_login=".$babDB->quote($remember_login).",
-            auth_multi_session=".$babDB->quote($auth_multi_session).",
-            auth_https=".$babDB->quote($auth_https).",
-            auth_fullscreen=".$babDB->quote($auth_fullscreen).",
-            authentification='".$babDB->db_escape_string($authtype)."',
-            ldap_host='".$babDB->db_escape_string($host)."',
-            ldap_domainname='".$babDB->db_escape_string($hostname)."',
-            ldap_userdn='".$babDB->db_escape_string($userdn)."',
-            ldap_allowadmincnx='".$babDB->db_escape_string($ldpapchkcnx)."',
-            ldap_notifyadministrators='".$babDB->db_escape_string($ldpapchknotif)."',
-            ldap_usercreate_test='".$babDB->db_escape_string($ldap_usercreate_test)."',
-            ldap_searchdn='".$babDB->db_escape_string($searchdn)."',
-            ldap_attribute='".$babDB->db_escape_string($ldapattr)."',
-            ldap_encryptiontype='".$babDB->db_escape_string($crypttype)."',
-            ldap_decoding_type='".$babDB->db_escape_string($decodetype)."',
-            ldap_filter='".$babDB->db_escape_string($ldapfilter)."',
-            ldap_admindn='".$babDB->db_escape_string($admindn)."',
-            ldap_groups=".$babDB->quote($ldap_groups).",
-            ldap_groups_create=".$babDB->quote($ldap_groups_create).",
-            ldap_groups_remove=".$babDB->quote($ldap_groups_remove);
-        if( !empty($adminpwd1))
-            {
-            $req .= ", ldap_adminpassword=ENCODE(\"".$babDB->db_escape_string($adminpwd1)."\",\"".$babDB->db_escape_string($GLOBALS['BAB_HASH_VAR'])."\")";
-            }
-        $req .= " where id='".$babDB->db_escape_string($id)."'";
-        $babDB->db_query($req);
-
-        $res = $babDB->db_query("select * from ".BAB_DBDIR_FIELDSEXTRA_TBL." where id_directory='0'");
-        while( $arr = $babDB->db_fetch_array($res))
-            {
-            $val = '';
-            if( $arr['id_field'] < BAB_DBDIR_MAX_COMMON_FIELDS )
-                {
-                $rr = $babDB->db_fetch_array($babDB->db_query("select name, description from ".BAB_DBDIR_FIELDS_TBL." where id='".$babDB->db_escape_string($arr['id_field'])."'"));
-                $fieldname = $rr['name'];
-                }
-            else
-                {
-                $rr = $babDB->db_fetch_array($babDB->db_query("select * from ".BAB_DBDIR_FIELDS_DIRECTORY_TBL." where id='".$babDB->db_escape_string(($arr['id_field'] - BAB_DBDIR_MAX_COMMON_FIELDS))."'"));
-                $fieldname = "babdirf".$arr['id_field'];
-                }
-
-            if( isset($_POST[$fieldname]) && !empty($_POST[$fieldname]))
-                {
-                $val = $_POST[$fieldname];
-                }
-            else
-                {
-                $var = "i_".$fieldname;
-                if( isset($_POST[$var]) && !empty($_POST[$var]))
-                    {
-                    $val = $_POST[$var];
-                    }
-                }
-            $babDB->db_query("update ".BAB_LDAP_SITES_FIELDS_TBL." set x_name='".$babDB->db_escape_string($val)."' where id_field='".$babDB->db_escape_string($arr['id_field'])."' and id_site='".$babDB->db_escape_string($id)."'");
-            }
-        }
+    }
     else {
         $babDB->db_query("
             UPDATE ".BAB_SITES_TBL." set
@@ -2553,7 +2432,7 @@ function siteUpdate_authentification($id, $authtype, $host, $hostname, $ldpapchk
 
     Header("Location: ". $GLOBALS['babUrlScript']."?tg=site&item=".$id);
     exit;
-    }
+}
 
 function siteUpdateRegistration($item, $rw, $rq, $ml, $cdp, $cen, $group)
 {
