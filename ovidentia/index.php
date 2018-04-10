@@ -246,13 +246,13 @@ unset($BAB_SESS_LOGGED);
 ini_set('default_charset', bab_charset::getIso());
 
 if ('version' !== bab_rp('tg') || 'upgrade' !== bab_rp('idx')) {
-    
+
     /**
-     * Context intialisation for all pages except the new 
+     * Context intialisation for all pages except the new
      * addon controller (addon=name.file) and tg=version (upgrades iframe)
      */
-    
-    
+
+
     bab_updateSiteSettings(); /* Get the site settings */
     if ($GLOBALS['babCookieIdent'] === true) {
         include $GLOBALS['babInstallPath']."utilit/cookieident.php";
@@ -260,20 +260,16 @@ if ('version' !== bab_rp('tg') || 'upgrade' !== bab_rp('idx')) {
 
     if (isset($_GET['clear'])) {
         bab_siteMap::clearAll();
-        if (isset($_SESSION['ovml_cache']))
-        {
-            unset($_SESSION['ovml_cache']);
-        }
     }
 
     bab_isUserLogged();
     bab_updateUserSettings();
 } else {
-    
+
     /**
      * Special context initialization for upgrades
      */
-    
+
     if (!isset($babLanguage)) {
         $babLanguage = 'fr';
     }
@@ -303,7 +299,7 @@ if (isset($_GET['babrw']))
     {
         $_GET += $arr;
         $_REQUEST += $arr;
-        
+
     } elseif (!bab_isUserLogged()) {
         bab_requireCredential();
     } else {
@@ -645,7 +641,7 @@ switch(bab_rp('tg'))
     case "comments":
         $incl = "comments";
         break;
-        
+
     /*
     case "charts":
         $babLevelOne = bab_translate("User's section");
@@ -677,7 +673,7 @@ switch(bab_rp('tg'))
         exit;
         break;
     */
-        
+
     case "faq":
         $babLevelOne = bab_translate("User's section");
         $babLevelTwo = bab_translate("Faqs");
@@ -807,7 +803,7 @@ switch(bab_rp('tg'))
         $incl = 'tmtaskmanager';
         break;
     */
-        
+
     case 'charset':
         $incl = 'admin/charset';
         break;
@@ -817,7 +813,7 @@ switch(bab_rp('tg'))
     case 'csrfprotect':
         die(bab_getInstance('bab_CsrfProtect')->getToken());
         break;
-        
+
     case 'search':
         /**
          * forward to search addon for backward compatibility
@@ -842,14 +838,14 @@ switch(bab_rp('tg'))
             }
             require_once $module;
         } else {
-            
+
             if ('' !== bab_rp('tg', '')) {
                 bab_pageNotFound();
             }
-            
+
             if ($home = bab_functionality::get('Home')) {
                 /*@var $home Func_Home */
-                
+
                 $home->setSitemapPosition();
                 $home->includePage();
             }
