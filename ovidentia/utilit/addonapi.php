@@ -3676,6 +3676,15 @@ function bab_getBody()
     return bab_getInstance('babBody');
 }
 
+/**
+ * @since 8.6.96
+ * 
+ * @return string
+ */
+function bab_getSiteName()
+{
+    return $GLOBALS['babSiteName'];
+}
 
 
 /*

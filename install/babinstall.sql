@@ -993,7 +993,7 @@ CREATE TABLE `bab_sites` (
   `name_order` enum('F L','L F') NOT NULL default 'F L',
   `email_password` enum('Y','N') NOT NULL default 'Y',
   `browse_users` enum('N','Y') NOT NULL default 'Y',
-  `authentification` smallint(5) unsigned NOT NULL default '0',
+  `authentification` varchar(255) NOT NULL default 'PortalAuthentication/AuthOvidentia',
   `ldap_host` tinytext NOT NULL,
   `ldap_domainname` varchar(255) NOT NULL default '',
   `ldap_userdn` text NOT NULL,

@@ -737,6 +737,22 @@ function bab_getAuthType()
     return bab_rp('sAuthType', '');
 }
 
+/**
+ * Return the authentication type saved in the table bab_sites for the specified site id
+ * @param string $siteName The site name (default from GLOBALS)
+ */
+function bab_getSiteAuthType($siteName = null)
+{
+    global $babDB;
+    $siteName = isset($siteName) ? bab_getSiteName() : $siteName;
+    
+    $res = $babDB->db_query("SELECT authentification FROM ".BAB_SITES_TBL." WHERE name=".$babDB->quote($siteName));
+    while($arr = $babDB->db_fetch_array($res))
+    {
+        return isset($arr['authentification']) ? $arr['authentification'] : '';
+    }
+}
+
 
 
 
@@ -765,7 +781,7 @@ function bab_doRequireCredential($sLoginMessage, $sAuthType)
         $sAuthType = bab_getAuthType();
         if ($sAuthType === '') {
             // If no AuthType has been specified we use the default authencation functionality.
-            $sAuthPath = 'PortalAuthentication';
+            $sAuthPath = bab_functionalities::sanitize(bab_getSiteAuthType(bab_getSiteName()));
         } else {
             $sAuthPath = bab_functionalities::sanitize('PortalAuthentication/Auth' . $sAuthType);
         }

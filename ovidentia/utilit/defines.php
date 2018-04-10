@@ -37,7 +37,6 @@ define("BAB_LDAP_SERVER_AD",	1); /* Active Directory */
 define("BAB_AUTHENTIFICATION_OVIDENTIA",	0);
 define("BAB_AUTHENTIFICATION_LDAP",			1);
 define("BAB_AUTHENTIFICATION_AD",			2); /* Active directory */
-define("BAB_AUTHENTIFICATION_LDAP_OR_AD",   3);
 
 define("BAB_LDAP_ISO8859"	,	0); /* ldap server is ISO-8859-1 */
 define("BAB_LDAP_UTF8"		,	1); /* ldap server is UTF8 */
