@@ -7391,6 +7391,10 @@ function ovidentia_upgrade($version_base,$version_ini) {
         ");
     }
     
+    /**
+     * Upgrade to 8.6.96
+     */
+    
     if (bab_isTable('bab_sites')) {
         //Get the authentication method for every sites
         $res = $babDB->db_query("SELECT id, authentification FROM bab_sites");
