@@ -35,7 +35,7 @@ include_once $GLOBALS['babInstallPath'].'utilit/sitemap.php';
 include_once $GLOBALS['babInstallPath'].'utilit/eventincl.php';
 include_once $GLOBALS['babInstallPath'].'utilit/groupsincl.php';
 include_once $GLOBALS['babInstallPath'].'utilit/body.class.php';
-
+include_once $GLOBALS['babInstallPath'].'utilit/registry.php';
 
 function bab_encrypt($txt,$key)
     {
