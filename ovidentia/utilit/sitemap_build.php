@@ -1884,6 +1884,12 @@ function bab_sitemap_mergedUserSection($event)
 
             if ($event->loadChildNodes($position)) {
 
+                $item = $event->createItem($dg_prefix.'UserSection');
+                $item->setLabel(bab_translate("Ovidentia functions"));
+                $item->setPosition($position);
+                $item->addIconClassname(FUnc_Icons::PLACES_USER_APPLICATIONS);
+                $event->addFolder($item);
+
                 $delegation_urls = bab_getUserDelegationUrls($id_delegation, $deleg, $dg_prefix);
 
                 foreach($delegation_urls as $arr) {
@@ -1910,6 +1916,12 @@ function bab_sitemap_mergedUserSection($event)
                 }
 
                 $position = array('root', $id_delegation, $dg_prefix.'User');
+
+                $item = $event->createItem($dg_prefix.'UserSectionAddons');
+                $item->setLabel(bab_translate('Add-ons links'));
+                $item->setPosition($position);
+                $item->addIconClassname(Func_Icons::PLACES_USER_APPLICATIONS);
+                $event->addFolder($item);
 
                 if ($event->loadChildNodes($position)) {
 
