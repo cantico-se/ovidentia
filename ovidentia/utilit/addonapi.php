@@ -3763,12 +3763,28 @@ function bab_setLanguage($code)
 }
 
 
+
+/**
+ *
+ * @return babDatabase
+ */
+function bab_getDB()
+{
+    static $db = null;
+    if (!isset($db)) {
+        $db = new babDatabase();
+    }
+    return $db;
+}
+
+
 /**
  * Check if the csrf protection is not disabled by registry or configuration constant
  * @return boolean
  */
 function bab_isCsrfProtectionEnabled()
 {
+    require_once dirname(__FILE__).'/registry.php';
     $enabled = !defined('BAB_CSRF_PROTECT') || BAB_CSRF_PROTECT !== false;
     $enabled = (bool)bab_Registry::get('/core/csrfProtect', $enabled);
     return $enabled;
