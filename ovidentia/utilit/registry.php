@@ -140,7 +140,7 @@ class bab_Registry
 	 */
 	public function setKeyValue($key, $value)
 	{
-		global $babDB;
+	    $babDB = bab_getDB();
 
 		if (false !== mb_strpos($key, '/')) {
 			trigger_error('"/" are forbidden in the key parameter of setKeyValue');
@@ -229,7 +229,7 @@ class bab_Registry
 	 */
 	public function removeKey($key)
 	{
-		global $babDB;
+	    $babDB = bab_getDB();
 
 		$dirkey = $this->dir.$key;
 		$res = $babDB->db_query("DELETE FROM bab_registry WHERE dirkey = ".$babDB->quote($dirkey));
@@ -283,7 +283,7 @@ class bab_Registry
 	 */
 	public function getValueEx($key)
 	{
-		global $babDB;
+	    $babDB = bab_getDB();
 
 		if (is_array($key))
 		{
@@ -338,7 +338,7 @@ class bab_Registry
 	 */
 	public function deleteDirectory()
 	{
-		global $babDB;
+	    $babDB = bab_getDB();
 
 		$l = mb_strlen($this->dir);
 
@@ -361,7 +361,7 @@ class bab_Registry
 	 */
 	public function isDirectory($path)
 	{
-		global $babDB;
+	    $babDB = bab_getDB();
 
 		$path = $this->getFullPath($path);
 
@@ -384,7 +384,7 @@ class bab_Registry
 	 */
 	public function moveDirectory($source, $dest)
 	{
-		global $babDB;
+	    $babDB = bab_getDB();
 
 		// If destination directory already exists we return with error.
 		if ($this->isDirectory($dest)) {
@@ -412,7 +412,7 @@ class bab_Registry
 	 */
 	public function fetchChildDir()
 	{
-		global $babDB;
+	    $babDB = bab_getDB();
 
 		if($this->r === null){
 			$this->r = array();
@@ -443,7 +443,7 @@ class bab_Registry
 	 */
 	public function fetchChildKey()
 	{
-		global $babDB;
+	    $babDB = bab_getDB();
 
 		static $r = array();
 		if (!isset($r[$this->dir])) {
