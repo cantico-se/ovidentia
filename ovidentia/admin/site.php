@@ -35,41 +35,34 @@ $bab_ldapAttributes = array('uid', 'cn', 'sn', 'givenname', 'mail', 'telephonenu
 
 class site_configuration_cls
 {
-    var $menu;
+    public $menu;
 
-    function site_configuration_cls($id_site = false)
+    public function __construct($id_site = false)
     {
-    global $babDB;
-    $this->t_record = bab_translate("Record");
-    $this->yes = bab_translate("Yes");
-    $this->no = bab_translate("No");
+        $babDB = bab_getDB();
+        $this->t_record = bab_translate("Record");
+        $this->yes = bab_translate("Yes");
+        $this->no = bab_translate("No");
 
-    $this->item = $id_site;
-    $this->menu = bab_getSitesConfigurationMenus();
+        $this->item = $id_site;
+        $this->menu = bab_getSitesConfigurationMenus();
 
-    if (false !== $id_site)
-        {
-        $res = $babDB->db_query("SELECT *, DECODE(smtppassword, \"".$GLOBALS['BAB_HASH_VAR']."\") as smtppass FROM ".BAB_SITES_TBL." WHERE id='".$babDB->db_escape_string($id_site)."'");
-        $this->row = $babDB->db_fetch_assoc($res);
+        if (false !== $id_site) {
+            $res = $babDB->db_query("SELECT *, DECODE(smtppassword, \"" . $GLOBALS['BAB_HASH_VAR'] . "\") as smtppass FROM " . BAB_SITES_TBL . " WHERE id='" . $babDB->db_escape_string($id_site) . "'");
+            $this->row = $babDB->db_fetch_assoc($res);
 
-        bab_debug($this->row);
-
-        $this->arr = array();
-        foreach($this->row as $k => $val)
-            {
-            $this->arr[$k] = bab_toHtml($val);
+            $this->arr = array();
+            foreach ($this->row as $k => $val) {
+                $this->arr[$k] = bab_toHtml($val);
             }
 
-        if (isset($_REQUEST['idx']))
-            {
-            $key = (int) mb_substr($_REQUEST['idx'],4);
-            if (isset($this->menu[$key]))
-                $GLOBALS['babBody']->title = $this->menu[$key];
+            if (isset($_REQUEST['idx'])) {
+                $key = (int) mb_substr($_REQUEST['idx'], 4);
+                if (isset($this->menu[$key]))
+                    $GLOBALS['babBody']->title = $this->menu[$key];
             }
-        }
-    else
-        {
-        $GLOBALS['babBody']->title = bab_translate("Create site");
+        } else {
+            $GLOBALS['babBody']->title = bab_translate("Create site");
         }
     }
 }
@@ -77,7 +70,7 @@ class site_configuration_cls
 
 function site_menu1()
 {
-    global $babBody;
+    $babBody = bab_getBody();
     class temp extends site_configuration_cls
         {
 
@@ -305,7 +298,7 @@ function site_menu1()
  */
 function site_menu2($id)
 {
-    global $babBody;
+    $babBody = bab_getBody();
 
     class email_site_configuration_cls extends site_configuration_cls
     {
@@ -377,7 +370,7 @@ function site_menu2($id)
 function site_menu3($id)
     {
 
-    global $babBody;
+    $babBody = bab_getBody();
     class temp extends site_configuration_cls
         {
 
@@ -406,7 +399,7 @@ function site_menu3($id)
 
 function site_menu4($id)
 {
-    global $babBody;
+    $babBody = bab_getBody();
 
     class bab_site_menu4_cls extends site_configuration_cls
     {
@@ -445,7 +438,7 @@ function site_menu4($id)
 function site_menu5($id)
     {
 
-    global $babBody;
+    $babBody = bab_getBody();
     class temp extends site_configuration_cls
         {
 
@@ -523,7 +516,7 @@ function site_menu5($id)
 function site_menu6($id)
     {
 
-    global $babBody;
+    $babBody = bab_getBody();
     class temp extends site_configuration_cls
         {
             var $t_defaultCalAccess		= '';
@@ -535,7 +528,7 @@ function site_menu6($id)
 
         function temp($id)
             {
-            global $babDB;
+            $babDB = bab_getDB();
             $this->t_dispdays = bab_translate("Days to display");
             $this->t_startdaytxt = bab_translate("First day of week");
             $this->t_starttimetxt = bab_translate("Start time");
@@ -831,13 +824,13 @@ function site_menu6($id)
 function site_menu13($id)
     {
 
-    global $babBody;
+    $babBody = bab_getBody();
     class site_menu13_class extends site_configuration_cls
         {
 
         function site_menu13_class($id)
             {
-            global $babDB;
+            $babDB = bab_getDB();
             $this->t_workdays = bab_translate("Working days (for all sites)");
             $this->t_nonworking = bab_translate("Non-working days");
             $this->t_ok = bab_translate("Ok");
@@ -936,7 +929,7 @@ function site_menu13($id)
 
         function getnextnonworking()
             {
-            global $babDB;
+            $babDB = bab_getDB();
             if ($arr = $babDB->db_fetch_array($this->resnw))
                 {
                 $this->value = $arr['nw_text'].'#';
@@ -1019,7 +1012,8 @@ function siteAuthentification($id)
     $W = bab_Widgets();
     $page = $W->BabPage();
 
-    global $babDB, $bab_ldapAttributes;
+    $babDB = bab_getDB();
+    global $bab_ldapAttributes;
     $req = "select *, DECODE(smtppassword, \"".$GLOBALS['BAB_HASH_VAR']."\") as smtppass, DECODE(ldap_adminpassword, \"".$GLOBALS['BAB_HASH_VAR']."\") as ldapadminpwd from ".BAB_SITES_TBL." where id='".$babDB->db_escape_string($id)."'";
     $res = $babDB->db_query($req);
     $res = $babDB->db_fetch_array($res);
@@ -1118,7 +1112,7 @@ function siteAuthentification($id)
 
     $page->pageEcho($W->HtmlCanvas());
 
-    global $babBody;
+    $babBody = bab_getBody();
     class clsSiteAuthentification
     {
         function getnextauth()
@@ -1148,7 +1142,8 @@ function siteAuthentification($id)
 
         function getnextfield()
             {
-            global $babDB, $bab_ldapAttributes;
+            $babDB = bab_getDB();
+            global $bab_ldapAttributes;
             static $i = 0;
             if( $i < $this->countf)
                 {
@@ -1312,7 +1307,7 @@ function siteAuthentification($id)
 
 function sectionDelete($id)
     {
-    global $babBody;
+    $babBody = bab_getBody();
 
     class temp
         {
@@ -1345,12 +1340,13 @@ function sectionDelete($id)
 
 function siteRegistration($id)
     {
-    global $babBody;
+    $babBody = bab_getBody();
     class temp
         {
         function temp($id)
             {
-            global $babDB, $babBody;
+            $babDB = bab_getDB();
+            $babBody = bab_getBody();
             $this->item = $id;
             $this->yes = bab_translate("Yes");
             $this->no = bab_translate("No");
@@ -1403,7 +1399,7 @@ function siteRegistration($id)
 
         function getnextfield()
             {
-            global $babDB;
+            $babDB = bab_getDB();
             static $i = 0;
             if( $i < $this->count)
                 {
@@ -1520,7 +1516,7 @@ function siteRegistration($id)
 
 function editDisclaimerPrivacy($id, $content)
     {
-    global $babBody;
+    $babBody = bab_getBody();
 
     class temp
         {
@@ -1538,7 +1534,7 @@ function editDisclaimerPrivacy($id, $content)
 
         function temp($id, $content)
             {
-            global $babDB;
+            $babDB = bab_getDB();
             $this->disclaimertxt = bab_translate("Disclaimer/Privacy Statement");
             $this->modify = bab_translate("Update");
             $this->item = $id;
@@ -1585,13 +1581,13 @@ function editDisclaimerPrivacy($id, $content)
 
 function editor_configuration($id_site)
     {
-    global $babBody;
+    $babBody = bab_getBody();
 
     class temp
         {
         function temp($id_site)
             {
-            global $babDB;
+            $babDB = bab_getDB();
             $this->id_site = $id_site;
 
             $this->t_use_editor = bab_translate("Use WYSIWYG editor");
@@ -1632,7 +1628,7 @@ function editor_configuration($id_site)
 
 function siteMenu($id_site)
 {
-global $babBody;
+$babBody = bab_getBody();
 
     class temp extends site_configuration_cls
         {
@@ -1744,7 +1740,7 @@ function call_site_menu11($item) {
 
 function record_editor_configuration($id_site)
 {
-    global $babDB;
+    $babDB = bab_getDB();
 
     $bitstring = array();
     for ($i = 0; $i < $_POST['bitstring_len']; $i++)
@@ -1828,7 +1824,8 @@ function record_editor_configuration($id_site)
 
 function siteSave($name)
     {
-    global $babBody, $babDB;
+    $babBody = bab_getBody();
+    $babDB = bab_getDB();
 
     $description 	= bab_pp('description');
     $babslogan 		= bab_pp('babslogan');
@@ -1887,7 +1884,8 @@ function siteSave($name)
 
 function siteUpdate_menu1()
 {
-    global $babBody, $babDB;
+    $babBody = bab_getBody();
+    $babDB = bab_getDB();
 
     $name			= &$_POST['name'];
     $description	= &$_POST['description'];
@@ -1995,7 +1993,8 @@ function siteUpdate_menu1()
 
 function siteUpdate_menu2()
 {
-    global $babBody, $babDB;
+    $babBody = bab_getBody();
+    $babDB = bab_getDB();
 
     if( $_POST['mailfunc'] == "smtp" && empty($_POST['smtpserver']))
         {
@@ -2037,7 +2036,7 @@ function siteUpdate_menu2()
 
 function siteUpdate_menu3()
 {
-    global $babDB;
+    $babDB = bab_getDB();
 
     $req = "UPDATE ".BAB_SITES_TBL." SET
             change_nickname='".$babDB->db_escape_string($_POST['change_nickname'])."',
@@ -2193,7 +2192,8 @@ function bab_createUploadPath($uploadpath)
 
 function siteUpdate_menuUpload()
 {
-    global $babDB, $babBody;
+    $babDB = bab_getDB();
+    $babBody = bab_getBody();
 
     $errors = false;
     if (!isAbsolutePath($_POST['uploadpath']) && !file_exists(realpath($_POST['uploadpath']))) {
@@ -2243,7 +2243,8 @@ function siteUpdate_menuUpload()
 
 function siteUpdate_menu5($item,$datelformat, $datesformat, $timeformat)
     {
-    global $babBody, $babDB;
+    $babBody = bab_getBody();
+    $babDB = bab_getDB();
 
     $req = "update ".BAB_SITES_TBL." set date_longformat='".$babDB->db_escape_string($datelformat)."', date_shortformat='".$babDB->db_escape_string($datesformat)."', time_format='".$babDB->db_escape_string($timeformat)."' where id='".$babDB->db_escape_string($item)."'";
     $babDB->db_query($req);
@@ -2253,7 +2254,7 @@ function siteUpdate_menu5($item,$datelformat, $datesformat, $timeformat)
 
 function siteUpdate_menu6($item)
     {
-    global $babDB;
+    $babDB = bab_getDB();
 
     $reqarr = array("startday='".$_POST['startday']."'");
 
@@ -2328,7 +2329,7 @@ function siteUpdate_menu6($item)
 
 function siteUpdate_menu13($item)
     {
-    global $babDB;
+    $babDB = bab_getDB();
 
     if (isset($_POST['funcname']))
     {
@@ -2400,7 +2401,8 @@ function siteUpdate_menu13($item)
 
 function siteUpdate_authentification($id, $authtype, $host, $hostname, $ldpapchkcnx, $searchdn)
 {
-    global $babBody, $babDB;
+    $babBody = bab_getBody();
+    $babDB = bab_getDB();
 
     $auth_multi_session = (int) bab_pp('auth_multi_session', 0);
     $auth_https = (int) bab_pp('auth_https', 0);
@@ -2436,7 +2438,8 @@ function siteUpdate_authentification($id, $authtype, $host, $hostname, $ldpapchk
 
 function siteUpdateRegistration($item, $rw, $rq, $ml, $cdp, $cen, $group)
 {
-    global $babBody, $babDB;
+    $babBody = bab_getBody();
+    $babDB = bab_getDB();
 
     $babDB->db_query("update ".BAB_SITES_TBL." set registration='".$babDB->db_escape_string($_POST['register'])."',display_disclaimer='".$babDB->db_escape_string($cdp)."', email_confirm='".$babDB->db_escape_string($cen)."', idgroup='".$babDB->db_escape_string($group)."' where id='".$babDB->db_escape_string($item)."'");
     $res = $babDB->db_query("select id from ".BAB_SITES_FIELDS_REGISTRATION_TBL." where id_site='".$babDB->db_escape_string($item)."'");
@@ -2473,7 +2476,7 @@ function siteUpdateRegistration($item, $rw, $rq, $ml, $cdp, $cen, $group)
 
 function confirmDeleteSite($id)
     {
-    global $babDB;
+    $babDB = bab_getDB();
     // delete homepages
     $babDB->db_query("delete from ".BAB_HOMEPAGES_TBL." where id_site='".$babDB->db_escape_string($id)."'");
     // delete ldap settings
@@ -2491,7 +2494,7 @@ function confirmDeleteSite($id)
 
 function siteUpdateDisclaimer($item)
     {
-    global $babDB;
+    $babDB = bab_getDB();
 
     include_once $GLOBALS['babInstallPath']."utilit/editorincl.php";
     $editor = new bab_contentEditor('bab_disclaimer');
