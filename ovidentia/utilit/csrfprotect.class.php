@@ -109,6 +109,8 @@ class bab_CsrfProtect
     }
 
 
+
+
     /**
      * Validate CSRF token on all requests other than GET
      * @return boolean
@@ -123,7 +125,7 @@ class bab_CsrfProtect
             return true;
         }
 
-        if (defined('BAB_CSRF_PROTECT') && false === BAB_CSRF_PROTECT) {
+        if (!bab_isCsrfProtectionEnabled()) {
             return true;
         }
 

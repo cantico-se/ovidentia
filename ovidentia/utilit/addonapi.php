@@ -3678,7 +3678,7 @@ function bab_getBody()
 
 /**
  * @since 8.6.96
- * 
+ *
  * @return string
  */
 function bab_getSiteName()
@@ -3763,6 +3763,17 @@ function bab_setLanguage($code)
 }
 
 
+/**
+ * Check if the csrf protection is not disabled by registry or configuration constant
+ * @return boolean
+ */
+function bab_isCsrfProtectionEnabled()
+{
+    $enabled = !defined('BAB_CSRF_PROTECT') || BAB_CSRF_PROTECT !== false;
+    $enabled = (bool)bab_Registry::get('/core/csrfProtect', $enabled);
+    return $enabled;
+}
+
 
 /**
  * function to call before saving
@@ -3771,7 +3782,7 @@ function bab_setLanguage($code)
  */
 function bab_requireSaveMethod()
 {
-    if (defined('BAB_CSRF_PROTECT') && false === BAB_CSRF_PROTECT) {
+    if (!bab_isCsrfProtectionEnabled()) {
         return true;
     }
 
