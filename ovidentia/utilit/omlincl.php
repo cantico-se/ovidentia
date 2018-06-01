@@ -8396,6 +8396,58 @@ class Func_Ovml_Function_Ajax extends Func_Ovml_Function {
 
 
 /**
+ * Returns a value from the registry.
+ *
+ * @see bab_Registry::get()
+ *
+ * @param path      The registry path
+ * @param default   The default value if path not found
+ *
+ * @since 8.6.97
+ */
+class Func_Ovml_Function_GetRegistryValue extends Func_Ovml_Function
+{
+    public function toString()
+    {
+        $path = '';
+        $saveas = '';
+        $default = null;
+
+        if (count($this->args)) {
+            // Récupération des arguments
+            foreach ($this->args as $name => $value) {
+                switch (mb_strtolower(trim($name))) {
+                    case 'path':
+                        $path = $value;
+                        break;
+                    case 'default':
+                        $default = $value;
+                        break;
+                    case 'saveas':
+                        $saveas = $value;
+                        break;
+                }
+            }
+
+            if (!$path) {
+                return '';
+            }
+
+            $value = bab_Registry::get($path, $default);
+
+            if ($saveas) {
+                $this->gctx->push($saveas, $value);
+                return '';
+            }
+
+            return $value;
+        }
+    }
+}
+
+
+
+/**
  * Arithmetic operators
  */
 class bab_ArithmeticOperator extends Func_Ovml_Function {
