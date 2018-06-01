@@ -505,7 +505,7 @@ class bab_Registry
             return constant($path);
         }
 
-        return null;
+        return $defaultValue;
     }
 
 
