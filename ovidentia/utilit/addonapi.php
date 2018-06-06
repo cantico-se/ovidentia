@@ -1215,8 +1215,6 @@ function bab_isUserGroupManager($grpid="")
 */
 function bab_getUserName($iIdUser, $bComposeUserName = true)
 {
-
-
     include_once dirname(__FILE__).'/userinfosincl.php';
 
     if (true === $bComposeUserName) {
@@ -1240,34 +1238,50 @@ function bab_getUserName($iIdUser, $bComposeUserName = true)
 }
 
 
+
 /**
- * Get Email address
- * @param	int	$id
+ * Returns the email address for the specified user id.
+ *
+ * @param	int $userId   The user id
  * @return string
  */
-function bab_getUserEmail($id)
-    {
-
+function bab_getUserEmail($userId)
+{
     include_once dirname(__FILE__).'/userinfosincl.php';
-    if ($row = bab_userInfos::getRow($id)) {
+
+    if (!$userId) {
+        return '';
+    }
+
+    if ($row = bab_userInfos::getRow($userId)) {
         return $row['email'];
-        }
+    }
 
     return '';
-    }
+}
+
+
 
 /**
+ * Returns the nickname for the specified user id.
+ *
+ * @param int $userId   The user id
  * @return string
  */
-function bab_getUserNickname($id)
-    {
+function bab_getUserNickname($userId)
+{
     include_once dirname(__FILE__).'/userinfosincl.php';
-    if ($row = bab_userInfos::getRow($id)) {
+
+    if (!$userId) {
+        return '';
+    }
+
+    if ($row = bab_userInfos::getRow($userId)) {
         return $row['nickname'];
-        }
+    }
 
     return '';
-    }
+}
 
 
 
@@ -3341,14 +3355,16 @@ function bab_locale() {
 
 
 
+/**
+ *
+ * @return string
+ */
 function bab_getHashVar()
 {
-    if (defined('BAB_HASH_VAR'))
-    {
-        return BAB_HASH_VAR;
-    } else {
-        return 'aqhjlongsmp';
-    }
+    require_once dirname(__FILE__).'/registry.php';
+    $hashVar = defined('BAB_HASH_VAR') ? BAB_HASH_VAR : 'aqhjlongsmp';
+    $hashVar = bab_Registry::get('/core/hashVar', $hashVar);
+    return $hashVar;
 }
 
 
