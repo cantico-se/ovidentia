@@ -536,7 +536,7 @@ class bab_sitemap_addFuncToProfile {
             }
 
             $babDB->db_query('
-                INSERT INTO '.BAB_SITEMAP_FUNCTION_PROFILE_TBL.'
+                INSERT IGNORE INTO '.BAB_SITEMAP_FUNCTION_PROFILE_TBL.'
                     (id_function, id_profile)
                 VALUES
                         '.implode(",\n ",$values).'
@@ -2297,4 +2297,3 @@ function bab_onBeforeSiteMapCreated(bab_eventBeforeSiteMapCreated $event) {
     // menu
     bab_sitemap_menu($event);
 }
-
