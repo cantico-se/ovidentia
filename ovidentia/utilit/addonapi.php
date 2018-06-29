@@ -1679,16 +1679,16 @@ function bab_isAccessValidByUser($table, $idobject, $iduser)
 
 
 /**
- * Checks that the specified user can access the object $idobject according to the acl table $table.
- * If $iduser is empty, the check is performed for the current user.
+ * The original bab_isAccessValid() function without bab_eventCheckAccessValid event override.
  *
+ * @since 8.6.97
  * @param string	$table		The acl table.
  * @param int		$idobject	The id of the object for which the access is checked.
  * @param mixed		$userId		The user id or '' for the current user.
  *
  * @return bool
  */
-function bab_isAccessValid($table, $idobject, $iduser='')
+function bab_isOriginalAccessValid($table, $idobject, $iduser='')
 {
     require_once $GLOBALS['babInstallPath'].'utilit/session.class.php';
     $session = bab_getInstance('bab_Session');
@@ -1713,17 +1713,41 @@ function bab_isAccessValid($table, $idobject, $iduser='')
 
 
 
+/**
+ * Checks that the specified user can access the object $idobject according to the acl table $table.
+ * If $iduser is empty, the check is performed for the current user.
+ *
+ * @param string	$table		The acl table.
+ * @param int		$idobject	The id of the object for which the access is checked.
+ * @param mixed		$userId		The user id or '' for the current user.
+ *
+ * @return bool
+ */
+function bab_isAccessValid($table, $idobject, $iduser='')
+{
+    require_once $GLOBALS['babInstallPath'] . 'utilit/eventaccess.php';
+    $event = new bab_eventCheckAccessValid($table, $idobject, $iduser);
+    bab_fireEvent($event);
+
+    $access = $event->getAccess();
+    if (isset($access)) {
+        return $access;
+    }
+
+    return bab_isOriginalAccessValid($table, $idobject, $iduser);
+}
+
+
 
 /**
- * Get the list of id_object accessible by the specified user.
- * If $userId is empty, the check is performed for anonymous users.
- * The id_object is returned in key and in the value of the result array.
+ * The original bab_getAccessibleObjects() function without bab_eventGetAccessibleObjects event override.
  *
+ * @since 8.6.97
  * @param string	$table		The acl table.
  * @param mixed		$userId		The user id or '' for anonymous users.
  * @return array
  */
-function bab_getAccessibleObjects($table, $userId)
+function bab_getOriginalAccessibleObjects($table, $userId)
 {
     require_once dirname(__FILE__).'/groupsincl.php';
     global $babDB;
@@ -1770,11 +1794,36 @@ function bab_getAccessibleObjects($table, $userId)
 
 
 /**
- * Get the list of id_object accessible by the current user
- * The id_object is stored in key and in the value
+ * Get the list of id_object accessible by the specified user.
+ * If $userId is empty, the check is performed for anonymous users.
+ * The id_object is returned in key and in the value of the result array.
+ *
+ * @param string	$table		The acl table.
+ * @param mixed		$userId		The user id or '' for anonymous users.
  * @return array
  */
-function bab_getUserIdObjects($table)
+function bab_getAccessibleObjects($table, $userId)
+{
+    $objects = bab_getOriginalAccessibleObjects($table, $userId);
+
+    require_once $GLOBALS['babInstallPath'] . 'utilit/eventaccess.php';
+    $event = new bab_eventGetAccessibleObjects($table, $userId, $objects);
+    bab_fireEvent($event);
+
+    $objects = $event->getObjects();
+
+    return $objects;
+}
+
+
+/**
+ * The original bab_getUserIdObjects() function without bab_eventGetAccessibleObjects event override.
+ *
+ * @since 8.6.97
+ * @param string $table
+ * @return array
+ */
+function bab_getOriginalUserIdObjects($table)
 {
     require_once dirname(__FILE__).'/defines.php';
     require_once dirname(__FILE__).'/groupsincl.php';
@@ -1818,6 +1867,28 @@ function bab_getUserIdObjects($table)
     }
 
     return $groupAccess['acltables'][$table];
+}
+
+
+/**
+ * Get the list of id_object accessible by the current user
+ * The id_object is stored in key and in the value
+ *
+ * @param string $table
+ * @return array
+ */
+function bab_getUserIdObjects($table)
+{
+    $objects = bab_getOriginalUserIdObjects($table);
+
+    $userId = bab_getUserId();
+    require_once $GLOBALS['babInstallPath'] . 'utilit/eventaccess.php';
+    $event = new bab_eventGetAccessibleObjects($table, $userId, $objects);
+    bab_fireEvent($event);
+
+    $objects = $event->getObjects();
+
+    return $objects;
 }
 
 
