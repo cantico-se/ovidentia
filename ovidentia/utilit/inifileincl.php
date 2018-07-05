@@ -205,6 +205,7 @@ class bab_inifile_requirements {
     public static function return_bytes($val) {
        $val = trim($val);
        $last = mb_strtolower($val{mb_strlen($val)-1});
+       $val = substr($val, 0, -1);
        switch($last) {
             // The 'G' modifier is available since PHP 5.1.0
             case 'g':
