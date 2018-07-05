@@ -98,7 +98,7 @@ class bab_Sort
     /**
      * Compare case-sensitively two objects.
      *
-     * @see 	bab_compare
+     * @see 	bab_compare()
      * @param 	object 	$obj1
      * @param 	object 	$obj2
      * @return 	int		Same values as bab_compare
@@ -117,7 +117,7 @@ class bab_Sort
     /**
      * Compare case-insensitively two objects.
      *
-     * @see 	bab_compare
+     * @see 	bab_compare()
      * @param 	object 	$obj1
      * @param 	object 	$obj2
      * @return 	int		Same values as bab_compare
@@ -199,7 +199,7 @@ class bab_Sort
     /**
      * Compare case-sensitively two strings.
      *
-     * @see bab_compare
+     * @see bab_compare()
      * @param string $string1
      * @param string $string2
      * @return int		Same values as bab_compare
@@ -213,7 +213,7 @@ class bab_Sort
     /**
      * Compare case-insensitively two strings.
      *
-     * @see bab_compare
+     * @see bab_compare()
      * @param string $string1
      * @param string $string2
      * @return int		Same values as bab_compare
@@ -228,7 +228,7 @@ class bab_Sort
     /**
      * Compare case-sensitively two arrays according to the specified key (self::$sKeyName).
      *
-     * @see bab_compare
+     * @see bab_compare()
      * @param array $array1
      * @param array $array2
      * @return int
@@ -243,7 +243,7 @@ class bab_Sort
     /**
      * Compare case-insensitively two arrays according to the specified key (self::$sKeyName).
      *
-     * @see bab_compare
+     * @see bab_compare()
      * @param array $array1
      * @param array $array2
      * @return int
@@ -265,7 +265,7 @@ class bab_Sort
  * 									If this parameter is null strings are then
  * 									considered in the same format as the database
  *
- * @return							1 if $sStr1 is greater than $sStr2
+ * @return	int						1 if $sStr1 is greater than $sStr2
  * 									0 if $sStr1 is equal to $sStr2
  * 									-1 if $sStr1 is less than $sStr2
  * 									On error boolean  FALSE  is returned
@@ -748,7 +748,7 @@ class bab_DateStrings
 
     /**
      *
-     * @return arrray
+     * @return array
      */
     public static function getDays()
     {
@@ -2231,7 +2231,7 @@ function bab_getUserDirEntryId($userId)
 
 /**
  * @deprecated this function does not return extra fields
- * @see bab_getDirEntry
+ * @see bab_getDirEntry()
  */
 function bab_getUserDirFields($id = false)
     {
@@ -2470,7 +2470,7 @@ function bab_updateGroup( $id, $name, $description)
 /**
  * Delete a group
  * @param int $id
- * @return unknown_type
+ * @return boolean
  */
 function bab_removeGroup($id)
 {
@@ -2584,8 +2584,8 @@ function bab_getUserInfos($id_user) {
  * Verify if the current user can update the account (superadmin...) of the user specified by id
  * @since			ovidentia-7-2-92-20100329153357
  *
- * @param $userId	id (int) of the user who must be updated
- * @return bool		true if the current user has rights to update the user
+ * @param $userId	int   id (int) of the user who must be updated
+ * @return          bool  true if the current user has rights to update the user
  */
 function bab_canCurrentUserUpdateUser($userId) {
     global $babBody;
@@ -3353,7 +3353,7 @@ function bab_abbr($text, $type, $max_length) {
 
 /**
  * Define and get the locale
- * @see		setLocale
+ * @see		setLocale()
  * @since 	6.1.1
  * @return 	false|string
  */
@@ -3621,7 +3621,7 @@ function bab_buildReference($module, $type, $identifier, $location = '')
  * @param	string		[$filename]		downloaded filename
  * @param	bool		$inline			inline or attachment mode
  * @param	bool		$exit			exit after download
- * @return unknown_type
+ * @return  bool
  */
 function bab_downloadFile(bab_Path $path, $filename = null, $inline = true, $exit = true)
 {
