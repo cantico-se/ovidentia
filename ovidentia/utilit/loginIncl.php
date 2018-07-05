@@ -25,6 +25,7 @@ include_once $GLOBALS['babInstallPath'].'admin/register.php';
 require_once dirname(__FILE__).'/userinfosincl.php';
 require_once dirname(__FILE__).'/password.class.php';
 require_once dirname(__FILE__).'/settings.class.php';
+require_once dirname(__FILE__).'/usermodifyincl.php';
 
 require_once $GLOBALS['babInstallPath'].'utilit/functionalityincl.php';
 
@@ -43,13 +44,18 @@ class Func_PortalAuthentication extends bab_functionality
      * the login form page will be with a 401 HTTP code
      */
     public $restrictedArea = false;
-    
 
-    
+
+
 
     public function getDescription()
     {
         return bab_translate("Authentication functionality");
+    }
+    
+    public function getAuthenticationType()
+    {
+        return BAB_AUTHENTIFICATION_OVIDENTIA;
     }
 
 
@@ -89,8 +95,8 @@ class Func_PortalAuthentication extends bab_functionality
     {
         return null;
     }
-    
-    
+
+
     /**
      * If authentication use ovidentia database
      * This is used by the emailpassword functionality and administrator users list
@@ -99,8 +105,8 @@ class Func_PortalAuthentication extends bab_functionality
     public function getLoginIdField() {
         return 'nickname';
     }
-    
-    
+
+
 
     /**
      * Sets the message that will be displayed to the user when asked for his credentials.
@@ -134,7 +140,7 @@ class Func_PortalAuthentication extends bab_functionality
     {
         $this->errorMessages = array();
     }
-    
+
     /**
      * @return array
      */
@@ -147,7 +153,7 @@ class Func_PortalAuthentication extends bab_functionality
                 'content' => $str
             );
         }
-        
+
         return array('messages' => $messages);
     }
 
@@ -249,38 +255,11 @@ class Func_PortalAuthentication extends bab_functionality
     public function authenticateUser($sLogin, $sPassword)
     {
 
-        $settings = bab_getInstance('bab_Settings');
-        /*@var $settings bab_Settings */
-
-        $babsite = $settings->getSiteSettings();
-
-
-        $aUser = bab_getUserByLoginPassword($sLogin, $sPassword);
-        if (!is_null($aUser) && $aUser['db_authentification'] == 'Y')
-            {
-            $babsite['authentification'] = BAB_AUTHENTIFICATION_OVIDENTIA;
-            }
-
-        $iAuthenticationType = (int) $babsite['authentification'];
         $AuthOvidentia = bab_functionality::get('PortalAuthentication/AuthOvidentia');
 
         /*@var $AuthOvidentia Func_PortalAuthentication_AuthOvidentia */
 
-        $return = null;
-
-        switch ($iAuthenticationType)
-        {
-            case BAB_AUTHENTIFICATION_OVIDENTIA:
-                $return = $AuthOvidentia->authenticateUserByLoginPassword($sLogin, $sPassword);
-                break;
-            case BAB_AUTHENTIFICATION_LDAP:
-                $return = $AuthOvidentia->authenticateUserByLDAP($sLogin, $sPassword);
-                break;
-            case BAB_AUTHENTIFICATION_AD:
-                $return = $AuthOvidentia->authenticateUserByActiveDirectory($sLogin, $sPassword);
-                break;
-        }
-
+        $return = $AuthOvidentia->authenticateUserByLoginPassword($sLogin, $sPassword);
         // copy errors messages to original object
         $this->errorMessages = $AuthOvidentia->errorMessages;
 
@@ -349,6 +328,23 @@ class Func_PortalAuthentication extends bab_functionality
         die(bab_translate("Func_PortalAuthentication::logout must not be called directly"));
     }
 
+    public function getConfigForm()
+    {
+        return '';
+    }
+    
+    public function isConfigured()
+    {
+        if($this->getConfigForm() != ''){
+            return false;
+        }
+        return true;
+    }
+    
+    public function getUserForm($userId, $pos, $grp)
+    {
+        return '';
+    }
 }
 
 
@@ -361,7 +357,7 @@ class Func_PortalAuthentication_AuthOvidentia extends Func_PortalAuthentication
 
     public function getDescription()
     {
-        return bab_translate("Authentication methods: Form, LDAP, Active directory, Cookie");
+        return bab_translate("Authentication methods: Form, Cookie");
     }
 
     /**
@@ -400,19 +396,19 @@ class Func_PortalAuthentication_AuthOvidentia extends Func_PortalAuthentication
 
                 return true;
             }
-            
+
             if (bab_isAjaxRequest() && count($this->errorMessages) > 0) {
                 header($_SERVER['SERVER_PROTOCOL'] . ' 500 Internal Server Error', true, 500);
                 echo bab_json_encode($this->getJsonErrors());
                 die();
             }
-            
+
         }
         else if ($sLogin === '' || $sPassword === '')
         {
             $this->addError(bab_translate("You must complete all fields !!"));
         }
-        
+
         header('location:'.$this->getLoginFormUrl());
         return false;
     }
@@ -428,7 +424,7 @@ class Func_PortalAuthentication_AuthOvidentia extends Func_PortalAuthentication
         if ($this->restrictedArea) {
             $url .= '&restricted=1';
         }
-        
+
         $settings = bab_getInstance('bab_Settings');
         /*@var $settings bab_Settings */
         $site = $settings->getSiteSettings();
@@ -523,154 +519,7 @@ class Func_PortalAuthentication_AuthOvidentia extends Func_PortalAuthentication
 
 
 
-    /**
-     * Returns the user id for the specified nickname and password using the ldap backend.
-     *
-     * @param string	$sLogin		The user nickname
-     * @param string	$sPassword	The user password
-     * @return int		The user id or null if not found
-     */
-    public function authenticateUserByLDAP($sLogin, $sPassword)
-    {
-        global $babBody;
-
-        include_once $GLOBALS['babInstallPath'] . 'utilit/ldap.php';
-
-        $oLdap = new babLDAP($babBody->babsite['ldap_host'], '', false);
-        if (false === $oLdap->connect())
-        {
-            $this->addError(bab_translate("Connection failed. Please contact your administrator"));
-            return null;
-        }
-
-        $aAttributes		= array('dn', 'modifyTimestamp', $babBody->babsite['ldap_attribute'], 'cn');
-        $aUpdateAttributes	= array();
-        $aExtraFieldId		= array();
-
-        bab_getLdapExtraFieldIdAndUpdateAttributes($aAttributes, $aUpdateAttributes, $aExtraFieldId);
-
-        $bLdapOk = true;
-        $aEntries = array();
-
-        //LDAP
-        {
-            if (isset($babBody->babsite['ldap_userdn']) && !empty($babBody->babsite['ldap_userdn']))
-            {
-                $sUserdn = str_replace('%UID', ldap_escapefilter($babBody->babsite['ldap_attribute']), $babBody->babsite['ldap_userdn']);
-                $sUserdn = str_replace('%NICKNAME', ldap_escapefilter($sLogin), $sUserdn);
-
-
-                if (false === $oLdap->bind(bab_ldapEncode($sUserdn), bab_ldapEncode($sPassword)))
-                {
-
-                    $this->addError(bab_translate("Binding failed. Please contact your administrator"));
-                    $bLdapOk = false;
-                }
-                else
-                {
-                    $aEntries = $oLdap->search(bab_ldapEncode($sUserdn), '(objectclass=*)', $aAttributes);
-                    if ($aEntries === false || $aEntries['count'] == 0)
-                    {
-                        $this->addError(bab_translate("User not found in the directory"));
-                        $bLdapOk = false;
-                    }
-                }
-            }
-            else
-            {
-                $sFilter = '';
-                if(isset($babBody->babsite['ldap_filter']) && !empty($babBody->babsite['ldap_filter']))
-                {
-                    $sFilter = str_replace('%UID', ldap_escapefilter($babBody->babsite['ldap_attribute']), $babBody->babsite['ldap_filter']);
-                    $sFilter = str_replace('%NICKNAME', ldap_escapefilter($sLogin), $sFilter);
-                }
-                else
-                {
-                    $sFilter = "(|(".ldap_escapefilter($babBody->babsite['ldap_attribute'])."=".ldap_escapefilter($sLogin)."))";
-                }
-
-                $DnEntries = $oLdap->search(bab_ldapEncode($babBody->babsite['ldap_searchdn']), bab_ldapEncode($sFilter), array('dn'));
-
-                if($DnEntries !== false && $DnEntries['count'] > 0 && isset($DnEntries[0]['dn']))
-                {
-
-                    if(false === $oLdap->bind($DnEntries[0]['dn'], bab_ldapEncode($sPassword)))
-                    {
-                        $this->addError(bab_translate("Binding failed. Please contact your administrator"));
-                        $bLdapOk = false;
-                    } else {
-
-                        // in some cases, the search is not allowed on all fields so a first search get the DN from search filter
-                        // and the second search get the directory entry after the bind operation
-
-                        $aEntries = $oLdap->search($DnEntries[0]['dn'], '(objectclass=*)', $aAttributes);
-                    }
-                }
-                else
-                {
-                    $bLdapOk = false;
-                }
-            }
-        }
-
-        $iIdUser = false;
-        if (!isset($aEntries) || $aEntries === false)
-        {
-            $this->addError(bab_translate("Authentification failed. Please verify your login ID and your password"));
-            $bLdapOk = false;
-        }
-
-        if( $bLdapOk )
-        {
-            $isNew = false;
-            $iIdUser = $this->registerUserIfNotExist($sLogin, $sPassword, $aEntries, $aUpdateAttributes, $isNew);
-            if (false === $iIdUser)
-            {
-                $oLdap->close();
-                return null;
-            }
-            else
-            {
-                if ($aEntries['count'] > 0)
-                {
-                    bab_ldapEntryToOvEntry($oLdap, $iIdUser, $sPassword, $aEntries, $aUpdateAttributes, $aExtraFieldId);
-                    bab_ldapEntryGroups($iIdUser, $aEntries[0], $babBody->babsite['ldap_groups'], (bool) $babBody->babsite['ldap_groups_create']);
-                }
-
-                if( $babBody->babsite['ldap_notifyadministrators'] == 'Y' && $isNew )
-                {
-                    $sGivenname	= isset($aUpdateAttributes['givenname'])?$aEntries[0][$aUpdateAttributes['givenname']][0]:$aEntries[0]['givenname'][0];
-                    $sSn		= isset($aUpdateAttributes['sn'])?$aEntries[0][$aUpdateAttributes['sn']][0]:$aEntries[0]['sn'][0];
-                    $sMail		= isset($aUpdateAttributes['email'])?$aEntries[0][$aUpdateAttributes['email']][0]:$aEntries[0]['mail'][0];
-                    notifyAdminRegistration(bab_composeUserName(bab_ldapDecode($sGivenname), bab_ldapDecode($sSn)), bab_ldapDecode($sMail), "");
-                }
-            }
-        }
-
-        $oLdap->close();
-
-        if (false === $bLdapOk)
-        {
-            if($babBody->babsite['ldap_allowadmincnx'] == 'Y')
-            {
-                $bLdapOk = bab_haveAdministratorRight($sLogin, $sPassword, $iIdUser);
-                if (false === $bLdapOk)
-                {
-                    $this->addError(bab_translate("Authentification failed. Please verify your login ID and your password"));
-                }
-            }
-        }
-
-        if (false !== $iIdUser && $bLdapOk)
-        {
-            $this->clearErrors();
-            return $iIdUser;
-        }
-
-        return null;
-    }
-
-
+    
     /**
      * LDAP method to create the account
      * or update directory entry
@@ -763,13 +612,6 @@ class Func_PortalAuthentication_AuthOvidentia extends Func_PortalAuthentication
         }
         return $iIdUser;
     }
-
-
-
-
-
-
-
 
     /**
      * Returns the user id for the specified nickname and password using the active directory backend.
@@ -895,6 +737,22 @@ function bab_getAuthType()
     return bab_rp('sAuthType', '');
 }
 
+/**
+ * Return the authentication type saved in the table bab_sites for the specified site id
+ * @param string $siteName The site name (default from GLOBALS)
+ */
+function bab_getSiteAuthType($siteName = null)
+{
+    global $babDB;
+    $siteName = isset($siteName) ? bab_getSiteName() : $siteName;
+    
+    $res = $babDB->db_query("SELECT authentification FROM ".BAB_SITES_TBL." WHERE name=".$babDB->quote($siteName));
+    while($arr = $babDB->db_fetch_array($res))
+    {
+        return isset($arr['authentification']) ? $arr['authentification'] : '';
+    }
+}
+
 
 
 
@@ -918,13 +776,12 @@ function bab_doRequireCredential($sLoginMessage, $sAuthType)
     {
         return true;
     }
-
     if ($sAuthType === '') {
         // Check if an AuthType has been specified by the url.
         $sAuthType = bab_getAuthType();
         if ($sAuthType === '') {
             // If no AuthType has been specified we use the default authencation functionality.
-            $sAuthPath = 'PortalAuthentication';
+            $sAuthPath = bab_functionalities::sanitize(bab_getSiteAuthType(bab_getSiteName()));
         } else {
             $sAuthPath = bab_functionalities::sanitize('PortalAuthentication/Auth' . $sAuthType);
         }
@@ -960,19 +817,19 @@ function bab_doRequireCredential($sLoginMessage, $sAuthType)
         }
         $oAuthObject->setLoginMessage($sLoginMessage);
         $oAuthObject->restrictedArea = true;
-        
+
         if(true === $oAuthObject->login())
         {
             loginRedirect($GLOBALS['babUrlScript'] . '?babHttpContext=restore');
             exit;
         }
 
-        
+
         if ($oAuthObject->errorMessages) {
             loginRedirect($oAuthObject->getLoginFormUrl());
         }
-        
-        
+
+
         // failed authentication without error message
         die(bab_translate("Failed authentication"));
     }
@@ -1009,7 +866,7 @@ function bab_getUserByEmailPassword($email, $sPassword)
     $sQuery = '
     SELECT id
     FROM ' . BAB_USERS_TBL . '
-    WHERE email = ' . $babDB->quote($email) . ' LIMIT 0,10'; // 10 match max are tested
+    WHERE email = ' . $babDB->quote(trim($email)) . ' LIMIT 0,10'; // 10 match max are tested
 
     $oResult = $babDB->db_query($sQuery);
     if(false !== $oResult)
@@ -1093,7 +950,7 @@ function bab_getUserByNickname($sNickname)
     $sQuery = '
         SELECT *
         FROM ' . BAB_USERS_TBL . '
-        WHERE nickname = ' . $babDB->quote($sNickname);
+        WHERE nickname = ' . $babDB->quote(trim($sNickname));
 
     $oResult = $babDB->db_query($sQuery);
     if(false != $oResult)
@@ -1201,7 +1058,7 @@ class displayLogin_Template
         $this->nickname = bab_translate("Login ID");
         $this->password = bab_translate("Password");
         $this->login = bab_translate("Login");
-        
+
         $this->isAjaxRequest = bab_isAjaxRequest();
 
         // verify and buid url
@@ -1241,6 +1098,9 @@ class displayLogin_Template
         $this->onemonth = bab_translate("one month");
         $this->oneyear = bab_translate("one year");
         $this->infinite = bab_translate("unlimited");
+
+        $this->emailPwdUrl = bab_toHtml('?tg=login&cmd=emailpwd');
+        $this->emailPwdTxt = bab_translate('Lost Password');
 
         $this->c_nickname = isset($_COOKIE['c_nickname']) ? bab_toHtml($_COOKIE['c_nickname']) : '';
     }
@@ -1291,15 +1151,15 @@ function displayAuthenticationForm($title, $errorMessages)
 	{
 		$referer = $_REQUEST['referer'];
 	}
-	
+
 	if (bab_rp('restricted')) {
 	    header($_SERVER['SERVER_PROTOCOL'].' 401 Unauthorized', true, 401);
 	}
-	
-	
+
+
 	$temp = new displayLogin_Template($referer);
 	$html =	bab_printTemplate($temp, 'login.html', 'login');
-	
+
 	if (bab_isAjaxRequest()) {
 		echo $html;
 		die();
@@ -1521,8 +1381,10 @@ function bab_isEmailPassword()
 function bab_ldapEntryToOvEntry($oLdap, $iIdUser, $sPassword, $aEntries, $aUpdateAttributes, $aExtraFieldId)
 {
     global $babDB;
+    require_once dirname(__FILE__).'/password.class.php';
+    $password = bab_Password::hash($sPassword);
 
-    $sQuery = 'update ' . BAB_USERS_TBL . ' set password=\'' . md5(mb_strtolower($sPassword)) . '\'';
+    $sQuery = 'update ' . BAB_USERS_TBL . ' set password=\'' . $password->value . '\'';
     reset($aUpdateAttributes);
     while(list($key, $val) = each($aUpdateAttributes))
     {
@@ -1569,7 +1431,11 @@ function bab_ldapEntryToOvEntry($oLdap, $iIdUser, $sPassword, $aEntries, $aUpdat
             switch($key)
             {
                 case 'jpegphoto':
-                    $sQuery .= ', photo_data=\'' . $babDB->db_escape_string($ldapvalue) . '\'';
+                case 'thumbnailphoto':
+                    if(!empty($ldapvalue)){
+                        $resize = bab_userModify::resizeBinary($ldapvalue);
+                        $sQuery .= ', photo_data=\'' . $babDB->db_escape_string($resize) . '\'';
+                    }
                     break;
 
                 case 'mail':
@@ -1898,7 +1764,7 @@ function bab_setUserSessionInfo($iIdUser)
     {
 
         $GLOBALS['BAB_SESS_LOGGED'] = null;
-        
+
 
         $session->BAB_SESS_NICKNAME		= $aUser['nickname'];
         $session->BAB_SESS_USER			= bab_composeUserName($aUser['firstname'], $aUser['lastname']);

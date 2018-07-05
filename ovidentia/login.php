@@ -43,7 +43,7 @@ function emailPassword()
         function temp()
             {
 
-            
+
 
             $this->intro = bab_translate("Before we can reset your password, you need to enter the information below to help identify your account:");
             $this->nickname = bab_translate("Your login ID");
@@ -102,9 +102,9 @@ function displayDisclaimer()
 function confirmUser($hash, $nickname)
     {
     global $babDB;
-    
+
     $hashVar = bab_getHashVar();
-    
+
     $new_hash=md5($nickname.$hashVar);
     if ($new_hash && ($new_hash==$hash))
         {
@@ -119,7 +119,7 @@ function confirmUser($hash, $nickname)
             $settings = bab_getInstance('bab_Settings');
             /*@var $settings bab_Settings */
             $site = $settings->getSiteSettings();
-                
+
             $arr = $babDB->db_fetch_array($result);
 
             $sql="update ".BAB_USERS_TBL." set is_confirmed='1', datelog=now(), lastlog=now()  WHERE id='".$babDB->db_escape_string($arr['id'])."'";
@@ -154,14 +154,18 @@ function confirmUser($hash, $nickname)
 
 function login_signon()
 {
+    global $babBody;
+
     require_once $GLOBALS['babInstallPath'].'utilit/loginIncl.php';
     $sAuthType = (string) bab_rp('sAuthType', '');
     if (false === bab_requireCredential(bab_translate("Login"), $sAuthType)) {
         $babBody->addError(sprintf(bab_translate("The authentication method '%s' is invalid"), $sAuthType));
     }
 
-    // if already logged, return to homepage
-    header('location:'.$GLOBALS['babUrlScript']);
+    if (!bab_isAjaxRequest()) {
+        // if already logged, return to homepage
+        header('location:'.$GLOBALS['babUrlScript']);
+    }
     exit;
 }
 
@@ -177,16 +181,16 @@ function displayConfirmForm($hash, $name)
 {
     global $babDB;
     $babBody = bab_getBody();
-    
+
     if (bab_isUserLogged()) {
         $url = new bab_url();
         $url->location();
     }
-    
+
     $sql = "select is_confirmed from ".BAB_USERS_TBL." where confirm_hash='".$babDB->db_escape_string($hash)."'";
     $res = $babDB->db_query($sql);
     $user = $babDB->db_fetch_assoc($res);
-    
+
     if ($user['is_confirmed']) {
         $url = new bab_url();
         $url->tg = 'login';
@@ -194,11 +198,11 @@ function displayConfirmForm($hash, $name)
         $url->msg = bab_translate('Your account is allready confirmed');
         $url->location();
     }
-    
-    
+
+
     if (!empty($_POST)) {
         bab_requireSaveMethod();
-        
+
         try {
             if (confirmUser($hash, $name )) {
                 $url = new bab_url();
@@ -211,14 +215,14 @@ function displayConfirmForm($hash, $name)
             $babBody->addError($e->getMessage());
         }
     }
-    
+
     $template = new stdClass();
     $template->hash = bab_toHtml($hash);
     $template->name = bab_toHtml($name);
     $template->confirmMessage = bab_toHtml(sprintf(bab_translate('Please confirm your account %s'), $name));
     $template->confirmButton = bab_toHtml(bab_translate('Confirm'));
-    
-    
+
+
     $babBody->babecho(bab_printTemplate($template, "login.html", "confirmForm"));
 }
 
@@ -324,7 +328,7 @@ switch($cmd)
         break;
 
     case "emailpwd":
-        $babBody->title = bab_translate("Email a new password");
+        $babBody->setTitle(bab_translate("Email a new password"));
         $babBody->addItemMenu("signon", bab_translate("Login"), $GLOBALS['babUrlScript']."?tg=login&cmd=signon");
         if( $babBody->babsite['registration'] == 'Y')
             $babBody->addItemMenu("register", bab_translate("Register"), $GLOBALS['babUrlScript']."?tg=login&cmd=register");

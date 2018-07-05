@@ -29,6 +29,7 @@
 		"ovidentia/sitemap_editor" : ">=0.8.12",
 		"ovidentia/orgchart" : ">=0.13.2",
 		"ovidentia/approbation_schema" : ">=0.2.2",
-		"ovidentia/storeclient" : ">=0.4.10"
+		"ovidentia/storeclient" : ">=0.4.10",
+		"ovidentia/authldap" : ">=1.0"
 	}
 }

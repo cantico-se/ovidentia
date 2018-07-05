@@ -1215,8 +1215,6 @@ function bab_isUserGroupManager($grpid="")
 */
 function bab_getUserName($iIdUser, $bComposeUserName = true)
 {
-
-
     include_once dirname(__FILE__).'/userinfosincl.php';
 
     if (true === $bComposeUserName) {
@@ -1240,34 +1238,50 @@ function bab_getUserName($iIdUser, $bComposeUserName = true)
 }
 
 
+
 /**
- * Get Email address
- * @param	int	$id
+ * Returns the email address for the specified user id.
+ *
+ * @param	int $userId   The user id
  * @return string
  */
-function bab_getUserEmail($id)
-    {
-
+function bab_getUserEmail($userId)
+{
     include_once dirname(__FILE__).'/userinfosincl.php';
-    if ($row = bab_userInfos::getRow($id)) {
+
+    if (!$userId) {
+        return '';
+    }
+
+    if ($row = bab_userInfos::getRow($userId)) {
         return $row['email'];
-        }
+    }
 
     return '';
-    }
+}
+
+
 
 /**
+ * Returns the nickname for the specified user id.
+ *
+ * @param int $userId   The user id
  * @return string
  */
-function bab_getUserNickname($id)
-    {
+function bab_getUserNickname($userId)
+{
     include_once dirname(__FILE__).'/userinfosincl.php';
-    if ($row = bab_userInfos::getRow($id)) {
+
+    if (!$userId) {
+        return '';
+    }
+
+    if ($row = bab_userInfos::getRow($userId)) {
         return $row['nickname'];
-        }
+    }
 
     return '';
-    }
+}
 
 
 
@@ -1665,16 +1679,16 @@ function bab_isAccessValidByUser($table, $idobject, $iduser)
 
 
 /**
- * Checks that the specified user can access the object $idobject according to the acl table $table.
- * If $iduser is empty, the check is performed for the current user.
+ * The original bab_isAccessValid() function without bab_eventCheckAccessValid event override.
  *
+ * @since 8.6.97
  * @param string	$table		The acl table.
  * @param int		$idobject	The id of the object for which the access is checked.
  * @param mixed		$userId		The user id or '' for the current user.
  *
  * @return bool
  */
-function bab_isAccessValid($table, $idobject, $iduser='')
+function bab_isOriginalAccessValid($table, $idobject, $iduser='')
 {
     require_once $GLOBALS['babInstallPath'].'utilit/session.class.php';
     $session = bab_getInstance('bab_Session');
@@ -1699,17 +1713,41 @@ function bab_isAccessValid($table, $idobject, $iduser='')
 
 
 
+/**
+ * Checks that the specified user can access the object $idobject according to the acl table $table.
+ * If $iduser is empty, the check is performed for the current user.
+ *
+ * @param string	$table		The acl table.
+ * @param int		$idobject	The id of the object for which the access is checked.
+ * @param mixed		$userId		The user id or '' for the current user.
+ *
+ * @return bool
+ */
+function bab_isAccessValid($table, $idobject, $iduser='')
+{
+    require_once $GLOBALS['babInstallPath'] . 'utilit/eventaccess.php';
+    $event = new bab_eventCheckAccessValid($table, $idobject, $iduser);
+    bab_fireEvent($event);
+
+    $access = $event->getAccess();
+    if (isset($access)) {
+        return $access;
+    }
+
+    return bab_isOriginalAccessValid($table, $idobject, $iduser);
+}
+
+
 
 /**
- * Get the list of id_object accessible by the specified user.
- * If $userId is empty, the check is performed for anonymous users.
- * The id_object is returned in key and in the value of the result array.
+ * The original bab_getAccessibleObjects() function without bab_eventGetAccessibleObjects event override.
  *
+ * @since 8.6.97
  * @param string	$table		The acl table.
  * @param mixed		$userId		The user id or '' for anonymous users.
  * @return array
  */
-function bab_getAccessibleObjects($table, $userId)
+function bab_getOriginalAccessibleObjects($table, $userId)
 {
     require_once dirname(__FILE__).'/groupsincl.php';
     global $babDB;
@@ -1756,11 +1794,36 @@ function bab_getAccessibleObjects($table, $userId)
 
 
 /**
- * Get the list of id_object accessible by the current user
- * The id_object is stored in key and in the value
+ * Get the list of id_object accessible by the specified user.
+ * If $userId is empty, the check is performed for anonymous users.
+ * The id_object is returned in key and in the value of the result array.
+ *
+ * @param string	$table		The acl table.
+ * @param mixed		$userId		The user id or '' for anonymous users.
  * @return array
  */
-function bab_getUserIdObjects($table)
+function bab_getAccessibleObjects($table, $userId)
+{
+    $objects = bab_getOriginalAccessibleObjects($table, $userId);
+
+    require_once $GLOBALS['babInstallPath'] . 'utilit/eventaccess.php';
+    $event = new bab_eventGetAccessibleObjects($table, $userId, $objects);
+    bab_fireEvent($event);
+
+    $objects = $event->getObjects();
+
+    return $objects;
+}
+
+
+/**
+ * The original bab_getUserIdObjects() function without bab_eventGetAccessibleObjects event override.
+ *
+ * @since 8.6.97
+ * @param string $table
+ * @return array
+ */
+function bab_getOriginalUserIdObjects($table)
 {
     require_once dirname(__FILE__).'/defines.php';
     require_once dirname(__FILE__).'/groupsincl.php';
@@ -1804,6 +1867,28 @@ function bab_getUserIdObjects($table)
     }
 
     return $groupAccess['acltables'][$table];
+}
+
+
+/**
+ * Get the list of id_object accessible by the current user
+ * The id_object is stored in key and in the value
+ *
+ * @param string $table
+ * @return array
+ */
+function bab_getUserIdObjects($table)
+{
+    $objects = bab_getOriginalUserIdObjects($table);
+
+    $userId = bab_getUserId();
+    require_once $GLOBALS['babInstallPath'] . 'utilit/eventaccess.php';
+    $event = new bab_eventGetAccessibleObjects($table, $userId, $objects);
+    bab_fireEvent($event);
+
+    $objects = $event->getObjects();
+
+    return $objects;
 }
 
 
@@ -3341,14 +3426,16 @@ function bab_locale() {
 
 
 
+/**
+ *
+ * @return string
+ */
 function bab_getHashVar()
 {
-    if (defined('BAB_HASH_VAR'))
-    {
-        return BAB_HASH_VAR;
-    } else {
-        return 'aqhjlongsmp';
-    }
+    require_once dirname(__FILE__).'/registry.php';
+    $hashVar = defined('BAB_HASH_VAR') ? BAB_HASH_VAR : 'aqhjlongsmp';
+    $hashVar = bab_Registry::get('/core/hashVar', $hashVar);
+    return $hashVar;
 }
 
 
@@ -3676,6 +3763,15 @@ function bab_getBody()
     return bab_getInstance('babBody');
 }
 
+/**
+ * @since 8.6.96
+ *
+ * @return string
+ */
+function bab_getSiteName()
+{
+    return $GLOBALS['babSiteName'];
+}
 
 
 /*
@@ -3756,13 +3852,40 @@ function bab_setLanguage($code)
 
 
 /**
+ *
+ * @return babDatabase
+ */
+function bab_getDB()
+{
+    static $db = null;
+    if (!isset($db)) {
+        $db = new babDatabase();
+    }
+    return $db;
+}
+
+
+/**
+ * Check if the csrf protection is not disabled by registry or configuration constant
+ * @return boolean
+ */
+function bab_isCsrfProtectionEnabled()
+{
+    require_once dirname(__FILE__).'/registry.php';
+    $enabled = !defined('BAB_CSRF_PROTECT') || BAB_CSRF_PROTECT !== false;
+    $enabled = (bool)bab_Registry::get('/core/csrfProtect', $enabled);
+    return $enabled;
+}
+
+
+/**
  * function to call before saving
  * @since 8.4.91
  * @return bool
  */
 function bab_requireSaveMethod()
 {
-    if (defined('BAB_CSRF_PROTECT') && false === BAB_CSRF_PROTECT) {
+    if (!bab_isCsrfProtectionEnabled()) {
         return true;
     }
 

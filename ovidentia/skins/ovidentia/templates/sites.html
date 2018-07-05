@@ -597,7 +597,7 @@ function validateNum(field)
         <tr>
             <td>{ imgsize_title }</td>
             <td>
-                <input type="text" name="imgsize" size="30" maxlength="255" value="{ arr[imgsize] }" />
+                <input type="text" name="imgsize" size="20" maxlength="10" value="{ arr[imgsize] }" /> { t_kb }
             </td>
         </tr>
 
@@ -606,6 +606,11 @@ function validateNum(field)
             <td>
                 <input type="text" name="uploadpath" size="30" maxlength="255" value="{ arr[uploadpath] }" />
             </td>
+        </tr>
+        
+        <tr>
+            <td>{ disk_free_space_title }</td>
+            <td><b>{ disk_free_space }</b></td>
         </tr>
 
 
@@ -1270,122 +1275,26 @@ function hideShowCnx()
         <td>
         <select name="authtype" onchange="javascript:hideShowCnx();">
         <!--#in getnextauth -->
-        <option value="{ authval }" { authselected }>{ authname }</option>
+	        <option value="{ authval }" { authselected }>{ authname }</option>
         <!--#endin getnextauth -->
         </select>
         &nbsp;&nbsp;
         </td>
     </tr>
+    
+    <!-- ICI -->
+    
+   <!--#if authval "== 0"  -->
+       <!--#if authval "< 3"  -->
+		    <tr id="ldapconfig">
+		        <td>
+		                { authldapformhtml }
+		        </td>
+		    </tr>
+        <!--#endif -->
+   <!--#endif -->
 
-    <tr  id="ldapconfig">
-        <td align="right" colspan="2">
-        <table width="100%" border="0" cellspacing="0" cellpadding="5" align="center">
-    <tr>
-        <td colspan="2"><input type="checkbox" name="ldpapchkcnx" value="Y" { ldpachkcnxchecked } />&nbsp;{ ldpachkcnxtxt }</td>
-    </tr>
-    <tr>
-        <td colspan="2"><input type="checkbox" name="ldpapchknotif" value="Y" { ldpachknotifchecked } />&nbsp;{ ldpachknotifyadmintxt } <a href="?tg=users&idx=notif" class="BabSiteAdminListLink">{ ldpachkviewnotifyadmintxt }</a></td>
-    </tr>
-    <tr>
-        <td colspan="2"><input type="checkbox" name="ldap_usercreate_test" value="1" { ldap_usercreate_test_checked } />&nbsp;{ ldap_usercreate_test_txt }</td>
-    </tr>
-    <tr>
-        <td align="right">&nbsp;</td>
-        <td><span style="color:red">*</span>&nbsp;{ fieldrequiredtxt }</td>
-    </tr>
-    <tr>
-        <td align="right" nowrap>{ hosttxt }&nbsp;<span style="color:red">*</span></td>
-        <td>
-        <input type="text" name="host" size="50" value="{ ldaphost }" />
-        </td>
-    </tr>
-    <tr id="ldpapdomainnameid">
-        <td align="right" nowrap>{ domainnametxt }&nbsp;<span style="color:red">*</span></td>
-        <td>
-        <input type="text" name="hostname" size="50" value="{ ldaphostname }" />
-        </td>
-    </tr>
-    <tr>
-        <td align="right">{ searchbasetxt }</td>
-        <td>
-        <input type="text" name="searchdn" size="50" value="{ ldapsearchdnsite }" />
-        </td>
-    </tr>
-    <tr>
-        <td align="right">{ filtertxt }</td>
-        <td>
-        <input type="text" name="ldapfilter" size="50" value="{ ldapfiltersite }" />
-        </td>
-    </tr>
-
-    <tr>
-        <td align="right" nowrap valign="middle">{ decodetypetxt }</td>
-        <td valign="middle">
-        <select name="decodetype">
-        <!--#in getnextdecodetype -->
-        <option value="{ stid }" { selected }>{ stval }</option>
-        <!--#endin getnextdecodetype -->
-        </select>
-        </td>
-    </tr>
-
-    <tr id="ldpapauthpassid">
-        <td align="right">{ authpasstypetxt }</td>
-        <td>
-<select name="crypttype">
-<option value=""></option>
-<!--#in getnextpasstype -->
-<option value="{ passtypeval }" { passtypeselected }>{ passtypename }</option>
-<!--#endin getnextpasstype -->
-</select>
-        </td>
-    </tr>
-    <tr id="ldapadmindnid">
-        <td align="right">{ admindntxt }</td>
-        <td>
-        <input type="text" name="admindn" size="50" value="{ ldapadmindn }" />
-        </td>
-    </tr>
-    <tr id="ldapadminpwd1id">
-        <td align="right">{ adminpwd1txt }</td>
-        <td>
-        <input type="password" name="adminpwd1" size="50" value="{ ldapadminpwd1 }" />
-        </td>
-    </tr>
-    <tr id="ldapadminpwd2id">
-        <td align="right">{ adminpwd2txt }</td>
-        <td>
-        <input type="password" name="adminpwd2" size="50" value="{ ldapadminpwd2 }" />
-        </td>
-    </tr>
-    <tr id="ldpapuserdnid">
-        <td align="right" nowrap>{ userdntxt }&nbsp;</td>
-        <td>
-        <input type="text" name="userdn" size="50" value="{ ldapuserdn }" />
-        </td>
-    </tr>
-    <!--#in getnextfield -->
-    <tr id="tdfieldid{ iindex }">
-        <td align="right">{ ofieldname }&nbsp;<!--#if required "== Y" --><span style="color:red">*</span><!--#endif required -->&nbsp;&nbsp;</td>
-        <td>
-        <select name="{ ofieldv }">
-        <option value=""></option>
-        <!--#in getnextval -->
-        <option value="{ ffieldid }" { fselected }>{ ffieldname }</option>
-        <!--#endin getnextval -->
-        </select>&nbsp;&nbsp;<input type="text" name="i_{ ofieldv }" size="20" value="{ ofieldval }" />
-        </td>
-    </tr>
-    <!--#endin getnextfield -->
-
-    <tr>
-        <td align="right" valign="top">{ groups }&nbsp;</td>
-        <td>
-            <input type="text" name="ldap_groups" size="30" value="{ ldap_groups }" /> <img src="{ babSkinPath }images/Puces/help.gif" onclick="alert(this.title);" title="{ groups_help }" /><br/>
-            <label><input type="checkbox" name="ldap_groups_create" value="1" <!--#if ldap_groups_create --> checked="checked" <!--#endif ldap_groups_create --> style="vertical-align:middle" />&nbsp;{ groups_create }</label><br />
-            <label><input type="checkbox" name="ldap_groups_remove" value="1" <!--#if ldap_groups_remove --> checked="checked" <!--#endif ldap_groups_remove --> style="vertical-align:middle" />&nbsp;{ groups_remove }</label>
-        </td>
-    </tr>
+    <!-- FIN -->
 
         </table>
         </td>
@@ -1401,6 +1310,15 @@ function hideShowCnx()
 </tr>
 </table>
 </form>
+<!--#if authval "> 2"  -->
+    <table id="ldapconfig" class="BabLoginCadreBackground"  width="90%" border="0" cellspacing="0" cellpadding="2" align="center">
+		<tr class="BabLoginMenuBackground">
+            <td>
+	                { authldapformhtml }
+            </td>
+        </tr>
+    </table>
+   <!--#endif -->
 <script type="text/javascript">
 <!--
 hideShowCnx();

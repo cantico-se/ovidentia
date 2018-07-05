@@ -1072,15 +1072,15 @@ onclick="selectAll(document.ordform.elements[4]); document.ordform.submit()">
 
 
     <td align="center">
-        <a href="Javascript:moveOptions(document.dispdbf.listfields1,document.dispdbf.elements[3])"><img src="{ babSkinPath }images/Puces/PuceGoRight.gif" border="0" alt=""></a>
+        <a href="Javascript:moveOptions(document.dispdbf.listfields1,document.getElementById('listpage0'))"><img src="{ babSkinPath }images/Puces/PuceGoRight.gif" border="0" alt=""></a>
         <br />
         <br />
-        <a href="Javascript:moveOptions(document.dispdbf.elements[3],document.dispdbf.listfields1)" ><img src="{ babSkinPath }images/Puces/PuceGoLeft.gif" border="0" alt=""></a>
+        <a href="Javascript:moveOptions(document.getElementById('listpage0'),document.dispdbf.listfields1)" ><img src="{ babSkinPath }images/Puces/PuceGoLeft.gif" border="0" alt=""></a>
     </td>
 
 
     <td align="center">
-        <select name="listfd[]"  size="12" multiple="multiple">
+        <select name="listfd[]" id="listpage0" size="12" multiple="multiple">
           <option value="0">{ listftxt }</option>
           <!--#in getnextdf -->
           <option value="{ arr[id] }">{ arr[description] }</option>
@@ -1088,10 +1088,10 @@ onclick="selectAll(document.ordform.elements[4]); document.ordform.submit()">
         </select>
     </td>
     <td align="center" width="10%">
-        <a href="Javascript:move(true, document.dispdbf.elements[3])"><img src="{ babSkinPath }images/Puces/PuceGoTop.gif" border=0 alt="{ moveup }"></a>
+        <a href="Javascript:move(true, document.getElementById('listpage0'))"><img src="{ babSkinPath }images/Puces/PuceGoTop.gif" border=0 alt="{ moveup }"></a>
         <br>
         <br>
-        <a href="Javascript:move(false, document.dispdbf.elements[3])"><img src="{ babSkinPath }images/Puces/PuceGoDown.gif" border="0" alt="{ movedown }"></a>
+        <a href="Javascript:move(false, document.getElementById('listpage0'))"><img src="{ babSkinPath }images/Puces/PuceGoDown.gif" border="0" alt="{ movedown }"></a>
     </td>
     </tr>
 
@@ -1118,15 +1118,15 @@ onclick="selectAll(document.ordform.elements[4]); document.ordform.submit()">
 
 
     <td align="center">
-        <a href="Javascript:moveOptions(document.dispdbf.listfields2,document.dispdbf.elements[5])"><img src="{ babSkinPath }images/Puces/PuceGoRight.gif" border="0" alt=""></a>
+        <a href="Javascript:moveOptions(document.dispdbf.listfields2,document.getElementById('listpage1'))"><img src="{ babSkinPath }images/Puces/PuceGoRight.gif" border="0" alt=""></a>
         <br />
         <br />
-        <a href="Javascript:moveOptions(document.dispdbf.elements[5],document.dispdbf.listfields2)" ><img src="{ babSkinPath }images/Puces/PuceGoLeft.gif" border="0" alt=""></a>
+        <a href="Javascript:moveOptions(document.getElementById('listpage1'),document.dispdbf.listfields2)" ><img src="{ babSkinPath }images/Puces/PuceGoLeft.gif" border="0" alt=""></a>
     </td>
 
 
     <td align="center">
-        <select name="sortfd[]"  size="12" multiple="multiple">
+        <select name="sortfd[]"  id="listpage1" size="12" multiple="multiple">
           <option value="0">{ listftxt }</option>
           <!--#in getnextsortf -->
           <option value="{ arr[id] }">{ arr[description] }</option>
@@ -1134,10 +1134,10 @@ onclick="selectAll(document.ordform.elements[4]); document.ordform.submit()">
         </select>
     </td>
     <td align="center" width="10%">
-        <a href="Javascript:move(true, document.dispdbf.elements[5])"><img src="{ babSkinPath }images/Puces/PuceGoTop.gif" border=0 alt="{ moveup }"></a>
+        <a href="Javascript:move(true, document.getElementById('listpage1'))"><img src="{ babSkinPath }images/Puces/PuceGoTop.gif" border=0 alt="{ moveup }"></a>
         <br>
         <br>
-        <a href="Javascript:move(false, document.dispdbf.elements[5])"><img src="{ babSkinPath }images/Puces/PuceGoDown.gif" border="0" alt="{ movedown }"></a>
+        <a href="Javascript:move(false, document.getElementById('listpage1'))"><img src="{ babSkinPath }images/Puces/PuceGoDown.gif" border="0" alt="{ movedown }"></a>
     </td>
     </tr>
 
@@ -1153,7 +1153,7 @@ onclick="selectAll(document.ordform.elements[4]); document.ordform.submit()">
 
     <tr valign="middle">
         <td align="center" colspan="4">
-            <input type="submit" name="Submit" value="{ update }" onclick="selectAll(document.dispdbf.elements[3]);selectAll(document.dispdbf.elements[5]); document.dispdbf.submit()" />
+            <input type="submit" name="Submit" value="{ update }" onclick="selectAll(document.getElementById('listpage0'));selectAll(document.getElementById('listpage1')); document.dispdbf.submit()" />
         <br>
         <br>
         </td>

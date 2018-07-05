@@ -767,6 +767,8 @@ class Func_Ovml_Container_ArticlesHomePages extends Func_Ovml_Container
             $this->ctx->curctx->push('ArticleDatePublication', bab_mktime($arr['date_publication']));
             $this->ctx->curctx->push('ArticleDateCreation', bab_mktime($arr['date']));
             $this->ctx->curctx->push('ArticleTopicId', $arr['id_topic']);
+            $topic = bab_getTopicArray($arr['id_topic']);
+            $this->ctx->curctx->push('ArticleCategoryId', $topic['id_cat']);
             $this->ctx->curctx->push('ArticleLanguage', $arr['lang']);
             $this->ctx->curctx->push('ArticleFiles', $arr['nfiles']);
             list($topictitle) = $babDB->db_fetch_array($babDB->db_query("select category from ".BAB_TOPICS_TBL." where id='".$babDB->db_escape_string($arr['id_topic'])."'"));
@@ -1345,54 +1347,191 @@ class Func_Ovml_Container_Articles extends Func_Ovml_Container
     var $imageheightmax;
     var $imagewidthmax;
 
+
+
+
+    /**
+     * @param int $groupId
+     * @return int[]
+     */
+    protected function getHomePageArticleIds($groupId)
+    {
+        global $babDB;
+
+        require_once dirname(__FILE__).'/settings.class.php';
+        $settings = bab_getInstance('bab_Settings');
+        /*@var $settings bab_Settings */
+        $site = $settings->getSiteSettings();
+
+        $articleIds = array();
+
+        $topview = bab_getUserIdObjects(BAB_TOPICSVIEW_GROUPS_TBL);
+
+        $res = $babDB->db_query("
+            SELECT at.id, at.id_topic, at.restriction
+            FROM " . BAB_ARTICLES_TBL . " at
+            LEFT JOIN " . BAB_HOMEPAGES_TBL . " ht ON ht.id_article = at.id
+            WHERE
+                ht.id_group = " . $babDB->quote($groupId) . "
+                AND ht.id_site = " . $babDB->quote($site['id']) . " AND ht.ordering != '0'
+                AND (at.date_publication = '0000-00-00 00:00:00' OR at.date_publication <= NOW())
+                AND (date_archiving = '0000-00-00 00:00:00' OR date_archiving >= NOW())
+            GROUP BY at.id"
+        );
+
+        while ($arr = $babDB->db_fetch_array($res)) {
+            if ($arr['restriction'] == '' || bab_articleAccessByRestriction($arr['restriction'])) {
+                if (isset($topview[$arr['id_topic']])) {
+                    $articleIds[] = $arr['id'];
+                }
+            }
+        }
+
+        return $articleIds;
+    }
+
+
+    /**
+     * @param int $categoryId
+     * @param int[] &$topicIds
+     * @return int[]
+     */
+    protected function getTopicIds($categoryId, &$topicIds)
+    {
+        global $babDB;
+        require_once dirname(__FILE__).'/artapi.php';
+        $topcats = bab_getArticleCategories();
+
+        foreach ($topcats as $id => $arr) {
+            if ($categoryId == $arr['parent']) {
+                $this->getTopicIds($id, $topicIds);
+            }
+        }
+
+        $res = $babDB->db_query("
+            SELECT id
+            FROM " . BAB_TOPICS_TBL . "
+            WHERE
+                id_cat = " . $babDB->quote($categoryId) . "
+                AND id IN(" . $babDB->quote(bab_getUserIdObjects(BAB_TOPICSVIEW_GROUPS_TBL)) . ")"
+        );
+        while( $row = $babDB->db_fetch_array($res)) {
+            $topicIds[] = $row['id'];
+        }
+    }
+
+
+    /**
+     * {@inheritDoc}
+     * @see Func_Ovml_Container::setOvmlContext()
+     */
     public function setOvmlContext(babOvTemplate $ctx)
     {
         global $babDB;
         parent::setOvmlContext($ctx);
+        $articleid = $ctx->curctx->getAttribute('articleid');
         $topicid = $ctx->curctx->getAttribute('topicid');
+        $topcatid = $ctx->curctx->getAttribute('categoryid');
+        $this->excludetopicid = $ctx->curctx->getAttribute('excludetopicid');
+        $excludetopcatid = $ctx->curctx->getAttribute('excludecategoryid');
         $delegationid = (int) $ctx->curctx->getAttribute('delegationid');
+        $homepage = $ctx->curctx->getAttribute('homepage');
 
-        $this->imageheightmax	= (int) $ctx->curctx->getAttribute('imageheightmax');
-        $this->imagewidthmax	= (int) $ctx->curctx->getAttribute('imagewidthmax');
+        $rows = $ctx->curctx->getAttribute('rows');
+        $offset = $ctx->curctx->getAttribute('offset');
 
-        $sDelegation = ' ';
+        $limit = $ctx->getAttribute('limit');
+        if (is_string($limit)) {
+            $limits = explode(',', $limit);
+            if (count($limits) === 1) {
+                $rows = $limit;
+            } else {
+                $offset = $limits[0];
+                $rows = $limits[1];
+            }
+        }
+
+
+        $this->imageheightmax = (int) $ctx->curctx->getAttribute('imageheightmax');
+        $this->imagewidthmax = (int) $ctx->curctx->getAttribute('imagewidthmax');
+
+        $delegationSql = ' ';
         $sLeftJoin = ' ';
-        if(0 != $delegationid)
-        {
+        if (0 != $delegationid) {
             $sLeftJoin =
                 'LEFT JOIN ' .
                     BAB_TOPICS_TBL . ' t ON t.id = at.id_topic ' .
                 'LEFT JOIN ' .
                     BAB_TOPICS_CATEGORIES_TBL . ' tpc ON tpc.id = t.id_cat ';
 
-            $sDelegation = ' AND tpc.id_dgowner = \'' . $babDB->db_escape_string($delegationid) . '\' ';
+            $delegationSql = ' AND tpc.id_dgowner = ' . $babDB->quote($delegationid) . ' ';
         }
 
-        if( $topicid === false || $topicid === '' )
-            $topicid = bab_getUserIdObjects(BAB_TOPICSVIEW_GROUPS_TBL);
-        else
-            $topicid = array_intersect(array_keys(bab_getUserIdObjects(BAB_TOPICSVIEW_GROUPS_TBL)), explode(',', $topicid));
-
-        if( count($topicid) > 0)
-        {
-            $this->excludetopicid = $ctx->curctx->getAttribute('excludetopicid');
-            if ( $this->excludetopicid !== false && $this->excludetopicid !== '' )
-                {
-                $topicid = array_diff($topicid, explode(',', $this->excludetopicid));
-                }
-
-            $archive = $ctx->curctx->getAttribute('archive');
-            if( $archive === false || $archive === '')
-                $archive = "no";
-
-            switch(mb_strtoupper($archive))
-            {
-                case 'NO': $archive = " AND archive='N' "; break;
-                case 'YES': $archive = " AND archive='Y' "; break;
-                default: $archive = ''; break;
-
+        $homePageSql = '';
+        if ($homepage) {
+            switch (mb_strtolower($homepage)) {
+                case 'public':
+                    $groupId = BAB_UNREGISTERED_GROUP;
+                    break;
+                case 'private':
+                default:
+                    if ($GLOBALS['BAB_SESS_LOGGED']) {
+                        $groupId = BAB_REGISTERED_GROUP;
+                    } else {
+                        $groupId = BAB_UNREGISTERED_GROUP;
+                    }
+                    break;
             }
 
+            $articleIds = $this->getHomePageArticleIds($groupId);
+            $homePageSql = " AND at.id IN(" . $babDB->quote($articleIds) . ") ";
+        }
+
+        $articleSql = '';
+        if ($articleid) {
+            $articleid = explode(',', $articleid);
+            $articleSql = " AND at.id IN(" . $babDB->quote($articleid) . ") ";
+        }
+
+        $topicIds = array();
+        if ($topcatid === false || $topcatid === '') {
+            if ($topicid === false || $topicid === '') {
+                $topicIds = bab_getUserIdObjects(BAB_TOPICSVIEW_GROUPS_TBL);
+            } else {
+                $topicIds = array_intersect(array_keys(bab_getUserIdObjects(BAB_TOPICSVIEW_GROUPS_TBL)), explode(',', $topicid));
+            }
+        } else {
+            $this->getTopicIds($topcatid, $topicIds);
+        }
+
+        if (count($topicIds) > 0) {
+            if ($this->excludetopicid !== false && $this->excludetopicid !== '') {
+                $topicIds = array_diff($topicIds, explode(',', $this->excludetopicid));
+            }
+
+            if ($excludetopcatid !== false && $excludetopcatid !== '') {
+                $excludeTopicIds = array();
+                $this->getTopicIds($excludetopcatid, $excludeTopicIds);
+                $topicIds = array_diff($topicIds, $excludeTopicIds);
+            }
+
+
+            $archive = $ctx->curctx->getAttribute('archive');
+            if ($archive === false || $archive === '') {
+                $archive = "no";
+            }
+
+            switch (mb_strtoupper($archive)) {
+                case 'NO':
+                    $archiveSql = " AND archive='N' ";
+                    break;
+                case 'YES':
+                    $archiveSql = " AND archive='Y' ";
+                    break;
+                default:
+                    $archiveSql = '';
+                    break;
+            }
 
             $minRating = $ctx->curctx->getAttribute('minrating');
             if (!is_numeric($minRating)) {
@@ -1406,23 +1545,23 @@ class Func_Ovml_Container_Articles extends Func_Ovml_Container
                     FROM ' . BAB_ARTICLES_TBL . ' AS at
                     LEFT JOIN ' . BAB_COMMENTS_TBL . ' c ON c.id_article=at.id AND c.article_rating > 0
                     ' . $sLeftJoin . '
-
-                    WHERE at.id_topic IN (' . $babDB->quote($topicid) . ')
+                    WHERE at.id_topic IN (' . $babDB->quote($topicIds) . ')
                     AND (at.date_publication=' . $babDB->quote('0000-00-00 00:00:00') . ' OR at.date_publication <= NOW())'
-                    . $archive
-                    . $sDelegation
+                    . $archiveSql
+                    . $delegationSql
+                    . $articleSql
+                    . $homePageSql
                     . $ratingGroupBy
                     ;
 
             $order = $ctx->curctx->getAttribute('order');
-            if( $order === false || $order === '' ) {
+            if ($order === false || $order === '') {
                 $order = 'asc';
             }
 
              /* topicorder=yes : order defined by managers */
             $forder = $ctx->curctx->getAttribute('topicorder');
-            switch(mb_strtoupper($forder))
-            {
+            switch(mb_strtoupper($forder)) {
                 case 'YES':
                     $forder = true;
                     break;
@@ -1433,12 +1572,10 @@ class Func_Ovml_Container_Articles extends Func_Ovml_Container
             }
 
             $orderby = $ctx->curctx->getAttribute('orderby');
-            if( $orderby === false || $orderby === '' )
+            if ($orderby === false || $orderby === '') {
                 $orderby = "at.date";
-            else
-                {
-                switch(mb_strtolower($orderby))
-                    {
+            } else {
+                switch (mb_strtolower($orderby)) {
                     case 'title': $orderby = 'at.title'; break;
                     case 'rating': $orderby = 'average_rating'; break;
                     case 'creation': $orderby = 'at.date'; break;
@@ -1446,11 +1583,10 @@ class Func_Ovml_Container_Articles extends Func_Ovml_Container
                     case 'modification':
                     default:
                         $orderby = 'at.date_modification'; break;
-                    }
                 }
+            }
 
-            switch(mb_strtoupper($order))
-            {
+            switch (mb_strtoupper($order)) {
                 case 'ASC':
                     if ($forder) { /* topicorder=yes : order defined by managers */
                         $order = 'at.ordering asc, at.date_modification desc';
@@ -1473,30 +1609,28 @@ class Func_Ovml_Container_Articles extends Func_Ovml_Container
 
             $req .=  'ORDER BY '.$order;
 
-            $rows = $ctx->curctx->getAttribute('rows');
-            $offset = $ctx->curctx->getAttribute('offset');
-            if( $rows === false || $rows === '')
+
+            if ($rows === false || $rows === '')
                 $rows = "-1";
 
-            if( $offset === false || $offset === '')
+            if ($offset === false || $offset === '') {
                 $offset = "0";
+            }
 
-            if ($rows != -1)
+            if ($rows != -1) {
                 $req .= ' limit '.$babDB->db_escape_string($offset).', '.$babDB->db_escape_string($rows);
+            }
 
             $res = $babDB->db_query($req);
 
-            while( $arr = $babDB->db_fetch_array($res) )
-            {
-                if( $arr['restriction'] == '' || bab_articleAccessByRestriction($arr['restriction']))
-                    {
+            while ($arr = $babDB->db_fetch_array($res)) {
+                if ($arr['restriction'] == '' || bab_articleAccessByRestriction($arr['restriction'])) {
                     $this->IdEntries[] = $arr['id'];
-                    }
+                }
             }
 
             $this->count = count($this->IdEntries);
-            if( $this->count > 0 )
-            {
+            if ($this->count > 0) {
                 $req = 'SELECT at.*, COUNT(aft.id) AS nfiles, AVG(c.article_rating) AS average_rating, COUNT(c.article_rating) AS nb_ratings
                             FROM ' . BAB_ARTICLES_TBL . ' AS at
                             LEFT JOIN ' . BAB_ART_FILES_TBL . ' AS aft ON at.id=aft.id_article
@@ -1507,46 +1641,51 @@ class Func_Ovml_Container_Articles extends Func_Ovml_Container
 
                 $this->res = $babDB->db_query($req);
             }
-        }
-        else
+        } else {
             $this->count = 0;
+        }
         $this->ctx->curctx->push('CCount', $this->count);
     }
+
 
     public function getnext()
     {
         global $babDB;
-        if( $this->idx < $this->count)
-        {
+        if ($this->idx < $this->count) {
             $arr = $babDB->db_fetch_array($this->res);
 
             setArticleAssociatedImageInfo($this->ctx, $this->imageheightmax, $this->imagewidthmax, $arr['id']);
+
+
 
             $this->ctx->curctx->push('CIndex', $this->idx);
             $this->ctx->curctx->push('ArticleTitle', $arr['title']);
             $this->pushEditor('ArticleHead', $arr['head'], $arr['head_format'], 'bab_article_head');
             $this->pushEditor('ArticleBody', $arr['body'], $arr['body_format'], 'bab_article_body');
-            if( empty($arr['body']))
+            if (empty($arr['body'])) {
                 $this->ctx->curctx->push('ArticleReadMore', 0);
-            else
+            } else {
                 $this->ctx->curctx->push('ArticleReadMore', 1);
+            }
             $this->ctx->curctx->push('ArticleId', $arr['id']);
             $this->ctx->curctx->push('ArticleUrl', bab_siteMap::url('babArticle_'.$arr['id'], $GLOBALS['babUrl'].bab_getSelf()."?tg=articles&idx=More&topics=".$arr['id_topic']."&article=".$arr['id']));
             $this->ctx->curctx->push('ArticlePopupUrl', $GLOBALS['babUrl'].bab_getSelf()."?tg=articles&idx=viewa&topics=".$arr['id_topic']."&article=".$arr['id']);
             $this->ctx->curctx->push('ArticleAuthor', $arr['id_author']);
-            if ($arr['date'] == $arr['date_modification'])
+            if ($arr['date'] == $arr['date_modification']) {
                 $this->ctx->curctx->push('ArticleModifiedBy', $arr['id_author']);
-            else
+            } else {
                 $this->ctx->curctx->push('ArticleModifiedBy', $arr['id_modifiedby']);
+            }
             $this->ctx->curctx->push('ArticleDate', bab_mktime($arr['date'])); /* for compatibility */
             $this->ctx->curctx->push('ArticleDateCreation', bab_mktime($arr['date']));
             $this->ctx->curctx->push('ArticleDateModification', bab_mktime($arr['date_modification']));
             $this->ctx->curctx->push('ArticleDatePublication', bab_mktime($arr['date_publication']));
             $this->ctx->curctx->push('ArticleTopicId', $arr['id_topic']);
+            $topic = bab_getTopicArray($arr['id_topic']);
+            $this->ctx->curctx->push('ArticleCategoryId', $topic['id_cat']);
             $this->ctx->curctx->push('ArticleLanguage', $arr['lang']);
             $this->ctx->curctx->push('ArticleFiles', $arr['nfiles']);
-            if( bab_isAccessValid(BAB_TOPICSMOD_GROUPS_TBL, $arr['id_topic']) )
-            {
+            if (bab_isAccessValid(BAB_TOPICSMOD_GROUPS_TBL, $arr['id_topic'])) {
                 $this->ctx->curctx->push('ArticleEditUrl', $GLOBALS['babUrl'].bab_getSelf()."?tg=articles&idx=Modify&topics=".$arr['id_topic'].'&article='.$arr['id']);
                 $this->ctx->curctx->push('ArticleEditName', bab_translate("Modify"));
             } else {
@@ -1559,13 +1698,12 @@ class Func_Ovml_Container_Articles extends Func_Ovml_Container
             $this->index = $this->idx;
             return true;
         }
-        else
-        {
-            $this->idx=0;
-            return false;
-        }
+        $this->idx = 0;
+        return false;
     }
 }
+
+
 
 class Func_Ovml_Container_Article extends Func_Ovml_Container
 {
@@ -1639,6 +1777,8 @@ class Func_Ovml_Container_Article extends Func_Ovml_Container
             $this->ctx->curctx->push('ArticleDateModification', bab_mktime($arr['date_modification']));
             $this->ctx->curctx->push('ArticleDatePublication', bab_mktime($arr['date_publication']));
             $this->ctx->curctx->push('ArticleTopicId', $arr['id_topic']);
+            $topic = bab_getTopicArray($arr['id_topic']);
+            $this->ctx->curctx->push('ArticleCategoryId', $topic['id_cat']);
             $this->ctx->curctx->push('ArticleLanguage', $arr['lang']);
             $this->ctx->curctx->push('ArticleFiles', $arr['nfiles']);
             if( bab_isAccessValid(BAB_TOPICSMOD_GROUPS_TBL, $arr['id_topic']) )
@@ -3339,6 +3479,8 @@ class Func_Ovml_Container_RecentArticles extends Func_Ovml_Container
             $this->ctx->curctx->push('ArticleUrl', bab_siteMap::url('babArticle_'.$arr['id'], $GLOBALS['babUrl'].bab_getSelf()."?tg=articles&idx=More&topics=".$arr['id_topic']."&article=".$arr['id']));
             $this->ctx->curctx->push('ArticlePopupUrl', $GLOBALS['babUrl'].bab_getSelf()."?tg=articles&idx=viewa&topics=".$arr['id_topic']."&article=".$arr['id']);
             $this->ctx->curctx->push('ArticleTopicId', $arr['id_topic']);
+            $topic = bab_getTopicArray($arr['id_topic']);
+            $this->ctx->curctx->push('ArticleCategoryId', $topic['id_cat']);
             $this->ctx->curctx->push('ArticleLanguage', $arr['lang']);
             $this->ctx->curctx->push('ArticleFiles', $arr['nfiles']);
             $this->ctx->curctx->push('ArticleDelegationId', $arr['id_dgowner']);
@@ -4070,6 +4212,8 @@ class Func_Ovml_Container_WaitingArticles extends Func_Ovml_Container
             $this->ctx->curctx->push('ArticleAuthor', $arr['id_author']);
             $this->ctx->curctx->push('ArticleDate', bab_mktime($arr['date_submission']));
             $this->ctx->curctx->push('ArticleTopicId', $arr['id_topic']);
+            $topic = bab_getTopicArray($arr['id_topic']);
+            $this->ctx->curctx->push('ArticleCategoryId', $topic['id_cat']);
             $this->ctx->curctx->push('ArticleLanguage', $arr['lang']);
             $this->ctx->curctx->push('ArticleFiles', $arr['nfiles']);
             $this->ctx->curctx->push('ArticleUrl', $GLOBALS['babUrl'].bab_getSelf()."?tg=approb");
@@ -5284,23 +5428,62 @@ class Func_Ovml_Container_CalendarEvents extends Func_Ovml_Container
 
 
     /**
-      * Get available calendar without filter
+     *
+     * @return bab_EventCalendar[]
      */
-    public function getCalendars($calendarid) {
+    protected function getAllNonPersonalCalendars()
+    {
+        global $babDB;
 
-        if (empty($calendarid)) {
-            trigger_error('filter=NO must be used with calendarid');
-            return;
+        $backend = bab_functionality::get('CalendarBackend/Ovi');
+        /*@var $backend Func_CalendarBackend_Ovi */
+
+        $query = "SELECT cpt.*, ct.id as idcal, ct.type as type
+            FROM " . BAB_CAL_PUBLIC_TBL . " cpt
+            LEFT JOIN " . BAB_CALENDAR_TBL . " ct on ct.owner=cpt.id
+            WHERE
+                ct.type IN('" . BAB_CAL_PUB_TYPE . "', '" . BAB_CAL_RES_TYPE . "')
+                AND ct.actif='Y'
+        ";
+        $res = $babDB->db_query($query);
+
+        $return = array();
+        while ($arr = $babDB->db_fetch_assoc($res)) {
+            switch ($arr['type']) {
+                case BAB_CAL_RES_TYPE:
+                    $calendar = $backend->ResourceCalendar();
+                    break;
+                case BAB_CAL_PUB_TYPE:
+                    $calendar = $backend->PublicCalendar();
+                    break;
+            }
+
+            $calendar->init(0, $arr);
+            $return[] = $calendar;
         }
 
+        return $return;
+    }
+
+
+    /**
+     * Get available calendar without filter
+     * @return bab_EventCalendar[]
+     */
+    public function getCalendars($calendarid)
+    {
         require_once dirname(__FILE__).'/cal.ovicalendar.class.php';
 
+        if (empty($calendarid)) {
+            return $this->getAllNonPersonalCalendars();
+        }
         $public = bab_cal_getPublicCalendars(0, $calendarid);
         $resource = bab_cal_getResourceCalendars(0, $calendarid);
         $personal = bab_cal_getPersonalCalendars(0, $calendarid);
 
         return array_merge($public, $resource, $personal);
     }
+
 
     /**
       * Get available calendar with filter
@@ -8213,6 +8396,58 @@ class Func_Ovml_Function_Ajax extends Func_Ovml_Function {
 
 
 /**
+ * Returns a value from the registry.
+ *
+ * @see bab_Registry::get()
+ *
+ * @param path      The registry path
+ * @param default   The default value if path not found
+ *
+ * @since 8.6.97
+ */
+class Func_Ovml_Function_GetRegistryValue extends Func_Ovml_Function
+{
+    public function toString()
+    {
+        $path = '';
+        $saveas = '';
+        $default = null;
+
+        if (count($this->args)) {
+            // Récupération des arguments
+            foreach ($this->args as $name => $value) {
+                switch (mb_strtolower(trim($name))) {
+                    case 'path':
+                        $path = $value;
+                        break;
+                    case 'default':
+                        $default = $value;
+                        break;
+                    case 'saveas':
+                        $saveas = $value;
+                        break;
+                }
+            }
+
+            if (!$path) {
+                return '';
+            }
+
+            $value = bab_Registry::get($path, $default);
+
+            if ($saveas) {
+                $this->gctx->push($saveas, $value);
+                return '';
+            }
+
+            return $value;
+        }
+    }
+}
+
+
+
+/**
  * Arithmetic operators
  */
 class bab_ArithmeticOperator extends Func_Ovml_Function {
@@ -9433,5 +9668,42 @@ class Func_Ovml_Function_GetCurrentAdmGroup extends Func_Ovml_Function {
     public function toString()
     {
         return bab_getCurrentAdmGroup();
+    }
+}
+
+
+
+/**
+ *  Ensures that the user is logged in.
+ */
+class Func_Ovml_Function_RequireCredentials extends Func_Ovml_Function
+{
+
+    /**
+     * @return string
+     */
+    public function toString()
+    {
+        $args = $this->args;
+        $authType = '';
+        $message = '';
+
+        if (count($args) === 0) {
+            return '';
+        }
+        foreach ($args as $p => $value) {
+            switch (mb_strtolower(trim($p))) {
+                case 'authType':
+                    $authType = $value;
+                    unset($args[$p]);
+                    break;
+                case 'message':
+                    $message = $value;
+                    unset($args[$p]);
+                    break;
+            }
+        }
+
+        return bab_requireCredential($message, $authType);
     }
 }

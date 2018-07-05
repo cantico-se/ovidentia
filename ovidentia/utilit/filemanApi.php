@@ -163,7 +163,17 @@ class bab_FileInfo extends SplFileInfo
 		$oCriteria = $oCriteria->_and($oIdDgOwnerField->in($iIdDelegation)); /* Criteria to the delegation of the file */
 
 
-		return $oFolderFileSet->get($oCriteria);
+		$files = $oFolderFileSet->select($oCriteria);
+
+		$file = $files->next();
+		while ($file) {
+		    if ($this->getFilename() === $file->getName()) {
+		        return $file;
+		    }
+		    $file = $files->next();
+		}
+
+		return null;
 	}
 
 
@@ -298,9 +308,9 @@ class bab_FileInfo extends SplFileInfo
 		if ($this->isDir()) {
 			return false;
 		}
-		
+
 		$fmFile = $this->getFmFile();
-		
+
 		return $fmFile->getMajorVer() . '.' . $fmFile->getMinorVer();
 	}
 }
@@ -684,7 +694,7 @@ class bab_Directory
 			);
 		}
 
-		
+
 
 		static $aRights = null;
 		if(!isset($aRights))
@@ -697,7 +707,7 @@ class bab_Directory
 				bab_Directory::RIGHT_NOTIFY => BAB_FMNOTIFY_GROUPS_TBL,
 			);
 		}
-		
+
 		foreach($aRights as $iBit => $sTable)
 		{
 		    if($iBits & $iBit)

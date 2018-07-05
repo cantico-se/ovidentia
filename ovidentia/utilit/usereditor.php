@@ -895,8 +895,12 @@ class Func_UserEditor extends bab_functionality {
     {
         $W = bab_Widgets();
 
-        $frame = $W->Frame()->addClass('buttons');
+        $frame = $W->VboxItems()->addClass('buttons')->setVerticalSpacing(1,'em');
         $frame->addItem($W->SubmitButton()->setLabel(bab_translate('Save'))->validate());
+        
+        if(!bab_isUserLogged()){
+            $frame->addItem($W->Link(bab_translate('Lost Password'), '?tg=login&cmd=emailpwd'));
+        }
 
         return $frame;
     }

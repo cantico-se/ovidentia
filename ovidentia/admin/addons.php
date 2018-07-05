@@ -243,8 +243,8 @@ function getAddonName($id)
 
 function callSingleAddonFunction($id,$name,$func)
 {
-
-	$addonpath = $GLOBALS['babInstallPath'].'addons/'.$name;
+    $addon = bab_getAddonInfosInstance($name);
+	$addonpath = $addon->getPhpPath();
 	if( is_file($addonpath."/init.php" ))
 		{
 		bab_setAddonGlobals($id);

@@ -35,7 +35,7 @@ include_once $GLOBALS['babInstallPath'].'utilit/sitemap.php';
 include_once $GLOBALS['babInstallPath'].'utilit/eventincl.php';
 include_once $GLOBALS['babInstallPath'].'utilit/groupsincl.php';
 include_once $GLOBALS['babInstallPath'].'utilit/body.class.php';
-
+include_once $GLOBALS['babInstallPath'].'utilit/registry.php';
 
 function bab_encrypt($txt,$key)
     {
@@ -118,9 +118,6 @@ function bab_formatAuthor($format, $id)
     return $txt;
 }
 
-function bab_stripDomainName($txt) {
-    return eregi_replace("((href|src)=['\"]?)".$GLOBALS['babUrl'], '\\1', $txt);
-    }
 
 function bab_isEmailValid($email)
     {

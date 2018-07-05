@@ -5,12 +5,12 @@
 // it under the terms of the GNU General Public License as published by
 // the Free Software Foundation; either version 2, or (at your option)
 // any later version.
-// 
+//
 // This program is distributed in the hope that it will be useful, but
 // WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 // See the GNU General Public License for more details.
-// 
+//
 // You should have received a copy of the GNU General Public License
 // along with this program; if not, write to the Free Software
 // Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307,
@@ -28,39 +28,38 @@ abstract class BAB_MySqlResultIterator implements SeekableIterator, Countable
 	protected $_oObject				= null;
 	protected $_iKey				= 0;
 	protected $_oDataBaseAdapter	= null;
-	
+
 	const EOF = -1;
-	
+
 	function BAB_MySqlResultIterator($oDataBaseAdapter = null)
 	{
 		if(!isset($oDataBaseAdapter))
 		{
-			global $babDB;
-			$oDataBaseAdapter = $babDB;
+		    $oDataBaseAdapter = bab_getDB();
 		}
 		$this->setDataBaseAdapter($oDataBaseAdapter);
 	}
-	
-	
+
+
 	//Helper function
 
 	function setDataBaseAdapter($oDataBaseAdapter)
 	{
 		$this->_oDataBaseAdapter = $oDataBaseAdapter;
 	}
-	
+
 	function getDataBaseAdapter()
 	{
 		return $this->_oDataBaseAdapter;
 	}
 
-	
+
 	//Iterator interface function implementation
 
 	/**
-     * Return the current element 
+     * Return the current element
      *
-     * @return 
+     * @return
      */
 	public function current()
 	{
@@ -68,45 +67,45 @@ abstract class BAB_MySqlResultIterator implements SeekableIterator, Countable
 		{
 			return $this->next();
 		}
-		
+
 		return $this->_oObject;
 	}
-	
+
 	/**
-     * Return the key of the current element  
+     * Return the key of the current element
      *
      * @return integer The key of the current element
      */
-	function key()   
+	function key()
 	{
 		return $this->_iKey;
 	}
 
 	/**
-     * Return the next element 
+     * Return the next element
      *
      * @return mixed
      */
 	function next()
 	{
 		$this->executeQuery();
-	
+
 		if(false !== ($aDatas = $this->getDataBaseAdapter()->db_fetch_assoc($this->_oResult)))
 		{
 			$this->_iKey++;
 			$this->_oObject = $this->getObject($aDatas);
 		}
-		else 
+		else
 		{
 			$this->_oObject = null;
 			$this->_iKey = self::EOF;
 		}
-		
+
 		return $this->_oObject;
 	}
 
 	/**
-     * Rewind the Iterator to the first element. 
+     * Rewind the Iterator to the first element.
      *
      */
 	function rewind()
@@ -120,7 +119,7 @@ abstract class BAB_MySqlResultIterator implements SeekableIterator, Countable
 	}
 
 	/**
-     * Check if there is a current element after calls to rewind() or next(). 
+     * Check if there is a current element after calls to rewind() or next().
      *
      * @return bool True if there is a current element after calls to rewind() or next()
     */
@@ -141,8 +140,8 @@ abstract class BAB_MySqlResultIterator implements SeekableIterator, Countable
 		}
 		return false;
 	}
-	
-	
+
+
 	//SeekableIterator interface function implementation
 
 	/**
@@ -158,10 +157,10 @@ abstract class BAB_MySqlResultIterator implements SeekableIterator, Countable
 			$this->reset($iRowNumber);
 		}
 	}
-	
-	
+
+
 	//Countable interface function implementation
-	
+
 	function count()
 	{
 		$this->executeQuery();
@@ -179,7 +178,7 @@ abstract class BAB_MySqlResultIterator implements SeekableIterator, Countable
 		$this->_oObject	= null;
 		$this->_iKey	= $iRowNumber;
 	}
-	
+
 	function setMySqlResult($oResult)
 	{
 		$this->_oResult = $oResult;
@@ -188,15 +187,15 @@ abstract class BAB_MySqlResultIterator implements SeekableIterator, Countable
 	//Hack
 	function executeQuery()
 	{
-	
+
 	}
-	
+
 	abstract public function getObject($aDatas);
 }
 
 
 /**
- * 
+ *
  *
  */
 abstract class bab_MySqlIterator extends BAB_MySqlResultIterator
@@ -216,7 +215,7 @@ abstract class bab_MySqlIterator extends BAB_MySqlResultIterator
 		$this->sQuery = $sQuery;
 		return $this;
 	}
-	
+
 	public function orderAsc($sField)
 	{
 		$this->aOrder[$sField] = 'ASC';
@@ -243,13 +242,13 @@ abstract class bab_MySqlIterator extends BAB_MySqlResultIterator
 		}
 		return $sOrder;
 	}
-	
+
 	public function setCriteria(BAB_Criteria $oCriteria = null)
 	{
 		$this->oCriteria = $oCriteria;
 		return $this;
 	}
-	
+
 	public function getCriteria()
 	{
 		if(is_null($this->oCriteria))
@@ -258,7 +257,7 @@ abstract class bab_MySqlIterator extends BAB_MySqlResultIterator
 		}
 		return $this->oCriteria;
 	}
-	
+
 	function executeQuery()
 	{
 		if(is_null($this->_oResult))
@@ -274,7 +273,7 @@ abstract class bab_MySqlIterator extends BAB_MySqlResultIterator
 			$this->setMySqlResult($this->getDataBaseAdapter()->db_query($sQuery));
 		}
 	}
-	
+
 	public function clear()
 	{
 		$this->_oObject		= null;
@@ -295,19 +294,19 @@ abstract class bab_MySqlIterator extends BAB_MySqlResultIterator
 class bab_QueryIterator extends BAB_MySqlResultIterator
 {
 	protected $sQuery = null;
-	
+
 	public function setQuery($sQuery)
 	{
 		$this->sQuery = $sQuery;
 		return $this;
 	}
-	
-	
+
+
 	public function getObject($aDatas)
 	{
 		return $aDatas;
 	}
-	
+
 	function executeQuery()
 	{
 		if(is_null($this->_oResult))

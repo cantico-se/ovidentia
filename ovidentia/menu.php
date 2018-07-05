@@ -52,7 +52,7 @@ function bab_menuSubNode($node)
     }
 
     bab_Sort::asort($tempLink, 'name');
-	
+
 
     foreach($tempLink as $link){
     	$content = '';
@@ -100,18 +100,18 @@ function bab_menuDisplay()
     /* @var $W Func_Widgets */
 
     $page = $W->babPage('bab-menu');
-	
+
 	$page->addJavascriptFile($GLOBALS['babScriptPath'].'menu.js');
 
 	$completeLayout = $W->VboxLayout('bab-menu-page');
     $completeLayout->setVerticalSpacing(1,'em');
     $completeLayout->addClass('BabLoginMenuBackground');
     $completeLayout->addClass('widget-bordered');
-    $completeLayout->addClass('icon-16x16 icon-left-16');
+    $completeLayout->addClass(Func_Icons::ICON_LEFT_16);
 
     $container = $W->FLowLayout()->setVerticalAlign('top');
 	$container->setHorizontalSpacing(2.5,'em');
-	
+
 	/*$completeLayout->addItem(
 		$W->Form()->addItem($W->LineEdit('bab-menu-search')->setPlaceHolder(bab_translate('Search'))->setName('search'))
 	);*/

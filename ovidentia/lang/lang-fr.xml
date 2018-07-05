@@ -2599,7 +2599,7 @@
 <string id="Authentication functionality">Fonctionnalité d'authentification</string>
 <string id="PortalAuthentication::login ID must not be called directly">PortalAuthentication::login ne doit pas être appelé directement</string>
 <string id="PortalAuthentication::logout must not be called directly">PortalAuthentication::logout ne doit pas être appelé directement</string>
-<string id="Authentication methods: Form, LDAP, Active directory, Cookie">Méthode d'authentification: Formulaire, LDAP, Active directory, Cookie</string>
+<string id="Authentication methods: Form, Cookie">Méthode d'authentification: Formulaire, Cookie</string>
 <string id="Planned">Planifié(e)</string>
 <string id="Cost">Coût</string>
 <string id="Time">Temps</string>
@@ -3549,4 +3549,6 @@ L'administrateur</string>
 <string id="The detailed history is used to build all the statistics, the history older than the limit set here is deleted by an automated task. Only the session tracking statistics need the detailed history.">L'historique détaillé est utilisé pour générer toutes les statistiques, l'historique plus vieux que la limite configurée ici est supprimé par une tâche planifiée. Seul les statisitiques des sessions nécéssite l'historique détaillé.</string>
 
 <string id="Last access: %s">Dernier accès : %s</string>
+<string id="Free disk space">Espace disque disponible</string>
+<string id="%s MB">%s Mo</string>
 </fr>

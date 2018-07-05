@@ -52,27 +52,27 @@ class bab_contentEditor {
 	var $editors;
 
 	/**
-	 * Create editor object 
+	 * Create editor object
 	 * @param	string	$uid	unique string for editor instance, it describe de editor position
 	 * @public
 	 */
 	function bab_contentEditor($uid) {
 		$this->uid = $uid;
-		
+
 		// default fieldname to uid
 		$this->fieldname = $uid;
-		
+
 		// default parameters
 		$this->parameters = array(
 			'height' => 500,
 			'email' => false
 		);
-		
+
 		$this->format = 'html'; // default format
-		
+
 		$this->editors = bab_editor_push($this);
 	}
-	
+
 	/**
 	 * Set html field name for the editor
 	 * @param	string	$fieldname
@@ -81,7 +81,7 @@ class bab_contentEditor {
 	function setRequestFieldName($fieldname) {
 		$this->fieldname = $fieldname;
 	}
-	
+
 	/**
 	 * set text to display in the editor or to convert in displayable html
 	 * the input text is in format described by setFormat()
@@ -91,7 +91,7 @@ class bab_contentEditor {
 	function setContent($content) {
 		$this->content = $content;
 	}
-	
+
 	/**
 	 * set the format of the content when the content is loaded from database with setContent
 	 * @param	string	$format
@@ -100,8 +100,8 @@ class bab_contentEditor {
 	function setFormat($format) {
 		$this->format = $format;
 	}
-	
-	
+
+
 	/**
 	 * get text to store in database after the form is submited
 	 * from the fired event
@@ -111,7 +111,7 @@ class bab_contentEditor {
 	 * @public
 	 */
 	function getContent() {
-	
+
 		if (!isset($this->content)) {
 			$event = new bab_eventEditorRequestToContent();
 			$this->setEventProperties($event);
@@ -119,17 +119,17 @@ class bab_contentEditor {
 			$this->content = $event->getOutputContent();
 			$this->format = $event->getOutputContentFormat();
 		}
-	
+
 		return $this->content;
 	}
-	
+
 	/**
 	 * get the format of the text to store in database after the form is submited
 	 * @return string
 	 * @public
 	 */
 	function getFormat() {
-	
+
 		if (!isset($this->format)) {
 			$event = new bab_eventEditorRequestToContent();
 			$this->setEventProperties($event);
@@ -137,10 +137,10 @@ class bab_contentEditor {
 			$this->content = $event->getOutputContent();
 			$this->format = $event->getOutputContentFormat();
 		}
-	
+
 		return $this->format;
 	}
-	
+
 	/**
 	 * define additionnal optional parameters for editor behavior
 	 * @public
@@ -151,8 +151,8 @@ class bab_contentEditor {
 		$this->parameters = $arr + $this->parameters;
 		return $this->parameters;
 	}
-	
-	
+
+
 	/**
 	 * get the html
 	 * Fire event bab_eventEditorContentToEditor to get the html form an addon
@@ -161,30 +161,30 @@ class bab_contentEditor {
 	 * @return string	html for editor
 	 */
 	function getEditor() {
-		
+
 		$event = new bab_eventEditorContentToEditor();
 		$this->setEventProperties($event);
 		bab_fireEvent($event);
-		
+
 		return $event->getOutputEditor();
 	}
-	
+
 	/**
 	 * get the displayable html of content
 	 * @return string
 	 */
 	function getHtml() {
-	
-		
-	
+
+
+
 		$event = new bab_eventEditorContentToHtml();
 		$this->setEventProperties($event);
 		bab_fireEvent($event);
-		
+
 		return $event->getOutputHtml();
 	}
-	
-	
+
+
 	/**
 	 * @private
 	 */
@@ -197,9 +197,9 @@ class bab_contentEditor {
 	}
 }
 
-/** 
+/**
  * All events for editor management
- */ 
+ */
 class bab_eventEditor extends bab_event {
 
 	/**
@@ -209,20 +209,20 @@ class bab_eventEditor extends bab_event {
 	var $fieldname;
 	var $content;
 	var $format;
-	var $parameters; 
+	var $parameters;
 }
 
 
 /**
  * Event to get the editor
- */ 
+ */
 class bab_eventEditorContentToEditor extends bab_eventEditor {
-	
-	/** 
+
+	/**
 	 * @private
 	 */
 	var $output_editor;
-	
+
 	/**
 	 * set the html to display the editor with the content to modify
 	 * action done by the registred function
@@ -233,7 +233,7 @@ class bab_eventEditorContentToEditor extends bab_eventEditor {
 			$this->output_editor = $html;
 		}
 	}
-	
+
 	/**
 	 * Used only by bab_contentEditor
 	 * @public
@@ -244,7 +244,7 @@ class bab_eventEditorContentToEditor extends bab_eventEditor {
 		if (!isset($this->output_editor)) {
 
 			$content = isset($this->content) ? $this->content : '';
-		
+
 			bab_debug('No editor registered by bab_eventEditorContentToEditor::setOutputEditor(), fallback to simple textarea');
 			return '<textarea id="'.bab_toHtml($this->uid).'" name="'.bab_toHtml($this->fieldname).'" cols="50" rows="10">'.bab_toHtml($content).'</textarea>';
 		}
@@ -255,14 +255,14 @@ class bab_eventEditorContentToEditor extends bab_eventEditor {
 
 /**
  * Event to get the content submited by the editor
- */ 
+ */
 class bab_eventEditorRequestToContent extends bab_eventEditor {
-	/** 
+	/**
 	 * @private
 	 */
 	var $output_content;
 	var $output_content_format;
-	
+
 	/**
 	 * set the content to record in database
 	 * action done by the registred function
@@ -272,7 +272,7 @@ class bab_eventEditorRequestToContent extends bab_eventEditor {
 		$this->output_content = $content;
 		$this->output_content_format = $format;
 	}
-	
+
 	/**
 	 * Used only by bab_contentEditor
 	 * @public
@@ -282,12 +282,12 @@ class bab_eventEditorRequestToContent extends bab_eventEditor {
 	function getOutputContent() {
 		if (!isset($this->output_content)) {
 			bab_debug('No editor content input registered by bab_eventEditorRequestToContent::setOutputContent(), fallback to simple POST['.$this->fieldname.'] value');
-			
+
 			return bab_pp($this->fieldname);
 		}
 		return $this->output_content;
 	}
-	
+
 	/**
 	 * Used only by bab_contentEditor
 	 * @public
@@ -305,13 +305,13 @@ class bab_eventEditorRequestToContent extends bab_eventEditor {
 
 /**
  * Event to get the html from the stored data
- */ 
+ */
 class bab_eventEditorContentToHtml extends bab_eventEditor {
-	/** 
+	/**
 	 * @private
 	 */
 	var $output_html;
-	
+
 	/**
 	 * set the displayabe html for the content
 	 * action done by the registred function
@@ -322,7 +322,7 @@ class bab_eventEditorContentToHtml extends bab_eventEditor {
 			$this->output_html = $html;
 		}
 	}
-	
+
 	/**
 	 * Used only by bab_contentEditor
 	 * @public
@@ -362,8 +362,8 @@ class bab_eventEditors extends bab_event {
 			'description' 	=> $description
 		);
     }
-    
-    
+
+
     /**
      * Get the list of registed editors
      * @public
@@ -407,8 +407,8 @@ class bab_eventEditorFunctions extends bab_event {
 	 * @public
 	 */
 	var $uid;
-	
-	
+
+
 	/**
 	 * @private
 	 */
@@ -416,7 +416,7 @@ class bab_eventEditorFunctions extends bab_event {
 
 	/**
 	 * Register a function for editor
-	 * 
+	 *
 	 * @param	string	$name
 	 * @param	string	$description
 	 * @param	string	$url
@@ -430,11 +430,11 @@ class bab_eventEditorFunctions extends bab_event {
 			'iconpath'		=> $iconpath
 		);
     }
-    
-    
+
+
     /**
      * Get the list of registed functions
-     * 
+     *
      */
     public function getFunctions() {
     	return $this->func;
@@ -446,68 +446,68 @@ class bab_eventEditorFunctions extends bab_event {
  * Register core functions
  */
 function bab_onEditorFunctions(bab_eventEditorFunctions $event) {
-	
+
 	if ('bab_article_head' === $event->uid
 	 || 'bab_article_body' === $event->uid
 	 || 'bab_faq_response' === $event->uid) {
 
 		$imageurl = '?tg=images&linked_images=1';
-	
+
 	} else {
-		
+
 		$imageurl = '?tg=images';
 	}
-	
-	
+
+
 	$event->addFunction(
-		bab_translate('Images'), 
-		bab_translate('Insert image from ovidentia content image manager'), 
+		bab_translate('Images'),
+		bab_translate('Insert image from ovidentia content image manager'),
 		$imageurl,
 		'skins/ovidentia/images/editor/ed_bab_image.gif'
 	);
-	
-	
+
+
 	$event->addFunction(
-		bab_translate('Files'), 
-		bab_translate('Insert a link to file or folder in ovidentia files manager'), 
-		'?tg=selector&idx=files&show_personal_directories=1&show_files=1&selectable_files=1&selectable_collective_directories=1&selectable_sub_directories=1&multi=1',
+		bab_translate('Files'),
+		bab_translate('Insert a link to file or folder in ovidentia files manager'),
+		'?tg=selector&idx=files&show_personal_folders=1&show_files=1&selectable_files=1&selectable_collective_folders=1&selectable_sub_folders=1&multi=1',
 		'skins/ovidentia/images/editor/ed_bab_file.gif'
 	);
-	
+
 	$event->addFunction(
-		bab_translate('Articles'), 
-		bab_translate('Insert a dynamic link to an article from ovidentia'), 
+		bab_translate('Articles'),
+		bab_translate('Insert a dynamic link to an article from ovidentia'),
 		'?tg=editorarticle&idx=brow',
 		'skins/ovidentia/images/editor/ed_bab_articleid.gif'
 	);
-	
+
 	$event->addFunction(
-		bab_translate('Faqs'), 
-		bab_translate('Insert a link to question/response from ovidentia FAQ'), 
+		bab_translate('Faqs'),
+		bab_translate('Insert a link to question/response from ovidentia FAQ'),
 		'?tg=editorfaq',
 		'skins/ovidentia/images/editor/ed_bab_faqid.gif'
 	);
-	
+
 	$event->addFunction(
-		bab_translate('Ovml'), 
-		bab_translate('Insert an ovml file'), 
+		bab_translate('Ovml'),
+		bab_translate('Insert an ovml file'),
 		'?tg=editorovml',
 		'skins/ovidentia/images/editor/ed_bab_ovml.gif'
 	);
-	
+
 	if( !empty($GLOBALS['BAB_SESS_USER']) && bab_contactsAccess())
 		{
 			$event->addFunction(
-				bab_translate('Contacts'), 
-				bab_translate('Insert a link to a personnal contact'), 
+				bab_translate('Contacts'),
+				bab_translate('Insert a link to a personnal contact'),
 				'?tg=editorcontdir',
 				'skins/ovidentia/images/editor/ed_bab_contdir.gif'
 			);
 		}
-		
+
 	$event->addFunction(
-		bab_translate('Directories'), 
-		bab_translate('Insert link to a directory entry'), 
+		bab_translate('Directories'),
+		bab_translate('Insert link to a directory entry'),
 		'?tg=editorcontdir&idx=directory',
 		'skins/ovidentia/images/editor/ed_bab_contdir.gif'
 	);
@@ -534,9 +534,9 @@ function bab_editor_text_toolbar($editname,$uid)
 			}
 		}
 	}
-	
+
 	global $babBody;
-	
+
 	$babBody->addJavascriptFile($GLOBALS['babInstallPath'].'scripts/bab_dialog.js');
 	$babBody->addJavascriptFile($GLOBALS['babInstallPath'].'scripts/text_toolbar.js');
 	$babBody->addStyleSheet('text_toolbar.css');
