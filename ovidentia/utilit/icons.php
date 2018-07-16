@@ -231,7 +231,7 @@ class Func_Icons extends bab_Functionality
 	/**
 	 * @since 8.7.0
 	 */
-	const ACTIONS_COMMENT						= 'actions-list-comment';
+	const ACTIONS_COMMENT						= 'actions-comment';
 
 
 	//-----------------------------------------------------------------------
