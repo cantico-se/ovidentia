@@ -157,6 +157,11 @@ class Func_Icons extends bab_Functionality
 	const ACTIONS_MAIL_SEND						= 'actions-mail-send';
 	const ACTIONS_SET_ACCESS_RIGHTS				= 'actions-set-access-rights';
 
+	/**
+	 * @since 8.7.0
+	 */
+	const ACTIONS_LIST_FILTER					= 'actions-list-filter';
+
 	const ACTIONS_LIST_ADD						= 'actions-list-add';
 	const ACTIONS_LIST_ADD_USER					= 'actions-list-add-user';
 	const ACTIONS_LIST_REMOVE					= 'actions-list-remove';
@@ -222,6 +227,11 @@ class Func_Icons extends bab_Functionality
 	const ACTIONS_LOGOUT						= 'actions-logout';
 
 	const ACTIONS_SHARE                         = 'actions-share';
+
+	/**
+	 * @since 8.7.0
+	 */
+	const ACTIONS_COMMENT						= 'actions-list-comment';
 
 
 	//-----------------------------------------------------------------------
@@ -331,6 +341,18 @@ class Func_Icons extends bab_Functionality
 	const OBJECTS_PHONE							= 'objects-phone';
 	const OBJECTS_MOBILE						= 'objects-mobile';
 	const OBJECTS_MAP_MARKER					= 'objects-map-marker';
+	/**
+	 * @since 8.7.0
+	 */
+	const OBJECTS_BOOK							= 'objects-book';
+	/**
+	 * @since 8.7.0
+	 */
+	const OBJECTS_LAPTOP						= 'objects-laptop';
+	/**
+	 * @since 8.7.0
+	 */
+	const OBJECTS_DESKTOP						= 'objects-desktop';
 
 
 	//-----------------------------------------------------------------------
