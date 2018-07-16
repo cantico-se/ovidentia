@@ -98,6 +98,14 @@ abstract class bab_Controller
 {
     const PROXY_CLASS_SUFFIX = 'Proxy';
 
+
+    /**
+     * @var string[]
+     */
+    protected $reloadSelectors = array();
+
+
+
     /**
      * The http request accepts json.
      * @var boolean
@@ -109,6 +117,27 @@ abstract class bab_Controller
      * @var boolean
      */
     protected static $acceptHtml = null;
+
+
+
+
+
+    /**
+     * @param string $reloadSelector
+     */
+    public function addReloadSelector($reloadSelector)
+    {
+        $this->reloadSelectors[$reloadSelector] = $reloadSelector;
+        return $this;
+    }
+
+    /**
+     * @return string[]
+     */
+    public function getReloadSelectors()
+    {
+        return $this->reloadSelectors;
+    }
 
 
 
@@ -719,6 +748,10 @@ abstract class bab_Controller
                         'level' => 'danger',
                         'content' => $message
                     );
+                }
+
+                if ($objectController->getReloadSelectors()) {
+                    $json['reloadSelector'] = implode(',', $objectController->getReloadSelectors());
                 }
 
                 //echo bab_convertStringFromDatabase(bab_json_encode($json), 'UTF-8');
