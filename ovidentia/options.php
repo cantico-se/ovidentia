@@ -1177,6 +1177,8 @@ function updateProfiles()
     {
         bab_removeUserFromGroup($GLOBALS['BAB_SESS_USERID'], $delgroups[$i]);
     }
+
+    bab_siteMap::clearAll();
     return true;
 }
 
@@ -1387,8 +1389,8 @@ if( '' != ($update = bab_pp('update')))
         case 'profiles':
             bab_requireSaveMethod();
             updateProfiles();
-            $idx = 'global';
-            break;
+            header('Location: ' . $GLOBALS['babUrlScript'] . '?tg=options&idx=global');
+            exit;
          case 'regsettings':
              bab_requireSaveMethod();
             $datelformat = bab_pp('datelformat');
