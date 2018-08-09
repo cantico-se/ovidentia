@@ -25,19 +25,29 @@ require_once $GLOBALS['babInstallPath'].'utilit/controller.class.php';
 
 class bab_CoreController extends bab_Controller
 {
-	protected function getControllerTg()
-	{
-		return 'main';
-	}
+    protected function getControllerTg()
+    {
+        return 'main';
+    }
 
-	/**
-	 * Get object name to use in URL from the controller classname
-	 * @param string $classname
-	 * @return string
-	 */
-	protected function getObjectName($classname)
-	{
-		$prefix = strlen('bab_Ctrl');
-		return strtolower(substr($classname, $prefix));
-	}
+    /**
+     * Get object name to use in URL from the controller classname
+     * @param string $classname
+     * @return string
+     */
+    protected function getObjectName($classname)
+    {
+        $prefix = strlen('bab_Ctrl');
+        return strtolower(substr($classname, $prefix));
+    }
+
+
+    /**
+     * @return widget_CtrlConfiguration
+     */
+    public function Configuration($proxy = true)
+    {
+        require_once dirname(__FILE__) . '/configuration.ctrl.php';
+        return bab_Controller::ControllerProxy('bab_CtrlConfiguration', $proxy);
+    }
 }
