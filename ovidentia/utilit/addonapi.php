@@ -3672,6 +3672,17 @@ function bab_downloadFile(bab_Path $path, $filename = null, $inline = true, $exi
 
 
 
+
+/**
+ * @since 8.7
+ * @return bab_CoreController
+ */
+function bab_CoreController()
+{
+    require_once $GLOBALS['babInstallPath'] . 'ctrl/corecontroller.class.php';
+    return new bab_CoreController();
+}
+
 /**
  * Instanciates the Widgets functionality.
  *
