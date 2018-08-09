@@ -323,6 +323,10 @@ if ('addons' !== bab_rp('tg') || 'import_frame' !== bab_rp('idx')) {
 /* Controler */
 switch(bab_rp('tg'))
     {
+
+    case "main":
+        $incl = "main";
+        break;
     case "login":
         $babLevelOne = bab_translate("Home");
         $babLevelTwo = bab_translate("Login");
