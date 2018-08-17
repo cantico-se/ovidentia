@@ -17,10 +17,10 @@
 	<h5>{ login } <!--#if BAB_SESS_USER --> <strong> { BAB_SESS_USER }</strong><!--#endif BAB_SESS_USER --></h5>
 	<ul>
 		<!--#in addUrl -->
-		<li><a href="{ url }">{ text }</a></li>
+		<li><a href="{ url }"<!--#if onclick --> onclick="{ onclick }"<!--#endif onclick -->>{ text }</a></li>
 		<!--#endin addUrl -->
 		<!--#in addAddonUrl -->
-		<li class="addon"><a href="{ url }">{ text }</a></li>
+		<li class="addon"><a href="{ url }"<!--#if onclick --> onclick="{ onclick }"<!--#endif onclick -->>{ text }</a></li>
 		<!--#endin addAddonUrl --> 
 	</ul>
 	<!--#if blogged --> 
