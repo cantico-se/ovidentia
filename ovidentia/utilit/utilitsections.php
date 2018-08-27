@@ -431,6 +431,7 @@ function addUrl(&$skip) {
 	$this->url = bab_toHtml($item->url);
 	$this->text = bab_toHtml($item->name);
 	$this->description = bab_toHtml($item->description);
+	$this->onclick = bab_toHtml($item->onclick);
 	$this->babUserSection = $this->babUserSection->nextSibling();
 	
 	if ('babUserApprob' === $uid && !bab_isWaitingApprobations())
@@ -453,6 +454,7 @@ function addAddonUrl()
 	$item = $this->babUserSectionAddons->getData();
 	$this->url = bab_toHtml($item->url);
 	$this->text = bab_toHtml($item->name);
+	$this->onclick = bab_toHtml($item->onclick);
 	$this->babUserSectionAddons = $this->babUserSectionAddons->nextSibling();
 	return true; 
 

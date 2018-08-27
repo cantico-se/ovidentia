@@ -545,13 +545,13 @@ function summaryDbContact($id, $idu, $update=true)
 						$this->arrorgid[] = array($rr['id'], $rr['name']);
 						}
 					}
+
+				$this->hasOrgChartFunctionnality = bab_functionality::get('OrgChart') ? true : false;
 				$this->orgcount = count($this->arrorgid);
-				if( $this->orgcount > 0 )
-					{
-					$this->vieworg = bab_translate("View this organizational chart");
-					$this->vieworgurl = $GLOBALS['babUrlScript']."?tg=chart&ocid=";
-					}
+				if($this->orgcount > 0){
+				    $this->vieworg = bab_translate("View this organizational chart");
 				}
+			}
 			else
 				{
 				$this->name = '';
@@ -634,6 +634,8 @@ function summaryDbContact($id, $idu, $update=true)
 					{
 					$this->oeid = 0;
 					}
+				$orgChartFunctionnalities = bab_functionality::get('OrgChart');
+				$this->orgurl = $orgChartFunctionnalities ? $orgChartFunctionnalities->getOrgchartViewPageUrl($this->orgid, $this->oeid) : '#';
 				$i++;
 				return true;
 				}

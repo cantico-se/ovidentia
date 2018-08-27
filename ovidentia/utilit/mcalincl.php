@@ -1125,7 +1125,7 @@ class cal_wmdbaseCls
 		if ($this->print) {
 			include_once $GLOBALS['babInstallPath']."utilit/uiutil.php";
 			$GLOBALS['babBodyPopup'] = new babBodyPopup();
-			$GLOBALS['babBodyPopup']->addStyleSheet('calendar.css');
+			$GLOBALS['babBodyPopup']->addStyleSheet($GLOBALS['babInstallPath'].'styles/calendar.css');
 			$GLOBALS['babBodyPopup']->title = $babBody->title;
 			$GLOBALS['babBodyPopup']->msgerror = $babBody->msgerror;
 			$GLOBALS['babBodyPopup']->babecho($html);

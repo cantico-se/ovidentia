@@ -761,12 +761,13 @@ bab_initFunctions.push(function() {
 </table>
 <br>
 <!--#if orgcount -->
+<!--#if hasOrgChartFunctionnality -->
 <script type="text/javascript">
 <!--
 function openWinOrg(val)
 {
 var dummy;
-Start('{ vieworgurl }'+val, 'OrgChartWin', 'width='+(screen.width-6)+',height='+(screen.height-60)+',status=no,resizable=yes,scrollbars=yes,top=1,left=1');
+Start(val, 'OrgChartWin', 'width='+(screen.width-6)+',height='+(screen.height-60)+',status=no,resizable=yes,scrollbars=yes,top=1,left=1');
 this.close();
 }
 
@@ -783,7 +784,7 @@ this.close();
         <td align="center">
         <select name="ocid">
         <!--#in getnextorg -->
-        <option value="{ orgid }&amp;oeid={ oeid }&amp;iduser={ idu }">{ orgn }</option>
+        <option value="{ orgurl }">{ orgn }</option>
         <!--#endin getnextorg -->
         </select>
         </td>
@@ -793,6 +794,7 @@ this.close();
 </tr>
 </table>
 </form>
+<!--#endif hasOrgChartFunctionnality  -->
 <!--#endif orgcount -->
 
 
