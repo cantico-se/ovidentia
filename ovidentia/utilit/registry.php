@@ -76,6 +76,8 @@ class bab_Registry
 {
     static $registry = null;
 
+    static $override = array();
+
     private $dir = '/';
     private $r = null;
 
@@ -522,6 +524,10 @@ class bab_Registry
             return constant('!' . $path);
         }
 
+        if (isset(self::$override[$path])) {
+            return self::$override[$path];
+        }
+
         $registry = self::getRegistry();
 
         $elements = explode('/', $path);
@@ -562,6 +568,23 @@ class bab_Registry
         $registryPath = implode('/', $elements);
         $registry->changeDirectory($registryPath);
         $registry->setKeyValue($key, $value);
+    }
+
+
+    /**
+     * Temporarily overrides the specified value.
+     * @since 8.6.97
+     *
+     * @param string $path
+     * @param mixed $value
+     */
+    public static function override($path, $value)
+    {
+        if (substr($path, 0, 1) !== '/') {
+            $path = '/' . $path;
+        }
+
+        self::$override[$path] = $value;
     }
 
 
