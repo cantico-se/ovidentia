@@ -473,10 +473,45 @@ class bab_Registry
 
 
     /**
+     * @return bab_Registry
+     */
+    private static function getRegistry()
+    {
+        if (!isset(self::$registry)) {
+            self::$registry = bab_getRegistry();
+        }
+        return self::$registry;
+    }
+
+
+
+
+    /**
+     * @param string $path
+     *
+     * @since 8.5.97
+     *
+     * @return mixed
+     */
+    public static function getLocked($path)
+    {
+        if (substr($path, 0, 1) !== '/') {
+            $path = '/' . $path;
+        }
+        if (defined('!' . $path)) {
+            return constant('!' . $path);
+        }
+        return null;
+    }
+
+
+    /**
      *
      * @param string $path
      *
      * @since 8.5.96
+     *
+     * @return mixed
      */
     public static function get($path, $defaultValue = null)
     {
@@ -487,15 +522,13 @@ class bab_Registry
             return constant('!' . $path);
         }
 
-        if (!isset(self::$registry)) {
-            self::$registry = bab_getRegistry();
-        }
+        $registry = self::getRegistry();
 
         $elements = explode('/', $path);
         $key = array_pop($elements);
         $registryPath = implode('/', $elements);
-        self::$registry->changeDirectory($registryPath);
-        $value = self::$registry->getValue($key);
+        $registry->changeDirectory($registryPath);
+        $value = $registry->getValue($key);
 
         if (isset($value)) {
             return $value;
@@ -522,20 +555,21 @@ class bab_Registry
             $path = '/' . $path;
         }
 
-        if (!isset(self::$registry)) {
-            self::$registry = bab_getRegistry();
-        }
+        $registry = self::getRegistry();
 
         $elements = explode('/', $path);
         $key = array_pop($elements);
         $registryPath = implode('/', $elements);
-        self::$registry->changeDirectory($registryPath);
-        self::$registry->setKeyValue($key, $value);
+        $registry->changeDirectory($registryPath);
+        $registry->setKeyValue($key, $value);
     }
 
 
+
+
     /**
-     *
+     * Deletes the key specified by $path in the registry.
+     * If $path represents a directory the whole directory is deleted.
      * @since 8.6.97
      *
      * @param string $path
@@ -546,14 +580,16 @@ class bab_Registry
             $path = '/' . $path;
         }
 
-        if (!isset(self::$registry)) {
-            self::$registry = bab_getRegistry();
-        }
+        $registry = self::getRegistry();
 
         $elements = explode('/', $path);
         $key = array_pop($elements);
         $registryPath = implode('/', $elements);
-        self::$registry->changeDirectory($registryPath);
-        self::$registry->removeKey($key);
+        $registry->changeDirectory($registryPath);
+        if ($registry->isDirectory($key)) {
+            $registry->changeDirectory($key);
+            return $registry->deleteDirectory();
+        }
+        return $registry->removeKey($key);
     }
 }
