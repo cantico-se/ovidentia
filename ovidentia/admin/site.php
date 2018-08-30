@@ -71,20 +71,21 @@ class site_configuration_cls
 function site_menu1()
 {
     $babBody = bab_getBody();
-    class temp extends site_configuration_cls
+    class site_configuration_site extends site_configuration_cls
+    {
+        public function __construct($id_site = false)
         {
-
-        function temp()
-            {
+            parent::__construct($id_site);
+            
             $this->name = bab_translate("Site name");
             $this->description = bab_translate("Description");
             $this->lang = bab_translate("Lang");
             $this->t_lang_default = bab_translate("Determine automatically");
-
+            
             $this->skin = bab_translate("Skin");
             $this->sitemap = bab_translate("Site map");
             $this->confirmation = bab_translate("Send email confirmation")."?";
-
+            
             $this->stattxt = bab_translate("Enable statistics recording")."?";
             $this->disabled = bab_translate("Disabled");
             $this->imagessize = bab_translate("Max image size ( Kb )");
@@ -99,193 +100,183 @@ function site_menu1()
             $this->mailfieldaddresstxt = bab_translate("Field to use when sending notification email");
             $this->proposemassmailingtxt = bab_translate("Propose mass mailing in directory views?");
             $this->staticurl_title = sprintf(bab_translate("Base url to use for static content (default is %s)"), $GLOBALS['babUrl']);
-
+            
             $this->sSiteMapInfo = bab_translate("The chosen site map will be use to fill menus.");
-
+            
             $this->skselectedindex = 0;
             $this->stselectedindex = 0;
-
-
-            if (empty($_REQUEST['item']))
-                {
+            
+            
+            if (empty($_REQUEST['item'])){
                 $this->site_configuration_cls();
                 $this->row = $this->arr = array(
-                        'name'			=> '',
-                        'description'	=> '',
-                        'lang'			=> '',
-                        'adminname'		=> '',
-                        'adminemail'	=> '',
-                        'skin'			=> '',
-                        'sitemap'		=> 'core',
-                        'style'			=> '',
-                        'babslogan'		=> '',
-                        'langfilter'	=> '',
-                        'mail_maxperpacket'	=> '25',
-                        'mail_fieldaddress'	=> 'Bcc',
-                        'mass_mailing' => 'N',
-                        'staticurl'		=> ''
-                    );
-
+                    'name'			=> '',
+                    'description'	=> '',
+                    'lang'			=> '',
+                    'adminname'		=> '',
+                    'adminemail'	=> '',
+                    'skin'			=> '',
+                    'sitemap'		=> 'core',
+                    'style'			=> '',
+                    'babslogan'		=> '',
+                    'langfilter'	=> '',
+                    'mail_maxperpacket'	=> '25',
+                    'mail_fieldaddress'	=> 'Bcc',
+                    'mass_mailing' => 'N',
+                    'staticurl'		=> ''
+                );
+                
                 $this->item = '';
-                }
-            else
-                {
-                $this->site_configuration_cls($_REQUEST['item']);
-                }
-
+            }
+            else{
+                parent::__construct($_REQUEST['item']);
+            }
+            
             $this->bccselected = '';
             $this->toselected = '';
             $this->ccselected = '';
-            switch( $this->row['mail_fieldaddress'] )
-                {
-                case 'Bcc': $this->bccselected = 'selected'; break;
-                case 'Cc': $this->ccselected = 'selected'; break;
-                case 'To': $this->toselected = 'selected'; break;
-                }
-
+            switch( $this->row['mail_fieldaddress'] ){
+                case 'Bcc': 
+                    $this->bccselected = 'selected'; 
+                    break;
+                case 'Cc': 
+                    $this->ccselected = 'selected'; 
+                    break;
+                case 'To': 
+                    $this->toselected = 'selected'; 
+                    break;
+            }
+            
             $this->arrlang	= bab_getAvailableLanguages();
             $this->count	= count($this->arrlang);
-            if($this->count > 0)
-            {
+            if($this->count > 0){
                 bab_sort::sort($this->arrlang);
             }
-
+            
             include_once $GLOBALS['babInstallPath'].'utilit/skinincl.php';
             $this->arrskins = bab_skin::getList();
             $this->cntskins = count($this->arrskins);
             bab_sort::natcasesort($this->arrskins);
-
+            
             $ignoredskins = bab_skin::getNotAccessibles();
-
+            
             if (0 < count($ignoredskins)) {
-                    $this->skinerror = bab_translate('One or more skins are not compatible with the ovidentia charset or access rights are not defined correctly.');
-                    if ('UTF-8' === bab_charset::getIso()) {
-                        $this->skinerror .= '<br /> '.bab_translate('Ovidentia is in UTF-8, all skins must be embeded in addons and the addonini file must contain the parameter mysql_character_set_database with supported character sets as value');
-                    }
-                } else {
-                    $this->skinerror = false;
+                $this->skinerror = bab_translate('One or more skins are not compatible with the ovidentia charset or access rights are not defined correctly.');
+                if ('UTF-8' === bab_charset::getIso()) {
+                    $this->skinerror .= '<br /> '.bab_translate('Ovidentia is in UTF-8, all skins must be embeded in addons and the addonini file must contain the parameter mysql_character_set_database with supported character sets as value');
                 }
-
-
-            $this->sitemaps = bab_siteMap::getList();
-
+            } else {
+                $this->skinerror = false;
             }
-
-        function getnextlang()
-            {
+            
+            
+            $this->sitemaps = bab_siteMap::getList();
+        }
+        
+        public function getnextlang()
+        {
             static $i = 0;
-            if( $i < $this->count)
-                {
+            if( $i < $this->count){
                 $this->langval = $this->arrlang[$i];
-                if( $this->row['lang'] == $this->langval )
+                if( $this->row['lang'] == $this->langval ){
                     $this->langselected = "selected";
-                else
+                }
+                else{
                     $this->langselected = "";
+                }
                 $i++;
                 return true;
-                }
-            else
-                return false;
             }
-
-        function getExtention($sFileName, $sSearch)
-            {
-            $iPos = mb_strpos($sFileName, $sSearch);
-            if (false !== $iPos)
-                {
-                    return mb_substr($sFileName, $iPos+1);
-                }
             return false;
+        }
+        
+        public function getExtention($sFileName, $sSearch)
+        {
+            $iPos = mb_strpos($sFileName, $sSearch);
+            if (false !== $iPos){
+                return mb_substr($sFileName, $iPos+1);
             }
-
-        function getnextskin()
-            {
+            return false;
+        }
+        
+        public function getnextskin()
+        {
             static $i = 0;
-            if( list(,$obj) = each($this->arrskins))
-                {
-
+            if( list(,$obj) = each($this->arrskins)){
                 $this->iindex = $i;
                 $this->skinname = bab_toHtml($obj->getName());
                 $this->skinval = bab_toHtml($obj->getName());
-                if( $this->skinname == $this->row['skin'] )
-                    {
+                if( $this->skinname == $this->row['skin'] ){
                     $this->skselectedindex = $i;
                     $this->skinselected = "selected";
-                    }
-                else
+                }
+                else{
                     $this->skinselected = "";
-
+                }
+        
                 $this->arrstyles = array_values($obj->getStyles());
                 $this->cntstyles = count($this->arrstyles);
                 $i++;
                 return true;
-                }
-            else
-                {
+            }
+            else{
                 $i = 0;
                 reset($this->arrskins);
                 return false;
-                }
             }
-
-        function getnextstyle()
-            {
+        }
+        
+        public function getnextstyle()
+        {
             static $j = 0;
-            if( $j < $this->cntstyles)
-                {
+            if( $j < $this->cntstyles){
                 $this->stylename = $this->arrstyles[$j];
                 $this->styleval = $this->arrstyles[$j];
-                if( $this->skinname == $this->row['skin'] && $this->row['style'] == $this->styleval)
+                if( $this->skinname == $this->row['skin'] && $this->row['style'] == $this->styleval){
                     $this->stselectedindex = $j;
+                }
                 $j++;
                 return true;
-                }
-            else
-                {
+            }
+            else{
                 $j = 0;
                 return false;
-                }
             }
-
-        function getnextlangfilter()
-            {
+        }
+        
+        public function getnextlangfilter()
+        {
             static $i = 0;
-            if( $i < (bab_getInstance('babLanguageFilter')->countFilters()))
-                {
+            if( $i < (bab_getInstance('babLanguageFilter')->countFilters())){
                 $this->langfilterval =	bab_getInstance('babLanguageFilter')->getFilterStr($i);
-                if($this->row['langfilter'] == $i )
-                    {
+                if($this->row['langfilter'] == $i ){
                     $this->langfilterselected = "selected";
-                    }
-                else
-                    {
+                }
+                else{
                     $this->langfilterselected = "";
-                    }
+                }
                 $i++;
                 return true;
-                }
-            else
-                return false;
-            } //getnextlangfilter
-
-
-
-        public function getnextsitemap()
-            {
-            if (list($uid,$sitemap) = each($this->sitemaps))
-                {
-                    $this->uid = bab_toHtml($uid);
-                    $this->name = bab_toHtml($sitemap->getSiteMapName());
-                    $this->selected = $uid === $this->row['sitemap'];
-                    return true;
-                }
-                return false;
             }
+            return false;
+        } //getnextlangfilter
+        
+        
+        
+        public function getnextsitemap()
+        {
+            if (list($uid,$sitemap) = each($this->sitemaps)){
+                $this->uid = bab_toHtml($uid);
+                $this->name = bab_toHtml($sitemap->getSiteMapName());
+                $this->selected = $uid === $this->row['sitemap'];
+                return true;
+            }
+            return false;
+        }
 
+    } // class temp
 
-        } // class temp
-
-    $temp = new temp();
+    $temp = new site_configuration_site();
     $babBody->babecho(	bab_printTemplate($temp, 'sites.html', 'menu1'));
 }
 
@@ -300,7 +291,7 @@ function site_menu2($id)
 {
     $babBody = bab_getBody();
 
-    class email_site_configuration_cls extends site_configuration_cls
+    class site_configuration_email extends site_configuration_cls
     {
 
         public function __construct($id)
@@ -330,7 +321,7 @@ function site_menu2($id)
             $this->thelp4 = bab_translate('SMTP: manual configuration');
             $this->thelp5 = bab_translate('Sendmail: Ovidentia uses the application sendmail installed on the local machine (see variable sendmail_path in the php.ini file');
 
-            $this->site_configuration_cls($id);
+            parent::__construct($id);
 
 // 			switch ($this->arr['smtpsecurity']) {
 // 				case 'ssl':
@@ -362,7 +353,7 @@ function site_menu2($id)
 
     } // class temp
 
-    $temp = new email_site_configuration_cls($id);
+    $temp = new site_configuration_email($id);
     $babBody->babecho(bab_printTemplate($temp, 'sites.html', 'menu2'));
 }
 
@@ -371,11 +362,10 @@ function site_menu3($id)
     {
 
     $babBody = bab_getBody();
-    class temp extends site_configuration_cls
+    class site_configuration_user_options extends site_configuration_cls
+    {
+        public function __construct($id)
         {
-
-        function temp($id)
-            {
             $this->change_nickname_title = bab_translate("User can modifiy his login ID");
             $this->change_password_title = bab_translate("User can modifiy his password");
 
@@ -386,14 +376,11 @@ function site_menu3($id)
             $this->change_unavailability_title = bab_translate("User can modifiy his unavailability");
             $this->browse_users_title = bab_translate("User can browse all registered users");
 
-            $this->site_configuration_cls($id);
-            }
-
-
-        } // class temp
-
-    $temp = new temp($id);
-    $babBody->babecho(	bab_printTemplate($temp, "sites.html", "menu3"));
+            parent::__construct($id);
+        }
+    } // class temp
+        $temp = new site_configuration_user_options($id);
+        $babBody->babecho(	bab_printTemplate($temp, "sites.html", "menu3"));
     }
 
 
@@ -401,9 +388,9 @@ function site_menu4($id)
 {
     $babBody = bab_getBody();
 
-    class bab_site_menu4_cls extends site_configuration_cls
+    class site_configuration_server_download extends site_configuration_cls
     {
-        function __construct($id)
+        public function __construct($id)
         {
             $this->imgsize_title = bab_translate("Max image size ( Kb )");
             $this->uploadpath_title = bab_translate("Upload path");
@@ -426,88 +413,80 @@ function site_menu4($id)
 
             $this->disk_free_space_title = bab_translate('Free disk space');
             $this->disk_free_space = number_format($disk_free_space, 2, ',', ' ') . ' ' . bab_translate('Mb');
-            $this->site_configuration_cls($id);
+            parent::__construct($id);
         }
     }
 
-    $temp = new bab_site_menu4_cls($id);
+    $temp = new site_configuration_server_download($id);
     $babBody->babecho(bab_printTemplate($temp, "sites.html", "menu4"));
 }
 
 
 function site_menu5($id)
-    {
+{
 
     $babBody = bab_getBody();
-    class temp extends site_configuration_cls
-        {
+    class site_configuration_date_formats extends site_configuration_cls
+    {
 
-        function temp($id)
-            {
+        public function __construct($id)
+        {
 
             $this->regsettings_title = bab_translate("Date and Time formats");
             $this->date_lformat_title = bab_translate("Long date format");
             $this->date_sformat_title = bab_translate("Short date format");
             $this->time_format_title = bab_translate("Time format");
 
-            $this->site_configuration_cls($id);
+            parent::__construct($id);
 
             $formats = bab_getRegionalFormats();
 
             $this->arrlfdate 	= $formats['longDate'];
             $this->arrsfdate 	= $formats['shortDate'];
             $this->arrtime 		= $formats['hour'];
-            }
+        }
 
-        function getnextlongdate()
-            {
+        public function getnextlongdate()
+        {
             static $i = 0;
-            if( $i < count($this->arrlfdate))
-                {
+            if( $i < count($this->arrlfdate)){
                 $this->dateval = bab_toHtml($this->arrlfdate[$i]);
                 $this->datetxt = bab_toHtml($this->arrlfdate[$i].' : '.bab_formatDate( bab_getDateFormat($this->arrlfdate[$i]), mktime() ));
                 $this->selected = $this->arrlfdate[$i] === $this->row['date_longformat'];
                 $i++;
                 return true;
-                }
-            else
-                return false;
             }
+            return false;
+        }
 
-        function getnextshortdate()
-            {
+        public function getnextshortdate()
+        {
             static $i = 0;
-            if( $i < count($this->arrsfdate))
-                {
+            if( $i < count($this->arrsfdate)){
                 $this->dateval = bab_toHtml($this->arrsfdate[$i]);
                 $this->datetxt = bab_toHtml($this->arrsfdate[$i].' : '.bab_formatDate( bab_getDateFormat($this->arrsfdate[$i]), mktime() ));
                 $this->selected = $this->arrsfdate[$i] === $this->row['date_shortformat'];
                 $i++;
                 return true;
-                }
-            else
-                return false;
             }
+                return false;
+        }
 
-        function getnexttime()
-            {
+        public function getnexttime()
+        {
             static $i = 0;
-            if( $i < count($this->arrtime))
-                {
+            if( $i < count($this->arrtime)){
                 $this->timeval = bab_toHtml($this->arrtime[$i]);
                 $this->timetxt = bab_toHtml($this->arrtime[$i].' : '.date( bab_getTimeFormat($this->arrtime[$i]) ));
                 $this->selected = $this->arrtime[$i] === $this->row['time_format'];
                 $i++;
                 return true;
-                }
-            else
-                return false;
             }
+                return false;
+        }
+    } // class temp
 
-
-        } // class temp
-
-    $temp = new temp($id);
+    $temp = new site_configuration_date_formats($id);
     $babBody->babecho(	bab_printTemplate($temp, "sites.html", "menu5"));
     }
 
@@ -517,17 +496,17 @@ function site_menu6($id)
     {
 
     $babBody = bab_getBody();
-    class temp extends site_configuration_cls
-        {
-            var $t_defaultCalAccess		= '';
-            var $aCalAccess				= array();
-            var $iCalAccess				= -1;
-            var $sCalAccess				= '';
-            var $sCalAccessSelected		= '';
-            var $iSelectedCalAccess		= -1;
+    class site_configuration_calendars extends site_configuration_cls
+    {
+        public $t_defaultCalAccess = '';
+        public $aCalAccess			= array();
+        public $iCalAccess			= -1;
+        public $sCalAccess			= '';
+        public $sCalAccessSelected	= '';
+        public $iSelectedCalAccess	= -1;
 
-        function temp($id)
-            {
+        public function __construct($id)
+        {
             $babDB = bab_getDB();
             $this->t_dispdays = bab_translate("Days to display");
             $this->t_startdaytxt = bab_translate("First day of week");
@@ -560,25 +539,20 @@ function site_menu6($id)
 
             );
 
-            $this->site_configuration_cls($id);
+            parent::__construct($id);
 
-            if(array_key_exists('row', get_object_vars($this)))
-            {
-                if(is_array($this->row) && array_key_exists('iDefaultCalendarAccess', $this->row))
-                {
+            if(array_key_exists('row', get_object_vars($this))){
+                if(is_array($this->row) && array_key_exists('iDefaultCalendarAccess', $this->row)){
                     $this->iSelectedCalAccess = $this->row['iDefaultCalendarAccess'];
                     //bab_debug('iDefaultCalendarAccess ==> ' . $this->iSelectedCalAccess);
-                    if( $this->row['iPersonalCalendarAccess'] ==  'Y')
-                    {
+                    if( $this->row['iPersonalCalendarAccess'] ==  'Y'){
                         $this->ypcalaccess = 'selected';
                         $this->npcalaccess = '';
                     }
-                    else
-                    {
+                    else{
                         $this->ypcalaccess = '';
                         $this->npcalaccess = 'selected';
                     }
-
                 }
             }
 
@@ -589,158 +563,125 @@ function site_menu6($id)
             $this->startday = $site['startday'];
             $this->sttime = $site['start_time'];
             $this->arrdv = array(bab_translate("Month"), bab_translate("Week"),bab_translate("Day"));
-            if( $site['allday'] ==  'Y')
-                {
+            if( $site['allday'] ==  'Y'){
                 $this->yallday = 'selected';
                 $this->nallday = '';
-                }
-            else
-                {
+            }
+            else{
                 $this->nallday = 'selected';
                 $this->yallday = '';
-                }
+            }
 
-            if( $site['usebgcolor'] ==  'Y')
-                {
+            if( $site['usebgcolor'] ==  'Y'){
                 $this->yusebgcolor = 'selected';
                 $this->nusebgcolor = '';
-                }
-            else
-                {
+            }
+            else{
                 $this->nusebgcolor = 'selected';
                 $this->yusebgcolor = '';
-                }
+            }
 
-            if( $site['usecatcolor'] == 'Y')
-                {
+            if( $site['usecatcolor'] == 'Y'){
                 $this->yusecatcolor = 'selected';
                 $this->nusecatcolor = '';
-                }
-            else
-                {
+            }
+            else{
                 $this->nusecatcolor = 'selected';
                 $this->yusecatcolor = '';
-                }
+            }
 
-            if( $site['show_update_info'] ==  'Y')
-                {
+            if( $site['show_update_info'] ==  'Y'){
                 $this->yshowupdateinfo = 'selected';
                 $this->nshowupdateinfo = '';
-                }
-            else
-                {
+            }
+            else{
                 $this->nshowupdateinfo = 'selected';
                 $this->yshowupdateinfo = '';
-                }
+            }
 
-            if( $site['show_onlydays_of_month'] ==  'Y')
-                {
+            if( $site['show_onlydays_of_month'] ==  'Y'){
                 $this->yshowonlydaysmonthinfo = 'selected';
                 $this->nshowonlydaysmonthinfo = '';
-                }
-            else
-                {
+            }
+            else{
                 $this->nshowonlydaysmonthinfo = 'selected';
                 $this->yshowonlydaysmonthinfo = '';
-                }
+            }
 
-            if( $site['calendar_notif_author'] ==  'Y')
-                {
+            if( $site['calendar_notif_author'] ==  'Y'){
                 $this->ycallendarnotif = 'selected';
                 $this->ncallendarnotif = '';
-                }
-            else
-                {
+            }
+            else{
                 $this->ncallendarnotif = 'selected';
                 $this->ycallendarnotif = '';
-                }
             }
+        }
 
-        function getnextdispday()
-            {
+        public function getnextdispday()
+        {
             static $i = 0;
-            if ($i < 7)
-                {
-                if( isset($this->dispdays[$i] ))
-                    {
+            if ($i < 7){
+                if( isset($this->dispdays[$i] )){
                     $this->checked = "checked";
-                    }
-                else
-                    {
+                }
+                else{
                     $this->checked = "";
-                    }
+                }
                 $this->dayid = $i;
                 $this->shortday = bab_DateStrings::getDay($i);
                 $i++;
                 return true;
-                }
-            else
-                {
-                $i = 0;
-                return false;
-                }
             }
+            $i = 0;
+            return false;
+        }
 
-        function getnextstartday()
-            {
+        public function getnextstartday()
+        {
             static $i = 0;
-            if ($i < 7)
-                {
-                if( $this->startday == $i )
-                    {
+            if ($i < 7){
+                if( $this->startday == $i ){
                     $this->checked = "selected";
-                    }
-                else
-                    {
+                }
+                else{
                     $this->checked = "";
-                    }
+                }
                 $this->dayid = $i;
                 $this->shortday = bab_DateStrings::getDay($i);
                 $i++;
                 return true;
-                }
-            else
-                {
-                $i = 0;
-                return false;
-                }
             }
+            $i = 0;
+            return false;
+        }   
 
-        function getnexttime()
-            {
+        public function getnexttime()
+        {
             static $i = 0;
-            if( $i < 24 )
-                {
+            if( $i < 24 ){
                 $this->timeid = sprintf("%02s:00:00", $i);
                 $this->timeval = mb_substr($this->timeid, 0, 2);
-                if( $this->timeid == $this->sttime)
-                    {
+                if( $this->timeid == $this->sttime){
                     $this->checked = "selected";
-                    }
-                else
-                    {
+                }
+                else{
                     $this->checked = "";
-                    }
+                }
                 $i++;
                 return true;
-                }
-            else
-                {
-                $this->sttime = $GLOBALS['babBody']->babsite['end_time'];
-                $i = 0;
-                return false;
-                }
-
             }
+            $this->sttime = $GLOBALS['babBody']->babsite['end_time'];
+            $i = 0;
+            return false;
+        }
 
 
-        function getnextet()
-            {
+        public function getnextet()
+        {
             static $i = 0;
-            if( $i < 5 )
-                {
-                switch($i)
-                    {
+            if( $i < 5 ){
+                switch($i){
                     case 0:
                         $this->etval = 5;
                         break;
@@ -756,80 +697,69 @@ function site_menu6($id)
                     case 4:
                         $this->etval = 60;
                         break;
-                    }
+                }
 
-                if( $this->etval == $GLOBALS['babBody']->babsite['elapstime'])
+                if( $this->etval == $GLOBALS['babBody']->babsite['elapstime']){
                     $this->etselected = 'selected';
-                else
+                }
+                else{
                     $this->etselected = '';
+                }
                 $i++;
                 return true;
-                }
-            else
-                {
-                $i = 0;
-                return false;
-                }
-
             }
+            $i = 0;
+            return false;
+        }
 
-        function getnextdv()
-            {
+        public function getnextdv(){
             static $i = 0;
-            if( $i < count($this->arrdv) )
-                {
-                if( $i == $GLOBALS['babBody']->babsite['defaultview'])
+            if( $i < count($this->arrdv) ){
+                if( $i == $GLOBALS['babBody']->babsite['defaultview']){
                     $this->dvselected = 'selected';
-                else
+                }
+                else{
                     $this->dvselected = '';
+                }
                 $this->dvvalid = $i;
                 $this->dvval = $this->arrdv[$i];
                 $i++;
                 return true;
-                }
-            else
-                {
-                $i = 0;
-                return false;
-                }
-
             }
+            $i = 0;
+            return false;
+        }
 
-        function getNextCalAccess()
-            {
-                $this->sCalAccessSelected = '';
+        public function getNextCalAccess(){
+            $this->sCalAccessSelected = '';
 
-                $aCalAccessItem = each($this->aCalAccess);
-                if(false !== $aCalAccessItem)
-                {
-                    $this->iCalAccess = $aCalAccessItem['key'];
-                    $this->sCalAccess = $aCalAccessItem['value'];
+            $aCalAccessItem = each($this->aCalAccess);
+            if(false !== $aCalAccessItem){
+                $this->iCalAccess = $aCalAccessItem['key'];
+                $this->sCalAccess = $aCalAccessItem['value'];
 
-                    if($this->iSelectedCalAccess == $this->iCalAccess)
-                    {
-                        $this->sCalAccessSelected = 'selected="selected"';
-                    }
-                    //bab_debug($aCalAccessItem);
-                    return true;
+                if($this->iSelectedCalAccess == $this->iCalAccess){
+                    $this->sCalAccessSelected = 'selected="selected"';
                 }
-                return false;
+                //bab_debug($aCalAccessItem);
+                return true;
             }
+            return false;
+        }
+    } // class temp
 
-        } // class temp
-
-    $temp = new temp($id);
+    $temp = new site_configuration_calendars($id);
     $babBody->babecho(	bab_printTemplate($temp, "sites.html", "menu6"));
-    }
+}
 
 function site_menu13($id)
-    {
+{
 
     $babBody = bab_getBody();
-    class site_menu13_class extends site_configuration_cls
+    class site_configuration_worked_days extends site_configuration_cls
+    {
+        public function __construct($id)
         {
-
-        function site_menu13_class($id)
-            {
             $babDB = bab_getDB();
             $this->t_workdays = bab_translate("Working days (for all sites)");
             $this->t_nonworking = bab_translate("Non-working days");
@@ -854,7 +784,7 @@ function site_menu13($id)
 
             $this->sttime = $GLOBALS['babBody']->babsite['start_time'];
 
-            $this->site_configuration_cls($id);
+            parent::__construct($id);
 
             include_once $GLOBALS['babInstallPath']."utilit/calapi.php";
             $sWorkingDays = '';
@@ -871,8 +801,7 @@ function site_menu13($id)
 
         public function getnextfunc()
         {
-            if (list(, $f) = each($this->func))
-            {
+            if (list(, $f) = each($this->func)){
                 $func = bab_functionality::get("WorkingHours/$f");
                 $this->name = bab_toHtml($f);
                 $this->description = bab_toHtml($func->getDescription());
@@ -883,126 +812,102 @@ function site_menu13($id)
             return false;
         }
 
-        function getnextworkday()
-            {
+        public function getnextworkday()
+        {
             static $i = 0;
-            if ($i < 7)
-                {
-                if( isset($this->workdays[$i] ))
-                    {
+            if ($i < 7){
+                if( isset($this->workdays[$i] )){
                     $this->checked = "checked";
-                    }
-                else
-                    {
+                }
+                else{
                     $this->checked = "";
-                    }
+                }
                 $this->dayid = $i;
                 $this->shortday = bab_DateStrings::getDay($i);
                 $i++;
                 return true;
-                }
-            else
-                {
-                $i = 0;
-                return false;
-                }
             }
+            $i = 0;
+            return false;
+        }
 
 
-        function getnextnonworking_type()
-            {
+        public function getnextnonworking_type()
+        {
             static $i = 1;
-            if ($i < 100 && isset($this->t_type[$i]))
-                {
+            if ($i < 100 && isset($this->t_type[$i])){
                 $this->type = $i;
                 $this->txt = $this->t_type[$i];
                 $i++;
                 return true;
-                }
-            else
-                {
-                $i = 1;
-                return false;
-                }
             }
+            $i = 1;
+            return false;
+        }
 
 
-        function getnextnonworking()
-            {
+        public function getnextnonworking()
+        {
             $babDB = bab_getDB();
-            if ($arr = $babDB->db_fetch_array($this->resnw))
-                {
+            if ($arr = $babDB->db_fetch_array($this->resnw)){
                 $this->value = $arr['nw_text'].'#';
                 $this->value .= $arr['nw_type'];
                 $this->value .= !empty($arr['nw_day']) ? ','.$arr['nw_day'] : '';
                 $this->nw_day = $arr['nw_day'];
-                if (!empty($arr['nw_text']))
+                if (!empty($arr['nw_text'])){
                     $this->text = $arr['nw_text'];
-                else
-                    {
-                    $this->text = $this->t_type[$arr['nw_type']];
-                    if (!empty($this->nw_day))
-                        {
-                        $this->text .= ' : '.$this->nw_day;
-                        }
-                    }
-                return true;
                 }
-            else
-                return false;
+                else{
+                    $this->text = $this->t_type[$arr['nw_type']];
+                    if (!empty($this->nw_day)){
+                        $this->text .= ' : '.$this->nw_day;
+                    }
+                }
+                return true;
             }
+            return false;
+        }
 
-        function getnexttime()
-            {
+        public function getnexttime()
+        {
             static $i = 0;
-            if( $i < 24 )
-                {
+            if( $i < 24 ){
                 $this->timeid = sprintf("%02s:00:00", $i);
                 $this->timeval = mb_substr($this->timeid, 0, 2);
-                if( $this->timeid == $this->sttime)
-                    {
+                if( $this->timeid == $this->sttime){
                     $this->checked = "selected";
-                    }
-                else
-                    {
+                }
+                else{
                     $this->checked = "";
-                    }
+                }
                 $i++;
                 return true;
-                }
-            else
-                {
-                $this->sttime = $GLOBALS['babBody']->babsite['end_time'];
-                $i = 0;
-                return false;
-                }
-
             }
-        function getnextcat()
-            {
+            $this->sttime = $GLOBALS['babBody']->babsite['end_time'];
+            $i = 0;
+            return false;
+        }
+        
+        public function getnextcat()
+        {
             static $i = 0;
-            if( $i < $this->catcount)
-                {
+            if( $i < $this->catcount){
                 $this->categid = $this->categs[$i]['id'];
                 $this->categname = bab_toHtml($this->categs[$i]['name']);
-                if( $this->categid == $this->id_cal_category )
-                    {
+                if( $this->categid == $this->id_cal_category ){
                     $this->selected = 'selected';
-                    }
-                else
-                    {
+                }
+                else{
                     $this->selected = '';
-                    }
+                }
                 $i++;
                 return true;
-                }
-            else
-                return false;
-
             }
-        } // class site_menu13_class
+            return false;
+        }
+    } // class site_menu13_class
 
-    $temp = new site_menu13_class($id);
+    $temp = new site_configuration_worked_days($id);
     $babBody->babecho(	bab_printTemplate($temp, "sites.html", "menu13"));
     }
 
@@ -1628,23 +1533,23 @@ function editor_configuration($id_site)
 
 function siteMenu($id_site)
 {
-$babBody = bab_getBody();
+    $babBody = bab_getBody();
 
-    class temp extends site_configuration_cls
-        {
-        function temp($id_site)
-            {
+    class site_main_menu extends site_configuration_cls
+    {
+        public function __construct($id_site = false){
+            parent::__construct($id_site);
             $this->t_delete = bab_translate("Delete");
-            $this->site_configuration_cls($id_site);
-            }
-
-        function getnext()
-            {
-            return list($this->page,$this->text) = each($this->menu);
-            }
         }
 
-    $temp = new temp($id_site);
+
+        public function getnext()
+        {
+            return list($this->page,$this->text) = each($this->menu);
+        }
+    }
+
+    $temp = new site_main_menu($id_site);
     $babBody->babecho(bab_printTemplate($temp,"sites.html", "menu"));
 }
 
