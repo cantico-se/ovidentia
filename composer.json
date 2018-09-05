@@ -31,5 +31,8 @@
 		"ovidentia/approbation_schema" : ">=0.2.2",
 		"ovidentia/storeclient" : ">=0.4.10",
 		"ovidentia/authldap" : ">=1.0"
+	},
+	"require-dev" : {
+	   "ovidentia/widgets" : "dev-master"
 	}
 }
