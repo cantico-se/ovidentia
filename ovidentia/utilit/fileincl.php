@@ -872,9 +872,9 @@ function saveFile($fmFiles, $id, $gr, $path, $description, $keywords, $readonly,
  * @param	string		$fname
  * @param	string		$description
  * @param	string		$keywords
- * @param	Y|N			$readonly
- * @param	Y|N			$confirm
- * @param	Y|N|false	$bnotify
+ * @param	string		$readonly       "Y"|"N"
+ * @param	string		$confirm        "Y"|"N"
+ * @param	string|bool	$bnotify        "Y"|"N"|false
  * @param	int			$newfolder
  * @param	boolean		$descup			Update description & keywords
  * @param	int			$maxdownloads
