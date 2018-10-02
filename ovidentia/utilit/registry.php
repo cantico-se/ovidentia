@@ -487,6 +487,19 @@ class bab_Registry
 
 
 
+    /**
+     *
+     * @param string $path
+     * @return string
+     */
+    private static function path($path)
+    {
+        if (substr($path, 0, 1) !== '/') {
+            $path = '/' . $path;
+        }
+
+        return $path;
+    }
 
     /**
      * @param string $path
@@ -497,9 +510,7 @@ class bab_Registry
      */
     public static function getLocked($path)
     {
-        if (substr($path, 0, 1) !== '/') {
-            $path = '/' . $path;
-        }
+        $path = self::path($path);
         if (defined('!' . $path)) {
             return constant('!' . $path);
         }
@@ -517,9 +528,7 @@ class bab_Registry
      */
     public static function get($path, $defaultValue = null)
     {
-        if (substr($path, 0, 1) !== '/') {
-            $path = '/' . $path;
-        }
+        $path = self::path($path);
         if (defined('!' . $path)) {
             return constant('!' . $path);
         }
@@ -557,9 +566,7 @@ class bab_Registry
      */
     public static function set($path, $value)
     {
-        if (substr($path, 0, 1) !== '/') {
-            $path = '/' . $path;
-        }
+        $path = self::path($path);
 
         $registry = self::getRegistry();
 
@@ -580,9 +587,7 @@ class bab_Registry
      */
     public static function override($path, $value)
     {
-        if (substr($path, 0, 1) !== '/') {
-            $path = '/' . $path;
-        }
+        $path = self::path($path);
 
         self::$override[$path] = $value;
     }
@@ -599,9 +604,7 @@ class bab_Registry
      */
     public static function delete($path)
     {
-        if (substr($path, 0, 1) !== '/') {
-            $path = '/' . $path;
-        }
+        $path = self::path($path);
 
         $registry = self::getRegistry();
 
