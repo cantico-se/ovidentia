@@ -1056,8 +1056,8 @@ class bab_siteMapItem {
         if (isset($this->target)) {
             return $this->target->canRead();
         }
-        
-        
+
+
         return bab_isAccessValid('bab_sitemap_node_read_groups', $this->id_function);
     }
 
@@ -1141,12 +1141,12 @@ class bab_siteMapItem {
     {
         return $this->setRightString('bab_sitemap_node_delete_groups', $value);
     }
-    
-    
-    
-    
-    
-    
+
+
+
+
+
+
     /**
      * Get default right for created subnode
      */
@@ -1154,49 +1154,49 @@ class bab_siteMapItem {
     {
         return $this->getRightString('bab_sitemap_default_create_groups');
     }
-    
+
     public function setDefaultCreate($value)
     {
         return $this->setRightString('bab_sitemap_default_create_groups', $value);
     }
-    
+
     public function getDefaultRead()
     {
         return $this->getRightString('bab_sitemap_default_read_groups');
     }
-    
+
     public function setDefaultRead($value)
     {
         return $this->setRightString('bab_sitemap_default_read_groups', $value);
     }
-    
+
     public function getDefaultUpdate()
     {
         return $this->getRightString('bab_sitemap_default_update_groups');
     }
-    
+
     public function setDefaultUpdate($value)
     {
         return $this->setRightString('bab_sitemap_default_update_groups', $value);
     }
-    
-    
+
+
     public function getDefaultDelete()
     {
         return $this->getRightString('bab_sitemap_default_delete_groups');
     }
-    
+
     public function setDefaultDelete($value)
     {
         return $this->setRightString('bab_sitemap_default_delete_groups', $value);
     }
-    
-    
-    
-    
-    
-    
-    
+
+
+
+
+
+
+
 
     /**
      * Get an array with acess rights as boolean
@@ -1787,6 +1787,12 @@ class bab_siteMap {
         self::$hitcache = array();
 
         self::unlockTables();
+
+        require_once dirname(__FILE__) . '/ovmlcache.php';
+        bab_ovml_cache::clearAllSessions();
+//         if (isset($_SESSION['ovml_cache'])) {
+//             unset($_SESSION['ovml_cache']);
+//         }
 
         //bab_siteMap::build();
 

@@ -68,7 +68,8 @@ function bab_printCachedOvml($name, $content, $args = array())
     // less than 1 hour (or the specified duration) old.
     if (!isset($ovmlCache['timestamp'])
             || !isset($ovmlCache['content'])
-            || (time() - $ovmlCache['timestamp'] > (isset($args['_ovml_cache_duration']) ? $args['_ovml_cache_duration'] : 3600))) {
+            || (time() - $ovmlCache['timestamp'] > (isset($args['_ovml_cache_duration']) ? $args['_ovml_cache_duration'] : 3600))
+            || (bab_Registry::get('/core/lastOvmlCacheClear') >= $ovmlCache['timestamp'])) {
         $ovmlCache['timestamp'] = time();
         $ovmlCache['content'] = bab_printOvml($content, $args);
     }
