@@ -25,7 +25,7 @@
 
 
 /**
- * 
+ *
  *
  *
  */
@@ -36,47 +36,47 @@ class bab_ovml_cache
 	 * @var string
 	 */
 	private $uid;
-	
-	
+
+
 	/**
 	 * ovml filename relative to ovml folder
 	 * @var string
 	 */
 	private $file;
-	
+
 	/**
 	 * ovml arguments
 	 * @var array
 	 */
 	private $args;
-	
-	
+
+
 	/**
 	 * Cache duration in seconds
 	 * @var int
 	 */
 	private $cache_duration = 3600;
-	
-	
+
+
 	/**
-	 * 
+	 *
 	 */
 	public function __construct($file, $args)
 	{
 		$this->file = $file;
-		
+
 		$this->args = $args;
-		
+
 		$uidargs = $args;
 		if (isset($uidargs['babCurrentDate']))
 		{
 			unset($uidargs['babCurrentDate']);
 		}
-		
+
 		$this->uid = $file . ':' . http_build_query($uidargs);
 	}
-	
-	
+
+
 	/**
 	 * Set cache duration
 	 * @param	int	$duration
@@ -85,11 +85,14 @@ class bab_ovml_cache
 	{
 		$this->cache_duration = $duration;
 	}
-	
-	
-	
-	
-	
+
+
+	public static function clearAllSessions()
+	{
+	    bab_Registry::set('/core/lastOvmlCacheClear', time());
+	}
+
+
 	/**
 	 * Cache method based on session (default)
 	 * @return string
@@ -100,19 +103,20 @@ class bab_ovml_cache
 			$_SESSION['ovml_cache'][$this->uid] = array();
 		}
 		$ovmlCache = & $_SESSION['ovml_cache'][$this->uid];
-		
+
 		// We check if there the specified ovml is in the cache and the cache is
 		// less than 1 hour (or the specified duration) old.
 		if (!isset($ovmlCache['timestamp'])
 				|| !isset($ovmlCache['content'])
-				|| (time() - $ovmlCache['timestamp'] > $this->cache_duration)) {
+				|| (time() - $ovmlCache['timestamp'] > $this->cache_duration)
+				|| (bab_Registry::get('/core/lastOvmlCacheClear') >= $ovmlCache['timestamp'])) {
 			$ovmlCache['timestamp'] = time();
 			$ovmlCache['content'] = bab_printOvmlTemplate($this->file, $this->args);
 		}
 		return $ovmlCache['content'];
 	}
-	
-	
+
+
 	/**
 	 * Cache method based on sitemap profile
 	 * @return string
@@ -120,12 +124,12 @@ class bab_ovml_cache
 	public function sitemap()
 	{
 		$profile = bab_sitemap::getProfilVersionUid();
-		
+
 		$this->uid .= '-'.$profile;
-		
+
 		return $this->file();
 	}
-	
+
 	/**
 	 * Cache method based on a file
 	 * @return string
@@ -133,13 +137,13 @@ class bab_ovml_cache
 	public function file()
 	{
 		require_once dirname(__FILE__).'/path.class.php';
-		
+
 		$path = new bab_Path($GLOBALS['babUploadPath'], 'tmp', 'ovmlcache');
 		$path->createDir();
-		
+
 		$path->push(md5($this->uid));
-		
-		if (!$path->isFile() || ((time()- filemtime($path->tostring())) > $this->cache_duration))
+
+		if (!$path->isFile() || ((time()- filemtime($path->tostring())) > $this->cache_duration)|| (bab_Registry::get('/core/lastOvmlCacheClear') >= filemtime($path->tostring())))
 		{
 			$content = bab_printOvmlTemplate($this->file, $this->args);
 			file_put_contents($path->tostring(), $content);
@@ -147,11 +151,11 @@ class bab_ovml_cache
 		} else {
 			$content = file_get_contents($path->tostring());
 		}
-		
+
 		return $content;
 	}
-	
-	
+
+
 	/**
 	 * remove cached files older than 10 days
 	 */
@@ -159,7 +163,7 @@ class bab_ovml_cache
 	{
 		// run only once per refresh
 		static $done = null;
-		
+
 		if (null === $done)
 		{
 			$path = new bab_Path($GLOBALS['babUploadPath'], 'tmp', 'ovmlcache');
@@ -178,7 +182,7 @@ class bab_ovml_cache
 					}
 				}
 			}
-		
+
 			$done = true;
 		}
 	}
