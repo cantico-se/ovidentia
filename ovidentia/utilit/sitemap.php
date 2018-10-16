@@ -1789,9 +1789,11 @@ class bab_siteMap {
 
         self::unlockTables();
 
-        if (isset($_SESSION['ovml_cache'])) {
-            unset($_SESSION['ovml_cache']);
-        }
+        require_once dirname(__FILE__) . '/ovmlcache.php';
+        bab_ovml_cache::clearAllSessions();
+//         if (isset($_SESSION['ovml_cache'])) {
+//             unset($_SESSION['ovml_cache']);
+//         }
 
         //bab_siteMap::build();
 
