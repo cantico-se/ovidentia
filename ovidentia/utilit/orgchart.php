@@ -26,12 +26,8 @@ include_once $GLOBALS['babInstallPath'].'utilit/tree.php';
 
 class bab_OrgChartElement extends bab_TreeViewElement
 {
-    /**#@+
-     * @access private
-     */
-    var $_members;
-    var $_linkEntity;
-    /**#@-*/
+    public $_members;
+    public $_linkEntity;
 
     /**
      * @param string $id			A unique element id in the treeview.
@@ -40,14 +36,14 @@ class bab_OrgChartElement extends bab_TreeViewElement
      * @param string $description	An additional description that will appear as a tooltip.
      * @param string $link			A link when clicking the node title.
      */
-    function __construct($id, $type, $title, $description, $link)
+    public function __construct($id, $type, $title, $description, $link)
     {
         parent::__construct($id, $type, $title, $description, $link);
         $this->_members = array();
     }
 
 
-    function addMember($memberName, $role = '', $url = '')
+    public function addMember($memberName, $role = '', $url = '')
     {
         if (!isset($this->_members[$role])) {
             $this->_members[$role] = array();
@@ -59,7 +55,7 @@ class bab_OrgChartElement extends bab_TreeViewElement
      * Defines the url link when the entity is clicked.
      * @param string $url
      */
-    function setLinkEntity($url)
+    public function setLinkEntity($url)
     {
         $this->_linkEntity = $url;
     }
@@ -73,28 +69,24 @@ class bab_OrgChartElement extends bab_TreeViewElement
 
 class bab_OrgChart extends bab_TreeView
 {
-    /**#@+
-     * @access private
-     */
-    var $_verticalThreshold;
-    var $_relativeThreshold;
-    var $_startLevel;
+    public $_verticalThreshold;
+    public $_relativeThreshold;
+    public $_startLevel;
 
-    var $_locationElements;
-    var $_openNodes;
-    var $_openMembers;
+    public $_locationElements;
+    public $_openNodes;
+    public $_openMembers;
 
-    var $t_zoomFactor;
+    public $t_zoomFactor;
 
-    var $t_nodeId;
-    var $t_layout;
-    var $t_previousLayout;
+    public $t_nodeId;
+    public $t_layout;
+    public $t_previousLayout;
 
-    var $t_nbMembers;
-    var $t_memberName;
+    public $t_nbMembers;
+    public $t_memberName;
 
-    var $t_linkEntity;
-    /**#@-*/
+    public $t_linkEntity;
 
 
     /**
@@ -106,7 +98,7 @@ class bab_OrgChart extends bab_TreeView
      * @return bab_OrgChart
      * @access public
      */
-    function __construct($id, $startLevel = 0)
+    public function __construct($id, $startLevel = 0)
     {
         parent::__construct($id);
 
@@ -146,27 +138,27 @@ class bab_OrgChart extends bab_TreeView
      * @param string $link			A link when clicking the node title.
      * @return bab_OrgChartElement
      */
-    function &createElement($id, $type, $title, $description, $link)
+    public function &createElement($id, $type, $title, $description, $link)
     {
         $element =new bab_OrgChartElement($id, $type, $title, $description, $link);
         return $element;
     }
 
 
-    function setOpenNodes($openNodes)
+    public function setOpenNodes($openNodes)
     {
         $this->_openNodes = $openNodes;
         reset($this->_openNodes);
     }
 
 
-    function setOpenMembers($openMembers)
+    public function setOpenMembers($openMembers)
     {
         $this->_openMembers = $openMembers;
         reset($this->_openMembers);
     }
 
-    function setZoomFactor($zoomFactor)
+    public function setZoomFactor($zoomFactor)
     {
         $this->t_zoomFactor = $zoomFactor;
     }
@@ -177,7 +169,7 @@ class bab_OrgChart extends bab_TreeView
      * @param int	$threshold
      * @access public
      */
-    function setVerticalThreshold($threshold)
+    public function setVerticalThreshold($threshold)
     {
         $this->_verticalThreshold = $threshold;
     }
@@ -189,7 +181,7 @@ class bab_OrgChart extends bab_TreeView
      * @param bool	$relative
      * @access public
      */
-    function setRelativeThreshold($relative)
+    public function setRelativeThreshold($relative)
     {
         $this->_relativeThreshold = $relative;
     }
@@ -200,7 +192,7 @@ class bab_OrgChart extends bab_TreeView
      * @access public
      * @return int
      */
-    function getVerticalThreshold()
+    public function getVerticalThreshold()
     {
         return $this->_verticalThreshold;
     }
@@ -210,7 +202,7 @@ class bab_OrgChart extends bab_TreeView
      * @ignore
      */
 
-    function getNextOpenNode()
+    public function getNextOpenNode()
     {
         while (list(, $nodeId) = each($this->_openNodes)) {
             $this->t_nodeId = $nodeId;
@@ -220,7 +212,7 @@ class bab_OrgChart extends bab_TreeView
         return false;
     }
 
-    function getNextOpenMember()
+    public function getNextOpenMember()
     {
         while (list(, $nodeId) = each($this->_openMembers)) {
             $this->t_memberId = $nodeId;
@@ -230,12 +222,12 @@ class bab_OrgChart extends bab_TreeView
         return false;
     }
 
-    function getNextLocationElement()
+    public function getNextLocationElement()
     {
         return false;
     }
 
-    function getNextElement()
+    public function getNextElement()
     {
         $this->t_tooltip = '';
         if ($this->_relativeThreshold) {
@@ -321,7 +313,7 @@ class bab_OrgChart extends bab_TreeView
         return false;
     }
 
-    function getNextMemberRole()
+    public function getNextMemberRole()
     {
         if (list($memberRole, ) = each($this->_currentElement->_members)) {
             $this->t_memberRole = $memberRole;
@@ -336,7 +328,7 @@ class bab_OrgChart extends bab_TreeView
     /**
      * @deprecated use getNextMember instead.
      */
-    function getNextMemberName()
+    public function getNextMemberName()
     {
         if (list(,$member) = each($this->_members)) {
             $this->t_memberName = $member['name'];
@@ -347,7 +339,7 @@ class bab_OrgChart extends bab_TreeView
     }
 
 
-    function getNextMember()
+    public function getNextMember()
     {
         if (list(,$member) = each($this->_members)) {
             $this->t_memberName = $member['name'];
@@ -392,7 +384,7 @@ class bab_OvidentiaOrgChart extends bab_OrgChart
      * @return bab_OrgChart
      * @access public
      */
-    function __construct($id, $orgChartId, $startEntityId = 0, $userId = 0, $startLevel = 0, $adminMode = false, $relative = true)
+    public function __construct($id, $orgChartId, $startEntityId = 0, $userId = 0, $startLevel = 0, $adminMode = false, $relative = true)
     {
         parent::__construct($id, $startLevel);
 
@@ -408,7 +400,7 @@ class bab_OvidentiaOrgChart extends bab_OrgChart
 
 
 
-    function _initLocation()
+    public function _initLocation()
     {
         global $babDB;
 
@@ -463,7 +455,7 @@ class bab_OvidentiaOrgChart extends bab_OrgChart
      * @param int $startEntityId
      * @access private
      */
-    function _selectEntities($startEntityId)
+    public function _selectEntities($startEntityId)
     {
         global $babDB;
 
@@ -501,8 +493,8 @@ class bab_OvidentiaOrgChart extends bab_OrgChart
     /**
      *
      */
-
-    function _getDirEntry($id = false) {
+    public function _getDirEntry($id = false)
+    {
         include_once $GLOBALS['babInstallPath']."utilit/dirincl.php";
         global $babDB;
 
@@ -544,7 +536,7 @@ class bab_OvidentiaOrgChart extends bab_OrgChart
      * @param int $entityId
      * @return array
      */
-    function _getEntityTypes($entityId)
+    public function _getEntityTypes($entityId)
     {
         global $babDB;
 
@@ -560,7 +552,7 @@ class bab_OvidentiaOrgChart extends bab_OrgChart
 
 
 
-    function &_addEntity($entityId, $entityParentId, $entityType, $entityName)
+    public function &_addEntity($entityId, $entityParentId, $entityType, $entityName)
     {
         $elementIdPrefix = 'ENT';
 
@@ -586,7 +578,7 @@ class bab_OvidentiaOrgChart extends bab_OrgChart
      * @param bab_OrgChartElement	$element
      * @param int					$entityId
      */
-    function _addMembers(&$element, $entityId)
+    public function _addMembers(&$element, $entityId)
     {
         require_once $GLOBALS['babInstallPath'].'utilit/ocapi.php';
         global $babDB;
@@ -643,7 +635,7 @@ class bab_OvidentiaOrgChart extends bab_OrgChart
      * @param int					$entityId
      * @param int					$entityParentId
      */
-    function _addActions(&$element, $entityId, $entityParentId)
+    public function _addActions(&$element, $entityId, $entityParentId)
     {
         if ($entityId != $this->_startEntityId) {
             $element->addAction('show_from_here',
@@ -687,7 +679,7 @@ class bab_OvidentiaOrgChart extends bab_OrgChart
      * @param int $startEntityId
      * @access private
      */
-    function _addEntities($startEntityId)
+    public function _addEntities($startEntityId)
     {
         require_once $GLOBALS['babInstallPath'].'utilit/ocapi.php';
         global $babDB;
@@ -713,7 +705,7 @@ class bab_OvidentiaOrgChart extends bab_OrgChart
 
     // Template function
 
-    function getNextLocationElement()
+    public function getNextLocationElement()
     {
         if (list($entityId, $entityTitle) = each($this->_locationElements))
         {
@@ -729,7 +721,7 @@ class bab_OvidentiaOrgChart extends bab_OrgChart
     /**
      * @access private
      */
-    function _updateTree()
+    public function _updateTree()
     {
         if ($this->isUpToDate())
             return;
@@ -745,37 +737,54 @@ class bab_OvidentiaOrgChart extends bab_OrgChart
 
 class bab_OvidentiaOrgChartTreeView extends bab_OvidentiaOrgChart
 {
-    function __construct($id, $orgChartId, $startEntityId = 0, $userId = 0, $startLevel = 0, $adminMode = false)
+    /**
+     * @param string    $id
+     * @param int       $orgChartId
+     * @param int       $startEntityId
+     * @param int       $userId
+     * @param int       $startLevel
+     * @param string    $adminMode
+     */
+    public function __construct($id, $orgChartId, $startEntityId = 0, $userId = 0, $startLevel = 0, $adminMode = false)
     {
         parent::__construct($id, $orgChartId, $startEntityId, $userId, $startLevel, $adminMode);
     }
 
 
-    function _addActions(&$element)
+    /**
+     * {@inheritDoc}
+     * @see bab_OvidentiaOrgChart::_addActions()
+     */
+    public function _addActions(&$element, $entityId, $entityParentId)
     {
-        $element->addAction('view_entity_directory',
-                    bab_translate("View in directory"),
-                    $GLOBALS['babSkinPath'] . 'images/nodetypes/collective_folder.png',
-                    '',
-                    'toggleMembers');
+        $element->addAction(
+            'view_entity_directory',
+            bab_translate("View in directory"),
+            $GLOBALS['babSkinPath'] . 'images/nodetypes/collective_folder.png',
+            '',
+            'toggleMembers'
+        );
     }
 
-
-    function &_addEntity($entityId, $entityParentId, $entityType, $entityName)
+    /**
+     * {@inheritDoc}
+     * @see bab_OvidentiaOrgChart::_addEntity()
+     */
+    public function &_addEntity($entityId, $entityParentId, $entityType, $entityName)
     {
         $elementIdPrefix = 'ENT';
 
-        $element =& $this->createElement($elementIdPrefix . $entityId,
-                                         $entityType,
-                                         bab_toHtml($entityName),
-                                         '',
-                                         '');
-        //$this->_addMembers($element, $entityId);
+        $element =& $this->createElement(
+            $elementIdPrefix . $entityId,
+            $entityType,
+            bab_toHtml($entityName),
+            '',
+            ''
+        );
 
         $element->setLink('javascript:window.parent.document.getElementById(\'frt\').contentWindow.updateFrFrame(\'disp5\',\'&pos=&xf=&q=&idx=list&entity=' .  $entityId . '\')');
         $element->setIcon($GLOBALS['babSkinPath'] . 'images/nodetypes/folder.png');
 
         return $element;
     }
-
 }
