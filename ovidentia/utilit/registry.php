@@ -629,9 +629,7 @@ class bab_Registry
      */
     public static function toArray($path)
     {
-        if (substr($path, 0, 1) !== '/') {
-            $path = '/' . $path;
-        }
+        $path = self::path($path);
         $registry = new bab_Registry();
 
         $elements = explode('/', $path);
