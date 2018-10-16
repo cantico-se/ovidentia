@@ -618,4 +618,33 @@ class bab_Registry
         }
         return $registry->removeKey($key);
     }
+
+    /**
+     * Returns an associative array of values found at the specified $path in the registry.
+     * Every directories under $path will be recursively parsed
+     *
+     * @since 8.6.98
+     * @param string $path
+     * @return array
+     */
+    public static function toArray($path)
+    {
+        $path = self::path($path);
+        $registry = new bab_Registry();
+
+        $elements = explode('/', $path);
+        $key = array_pop($elements);
+        $registryPath = implode('/', $elements);
+        $registry->changeDirectory($registryPath);
+
+        $array = array();
+        while ($key = $registry->fetchChildKey()) {
+            $array[trim($key, '/')] = $registry->get($registryPath . '/' . $key);
+        }
+        while ($key = $registry->fetchChildDir()) {
+            $array[trim($key, '/')] = $registry->toArray($registryPath . '/' . $key);
+        }
+
+        return $array;
+    }
 }
