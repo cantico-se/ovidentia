@@ -87,10 +87,18 @@ class bab_ovml_cache
 	}
 
 
-	public static function clearAllSessions()
-	{
-	    bab_Registry::set('/core/lastOvmlCacheClear', time());
-	}
+    public static function clearAllSessions()
+    {
+        $path = '/core/lastOvmlCacheClear';
+        $value = time();
+        $registry = bab_getRegistry();
+
+        $elements = explode('/', $path);
+        $key = array_pop($elements);
+        $registryPath = implode('/', $elements);
+        $registry->changeDirectory($registryPath);
+        $registry->setKeyValue($key, $value);
+    }
 
 
 	/**
