@@ -246,7 +246,7 @@ abstract class bab_Controller
      * @param string $classname
      * @return bab_Controller
      */
-    protected static function getProxyInstance($classname)
+    public static function getProxyInstance($classname)
     {
         $class = new ReflectionClass($classname);
         $proxyClassname = $classname . self::PROXY_CLASS_SUFFIX;
@@ -293,7 +293,7 @@ abstract class bab_Controller
     /**
      * @return bab_Controller
      */
-    protected function proxy()
+    public function proxy()
     {
         $className = get_class($this);
         if (false === strpos($className, '\\')) {
