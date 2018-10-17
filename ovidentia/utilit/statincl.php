@@ -55,10 +55,6 @@ class bab_WebStatEvent
                 break;
         }
         
-        register_shutdown_function(array(
-            &$this,
-            'updateInfo'
-        ));
         $this->idevt = 0;
         $this->info = array();
         
@@ -96,6 +92,10 @@ class bab_WebStatEvent
                 'logEvent'
             ));
         }
+        register_shutdown_function(array(
+            $this,
+            'updateInfo'
+        ));
         
         $this->module($this->tg);
         $GLOBALS['babUrlStatInfo'] = $GLOBALS['babUrlScript'] . '?tg=statinfo&statevt=' . $this->idevt;
