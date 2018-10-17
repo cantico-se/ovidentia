@@ -666,7 +666,6 @@ class bab_Registry
 
         foreach ($importData as $key => $value) {
             if (! is_array($value)) {
-                var_dump($registryPath . '/' . $key);
                 $registry->set($registryPath . '/' . $key, $value);
             } else {
                 $registry->importFromArray($value, $registryPath . '/' . trim($key, '/') . '/');
