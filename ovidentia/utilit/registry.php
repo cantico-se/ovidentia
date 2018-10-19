@@ -647,4 +647,29 @@ class bab_Registry
 
         return $array;
     }
+
+    /**
+     * Import into the registry at the path specified by $destination every values from $importData
+     *
+     * @since 8.6.98
+     * @param array $importData associative array of key => value. Value can be an associative array
+     * @return void
+     */
+    public static function importFromArray($importData = array(), $destination)
+    {
+        $destination = self::path($destination);
+        $registry = new bab_Registry();
+
+        $elements = explode('/', $destination);
+        $key = array_pop($elements);
+        $registryPath = implode('/', $elements);
+
+        foreach ($importData as $key => $value) {
+            if (! is_array($value)) {
+                $registry->set($registryPath . '/' . $key, $value);
+            } else {
+                $registry->importFromArray($value, $registryPath . '/' . trim($key, '/') . '/');
+            }
+        }
+    }
 }
