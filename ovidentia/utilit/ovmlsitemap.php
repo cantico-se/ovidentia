@@ -49,6 +49,19 @@ abstract class Ovml_Container_Sitemap extends Func_Ovml_Container
      */
     protected $sitemap_name;
 
+    /**
+     * @var string  The current sitemap node id
+     */
+    protected	$selectedNodeId = null;
+
+    /**
+     * @var string[] The node ids of the current sitemap path
+     */
+    protected	$activeNodes = array();
+
+    protected	$selectedClass = 'selected';
+    protected	$activeClass = 'active';
+
 
     /**
      * @var int $limit				The max number of elements to return.
@@ -97,6 +110,28 @@ abstract class Ovml_Container_Sitemap extends Func_Ovml_Container
             $this->sitemap_name = $sitemap;
         }
 
+        $baseNodeId = $this->getBaseNode();
+        $home = $this->sitemap->getNodeById($baseNodeId);
+
+        $this->selectedNodeId = bab_siteMap::getPosition();
+
+        // if base node (parameter 'basenode') has been specified,
+        // we try to find if a descendant of this node has
+        // a target to the current position.
+        if ($customNode = $this->sitemap->getNodeByTargetId($baseNodeId, $selectedNodeId)) {
+            $this->selectedNodeId = $customNode->getId();
+        }
+
+        $selectedNode = $this->sitemap->getNodeById($this->selectedNodeId);
+
+        while ($selectedNode && ($item = $selectedNode->getData())) {
+            /* @var $item bab_SitemapItem */
+            $this->activeNodes[$item->id_function] = $item->id_function;
+            if ($home->getData()->id_function === $item->id_function) {
+                break;
+            }
+            $selectedNode = $selectedNode->parentNode();
+        }
     }
 
 
@@ -190,7 +225,7 @@ abstract class Ovml_Container_Sitemap extends Func_Ovml_Container
             $this->idx = $this->limitOffset;
             return false;
         }
-        
+
         if (!isset($this->IdEntries[$this->idx])) {
             return false;
         }
@@ -253,6 +288,17 @@ class Func_Ovml_Container_SitemapEntries extends Ovml_Container_Sitemap
                     $item = $node->getData();
                     $tmp = array();
 
+                    $classnames = $item->getIconClassnames();
+
+                    if (isset($this->activeNodes[$item->id_function])) {
+                        // the nodes in the current path have the "active" class.
+                        $classnames .= ' ' . $this->activeClass;
+                    }
+                    if ($this->selectedNodeId === $item->id_function) {
+                        // the current node has the "selected" class.
+                        $classnames .= ' ' . $this->selectedClass;
+                    }
+
                     $tmp['url'] = $item->getRwUrl();
                     $tmp['text'] = $item->name;
                     $tmp['description'] = $item->description;
@@ -263,7 +309,7 @@ class Func_Ovml_Container_SitemapEntries extends Ovml_Container_Sitemap
                     $tmp['pageTitle'] = $item->getPageTitle();
                     $tmp['pageDescription'] = $item->getPageDescription();
                     $tmp['pageKeywords'] = $item->getPageKeywords();
-                    $tmp['classnames'] = $item->getIconClassnames();
+                    $tmp['classnames'] = $classnames;
                     $tmp['menuIgnore'] = $item->menuIgnore;
                     $tmp['breadCrumbIgnore'] = $item->breadCrumbIgnore;
                     $tmp['target'] = $item->getTarget()->id_function;
@@ -722,8 +768,8 @@ class Func_Ovml_Function_CurrentNode extends Func_Ovml_Function
 /**
  * Return the sitemap menu tree in a html UL LI
  *
- * <OFSitemapMenu 
- *      [sitemap="sitemapName"] [baselangid="parentnode"] [basenode="parentNode"] 
+ * <OFSitemapMenu
+ *      [sitemap="sitemapName"] [baselangid="parentnode"] [basenode="parentNode"]
  *      [selectednode=""] [keeplastknown="0|1"] [maxdepth="depth"] [outerul="1"] [admindelegation="0"]
  *      [editlinkslevel="0"]
  *      >
@@ -811,7 +857,7 @@ class Func_Ovml_Function_SitemapMenu extends Func_Ovml_Function {
             // the current node has the "selected" class.
             $additional_classes[] = $this->selectedClass;
         }
-        
+
         if (isset($this->args['editlinkslevel']) && $this->args['editlinkslevel'] >= $depth) {
             $additional_classes[] = 'smed-sitemapnode-'.$siteMapItem->id_function;
         }
