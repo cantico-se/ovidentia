@@ -525,7 +525,16 @@ class bab_ArtDraft
 			/*@var $oPubPathEnv bab_PublicationPathsEnv */
 			if(false === $oPubPathEnv->setEnv(0))
 			{
-				throw new Exception('Unexpected error');
+			    $errors = $oPubPathEnv->getError();
+			    $msg = '';
+			    $nbErrors = count($errors);
+			    foreach ($errors as $i => $error){
+			        $msg .= $error;
+			        if($i+1 < $nbErrors){
+			            $msg .= '. ';
+			        }
+			    }
+				throw new Exception('Unexpected error : '.$msg);
 			}
 
 			$targetPath = new bab_path($oPubPathEnv->getDraftArticleImgPath($this->id));
