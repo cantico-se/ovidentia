@@ -203,7 +203,7 @@ class bab_fileHandler {
 		{
 			bab_mkdir($GLOBALS['babUploadPath'].'/tmp');
 		}
-		
+
 		$temporaryPathToFile = $GLOBALS['babUploadPath'].'/tmp/'.session_id().'_'.$this->filename;
 		if ($this->import($temporaryPathToFile)) {
 			$this->source	= $temporaryPathToFile;
@@ -350,9 +350,7 @@ function bab_importFmFile($fmFile, $id_owner, $path, $bgroup, $withName = true)
 			}
 
 			// update a file
-			return saveUpdateFile($oFolderFile->getId(), $fmFile, $fmFile->filename,
-				$oFolderFile->getDescription(), '',
-				$oFolderFile->getReadOnly(), 'Y', false, false);
+			return saveUpdateFile($oFolderFile->getId(), $fmFile, $fmFile->filename, $oFolderFile->getDescription(), '', $oFolderFile->getReadOnly(), 'Y', false, false, null);
 		}
 		return false;
 	}
