@@ -43,8 +43,8 @@ class swishCls
 
 	$registry = bab_getRegistryInstance();
 	$registry->changeDirectory('/bab/indexfiles/');
-	
-	
+
+
 	if ('\\' === DIRECTORY_SEPARATOR) {
 		$default_charset = 'ISO-8859-1';
 	} else {
@@ -52,7 +52,7 @@ class swishCls
 	}
 
 	$this->system_charset = $registry->getValue('system_charset', $default_charset);
-	
+
 	$this->uploadDir = bab_getInstance('bab_Settings')->getUploadPath();
 
 	if (!is_dir($this->uploadDir.'/tmp/'))
@@ -80,10 +80,11 @@ class swishCls
 		$this->pdftotext = $arr['pdftotext'];	// 'C:/Progra~1/SWISH-E/lib/swish-e/pdftotext';
 		$this->xls2csv = $arr['xls2csv'];		// 'C:/Progra~1/SWISH-E/lib/swish-e/xls2csv';
 		$this->catdoc = $arr['catdoc'];
+		$this->docx2txt = $arr['docx2txt'];
 		$this->unzip = $arr['unzip'];
 		}
-	
-	
+
+
 	if (empty($this->swishCmd)) {
 		if ('\\' === DIRECTORY_SEPARATOR) {
 			$this->swishCmd = 'C:/Progra~1/SWISH-E/swish-e.exe';
@@ -91,8 +92,8 @@ class swishCls
 			$this->swishCmd = $this->getDefaultCommand('swish-e');
 		}
 	}
-	
-	
+
+
 	if (empty($this->pdftotext)) {
 		if ('\\' === DIRECTORY_SEPARATOR) {
 			$this->pdftotext = 'C:/Progra~1/SWISH-E/lib/swish-e/pdftotext.exe';
@@ -100,7 +101,7 @@ class swishCls
 			$this->pdftotext = $this->getDefaultCommand('pdftotext');
 		}
 	}
-	
+
 	if (empty($this->xls2csv)) {
 		if ('\\' === DIRECTORY_SEPARATOR) {
 			$this->xls2csv = 'C:/Progra~1/SWISH-E/lib/swish-e/xls2csv.exe';
@@ -108,7 +109,7 @@ class swishCls
 			$this->xls2csv = $this->getDefaultCommand('xls2csv');
 		}
 	}
-	
+
 	if (empty($this->catdoc)) {
 		if ('\\' === DIRECTORY_SEPARATOR) {
 			$this->catdoc = 'C:/Progra~1/SWISH-E/lib/swish-e/catdoc.exe';
@@ -116,7 +117,15 @@ class swishCls
 			$this->catdoc = $this->getDefaultCommand('catdoc');
 		}
 	}
-	
+
+	if (empty($this->docx2txt)) {
+	    if ('\\' === DIRECTORY_SEPARATOR) {
+	        $this->docx2txt= 'C:/Progra~1/SWISH-E/lib/swish-e/docx2txt.exe';
+	    } else {
+	        $this->docx2txt= $this->getDefaultCommand('docx2txt');
+	    }
+	}
+
 	if (empty($this->unzip)) {
 		if ('\\' === DIRECTORY_SEPARATOR) {
 			$this->unzip = 'C:/Progra~1/SWISH-E/lib/swish-e/unzip.exe';
@@ -127,13 +136,13 @@ class swishCls
 
 	$this->object = $object;
 	}
-	
-	
+
+
 	/**
 	 * Find executable on linux
 	 */
 	function getDefaultCommand($command) {
-		
+
 		$obj = $this->execCmd('whereis -b '.$command);
 		while ($str = $obj->getNextDebug()) {
 		    $m = null;
@@ -143,11 +152,11 @@ class swishCls
 				}
 			}
 		}
-		
+
 		return '/usr/bin/'.$command;
 	}
-	
-	
+
+
 
 
 	/**
@@ -158,7 +167,7 @@ class swishCls
 	function execCmd($cmd)
 	{
 
-	
+
 
 
 	$r = new bab_indexReturn;
@@ -178,7 +187,7 @@ class swishCls
 
 	// attention, si on considere que le retour de swishe est en "system_charset" les caracteres accentues serons perdus car les fichiers du gestionnaire de fichiers
 	// sont enregistres sur le disque du dur dans le charset d'ovidentia, il faut donc conserver le retour tel quel pour que ce soit lisible
-	
+
 	// $buffer = bab_getStringAccordingToDataBase($buffer, $this->system_charset);
 
 	$r->addDebug($buffer);
@@ -204,7 +213,7 @@ class bab_batchFile {
 	function init() {
 		$file = $this->file;
 		$r = new bab_indexReturn;
-		
+
 		if (is_file($file) && !is_writable($file)) {
 			$r->addError(sprintf(bab_translate("The file %s is not writable"),$file));
 			$r->result = false;
@@ -274,13 +283,13 @@ class bab_indexFilesCls extends swishCls
 		public function setTempConfigFile($indexFile) {
 
 			$r = new bab_indexReturn;
-		
+
 			if (!is_file($this->swishCmd)) {
 				$r->result = false;
 				$r->addError(sprintf(bab_translate('File not found : %s'),$this->swishCmd));
 				return $r;
 				}
-			
+
 			$this->objectIndex = $indexFile;
 
 			$str = bab_printTemplate($this, 'swish.config');
@@ -292,7 +301,7 @@ class bab_indexFilesCls extends swishCls
 				$r->addDebug($str);
 				return $r;
 				}
-			
+
 			$r->result = false;
 			$r->addError(bab_translate('Unexpected error : cannot write to upload directory'));
 			return $r;
@@ -303,22 +312,22 @@ class bab_indexFilesCls extends swishCls
 		 */
 		public function checkTimeout() {
 			global $babDB;
-		
+
 			$r = new bab_indexReturn;
 
 			$res = $babDB->db_query('SELECT * FROM '.BAB_INDEX_SPOOLER_TBL.' WHERE object='.$babDB->quote($this->object));
 
 			if (0 < $babDB->db_num_rows($res)) {
-			
+
 				$object = $babDB->db_fetch_assoc($res);
 				$object['function_parameter'] = unserialize($object['function_parameter']);
-			
+
 				if (!file_exists($this->indexLog)) {
 					// locked but not launched yet
 					$r->result = BAB_INDEX_PENDING;
 					$r->addError(sprintf(bab_translate("There is a lock on the index file %s, indexation is in a waiting state"),$this->object));
 				} else {
-					
+
 					$content = implode("", @file($this->indexLog));
 					if (false === mb_strpos($content,'OVIDENTIA EOF')) {
 						// file created but script not finished
@@ -340,7 +349,7 @@ class bab_indexFilesCls extends swishCls
 								$r->result = BAB_INDEX_FREE;
 								$r->addDebug(sprintf(bab_translate("The lock has been removed from %s"),$this->object));
 							} else {
-								
+
 								$r->result = false;
 								$r->addError("Error with callback function in ".$this->object);
 								$r->addDebug($object['function']);
@@ -371,7 +380,7 @@ class bab_indexFilesCls extends swishCls
 		public function prepareIndex($require_once, $function, $function_parameter) {
 
 			global $babDB;
-			
+
 			$r = $this->checkTimeout();
 			$r->result = BAB_INDEX_FREE === $r->result;
 			$r->merge($this->setTempConfigFile($this->mainIndex));
@@ -381,7 +390,7 @@ class bab_indexFilesCls extends swishCls
 			}
 
 			$babDB->db_query('
-				INSERT INTO '.BAB_INDEX_SPOOLER_TBL.' (object, require_once, function, function_parameter) 
+				INSERT INTO '.BAB_INDEX_SPOOLER_TBL.' (object, require_once, function, function_parameter)
 				VALUES (
 					'.$babDB->quote($this->object).',
 					'.$babDB->quote($require_once).',
@@ -426,14 +435,14 @@ class bab_indexFilesCls extends swishCls
 			$bat->init();
 
 			if (!defined('BAB_SWISHE_WGET_URL')) {
-			
+
 				$registry = bab_getRegistryInstance();
 				$registry->changeDirectory('/bab/indexfiles/');
 				$default_command = $registry->getValue('http_query_command', 'wget -q --spider %s');
 
 				define('BAB_SWISHE_WGET_URL', $default_command);
 			}
-			
+
 			$bat->addCmd(sprintf(BAB_SWISHE_WGET_URL, escapeshellarg($GLOBALS['babUrlScript'].'?tg=usrindex&cmd=EOF')));
 			$bat->close();
 		}
@@ -446,9 +455,9 @@ class bab_indexFilesCls extends swishCls
 		public function indexFiles()
 		{
 			$r = $this->checkTimeout();
-			
+
 			if (BAB_INDEX_FREE === $r->result) {
-				$r->merge($this->setTempConfigFile($this->mainIndex));	
+				$r->merge($this->setTempConfigFile($this->mainIndex));
 				$r->merge($this->execCmd($this->swishCmd.' -c '.escapeshellarg($this->tmpCfgFile)));
 				unlink($this->tmpCfgFile);
 				$r->result = true;
@@ -460,7 +469,7 @@ class bab_indexFilesCls extends swishCls
 			return $r;
 		}
 
-	
+
 		/**
 		 * Add file into index
 		 * @return object bab_indexReturn
@@ -472,24 +481,24 @@ class bab_indexFilesCls extends swishCls
 			}
 
 			$r = new bab_indexReturn;
-			
+
 			$r->merge($this->setTempConfigFile($this->mergeIndex));
 			$r->merge($this->execCmd($this->swishCmd.' -c '.escapeshellarg($this->tmpCfgFile)));
 
-			
+
 			if (is_file($this->tempIndex)) {
 				unlink($this->tempIndex);
 				unlink($this->tempIndex.'.prop');
 			}
-			
+
 			$r->merge($this->execCmd($this->swishCmd.' -M '.escapeshellarg($this->mainIndex).' '.escapeshellarg($this->mergeIndex).' '.escapeshellarg($this->tempIndex)));
 
-			
+
 			@unlink($this->tmpCfgFile);
 
 			@unlink($this->mergeIndex);
 			@unlink($this->mergeIndex.'.prop');
-			
+
 			if (is_file($this->tempIndex)) {
 				@unlink($this->mainIndex);
 				@unlink($this->mainIndex.'.prop');
@@ -539,13 +548,13 @@ class bab_searchFilesCls extends swishCls
 	 */
 	public function setQueryOperator($query1, $query2, $option)
 		{
-		
+
 		$query1 = preg_replace_callback("/\s(OR|NOT|AND|or|not|and)\s/", create_function('$v','return \' "\'.$v[1].\'" \';'), $query1);
 
 		//space = OR in ovidentia
 
 		$query1 = str_replace(' ', ' OR ', $query1);
-		
+
 		$this->query = $query1;
 		if (!empty($query2))
 			{
@@ -574,7 +583,7 @@ class bab_searchFilesCls extends swishCls
 
 
 		$cmd_query = bab_convertStringFromDatabase($this->query, $this->system_charset);
-		
+
 		// set a locale for escapeshellarg
 		bab_locale();
 		$system = $this->swishCmd.' -f '.escapeshellarg($this->mainIndex).' -w '.escapeshellarg($cmd_query);
@@ -591,15 +600,15 @@ class bab_searchFilesCls extends swishCls
 				{
 				$files[] = array(
 						'file' 		=> $matches[2][$j],
-						'title' 	=> $matches[3][$j], 
+						'title' 	=> $matches[3][$j],
 						'relevance' => (int) $matches[1][$j]
 					);
 
 				$debug .= $matches[1][$j].' - '.$matches[2][$j]."\n";
 				}
 			}
-			
-			
+
+
 	    if (empty($debug)) {
 	        $debug .= 'No results.';
 	    }
@@ -623,14 +632,14 @@ class bab_searchFilesCls extends swishCls
 			$swish = new Swish($this->mainIndex);
 			$results = $swish->query($this->query);
 			$files = array();
-			
+
 			while($result = $results->nextResult()) {
-	
+
 				bab_debug($result, DBG_INFO, 'swish-e');
 
 				$files[] = array(
 					'file' 		=> (string)	$result->swishdocpath,
-					'title' 	=> (string) @$result->swishtitle, 
+					'title' 	=> (string) @$result->swishtitle,
 					'relevance' => (int) 	$result->swishrank
 				);
 			}
@@ -656,9 +665,9 @@ class bab_searchFilesCls extends swishCls
 
 
 class bab_indexFileCls extends swishCls {
-	
+
 	function bab_indexFileCls($object) {
-		
+
 		parent::__construct($object);
 	}
 
@@ -667,7 +676,7 @@ class bab_indexFileCls extends swishCls {
 	 * @return boolean
 	 */
 	function createObject($name, $onload) {
-		
+
 		return true;
 	}
 
@@ -700,7 +709,8 @@ class searchEngineInfosObjCls {
 			'application/msword',
 			'application/vnd.oasis.opendocument.text',
 			'application/vnd.oasis.opendocument.spreadsheet',
-			'application/vnd.oasis.opendocument.presentation'
+			'application/vnd.oasis.opendocument.presentation',
+		    'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
 		);
 	}
 }

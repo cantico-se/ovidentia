@@ -7333,7 +7333,6 @@ function ovidentia_upgrade($version_base,$version_ini) {
         $babDB->db_query("ALTER TABLE `bab_sites` ADD `stat_keep_history` tinyint(3) NOT NULL default '0' COMMENT 'Number of days of detailled history in stats'");
     }
 
-
     /**
      * Upgrade to 8.5.97
      */
@@ -7390,24 +7389,24 @@ function ovidentia_upgrade($version_base,$version_ini) {
             )
         ");
     }
-    
+
     /**
      * Upgrade to 8.6.96
      */
-    
+
     if (bab_isTable('bab_sites')) {
         //Get the authentication method for every sites
         $res = $babDB->db_query("SELECT id, authentification FROM bab_sites");
         $sitesConfig = array();
         while($arr = $babDB->db_fetch_array($res))
         {
-            $sitesConfig[$arr['id']] = $arr['authentification']; 
+            $sitesConfig[$arr['id']] = $arr['authentification'];
         }
         //Set the new type
         $babDB->db_query("ALTER TABLE `bab_sites` MODIFY `authentification` VARCHAR(255)");
-        
+
         //Set the new authentication value based on what was previously recovered
-        
+
         foreach ($sitesConfig as $siteId => $authenticationValue){
             $funcPath = '';
             switch ($authenticationValue){
@@ -7429,7 +7428,13 @@ function ovidentia_upgrade($version_base,$version_ini) {
         }
     }
 
+    /**
+     * Upgrade to 8.6.98
+     */
 
+    if (!bab_isTableField(BAB_SITES_SWISH_TBL, 'docx2txt')) {
+        $babDB->db_query("ALTER TABLE `" . BAB_SITES_SWISH_TBL . "` ADD `docx2txt` VARCHAR(255) NOT NULL default ''");
+    }
 
 
 
