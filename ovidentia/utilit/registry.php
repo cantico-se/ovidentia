@@ -501,6 +501,7 @@ class bab_Registry
         return $path;
     }
 
+
     /**
      * @param string $path
      *
@@ -518,9 +519,93 @@ class bab_Registry
     }
 
 
+
+    /**
+     * @param string $path
+     * @param mixed $defaultValue
+     *
+     * @since 8.6.98
+     *
+     * @return array
+     */
+    public static function getOverriddenValues($path, $defaultValue = null)
+    {
+        $path = self::path($path);
+
+        $overridenValues = array(
+            'importantConstant' => null,
+            'override' => null,
+            'userOverride' => null,
+            'sessionOverride' => null,
+            'registry' => null,
+            'constant' => null,
+            'default' => null
+        );
+
+        // Important constant
+
+        if (defined('!' . $path)) {
+            $overridenValues['importantConstant'] = constant('!' . $path);
+        }
+
+        // Override
+
+        if (isset(self::$override[$path])) {
+            $overridenValues['override'] = self::$override[$path];
+        }
+
+        $registry = self::getRegistry();
+
+        $elements = explode('/', $path);
+        $key = array_pop($elements);
+        $registryPath = implode('/', $elements);
+        $registry->changeDirectory($registryPath);
+
+        // User override
+
+        $userId = bab_getUserId();
+        $prefix = self::getUserIdPathPrefix($userId);
+
+        $registry->changeDirectory($prefix . '/' . $registryPath);
+        $value = $registry->getValue($key);
+
+        if (isset($value)) {
+            $overridenValues['userOverride'] = $value;
+        }
+
+        // Session override
+
+        if (isset($_SESSION[__CLASS__ . '/' . $path])) {
+            $overridenValues['sessionOverride'] = $_SESSION[__CLASS__ . '/' . $path];
+        }
+
+        // Registry
+
+        $registry->changeDirectory($registryPath);
+        $value = $registry->getValue($key);
+
+        if (isset($value)) {
+            $overridenValues['registry'] = $value;
+        }
+
+        // Constant
+
+        if (defined($path)) {
+            $overridenValues['constant'] = constant($path);
+        }
+
+        // Default
+
+        $overridenValues['default'] = $defaultValue;
+
+        return $overridenValues;
+    }
+
+
     /**
      *
      * @param string $path
+     * @param mixed $defaultValue
      *
      * @since 8.5.96
      *
@@ -529,9 +614,14 @@ class bab_Registry
     public static function get($path, $defaultValue = null)
     {
         $path = self::path($path);
+
+        // Important constant
+
         if (defined('!' . $path)) {
             return constant('!' . $path);
         }
+
+        // Override
 
         if (isset(self::$override[$path])) {
             return self::$override[$path];
@@ -543,15 +633,41 @@ class bab_Registry
         $key = array_pop($elements);
         $registryPath = implode('/', $elements);
         $registry->changeDirectory($registryPath);
+
+        // User override
+
+        $userId = bab_getUserId();
+        $prefix = self::getUserIdPathPrefix($userId);
+
+        $registry->changeDirectory($prefix . '/' . $registryPath);
         $value = $registry->getValue($key);
 
         if (isset($value)) {
             return $value;
         }
 
+        // Session override
+
+        if (isset($_SESSION[__CLASS__ . '/' . $path])) {
+            return $_SESSION[__CLASS__ . '/' . $path];
+        }
+
+        // Registry
+
+        $registry->changeDirectory($registryPath);
+        $value = $registry->getValue($key);
+
+        if (isset($value)) {
+            return $value;
+        }
+
+        // Constant
+
         if (defined($path)) {
             return constant($path);
         }
+
+        // Default
 
         return $defaultValue;
     }
@@ -580,6 +696,9 @@ class bab_Registry
 
     /**
      * Temporarily overrides the specified value.
+     *
+     * The override lasts until the end of the script.
+     *
      * @since 8.6.97
      *
      * @param string $path
@@ -593,6 +712,59 @@ class bab_Registry
     }
 
 
+    /**
+     * Overrides the specified value for the current session.
+     *
+     * The override lasts until the end of the session.
+     *
+     * @since 8.6.98
+     *
+     * @param string $path
+     * @param mixed $value
+     */
+    public static function sessionOverride($path, $value)
+    {
+        $path = self::path($path);
+
+        $_SESSION[__CLASS__ . '/' . $path] = $value;
+    }
+
+
+    /**
+     *
+     * @since 8.6.98
+     *
+     * @param string $userId
+     * @return string
+     */
+    private function getUserIdPathPrefix($userId)
+    {
+        return '/U/' . $userId;
+    }
+
+
+    /**
+     * Overrides the specified value for the current user.
+     *
+     * The override persists across session.
+     *
+     * @since 8.6.98
+     *
+     * @param string $path
+     * @param mixed $value
+     */
+    public static function userOverride($path, $value)
+    {
+        if (!bab_isUserLogged()) {
+            self::sessionOverride($path, $value);
+            return;
+        }
+
+        $userId = bab_getUserId();
+        $prefix = self::getUserIdPathPrefix($userId);
+
+        bab_Registry::set($prefix . '/' . $path, $value);
+    }
 
 
     /**
@@ -618,6 +790,41 @@ class bab_Registry
         }
         return $registry->removeKey($key);
     }
+
+
+    /**
+     *
+     * @param string $path
+     */
+    public static function sessionDelete($path)
+    {
+        $pathLength = strlen($path);
+        $sessionKeys = array_keys($_SESSION);
+        foreach ($sessionKeys as $sessionKey) {
+            if (substr($sessionKey, 0, $pathLength) === $path) {
+                unset($_SESSION[$sessionKey]);
+            }
+        }
+    }
+
+
+    /**
+     *
+     * @param string $path
+     */
+    public static function userDelete($path)
+    {
+        if (!bab_isUserLogged()) {
+            self::sessionDelete($path);
+            return;
+        }
+
+        $userId = bab_getUserId();
+        $prefix = self::getUserIdPathPrefix($userId);
+
+        bab_Registry::delete($prefix . '/' . $path);
+    }
+
 
     /**
      * Returns an associative array of values found at the specified $path in the registry.
