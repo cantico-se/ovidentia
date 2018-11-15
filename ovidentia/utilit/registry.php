@@ -534,9 +534,9 @@ class bab_Registry
 
         $overridenValues = array(
             'importantConstant' => null,
-            'override' => null,
-            'userOverride' => null,
             'sessionOverride' => null,
+            'userOverride' => null,
+            'override' => null,
             'registry' => null,
             'constant' => null,
             'default' => null
@@ -548,11 +548,12 @@ class bab_Registry
             $overridenValues['importantConstant'] = constant('!' . $path);
         }
 
-        // Override
+        // User session override
 
-        if (isset(self::$override[$path])) {
-            $overridenValues['override'] = self::$override[$path];
+        if (isset($_SESSION[__CLASS__ . '/' . $path])) {
+            $overridenValues['sessionOverride'] = $_SESSION[__CLASS__ . '/' . $path];
         }
+
 
         $registry = self::getRegistry();
 
@@ -561,7 +562,7 @@ class bab_Registry
         $registryPath = implode('/', $elements);
         $registry->changeDirectory($registryPath);
 
-        // User override
+        // User persistent override
 
         $userId = bab_getUserId();
         $prefix = self::getUserIdPathPrefix($userId);
@@ -573,10 +574,10 @@ class bab_Registry
             $overridenValues['userOverride'] = $value;
         }
 
-        // Session override
+        // Global override
 
-        if (isset($_SESSION[__CLASS__ . '/' . $path])) {
-            $overridenValues['sessionOverride'] = $_SESSION[__CLASS__ . '/' . $path];
+        if (isset(self::$override[$path])) {
+            $overridenValues['override'] = self::$override[$path];
         }
 
         // Registry
@@ -621,10 +622,10 @@ class bab_Registry
             return constant('!' . $path);
         }
 
-        // Override
+        // User session override
 
-        if (isset(self::$override[$path])) {
-            return self::$override[$path];
+        if (isset($_SESSION[__CLASS__ . '/' . $path])) {
+            return $_SESSION[__CLASS__ . '/' . $path];
         }
 
         $registry = self::getRegistry();
@@ -634,22 +635,22 @@ class bab_Registry
         $registryPath = implode('/', $elements);
         $registry->changeDirectory($registryPath);
 
-        // User override
+        // User persistent override
 
         $userId = bab_getUserId();
-        $prefix = self::getUserIdPathPrefix($userId);
+        $userPrefix = self::getUserIdPathPrefix($userId);
 
-        $registry->changeDirectory($prefix . '/' . $registryPath);
+        $registry->changeDirectory($userPrefix . '/' . $registryPath);
         $value = $registry->getValue($key);
 
         if (isset($value)) {
             return $value;
         }
 
-        // Session override
+        // Global override
 
-        if (isset($_SESSION[__CLASS__ . '/' . $path])) {
-            return $_SESSION[__CLASS__ . '/' . $path];
+        if (isset(self::$override[$path])) {
+            return self::$override[$path];
         }
 
         // Registry
