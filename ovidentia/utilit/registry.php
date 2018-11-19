@@ -738,7 +738,7 @@ class bab_Registry
      * @param string $userId
      * @return string
      */
-    private function getUserIdPathPrefix($userId)
+    private static function getUserIdPathPrefix($userId)
     {
         return '/U/' . $userId;
     }
