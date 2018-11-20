@@ -524,6 +524,29 @@ class bab_Registry
      * @param string $path
      * @param mixed $defaultValue
      *
+     * @since 8.6.99
+     *
+     * @return string|NULL      'importantConstant', 'sessionOverride', 'userOverride', 'override', 'registry', 'constant', 'default'
+     */
+    public static function getSource($path, $defaultValue = null)
+    {
+        $path = self::path($path);
+
+        $overridenValues = self::getOverriddenValues($path, $defaultValue);
+
+        foreach ($overridenValues as $source => $overridenValue) {
+            if (isset($overridenValue)) {
+                return $source;
+            }
+        }
+        return null;
+    }
+
+
+    /**
+     * @param string $path
+     * @param mixed $defaultValue
+     *
      * @since 8.6.98
      *
      * @return array
@@ -604,6 +627,7 @@ class bab_Registry
 
 
     /**
+     * Returns the value associated path.
      *
      * @param string $path
      * @param mixed $defaultValue
