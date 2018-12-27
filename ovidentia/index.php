@@ -287,19 +287,18 @@ $babOvidentiaJs = $babScriptPath."ovidentia.js";
 $babOvmlPath = bab_Skin::getUserSkin()->getThemePath().'ovml/';
 
 
-
-
-
 /**
  * URL rewriting
  */
-if (isset($_GET['babrw']))
-{
-    if (false !== $arr = bab_siteMap::extractNodeUrlFromRewrite($_GET['babrw'], true))
-    {
-        $_GET += $arr;
-        $_REQUEST += $arr;
+if (isset($_GET['babrw'])) {
+    require_once $GLOBALS['babInstallPath'] . 'utilit/evtincl.php';
+    $event = new bab_eventRewrittenUrlRequested($_GET['babrw']);
+    bab_fireEvent($event);
 
+    if ($event->isFound()) {
+        $urlParameters = $event->urlParameters[0];
+        $_GET += $urlParameters;
+        $_REQUEST += $urlParameters;
     } elseif (!bab_isUserLogged()) {
         bab_requireCredential();
     } else {
@@ -309,14 +308,11 @@ if (isset($_GET['babrw']))
 
 
 
-/**
- * Event : Before Page Created
- * Event intervenes just before the inclusion of code PHP which manages the current page:
- * the body of the page is not prepared, the template of the page is not treated.
- */
+
+
+
 if ('addons' !== bab_rp('tg') || 'import_frame' !== bab_rp('idx')) {
-    class bab_eventBeforePageCreated extends bab_event { }
-    $event = new bab_eventBeforePageCreated;
+    $event = new bab_eventBeforePageCreated();
     bab_fireEvent($event); /* Fire all event registered as listeners */
 }
 
@@ -864,12 +860,8 @@ if( !empty($incl))
     }
 
 
-/**
- * Event page refreshed
- * @since 6.6.90
- */
-class bab_eventPageRefreshed extends bab_event { }
-$event = new bab_eventPageRefreshed;
+
+$event = new bab_eventPageRefreshed();
 bab_fireEvent($event); /* Fire all event registered as listeners */
 
 require_once $GLOBALS['babInstallPath'].'utilit/pageincl.php';

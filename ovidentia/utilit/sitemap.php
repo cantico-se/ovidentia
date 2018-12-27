@@ -2894,3 +2894,14 @@ class bab_eventBeforeSiteMapList extends bab_event {
     }
 
 }
+
+
+
+
+function bab_onRewrittenUrlRequested(bab_eventRewrittenUrlRequested $event)
+{
+    if (false !== $arr = bab_siteMap::extractNodeUrlFromRewrite($event->getRequestedUrl(), true)) {
+        $event->setUrlParameters($arr);
+        $event->stopPropagation(true);
+    }
+}

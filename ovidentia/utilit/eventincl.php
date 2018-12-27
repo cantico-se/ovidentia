@@ -1,4 +1,5 @@
 <?php
+
 /************************************************************************
  * OVIDENTIA http://www.ovidentia.org                                   *
  ************************************************************************
@@ -20,35 +21,120 @@
  * along with this program; if not, write to the Free Software			*
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307,*
  * USA.																	*
-************************************************************************/
+ ************************************************************************/
 
 
-
-
-class bab_event {
-
+class bab_event
+{
     /**
      * Can be set in the callback function to stop the processing done by bab_fireEvent
-     * @var bool
+     *
+     * @var boolean
      */
     public $stop_propagation = false;
 
+
+    /**
+     * Will stop the processing done by fireEvent.
+     *
+     * @param boolean $stop
+     */
+    public function stopPropagation($stop = true)
+    {
+        $this->stop_propagation = $stop;
+    }
 }
 
-class bab_eventPageNotFound extends bab_event { }
+
+class bab_eventPageNotFound extends bab_event
+{
+}
+
+/**
+ * Event rewritten url requested
+ *
+ * @since 8.6.99
+ */
+class bab_eventRewrittenUrlRequested extends bab_event
+{
+    /**
+     * @var string
+     */
+    private $requestedUrl;
+
+    /**
+     * @var array
+     */
+    private $urlParameters = null;
+
+
+    /**
+     * @param string $requestedUrl
+     */
+    public function __construct($requestedUrl)
+    {
+        $this->requestedUrl = $requestedUrl;
+    }
+
+
+    /**
+     * @return boolean
+     */
+    public function isFound()
+    {
+        return isset($this->urlParameters);
+    }
+
+
+    /**
+     * Sets the GET parameters of the matching url in an key => value array.
+     * @param array $parameters
+     */
+    public function setUrlParameters(array $parameters)
+    {
+        $this->urlParameters = $parameters;
+    }
+
+
+    public function getRequestedUrl()
+    {
+        return $this->requestedUrl;
+    }
+}
+
+
+/**
+ * Event : Before Page Created
+ * This event is fired just before the inclusion of the code which manages the current page:
+ * the body of the page is not prepared, the template of the page is not treated.
+ */
+class bab_eventBeforePageCreated extends bab_event
+{
+}
+
+
+/**
+ * Event page refreshed
+ *
+ * @since 6.6.90
+ */
+class bab_eventPageRefreshed extends bab_event
+{
+}
+
 
 /**
  * Add event listener
  * Once the listener is added, the function $function_name will be fired if bab_fireEvent is called with an event
- * inherited or instancied from the class $event_class_name
+ * inherited or instantiated from the class $event_class_name
  *
  * The function return false if the event listener is already created
  *
  * @param	string	$event_class_name
  * @param	string	$function_name			function name without (), if the function_name string contain a ->, the text before -> will be evaluated to get an object and the text after will be the method (not evaluated)
  * @param	string	$require_file			file path relative to ovidentia core or relative to ovidentia root path, the file where $function_name is declared, this can be an empty string if function exists in global scope
- * @param	string	[$addon_name]			if addon name is set, additional tests will be verified on access rights before the call, and environement varaibles of addon will be set correctly
- * @param	int		[$priority]				for mutiple calls on one event, the calls will be ordered by priority descending
+ * @param	string	[$addon_name]			if addon name is set, additional tests will be verified on access rights before the call, and environment variables of addon will be set correctly
+ * @param	int		[$priority]				for multiple calls on one event, the calls will be ordered by priority descending
  *
  * @return boolean
  */
@@ -125,19 +211,24 @@ function bab_removeEventListener($event_class_name, $function_name, $require_fil
 
 /**
  * Remove all event listeners of the specified addon.
+ * If $event_class_name is specified only listeners for events of this class are removed.
  * since ovidentia 8.1.101, this function is called when an addon is deleted
  * addons will not need to unregister in the onDeleteAddon callback if
  * the addon require a greater version than 8.1.101
  *
  * @see		bab_removeEventListener()
  * @param	string	$addon_name
+ * @param	string	$event_class_name @since 8.6.99
  * @since   8.1.95
  */
-function bab_removeAddonEventListeners($addon_name)
+function bab_removeAddonEventListeners($addon_name, $event_class_name = null)
 {
     global $babDB;
 
     $sql = 'DELETE FROM '.BAB_EVENT_LISTENERS_TBL.' WHERE addon_name = ' . $babDB->quote($addon_name);
+    if (isset($event_class_name)) {
+        $sql .= ' AND event_class_name = ' . $babDB->quote($event_class_name);
+    }
 
     $babDB->db_query($sql);
 }

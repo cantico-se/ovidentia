@@ -7436,15 +7436,14 @@ function ovidentia_upgrade($version_base,$version_ini) {
         $babDB->db_query("ALTER TABLE `" . BAB_SITES_SWISH_TBL . "` ADD `docx2txt` VARCHAR(255) NOT NULL default ''");
     }
 
-
-
-
-
+    /**
+     * Upgrade to 8.6.99
+     */
+    bab_removeAddonEventListeners('core', 'bab_eventRewrittenUrlRequested');
+    bab_addEventListener('bab_eventRewrittenUrlRequested', 'bab_onRewrittenUrlRequested', 'utilit/sitemap.php');
 
 
     return true;
-
-
 }
 
 
