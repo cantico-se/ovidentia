@@ -3064,11 +3064,11 @@ function haveRightOn($sPath, $sTableName, $oFileMgrEnv = null)
         $sFullPath = $oFileMgrEnv->getRootFmPath() . $sPath;
     }
 
-
     //$oFileMgrEnv = getEnvObject();
     if($oFileMgrEnv->userIsInCollectiveFolder() || $oFileMgrEnv->userIsInRootFolder())
     {
-        $oFmFolder = BAB_FmFolderSet::getFirstCollectiveFolder($sPath);
+        $oFmFolder = BAB_FmFolderSet::getFirstCollectiveFolder($sPath, $oFileMgrEnv->oFmFolder->getDelegationOwnerId());
+
         if(!is_null($oFmFolder))
         {
             return bab_isAccessValid($sTableName, $oFmFolder->getId());
