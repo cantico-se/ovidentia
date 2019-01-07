@@ -296,7 +296,7 @@ if (isset($_GET['babrw'])) {
     bab_fireEvent($event);
 
     if ($event->isFound()) {
-        $urlParameters = $event->urlParameters[0];
+        $urlParameters = $event->getUrlParameters();
         $_GET += $urlParameters;
         $_REQUEST += $urlParameters;
     } elseif (!bab_isUserLogged()) {

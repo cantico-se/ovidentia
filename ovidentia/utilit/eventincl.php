@@ -73,7 +73,7 @@ class bab_eventRewrittenUrlRequested extends bab_event
      */
     public function __construct($requestedUrl)
     {
-        $this->requestedUrl = $requestedUrl;
+        $this->setRequestedUrl($requestedUrl);
     }
 
 
@@ -96,6 +96,28 @@ class bab_eventRewrittenUrlRequested extends bab_event
     }
 
 
+    /**
+     * Returns the GET parameters of the matching url in an key => value array.
+     * @return array
+     */
+    public function getUrlParameters()
+    {
+        return $this->urlParameters;
+    }
+
+
+    /**
+     * @param string $requestedUrl
+     */
+    public function setRequestedUrl($requestedUrl)
+    {
+        $this->requestedUrl = $requestedUrl;
+    }
+
+
+    /**
+     * @return string
+     */
     public function getRequestedUrl()
     {
         return $this->requestedUrl;
