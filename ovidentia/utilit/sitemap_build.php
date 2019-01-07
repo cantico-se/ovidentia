@@ -152,6 +152,7 @@ class bab_siteMap_buildItem
 
 
     /**
+     * @since 8.6.99
      * @param string $rewriteName
      */
     public function setRewriteName($rewriteName)
