@@ -1361,18 +1361,6 @@ function bab_sitemap_countChilds($node, $n = 0)
 
 
 
-
-
-function bab_getMicrotime()
-{
-    list($usec, $sec) = explode(" ", microtime());
-    return ((float)$usec + (float)$sec);
-}
-
-
-
-
-
 /**
  *
  * @return bab_eventBeforeSiteMapCreated
