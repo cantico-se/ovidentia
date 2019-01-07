@@ -40,6 +40,7 @@ class bab_siteMap_buildItem
     public  $position = array();
     public  $lang;
     public 	$funcname;
+    public  $rewriteName;
     public  $parentNode;        // ref bab_siteMap_buildItem
     public  $parentNode_str;
     public 	$childNodes = array();
@@ -151,6 +152,14 @@ class bab_siteMap_buildItem
 
 
     /**
+     * @param string $rewriteName
+     */
+    public function setRewriteName($rewriteName)
+    {
+        $this->rewriteName = $rewriteName;
+    }
+
+    /**
      * @param	bab_siteMap_buildItem	$obj
      */
     public function addChildNode($obj)
@@ -197,6 +206,7 @@ class bab_siteMap_buildItem
         $clone->delegation = $this->delegation;
         $clone->progress = $this->progress;
         $clone->funcname = $this->funcname;
+        $clone->rewriteName = $this->rewriteName;
 
         return $clone;
     }
@@ -673,9 +683,11 @@ class bab_siteMap_insertFunctionObj
                 $onclick = isset($node->onclick) ? $node->onclick 	: '';
                 $href = isset($node->href) ? $node->href		: '';
                 $funcname = isset($node->funcname) ? $node->funcname	: '';
+                $rewriteName = isset($node->rewriteName) ? $node->rewriteName : '';
+
 
                 $folder = $node->folder ? '1' : '0';
-                $values[] = '('.$babDB->quote($node->uid).','.$babDB->quote($href).','.$babDB->quote($onclick).','.$babDB->quote($folder).','.$babDB->quote($node->getIcon()).', '.$babDB->quote($funcname).')';
+                $values[] = '('.$babDB->quote($node->uid).','.$babDB->quote($href).','.$babDB->quote($onclick).','.$babDB->quote($folder).','.$babDB->quote($node->getIcon()).', '.$babDB->quote($funcname).', '.$babDB->quote($rewriteName).')';
             }
 
             $babDB->db_query('
@@ -686,7 +698,8 @@ class bab_siteMap_insertFunctionObj
                         onclick,
                         folder,
                         icon,
-                        funcname
+                        funcname,
+                        rewrite
                     )
                 VALUES
                     '.implode(",\n ",$values).'
@@ -2211,7 +2224,6 @@ function bab_sitemap_faq($event)
 {
     global $babDB;
     include_once $GLOBALS['babInstallPath'].'utilit/faqincl.php';
-
 
     $delegations = bab_getUserSitemapDelegations();
 
