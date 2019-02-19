@@ -454,12 +454,14 @@ abstract class bab_Controller
     {
         $fullClassName = substr(get_class($this), 0, -strlen(self::PROXY_CLASS_SUFFIX));
         $className = join('', array_slice(explode('\\', $fullClassName), -1));
+
         if (!method_exists($fullClassName, $methodName)) {
         	throw new bab_InvalidActionException($fullClassName . '::' . $methodName);
         }
         $method = new ReflectionMethod($fullClassName, $methodName);
 
         $objectName = $this->getObjectName($className);
+
         $parameters = $method->getParameters();
         $actionParams = array();
         $argNumber = 0;
@@ -705,7 +707,12 @@ abstract class bab_Controller
 
                     // widgets >= 1.0.65
                     if ($returnedValue instanceof Widget_BabPage && method_exists($returnedValue, 'getPageTitle')) {
-                       header('X-Cto-PageTitle: '.bab_convertStringFromDatabase($returnedValue->getPageTitle(), 'ISO-8859-1'));
+                        $pageTitle = $returnedValue->getPageTitle();
+                        if (method_exists($htmlCanvas, 'sendPageTitle')) {
+                            $htmlCanvas->sendPageTitle($pageTitle);
+                        } else {
+                            header('X-Cto-PageTitle: ' . $pageTitle);
+                        }
                     }
 
                     die($returnedValue->display($htmlCanvas));
