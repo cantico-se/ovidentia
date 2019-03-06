@@ -388,6 +388,58 @@ class Func_Icons extends bab_Functionality
 	const STATUS_DIALOG_QUESTION				= 'status-dialog-question';
 	const STATUS_DIALOG_WARNING					= 'status-dialog-warning';
 	const STATUS_CONTENT_LOADING				= 'status-content-loading';
+	
+	//-----------------------------------------------------------------------
+	// MEDICAL
+	//-----------------------------------------------------------------------
+	const MEDICAL_AMBULANCE      = 'medical-ambulance';
+	const MEDICAL_H_SQUARE       = 'medical-h-square';
+	const MEDICAL_HEART          = 'medical-heart';
+	const MEDICAL_HEART_O        = 'medical-heart-o';
+	const MEDICAL_HEARTBEAT      = 'medical-heartbeat';
+	const MEDICAL_HOSPITAL_O     = 'medical-hospital-o';
+	const MEDICAL_MEDKIT         = 'medical-medkit';
+	const MEDICAL_PLUS_SQUARE    = 'medical-plus-square';
+	const MEDICAL_STETHOSCOPE    = 'medical-stethoscope';
+	const MEDICAL_USER_MD        = 'medical-user-md';
+	const MEDICAL_WHEELCHAIR     = 'medical-wheelchair';
+	const MEDICAL_WHEELCHAIR_ALT = 'medical-wheelchair-alt';
+	
+	//-----------------------------------------------------------------------
+	// CURRENCY
+	//-----------------------------------------------------------------------
+	const CURRENCY_YUAN          = 'currency-jpy';
+	const CURRENCY_YEN           = 'currency-jpy';
+	const CURRENCY_DOLLAR        = 'currency-usd';
+	const CURRENCY_EURO          = 'currency-eur';
+	const CURRENCY_POUND         = 'currency-gbp';
+	const CURRENCY_RUPEE         = 'currency-inr';
+	const CURRENCY_WON           = 'currency-krw';
+	const CURRENCY_MONEY         = 'currency-money';
+	const CURRENCY_RUBLE         = 'currency-rub';
+	const CURRENCY_LIRA          = 'currency-try';
+	
+	//-----------------------------------------------------------------------
+	// CHART
+	//-----------------------------------------------------------------------
+	CONST CHART_AREA_CHART   = 'chart-area-chart';
+	CONST CHART_BAR_CHART    = 'chart-bar-chart';
+	CONST CHART_LINE_CHART   = 'chart-line-chart';
+	CONST CHART_PIE_CHART    = 'chart-pie-chart';
+	
+	//-----------------------------------------------------------------------
+	// TRANSPORTATION
+	//-----------------------------------------------------------------------
+	CONST TRANSPORTATION_CAR         = 'transportation-car';
+	CONST TRANSPORTATION_BICYCLE     = 'transportation-bicycle';
+	CONST TRANSPORTATION_BUS         = 'transportation-bus';
+	CONST TRANSPORTATION_MOTORCYCLE  = 'transportation-motorcycle';
+	CONST TRANSPORTATION_PLANE       = 'transportation-plane';
+	CONST TRANSPORTATION_SHIP        = 'transportation-ship';
+	CONST TRANSPORTATION_SUBWAY      = 'transportation-subway';
+	CONST TRANSPORTATION_TAXI        = 'transportation-taxi';
+	CONST TRANSPORTATION_TRAIN       = 'transportation-train';
+	CONST TRANSPORTATION_TRUCK       = 'transportation-truck';
 
 
 
