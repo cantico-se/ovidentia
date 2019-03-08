@@ -41,27 +41,27 @@ include_once $GLOBALS['babInstallPath'].'utilit/omlincl.php';
 class Func_Ovml_Container_OrgUserEntities extends Func_Ovml_Container
 {
 	var $aEntity = array();
-	
+
 	var $iIndex = 0;
 	var $iCount = 0;
-	
+
 	public function setOvmlContext(babOvTemplate $ctx)
 	{
 		parent::setOvmlContext($ctx);
-		
+
 		$iIdOrgChart	= (int) $ctx->curctx->getAttribute('orgChartId');
 		$iIdUser		= (int) $ctx->curctx->getAttribute('userId');
 		$sRoleType		= (string) $ctx->curctx->getAttribute('roleType');
-		
+
 		if(0 === $iIdOrgChart)
 		{
 			$aPrimaryChart = bab_OCGetRootEntity();
 			if(0 !== count($aPrimaryChart))
 			{
 				$iIdOrgChart = (int) $aPrimaryChart['id_oc'];
-			}			
+			}
 		}
-		
+
 		$aRoleType = null;
 		if(0 !== mb_strlen(trim($sRoleType)))
 		{
@@ -71,11 +71,11 @@ class Func_Ovml_Container_OrgUserEntities extends Func_Ovml_Container
 				$aRoleType = $aType;
 			}
 		}
-		
+
 		$oOrgChartUtil = new bab_OrgChartUtil($iIdOrgChart);
 		$this->aEntity = $oOrgChartUtil->getUserEntities($iIdUser, $aRoleType);
 		//bab_debug($this->aEntity);
-		
+
 		if(is_array($this->aEntity))
 		{
 			$this->iCount = count($this->aEntity);
@@ -102,13 +102,13 @@ class Func_Ovml_Container_OrgUserEntities extends Func_Ovml_Container
 				$this->ctx->curctx->push('EntityId', $aDatas['value']['id']);
 				$this->ctx->curctx->push('EntityName', $aDatas['value']['name']);
 				$this->ctx->curctx->push('EntityDescription', $aDatas['value']['description']);
-				
+
 				$this->idx++;
 				$this->iIndex = $this->idx;
 				return true;
 			}
 		}
-		
+
 		$this->idx = 0;
 		return false;
 	}
@@ -131,22 +131,22 @@ class Func_Ovml_Container_OrgPathToEntity extends Func_Ovml_Container
 	var $iIndex		= 0;
 	var $iCount		= 0;
 	var $oResult	= false;
-	
+
 	public function setOvmlContext(babOvTemplate $ctx)
 	{
 		parent::setOvmlContext($ctx);
-		
+
 		$iIdEntity		= (int) $ctx->curctx->getAttribute('entityId');
 		$bIncludeEntity	= ('1' == (int) $ctx->curctx->getAttribute('includeEntity'));
 		$sOrder			= (string) $ctx->curctx->getAttribute('order');
 
-		$sQuery = bab_OCGetPathToNodeQuery($iIdEntity, $bIncludeEntity, $sOrder);		
+		$sQuery = bab_OCGetPathToNodeQuery($iIdEntity, $bIncludeEntity, $sOrder);
 		//bab_debug($sQuery);
-		
+
 		$this->ctx->curctx->push('CCount', 0);
-		
+
 		global $babDB;
-		
+
 		$this->oResult = $babDB->db_query($sQuery);
 		if(false !== $this->oResult)
 		{
@@ -171,16 +171,166 @@ class Func_Ovml_Container_OrgPathToEntity extends Func_Ovml_Container
 				$this->ctx->curctx->push('EntityId', $aDatas['iIdEntity']);
 				$this->ctx->curctx->push('EntityName', $aDatas['sName']);
 				$this->ctx->curctx->push('EntityDescription', $aDatas['sDescription']);
-				
+
 				$this->idx++;
 				$this->iIndex = $this->idx;
 				return true;
 			}
 		}
-		
+
 		$this->idx = 0;
 		return false;
 	}
 }
-	
-	
+
+
+
+
+/**
+ * OVML Container <OCOrgChildEntities entityId="">
+ *
+ * @since 8.6.100
+ *
+ * List all direct child entities of an entity in an organization chart.
+ *
+ * Returned OVML variables are :
+ * - OVEntityId
+ * - OVEntityName
+ * - OVEntityDescription
+ */
+class Func_Ovml_Container_OrgChildEntities extends Func_Ovml_Container
+{
+    protected $entities = null;
+
+    /**
+     * @var ArrayObject
+     */
+    protected $iterator = null;
+
+    /**
+     * {@inheritDoc}
+     * @see Func_Ovml_Container::setOvmlContext()
+     */
+    public function setOvmlContext(babOvTemplate $ctx)
+    {
+        parent::setOvmlContext($ctx);
+
+        $entityId = (int) $ctx->curctx->getAttribute('entityId');
+
+        $this->entities = bab_OCGetDirectChildren($entityId);
+
+        foreach (array_keys($this->entities) as $key) {
+            if (empty($key)) {
+                unset($this->entities[$key]);
+            }
+        }
+
+
+        $this->iterator = new ArrayIterator($this->entities);
+
+        $this->ctx->curctx->push('CCount', count($this->entities));
+    }
+
+    /**
+     * {@inheritDoc}
+     * @see Func_Ovml_Container::getnext()
+     */
+    public function getnext()
+    {
+        if ($this->iterator->valid()) {
+            $entity = $this->iterator->current();
+            $this->ctx->curctx->push('CIndex', $this->idx);
+            $this->ctx->curctx->push('EntityId', $entity['id']);
+            $this->ctx->curctx->push('EntityName', $entity['name']);
+            $this->ctx->curctx->push('EntityDescription', $entity['description']);
+            $this->ctx->curctx->push('EntityOrgChartId', $entity['id_oc']);
+            $this->ctx->curctx->push('EntityGroupId', $entity['id_group']);
+
+            $this->idx++;
+            $this->iIndex = $this->idx;
+
+            $this->iterator->next();
+            return true;
+        }
+
+        $this->idx = 0;
+        return false;
+    }
+}
+
+
+/**
+ * OVML Container <OCOrgEntityMembers entityId="">
+ *
+ * @since 8.6.100
+ *
+ * List all members of an entity
+ *
+ * Returned OVML variables are :
+ * - OVEntityMemberDirEntryId
+ * - OVEntityMemberRoleType
+ * - OVEntityMemberRoleName
+ * - OVEntityMemberUserDisabled
+ * - OVEntityMemberUserConfirmed
+ * - OVEntityMemberSn
+ * - OVEntityMemberGivenname
+ * - OVEntityMemberUserId
+ */
+class Func_Ovml_Container_OrgEntityMembers extends Func_Ovml_Container
+{
+    protected $members = null;
+    protected $nbMembers = 0;
+
+
+    /**
+     * {@inheritDoc}
+     * @see Func_Ovml_Container::setOvmlContext()
+     */
+    public function setOvmlContext(babOvTemplate $ctx)
+    {
+        parent::setOvmlContext($ctx);
+
+        $entityId = (int) $ctx->curctx->getAttribute('entityId');
+
+        $babDB = bab_getDB();
+
+        $this->members = bab_OCSelectEntityCollaborators($entityId);
+
+        $this->nbMembers = $babDB->db_num_rows($this->members);
+
+        $this->ctx->curctx->push('CCount', count($this->nbMembers));
+    }
+
+    /**
+     * {@inheritDoc}
+     * @see Func_Ovml_Container::getnext()
+     */
+    public function getnext()
+    {
+        $babDB = bab_getDB();
+        $member = $babDB->db_fetch_assoc($this->members);
+
+        if (false !== $member) {
+            $this->ctx->curctx->push('CIndex', $this->idx);
+            $this->ctx->curctx->push('EntityMemberDirEntryId', $member['id_dir_entry']);
+            $this->ctx->curctx->push('EntityMemberRoleType', $member['role_type']);
+            $this->ctx->curctx->push('EntityMemberRoleName', $member['role_name']);
+            $this->ctx->curctx->push('EntityMemberUserDisabled', $member['user_disabled']);
+            $this->ctx->curctx->push('EntityMemberUserConfirmed', $member['user_confirmed']);
+            $this->ctx->curctx->push('EntityMemberSn', $member['sn']);
+            $this->ctx->curctx->push('EntityMemberGivenname', $member['givenname']);
+            $this->ctx->curctx->push('EntityMemberUserId', $member['id_user']);
+
+            $this->idx++;
+            $this->iIndex = $this->idx;
+            return true;
+        }
+
+        $this->idx = 0;
+        return false;
+    }
+}
+
+
+
+
