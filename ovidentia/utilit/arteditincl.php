@@ -85,7 +85,7 @@ class bab_ArticleDraftEditor {
 		    $this->draft = null;
 		    return $this;
 		}
-		
+
 		if (!$this->draft->isModifiable()) {
 			$babBody->addError(bab_translate('Error, this draft is not modifiable'));
 			$this->draft = null;
@@ -115,6 +115,26 @@ class bab_ArticleDraftEditor {
 		return $this;
 	}
 
+	/**
+	 * Init draft from id article
+	 * @param	int	$idArticle
+	 * @return bab_ArticleDraftEditor
+	 */
+	public function copyArticle($idArticle)
+	{
+	    global $babBody;
+
+	    try {
+	        $this->draft->copyFromIdArticle($idArticle);
+	    }
+	    catch(ErrorException $e)
+	    {
+	        $babBody->addError($e->getMessage());
+	        $this->draft = null;
+	    }
+
+	    return $this;
+	}
 
 	/**
 	 * Init draft from id topic
@@ -190,55 +210,55 @@ class bab_ArticleDraftEditor {
 			// ignore, the folder does not exists
 		}
 	}
-	
+
 	public function getTopicTemplate()
 	{
 		$values = array('head' => '', 'body' => '');
-	
+
 		if (!bab_gp('topics',false))
 		{
 			return false;
 		}
-	
+
 		global $babDB;
-	
+
 		$res = $babDB->db_query("select article_tmpl from bab_topics  where id=".$babDB->quote(bab_gp('topics',false)));
 		if( !$res || $babDB->db_num_rows($res) !== 1 ) {
 			return false;
 		}
-	
-	
+
+
 		$topic = $babDB->db_fetch_array($res);
 		$template = $topic['article_tmpl'];
-	
+
 		if (empty($template))
 		{
 			return $values;
 		}
-	
+
 		return bab_getTopicTemplate($template, 'html', 'html');
 	}
-	
-	
+
+
 	public static function suggestTag()
 	{
 		global $babDB;
 		$W = bab_Widgets();
-		
+
 		$tags = $W->SuggestLineEdit('bab_artedit_suggesttag');
 		if ($keyword = $tags->getSearchKeyword())
 		{
 			// search for keyword
-		
+
 			$res = $babDB->db_query("SELECT tag_name FROM bab_tags WHERE tag_name LIKE '".$babDB->db_escape_like($keyword)."%'");
 			while ($arr = $babDB->db_fetch_assoc($res))
 			{
 				$tags->addSuggestion($arr['tag_name'], $arr['tag_name']);
 			}
-		
+
 			$tags->sendSuggestions();
 		}
-		
+
 		die();
 	}
 
@@ -260,18 +280,18 @@ class bab_ArticleDraftEditor {
 
 		$W = bab_Widgets();
 		$W->includeCss();
-		
-		
+
+
 
 
 
 		$babBody->setTitle(bab_translate('Article publication'));
 
 		$page = $W->BabPage();
-		
+
 		$J = bab_jQuery();
 		$J->includeUi();
-		
+
 		$page->addJavascriptFile($GLOBALS['babScriptPath'].'bab_article.js');
 		$page->addStyleSheet($GLOBALS['babInstallPath'].'styles/artedit.css');
 
@@ -345,8 +365,8 @@ class bab_ArticleDraftEditor {
 			)->setFoldable(true)
 		);
 
-		
-		
+
+
 
 		$bodyEditor = new bab_contentEditor('bab_article_body');
 		$bodyEditor->setRequestFieldName('body');
@@ -443,7 +463,7 @@ class bab_ArticleDraftEditor {
 				)
 		);
 
-		
+
 
 		$LeftFrame->addItem(
 				$W->Frame()
@@ -521,9 +541,9 @@ class bab_ArticleDraftEditor {
 		{
 			$lang->addOption($l,$l);
 		}
-		
-		
-		
+
+
+
 		$LeftFrame->addItem(
 				$update_meta = $W->Section(
 						bab_translate('HTML metadata'),
@@ -532,12 +552,12 @@ class bab_ArticleDraftEditor {
 							->addItem(bab_labelStr(bab_translate('Page description'), $W->TextEdit()->setColumns(80)->disable()->setName('page_description')))
 							->addItem(bab_labelStr(bab_translate('Page keywords'), $W->LineEdit()->setSize(70)->setMaxSize(255)->disable()->setName('page_keywords')))
 							->addItem(bab_labelStr(bab_translate('Rewrite name'), $W->LineEdit()->setSize(50)->setMaxSize(255)->disable()->setName('rewritename')))
-							
+
 				)->setFoldable(true, true)
 		);
-		
-		
-		
+
+
+
 
 
 		if($this->draft->id_article){
@@ -603,10 +623,10 @@ class bab_ArticleDraftEditor {
 			),
 			0
 		);
-		
-		
-		
-		
+
+
+
+
 
 		$LeftFrame->addItem(
 			$W->Frame()->addItem(
@@ -719,53 +739,53 @@ class bab_ArticleDraftEditor {
 
 		$page->displayHtml();
 	}
-	
-	
-	
-	
+
+
+
+
 	public static function topic($idDraft = null, $id_topic = null)
 	{
 		$W = bab_Widgets();
-		
+
 		if (null !== $idDraft)
 		{
 			if (!bab_isDraftModifiable($idDraft))
 			{
 				die(bab_translate('Error, this draft is not modifiable'));
 			}
-			
+
 			$draft = new bab_ArtDraft;
 			$draft->getFromIdDraft($idDraft);
 		}
-		
-		
+
+
 		$topicList = bab_getArticleTopicsAsTextTree(0, false, BAB_TOPICSSUB_GROUPS_TBL);
-		
+
 		$topic = $W->Select('bab-article-topic');
-		
+
 		foreach($topicList as $topcat){
-		
+
 			$topcat['name'] = bab_abbr($topcat['name'], BAB_ABBR_FULL_WORDS, 50);
-		
+
 			if($topcat['category']){
 				$topic->addOption($topic->SelectOption('cat-'.$topcat['id_object'], $topcat['name'])->disable()->addClass('category'));
 			} else {
 				$topic->addOption($topic->SelectOption($topcat['id_object'], $topcat['name']));
 			}
 		}
-		
+
 		if (isset($draft) && $draft->id_topic)
 		{
 			$topic->addOption($topic->SelectOption($draft->id_topic, bab_getTopicTitle($draft->id_topic)));
 		}
-		
+
 		$topic->setName('id_topic');
-		
+
 		if (isset($id_topic))
 		{
 			$topic->setValue($id_topic);
 		}
-		
+
 		die($topic->display($W->HtmlCanvas()));
 	}
 }

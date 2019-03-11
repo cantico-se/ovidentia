@@ -144,7 +144,7 @@ abstract class bab_listArticles extends categoriesHierarchy
 			{
 			$this->bmanage = false;
 			}
-			
+
 		if( bab_isAccessValid(BAB_TOPICSSUB_GROUPS_TBL, $this->topics))
 			{
 				$this->submittxt = bab_translate("Submit");
@@ -421,7 +421,7 @@ function listArticles($topics)
 					{
 					$GLOBALS['babWebStat']->addArticle($this->arr['id']);
 					}
-					
+
 				list($totalc) = $babDB->db_fetch_row($babDB->db_query("select count(id) as total from ".BAB_COMMENTS_TBL." where id_article='".$babDB->db_escape_string($this->arr['id'])."' and confirmed='Y'"));
 
 				if( $totalc > 0 || $this->bcomment)
@@ -618,10 +618,10 @@ function listArchiveArticles($topics, $pos)
 				$res = $babDB->db_query($req);
 				$ar = $babDB->db_fetch_array($res);
 				$total = $ar['total'];
-				
+
 				$this->moreurl = bab_toHtml(bab_sitemap::url('babArticle_'.$this->arr['id'], $GLOBALS['babUrlScript']."?tg=articles&idx=More&topics=".$this->topics."&article=".$this->arr['id']));
-				
-				
+
+
 				if( $total > 0)
 					{
 					$this->commentsurl = $this->moreurl.'#bab_comments';
@@ -635,7 +635,7 @@ function listArchiveArticles($topics, $pos)
 					$this->commentstxt = '';
 					}
 
-				
+
 				$this->resf = $babDB->db_query("select * from ".BAB_ART_FILES_TBL." where id_article='".$babDB->db_escape_string($this->arr['id'])."' order by ordering asc");
 				$this->countf = $babDB->db_num_rows($this->resf);
 
@@ -732,7 +732,7 @@ function readMore($topics, $article)
 			$req = "select * from ".BAB_ARTICLES_TBL." where id='".$babDB->db_escape_string($article)."' and (date_publication='0000-00-00 00:00:00' or date_publication <= now())";
 			$this->res = $babDB->db_query($req);
 			$this->arr = $babDB->db_fetch_assoc($this->res);
-			
+
 			$this->count = $babDB->db_num_rows($this->res);
 			$res = $babDB->db_query("select count(*) from ".BAB_ARTICLES_TBL." where id_topic='".$babDB->db_escape_string($this->topics)."' and archive='Y'");
 			list($this->nbarch) = $babDB->db_fetch_row($res);
@@ -752,7 +752,7 @@ function readMore($topics, $article)
 			$this->rescom = $babDB->db_query("select * from ".BAB_COMMENTS_TBL." where id_article='".$babDB->db_escape_string($article)."' and confirmed='Y' order by date desc");
 			$this->countcom = $babDB->db_num_rows($this->rescom);
 			$this->cancomment_or_countcom = ($this->countcom > 0 || bab_isAccessValid(BAB_TOPICSCOM_GROUPS_TBL, $this->arr['id_topic']));
-			
+
 			if( $this->count > 0 && $this->arr['archive'] == 'N' && (bab_isAccessValid(BAB_TOPICSMOD_GROUPS_TBL, $this->topics) || ( $arrtop['allow_update'] != '0' && $this->arr['id_author'] == $GLOBALS['BAB_SESS_USERID']) || ($arrtop['allow_manupdate'] != '0' && bab_isAccessValid(BAB_TOPICSMAN_GROUPS_TBL, $this->topics))))
 				{
 				$this->bmodify = true;
@@ -782,7 +782,7 @@ function readMore($topics, $article)
 			if( $this->arr['archive'] == 'N' && bab_isAccessValid(BAB_TOPICSCOM_GROUPS_TBL, $this->topics))
 				{
 				$moreurl = bab_sitemap::url('babArticle_'.$this->arr['id'], $GLOBALS['babUrlScript']."?tg=articles&idx=More&topics=".$this->topics."&article=".$this->arr['id']);
-				    
+
 				$this->commentsurl = bab_toHtml($moreurl . '#bab_comment');
 				$this->editcommentsurl = bab_toHtml($moreurl . '#bab_edit_comment');
 				$this->commentstxt = bab_translate("Add Comment");
@@ -811,40 +811,40 @@ function readMore($topics, $article)
 
 			include_once $GLOBALS['babInstallPath']."utilit/editorincl.php";
 			}
-			
+
 		private function setMeta()
 		{
 			$head = bab_getInstance('babHead');
 			/*@var $head babHead */
-			
+
 			if (empty($this->arr['page_title']))
 			{
 				$head->setTitle($this->arr['title']);
 			} else {
 				$head->setTitle($this->arr['page_title']);
 			}
-			
-			
+
+
 			if (empty($this->arr['page_description']))
 			{
 				$head->setDescription(trim(bab_unhtmlentities(strip_tags($this->babtpl_head))));
 			} else {
 				$head->setDescription($this->arr['page_description']);
 			}
-			
-			
+
+
 			if (!empty($this->arr['page_keywords']))
 			{
 				$head->setKeywords($this->arr['page_keywords']);
 			}
-			
+
 			if ($sitemapItem = bab_sitemap::getRealPosition())
 			{
 				$head->setCanonicalUrl($sitemapItem->getRwUrl());
 			}
-		}	
-			
-			
+		}
+
+
 
 		function getnext(&$skip)
 			{
@@ -916,9 +916,9 @@ function readMore($topics, $article)
 				} else {
 					$this->imageurl = false;
 				}
-				
+
 				$this->setMeta();
-				
+
 				$this->loadCommentEditor();
 
 				$i++;
@@ -959,30 +959,30 @@ function readMore($topics, $article)
 				return false;
 				}
 			}
-			
+
 		protected function loadCommentEditor()
 		{
 		    $this->addcommenteditor = '';
-		    
+
 		    if (!bab_isAccessValid(BAB_TOPICSCOM_GROUPS_TBL, $this->topics)) {
 		        return;
 		    }
-		    
+
 		    require_once dirname(__FILE__).'/utilit/commentincl.php';
-		    
+
 		    $addCommentTemplate = new bab_AddCommentTemplate(
-		            $this->topics, 
-		            $this->babtpl_articleid, 
-		            bab_pp('subject'), 
-		            bab_pp('message'), 
+		            $this->topics,
+		            $this->babtpl_articleid,
+		            bab_pp('subject'),
+		            bab_pp('message'),
 		            null
 		        );
 		    $this->addcommenteditor = bab_printTemplate($addCommentTemplate, 'comments.html', 'commentcreate');
-            
+
 		}
-		
-		
-		
+
+
+
 		public function getnextcom()
 			{
 			global $babDB;
@@ -1294,11 +1294,11 @@ function viewArticle($article)
 function articles_init($topics)
 {
 	global $babDB;
-	
-	
+
+
 	$registry = bab_getRegistryInstance();
 	$registry->changeDirectory('/bab/articles/');
-	
+
 	$arrret = array(
 		'topic_title' 		=> $registry->getValue('topic_title', true),
 		'topic_menu'		=> $registry->getValue('topic_menu', true)
@@ -1391,7 +1391,7 @@ function bab_topicSubscription($id_topic, $customBackurl)
 		case 0:
 			$i = bab_TopicNotificationSubscription($id_topic, bab_getUserId(), true);
 			break;
-			
+
 		default:
 		    die('Subscription is disabled');
 		    break;
@@ -1420,30 +1420,30 @@ function bab_topicSubscription($id_topic, $customBackurl)
 function bab_topicSubscriptionForm($id_topic)
 {
     $W = bab_Widgets();
-    
+
     $form = $W->Form(null, $W->VBoxLayout()->setVerticalSpacing(3, 'em'));
     $form->setSelfPageHiddenFields();
-    
+
     if (!empty($_SERVER['HTTP_REFERER'])) {
         $form->setHiddenValue('backurl', $_SERVER['HTTP_REFERER']);
     }
-    
+
     $form->addClass('BabLoginMenuBackground');
     $form->addClass('widget-bordered');
-    
+
     $label = bab_translate('Notify me by email when an article is published');
-    
+
     if (1 === bab_TopicNotificationSubscription($id_topic, bab_getUserId())) {
-        
-        $label = bab_translate('Stop receiving notifications for this topic'); 
+
+        $label = bab_translate('Stop receiving notifications for this topic');
     }
-    
+
     $form->addItem($W->Title(bab_getTopicTitle($id_topic), 2));
     $form->addItem($W->SubmitButton()->setLabel($label));
-    
+
     $page = $W->BabPage();
     $page->addItem($form);
-    
+
     $page->displayHtml();
 }
 
@@ -1499,7 +1499,7 @@ switch($idx)
 	case "unload":
 		$popupmessage = bab_rp('popupmessage');
 		$refreshurl = bab_rp('refreshurl');
-		
+
 		popupUnload($popupmessage, $refreshurl);
 		exit;
 
@@ -1575,11 +1575,11 @@ switch($idx)
 			$babBody->addError(bab_translate('You need to be logged in to subscribe or unsuscribe'));
 			break;
 		}
-		
+
 		if (!empty($_POST)) {
 		    bab_requireSaveMethod() && bab_topicSubscription($id_topic, bab_pp('backurl'));
 		}
-		
+
 		bab_topicSubscriptionForm($id_topic);
 		break;
 
@@ -1617,6 +1617,38 @@ switch($idx)
 		break;
 
 
+    case "copy":
+        /* @since 8.7.0 */
+        require_once dirname(__FILE__).'/utilit/arteditincl.php';
+        $form = new bab_ArticleDraftEditor();
+        $article = bab_rp('article');
+        $form->copyArticle($article);
+
+        $backUrl = null;
+
+        if (!empty($_SERVER['HTTP_REFERER'])) {
+            $referer = new bab_url($_SERVER['HTTP_REFERER']);
+            $self = bab_url::get_request_gp();
+
+            if ($referer->checksum() !== $self->checksum()) {
+                $backUrl = $referer;
+            }
+        }
+
+        if (!isset($backUrl)) {
+            // If the referer url is not available we go back to the article's topic page.
+            $backUrl = bab_url::request('tg');
+            $backUrl = new bab_url($backUrl);
+            $articles = $babDB->db_query("SELECT id_topic from ".BAB_ARTICLES_TBL." WHERE id=".$babDB->quote($article)." AND archive='N'");
+            $art = $babDB->db_fetch_assoc($articles);
+
+            $backUrl->topics = $art['id_topic'];
+        }
+
+        $form->setBackUrl($backUrl);
+
+        $form->display();
+        break;
 
 	case "Print":
 		$article = bab_rp('article');
@@ -1647,7 +1679,7 @@ switch($idx)
 		}
 		bab_siteMap::setPosition('bab', 'ArticleTopic_'.$topics);
 		listArticles($topics);
-		
+
 		if( $arr['nbarchive'] )
 			{
 			$babBody->addItemMenu("Articles",bab_translate("Articles"),$GLOBALS['babUrlScript']."?tg=articles&idx=Articles&topics=".$topics);

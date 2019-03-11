@@ -2118,6 +2118,123 @@ function bab_getDocumentArticle( $idf )
     bab_downloadFile(new bab_Path($fullpath), $file, (1 === bab_getFileContentDisposition()));
 }
 
+
+
+
+/**
+ * Create a new article draft based on an existing article
+ *
+ * @since 8.7.0
+ *
+ * @param int $idarticle
+ *
+ * @throws ErrorException
+ *
+ * @return int return the id of the article draft created
+ */
+function bab_copyArticle($idarticle)
+{
+    if (count(bab_getUserIdObjects(BAB_TOPICSSUB_GROUPS_TBL)) == 0) {
+        $message = bab_translate('Access denied to draft creation, no accessible topic');
+        throw new ErrorException($message);
+    }
+
+    $babDB = bab_getDB();
+
+    $articles = $babDB->db_query('SELECT * FROM ' . BAB_ARTICLES_TBL . " WHERE id=" . $babDB->quote($idarticle));
+    if (!$articles || $babDB->db_num_rows($articles) < 1 ) {
+        $message = bab_translate('The article does not exists');
+        throw new ErrorException($message);
+    }
+    $article = $babDB->db_fetch_assoc($articles);
+
+    $idtopic = (int) $article['id_topic'];
+
+    $error = '';
+    $id = bab_addArticleDraft(bab_translate('Copy') . ' ' . $article['title'], '', '', $idtopic, $error, array('update_datemodif' => 'Y'));
+    if ($id === 0) {
+        throw new ErrorException($error);
+    }
+
+    $babDB->db_query("
+        UPDATE " . BAB_ART_DRAFTS_TBL . " SET
+            head                =" . $babDB->quote($article['head']) . ",
+            head_format         =" . $babDB->quote($article['head_format']) . ",
+            body                =" . $babDB->quote($article['body']) . ",
+            body_format         =" . $babDB->quote($article['body_format']) . ",
+            date_publication    =" . $babDB->quote($article['date_publication']) . ",
+            date_archiving      =" . $babDB->quote($article['date_archiving']) . ",
+            lang                =" . $babDB->quote($article['lang']) . ",
+            restriction         =" . $babDB->quote($$article['restriction']) . ",
+            page_title          =" . $babDB->quote($article['page_title']) . ",
+            page_description    =" . $babDB->quote($article['page_description']) . ",
+            page_keywords       =" . $babDB->quote($article['page_keywords']) . ",
+            rewritename         =" . $babDB->quote($article['rewritename']) . "
+
+        WHERE id=" . $babDB->quote($id) . "
+    ");
+
+    $res = $babDB->db_query("SELECT * FROM " . BAB_ART_FILES_TBL . " WHERE id_article=" . $babDB->quote($idarticle));
+    $pathorg = bab_getUploadArticlesPath();
+    $pathdest = bab_getUploadDraftsPath();
+    while ($rr = $babDB->db_fetch_array($res)) {
+        if ( copy($pathorg.$idarticle.",".$rr['name'], $pathdest.$id.",".$rr['name'])) {
+            $babDB->db_query("
+                INSERT INTO " . BAB_ART_DRAFTS_FILES_TBL . "
+                    (id_draft, name, description, ordering)
+                VALUES (
+                    " . $babDB->quote($id) . ",
+                    " . $babDB->quote($rr['name']) . ",
+                    " . $babDB->quote($rr['description']) . ",
+                    " . $babDB->quote($rr['ordering']) . "
+                )
+            ");
+        }
+    }
+
+
+    // copy associated image to draft
+
+    if ($image = bab_getImageArticle($idarticle)) {
+        $source = new bab_path($GLOBALS['babUploadPath'], $image['relativePath'], $image['name']);
+
+        $oPubPathEnv = bab_getInstance('bab_PublicationPathsEnv');
+        /*@var $oPubPathEnv bab_PublicationPathsEnv */
+        $oPubPathEnv->setEnv(0);
+
+        $targetPath = new bab_path($oPubPathEnv->getDraftArticleImgPath($id));
+        $targetPath->createDir();
+        $target = clone $targetPath;
+        $target->push($image['name']);
+
+        if (copy($source->toString(), $target->toString())) {
+            $sRelativePath = mb_substr($targetPath->toString(), 1 + mb_strlen($GLOBALS['babUploadPath']));
+            bab_addImageToDraftArticle($id, $image['name'], $sRelativePath.'/');
+        }
+    }
+
+    // copy tags to draft
+
+    require_once dirname(__FILE__) . '/tagApi.php';
+
+    $oReferenceMgr = bab_getInstance('bab_ReferenceMgr');
+
+    $oIterator = $oReferenceMgr->getTagsByReference(bab_Reference::makeReference('ovidentia', '', 'articles', 'article', $idarticle));
+    $oIterator->orderAsc('tag_name');
+    $oReferenceDraft = bab_Reference::makeReference('ovidentia', '', 'articles', 'draft', $id);
+    foreach($oIterator as $oTag) {
+        $oReferenceMgr->add($oTag->getName(), $oReferenceDraft);
+    }
+
+    return $id;
+}
+
+
+
+
+
+
+
 /**
  * Create a new article draft
  *
@@ -2128,8 +2245,9 @@ function bab_getDocumentArticle( $idf )
  *
  * @return int return the id of the article draft created
  */
-function bab_newArticleDraft($idtopic, $idarticle) {
-    global $babDB, $BAB_SESS_USERID;
+function bab_newArticleDraft($idtopic, $idarticle)
+{
+    global $babDB;
 
 
     // check if draft allredy exists

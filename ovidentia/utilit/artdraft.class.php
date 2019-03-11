@@ -133,22 +133,22 @@ class bab_ArtDraft
 	 * @var string
 	 */
 	public $modification_comment;
-	
+
 	/**
 	 * @var string
 	 */
 	public $page_title;
-	
+
 	/**
 	 * @var string
 	 */
 	public $page_description;
-	
+
 	/**
 	 * @var string
 	 */
 	public $page_keywords;
-	
+
 	/**
 	 * @var string
 	 */
@@ -223,6 +223,23 @@ class bab_ArtDraft
 	}
 
 
+
+    /**
+     * Create a draft in database as a copy of an article, and fill class properties
+     *
+     * @since 8.7.0
+     *
+     * @param int $id_article
+     * @return bab_ArtDraft
+     */
+    public function copyFromIdArticle($id_article)
+    {
+        $id_draft = bab_copyArticle($id_article);
+
+        $this->getFromIdDraft($id_draft);
+
+        return $this;
+    }
 
 
 	/**
@@ -363,7 +380,7 @@ class bab_ArtDraft
 	{
 		global $babDB;
 		require_once $GLOBALS['babInstallPath']."utilit/imgincl.php";
-		
+
 		$ar = array();
 		$this->head = imagesReplace($this->head, $this->id."_draft_", $ar);
 		$this->body = imagesReplace($this->body, $this->id."_draft_", $ar);
@@ -378,7 +395,7 @@ class bab_ArtDraft
 			*/
 
 		} else {
-			
+
 			$tmp = array();
 
 			$query = 'UPDATE bab_art_drafts SET ';
@@ -552,7 +569,7 @@ class bab_ArtDraft
 					$returnRename = copy($filePickerItem->getFilePath()->toString(), $target->toString());
 					unlink($filePickerItem->getFilePath()->toString());
 				}
-				
+
 				if ($returnRename)
 				{
 					$sRelativePath = mb_substr($targetPath->toString(), 1 + mb_strlen($GLOBALS['babUploadPath']));
@@ -569,7 +586,7 @@ class bab_ArtDraft
 
 			$tmpPath = $filepicker->getFolder();
 			/*@var $tmpPath bab_Path */
-			
+
 			try {
 			    $tmpPath->deleteDir();
 			} catch (Exception $e) {
