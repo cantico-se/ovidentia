@@ -2089,8 +2089,8 @@ class bab_OvmlAttributes
                 return strip_tags($val);
 
             case '2':
-                $val = eregi_replace('<BR[[:space:]]*/?[[:space:]]*>', "\n ", $val);
-                $val = eregi_replace('<P>|</P>|<P />|<P/>', "\n ", $val);
+                $val = preg_replace('/<BR[[:space:]]*\/?[[:space:]]*>/i', "\n ", $val);
+                $val = preg_replace('/<P>|<\/P>|<P \/>|<P\/>/i', "\n ", $val);
                 return strip_tags($val);
         }
     }
