@@ -1727,9 +1727,9 @@ class babOvTemplate
     /**
      * Process a container
      *
-     * @param $handler      Container name without OC, this is the functionality name
-     * @param string $txt   Container content
-     * @param array $args   Container arguments
+     * @param string $handler   Container name without OC, this is the functionality name
+     * @param string $txt       Container content
+     * @param array $args       Container arguments
      */
     public function handle_tag($handler, $txt, $args, $fprint = 'printout')
     {
