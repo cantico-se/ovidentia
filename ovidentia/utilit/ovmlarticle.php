@@ -29,14 +29,25 @@ require_once dirname(__FILE__).'/userincl.php';
 class Func_Ovml_Container_ArticlesHomePages extends Func_Ovml_Container
 {
     public $IdEntries = array();
+
     public $arrid = array();
+
     public $index;
+
     public $count;
+
     public $idgroup;
 
     public $imageheightmax;
+
     public $imagewidthmax;
 
+    protected $userCanSubmitArticles = null;
+
+    /**
+     * {@inheritDoc}
+     * @see Func_Ovml_Container::setOvmlContext()
+     */
     public function setOvmlContext(babOvTemplate $ctx)
     {
         global $babDB;
@@ -117,7 +128,10 @@ class Func_Ovml_Container_ArticlesHomePages extends Func_Ovml_Container
 
         $this->count = isset($this->res) ? $babDB->db_num_rows($this->res) : 0;
         $this->ctx->curctx->push('CCount', $this->count);
+
+        $this->userCanSubmitArticles = (count(bab_getUserIdObjects(BAB_TOPICSSUB_GROUPS_TBL)) > 0);
     }
+
 
     public function getnext()
     {
@@ -165,6 +179,14 @@ class Func_Ovml_Container_ArticlesHomePages extends Func_Ovml_Container
                 $this->ctx->curctx->push('ArticleEditUrl', '');
                 $this->ctx->curctx->push('ArticleEditName', '');
             }
+
+            if ($this->userCanSubmitArticles) {
+                $this->ctx->curctx->push('ArticleCopyUrl', $GLOBALS['babUrl'] . bab_getSelf() . "?tg=articles&idx=copy&article=" . $arr['id']);
+                $this->ctx->curctx->push('ArticleCopyName', bab_translate("Copy"));
+            } else {
+                $this->ctx->curctx->push('ArticleCopyUrl', '');
+                $this->ctx->curctx->push('ArticleCopyName', '');
+            }
             $this->idx ++;
             $this->index = $this->idx;
             return true;
@@ -179,12 +201,20 @@ class Func_Ovml_Container_ArticlesHomePages extends Func_Ovml_Container
 class Func_Ovml_Container_ArticleCategories extends Func_Ovml_Container
 {
     public $IdEntries = array();
+
     public $index;
+
     public $count;
 
     public $imageheightmax;
+
     public $imagewidthmax;
 
+
+    /**
+     * {@inheritDoc}
+     * @see Func_Ovml_Container::setOvmlContext()
+     */
     public function setOvmlContext(babOvTemplate $ctx)
     {
         global $babDB;
@@ -245,13 +275,22 @@ class Func_Ovml_Container_ArticleCategories extends Func_Ovml_Container
 class Func_Ovml_Container_ParentsArticleCategory extends Func_Ovml_Container
 {
     public $IdEntries = array();
+
     public $res;
+
     public $index;
+
     public $count;
 
     public $imageheightmax;
+
     public $imagewidthmax;
 
+
+    /**
+     * {@inheritDoc}
+     * @see Func_Ovml_Container::setOvmlContext()
+     */
     public function setOvmlContext(babOvTemplate $ctx)
     {
         global $babDB;
@@ -312,13 +351,22 @@ class Func_Ovml_Container_ParentsArticleCategory extends Func_Ovml_Container
 class Func_Ovml_Container_ArticleCategory extends Func_Ovml_Container
 {
     public $arrid = array();
+
     public $index;
+
     public $count;
+
     public $res;
 
     public $imageheightmax;
+
     public $imagewidthmax;
 
+
+    /**
+     * {@inheritDoc}
+     * @see Func_Ovml_Container::setOvmlContext()
+     */
     public function setOvmlContext(babOvTemplate $ctx)
     {
         global $babDB;
@@ -383,6 +431,11 @@ class Func_Ovml_Container_ArticleCategoryPrevious extends Func_Ovml_Container_Ar
 {
     public $handler;
 
+
+    /**
+     * {@inheritDoc}
+     * @see Func_Ovml_Container_ArticleCategory::setOvmlContext()
+     */
     public function setOvmlContext(babOvTemplate $ctx)
     {
         $this->handler = $ctx->get_handler('Func_Ovml_Container_ArticleCategories');
@@ -401,6 +454,11 @@ class Func_Ovml_Container_ArticleCategoryNext extends Func_Ovml_Container_Articl
 {
     public $handler;
 
+
+    /**
+     * {@inheritDoc}
+     * @see Func_Ovml_Container_ArticleCategory::setOvmlContext()
+     */
     public function setOvmlContext(babOvTemplate $ctx)
     {
         $this->handler = $ctx->get_handler('Func_Ovml_Container_ArticleCategories');
@@ -421,13 +479,22 @@ class Func_Ovml_Container_ArticleCategoryNext extends Func_Ovml_Container_Articl
 class Func_Ovml_Container_ArticleTopics extends Func_Ovml_Container
 {
     public $IdEntries = array();
+
     public $ctx;
+
     public $index;
+
     public $count;
 
     public $imageheightmax;
+
     public $imagewidthmax;
 
+
+    /**
+     * {@inheritDoc}
+     * @see Func_Ovml_Container::setOvmlContext()
+     */
     public function setOvmlContext(babOvTemplate $ctx)
     {
         global $babDB;
@@ -518,13 +585,22 @@ class Func_Ovml_Container_ArticleTopics extends Func_Ovml_Container
 class Func_Ovml_Container_ArticleTopic extends Func_Ovml_Container
 {
     public $IdEntries = array();
+
     public $topicid;
+
     public $count;
+
     public $index;
 
     public $imageheightmax;
+
     public $imagewidthmax;
 
+
+    /**
+     * {@inheritDoc}
+     * @see Func_Ovml_Container::setOvmlContext()
+     */
     public function setOvmlContext(babOvTemplate $ctx)
     {
         global $babDB;
@@ -639,6 +715,11 @@ class Func_Ovml_Container_ArticleTopicPrevious extends Func_Ovml_Container_Artic
 {
     public $handler;
 
+
+    /**
+     * {@inheritDoc}
+     * @see Func_Ovml_Container_ArticleTopic::setOvmlContext()
+     */
     public function setOvmlContext(babOvTemplate $ctx)
     {
         $this->handler = $ctx->get_handler('Func_Ovml_Container_ArticleTopics');
@@ -657,6 +738,11 @@ class Func_Ovml_Container_ArticleTopicNext extends Func_Ovml_Container_ArticleTo
 {
     public $handler;
 
+
+    /**
+     * {@inheritDoc}
+     * @see Func_Ovml_Container_ArticleTopic::setOvmlContext()
+     */
     public function setOvmlContext(babOvTemplate $ctx)
     {
         $this->handler = $ctx->get_handler('Func_Ovml_Container_ArticleCategories');
@@ -676,13 +762,18 @@ class Func_Ovml_Container_ArticleTopicNext extends Func_Ovml_Container_ArticleTo
 class Func_Ovml_Container_Articles extends Func_Ovml_Container
 {
     public $IdEntries = array();
+
     public $index;
+
     public $count;
+
     public $res;
 
     public $imageheightmax;
+
     public $imagewidthmax;
 
+    protected $userCanSubmitArticles = null;
 
     /**
      *
@@ -980,6 +1071,8 @@ class Func_Ovml_Container_Articles extends Func_Ovml_Container
             $this->count = 0;
         }
         $this->ctx->curctx->push('CCount', $this->count);
+
+        $this->userCanSubmitArticles = (count(bab_getUserIdObjects(BAB_TOPICSSUB_GROUPS_TBL)) > 0);
     }
 
     public function getnext()
@@ -1024,6 +1117,15 @@ class Func_Ovml_Container_Articles extends Func_Ovml_Container
                 $this->ctx->curctx->push('ArticleEditUrl', '');
                 $this->ctx->curctx->push('ArticleEditName', '');
             }
+
+            if ($this->userCanSubmitArticles) {
+                $this->ctx->curctx->push('ArticleCopyUrl', $GLOBALS['babUrl'] . bab_getSelf() . "?tg=articles&idx=copy&article=" . $arr['id']);
+                $this->ctx->curctx->push('ArticleCopyName', bab_translate("Copy"));
+            } else {
+                $this->ctx->curctx->push('ArticleCopyUrl', '');
+                $this->ctx->curctx->push('ArticleCopyName', '');
+            }
+
             $this->ctx->curctx->push('ArticleAverageRating', (float) $arr['average_rating']);
             $this->ctx->curctx->push('ArticleNbRatings', (float) $arr['nb_ratings']);
             $this->idx ++;
@@ -1040,13 +1142,24 @@ class Func_Ovml_Container_Articles extends Func_Ovml_Container
 class Func_Ovml_Container_Article extends Func_Ovml_Container
 {
     public $IdEntries = array();
+
     public $res;
+
     public $index;
+
     public $count;
 
     public $imageheightmax;
+
     public $imagewidthmax;
 
+    protected $userCanSubmitArticles = null;
+
+
+    /**
+     * {@inheritDoc}
+     * @see Func_Ovml_Container::setOvmlContext()
+     */
     public function setOvmlContext(babOvTemplate $ctx)
     {
         global $babDB;
@@ -1073,7 +1186,10 @@ class Func_Ovml_Container_Article extends Func_Ovml_Container
         }
 
         $this->ctx->curctx->push('CCount', $this->count);
+
+        $this->userCanSubmitArticles = (count(bab_getUserIdObjects(BAB_TOPICSSUB_GROUPS_TBL)) > 0);
     }
+
 
     public function getnext()
     {
@@ -1115,6 +1231,13 @@ class Func_Ovml_Container_Article extends Func_Ovml_Container
                 $this->ctx->curctx->push('ArticleEditUrl', '');
                 $this->ctx->curctx->push('ArticleEditName', '');
             }
+            if ($this->userCanSubmitArticles) {
+                $this->ctx->curctx->push('ArticleCopyUrl', $GLOBALS['babUrl'] . bab_getSelf() . "?tg=articles&idx=copy&article=" . $arr['id']);
+                $this->ctx->curctx->push('ArticleCopyName', bab_translate("Copy"));
+            } else {
+                $this->ctx->curctx->push('ArticleCopyUrl', '');
+                $this->ctx->curctx->push('ArticleCopyName', '');
+            }
             $this->ctx->curctx->push('ArticleAverageRating', bab_getArticleAverageRating($arr['id']));
             $this->ctx->curctx->push('ArticleNbRatings', bab_getArticleNbRatings($arr['id']));
             $this->idx ++;
@@ -1131,10 +1254,18 @@ class Func_Ovml_Container_Article extends Func_Ovml_Container
 class Func_Ovml_Container_ArticleFiles extends Func_Ovml_Container
 {
     public $IdEntries = array();
+
     public $res;
+
     public $index;
+
     public $count;
 
+
+    /**
+     * {@inheritDoc}
+     * @see Func_Ovml_Container::setOvmlContext()
+     */
     public function setOvmlContext(babOvTemplate $ctx)
     {
         global $babDB;
@@ -1180,10 +1311,16 @@ class Func_Ovml_Container_ArticleFiles extends Func_Ovml_Container
     }
 }
 
+
 class Func_Ovml_Container_ArticlePrevious extends Func_Ovml_Container_Article
 {
     public $handler;
 
+
+    /**
+     * {@inheritDoc}
+     * @see Func_Ovml_Container_Article::setOvmlContext()
+     */
     public function setOvmlContext(babOvTemplate $ctx)
     {
         $this->handler = $ctx->get_handler('Func_Ovml_Container_Articles');
@@ -1197,10 +1334,16 @@ class Func_Ovml_Container_ArticlePrevious extends Func_Ovml_Container_Article
     }
 }
 
+
 class Func_Ovml_Container_ArticleNext extends Func_Ovml_Container_Article
 {
     public $handler;
 
+
+    /**
+     * {@inheritDoc}
+     * @see Func_Ovml_Container_Article::setOvmlContext()
+     */
     public function setOvmlContext(babOvTemplate $ctx)
     {
         $this->handler = $ctx->get_handler('Func_Ovml_Container_Articles');
@@ -1221,18 +1364,34 @@ class Func_Ovml_Container_ArticleNext extends Func_Ovml_Container_Article
 class Func_Ovml_Container_RecentArticles extends Func_Ovml_Container
 {
     public $res;
+
     public $IdEntries = array();
+
     public $arrid = array();
+
     public $index;
+
     public $count;
+
     public $resarticles;
+
     public $nbdays;
+
     public $last;
+
     public $topicid;
 
     public $imageheightmax;
+
     public $imagewidthmax;
 
+    protected $userCanSubmitArticles = null;
+
+
+    /**
+     * {@inheritDoc}
+     * @see Func_Ovml_Container::setOvmlContext()
+     */
     public function setOvmlContext(babOvTemplate $ctx)
     {
         global $babDB;
@@ -1408,7 +1567,10 @@ class Func_Ovml_Container_RecentArticles extends Func_Ovml_Container
             $this->count = 0;
         }
         $this->ctx->curctx->push('CCount', $this->count);
+
+        $this->userCanSubmitArticles = (count(bab_getUserIdObjects(BAB_TOPICSSUB_GROUPS_TBL)) > 0);
     }
+
 
     public function gettopics($idparent)
     {
@@ -1421,14 +1583,14 @@ class Func_Ovml_Container_RecentArticles extends Func_Ovml_Container
             }
         }
 
-        $babDB = &$GLOBALS['babDB'];
-
+        $babDB = bab_getDB();
 
         $res = $babDB->db_query("select id from " . BAB_TOPICS_TBL . " where id_cat='" . $babDB->db_escape_string($idparent) . "' AND id IN(" . $babDB->quote(bab_getUserIdObjects(BAB_TOPICSVIEW_GROUPS_TBL)) . ")");
         while ($row = $babDB->db_fetch_array($res)) {
             $this->topicid[] = $row['id'];
         }
     }
+
 
     public function getnext()
     {
@@ -1442,16 +1604,18 @@ class Func_Ovml_Container_RecentArticles extends Func_Ovml_Container
             $this->ctx->curctx->push('ArticleTitle', $arr['title']);
             $this->pushEditor('ArticleHead', $arr['head'], $arr['head_format'], 'bab_article_head');
             $this->pushEditor('ArticleBody', $arr['body'], $arr['body_format'], 'bab_article_body');
-            if (empty($arr['body']))
+            if (empty($arr['body'])) {
                 $this->ctx->curctx->push('ArticleReadMore', 0);
-            else
+            } else {
                 $this->ctx->curctx->push('ArticleReadMore', 1);
+            }
             $this->ctx->curctx->push('ArticleId', $arr['id']);
             $this->ctx->curctx->push('ArticleAuthor', $arr['id_author']);
-            if ($arr['date'] == $arr['date_modification'])
+            if ($arr['date'] == $arr['date_modification']) {
                 $this->ctx->curctx->push('ArticleModifiedBy', $arr['id_author']);
-            else
+            } else {
                 $this->ctx->curctx->push('ArticleModifiedBy', $arr['id_modifiedby']);
+            }
             $this->ctx->curctx->push('ArticleDate', bab_mktime($arr['date_modification'])); /* for compatibility */
             $this->ctx->curctx->push('ArticleDateModification', bab_mktime($arr['date_modification']));
             $this->ctx->curctx->push('ArticleDatePublication', bab_mktime($arr['date_publication']));
@@ -1471,6 +1635,13 @@ class Func_Ovml_Container_RecentArticles extends Func_Ovml_Container
                 $this->ctx->curctx->push('ArticleEditUrl', '');
                 $this->ctx->curctx->push('ArticleEditName', '');
             }
+            if ($this->userCanSubmitArticles) {
+                $this->ctx->curctx->push('ArticleCopyUrl', $GLOBALS['babUrl'] . bab_getSelf() . "?tg=articles&idx=copy&article=" . $arr['id']);
+                $this->ctx->curctx->push('ArticleCopyName', bab_translate("Copy"));
+            } else {
+                $this->ctx->curctx->push('ArticleCopyUrl', '');
+                $this->ctx->curctx->push('ArticleCopyName', '');
+            }
             $this->ctx->curctx->push('ArticleAverageRating', (float) $arr['average_rating']);
             $this->ctx->curctx->push('ArticleNbRatings', (float) $arr['nb_ratings']);
             $this->idx ++;
@@ -1483,17 +1654,31 @@ class Func_Ovml_Container_RecentArticles extends Func_Ovml_Container
     }
 }
 
+
+
 class Func_Ovml_Container_RecentComments extends Func_Ovml_Container
 {
     public $index;
+
     public $count;
+
     public $rescomments;
+
     public $countcomments;
+
     public $lastlog;
+
     public $nbdays;
+
     public $last;
+
     public $articleid;
 
+
+    /**
+     * {@inheritdoc}
+     * @see Func_Ovml_Container::setOvmlContext()
+     */
     public function setOvmlContext(babOvTemplate $ctx)
     {
         global $babDB;
@@ -1603,14 +1788,26 @@ class Func_Ovml_Container_RecentComments extends Func_Ovml_Container
 class Func_Ovml_Container_WaitingArticles extends Func_Ovml_Container
 {
     public $IdEntries = array();
+
     public $res;
+
     public $index;
+
     public $count;
+
     public $topicid;
 
     public $imageheightmax;
+
     public $imagewidthmax;
 
+    protected $userCanSubmitArticles = null;
+
+
+    /**
+     * {@inheritDoc}
+     * @see Func_Ovml_Container::setOvmlContext()
+     */
     public function setOvmlContext(babOvTemplate $ctx)
     {
         global $babDB;
@@ -1661,7 +1858,10 @@ class Func_Ovml_Container_WaitingArticles extends Func_Ovml_Container
         }
 
         $this->ctx->curctx->push('CCount', $this->count);
+
+        $this->userCanSubmitArticles = (count(bab_getUserIdObjects(BAB_TOPICSSUB_GROUPS_TBL)) > 0);
     }
+
 
     public function getnext()
     {
@@ -1697,6 +1897,13 @@ class Func_Ovml_Container_WaitingArticles extends Func_Ovml_Container
                 $this->ctx->curctx->push('ArticleEditUrl', '');
                 $this->ctx->curctx->push('ArticleEditName', '');
             }
+            if ($this->userCanSubmitArticles) {
+                $this->ctx->curctx->push('ArticleCopyUrl', $GLOBALS['babUrl'] . bab_getSelf() . "?tg=articles&idx=copy&article=" . $arr['id']);
+                $this->ctx->curctx->push('ArticleCopyName', bab_translate("Copy"));
+            } else {
+                $this->ctx->curctx->push('ArticleCopyUrl', '');
+                $this->ctx->curctx->push('ArticleCopyName', '');
+            }
             $this->idx ++;
             $this->index = $this->idx;
             return true;
@@ -1708,22 +1915,33 @@ class Func_Ovml_Container_WaitingArticles extends Func_Ovml_Container
 }
 
 
+
 class Func_Ovml_Container_WaitingComments extends Func_Ovml_Container
 {
+
     public $res;
+
     public $IdEntries = array();
+
     public $index;
+
     public $count;
+
     public $articleid;
 
 
+    /**
+     *
+     * {@inheritdoc}
+     * @see Func_Ovml_Container::setOvmlContext()
+     */
     public function setOvmlContext(babOvTemplate $ctx)
     {
         global $babDB;
         parent::setOvmlContext($ctx);
 
         $userid = $ctx->curctx->getAttribute('userid');
-        if ($userid === false || $userid === '' ) {
+        if ($userid === false || $userid === '') {
             $userid = $GLOBALS['BAB_SESS_USERID'];
         }
 
@@ -1731,15 +1949,11 @@ class Func_Ovml_Container_WaitingComments extends Func_Ovml_Container
             $this->articleid = $ctx->curctx->getAttribute('articleid');
             $delegationid = (int) $ctx->curctx->getAttribute('delegationid');
 
-            $req = "select c.id, c.id_topic from ".BAB_COMMENTS_TBL." c ";
+            $req = "select c.id, c.id_topic from " . BAB_COMMENTS_TBL . " c ";
 
             $sDelegation = ' ';
             if (0 != $delegationid) {
-                $req .=
-                    'LEFT JOIN ' .
-                        BAB_TOPICS_TBL . ' tp ON tp.id = id_topic ' .
-                    'LEFT JOIN ' .
-                        BAB_TOPICS_CATEGORIES_TBL . ' tpCat ON tpCat.id = tp.id_cat ';
+                $req .= 'LEFT JOIN ' . BAB_TOPICS_TBL . ' tp ON tp.id = id_topic ' . 'LEFT JOIN ' . BAB_TOPICS_CATEGORIES_TBL . ' tpCat ON tpCat.id = tp.id_cat ';
 
                 $sDelegation = ' AND tpCat.id_dgowner = \'' . $babDB->db_escape_string($delegationid) . '\' ';
             }
@@ -1747,20 +1961,20 @@ class Func_Ovml_Container_WaitingComments extends Func_Ovml_Container
             $req .= "where c.confirmed='N'" . $sDelegation;
 
 
-            if ($this->articleid !== false && $this->articleid !== '' ) {
-                $req .= " and c.id_article IN (".$babDB->quote(explode(',', $this->articleid)).")";
+            if ($this->articleid !== false && $this->articleid !== '') {
+                $req .= " and c.id_article IN (" . $babDB->quote(explode(',', $this->articleid)) . ")";
             }
 
             $res = $babDB->db_query($req);
             while ($arr = $babDB->db_fetch_array($res)) {
                 $waitcom = bab_getWaitingComments($arr['id_topic']);
-                if (count($waitcom) > 0 && in_array( $arr['id'], $waitcom)) {
+                if (count($waitcom) > 0 && in_array($arr['id'], $waitcom)) {
                     $this->IdEntries[] = $arr['id'];
                 }
             }
             $this->count = count($this->IdEntries);
             if ($this->count > 0) {
-                $this->res = $babDB->db_query("select * from ".BAB_COMMENTS_TBL." where id IN (".$babDB->quote($this->IdEntries).") order by date desc");
+                $this->res = $babDB->db_query("select * from " . BAB_COMMENTS_TBL . " where id IN (" . $babDB->quote($this->IdEntries) . ") order by date desc");
                 $this->count = $babDB->db_num_rows($this->res);
             }
         } else {
@@ -1788,10 +2002,10 @@ class Func_Ovml_Container_WaitingComments extends Func_Ovml_Container
                 $this->ctx->curctx->push('CommentAuthor', $arr['name']);
             }
             $this->ctx->curctx->push('CommentLanguage', $arr['lang']);
-            $this->ctx->curctx->push('CommentUrl', $GLOBALS['babUrl'].bab_getSelf()."?tg=approb");
-            $this->ctx->curctx->push('CommentPopupUrl', $GLOBALS['babUrl'].bab_getSelf()."?tg=approb&idx=viewcom&idcom=".$arr['id']."&idart=".$arr['id_article']."&topics=".$arr['id_topic']);
+            $this->ctx->curctx->push('CommentUrl', $GLOBALS['babUrl'] . bab_getSelf() . "?tg=approb");
+            $this->ctx->curctx->push('CommentPopupUrl', $GLOBALS['babUrl'] . bab_getSelf() . "?tg=approb&idx=viewcom&idcom=" . $arr['id'] . "&idart=" . $arr['id_article'] . "&topics=" . $arr['id_topic']);
             $this->ctx->curctx->push('CommentArticleRating', $arr['article_rating']);
-            $this->idx++;
+            $this->idx ++;
             $this->index = $this->idx;
             return true;
         } else {
@@ -1822,26 +2036,26 @@ function setArticleAssociatedImageInfo($oCtx, $iMaxImageHeight, $iMaxImageWidth,
     $settings = bab_getInstance('bab_Settings');
     /*@var $settings bab_Settings */
 
-    $bProcessed		= false;
-    $sUploadPath	= BAB_PathUtil::addEndSlash(BAB_PathUtil::sanitize($settings->getUploadPath()));
+    $bProcessed = false;
+    $sUploadPath = BAB_PathUtil::addEndSlash(BAB_PathUtil::sanitize($settings->getUploadPath()));
 
     if (is_dir($sUploadPath)) {
         $aImgInfo = bab_getImageArticle($iIdArticle);
         if (is_array($aImgInfo)) {
-            $iHeight			= $iMaxImageHeight ? $iMaxImageHeight : 2048;
-            $iWidth				= $iMaxImageWidth ? $iMaxImageWidth : 2048;
-            $sName				= $aImgInfo['name'];
-            $sRelativePath		= $aImgInfo['relativePath'];
-            $sFullPathName		= $sUploadPath . $sRelativePath . $sName;
-            $sImageUrl			= $GLOBALS['babUrl'].bab_getSelf() . '?tg=articles&idx=getImage&sImage=' . urlencode($sName);
-            $sOriginalImageUrl	= $sImageUrl . '&iIdArticle=' . $iIdArticle;
+            $iHeight = $iMaxImageHeight ? $iMaxImageHeight : 2048;
+            $iWidth = $iMaxImageWidth ? $iMaxImageWidth : 2048;
+            $sName = $aImgInfo['name'];
+            $sRelativePath = $aImgInfo['relativePath'];
+            $sFullPathName = $sUploadPath . $sRelativePath . $sName;
+            $sImageUrl = $GLOBALS['babUrl'] . bab_getSelf() . '?tg=articles&idx=getImage&sImage=' . urlencode($sName);
+            $sOriginalImageUrl = $sImageUrl . '&iIdArticle=' . $iIdArticle;
 
             $T = bab_functionality::get('Thumbnailer');
             $thumbnailUrl = null;
 
             if ($T) {
                 // The thumbnailer functionality is available.
-                 $T->setSourceFile($sFullPathName);
+                $T->setSourceFile($sFullPathName);
                 $thumbnailUrl = $T->getThumbnail($iWidth, $iHeight);
             }
             if ($thumbnailUrl) {
@@ -1914,26 +2128,26 @@ function setCategoryAssociatedImageInfo($oCtx, $iMaxImageHeight, $iMaxImageWidth
     require_once dirname(__FILE__) . '/artapi.php';
     require_once dirname(__FILE__) . '/pathUtil.class.php';
 
-    $bProcessed		= false;
-    $sUploadPath	= BAB_PathUtil::addEndSlash(BAB_PathUtil::sanitize($GLOBALS['babUploadPath']));
+    $bProcessed = false;
+    $sUploadPath = BAB_PathUtil::addEndSlash(BAB_PathUtil::sanitize($GLOBALS['babUploadPath']));
 
     if (is_dir($sUploadPath)) {
         $aImgInfo = bab_getImageCategory($iIdCategory);
         if (is_array($aImgInfo)) {
-            $iHeight			= $iMaxImageHeight ? $iMaxImageHeight : 2048;
-            $iWidth				= $iMaxImageWidth ? $iMaxImageWidth : 2048;
-            $sName				= $aImgInfo['name'];
-            $sRelativePath		= $aImgInfo['relativePath'];
-            $sFullPathName		= $sUploadPath . $sRelativePath . $sName;
-            $sImageUrl			= $GLOBALS['babUrl'].bab_getSelf() . '?tg=topusr&idx=getCategoryImage&sImage=' . bab_toHtml($sName);
-            $sOriginalImageUrl	= $sImageUrl . '&iIdCategory=' . $iIdCategory;
+            $iHeight = $iMaxImageHeight ? $iMaxImageHeight : 2048;
+            $iWidth = $iMaxImageWidth ? $iMaxImageWidth : 2048;
+            $sName = $aImgInfo['name'];
+            $sRelativePath = $aImgInfo['relativePath'];
+            $sFullPathName = $sUploadPath . $sRelativePath . $sName;
+            $sImageUrl = $GLOBALS['babUrl'] . bab_getSelf() . '?tg=topusr&idx=getCategoryImage&sImage=' . bab_toHtml($sName);
+            $sOriginalImageUrl = $sImageUrl . '&iIdCategory=' . $iIdCategory;
 
             $T = bab_functionality::get('Thumbnailer');
             $thumbnailUrl = null;
 
             if ($T && $iWidth && $iHeight) {
                 // The thumbnailer functionality is available.
-                 $T->setSourceFile($sFullPathName);
+                $T->setSourceFile($sFullPathName);
                 $thumbnailUrl = $T->getThumbnail($iWidth, $iHeight);
             }
             if ($thumbnailUrl) {
@@ -2012,26 +2226,26 @@ function setTopicAssociatedImageInfo($oCtx, $iMaxImageHeight, $iMaxImageWidth, $
     $settings = bab_getInstance('bab_Settings');
     /*@var $settings bab_Settings */
 
-    $bProcessed		= false;
-    $sUploadPath	= BAB_PathUtil::addEndSlash(BAB_PathUtil::sanitize($settings->getUploadPath()));
+    $bProcessed = false;
+    $sUploadPath = BAB_PathUtil::addEndSlash(BAB_PathUtil::sanitize($settings->getUploadPath()));
 
-    if(is_dir($sUploadPath)) {
+    if (is_dir($sUploadPath)) {
         $aImgInfo = bab_getImageTopic($iIdTopic);
         if (is_array($aImgInfo)) {
-            $iHeight			= $iMaxImageHeight ? $iMaxImageHeight : 2048;
-            $iWidth				= $iMaxImageWidth ? $iMaxImageWidth : 2048;
-            $sName				= $aImgInfo['name'];
-            $sRelativePath		= $aImgInfo['relativePath'];
-            $sFullPathName		= $sUploadPath . $sRelativePath . $sName;
-            $sImageUrl			= $GLOBALS['babUrl'].bab_getSelf() . '?tg=topusr&idx=getTopicImage&sImage=' . bab_toHtml($sName);
-            $sOriginalImageUrl	= $sImageUrl . '&iIdTopic=' . $iIdTopic . '&item=' . $iIdTopic  . '&iIdCategory=' . $iIdCategory;
+            $iHeight = $iMaxImageHeight ? $iMaxImageHeight : 2048;
+            $iWidth = $iMaxImageWidth ? $iMaxImageWidth : 2048;
+            $sName = $aImgInfo['name'];
+            $sRelativePath = $aImgInfo['relativePath'];
+            $sFullPathName = $sUploadPath . $sRelativePath . $sName;
+            $sImageUrl = $GLOBALS['babUrl'] . bab_getSelf() . '?tg=topusr&idx=getTopicImage&sImage=' . bab_toHtml($sName);
+            $sOriginalImageUrl = $sImageUrl . '&iIdTopic=' . $iIdTopic . '&item=' . $iIdTopic . '&iIdCategory=' . $iIdCategory;
 
             $T = bab_functionality::get('Thumbnailer');
             $thumbnailUrl = null;
 
             if ($T && $iWidth && $iHeight) {
                 // The thumbnailer functionality is available.
-                 $T->setSourceFile($sFullPathName);
+                $T->setSourceFile($sFullPathName);
                 $thumbnailUrl = $T->getThumbnail($iWidth, $iHeight);
             }
             if ($thumbnailUrl) {
@@ -2106,11 +2320,11 @@ function setImageInfo($oCtx, $iMaxImageHeight, $iMaxImageWidth, $path)
     require_once dirname(__FILE__) . '/artapi.php';
     require_once dirname(__FILE__) . '/pathUtil.class.php';
 
-    $bProcessed		= false;
+    $bProcessed = false;
 
-    $iHeight			= $iMaxImageHeight ? $iMaxImageHeight : 2048;
-    $iWidth				= $iMaxImageWidth ? $iMaxImageWidth : 2048;
-    $sFullPathName		= $path;
+    $iHeight = $iMaxImageHeight ? $iMaxImageHeight : 2048;
+    $iWidth = $iMaxImageWidth ? $iMaxImageWidth : 2048;
+    $sFullPathName = $path;
 
     $T = bab_functionality::get('Thumbnailer');
     $thumbnailUrl = null;
@@ -2131,15 +2345,6 @@ function setImageInfo($oCtx, $iMaxImageHeight, $iMaxImageWidth, $path)
         $oCtx->curctx->push('ImageUrl', '');
     }
 }
-
-
-
-
-
-
-
-
-
 
 
 
@@ -2178,21 +2383,27 @@ function setImageInfo($oCtx, $iMaxImageHeight, $iMaxImageWidth, $path)
  * a definir
  * </ul>
  */
-class Func_Ovml_Function_ArticleTree extends Func_Ovml_Function {
+class Func_Ovml_Function_ArticleTree extends Func_Ovml_Function
+{
+    protected $path = null;
 
-    protected	$path = null;
-    protected	$delegation = 0;
-    protected	$article = 1;
-    protected	$articlelimit = 0;
-    protected	$hideempty = 'none';
-    protected	$hidefirstnode = 0;
+    protected $delegation = 0;
 
-    protected	$selectedClass = 'selected';
-    protected	$activeClass = 'active';
-    protected	$date = 'none';
+    protected $article = 1;
 
+    protected $articlelimit = 0;
 
-    protected	$maxDepth = 100;
+    protected $hideempty = 'none';
+
+    protected $hidefirstnode = 0;
+
+    protected $selectedClass = 'selected';
+
+    protected $activeClass = 'active';
+
+    protected $date = 'none';
+
+    protected $maxDepth = 100;
 
 
     private function getChild($id, $depth = 1)
@@ -2201,19 +2412,18 @@ class Func_Ovml_Function_ArticleTree extends Func_Ovml_Function {
         $return = '';
 
         $req = "SELECT bab_topics_categories.id as id, bab_topics_categories.title as title
-                FROM ".BAB_TOPICS_CATEGORIES_TBL.", ".BAB_TOPCAT_ORDER_TBL."
+                FROM " . BAB_TOPICS_CATEGORIES_TBL . ", " . BAB_TOPCAT_ORDER_TBL . "
                 WHERE bab_topcat_order.type = 1
-                AND bab_topics_categories.id_parent=".$babDB->quote($id)."
+                AND bab_topics_categories.id_parent=" . $babDB->quote($id) . "
                 AND bab_topcat_order.id_topcat=bab_topics_categories.id
                 ORDER BY bab_topcat_order.ordering ASC";
         $res = $babDB->db_query($req);
-        while( $arr = $babDB->db_fetch_assoc($res))
-        {
+        while ($arr = $babDB->db_fetch_assoc($res)) {
             $child = $this->getChild($arr['id']);
-            if(!($child == '' && ($this->hideempty == "all" || $this->hideempty == "category"))){
+            if (! ($child == '' && ($this->hideempty == "all" || $this->hideempty == "category"))) {
                 $return[] = array(
                     'type' => 'category',
-                    'url'=> htmlentities($GLOBALS['babUrl'].bab_getSelf().'?tg=topusr&cat='.$arr['id']),
+                    'url' => htmlentities($GLOBALS['babUrl'] . bab_getSelf() . '?tg=topusr&cat=' . $arr['id']),
                     'name' => $arr['title'],
                     'child' => $child,
                     'date' => ''
@@ -2222,58 +2432,53 @@ class Func_Ovml_Function_ArticleTree extends Func_Ovml_Function {
         }
 
         $sTopic = ' ';
-        if($this->topic){
+        if ($this->topic) {
             $sTopic = ' AND id = \'' . $babDB->db_escape_string($this->topic) . '\' ';
         }
         $req = "SELECT bab_topics.id as id, bab_topics.category as category
-                FROM ".BAB_TOPICS_TBL.", ".BAB_TOPCAT_ORDER_TBL."
+                FROM " . BAB_TOPICS_TBL . ", " . BAB_TOPCAT_ORDER_TBL . "
                 WHERE bab_topcat_order.type = 2
-                AND id_cat=".$babDB->quote($id) . $sTopic . "
+                AND id_cat=" . $babDB->quote($id) . $sTopic . "
                 AND bab_topcat_order.id_topcat=bab_topics.id
                 ORDER BY bab_topcat_order.ordering ASC";
-        $req = "select * from ".BAB_TOPICS_TBL." where id_cat=".$babDB->quote($id) . $sTopic;
+        $req = "select * from " . BAB_TOPICS_TBL . " where id_cat=" . $babDB->quote($id) . $sTopic;
         $res = $babDB->db_query($req);
 
-        if (bab_isUserLogged())
-        {
-            require_once dirname(__FILE__).'/userinfosincl.php';
+        if (bab_isUserLogged()) {
+            require_once dirname(__FILE__) . '/userinfosincl.php';
             $usersettings = bab_userInfos::getUserSettings();
             $lastlog = $usersettings['lastlog'];
         } else {
             $lastlog = '';
         }
 
-        while( $arr = $babDB->db_fetch_assoc($res))
-        {
+        while ($arr = $babDB->db_fetch_assoc($res)) {
             $returnTempTopic = '';
-            if(bab_isAccessValid(BAB_TOPICSVIEW_GROUPS_TBL, $arr['id'])){
+            if (bab_isAccessValid(BAB_TOPICSVIEW_GROUPS_TBL, $arr['id'])) {
                 $child = '';
-                if($this->article){
-                    $reqArticles = "select * from ".BAB_ARTICLES_TBL." where id_topic=".$babDB->quote($arr['id']) . 'ORDER BY date DESC';
-                    if($this->articlelimit != 0){
-                        $reqArticles.= " LIMIT 0,".$this->articlelimit;
+                if ($this->article) {
+                    $reqArticles = "select * from " . BAB_ARTICLES_TBL . " where id_topic=" . $babDB->quote($arr['id']) . 'ORDER BY date DESC';
+                    if ($this->articlelimit != 0) {
+                        $reqArticles .= " LIMIT 0," . $this->articlelimit;
                     }
                     $resArticles = $babDB->db_query($reqArticles);
 
-                    $returnArticle = "";
-                    while( $arrArticles = $babDB->db_fetch_array($resArticles))
-                    {
+                    while ($arrArticles = $babDB->db_fetch_array($resArticles)) {
                         $classNew = '';
-                        if( $arrArticles['date'] > $lastlog)
-                        {
+                        if ($arrArticles['date'] > $lastlog) {
                             $classNew = 'new';
                         }
                         $date = '';
-                        if( $this->date == 'publication'){
-                            $date = '('.bab_shortDate($arrArticles['date_publication']).')';
-                        }elseif( $this->date == 'modification'){
-                            $date = '('.bab_shortDate($arrArticles['date_modification']).')';
-                        }elseif( $this->date == 'all'){
-                            $date = '('.bab_shortDate($arrArticles['date_publication']) .' - '. bab_shortDate($arrArticles['date_modification']).')';
+                        if ($this->date == 'publication') {
+                            $date = '(' . bab_shortDate($arrArticles['date_publication']) . ')';
+                        } elseif ($this->date == 'modification') {
+                            $date = '(' . bab_shortDate($arrArticles['date_modification']) . ')';
+                        } elseif ($this->date == 'all') {
+                            $date = '(' . bab_shortDate($arrArticles['date_publication']) . ' - ' . bab_shortDate($arrArticles['date_modification']) . ')';
                         }
                         $child[] = array(
-                            'type' => 'article '.$classNew,
-                            'url'=> bab_toHtml(bab_siteMap::url($arrArticles['id'], $GLOBALS['babUrl'].bab_getSelf()."?tg=articles&idx=More&topics=".$arrArticles['id_topic']."&article=".$arrArticles['id'])),
+                            'type' => 'article ' . $classNew,
+                            'url' => bab_toHtml(bab_siteMap::url($arrArticles['id'], $GLOBALS['babUrl'] . bab_getSelf() . "?tg=articles&idx=More&topics=" . $arrArticles['id_topic'] . "&article=" . $arrArticles['id'])),
                             'name' => $arrArticles['title'],
                             'child' => '',
                             'date' => $date
@@ -2283,13 +2488,13 @@ class Func_Ovml_Function_ArticleTree extends Func_Ovml_Function {
 
                 $returnTempTopic = array(
                     'type' => 'topic',
-                    'url'=> htmlentities($GLOBALS['babUrl'].bab_getSelf().'?tg=articles&idx=Articles&topics='.$arr['id']),
+                    'url' => htmlentities($GLOBALS['babUrl'] . bab_getSelf() . '?tg=articles&idx=Articles&topics=' . $arr['id']),
                     'name' => $arr['category'],
                     'child' => $child,
                     'date' => ''
                 );
 
-                if($child != "" || ($this->hideempty != "all" && $this->hideempty != "topic")){
+                if ($child != "" || ($this->hideempty != "all" && $this->hideempty != "topic")) {
                     $return[] = $returnTempTopic;
                 }
             }
@@ -2301,27 +2506,27 @@ class Func_Ovml_Function_ArticleTree extends Func_Ovml_Function {
     function generateUL($currentStage, $firstLevel = false)
     {
         $return = '';
-        foreach($currentStage as $nextStage){
-            if($firstLevel){
-                $return.='<ul class="articletree">';
+        foreach ($currentStage as $nextStage) {
+            if ($firstLevel) {
+                $return .= '<ul class="articletree">';
             }
-            if(!($this->hidefirstnode && $firstLevel)){//Si on est au prmier niveau et qu'on veut cacher le premier niveau on ne rentre pas dans le IF
-                $return.= '<li class="'.$nextStage['type'].'"><span class="unfold-fold"></span><a href="'.$nextStage['url'].'">'.$nextStage['name']."</a>".$nextStage['date'];
+            if (! ($this->hidefirstnode && $firstLevel)) { // Si on est au prmier niveau et qu'on veut cacher le premier niveau on ne rentre pas dans le IF
+                $return .= '<li class="' . $nextStage['type'] . '"><span class="unfold-fold"></span><a href="' . $nextStage['url'] . '">' . $nextStage['name'] . "</a>" . $nextStage['date'];
             }
 
-            if($nextStage['child'] != ''){
-                if(!($this->hidefirstnode && $firstLevel)){
-                    $return.= '<ul>' . $this->generateUL($nextStage['child']) . '</ul>';
-                }else{
-                    $return.= $this->generateUL($nextStage['child']);
+            if ($nextStage['child'] != '') {
+                if (! ($this->hidefirstnode && $firstLevel)) {
+                    $return .= '<ul>' . $this->generateUL($nextStage['child']) . '</ul>';
+                } else {
+                    $return .= $this->generateUL($nextStage['child']);
                 }
             }
 
-            if(!($this->hidefirstnode && $firstLevel)){
-                $return.= '</li>';
+            if (! ($this->hidefirstnode && $firstLevel)) {
+                $return .= '</li>';
             }
-            if($firstLevel){
-                $return.='</ul>';
+            if ($firstLevel) {
+                $return .= '</ul>';
             }
         }
         return $return;
@@ -2329,6 +2534,7 @@ class Func_Ovml_Function_ArticleTree extends Func_Ovml_Function {
 
 
     /**
+     *
      * @return string
      */
     public function toString()
@@ -2338,55 +2544,55 @@ class Func_Ovml_Function_ArticleTree extends Func_Ovml_Function {
 
         if (isset($args['delegation'])) {
             $this->delegation = $args['delegation'];
-        }else{
+        } else {
             $this->delegation = 0;
         }
 
         if (isset($args['maxdepth'])) {
             $this->maxDepth = $args['maxdepth'];
-        }else{
+        } else {
             $this->maxDepth = 100;
         }
 
         if (isset($args['article'])) {
             $this->article = $args['article'];
-        }else{
+        } else {
             $this->article = 1;
         }
 
         if (isset($args['topic'])) {
             $this->topic = $args['topic'];
-        }else{
+        } else {
             $this->topic = null;
         }
 
         if (isset($args['category'])) {
             $this->category = $args['category'];
-        }else{
+        } else {
             $this->category = null;
         }
 
         if (isset($args['articlelimit'])) {
             $this->articlelimit = $args['articlelimit'];
-        }else{
+        } else {
             $this->articlelimit = 0;
         }
 
         if (isset($args['date'])) {
             $this->date = $args['date'];
-        }else{
+        } else {
             $this->date = 'none';
         }
 
         if (isset($args['hideempty'])) {
             $this->hideempty = $args['hideempty'];
-        }else{
+        } else {
             $this->hideempty = 'none';
         }
 
         if (isset($args['hidefirstnode'])) {
             $this->hidefirstnode = $args['hidefirstnode'];
-        }else{
+        } else {
             $this->hidefirstnode = 0;
         }
 
@@ -2395,26 +2601,26 @@ class Func_Ovml_Function_ArticleTree extends Func_Ovml_Function {
         $sDelegation = ' AND id_dgowner = \'' . $babDB->db_escape_string($this->delegation) . '\' ';
 
         $sCategory = ' ';
-        if($this->category){
+        if ($this->category) {
             $sCategory = ' AND bab_topics_categories.id = \'' . $babDB->db_escape_string($this->category) . '\' ';
         }
 
         $req = "SELECT bab_topics_categories.id as id, bab_topics_categories.title as title
-                FROM ".BAB_TOPICS_CATEGORIES_TBL.", ".BAB_TOPCAT_ORDER_TBL."
+                FROM " . BAB_TOPICS_CATEGORIES_TBL . ", " . BAB_TOPCAT_ORDER_TBL . "
                 WHERE bab_topcat_order.type = 1
-                AND bab_topcat_order.id_topcat=bab_topics_categories.id" . $sDelegation . $sCategory."
+                AND bab_topcat_order.id_topcat=bab_topics_categories.id" . $sDelegation . $sCategory . "
                 ORDER BY bab_topcat_order.ordering ASC";
         $res = $babDB->db_query($req);
 
         $core = array();
-        while( $arr = $babDB->db_fetch_assoc($res))
-        {
-            $core[]= array(
+        while ($arr = $babDB->db_fetch_assoc($res)) {
+            $core[] = array(
                 'type' => 'category',
-                'url' => htmlentities($GLOBALS['babUrl'].bab_getSelf().'?tg=topusr&cat='.$arr['id']),
+                'url' => htmlentities($GLOBALS['babUrl'] . bab_getSelf() . '?tg=topusr&cat=' . $arr['id']),
                 'name' => $arr['title'],
                 'child' => $this->getChild($arr['id']),
-                'date' => '');
+                'date' => ''
+            );
         }
 
         return $this->generateUL($core, true);
@@ -2425,17 +2631,26 @@ class Func_Ovml_Function_ArticleTree extends Func_Ovml_Function {
 
 
 
-class Func_Ovml_Function_PreviousOrNextArticle extends Func_Ovml_Function {
-
+class Func_Ovml_Function_PreviousOrNextArticle extends Func_Ovml_Function
+{
     protected $articleid = null;
+
     protected $topicid = null;
+
     protected $excludetopicid = null;
+
     protected $delegationid = null;
+
     protected $archive = null;
+
     protected $orderby = null;
+
     protected $order = null;
+
     protected $topicorder = false;
+
     protected $minrating = null;
+
     protected $articles = null;
 
     protected $saveas = null;
@@ -2453,7 +2668,6 @@ class Func_Ovml_Function_PreviousOrNextArticle extends Func_Ovml_Function {
 
     public function init()
     {
-
         global $babDB;
         $args = $this->args;
 
@@ -2522,14 +2736,13 @@ class Func_Ovml_Function_PreviousOrNextArticle extends Func_Ovml_Function {
         if (count($this->topicid) == 0) {
             return false;
         }
-
-        switch(mb_strtoupper($this->archive)) {
+        switch (mb_strtoupper($this->archive)) {
             case 'YES':
                 $this->archive = " AND archive='Y' ";
                 break;
             case 'NO':
-                 $this->archive = " AND archive='N' ";
-                 break;
+                $this->archive = " AND archive='N' ";
+                break;
             default:
                 $this->archive = " ";
                 break;
@@ -2629,9 +2842,8 @@ class Func_Ovml_Function_PreviousOrNextArticle extends Func_Ovml_Function {
 
 
 
-
-class Func_Ovml_Function_NextArticle extends Func_Ovml_Function_PreviousOrNextArticle {
-
+class Func_Ovml_Function_NextArticle extends Func_Ovml_Function_PreviousOrNextArticle
+{
     /**
      * @return string
      */
@@ -2663,8 +2875,8 @@ class Func_Ovml_Function_NextArticle extends Func_Ovml_Function_PreviousOrNextAr
 
 
 
-class Func_Ovml_Function_PreviousArticle extends Func_Ovml_Function_PreviousOrNextArticle {
-
+class Func_Ovml_Function_PreviousArticle extends Func_Ovml_Function_PreviousOrNextArticle
+{
     /**
      * @return string
      */
