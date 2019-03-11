@@ -963,18 +963,13 @@ class bab_siteMap_insertTree
     {
         $insertFunc = new bab_siteMap_insertFunctionObj();
 
-        foreach($this->nodeList as $node) {
-
+        foreach ($this->nodeList as $node) {
             if (isset($this->functions[$node->uid]) && 'noref' === $this->functions[$node->uid]) {
                 // noref : la fonction existe mais n'est pas inseree dans l'arbre
                 $this->functions[$node->uid] = true;
-
             } elseif (isset($this->functions[$node->uid])) {
                 // isset : la fonction existe et est dans l'arbre
-                $previous_node = $node->uid;
-                $previous_id = $this->functions[$node->uid];
                 $this->functions[$node->uid] = false;
-
             } else {
                 // !isset : la fonction n'existe pas
                 // bab_debug('sitemap add : '.$node->uid.' ('.$node->label.')');
@@ -997,7 +992,7 @@ class bab_siteMap_insertTree
 
     /**
      * The tree is not empty, add missing nodes
-     * @return unknown_type
+     * @return void
      */
     private function addMissingNodes($tree, $id_profile)
     {
