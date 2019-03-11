@@ -203,7 +203,7 @@ class Func_Ovml_Container_OrgChildEntities extends Func_Ovml_Container
     protected $entities = null;
 
     /**
-     * @var ArrayObject
+     * @var ArrayIterator
      */
     protected $iterator = null;
 
@@ -298,7 +298,7 @@ class Func_Ovml_Container_OrgEntityMembers extends Func_Ovml_Container
 
         $this->nbMembers = $babDB->db_num_rows($this->members);
 
-        $this->ctx->curctx->push('CCount', count($this->nbMembers));
+        $this->ctx->curctx->push('CCount', $this->nbMembers);
     }
 
     /**
@@ -330,7 +330,4 @@ class Func_Ovml_Container_OrgEntityMembers extends Func_Ovml_Container
         return false;
     }
 }
-
-
-
 
