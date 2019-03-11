@@ -171,7 +171,7 @@ class Func_Ovml_Container_ForumPrevious extends Func_Ovml_Container_Forum
                 $ctx->curctx->push('forumid', $this->handler->IdEntries[$this->handler->index - 2]);
             }
         }
-        $this->bab_Forum($ctx);
+        parent::setOvmlContext($ctx);
     }
 }
 
@@ -196,7 +196,7 @@ class Func_Ovml_Container_ForumNext extends Func_Ovml_Container_Forum
                 $ctx->curctx->push('forumid', $this->handler->IdEntries[$this->handler->index]);
             }
         }
-        $this->bab_Forum($ctx);
+        parent::setOvmlContext($ctx);
     }
 }
 

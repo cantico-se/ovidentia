@@ -153,7 +153,7 @@ class Func_Ovml_Container_FaqPrevious extends Func_Ovml_Container_Faq
                 $ctx->curctx->push('faqid', $this->handler->IdEntries[$this->handler->index - 2]);
             }
         }
-        $this->bab_Faq($ctx);
+        parent:setOvmlContext($ctx);
     }
 }
 
@@ -177,9 +177,10 @@ class Func_Ovml_Container_FaqNext extends Func_Ovml_Container_Faq
                 $ctx->curctx->push('faqid', $this->handler->IdEntries[$this->handler->index]);
             }
         }
-        $this->bab_Faq($ctx);
+        parent:setOvmlContext($ctx);
     }
 }
+
 
 class Func_Ovml_Container_FaqSubCategories extends Func_Ovml_Container
 {
@@ -455,7 +456,7 @@ class Func_Ovml_Container_FaqQuestionPrevious extends Func_Ovml_Container_FaqQue
                 $ctx->curctx->push('questionid', $this->handler->IdEntries[$this->handler->index - 2]);
             }
         }
-        $this->bab_FaqQuestion($ctx);
+        parent:setOvmlContext($ctx);
     }
 }
 
@@ -479,7 +480,7 @@ class Func_Ovml_Container_FaqQuestionNext extends Func_Ovml_Container_FaqQuestio
                 $ctx->curctx->push('questionid', $this->handler->IdEntries[$this->handler->index]);
             }
         }
-        $this->bab_FaqQuestion($ctx);
+        parent:setOvmlContext($ctx);
     }
 }
 

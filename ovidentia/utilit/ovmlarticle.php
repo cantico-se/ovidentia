@@ -444,7 +444,7 @@ class Func_Ovml_Container_ArticleCategoryPrevious extends Func_Ovml_Container_Ar
                 $ctx->curctx->push('categoryid', $this->handler->IdEntries[$this->handler->index - 2]);
             }
         }
-        $this->bab_ArticleCategory($ctx);
+        parent::setOvmlContext($ctx);
     }
 }
 
@@ -468,7 +468,7 @@ class Func_Ovml_Container_ArticleCategoryNext extends Func_Ovml_Container_Articl
                 $ctx->curctx->push('categoryid', $this->handler->IdEntries[$this->handler->index]);
             }
         }
-        $this->bab_ArticleCategory($ctx);
+        parent::setOvmlContext($ctx);
     }
 }
 
@@ -728,7 +728,7 @@ class Func_Ovml_Container_ArticleTopicPrevious extends Func_Ovml_Container_Artic
                 $ctx->curctx->push('topicid', $this->handler->IdEntries[$this->handler->index - 2]);
             }
         }
-        $this->bab_ArticleTopic($ctx);
+        parent::setOvmlContext($ctx);
     }
 }
 
@@ -752,7 +752,7 @@ class Func_Ovml_Container_ArticleTopicNext extends Func_Ovml_Container_ArticleTo
                 $ctx->curctx->push('topicid', $this->handler->IdEntries[$this->handler->index]);
             }
         }
-        $this->bab_ArticleTopic($ctx);
+        parent::setOvmlContext($ctx);
     }
 }
 

@@ -187,7 +187,7 @@ class Func_Ovml_Container_FolderPrevious extends Func_Ovml_Container_Folder
                 $ctx->curctx->push('folderid', $this->handler->IdEntries[$this->handler->index - 2]);
             }
         }
-        $this->bab_Folder($ctx);
+        parent::setOvmlContext($ctx);
     }
 }
 
@@ -212,7 +212,7 @@ class Func_Ovml_Container_FolderNext extends Func_Ovml_Container_Folder
                 $ctx->curctx->push('folderid', $this->handler->IdEntries[$this->handler->index]);
             }
         }
-        $this->bab_Folder($ctx);
+        parent::setOvmlContext($ctx);
     }
 }
 
