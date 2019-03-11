@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software			*
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307,*
  * USA.																	*
-************************************************************************/
+ ************************************************************************/
 
 require_once $GLOBALS['babInstallPath'].'utilit/ocapi.php';
 include_once $GLOBALS['babInstallPath'].'utilit/omlincl.php';
@@ -40,78 +40,80 @@ include_once $GLOBALS['babInstallPath'].'utilit/omlincl.php';
  */
 class Func_Ovml_Container_OrgUserEntities extends Func_Ovml_Container
 {
-	var $aEntity = array();
+    public $aEntity = array();
 
-	var $iIndex = 0;
-	var $iCount = 0;
+    public $iIndex = 0;
 
-	public function setOvmlContext(babOvTemplate $ctx)
-	{
-		parent::setOvmlContext($ctx);
+    public $iCount = 0;
 
-		$iIdOrgChart	= (int) $ctx->curctx->getAttribute('orgChartId');
-		$iIdUser		= (int) $ctx->curctx->getAttribute('userId');
-		$sRoleType		= (string) $ctx->curctx->getAttribute('roleType');
 
-		if(0 === $iIdOrgChart)
-		{
-			$aPrimaryChart = bab_OCGetRootEntity();
-			if(0 !== count($aPrimaryChart))
-			{
-				$iIdOrgChart = (int) $aPrimaryChart['id_oc'];
-			}
-		}
+    /**
+     * {@inheritDoc}
+     * @see Func_Ovml_Container::setOvmlContext()
+     */
+    public function setOvmlContext(babOvTemplate $ctx)
+    {
+        parent::setOvmlContext($ctx);
 
-		$aRoleType = null;
-		if(0 !== mb_strlen(trim($sRoleType)))
-		{
-			$aType = explode(',', $sRoleType);
-			if(false !== $aType)
-			{
-				$aRoleType = $aType;
-			}
-		}
+        $iIdOrgChart = (int) $ctx->curctx->getAttribute('orgChartId');
+        $iIdUser = (int) $ctx->curctx->getAttribute('userId');
+        $sRoleType = (string) $ctx->curctx->getAttribute('roleType');
 
-		$oOrgChartUtil = new bab_OrgChartUtil($iIdOrgChart);
-		$this->aEntity = $oOrgChartUtil->getUserEntities($iIdUser, $aRoleType);
-		//bab_debug($this->aEntity);
+        if (0 === $iIdOrgChart) {
+            $aPrimaryChart = bab_OCGetRootEntity();
+            if (0 !== count($aPrimaryChart)) {
+                $iIdOrgChart = (int) $aPrimaryChart['id_oc'];
+            }
+        }
 
-		if(is_array($this->aEntity))
-		{
-			$this->iCount = count($this->aEntity);
-			$this->ctx->curctx->push('CCount', $this->iCount);
-		}
-		else
-		{
-			$this->ctx->curctx->push('CCount', 0);
-		}
-	}
+        $aRoleType = null;
+        if (0 !== mb_strlen(trim($sRoleType))) {
+            $aType = explode(',', $sRoleType);
+            if (false !== $aType) {
+                $aRoleType = $aType;
+            }
+        }
 
-	public function getnext()
-	{
-		$this->ctx->curctx->push('CIndex', $this->idx);
-		$this->ctx->curctx->push('EntityId', 0);
-		$this->ctx->curctx->push('EntityName', '');
-		$this->ctx->curctx->push('EntityDescription', '');
+        $oOrgChartUtil = new bab_OrgChartUtil($iIdOrgChart);
+        $this->aEntity = $oOrgChartUtil->getUserEntities($iIdUser, $aRoleType);
+        // bab_debug($this->aEntity);
 
-		if($this->iIndex < $this->iCount)
-		{
-			$aDatas = each($this->aEntity);
-			if(false !== $aDatas)
-			{
-				$this->ctx->curctx->push('EntityId', $aDatas['value']['id']);
-				$this->ctx->curctx->push('EntityName', $aDatas['value']['name']);
-				$this->ctx->curctx->push('EntityDescription', $aDatas['value']['description']);
+        if (is_array($this->aEntity)) {
+            $this->iCount = count($this->aEntity);
+            $this->ctx->curctx->push('CCount', $this->iCount);
+        } else {
+            $this->ctx->curctx->push('CCount', 0);
+        }
+    }
 
-				$this->idx++;
-				$this->iIndex = $this->idx;
-				return true;
-			}
-		}
 
-		$this->idx = 0;
-		return false;
-	}
+    /**
+     * {@inheritDoc}
+     * @see Func_Ovml_Container::getnext()
+     */
+    public function getnext()
+    {
+        $this->ctx->curctx->push('CIndex', $this->idx);
+        $this->ctx->curctx->push('EntityId', 0);
+        $this->ctx->curctx->push('EntityName', '');
+        $this->ctx->curctx->push('EntityDescription', '');
+
+        if ($this->iIndex < $this->iCount) {
+            $aDatas = each($this->aEntity);
+            if (false !== $aDatas) {
+                $this->ctx->curctx->push('EntityId', $aDatas['value']['id']);
+                $this->ctx->curctx->push('EntityName', $aDatas['value']['name']);
+                $this->ctx->curctx->push('EntityDescription', $aDatas['value']['description']);
+
+                $this->idx ++;
+                $this->iIndex = $this->idx;
+                return true;
+            }
+        }
+
+        $this->idx = 0;
+        return false;
+    }
 }
 
 
@@ -127,60 +129,70 @@ class Func_Ovml_Container_OrgUserEntities extends Func_Ovml_Container
  */
 class Func_Ovml_Container_OrgPathToEntity extends Func_Ovml_Container
 {
-	var $aEntity	= array();
-	var $iIndex		= 0;
-	var $iCount		= 0;
-	var $oResult	= false;
+    public $aEntity = array();
 
-	public function setOvmlContext(babOvTemplate $ctx)
-	{
-		parent::setOvmlContext($ctx);
+    public $iIndex = 0;
 
-		$iIdEntity		= (int) $ctx->curctx->getAttribute('entityId');
-		$bIncludeEntity	= ('1' == (int) $ctx->curctx->getAttribute('includeEntity'));
-		$sOrder			= (string) $ctx->curctx->getAttribute('order');
+    public $iCount = 0;
 
-		$sQuery = bab_OCGetPathToNodeQuery($iIdEntity, $bIncludeEntity, $sOrder);
-		//bab_debug($sQuery);
+    public $oResult = false;
 
-		$this->ctx->curctx->push('CCount', 0);
 
-		global $babDB;
+    /**
+     * {@inheritDoc}
+     * @see Func_Ovml_Container::setOvmlContext()
+     */
+    public function setOvmlContext(babOvTemplate $ctx)
+    {
+        parent::setOvmlContext($ctx);
 
-		$this->oResult = $babDB->db_query($sQuery);
-		if(false !== $this->oResult)
-		{
-			$iNumRows = $babDB->db_num_rows($this->oResult);
-			$this->iCount = $iNumRows;
-			$this->ctx->curctx->push('CCount', $iNumRows);
-		}
-	}
+        $iIdEntity = (int) $ctx->curctx->getAttribute('entityId');
+        $bIncludeEntity = ('1' == (int) $ctx->curctx->getAttribute('includeEntity'));
+        $sOrder = (string) $ctx->curctx->getAttribute('order');
 
-	public function getnext()
-	{
-		$this->ctx->curctx->push('CIndex', $this->idx);
-		$this->ctx->curctx->push('EntityId', 0);
-		$this->ctx->curctx->push('EntityName', '');
-		$this->ctx->curctx->push('EntityDescription', '');
+        $sQuery = bab_OCGetPathToNodeQuery($iIdEntity, $bIncludeEntity, $sOrder);
+        // bab_debug($sQuery);
 
-		if($this->iIndex < $this->iCount)
-		{
-			global $babDB;
-			if(false !== ($aDatas = $babDB->db_fetch_assoc($this->oResult)))
-			{
-				$this->ctx->curctx->push('EntityId', $aDatas['iIdEntity']);
-				$this->ctx->curctx->push('EntityName', $aDatas['sName']);
-				$this->ctx->curctx->push('EntityDescription', $aDatas['sDescription']);
+        $this->ctx->curctx->push('CCount', 0);
 
-				$this->idx++;
-				$this->iIndex = $this->idx;
-				return true;
-			}
-		}
+        global $babDB;
 
-		$this->idx = 0;
-		return false;
-	}
+        $this->oResult = $babDB->db_query($sQuery);
+        if (false !== $this->oResult) {
+            $iNumRows = $babDB->db_num_rows($this->oResult);
+            $this->iCount = $iNumRows;
+            $this->ctx->curctx->push('CCount', $iNumRows);
+        }
+    }
+
+
+    /**
+     * {@inheritDoc}
+     * @see Func_Ovml_Container::getnext()
+     */
+    public function getnext()
+    {
+        $this->ctx->curctx->push('CIndex', $this->idx);
+        $this->ctx->curctx->push('EntityId', 0);
+        $this->ctx->curctx->push('EntityName', '');
+        $this->ctx->curctx->push('EntityDescription', '');
+
+        if ($this->iIndex < $this->iCount) {
+            global $babDB;
+            if (false !== ($aDatas = $babDB->db_fetch_assoc($this->oResult))) {
+                $this->ctx->curctx->push('EntityId', $aDatas['iIdEntity']);
+                $this->ctx->curctx->push('EntityName', $aDatas['sName']);
+                $this->ctx->curctx->push('EntityDescription', $aDatas['sDescription']);
+
+                $this->idx ++;
+                $this->iIndex = $this->idx;
+                return true;
+            }
+        }
+
+        $this->idx = 0;
+        return false;
+    }
 }
 
 
@@ -279,6 +291,7 @@ class Func_Ovml_Container_OrgChildEntities extends Func_Ovml_Container
 class Func_Ovml_Container_OrgEntityMembers extends Func_Ovml_Container
 {
     protected $members = null;
+
     protected $nbMembers = 0;
 
 
