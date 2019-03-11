@@ -456,7 +456,7 @@ class Func_Ovml_Container_FaqQuestionPrevious extends Func_Ovml_Container_FaqQue
                 $ctx->curctx->push('questionid', $this->handler->IdEntries[$this->handler->index - 2]);
             }
         }
-        parent:setOvmlContext($ctx);
+        parent::setOvmlContext($ctx);
     }
 }
 
@@ -480,7 +480,7 @@ class Func_Ovml_Container_FaqQuestionNext extends Func_Ovml_Container_FaqQuestio
                 $ctx->curctx->push('questionid', $this->handler->IdEntries[$this->handler->index]);
             }
         }
-        parent:setOvmlContext($ctx);
+        parent::setOvmlContext($ctx);
     }
 }
 
