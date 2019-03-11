@@ -20,12 +20,12 @@
  * along with this program; if not, write to the Free Software			*
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307,*
  * USA.																	*
-************************************************************************/
+ ************************************************************************/
 
-include_once $GLOBALS['babInstallPath'].'utilit/defines.php';
-include_once $GLOBALS['babInstallPath'].'utilit/treebase.php';
-include_once $GLOBALS['babInstallPath'].'utilit/eventincl.php';
-include_once $GLOBALS['babInstallPath'].'utilit/userincl.php';
+include_once $GLOBALS['babInstallPath'] . 'utilit/defines.php';
+include_once $GLOBALS['babInstallPath'] . 'utilit/treebase.php';
+include_once $GLOBALS['babInstallPath'] . 'utilit/eventincl.php';
+include_once $GLOBALS['babInstallPath'] . 'utilit/userincl.php';
 
 /**
  * Sitemap rootNode
@@ -69,15 +69,11 @@ class bab_siteMapOrphanRootNode extends bab_OrphanRootNode {
     public $enableRewriting = false;
 
 
-
-
     /**
      * Populate an index with all the nodes under the rewrite root nodes
      * the nodes in this index will be prioritary when decoding the rewrite path.
      *
      * the index should contain the nodes from sitemap_editor and not the referenced nodes from the core sitemap
-     *
-     *
      */
     protected function addNodeToRewritePriorityIndex(bab_Node $newNode, $id = null)
     {
@@ -85,20 +81,18 @@ class bab_siteMapOrphanRootNode extends bab_OrphanRootNode {
         /* @var $sitemapItem bab_sitemapItem */
         $rewriteName = $sitemapItem->getRewriteName();
 
-        if (isset($this->rewriteIndex_underRoot[$id]) || $rewriteName === bab_siteMap::REWRITING_ROOT_NODE)
-        {
+        if (isset($this->rewriteIndex_underRoot[$id]) || $rewriteName === bab_siteMap::REWRITING_ROOT_NODE) {
             $this->rewriteIndex_underRoot[$newNode->getId()] = '';
 
-            if ($newNode->hasChildNodes())
-            {
+            if ($newNode->hasChildNodes()) {
                 // if the node already have childnodes, the childnodes are also under base
                 // in this case, this subtree has been added before the rewriting root node
 
                 $I = new bab_NodeIterator($newNode);
                 while ($childNode = $I->nextNode()) {
-                    if (!($childNode instanceof bab_Node)) {
-                        //TODO Ne devrais pas se produire!
-                        //bab_debug($newNode->__toString());
+                    if (! ($childNode instanceof bab_Node)) {
+                        // TODO Ne devrais pas se produire!
+                        // bab_debug($newNode->__toString());
                         continue;
                     }
                     $this->rewriteIndex_underRoot[$childNode->getId()] = '';
@@ -108,22 +102,19 @@ class bab_siteMapOrphanRootNode extends bab_OrphanRootNode {
     }
 
 
-
     /**
      * Populate rewriteIndex
+     *
      * @param bab_Node $newNode
-     * @param string $id        parent node ID
+     * @param string $id            parent node ID
      */
     protected function addNodeToRewriteIndex(bab_Node $newNode, $id = null)
     {
-
-
         $sitemapItem = $newNode->getData();
         /* @var $sitemapItem bab_sitemapItem */
         $rewriteName = $sitemapItem->getRewriteName();
 
-        if (!isset($this->rewriteIndex_id[$newNode->getId()]))
-        {
+        if (! isset($this->rewriteIndex_id[$newNode->getId()])) {
             $this->rewriteIndex_id[$newNode->getId()] = array(
                 $id,
                 $rewriteName,
@@ -133,15 +124,16 @@ class bab_siteMapOrphanRootNode extends bab_OrphanRootNode {
         }
 
         if (isset($this->rewriteIndex_rn[$rewriteName])) {
-            if (isset($this->rewriteIndex_underRoot[$newNode->getId()]))
-            {
+            if (isset($this->rewriteIndex_underRoot[$newNode->getId()])) {
                 // if under root node, the node will have priority in the node detection from rewrite url
                 array_unshift($this->rewriteIndex_rn[$rewriteName], $newNode->getId());
             } else {
                 array_push($this->rewriteIndex_rn[$rewriteName], $newNode->getId());
             }
         } else {
-            $this->rewriteIndex_rn[$rewriteName] = array($newNode->getId());
+            $this->rewriteIndex_rn[$rewriteName] = array(
+                $newNode->getId()
+            );
         }
     }
 
@@ -156,8 +148,8 @@ class bab_siteMapOrphanRootNode extends bab_OrphanRootNode {
      * @param string $id        parent node ID
      * @return boolean
      */
-    public function appendChild(bab_Node $newNode, $id = null) {
-
+    public function appendChild(bab_Node $newNode, $id = null)
+    {
         $this->addNodeToRewritePriorityIndex($newNode, $id);
         $this->addNodeToRewriteIndex($newNode, $id);
 
@@ -199,7 +191,6 @@ class bab_siteMapOrphanRootNode extends bab_OrphanRootNode {
     }
 
 
-
     /**
      * Get rewrite index with non ignored parent
      *
@@ -216,9 +207,9 @@ class bab_siteMapOrphanRootNode extends bab_OrphanRootNode {
         $nodeIndex = $this->rewriteIndex_id[$nodeId];
         $nodeIndex[0] = $this->getNonIgnoredParent($nodeIndex[0]);
 
-
         return $nodeIndex;
     }
+
 
     /**
      * @return bool
@@ -229,15 +220,14 @@ class bab_siteMapOrphanRootNode extends bab_OrphanRootNode {
     }
 
 
-
-
     /**
      * get sitemap node id from the rewrite string
      * a rewrite string is a path composed by rewrite names and slashes like Article/Category/topic
      * at each level, the rewrite name is used
+     *
      * @see bab_sitemap
      *
-     * @param	string	$rewrite
+     * @param string $rewrite
      * @return string
      */
     public function getNodeIdFromRewritePath($rewrite)
@@ -250,16 +240,15 @@ class bab_siteMapOrphanRootNode extends bab_OrphanRootNode {
 
         $first = array_shift($arr);
 
-        if (!isset($this->rewriteIndex_rn[$first]))
-        {
-            bab_debug('first node of rewrite path not found : '.$first);
+        if (! isset($this->rewriteIndex_rn[$first])) {
+            bab_debug('first node of rewrite path not found : ' . $first);
             return null;
         }
 
         $dynamic_solutions = array();
 
 
-        foreach($this->rewriteIndex_rn[$first] as $nodeId) {
+        foreach ($this->rewriteIndex_rn[$first] as $nodeId) {
 
             if ($this->isRewriteIndexSet($nodeId)) {
 
@@ -267,76 +256,56 @@ class bab_siteMapOrphanRootNode extends bab_OrphanRootNode {
                     return $nodeId;
                 }
 
-                if ($found = $this->getNextRewriteNode($arr, $nodeId, $dynamic_solutions))
-                {
+                if ($found = $this->getNextRewriteNode($arr, $nodeId, $dynamic_solutions)) {
                     return $found;
-
-                } elseif (!empty($dynamic_solutions)) {
-
-
+                } elseif (! empty($dynamic_solutions)) {
 
                     // try with dynamic nodes
-                    foreach($dynamic_solutions as $dynsol)
-                    {
-                        if ($dynnodeid = $this->getNodeIdFromRewriteInFunctionality($dynsol['id_parent'], $dynsol['funcname'], $dynsol['path']))
-                        {
+                    foreach ($dynamic_solutions as $dynsol) {
+                        if ($dynnodeid = $this->getNodeIdFromRewriteInFunctionality($dynsol['id_parent'], $dynsol['funcname'], $dynsol['path'])) {
                             return $dynnodeid;
                         }
                     }
 
                     return null;
-
                 }
-
-
             }
         }
-
-
-
 
         bab_debug("the rewrite name $first has no id_function in index");
         return null;
     }
 
 
-
-
     /**
      * Get node ID from a dynamic node and a rewrite path
-     * @param string	$funcname
-     * @param array 	$rewritepath	Relative rewrite path
+     *
+     * @param string $funcname
+     * @param array $rewritepath
+     *            Relative rewrite path
      */
     private function getNodeIdFromRewriteInFunctionality($id_parent, $funcname, Array $rewritepath)
     {
-        $dynnode = bab_functionality::get('SitemapDynamicNode/'.$funcname);
+        $dynnode = bab_functionality::get('SitemapDynamicNode/' . $funcname);
         /*@var $dynnode Func_SitemapDynamicNode */
 
-        if (false === $dynnode)
-        {
+        if (false === $dynnode) {
             return null;
         }
-
-
-
-
 
         $parentNode = $this->getNodeById($id_parent);
 
         $itemList = $dynnode->getSitemapItemsFromRewritePath($parentNode, $rewritepath);
 
-        if (!isset($itemList))
-        {
+        if (! isset($itemList)) {
             return null;
         }
 
 
-        foreach($itemList as $sitemapItem)
-        {
+        foreach ($itemList as $sitemapItem) {
             $node = $this->createNode($sitemapItem, $sitemapItem->id_function);
 
-            if (null === $node)
-            {
+            if (null === $node) {
                 // node allready exists
                 continue;
             }
@@ -354,8 +323,8 @@ class bab_siteMapOrphanRootNode extends bab_OrphanRootNode {
 
     /**
      * Add indexes to the nodes from informations in sitemap item
-     * @param unknown_type $node
-     * @param unknown_type $sitemapItem
+     * @param bab_Node          $node
+     * @param bab_siteMapItem   $sitemapItem
      */
     public function addNodeIndexes(bab_Node $node, bab_siteMapItem $sitemapItem)
     {
@@ -363,7 +332,6 @@ class bab_siteMapOrphanRootNode extends bab_OrphanRootNode {
             // add url in index
             $node->addIndex('url', $sitemapItem->url);
         }
-
 
         if ($sitemapItem->target) {
             // add target in index
@@ -375,13 +343,9 @@ class bab_siteMapOrphanRootNode extends bab_OrphanRootNode {
         }
 
         if ($sitemapItem->langId) {
-            $node->addIndex('lang-'.$sitemapItem->langId[0], $sitemapItem->langId[1]);
+            $node->addIndex('lang-' . $sitemapItem->langId[0], $sitemapItem->langId[1]);
         }
     }
-
-
-
-
 
 
     /**
@@ -395,17 +359,15 @@ class bab_siteMapOrphanRootNode extends bab_OrphanRootNode {
         $searched_path = $path;
         $first = array_shift($path);
 
-        if (!isset($this->rewriteIndex_rn[$first]))
-        {
+        if (! isset($this->rewriteIndex_rn[$first])) {
             $parentIndex = $this->getRewriteIndex($id_parent);
             $parent_funcname = $parentIndex[2];
 
-            if (isset($parent_funcname))
-            {
+            if (isset($parent_funcname)) {
                 $dynamic_solutions[] = array(
-                    'id_parent'	=> $id_parent,
-                    'path' 		=> $searched_path,
-                    'funcname' 	=> $parent_funcname
+                    'id_parent' => $id_parent,
+                    'path' => $searched_path,
+                    'funcname' => $parent_funcname
                 );
 
                 return null;
@@ -415,34 +377,28 @@ class bab_siteMapOrphanRootNode extends bab_OrphanRootNode {
             return null;
         }
 
-
-        foreach($this->rewriteIndex_rn[$first] as $nodeId) {
+        foreach ($this->rewriteIndex_rn[$first] as $nodeId) {
 
             $nodeIndex = $this->getRewriteIndex($nodeId);
 
-            if (!isset($nodeIndex))
-            {
+            if (! isset($nodeIndex)) {
                 bab_debug("Process node for $first, found $nodeId node ignored because there is no parent in index");
                 continue;
             }
 
-            if ($id_parent !== $nodeIndex[0])
-            {
+            if ($id_parent !== $nodeIndex[0]) {
                 bab_debug("Process node for $first, found $nodeId with parent=$nodeIndex[0], node ignored because parent shoud be $id_parent");
                 continue;
             }
 
 
-            if (0 === count($path))
-            {
+            if (0 === count($path)) {
                 return $nodeId;
             }
 
-            if ($next = $this->getNextRewriteNode($path, $nodeId, $dynamic_solutions))
-            {
+            if ($next = $this->getNextRewriteNode($path, $nodeId, $dynamic_solutions)) {
                 return $next;
             }
-
         }
 
         bab_debug("The rewrite name $first has no id_function in index, path : ".implode('/', $path)." , id_parent : $id_parent, will try with dynamic nodes", DBG_WARNING);
@@ -471,8 +427,7 @@ class bab_siteMapOrphanRootNode extends bab_OrphanRootNode {
     {
         $node = parent::getNodeById($id);
 
-        if (isset($node))
-        {
+        if (isset($node)) {
             return $node;
         }
 
@@ -538,19 +493,16 @@ class bab_siteMapOrphanRootNode extends bab_OrphanRootNode {
     {
         $nodes = array();
         $customNodes = $this->getNodesByIndex('target', $targetId);
-        foreach ($customNodes as $customNode)
-        {
+        foreach ($customNodes as $customNode) {
             /*@var $customNode bab_Node */
 
             // get the first custom node under baseNode
             $testNode = $customNode->parentNode();
             /*@var $testNode bab_Node */
             do {
-
                 if ($baseNodeId === $testNode->getId()) {
                     $nodes[] = $customNode;
                 }
-
             } while ($testNode = $testNode->parentNode());
         }
 
@@ -569,27 +521,21 @@ class bab_siteMapOrphanRootNode extends bab_OrphanRootNode {
     public function getNodeByTargetId($baseNodeId, $targetId)
     {
         $customNodes = $this->getNodesByIndex('target', $targetId);
-        foreach ($customNodes as $customNode)
-        {
+        foreach ($customNodes as $customNode) {
             /*@var $customNode bab_Node */
 
             // get the first custom node under baseNode
             $testNode = $customNode->parentNode();
             /*@var $testNode bab_Node */
             do {
-
-                if ($baseNodeId === $testNode->getId())
-                {
+                if ($baseNodeId === $testNode->getId()) {
                     return $customNode;
                 }
-
             } while ($testNode = $testNode->parentNode());
         }
 
         return null;
     }
-
-
 
 
     /**
@@ -601,8 +547,7 @@ class bab_siteMapOrphanRootNode extends bab_OrphanRootNode {
     private function filterByBaseNodeId($baseNodeId, Array $customNodes)
     {
         $return = array();
-        foreach ($customNodes as $customNode)
-        {
+        foreach ($customNodes as $customNode) {
             /*@var $customNode bab_Node */
 
             // get the first custom node under baseNode
@@ -613,18 +558,11 @@ class bab_siteMapOrphanRootNode extends bab_OrphanRootNode {
                 if ($baseNodeId === $testNode->getId()) {
                     $return[] = $customNode;
                 }
-
             } while ($testNode = $testNode->parentNode());
         }
 
         return $return;
     }
-
-
-
-
-
-
 
 
     /**
@@ -648,7 +586,6 @@ class bab_siteMapOrphanRootNode extends bab_OrphanRootNode {
      */
     public function getNodesByIdPattern($baseNodeId, $pattern)
     {
-
         $return = new stdClass();
         $return->matches = array();
         $return->nodes = array();
@@ -656,7 +593,7 @@ class bab_siteMapOrphanRootNode extends bab_OrphanRootNode {
         $baseNode = $this->getNodeById($baseNodeId);
 
         $I = new bab_NodeIterator($baseNode);
-        while($childNode = $I->nextNode()) {
+        while ($childNode = $I->nextNode()) {
             /*@var $childNode \bab_Node */
             $m = null;
             if (preg_match($pattern, $childNode->getId(), $m)) {
@@ -666,7 +603,7 @@ class bab_siteMapOrphanRootNode extends bab_OrphanRootNode {
                 unset($m[0]);
 
                 foreach ($m as $position => $value) {
-                    if (!isset($return->matches[$position])) {
+                    if (! isset($return->matches[$position])) {
                         $return->matches[$position] = array();
                     }
 
@@ -701,7 +638,6 @@ class bab_siteMapOrphanRootNode extends bab_OrphanRootNode {
      */
     public function getNodesByTargetPattern($baseNodeId, $pattern)
     {
-
         $targetIndex = $this->getRootIndex('target');
 
         $return = new stdClass();
@@ -744,62 +680,48 @@ class bab_siteMapOrphanRootNode extends bab_OrphanRootNode {
      * use only if not found in sitemap
      * return null if not found in not loaded dynamic nodes
      *
-     * @param	string	$nodeId
+     * @param string $nodeId
      *
      * @return bab_Node
      */
     protected function getDynamicNodeById($nodeId)
     {
-
-
         $funcname_list = $this->getIndexValues('funcname');
-        foreach($funcname_list as $funcname)
-        {
-            $dynnode = bab_functionality::get('SitemapDynamicNode/'.$funcname);
+        foreach ($funcname_list as $funcname) {
+            $dynnode = bab_functionality::get('SitemapDynamicNode/' . $funcname);
             /*@var $dynnode Func_SitemapDynamicNode */
 
-            if (false === $dynnode)
-            {
+            if (false === $dynnode) {
                 continue;
             }
 
-
-
             $newNode = $dynnode->getNodeById($nodeId);
 
-            if (!isset($newNode))
-            {
+            if (! isset($newNode)) {
                 // not found in this functionality
                 continue;
             }
 
-
-
             $parentNode = $newNode->parentNode();
             /*@var $parentNode bab_Node */
 
-            if (!isset($parentNode))
-            {
+            if (! isset($parentNode)) {
                 continue;
             }
 
-
             $baseNodeId = bab_siteMap::getSitemapRootNode();
 
-            do
-            {
+            do {
                 // if parentNode exists in current sitemap, append subtree
                 // prefer the original instead of the target if available
 
                 $sitemapParentNode = $this->getNodeByTargetId($baseNodeId, $parentNode->getId());
 
-                if (null === $sitemapParentNode)
-                {
+                if (null === $sitemapParentNode) {
                     $sitemapParentNode = parent::getNodeById($parentNode->getId());
                 }
 
-                if (isset($sitemapParentNode))
-                {
+                if (isset($sitemapParentNode)) {
                     $cn = $parentNode->firstChild();
                     /*@var $cn bab_Node */
                     do {
@@ -809,17 +731,14 @@ class bab_siteMapOrphanRootNode extends bab_OrphanRootNode {
 
                     return $newNode;
                 }
-
-            } while($parentNode = $parentNode->parentNode());
+            } while ($parentNode = $parentNode->parentNode());
         }
 
         return null;
-
     }
-
-
-
 }
+
+
 
 /**
  * Sitemap item contener
@@ -856,9 +775,6 @@ class bab_siteMapItem {
      * @var string
      */
     public $rewriteName = null;
-
-
-
 
     /**
      * If the node url should be a modified with a rewrite rule or not
@@ -1009,9 +925,11 @@ class bab_siteMapItem {
      * @see bab_Node::sortSubTree()
      * @see bab_Node::sortChildNodes()
      */
-    public function compare($node) {
+    public function compare($node)
+    {
         return bab_compare($this->name, $node->name);
     }
+
 
     /**
      * get symlink target or current node
@@ -1027,10 +945,6 @@ class bab_siteMapItem {
     }
 
 
-
-
-
-
     /**
      * Test if a sub-node can be created
      * @return bool
@@ -1043,6 +957,7 @@ class bab_siteMapItem {
 
         return bab_isAccessValid('bab_sitemap_node_create_groups', $this->id_function);
     }
+
 
     /**
      * Test if the node is readable
@@ -1057,9 +972,9 @@ class bab_siteMapItem {
             return $this->target->canRead();
         }
 
-
         return bab_isAccessValid('bab_sitemap_node_read_groups', $this->id_function);
     }
+
 
     /**
      * @return bool
@@ -1072,6 +987,7 @@ class bab_siteMapItem {
 
         return bab_isAccessValid('bab_sitemap_node_update_groups', $this->id_function);
     }
+
 
     /**
      * @return bool
@@ -1086,14 +1002,12 @@ class bab_siteMapItem {
     }
 
 
-
-
-
     private function getRightString($table)
     {
         require_once $GLOBALS['babInstallPath'].'admin/acl.php';
         return aclGetRightsString($table, $this->id_function);
     }
+
 
     private function setRightString($table, $value)
     {
@@ -1101,10 +1015,12 @@ class bab_siteMapItem {
         return aclSetRightsString($table, $this->id_function, $value);
     }
 
+
     public function getCreate()
     {
         return $this->getRightString('bab_sitemap_node_create_groups');
     }
+
 
     public function setCreate($value)
     {
@@ -1116,10 +1032,12 @@ class bab_siteMapItem {
         return $this->getRightString('bab_sitemap_node_read_groups');
     }
 
+
     public function setRead($value)
     {
         return $this->setRightString('bab_sitemap_node_read_groups', $value);
     }
+
 
     public function getUpdate()
     {
@@ -1137,14 +1055,11 @@ class bab_siteMapItem {
         return $this->getRightString('bab_sitemap_node_delete_groups');
     }
 
+
     public function setDelete($value)
     {
         return $this->setRightString('bab_sitemap_node_delete_groups', $value);
     }
-
-
-
-
 
 
     /**
@@ -1155,25 +1070,30 @@ class bab_siteMapItem {
         return $this->getRightString('bab_sitemap_default_create_groups');
     }
 
+
     public function setDefaultCreate($value)
     {
         return $this->setRightString('bab_sitemap_default_create_groups', $value);
     }
+
 
     public function getDefaultRead()
     {
         return $this->getRightString('bab_sitemap_default_read_groups');
     }
 
+
     public function setDefaultRead($value)
     {
         return $this->setRightString('bab_sitemap_default_read_groups', $value);
     }
 
+
     public function getDefaultUpdate()
     {
         return $this->getRightString('bab_sitemap_default_update_groups');
     }
+
 
     public function setDefaultUpdate($value)
     {
@@ -1186,16 +1106,11 @@ class bab_siteMapItem {
         return $this->getRightString('bab_sitemap_default_delete_groups');
     }
 
+
     public function setDefaultDelete($value)
     {
         return $this->setRightString('bab_sitemap_default_delete_groups', $value);
     }
-
-
-
-
-
-
 
 
     /**
@@ -1211,6 +1126,7 @@ class bab_siteMapItem {
             'delete' => $this->canDelete()
         );
     }
+
 
     /**
      * Get rights as an array of string suitable for widget acl
@@ -1253,12 +1169,6 @@ class bab_siteMapItem {
     }
 
 
-
-
-
-
-
-
     /**
      * return rewrite name of node
      * @return string
@@ -1299,9 +1209,7 @@ class bab_siteMapItem {
         }
 
         $head = bab_getInstance('babHead');
-
-        if (null !== $keywords = $head->getKeywords())
-        {
+        if (null !== $keywords = $head->getKeywords()) {
             return $keywords;
         }
 
@@ -1348,21 +1256,19 @@ class bab_siteMapItem {
     /**
      * Returns the page title for the html title tag.
      *
-     * @param bool		$inherit		If true and pageTitle are not defined the method will return the pageTitle of
-     * 									the closest parent with pageTitle defined.
+     * @param bool $inherit     If true and pageTitle are not defined the method will return the pageTitle of
+     *                          the closest parent with pageTitle defined.
      *
      * @return string
      */
     public function getPageTitle($inherit = false)
     {
-        if ($title = $this->getSitemapPageTitle($inherit))
-        {
+        if ($title = $this->getSitemapPageTitle($inherit)) {
             return $title;
         }
 
         $head = bab_getInstance('babHead');
-        if (null !== $title = $head->getTitle())
-        {
+        if (null !== $title = $head->getTitle()) {
             return $title;
         }
 
@@ -1397,19 +1303,19 @@ class bab_siteMapItem {
     /**
      * Returns the page description for an html meta/description tag.
      *
-     * @param bool		$inherit		If true and pageDescription are not defined the method will return the pageDescription of
-     * 									the closest parent with pageDescription defined.
+     * @param bool $inherit     If true and pageDescription are not defined the method will return the pageDescription of
+     *                          the closest parent with pageDescription defined.
+     *
+     * @return string
      */
     public function getPageDescription($inherit = true)
     {
-        if ($description = $this->getSitemapPageDescription($inherit))
-        {
+        if ($description = $this->getSitemapPageDescription($inherit)) {
             return $description;
         }
 
         $head = bab_getInstance('babHead');
-        if (null !== $description = $head->getDescription())
-        {
+        if (null !== $description = $head->getDescription()) {
             return $description;
         }
 
@@ -1421,21 +1327,18 @@ class bab_siteMapItem {
     /**
      * Returns the page description defined in sitemap for an html meta/description tag.
      *
-     * @param bool		$inherit		If true and pageDescription are not defined the method will return the pageDescription of
-     * 									the closest parent with pageDescription defined.
+     * @param bool $inherit     If true and pageDescription are not defined the method will return the pageDescription of
+     *                          the closest parent with pageDescription defined.
      *
-     * @return null
+     * @return string|null
      */
     private function getSitemapPageDescription($inherit)
     {
-        if (!empty($this->pageDescription)) {
+        if (! empty($this->pageDescription)) {
             return $this->pageDescription;
         }
 
-        if ($inherit
-                && $this->node
-                && ($parentNode = $this->node->parentNode())
-                && ($parentSitemapItem = $parentNode->getData())) {
+        if ($inherit && $this->node && ($parentNode = $this->node->parentNode()) && ($parentSitemapItem = $parentNode->getData())) {
             return $parentSitemapItem->getSitemapPageDescription($inherit);
         }
 
@@ -1445,12 +1348,12 @@ class bab_siteMapItem {
 
     /**
      * Test if babrw is used in url or if the url contain only the path
+     *
      * @return bool
      */
     public function rewritingEnabled()
     {
-        if (!isset($this->node) || !isset($this->node->_tree))
-        {
+        if (! isset($this->node) || ! isset($this->node->_tree)) {
             return false;
         }
 
@@ -1460,6 +1363,7 @@ class bab_siteMapItem {
 
     /**
      * Get rewritten path
+     *
      * @return string
      */
     public function getRwPath()
@@ -1469,12 +1373,11 @@ class bab_siteMapItem {
         $arr = array();
         $pos = 0;
 
-        do
-        {
-            $pos++;
+        do {
+            $pos ++;
             $sitemapItem = $node->getData();
-            /*@var $sitemapItem $sitemapItem */
-            if (!$sitemapItem || $sitemapItem->getRewriteName() === bab_siteMap::REWRITING_ROOT_NODE || $sitemapItem->id_function == 'DGAll') {
+            /* @var $sitemapItem $sitemapItem */
+            if (! $sitemapItem || $sitemapItem->getRewriteName() === bab_siteMap::REWRITING_ROOT_NODE || $sitemapItem->id_function == 'DGAll') {
                 break;
             }
 
@@ -1483,34 +1386,26 @@ class bab_siteMapItem {
             }
 
             array_unshift($arr, $sitemapItem->getRewriteName());
-
         } while ($node = $node->parentNode());
-
-
 
         return implode('/', $arr);
     }
 
 
-
-
-
-
     /**
      * Get rewritten url if the rewriting is enabled or the regular url if there is no rewriting
+     *
      * @return string
      */
     public function getRwUrl()
     {
         $url = $this->url;
 
-        if ('' === $url || $this->disabledRewrite)
-        {
+        if ('' === $url || $this->disabledRewrite) {
             return $url;
         }
 
-        if ('http' === mb_substr($url, 0, 4) && $GLOBALS['babUrl'] !== mb_substr($url, 0, strlen($GLOBALS['babUrl'])))
-        {
+        if ('http' === mb_substr($url, 0, 4) && $GLOBALS['babUrl'] !== mb_substr($url, 0, strlen($GLOBALS['babUrl']))) {
             return $url;
         }
 
@@ -1518,16 +1413,12 @@ class bab_siteMapItem {
         if ($this->rewritingEnabled()) {
             $url = $this->getRwPath();
             // $url = bab_sitemap::rewrittenUrlOld($this->id_function);
-
         } else {
             $path = $this->getRwPath();
             // $path = bab_sitemap::rewrittenUrlOld($this->id_function);
-            if ($path)
-            {
-                $url = '?babrw='.$path;
+            if ($path) {
+                $url = '?babrw=' . $path;
             }
-
-
         }
 
         return $url;
@@ -1540,23 +1431,25 @@ class bab_siteMapItem {
     /**
      * Get LI html tag for the sitemap item
      *
-     * @param	string		$ul 						HTML for submenu UL tag
-     * @param	array		$additional_classes			additional classes to set on LI
+     * @param string $ul
+     *            HTML for submenu UL tag
+     * @param array $additional_classes
+     *            additional classes to set on LI
      * @return string
      */
     public function getHtmlListItem($ul = null, $additional_classes = null)
     {
         $return = '';
 
-        if (!empty($this->iconClassnames)) {
-            $icon = 'icon '.$this->iconClassnames;
+        if (! empty($this->iconClassnames)) {
+            $icon = 'icon ' . $this->iconClassnames;
         } else {
             $icon = 'icon';
         }
 
-        if (!empty($this->description)) {
+        if (! empty($this->description)) {
 
-            $description = ' title="'.bab_toHtml($this->description).'"';
+            $description = ' title="' . bab_toHtml($this->description) . '"';
         } else {
             $description = '';
         }
@@ -1567,21 +1460,21 @@ class bab_siteMapItem {
         if ($url) {
 
             if ($this->onclick) {
-                $onclick = ' onclick="'.bab_toHtml($this->onclick).'"';
+                $onclick = ' onclick="' . bab_toHtml($this->onclick) . '"';
             } else {
                 $onclick = '';
             }
 
-            $htmlData = '<a class="'.bab_toHtml($icon).'" href="'.bab_toHtml($url).'" '.$onclick.' '.$description.'>'.bab_toHtml($this->name).'</a>';
+            $htmlData = '<a class="' . bab_toHtml($icon) . '" href="' . bab_toHtml($url) . '" ' . $onclick . ' ' . $description . '>' . bab_toHtml($this->name) . '</a>';
         } else {
-            $htmlData = '<span class="'.bab_toHtml($icon).'"'.$description.'>'.bab_toHtml($this->name).'</span>';
+            $htmlData = '<span class="' . bab_toHtml($icon) . '"' . $description . '>' . bab_toHtml($this->name) . '</span>';
         }
 
         $classnames = array();
 
-        $classnames[] = 'sitemap-'.$this->id_function;
+        $classnames[] = 'sitemap-' . $this->id_function;
 
-        if (!empty($this->iconClassnames)) {
+        if (! empty($this->iconClassnames)) {
             $classnames[] = $this->iconClassnames;
         }
 
@@ -1589,15 +1482,13 @@ class bab_siteMapItem {
             $classnames[] = 'sitemap-folder';
         }
 
-        if (isset($additional_classes))
-        {
-            foreach($additional_classes as $class)
-            {
+        if (isset($additional_classes)) {
+            foreach ($additional_classes as $class) {
                 $classnames[] = $class;
             }
         }
 
-        $return .= '<li class="no-icon '.bab_toHtml(implode(' ', $classnames)).'">'.$htmlData;
+        $return .= '<li class="no-icon ' . bab_toHtml(implode(' ', $classnames)) . '">' . $htmlData;
 
         if (isset($ul)) {
             $return .= $ul;
@@ -1649,23 +1540,23 @@ class bab_siteMap {
      */
     const REWRITING_ROOT_NODE	=	'rewriting-root-node';
 
+
     /**
      * set sitemap informations
-     * @return bab_siteMapOrphanRootNode
      */
-    public function __construct($name, $description) {
-
+    public function __construct($name, $description)
+    {
         $this->siteMapName 			= $name;
         $this->siteMapDescription	= $description;
-
-        return $this;
     }
+
 
     /**
      * Sitemap name
      * @return string
      */
-    public function getSiteMapName() {
+    public function getSiteMapName()
+    {
         return $this->siteMapName;
     }
 
@@ -1674,9 +1565,11 @@ class bab_siteMap {
      * Sitemap description
      * @return string
      */
-    public function getSiteMapDescription() {
+    public function getSiteMapDescription()
+    {
         return $this->siteMapDescription;
     }
+
 
     /**
      * Get the full sitemap as a bab_Node tree
@@ -1684,16 +1577,19 @@ class bab_siteMap {
      * @param int $levels
      * @return bab_siteMapOrphanRootNode
      */
-    public function getRootNode($path = null, $levels = null, $build = true) {
+    public function getRootNode($path = null, $levels = null, $build = true)
+    {
         return bab_siteMap::get($path, $levels, $build);
     }
+
 
     /**
      * Get one level in sitemap as a bab_Node list
      * @param	string	$nodeId
      * @return bab_siteMapOrphanRootNode
      */
-    public function getLevelRootNode($nodeId) {
+    public function getLevelRootNode($nodeId)
+    {
         return bab_siteMap::getLevel($nodeId);
     }
 
@@ -1701,11 +1597,13 @@ class bab_siteMap {
     /**
      *
      * @param string $uid
-     * @return unknown_type
+     * @return string
      */
-    public function setVisibleRootNode($uid) {
+    public function setVisibleRootNode($uid)
+    {
         $this->visibleRootNode = $uid;
     }
+
 
     /**
      * get the visible root node to use in interfaces
@@ -1758,9 +1656,9 @@ class bab_siteMap {
             );
         }
 
-
         self::unlockTables();
     }
+
 
     /**
      * Delete sitemap for all users as well as ovml cached data.
@@ -1828,11 +1726,9 @@ class bab_siteMap {
     }
 
 
-
-
     /**
      *
-     * @param 	resource 	$res
+     * @param resource $res
      *
      * @return bab_siteMapOrphanRootNode
      */
@@ -1845,27 +1741,25 @@ class bab_siteMap {
 
         // bab_debug(sprintf('bab_siteMap::get() %d nodes', $babDB->db_num_rows($res)));
 
-
         while ($arr = $babDB->db_fetch_assoc($res)) {
 
-            if ('?' === @mb_substr($arr['url'],0,1)) {
+            if ('?' === @mb_substr($arr['url'], 0, 1)) {
                 // sitemap store URL without the php filename
-                $arr['url'] = bab_getSelf().$arr['url'];
+                $arr['url'] = bab_getSelf() . $arr['url'];
             }
 
             $data = new bab_siteMapItem();
-            $data->id_function 		= $arr['id_function'];
-            $data->name 			= $arr['name'];
-            $data->description 		= $arr['description'];
-            $data->url 				= $arr['url'];
-            $data->onclick 			= $arr['onclick'];
-            $data->folder 			= 1 == $arr['folder'];
-            $data->iconClassnames	= $arr['icon'];
-            $data->rewriteName		= $arr['rewrite'];
-            $data->haschildnodes	= ($arr['itemcount'] > 0);
-            if ('' !== $arr['funcname'])
-            {
-                $data->funcname	= $arr['funcname'];
+            $data->id_function = $arr['id_function'];
+            $data->name = $arr['name'];
+            $data->description = $arr['description'];
+            $data->url = $arr['url'];
+            $data->onclick = $arr['onclick'];
+            $data->folder = 1 == $arr['folder'];
+            $data->iconClassnames = $arr['icon'];
+            $data->rewriteName = $arr['rewrite'];
+            $data->haschildnodes = ($arr['itemcount'] > 0);
+            if ('' !== $arr['funcname']) {
+                $data->funcname = $arr['funcname'];
             }
 
 
@@ -1939,8 +1833,8 @@ class bab_siteMap {
      *
      * @since 7.8.3
      *
-     * @param	array	$path
-     * @param	int		$levels
+     * @param array $path
+     * @param int $levels
      * @return int (crc32) or NULL if no sitemap registered for the user
      */
     public static function getProfilVersionUid($path = null, $levels = null)
@@ -1950,18 +1844,17 @@ class bab_siteMap {
 
         $root_function = null === $path ? null : end($path);
 
-        $query_root_function = null === $root_function ? 'pv.root_function IS NULL' : 'pv.root_function='.$babDB->quote($root_function);
-        $query_levels = null === $levels ? 'pv.levels IS NULL' : 'pv.levels='.$babDB->quote($levels);
+        $query_root_function = null === $root_function ? 'pv.root_function IS NULL' : 'pv.root_function=' . $babDB->quote($root_function);
+        $query_levels = null === $levels ? 'pv.levels IS NULL' : 'pv.levels=' . $babDB->quote($levels);
 
-        if (!bab_isUserLogged())
-        {
-            $query = "SELECT pv.uid_functions FROM bab_sitemap_profile_versions pv WHERE pv.id_profile=".$babDB->quote(BAB_UNREGISTERED_SITEMAP_PROFILE);
+        if (! bab_isUserLogged()) {
+            $query = "SELECT pv.uid_functions FROM bab_sitemap_profile_versions pv WHERE pv.id_profile=" . $babDB->quote(BAB_UNREGISTERED_SITEMAP_PROFILE);
         } else {
-            $query = "SELECT pv.uid_functions FROM bab_users u, bab_sitemap_profile_versions pv WHERE  pv.id_profile=u.id_sitemap_profile AND u.id=".$babDB->quote(bab_getUserId());
+            $query = "SELECT pv.uid_functions FROM bab_users u, bab_sitemap_profile_versions pv WHERE  pv.id_profile=u.id_sitemap_profile AND u.id=" . $babDB->quote(bab_getUserId());
         }
 
-        $query .= ' AND '.$query_root_function;
-        $query .= ' AND '.$query_levels;
+        $query .= ' AND ' . $query_root_function;
+        $query .= ' AND ' . $query_levels;
 
         $res = $babDB->db_query($query);
 
@@ -1981,26 +1874,23 @@ class bab_siteMap {
 
 
 
-
-
     /**
      * Get sitemap default for current user
      *
-     * @param	array	$path
-     * @param	int		$levels
+     * @param array $path
+     * @param int $levels
      *
      * @return bab_siteMapOrphanRootNode
      */
-    public static function get($path = null, $levels = null, $build = true) {
-
+    public static function get($path = null, $levels = null, $build = true)
+    {
         // echo "sitemap get ".implode('/',$path)."\n";
-
-        include_once $GLOBALS['babInstallPath'].'utilit/delegincl.php';
+        include_once $GLOBALS['babInstallPath'] . 'utilit/delegincl.php';
 
 
         $cachekey = null === $path ? '0' : end($path);
         if (null !== $levels) {
-            $cachekey .= ','.$levels;
+            $cachekey .= ',' . $levels;
         }
 
         if (isset(self::$hitcache[$cachekey])) {
@@ -2012,16 +1902,13 @@ class bab_siteMap {
             return self::$hitcache['0'];
         }
 
-
         /** @var $babDB bab_Database */
         global $babDB;
 
-
         $root_function = null === $path ? null : end($path);
 
-        $query_root_function = null === $root_function ? 'pv.root_function IS NULL' : 'pv.root_function='.$babDB->quote($root_function);
-        $query_levels = null === $levels ? 'pv.levels IS NULL' : 'pv.levels='.$babDB->quote($levels);
-
+        $query_root_function = null === $root_function ? 'pv.root_function IS NULL' : 'pv.root_function=' . $babDB->quote($root_function);
+        $query_levels = null === $levels ? 'pv.levels IS NULL' : 'pv.levels=' . $babDB->quote($levels);
 
         $query = 'SELECT
                 s.id,
@@ -2040,55 +1927,52 @@ class bab_siteMap {
                 pv.id profile_version,
                 ((s.lr-s.lf-1)DIV 2) itemcount
             FROM
-                '.BAB_SITEMAP_FUNCTIONS_TBL.' f,
-                '.BAB_SITEMAP_FUNCTION_LABELS_TBL.' fl,
-                '.BAB_SITEMAP_FUNCTION_PROFILE_TBL.' fp,
-                '.BAB_SITEMAP_TBL.' s
-                    LEFT JOIN '.BAB_SITEMAP_TBL.' sp ON sp.id = s.id_parent,
-                '.BAB_SITEMAP_PROFILES_TBL.' p
-                    LEFT JOIN '.BAB_SITEMAP_PROFILE_VERSIONS_TBL.' pv
+                ' . BAB_SITEMAP_FUNCTIONS_TBL . ' f,
+                ' . BAB_SITEMAP_FUNCTION_LABELS_TBL . ' fl,
+                ' . BAB_SITEMAP_FUNCTION_PROFILE_TBL . ' fp,
+                ' . BAB_SITEMAP_TBL . ' s
+                    LEFT JOIN ' . BAB_SITEMAP_TBL . ' sp ON sp.id = s.id_parent,
+                ' . BAB_SITEMAP_PROFILES_TBL . ' p
+                    LEFT JOIN ' . BAB_SITEMAP_PROFILE_VERSIONS_TBL . ' pv
                     ON p.id = pv.id_profile
-                    AND '.$query_root_function.'
-                    AND '.$query_levels.'
+                    AND ' . $query_root_function . '
+                    AND ' . $query_levels . '
             ';
-
 
         if (bab_getUserId()) {
 
-            $query .= ', '.BAB_USERS_TBL.' u
+            $query .= ', ' . BAB_USERS_TBL . ' u
 
             WHERE
                 s.id_function = f.id_function
                 AND fp.id_function = f.id_function
                 AND fp.id_profile = p.id
                 AND p.id = u.id_sitemap_profile
-                AND u.id = '.$babDB->quote(bab_getUserId()).'
+                AND u.id = ' . $babDB->quote(bab_getUserId()) . '
                 ';
-
         } else {
             $query .= 'WHERE
                 s.id_function = f.id_function
                 AND fp.id_function = f.id_function
                 AND fp.id_profile = p.id
-                AND p.id = \''.BAB_UNREGISTERED_SITEMAP_PROFILE.'\'
+                AND p.id = \'' . BAB_UNREGISTERED_SITEMAP_PROFILE . '\'
                 ';
         }
 
-
         $query .= '
             AND fl.id_function=f.id_function
-            AND fl.lang='.$babDB->quote(bab_getLanguage()).'
+            AND fl.lang=' . $babDB->quote(bab_getLanguage()) . '
         ';
 
 
         /*
-        $viewable_delegations = array();
-
-        $delegations = bab_getUserVisiblesDelegations();
-        foreach($delegations as $arr) {
-            $viewable_delegations[$arr['id']] = $arr['id'];
-        }
-        */
+         * $viewable_delegations = array();
+         *
+         * $delegations = bab_getUserVisiblesDelegations();
+         * foreach($delegations as $arr) {
+         * $viewable_delegations[$arr['id']] = $arr['id'];
+         * }
+         */
         // $query .= ' AND (s.id_dgowner IS NULL OR s.id_dgowner IN('.$babDB->quote($viewable_delegations).') )';
         // tenir compte que de DGAll pour le moment
         // $query .= ' AND s.id_dgowner IS NULL ';
@@ -2101,7 +1985,7 @@ class bab_siteMap {
 
         if (0 === $babDB->db_num_rows($res)) {
 
-            if (!$build) {
+            if (! $build) {
                 return null;
             }
 
@@ -2111,27 +1995,23 @@ class bab_siteMap {
             $res = $babDB->db_query($query);
         }
 
-
         $firstnode = $babDB->db_fetch_assoc($res);
 
         if (null === $firstnode['profile_version']) {
 
-            if (!$build) {
+            if (! $build) {
                 return null;
             }
-
 
             // the profile version is missing, add version to profile
             // the user have a correct profile and a correct sitemap but the sitemap is incomplete
             // additional nodes need to be created in sitemap without deleting the profile
             self::repair($path, $levels);
             $res = $babDB->db_query($query);
-
         } else {
 
             $babDB->db_data_seek($res, 0);
         }
-
 
         $rootNode = self::buildFromResource($res);
 
@@ -2142,34 +2022,19 @@ class bab_siteMap {
 
 
 
-
-
-
-
-
-
-
-
-
-
-
     /**
      * Get sitemap level and ancestors
      *
-     * @param	string	$nodeId
+     * @param string $nodeId
      *
      * @return bab_siteMapOrphanRootNode
      */
-    public static function getLevel($nodeId) {
-
-
-        include_once $GLOBALS['babInstallPath'].'utilit/delegincl.php';
-
-
+    public static function getLevel($nodeId)
+    {
+        include_once $GLOBALS['babInstallPath'] . 'utilit/delegincl.php';
 
         /** @var $babDB bab_Database */
         global $babDB;
-
 
         $query = 'SELECT
             s.id,
@@ -2188,52 +2053,48 @@ class bab_siteMap {
             pv.id profile_version,
             ((s.lr-s.lf-1)DIV 2) itemcount
         FROM
-        '.BAB_SITEMAP_FUNCTIONS_TBL.' f,
-        '.BAB_SITEMAP_FUNCTION_LABELS_TBL.' fl,
-        '.BAB_SITEMAP_FUNCTION_PROFILE_TBL.' fp,
-        '.BAB_SITEMAP_TBL.' s,
-        '.BAB_SITEMAP_TBL.' sp,
-        '.BAB_SITEMAP_PROFILES_TBL.' p
-            LEFT JOIN '.BAB_SITEMAP_PROFILE_VERSIONS_TBL.' pv
+        ' . BAB_SITEMAP_FUNCTIONS_TBL . ' f,
+        ' . BAB_SITEMAP_FUNCTION_LABELS_TBL . ' fl,
+        ' . BAB_SITEMAP_FUNCTION_PROFILE_TBL . ' fp,
+        ' . BAB_SITEMAP_TBL . ' s,
+        ' . BAB_SITEMAP_TBL . ' sp,
+        ' . BAB_SITEMAP_PROFILES_TBL . ' p
+            LEFT JOIN ' . BAB_SITEMAP_PROFILE_VERSIONS_TBL . ' pv
                 ON p.id = pv.id_profile
                     AND pv.root_function IS NULL
                     AND pv.levels IS NULL
         ';
 
-
         if (bab_getUserId()) {
 
-            $query .= ', '.BAB_USERS_TBL.' u
+            $query .= ', ' . BAB_USERS_TBL . ' u
 
             WHERE
                 s.id_function = f.id_function
                 AND fp.id_function = f.id_function
                 AND fp.id_profile = p.id
                 AND p.id = u.id_sitemap_profile
-                AND u.id = '.$babDB->quote(bab_getUserId()).'
+                AND u.id = ' . $babDB->quote(bab_getUserId()) . '
             ';
-
         } else {
             $query .= 'WHERE
                 s.id_function = f.id_function
                 AND fp.id_function = f.id_function
                 AND fp.id_profile = p.id
-                AND p.id = \''.BAB_UNREGISTERED_SITEMAP_PROFILE.'\'
+                AND p.id = \'' . BAB_UNREGISTERED_SITEMAP_PROFILE . '\'
             ';
         }
 
-
         $query .= '
-            AND sp.id_function='.$babDB->quote($nodeId).'
+            AND sp.id_function=' . $babDB->quote($nodeId) . '
             AND fl.id_function=f.id_function
-            AND fl.lang='.$babDB->quote(bab_getLanguage()).'
+            AND fl.lang=' . $babDB->quote(bab_getLanguage()) . '
             AND (sp.id = s.id_parent OR (s.lf<=sp.lf AND s.lr>=sp.lr))
         ';
 
-
         $query .= 'ORDER BY s.lf';
 
-        //bab_debug($query);
+        // bab_debug($query);
 
         $res = $babDB->db_query($query);
 
@@ -2253,12 +2114,10 @@ class bab_siteMap {
             // additional nodes need to be created in sitemap without deleting the profile
             self::repair(null, null);
             $res = $babDB->db_query($query);
-
         } else {
 
             $babDB->db_data_seek($res, 0);
         }
-
 
         $rootNode = self::buildFromResource($res);
 
@@ -2271,30 +2130,23 @@ class bab_siteMap {
 
 
 
-
-
-
-
-
-
-
-
-
     /**
      * Get the url of a sitemap node or null if the node does not exists or if there is no url
-     * @param	string	$sId
+     *
+     * @param string $sId
      */
-    public static function getUrlById($sId) {
-
+    public static function getUrlById($sId)
+    {
         $notesNode = self::get()->getNodeById($sId);
 
-        if (!isset($notesNode)) {
+        if (! isset($notesNode)) {
             return null;
         }
 
         $sitemapItem = $notesNode->getData();
         return $sitemapItem->url;
     }
+
 
     /**
      * Get the name of a sitemap node or null if the node does not exists or if there is no url
@@ -2320,27 +2172,25 @@ class bab_siteMap {
 
     /**
      * Build sitemap for current user
+     *
      * @return boolean
      */
-    public static function build($path, $levels) {
-
-
-        include_once $GLOBALS['babInstallPath'].'utilit/sitemap_build.php';
+    public static function build($path, $levels)
+    {
+        include_once $GLOBALS['babInstallPath'] . 'utilit/sitemap_build.php';
         return bab_siteMap_build($path, $levels);
-
     }
 
 
     /**
      * Add missing node to current sitemap
+     *
      * @return boolean
      */
-    private static function repair($path, $levels) {
-
-
-        include_once $GLOBALS['babInstallPath'].'utilit/sitemap_build.php';
+    private static function repair($path, $levels)
+    {
+        include_once $GLOBALS['babInstallPath'] . 'utilit/sitemap_build.php';
         return bab_siteMap_repair($path, $levels);
-
     }
 
 
@@ -2352,10 +2202,10 @@ class bab_siteMap {
      * @see bab_eventBeforeSitemapList
      * @see bab_siteMapOrphanRootNode
      *
-     * @return array	of bab_siteMap
+     * @return bab_siteMap[]
      */
-    public static function getList() {
-
+    public static function getList()
+    {
         $event = new bab_eventBeforeSiteMapList;
         $core = new bab_siteMap(bab_translate('Default'), bab_translate('Default sitemap proposed by Ovidentia'));
 
@@ -2364,7 +2214,6 @@ class bab_siteMap {
         bab_fireEvent($event);
 
         return $event->getAvailable();
-
     }
 
 
@@ -2372,20 +2221,21 @@ class bab_siteMap {
      * get the visible root node to use in interfaces
      * default is babDGAll
      * externally provided sitemap can set the value to another node in the same sitemap
-     * @param string	$uid sitemap uid
+     *
+     * @param string $uid   Sitemap uid
      * @return string
      */
     public static function getVisibleRootNodeByUid($uid)
     {
         $list = self::getList();
 
-        if (!isset($list[$uid])) {
+        if (! isset($list[$uid])) {
             return null;
         }
 
-        if($list[$uid]->getVisibleRootNode() !== NULL){
+        if ($list[$uid]->getVisibleRootNode() !== NULL) {
             return $list[$uid]->getVisibleRootNode();
-        }else{
+        } else {
             return 'DGAll';
         }
     }
@@ -2432,16 +2282,13 @@ class bab_siteMap {
 
 
 
-
-
-
-
     /**
      * Get sitemap tree by unique UID from sitemap list
      * @param	string	$uid
      * @return bab_siteMapOrphanRootNode
      */
-    public static function getByUid($uid) {
+    public static function getByUid($uid)
+    {
         $list = self::getList();
 
         if (!isset($list[$uid])) {
@@ -2453,34 +2300,25 @@ class bab_siteMap {
 
 
 
-
-
-
-
     /**
      * Set position in sitemap for current page, if the position is not already defined by the URL
      *
-     *
-     * @param	string	$uid_prefix	sitemap node UID prefix before delegation identification
-     * @param	string	$uid_suffix sitemap node UID suffix after delegation identification
-     *
+     * @param string $uid_prefix    Sitemap node UID prefix before delegation identification
+     * @param string $uid_suffix    Sitemap node UID suffix after delegation identification
      */
-    public static function setPosition($uid_prefix, $uid_suffix = null) {
-
+    public static function setPosition($uid_prefix, $uid_suffix = null)
+    {
         if (null !== self::$current_page) {
             return;
         }
-
 
         if (null === $uid_suffix) {
 
             self::$current_page = $uid_prefix;
         } else {
-
             // for now current delegation is always DGAll, suffix is just appended
 
-            self::$current_page = $uid_prefix.$uid_suffix;
-
+            self::$current_page = $uid_prefix . $uid_suffix;
         }
     }
 
@@ -2490,7 +2328,8 @@ class bab_siteMap {
      *
      * @return string
      */
-    public static function getPosition() {
+    public static function getPosition()
+    {
         return self::$current_page;
     }
 
@@ -2503,14 +2342,13 @@ class bab_siteMap {
      *
      * @return bab_SitemapItem
      */
-    public static function getRealPosition() {
-
+    public static function getRealPosition()
+    {
         global $babBody;
 
         $position = self::getPosition();
         $sitemap = self::getByUid($babBody->babsite['sitemap']);
-        if (isset($sitemap))
-        {
+        if (isset($sitemap)) {
             $node = $sitemap->getNodeById($position);
 
             if (isset($node)) {
@@ -2533,15 +2371,15 @@ class bab_siteMap {
      *
      * @see bab_sitemap::setPosition()
      *
-     * @param	string	$sitemap_uid	ID of sitemap tree, default is sitemap selected in site options
-     * @param	string	$baseNodeId		start of the breadcrumb, default is the visible root node of the sitemap
-     * @param	string	$nodeId			current page node, default is the automatic current page
+     * @param string $sitemap_uid   ID of sitemap tree, default is sitemap selected in site options
+     * @param string $baseNodeId    Start of the breadcrumb, default is the visible root node of the sitemap
+     * @param string $nodeId        Current page node, default is the automatic current page
      *
-     * @return array | null				Array of bab_Node
+     * @return array | null         Array of bab_Node
      */
-    public static function getBreadCrumb($sitemap_uid = null, $baseNodeId = null, $nodeId = null) {
-
-        if (!isset(self::$current_page) && !isset($nodeId)) {
+    public static function getBreadCrumb($sitemap_uid = null, $baseNodeId = null, $nodeId = null)
+    {
+        if (! isset(self::$current_page) && ! isset($nodeId)) {
             return null;
         }
 
@@ -2549,7 +2387,7 @@ class bab_siteMap {
             global $babBody;
             $sitemap_uid = $babBody->babsite['sitemap'];
             $sitemap = self::getByUid($sitemap_uid);
-            if (!isset($sitemap)) {
+            if (! isset($sitemap)) {
                 $sitemap_uid = 'core';
                 $sitemap = self::getByUid('core');
             }
@@ -2557,47 +2395,38 @@ class bab_siteMap {
             $sitemap = self::getByUid($sitemap_uid);
         }
 
-        if (!isset($sitemap)) {
+        if (! isset($sitemap)) {
             bab_debug(sprintf('Breadcrumb : empty breadcrumb because sitemap not found %s', $sitemap_uid), DBG_ERROR);
             return array();
         }
 
-
-        if (!isset($nodeId))
-        {
+        if (! isset($nodeId)) {
             $nodeId = self::$current_page;
         }
 
         // if undefined baseNodeId, use the default visible root for sitemap
 
-        if (!isset($baseNodeId))
-        {
+        if (! isset($baseNodeId)) {
             $baseNodeId = bab_siteMap::getVisibleRootNodeByUid($sitemap_uid);
         }
 
-
         $baseNode = $sitemap->getNodeById($baseNodeId);
-        if (!isset($baseNode)) {
+        if (! isset($baseNode)) {
             // basenode not found
             bab_debug(sprintf('Breadcrumb : empty breadcrumb because baseNodeId=%s not found in sitemap %s', $baseNodeId, $sitemap_uid), DBG_ERROR);
             return array();
         }
 
-
         // verify if the $nodeId or target is under baseNode
-
 
         $currentNode = $sitemap->getNodeById($nodeId);
         $matchingNodes = array();
 
-
-        if (!isset($currentNode)) {
+        if (! isset($currentNode)) {
             // nodeId not found
             bab_debug(sprintf('Breadcrumb : empty breadcrumb because nodeId=%s not found in sitemap %s', $nodeId, $sitemap_uid), DBG_ERROR);
             return array();
         }
-
-
 
         // test if current node is under baseNode
 
@@ -2605,20 +2434,17 @@ class bab_siteMap {
         $testNode = $currentNode;
         do {
 
-            if ($baseNodeId === $testNode->getId())
-            {
+            if ($baseNodeId === $testNode->getId()) {
                 $matchingNodes[] = $currentNode;
                 break;
             }
-
-        } while($testNode = $testNode->parentNode());
+        } while ($testNode = $testNode->parentNode());
 
 
         // test if a target to current node is under basenode
 
         $customNodes = $sitemap->getNodesByIndex('target', $nodeId);
-        foreach($customNodes as $customNode)
-        {
+        foreach ($customNodes as $customNode) {
             /*@var $customNode bab_Node */
 
             // get the first custom node under baseNode
@@ -2626,17 +2452,12 @@ class bab_siteMap {
             /*@var $testNode bab_Node */
             do {
 
-                if ($baseNodeId === $testNode->getId())
-                {
+                if ($baseNodeId === $testNode->getId()) {
                     $matchingNodes[] = $customNode;
                     break;
                 }
-
-            } while($testNode = $testNode->parentNode());
+            } while ($testNode = $testNode->parentNode());
         }
-
-
-
 
         if (count($matchingNodes) === 0) {
 
@@ -2653,23 +2474,19 @@ class bab_siteMap {
 
         $node = $matchingNodes[0];
 
-        if (false === $node->getData()->breadCrumbIgnore)
-        {
-            $breadCrumbs = array($node);
+        if (false === $node->getData()->breadCrumbIgnore) {
+            $breadCrumbs = array(
+                $node
+            );
         } else {
             $breadCrumbs = array();
         }
 
-
         while (($node->getId() !== $baseNodeId) && ($node = $node->parentNode())) {
-            if (false === $node->getData()->breadCrumbIgnore)
-            {
+            if (false === $node->getData()->breadCrumbIgnore) {
                 array_unshift($breadCrumbs, $node);
             }
         }
-
-
-
 
         return $breadCrumbs;
     }
@@ -2677,7 +2494,6 @@ class bab_siteMap {
 
     /**
      * Set site language if one of the node in path
-     *
      */
     private static function processSetLanguage(bab_Node $positionNode)
     {
@@ -2692,7 +2508,6 @@ class bab_siteMap {
             if (isset($sitemapItem->setlanguage) && '' !== $sitemapItem->setlanguage) {
                 bab_setLanguage($sitemapItem->setlanguage);
             }
-
         } while (isset($positionNode) && $positionNode = $positionNode->parentNode());
     }
 
@@ -2700,28 +2515,29 @@ class bab_siteMap {
 
     /**
      * Select current node from the rewrite url and extract sitemap node url parameters in an array
-     * @param	string	$rewrite		Rewrite string (ex : babrw variable)
-     * @param	bool	$setPosition	if set to true, the current page will be associated to the corresponding sitemap node
+     *
+     * @param string $rewrite
+     *            Rewrite string (ex : babrw variable)
+     * @param bool $setPosition
+     *            if set to true, the current page will be associated to the corresponding sitemap node
      * @return array
      */
     public static function extractNodeUrlFromRewrite($rewrite, $setPosition = false)
     {
         $root = bab_siteMap::getFromSite();
 
-        if (!isset($root)) {
+        if (! isset($root)) {
             return false;
         }
 
         $nodeId = $root->getNodeIdFromRewritePath($rewrite);
 
 
-        if (null === $nodeId)
-        {
+        if (null === $nodeId) {
             return false;
         }
 
-        if ($setPosition)
-        {
+        if ($setPosition) {
             bab_siteMap::setPosition($nodeId);
         }
 
@@ -2729,8 +2545,7 @@ class bab_siteMap {
 
 
         $node = $root->getNodeById($nodeId);
-        if (!$node)
-        {
+        if (! $node) {
             return false;
         }
 
@@ -2751,24 +2566,24 @@ class bab_siteMap {
 
     /**
      * Get the rewritten url of a sitemap node or an url with babrw= if the rewriting is disabled
+     *
      * @param string $id_function
-     * @param string $fallback_url		If node not found in site sitemap, return the fallback url if defined
+     * @param string $fallback_url
+     *            If node not found in site sitemap, return the fallback url if defined
      * @return string
      */
     public static function url($id_function, $fallback_url = null)
     {
         $sitemap = self::getFromSite();
 
-        if (!($sitemap instanceof bab_siteMapOrphanRootNode))
-        {
+        if (! ($sitemap instanceof bab_siteMapOrphanRootNode)) {
             return $fallback_url;
         }
 
         $node = $sitemap->getNodeById($id_function);
 
-        if (!isset($node)) {
-            if (isset($fallback_url))
-            {
+        if (! isset($node)) {
+            if (isset($fallback_url)) {
                 bab_debug(sprintf('Node %s not found is site sitemap, return the fallback_url %s instead of rewritten url', $id_function, $fallback_url));
             }
 
@@ -2783,6 +2598,7 @@ class bab_siteMap {
 
     /**
      * Get the rewritten url string of a sitemap node
+     *
      * @param string $id_function
      * @return string
      */
@@ -2790,15 +2606,14 @@ class bab_siteMap {
     {
         static $root = null;
 
-        if (!isset($root)) {
+        if (! isset($root)) {
             $root = bab_siteMap::getFromSite();
         }
 
         $node = $root->getNodeById($id_function);
 
-        if (!$node)
-        {
-            bab_debug('Failed to get '.$id_function.' in sitemap');
+        if (! $node) {
+            bab_debug('Failed to get ' . $id_function . ' in sitemap');
             return null;
         }
 
@@ -2820,26 +2635,22 @@ class bab_siteMap {
     {
         static $root = null;
 
-        if (!isset($root)) {
+        if (! isset($root)) {
             $root = bab_siteMap::getFromSite();
         }
 
         $node = $root->getNodeById($id_function);
 
-        if (!$node)
-        {
-            bab_debug('Failed to get '.$id_function.' in sitemap');
+        if (! $node) {
+            bab_debug('Failed to get ' . $id_function . ' in sitemap');
             return null;
         }
 
-
-
         $arr = array();
 
-        do
-        {
+        do {
             $sitemapItem = $node->getData();
-            if (!$sitemapItem || $sitemapItem->getRewriteName() === self::REWRITING_ROOT_NODE) {
+            if (! $sitemapItem || $sitemapItem->getRewriteName() === self::REWRITING_ROOT_NODE) {
                 break;
             }
             array_unshift($arr, $sitemapItem->getRewriteName());
@@ -2867,18 +2678,18 @@ class bab_siteMap {
  * @package sitemap
  * @see bab_siteMap::getList()
  */
-class bab_eventBeforeSiteMapList extends bab_event {
-
+class bab_eventBeforeSiteMapList extends bab_event
+{
     private $available = array();
 
     /**
-     * @param	string				$uid		ASCII string, unique identifier
-     * @param	bab_siteMap			$siteMap	sitemap
-     *
+     * @param string $uid           ASCII string, unique identifier
+     * @param bab_siteMap $siteMap  sitemap
      *
      * @return bab_eventBeforeSiteMapList
      */
-    public function addSiteMap($uid, bab_siteMap $siteMap, $viewRoot = 'DGAll') {
+    public function addSiteMap($uid, bab_siteMap $siteMap, $viewRoot = 'DGAll')
+    {
         $this->available[$uid] = $siteMap;
         $siteMap->setVisibleRootNode($viewRoot);
 
@@ -2889,10 +2700,10 @@ class bab_eventBeforeSiteMapList extends bab_event {
      *
      * @return array
      */
-    public function getAvailable() {
+    public function getAvailable()
+    {
         return $this->available;
     }
-
 }
 
 
