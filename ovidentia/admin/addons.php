@@ -65,7 +65,7 @@ class bab_addons_list
 
     public $altbg = true;
 
-    function __construct()
+    public function __construct()
     {
         include_once $GLOBALS['babInstallPath'] . 'utilit/addonsincl.php';
 
@@ -96,7 +96,7 @@ class bab_addons_list
         $this->res = $this->getRes();
     }
 
-    function getRes()
+    public function getRes()
     {
         $return = array();
         foreach (bab_addonsInfos::getDbAddonsByName() as $name => $addon) {
@@ -109,7 +109,7 @@ class bab_addons_list
         return $return;
     }
 
-    function display($addon)
+    public function display($addon)
     {
         if (! $addon) {
             return false;
@@ -119,7 +119,7 @@ class bab_addons_list
         return 'EXTENSION' === $type;
     }
 
-    function getnext()
+    public function getnext()
     {
         if (list (, $addon) = each($this->res)) {
             $this->altbg = ! $this->altbg;
@@ -173,14 +173,14 @@ class bab_addons_list
 
 class bab_addons_list_library extends bab_addons_list
 {
-    function bab_addons_list_library()
+    public function __construct()
     {
-        parent::bab_addons_list();
+        parent::__construct();
 
         $this->display_in_form = false;
     }
 
-    function display($addon)
+    public function display($addon)
     {
         return 'LIBRARY' === $addon->getAddonType();
     }
@@ -190,14 +190,14 @@ class bab_addons_list_library extends bab_addons_list
 
 class bab_addons_list_theme extends bab_addons_list
 {
-    function bab_addons_list_theme()
+    public function __construct()
     {
-        parent::bab_addons_list();
+        parent::__construct();
 
         $this->display_in_form = false;
     }
 
-    function display($addon)
+    public function display($addon)
     {
         return 'THEME' === $addon->getAddonType();
     }
@@ -372,29 +372,24 @@ function addon_display_upgrade($id)
  * Upgrade frame
  * Database upgrade for one addon
  */
-function addon_call_upgrade($id) {
+function addon_call_upgrade($id)
+{
+    require_once $GLOBALS['babInstallPath'] . 'utilit/install.class.php';
 
-	require_once $GLOBALS['babInstallPath'].'utilit/install.class.php';
+    $row = bab_addonsInfos::getDbRow($id);
+    $addon = bab_getAddonInfosInstance($row['title']);
 
-	$row = bab_addonsInfos::getDbRow($id);
-	$addon = bab_getAddonInfosInstance($row['title']);
+    if (! $addon->isValid()) {
+        die();
+    }
 
-	if (!$addon->isValid()) {
-		die();
-	}
+    $frame = new bab_installWindow();
+    $frame->setStartMessage(bab_translate('Install start'));
+    $frame->setStopMessage(bab_translate('The addon upgrade was successful'), bab_translate('An error occurred during the addon upgrade'));
 
-	$frame = new bab_installWindow;
-	$frame->setStartMessage(bab_translate('Install start'));
-	$frame->setStopMessage(
-		bab_translate('The addon upgrade was successful'),
-		bab_translate('An error occurred during the addon upgrade')
-	);
-
-	$frame->startInstall(array($addon, 'upgrade'));
-	die();
+    $frame->startInstall(array($addon, 'upgrade'));
+    die();
 }
-
-
 
 
 
@@ -843,12 +838,12 @@ function bab_display_addon_requirements()
             $this->installed = false;
 
             $ini = new bab_inifile();
-            
+
             $tmpFolder = bab_gp('folder', null);
-            
+
             if (isset($tmpFolder)) {
                 $tmpPath = new bab_Path($GLOBALS['babUploadPath' ] . '/tmp/' . $tmpFolder);
-                
+
                 $ul = null;
                 foreach ($tmpPath as $uploadedFile) {
                     $ul = $uploadedFile->toString();
@@ -856,8 +851,7 @@ function bab_display_addon_requirements()
                 // display requirements from temporary package into installation process
                 $this->item = '';
 
-                $name 			= bab_Path::decode($uploadedFile->getBasename());
-                $filename 		= mb_substr( $ul,(mb_strrpos( $ul,'/')+1));
+                $name = bab_Path::decode($uploadedFile->getBasename());
                 $this->tmpFolder =  bab_toHtml($tmpFolder);
                 $this->action = 'import';
 
@@ -1008,7 +1002,7 @@ class bab_import_package
         }
         if (bab_rp('tmpFolder')) {
             $path = new bab_Path($GLOBALS['babUploadPath'] . '/tmp/' . bab_rp('tmpFolder'));
-            
+
             foreach ($path as $file) {
                 $install = new bab_InstallSource();
                 $install->setArchive($file->toString());
@@ -1515,18 +1509,18 @@ function viewModified()
 function bab_addonUploadToolbar($message, $func = null)
 {
     global $babBody;
-    
+
     $W = bab_Widgets();
-    
+
     $toolbar = $W->FlowItems();
     $toolbar->addClass(Func_Icons::ICON_LEFT_16, 'widget-toolbar');
-    
+
     if (!defined('BAB_SYSTEM_ACCESS') || BAB_SYSTEM_ACCESS === true) {
         $uploadFolder = uniqid('addon');
-        
+
         $uploadPath = new bab_Path($GLOBALS['babUploadPath' ] . '/tmp/' . $uploadFolder);
         $uploadPath->createDir();
-        
+
         $uploadAction = $W->Action();
         $uploadAction->setMethod(
             'addons',
@@ -1535,17 +1529,17 @@ function bab_addonUploadToolbar($message, $func = null)
                 'folder' => $uploadFolder
             )
         );
-        
+
         $uploadButton = $W->FilePicker()
         ->onUploadAction($uploadAction)
         ->hideFiles()
         ->setFolder($uploadPath)
         ->setTitle($message)
         ->addClass('widget-actionbutton', 'icon', Func_Icons::ACTIONS_DOCUMENT_UPLOAD);
-        
+
         $toolbar->addItem($uploadButton);
     }
-    
+
     if (null !== $func) {
         $toolbar->addItem(
             $W->Link(
@@ -1554,7 +1548,7 @@ function bab_addonUploadToolbar($message, $func = null)
                 )->addClass('widget-actionbutton', 'icon', Func_Icons::PLACES_FOLDER_RED)
             );
     }
-    
+
     $babBody->babEcho($toolbar->display($W->HtmlCanvas()));
 }
 
