@@ -581,10 +581,8 @@ class bab_addonPackage
      * Add path to zip
      *
      * @param bab_addonInfos $addon
-     * @param array $res
-     *            List of files to zip
-     * @param string $targetPath
-     *            Path in zip archive
+     * @param array $res            List of files to zip
+     * @param string $targetPath    Path in zip archive
      */
     private function addPath(bab_addonInfos $addon, $path, $res, $targetPath)
     {
@@ -743,40 +741,6 @@ function upload()
 
 
 
-/**
- * Upload file to tmp folder
- *
- * @return string temporary file path to addon package
- */
-function upload_tmpfile()
-{
-    global $babBody;
-    include_once $GLOBALS['babInstallPath'] . 'utilit/uploadincl.php';
-
-    if (defined('BAB_SYSTEM_ACCESS') && BAB_SYSTEM_ACCESS === false) {
-        $babBody->addError(bab_translate('System access is not allowed'));
-        return false;
-    }
-
-    $upload = bab_fileHandler::upload('uploadf');
-
-    if ($upload->error) {
-        $babBody->addError($upload->error);
-        return false;
-    }
-
-    $tmpfile = $upload->importTemporary();
-
-    if (false === $tmpfile) {
-        $babBody->addError(bab_translate('Unexpected error, the archive could not be created in temporary folder'));
-        return false;
-    }
-
-    return $tmpfile;
-}
-
-
-
 
 
 
@@ -786,8 +750,7 @@ function bab_search_addon_upgrade()
 
     $W = bab_Widgets();
     $page = $W->BabPage();
-    $form = $W->Form(null, $W->VBoxLayout()
-        ->setVerticalSpacing(1, 'em'));
+    $form = $W->Form(null, $W->VBoxLayout()->setVerticalSpacing(1, 'em'));
 
     $form->setName('dlfile');
     $form->setHiddenValue('tg', bab_rp('tg'));
@@ -797,8 +760,7 @@ function bab_search_addon_upgrade()
     $form->addClass('widget-centered');
     $form->setCanvasOptions($form->Options()->width(50, 'em'));
 
-    $form->addItem($W->Title(bab_translate('Update to version'))
-        ->colon());
+    $form->addItem($W->Title(bab_translate('Update to version'))->colon());
 
     $repository = bab_getInstance('bab_InstallRepository');
     /*@var $repository bab_InstallRepository */
@@ -840,8 +802,7 @@ function bab_search_addon_upgrade()
         $page->addError(sprintf(bab_translate('There are no upgrade available for the addon %s'), $row['title']));
     }
 
-    $form->addItem($W->SubmitButton()
-        ->setLabel(bab_translate('Next')));
+    $form->addItem($W->SubmitButton()->setLabel(bab_translate('Next')));
 
     $page->displayHtml();
 }
@@ -876,21 +837,28 @@ function bab_display_addon_requirements()
 
         public $altbg = false;
 
-        function __construct()
+        public function __construct()
         {
             global $babBody;
             $this->installed = false;
 
             $ini = new bab_inifile();
-            if (isset($_FILES['uploadf'])) {
+            
+            $tmpFolder = bab_gp('folder', null);
+            
+            if (isset($tmpFolder)) {
+                $tmpPath = new bab_Path($GLOBALS['babUploadPath' ] . '/tmp/' . $tmpFolder);
+                
+                $ul = null;
+                foreach ($tmpPath as $uploadedFile) {
+                    $ul = $uploadedFile->toString();
+                }
                 // display requirements from temporary package into installation process
                 $this->item = '';
 
-                $ul = upload_tmpfile();
-
-                $name = mb_substr($ul, (mb_strrpos($ul, '/') + 2 + strlen(session_id())));
-                $filename = mb_substr($ul, (mb_strrpos($ul, '/') + 1));
-                $this->tmpfile = bab_toHtml($filename);
+                $name 			= bab_Path::decode($uploadedFile->getBasename());
+                $filename 		= mb_substr( $ul,(mb_strrpos( $ul,'/')+1));
+                $this->tmpFolder =  bab_toHtml($tmpFolder);
                 $this->action = 'import';
 
                 $install = new bab_InstallSource();
@@ -925,7 +893,7 @@ function bab_display_addon_requirements()
                 $this->dependences = $addon->getDependences();
 
                 $ini->inifile($addon->getIniFilePath());
-                $this->tmpfile = '';
+                $this->tmpFolder = '';
                 $this->action = 'upgrade';
                 $this->t_install = bab_translate("Upgrade");
 
@@ -1038,6 +1006,15 @@ class bab_import_package
                 return $install;
             }
         }
+        if (bab_rp('tmpFolder')) {
+            $path = new bab_Path($GLOBALS['babUploadPath'] . '/tmp/' . bab_rp('tmpFolder'));
+            
+            foreach ($path as $file) {
+                $install = new bab_InstallSource();
+                $install->setArchive($file->toString());
+                return $install;
+            }
+        }
 
         return null;
     }
@@ -1090,7 +1067,6 @@ class bab_import_package
             return false;
         }
 
-
         $repository = bab_getInstance('bab_InstallRepository');
         /*@var $repository bab_InstallRepository */
 
@@ -1102,13 +1078,11 @@ class bab_import_package
         }
 
         try {
-            $file->install(true /* update progress bar */
-            );
+            $file->install(true);
         } catch (Exception $e) {
             bab_installWindow::message($e->getMessage());
             return false;
         }
-
 
         return true;
     }
@@ -1171,7 +1145,8 @@ class bab_import_package
         $frameurl = bab_url::mod($url, 'idx', 'import_frame');
 
 
-        $frameurl = bab_url::mod($frameurl, 'tmpfile', bab_rp('tmpfile')); // temporary file name from upload
+		$frameurl = bab_url::mod($frameurl, 'tmpFolder', bab_rp('tmpFolder')); // temporary file name from upload
+//		$frameurl = bab_url::mod($frameurl, 'tmpfile', bab_rp('tmpfile')); // temporary file name from upload
         $frameurl = bab_url::mod($frameurl, 'dlfile', bab_rp('dlfile')); // file name to download, must be an array with [name], [version]
 
         if (isset($ini) && ($ini instanceof bab_CoreIniFile)) {
@@ -1190,10 +1165,7 @@ class bab_import_package
         require_once $GLOBALS['babInstallPath'] . 'utilit/install.class.php';
 
         $frame = new bab_installWindow();
-        $frame->startInstall(array(
-            'bab_import_package',
-            'install'
-        ));
+        $frame->startInstall(array('bab_import_package', 'install'));
         die();
     }
 }
@@ -1474,7 +1446,9 @@ function viewVersion()
     $sImgPath = $GLOBALS['babInstallPath'] . 'skins/ovidentia/images/Puces/';
 
     if (! defined('BAB_SYSTEM_ACCESS') || BAB_SYSTEM_ACCESS === true) {
-        $oToolbar->addToolbarItem(new BAB_ToolbarItem(bab_translate('Ovidentia upgrade'), $GLOBALS['babUrlScript'] . '?tg=addons&idx=zipupgrade', $sImgPath . 'package_settings.png', '', '', ''));
+        $oToolbar->addToolbarItem(
+            new BAB_ToolbarItem(bab_translate('Ovidentia upgrade'), $GLOBALS['babUrlScript'] . '?tg=addons&idx=zipupgrade', $sImgPath . 'package_settings.png', '', '', '')
+        );
     }
 
     $babBody->addStyleSheet('toolbar.css');
@@ -1540,24 +1514,50 @@ function viewModified()
 
 function bab_addonUploadToolbar($message, $func = null)
 {
-    require_once $GLOBALS['babInstallPath'] . 'utilit/toolbar.class.php';
     global $babBody;
-
-    $oToolbar = new BAB_Toolbar();
-
-    $sImgPath = $GLOBALS['babInstallPath'] . 'skins/ovidentia/images/Puces/';
-
-    if (! defined('BAB_SYSTEM_ACCESS') || BAB_SYSTEM_ACCESS === true) {
-        $oToolbar->addToolbarItem(new BAB_ToolbarItem($message, $GLOBALS['babUrlScript'] . '?tg=addons&idx=upload', $sImgPath . 'package_settings.png', '', '', ''));
+    
+    $W = bab_Widgets();
+    
+    $toolbar = $W->FlowItems();
+    $toolbar->addClass(Func_Icons::ICON_LEFT_16, 'widget-toolbar');
+    
+    if (!defined('BAB_SYSTEM_ACCESS') || BAB_SYSTEM_ACCESS === true) {
+        $uploadFolder = uniqid('addon');
+        
+        $uploadPath = new bab_Path($GLOBALS['babUploadPath' ] . '/tmp/' . $uploadFolder);
+        $uploadPath->createDir();
+        
+        $uploadAction = $W->Action();
+        $uploadAction->setMethod(
+            'addons',
+            'requirements',
+            array(
+                'folder' => $uploadFolder
+            )
+        );
+        
+        $uploadButton = $W->FilePicker()
+        ->onUploadAction($uploadAction)
+        ->hideFiles()
+        ->setFolder($uploadPath)
+        ->setTitle($message)
+        ->addClass('widget-actionbutton', 'icon', Func_Icons::ACTIONS_DOCUMENT_UPLOAD);
+        
+        $toolbar->addItem($uploadButton);
     }
-
+    
     if (null !== $func) {
-        $oToolbar->addToolbarItem(new BAB_ToolbarItem(bab_translate("Libraries administration"), $GLOBALS['babUrlScript'] . '?tg=addons&idx=functionalities&failsafe=0', $sImgPath . 'folder.gif', '', '', ''));
+        $toolbar->addItem(
+            $W->Link(
+                bab_translate('Libraries administration'),
+                $GLOBALS['babUrlScript'].'?tg=addons&idx=functionalities&failsafe=0'
+                )->addClass('widget-actionbutton', 'icon', Func_Icons::PLACES_FOLDER_RED)
+            );
     }
-
-    $babBody->addStyleSheet('toolbar.css');
-    $babBody->babEcho($oToolbar->printTemplate());
+    
+    $babBody->babEcho($toolbar->display($W->HtmlCanvas()));
 }
+
 
 
 
