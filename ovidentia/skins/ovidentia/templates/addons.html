@@ -146,7 +146,7 @@
 <input type="hidden" name="babCsrfProtect" value="{ babCsrfProtect }" />
 <input type="hidden" name="tg" value="addons" />
 <input type="hidden" name="idx" value="{ action }" />
-<input type="hidden" name="tmpfile" value="{ tmpfile }" />
+<input type="hidden" name="tmpFolder" value="{ tmpFolder }" />
 
 <!--#if item -->
 <input type="hidden" name="item" value="{ item }" />
@@ -296,24 +296,11 @@
 
 <!--#begin upgrade -->
 
-<table width="90%" border="0" cellspacing="0" cellpadding="2" align="center">
-	<tr> 
-		<td class="BabLoginCadreBackground" align="center"> 
-		<table class="BabLoginMenuBackground" width="100%" border="0" cellspacing="0" cellpadding="10">
-			<tr valign="top"> 
-				<td>
-					<h5>{ t_upgrade }</h5>
-					<br /><br />
-					<iframe src="{ frameurl }" width="100%" border="0" id="BAB_ADDON_installframe">
-						
-					</iframe>
-					<p align="center"><input type="button" value="{ t_continue }" id="BAB_ADDON_continue_button" /></p>
-				</td>
-			</tr>
-		</table>
-		</td>
-	</tr>
-</table>
+<div style="overflow-x: auto; overflow-y: hidden; resize: vertical; position: relative;">
+<iframe src="{ frameurl }" style="width: 100%; height: 100%; border: none" id="BAB_ADDON_installframe"></iframe>
+</div>
+
+<p align="center"><input type="button" value="{ t_continue }" id="BAB_ADDON_continue_button" /></p>
 
 <script type="text/javascript">
 
