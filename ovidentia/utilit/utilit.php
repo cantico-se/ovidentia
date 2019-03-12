@@ -46,8 +46,6 @@ include_once $GLOBALS['babInstallPath'].'utilit/registry.php';
  */
 function bab_encrypt($plaintext, $key)
 {
-    $ciphertext = '';
-
     $cipher = "AES-128-CBC";
 
     $ivlen = openssl_cipher_iv_length($cipher);
@@ -68,8 +66,6 @@ function bab_encrypt($plaintext, $key)
  */
 function bab_decrypt($ciphertext, $key)
 {
-    $plaintext = '';
-
     $cipher = "AES-128-CBC";
 
     $c = base64_decode($ciphertext);
@@ -789,7 +785,7 @@ function bab_isDelegated($functionname)
 function bab_setUserPasswordVariable($id, $cpw, $id_user)
 {
     global $BAB_SESS_USERID;
-    if (extension_loaded('mcrypt') && ! empty($cpw) && isset($GLOBALS['babEncryptionKey']) && ! isset($_REQUEST['babEncryptionKey']) && ! empty($GLOBALS['babEncryptionKey']) && ! empty($BAB_SESS_USERID) && $BAB_SESS_USERID == $id_user) {
+    if (! empty($cpw) && isset($GLOBALS['babEncryptionKey']) && ! isset($_REQUEST['babEncryptionKey']) && ! empty($GLOBALS['babEncryptionKey']) && ! empty($BAB_SESS_USERID) && $BAB_SESS_USERID == $id_user) {
         $GLOBALS['babUserPassword'] = bab_decrypt($cpw, md5($id . session_id() . $BAB_SESS_USERID . $GLOBALS['babEncryptionKey']));
     }
 }
