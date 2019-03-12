@@ -3575,5 +3575,6 @@ class Func_Ovml_Function_RequireCredentials extends Func_Ovml_Function
 require_once dirname(__FILE__).'/ovmlfile.php';
 require_once dirname(__FILE__).'/ovmlarticle.php';
 require_once dirname(__FILE__).'/ovmlcalendar.php';
+require_once dirname(__FILE__).'/ovmlforum.php';
 require_once dirname(__FILE__).'/ovmlfaq.php';
 
