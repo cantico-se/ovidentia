@@ -1,5 +1,5 @@
 <?php
-//-------------------------------------------------------------------------
+// -------------------------------------------------------------------------
 // OVIDENTIA http://www.ovidentia.org
 // Ovidentia is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -15,27 +15,25 @@
 // along with this program; if not, write to the Free Software
 // Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307,
 // USA.
-//-------------------------------------------------------------------------
+// -------------------------------------------------------------------------
 /**
+ *
  * @license http://opensource.org/licenses/gpl-license.php GNU General Public License (GPL)
  * @copyright Copyright (c) 2008 by CANTICO ({@link http://www.cantico.fr})
  */
 
 /**
-* @internal SEC1 PR 2006-12-12 FULL
-*/
+ * @internal SEC1 PR 2006-12-12 FULL
+ */
 
-
-
-
-include_once $GLOBALS['babInstallPath'].'utilit/template.php';
-include_once $GLOBALS['babInstallPath'].'utilit/userincl.php';
-include_once $GLOBALS['babInstallPath'].'utilit/mailincl.php';
-include_once $GLOBALS['babInstallPath'].'utilit/sitemap.php';
-include_once $GLOBALS['babInstallPath'].'utilit/eventincl.php';
-include_once $GLOBALS['babInstallPath'].'utilit/groupsincl.php';
-include_once $GLOBALS['babInstallPath'].'utilit/body.class.php';
-include_once $GLOBALS['babInstallPath'].'utilit/registry.php';
+include_once $GLOBALS['babInstallPath'] . 'utilit/template.php';
+include_once $GLOBALS['babInstallPath'] . 'utilit/userincl.php';
+include_once $GLOBALS['babInstallPath'] . 'utilit/mailincl.php';
+include_once $GLOBALS['babInstallPath'] . 'utilit/sitemap.php';
+include_once $GLOBALS['babInstallPath'] . 'utilit/eventincl.php';
+include_once $GLOBALS['babInstallPath'] . 'utilit/groupsincl.php';
+include_once $GLOBALS['babInstallPath'] . 'utilit/body.class.php';
+include_once $GLOBALS['babInstallPath'] . 'utilit/registry.php';
 
 
 /**
@@ -126,10 +124,11 @@ function bab_formatAuthor($format, $id)
 
 function bab_isEmailValid($email)
 {
-    if (empty($email) || preg_match('/\s+/', $email))
+    if (empty($email) || preg_match('/\s+/', $email)) {
         return false;
-    else
+    } else {
         return true;
+    }
 }
 
 
@@ -460,12 +459,10 @@ class babHead
  */
 function bab_getICalendars($id_user = '')
 {
-
-    include_once $GLOBALS['babInstallPath'].'utilit/calincl.php';
+    include_once $GLOBALS['babInstallPath'] . 'utilit/calincl.php';
     static $calendars = null;
 
-    if (!isset($calendars[$id_user])) {
-
+    if (! isset($calendars[$id_user])) {
         $calendars[$id_user] = new bab_icalendars($id_user);
     }
 
@@ -733,7 +730,7 @@ class bab_UsersLog
  */
 function bab_getCurrentAdmGroup()
 {
-    require_once dirname(__FILE__).'/delegincl.php';
+    require_once dirname(__FILE__) . '/delegincl.php';
     $delegation = bab_getInstance('bab_currentDelegation');
     /*@var $delegation bab_currentDelegation */
     return $delegation->getCurrentAdmGroup();
@@ -744,11 +741,12 @@ function bab_getCurrentAdmGroup()
  * Returns an array with all information about the delegation.
  *
  * This method replace the $babBody->currentDGGroup variable
+ *
  * @return array
  */
 function bab_getCurrentDGGroup()
 {
-    require_once dirname(__FILE__).'/delegincl.php';
+    require_once dirname(__FILE__) . '/delegincl.php';
     $delegation = bab_getInstance('bab_currentDelegation');
     /*@var $delegation bab_currentDelegation */
     return $delegation->getCurrentDGGroup();
@@ -1045,8 +1043,8 @@ function bab_updateSiteSettings()
         $GLOBALS['babTimeFormat'] = bab_getTimeFormat($arr['time_format']);
     }
 
-    if ($arr['authentification'] == 1) // LDAP authentification
-    {
+    if ($arr['authentification'] == 1) {
+        // LDAP authentification
         $babBody->babsite['registration'] = 'N';
         $babBody->babsite['change_nickname'] = 'N';
     }
@@ -1161,8 +1159,9 @@ class babLanguageFilter
     {
         $i = 0;
         while ($i < count($this->langFilterNames)) {
-            if ($this->langFilterNames[$i] == $filterStr)
+            if ($this->langFilterNames[$i] == $filterStr) {
                 return $i;
+            }
             $i ++;
         }
         return 0;
