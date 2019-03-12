@@ -37,43 +37,56 @@ include_once $GLOBALS['babInstallPath'].'utilit/groupsincl.php';
 include_once $GLOBALS['babInstallPath'].'utilit/body.class.php';
 include_once $GLOBALS['babInstallPath'].'utilit/registry.php';
 
-function bab_encrypt($txt,$key)
-    {
-    $td = mcrypt_module_open(MCRYPT_TRIPLEDES, '', MCRYPT_MODE_CFB, '');
-    if( $td === false)
-        return '';
-    $key = mb_substr($key, 0, mcrypt_enc_get_key_size($td));
-    $iv_size = mcrypt_enc_get_iv_size($td);
-    $iv = mcrypt_create_iv($iv_size, MCRYPT_RAND);
-    if( mcrypt_generic_init($td, $key, $iv) != -1 )
-        {
-        $crypttxt = mcrypt_generic($td, $txt);
-        mcrypt_generic_deinit($td);
-        mcrypt_module_close($td);
-        $crypttxt = $iv.$crypttxt;
-        return $crypttxt;
-        }
-    return '';
+
+/**
+ *
+ * @param string $plaintext
+ * @param string $key
+ * @return string
+ */
+function bab_encrypt($plaintext, $key)
+{
+    $ciphertext = '';
+
+    $cipher = "AES-128-CBC";
+
+    $ivlen = openssl_cipher_iv_length($cipher);
+    $iv = openssl_random_pseudo_bytes($ivlen);
+    $ciphertext_raw = openssl_encrypt($plaintext, $cipher, $key, OPENSSL_RAW_DATA, $iv);
+    $hmac = hash_hmac('sha256', $ciphertext_raw, $key, true);
+    $ciphertext = base64_encode($iv . $hmac . $ciphertext_raw);
+
+    return $ciphertext;
+}
+
+
+/**
+ *
+ * @param string $ciphertext
+ * @param string $key
+ * @return string
+ */
+function bab_decrypt($ciphertext, $key)
+{
+    $plaintext = '';
+
+    $cipher = "AES-128-CBC";
+
+    $c = base64_decode($ciphertext);
+    $ivlen = openssl_cipher_iv_length($cipher);
+    $iv = substr($c, 0, $ivlen);
+    $sha2len = 32;
+    $hmac = substr($c, $ivlen, $sha2len);
+    $ciphertext_raw = substr($c, $ivlen + $sha2len);
+    $plaintext = openssl_decrypt($ciphertext_raw, $cipher, $key, OPENSSL_RAW_DATA, $iv);
+    $calcmac = hash_hmac('sha256', $ciphertext_raw, $key, true);
+    if (!hash_equals($hmac, $calcmac)) {
+        $plaintext = '';
     }
 
-function bab_decrypt($txt,$key)
-    {
-    $td = mcrypt_module_open(MCRYPT_TRIPLEDES, '', MCRYPT_MODE_CFB, '');
-    if( $td === false)
-        return '';
-    $key = mb_substr($key, 0, mcrypt_enc_get_key_size($td));
-    $iv_size = mcrypt_enc_get_iv_size($td);
-    $iv = mb_substr($txt,0,$iv_size);
-    $txt = mb_substr($txt,$iv_size);
-    if (mcrypt_generic_init($td, $key, $iv) != -1)
-        {
-        $crypttxt = mdecrypt_generic($td, $txt);
-        mcrypt_generic_deinit($td);
-        mcrypt_module_close($td);
-        return rtrim($crypttxt);
-        }
-    return '';
-    }
+    return $plaintext;
+}
+
 
 function bab_formatAuthor($format, $id)
 {
