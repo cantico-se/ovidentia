@@ -212,12 +212,10 @@ class Func_Ovml_Container_OrgPathToEntity extends Func_Ovml_Container
  */
 class Func_Ovml_Container_OrgChildEntities extends Func_Ovml_Container
 {
-    protected $entities = null;
-
     /**
      * @var ArrayIterator
      */
-    protected $iterator = null;
+    protected $entities = null;
 
     /**
      * {@inheritDoc}
@@ -229,19 +227,19 @@ class Func_Ovml_Container_OrgChildEntities extends Func_Ovml_Container
 
         $entityId = (int) $ctx->curctx->getAttribute('entityId');
 
-        $this->entities = bab_OCGetDirectChildren($entityId);
+        $entities = bab_OCGetDirectChildren($entityId);
 
-        foreach (array_keys($this->entities) as $key) {
+        foreach (array_keys($entities) as $key) {
             if (empty($key)) {
-                unset($this->entities[$key]);
+                unset($entities[$key]);
             }
         }
 
+        $this->entities = new ArrayIterator($entities);
 
-        $this->iterator = new ArrayIterator($this->entities);
-
-        $this->ctx->curctx->push('CCount', count($this->entities));
+        $this->ctx->curctx->push('CCount', $this->entities->count());
     }
+
 
     /**
      * {@inheritDoc}
@@ -249,8 +247,8 @@ class Func_Ovml_Container_OrgChildEntities extends Func_Ovml_Container
      */
     public function getnext()
     {
-        if ($this->iterator->valid()) {
-            $entity = $this->iterator->current();
+        if ($this->entities->valid()) {
+            $entity = $this->entities->current();
             $this->ctx->curctx->push('CIndex', $this->idx);
             $this->ctx->curctx->push('EntityId', $entity['id']);
             $this->ctx->curctx->push('EntityName', $entity['name']);
@@ -261,7 +259,7 @@ class Func_Ovml_Container_OrgChildEntities extends Func_Ovml_Container
             $this->idx++;
             $this->iIndex = $this->idx;
 
-            $this->iterator->next();
+            $this->entities->next();
             return true;
         }
 
