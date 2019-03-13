@@ -60,38 +60,38 @@ function listArticles($id)
 	{
 	global $babBody;
 
-	class temp
+	class listArticlesTpl
 		{
-		var $title;
-		var $titlename;
-		var $articleid;
-		var $item;
-		var $checkall;
-		var $uncheckall;
-		var $urltitle;
+		public $title;
+		public $titlename;
+		public $articleid;
+		public $item;
+		public $checkall;
+		public $uncheckall;
+		public $urltitle;
 
-		var $db;
-		var $res;
-		var $count;
+		public $db;
+		public $res;
+		public $count;
 
-		var $siteid;
-		var $userid;
-		var $badmin;
-		var $homepages;
-		var $homepagesurl;
+		public $siteid;
+		public $userid;
+		public $badmin;
+		public $homepages;
+		public $homepagesurl;
 
-		var $checked0;
-		var $checked1;
-		var $deletealt;
-		var $art0alt;
-		var $art1alt;
-		var $archivealt;
-		var $deletehelp;
-		var $archivehelp;
-		var $art0help;
-		var $art1help;
+		public $checked0;
+		public $checked1;
+		public $deletealt;
+		public $art0alt;
+		public $art1alt;
+		public $archivealt;
+		public $deletehelp;
+		public $archivehelp;
+		public $art0help;
+		public $art1help;
 
-		function temp($id)
+		function __construct($id)
 			{
 			global $babBody, $babDB;
 			$this->titlename = bab_translate("Title");
@@ -257,7 +257,7 @@ function listArticles($id)
 
 		}
 
-	$temp = new temp($id);
+		$temp = new listArticlesTpl($id);
 	$babBody->addStyleSheet('tree.css');
 	$babBody->addStyleSheet('groups.css');
 	$babBody->babecho(bab_printTemplate($temp,"topman.html", "articleslist"));
@@ -267,27 +267,27 @@ function listOldArticles($id)
 	{
 	global $babBody;
 
-	class temp
+	class listOldArticlesTpl
 		{
-		var $title;
-		var $titlename;
-		var $articleid;
-		var $item;
-		var $checkall;
-		var $uncheckall;
-		var $urltitle;
+		public $title;
+		public $titlename;
+		public $articleid;
+		public $item;
+		public $checkall;
+		public $uncheckall;
+		public $urltitle;
 
-		var $db;
-		var $res;
-		var $count;
+		public $db;
+		public $res;
+		public $count;
 
-		var $archivealt;
-		var $archivehelp;
+		public $archivealt;
+		public $archivehelp;
 
-		var $deletealt;
-		var $deletehelp;
+		public $deletealt;
+		public $deletehelp;
 
-		function temp($id)
+		function __construct($id)
 			{
 			global $babDB;
 			$this->titlename = bab_translate("Title");
@@ -324,32 +324,32 @@ function listOldArticles($id)
 
 		}
 
-	$temp = new temp($id);
-	$babBody->babecho(	bab_printTemplate($temp,"topman.html", "oldarticleslist"));
+		$temp = new listOldArticlesTpl($id);
+	$babBody->babecho(bab_printTemplate($temp,"topman.html", "oldarticleslist"));
 	}
 
 function viewArticle($article)
 	{
 	global $babBody;
 
-	class temp
+	class viewArticleTpl
 		{
 
-		var $content;
-		var $head;
-		var $arr = array();
-		var $db;
-		var $count;
-		var $res;
-		var $more;
-		var $topics;
-		var $babMeta;
-		var $babCss;
-		var $close;
-		var $altbg = false;
-		var $sContent = '';
+		public $content;
+		public $head;
+		public $arr = array();
+		public $db;
+		public $count;
+		public $res;
+		public $more;
+		public $topics;
+		public $babMeta;
+		public $babCss;
+		public $close;
+		public $altbg = false;
+		public $sContent = '';
 
-		function temp($article)
+		function __construct($article)
 			{
 			global $babDB;
 			$this->babCss		= bab_printTemplate($this,"config.html", "babCss");
@@ -455,7 +455,7 @@ function viewArticle($article)
 			}
 		}
 
-	$temp = new temp($article);
+	$temp = new viewArticleTpl($article);
 	echo bab_printTemplate($temp,"topman.html", "articleview");
 	}
 
@@ -463,17 +463,17 @@ function deleteArticles($art, $item)
 	{
 	global $babBody, $idx;
 
-	class tempa
+	class deleteArticlesTpl
 		{
-		var $warning;
-		var $message;
-		var $title;
-		var $urlyes;
-		var $urlno;
-		var $yes;
-		var $no;
+		public $warning;
+		public $message;
+		public $title;
+		public $urlyes;
+		public $urlno;
+		public $yes;
+		public $no;
 
-		function tempa($art, $item)
+		function __construct($art, $item)
 			{
 			global $babDB;
 			$this->message = bab_translate("Are you sure you want to delete those articles");
@@ -507,7 +507,7 @@ function deleteArticles($art, $item)
 		$idx = "Articles";
 		return;
 		}
-	$tempa = new tempa($art, $item);
+	$tempa = new deleteArticlesTpl($art, $item);
 	$babBody->babecho(	bab_printTemplate($tempa,"warning.html", "warningyesno"));
 	}
 
@@ -515,13 +515,13 @@ function deleteArticles($art, $item)
 function orderArticles($id)
 	{
 	global $babBody;
-	class temp
+	class orderArticlesTpl
 		{
-		var $sorta;
-		var $sortd;
-		var $topicid;
+		public $sorta;
+		public $sortd;
+		public $topicid;
 
-		function temp($id)
+		function __construct($id)
 			{
 			global $babBody, $babDB, $BAB_SESS_USERID;
 			$this->topicid = $id;
@@ -552,7 +552,7 @@ function orderArticles($id)
 				return false;
 			}
 		}
-	$temp = new temp($id);
+		$temp = new orderArticlesTpl($id);
 	$babBody->babecho(	bab_printTemplate($temp, "sites.html", "scripts"));
 	$babBody->babecho(	bab_printTemplate($temp,"topman.html", "articlesorder"));
 	}
@@ -562,18 +562,18 @@ function viewArticleHistory($idart)
 {
 	global $babBodyPopup;
 
-	class temp
+	class viewArticleHistoryTpl
 		{
-		var $topname;
-		var $topurl;
-		var $prevname;
-		var $prevurl;
-		var $nextname;
-		var $nexturl;
-		var $bottomname;
-		var $bottomurl;
+		public $topname;
+		public $topurl;
+		public $prevname;
+		public $prevurl;
+		public $nextname;
+		public $nexturl;
+		public $bottomname;
+		public $bottomurl;
 
-		function temp($article, $pos)
+		function __construct($article, $pos)
 			{
 			global $babBodyPopup, $babDB, $rfurl;
 
@@ -693,7 +693,7 @@ function viewArticleHistory($idart)
 
 	global $babBody;
 
-	$temp = new temp($idart, (int) bab_rp('pos', 0));
+	$temp = new viewArticleHistoryTpl($idart, (int) bab_rp('pos', 0));
 	$babBody->babPopup(bab_printTemplate($temp, "topman.html", "articlehistoric"));
 }
 
@@ -701,10 +701,10 @@ function viewArticleHistory($idart)
 function viewArticleProperties($item, $idart)
 	{
 	global $babBody;
-	class temp
+	class viewArticlePropertiesTpl
 		{
 
-		function temp($item, $idart)
+		    function __construct($item, $idart)
 			{
 			global $babBody, $babDB, $BAB_SESS_USERID;
 			$this->access = false;
@@ -1081,7 +1081,7 @@ function viewArticleProperties($item, $idart)
 	global $babBody, $babScriptPath;
 	$babBody->addJavascriptFile($babScriptPath.'bab_dialog.js');
 
-	$temp = new temp($item, $idart);
+	$temp = new viewArticlePropertiesTpl($item, $idart);
 	$babBody->babPopup(bab_printTemplate($temp, "topman.html", "propertiesarticle"));
 	}
 
@@ -1090,23 +1090,23 @@ function siteHomePage0($id)
 	{
 
 	global $babBody;
-	class temp0
+	class siteHomePage0Tpl
 		{
-		var $create;
+		public $create;
 
-		var $moveup;
-		var $movedown;
+		public $moveup;
+		public $movedown;
 
-		var $id;
-		var $arr = array();
-		var $db;
-		var $res;
+		public $id;
+		public $arr = array();
+		public $db;
+		public $res;
 
-		var $listhometxt;
-		var $listpagetxt;
-		var $title;
+		public $listhometxt;
+		public $listpagetxt;
+		public $title;
 
-		function temp0($id)
+		function __construct($id)
 			{
 			global $babDB;
 			$this->title = bab_translate("Unregistered users home page");
@@ -1161,7 +1161,7 @@ function siteHomePage0($id)
 			}
 		}
 
-	$temp0 = new temp0($id);
+		$temp0 = new siteHomePage0Tpl($id);
 	$babBody->babecho(	bab_printTemplate($temp0, "sites.html", "scripts"));
 	$babBody->babecho(	bab_printTemplate($temp0, "topman.html", "sitehomepage0"));
 	}
@@ -1170,23 +1170,23 @@ function siteHomePage1($id)
 	{
 
 	global $babBody;
-	class temp1
+	class siteHomePage1Tpl
 		{
-		var $create;
+		public $create;
 
-		var $moveup;
-		var $movedown;
+		public $moveup;
+		public $movedown;
 
-		var $id;
-		var $arr = array();
-		var $db;
-		var $res;
+		public $id;
+		public $arr = array();
+		public $db;
+		public $res;
 
-		var $listhometxt;
-		var $listpagetxt;
-		var $title;
+		public $listhometxt;
+		public $listpagetxt;
+		public $title;
 
-		function temp1($id)
+		function __construct($id)
 			{
 			global $babDB;
 			$this->title = bab_translate("Registered users home page");
@@ -1196,7 +1196,7 @@ function siteHomePage1($id)
 			$this->movedown = bab_translate("Move Down");
 			$this->create = bab_translate("Modify");
 			$this->id = (int) $id;
-			
+
 			$req = "select at.title, ht.id_article from ".BAB_ARTICLES_TBL." at left join ".BAB_HOMEPAGES_TBL." ht on at.id=ht.id_article where ht.id_group='1' and ht.id_site='".$babDB->db_escape_string($id)."' and ht.ordering='0' and (at.date_archiving = '0000-00-00 00:00' OR at.date_archiving >= now()) order by ht.ordering asc";
 
 			$this->reshome1 = $babDB->db_query($req);
@@ -1242,7 +1242,7 @@ function siteHomePage1($id)
 			}
 		}
 
-	$temp0 = new temp1($id);
+		$temp0 = new siteHomePage1Tpl($id);
 	$babBody->babecho(	bab_printTemplate($temp0, "sites.html", "scripts"));
 	$babBody->babecho(	bab_printTemplate($temp0, "topman.html", "sitehomepage1"));
 	}
@@ -1254,7 +1254,7 @@ function displayTags()
 	class displayTagsCls
 		{
 
-		function displayTagsCls()
+		    function __construct()
 			{
 			global $babDB;
 
@@ -1303,17 +1303,17 @@ function displayTags()
 function importTagsFile()
 	{
 	global $babBody;
-	class temp
+	class importTagsFileTpl
 		{
-		var $import;
-		var $name;
-		var $id;
-		var $separator;
-		var $other;
-		var $comma;
-		var $tab;
+		public $import;
+		public $name;
+		public $id;
+		public $separator;
+		public $other;
+		public $comma;
+		public $tab;
 
-		function temp()
+		function __construct()
 			{
 			$this->import = bab_translate("Import");
 			$this->name = bab_translate("File");
@@ -1324,7 +1324,7 @@ function importTagsFile()
 			}
 		}
 
-	$temp = new temp();
+		$temp = new importTagsFileTpl();
 	$babBody->babecho(	bab_printTemplate($temp,"topman.html", "tagsimpfile"));
 	}
 
@@ -1333,14 +1333,14 @@ function importTagsFile()
 function mapTagsImportFile($file, $tmpfile, $wsepar, $separ)
 	{
 	global $babBody;
-	class temp
+	class mapTagsImportFileTpl
 		{
-		var $res;
-		var $count;
-		var $db;
-		var $id;
+		public $res;
+		public $count;
+		public $db;
+		public $id;
 
-		function temp($pfile, $wsepar, $separ)
+		function __construct($pfile, $wsepar, $separ)
 			{
 			$this->helpfields = bab_translate("Choose the column");
 			$this->process = bab_translate("Import");
@@ -1401,7 +1401,7 @@ function mapTagsImportFile($file, $tmpfile, $wsepar, $separ)
 		$babBody->msgerror = bab_translate("Cannot create temporary file");
 		return;
 		}
-	$temp = new temp($nf, $wsepar, $separ);
+		$temp = new mapTagsImportFileTpl($nf, $wsepar, $separ);
 	$babBody->babecho(	bab_printTemplate($temp,"topman.html", "tagsmapfile"));
 	}
 
@@ -1641,7 +1641,7 @@ $refreshurl = bab_rp('refreshurl');
 if("articles" === bab_rp('upart') && $manager)
 	{
 	if (isset($_POST['action'])) {
-	    
+
 		switch($_POST['action'])
 			{
 			case "homepage0":
@@ -1743,11 +1743,11 @@ switch($idx)
 		}
 		exit;
 		break;
-		
+
 	case "unload":
 		popupUnload($popupmessage, $refreshurl);
 		exit;
-		
+
 	case "getf":
 		if ( $manager ) {
 		    bab_getDocumentArticle( bab_rp('idf'));
