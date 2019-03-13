@@ -173,9 +173,9 @@ class bab_addons_list
 
 class bab_addons_list_library extends bab_addons_list
 {
-    function bab_addons_list_library()
+    function __construct()
     {
-        parent::bab_addons_list();
+        parent::__construct();
 
         $this->display_in_form = false;
     }
@@ -190,9 +190,9 @@ class bab_addons_list_library extends bab_addons_list
 
 class bab_addons_list_theme extends bab_addons_list
 {
-    function bab_addons_list_theme()
+    function __construct()
     {
-        parent::bab_addons_list();
+        parent::__construct();
 
         $this->display_in_form = false;
     }
@@ -414,7 +414,7 @@ function bab_addon_export_rd($d)
         $handle = opendir($d);
 
         if (! $handle) {
-            return false;
+            return array();
         }
 
         while ($file = readdir($handle)) {
