@@ -1655,10 +1655,6 @@ switch($idx)
         $idx = 'version';
         break;
 
-    case 'zipupgrade_message':
-        zipupgrade_message();
-        break;
-
     case "view":
         $babBody->title = bab_translate("Access to Add-on") . " " . getAddonName($item);
         aclGroups("addons", "list", BAB_ADDONS_GROUPS_TBL, $item, "acladd");
