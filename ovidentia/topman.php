@@ -330,8 +330,6 @@ function listOldArticles($id)
 
 function viewArticle($article)
 	{
-	global $babBody;
-
 	class viewArticleTpl
 		{
 
@@ -401,7 +399,6 @@ function viewArticle($article)
 		function getnextdoc()
 			{
 			global $babDB;
-			global $arrtop;
 			static $i = 0;
 			if( $i < $this->countf)
 				{
@@ -523,7 +520,7 @@ function orderArticles($id)
 
 		function __construct($id)
 			{
-			global $babBody, $babDB, $BAB_SESS_USERID;
+			global $babDB;
 			$this->topicid = $id;
 			$this->toplisttxt = "---- ".bab_translate("Top")." ----";
 			$this->moveup = bab_translate("Move Up");
@@ -560,8 +557,6 @@ function orderArticles($id)
 
 function viewArticleHistory($idart)
 {
-	global $babBodyPopup;
-
 	class viewArticleHistoryTpl
 		{
 		public $topname;
@@ -575,7 +570,7 @@ function viewArticleHistory($idart)
 
 		function __construct($article, $pos)
 			{
-			global $babBodyPopup, $babDB, $rfurl;
+			global $babDB;
 
 			$this->topurl = "";
 			$this->bottomurl = "";
@@ -595,7 +590,6 @@ function viewArticleHistory($idart)
 			$res = $babDB->db_query("select id, id_author  from ".BAB_ART_DRAFTS_TBL." where id_article='".$babDB->db_escape_string($article)."'");
 			if( $res && $babDB->db_num_rows($res) > 0 )
 				{
-				$arr = $babDB->db_fetch_array($res);
 				$this->bmodify = false;
 				$this->editdrafttxt = false;
 				}
@@ -706,7 +700,7 @@ function viewArticleProperties($item, $idart)
 
 		    function __construct($item, $idart)
 			{
-			global $babBody, $babDB, $BAB_SESS_USERID;
+			global $babBody, $babDB;
 			$this->access = false;
 
 			$req = "select at.id, at.title, at.id_topic, at.date_publication, at.date_archiving, at.restriction, count(aft.id) as totalf from ".BAB_ARTICLES_TBL." at left join ".BAB_ART_FILES_TBL." aft on at.id=aft.id_article where at.id='".$babDB->db_escape_string($idart)."' group by aft.id_article";
@@ -1459,7 +1453,7 @@ function unarchiveArticles($item, $aart)
 
 function saveOrderArticles($id, $listarts)
 	{
-	global $babBody, $babDB;
+	global $babDB;
 
 	$babDB->db_query("update ".BAB_ARTICLES_TBL." set ordering='0' where id_topic='".$babDB->db_escape_string($id)."'");
 	for($i=0; $i < count($listarts); $i++)
@@ -1471,12 +1465,10 @@ function saveOrderArticles($id, $listarts)
 
 function saveArticleProperties()
 {
-	global $babBody, $babDB, $BAB_SESS_USERID;
+	global $babDB;
 	$idart = bab_rp('idart');
-	$item = bab_rp('item');
 	$topicid = bab_rp('topicid');
 	$cdatep = bab_rp('cdatep', null);
-	$yearbegin = bab_rp('yearbegin');
 	$yearpub = bab_rp('yearpub');
 	$monthpub = bab_rp('monthpub');
 	$daypub = bab_rp('daypub');
@@ -1490,7 +1482,6 @@ function saveArticleProperties()
 	$operator = bab_rp('operator');
 	$grpids = bab_rp('grpids');
 	$ymin = bab_rp('ymin');
-	$ymax = bab_rp('ymax');
 
 	if( isset($cdatep) || isset($cdatee) || isset($topicid) || isset($restriction))
 	{
@@ -1563,12 +1554,12 @@ function siteUpdateHomePage0($item, $listpage0)
 	{
 	global $babDB;
 	$req = "update ".BAB_HOMEPAGES_TBL." set ordering='0' where id_site='".$babDB->db_escape_string($item)."' and id_group='2'";
-	$res = $babDB->db_query($req);
+	$babDB->db_query($req);
 
 	for($i=0; $i < count($listpage0); $i++)
 		{
 		$req = "update ".BAB_HOMEPAGES_TBL." set ordering='".($i + 1)."' where id_group='2' and id_site='".$babDB->db_escape_string($item)."' and id_article='".$babDB->db_escape_string($listpage0[$i])."'";
-		$res = $babDB->db_query($req);
+		$babDB->db_query($req);
 		}
 	return true;
 	}
@@ -1577,12 +1568,12 @@ function siteUpdateHomePage1($item, $listpage1)
 	{
 	global $babDB;
 	$req = "update ".BAB_HOMEPAGES_TBL." set ordering='0' where id_site='".$babDB->db_escape_string($item)."' and id_group='1'";
-	$res = $babDB->db_query($req);
+	$babDB->db_query($req);
 
 	for($i=0; $i < count($listpage1); $i++)
 		{
 		$req = "update ".BAB_HOMEPAGES_TBL." set ordering='".($i + 1)."' where id_group='1' and id_site='".$babDB->db_escape_string($item)."' and id_article='".$babDB->db_escape_string($listpage1[$i])."'";
-		$res = $babDB->db_query($req);
+		$babDB->db_query($req);
 		}
 	return true;
 	}
