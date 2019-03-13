@@ -160,7 +160,7 @@ function listArticles($id)
                 LEFT JOIN " . BAB_HOMEPAGES_TBL . " AS public
                     ON public.id_site=" . $babDB->quote($this->siteid) . " AND public.id_article=at.id AND public.id_group='2'
                 LEFT JOIN " . BAB_HOMEPAGES_TBL . " private
-                    ON private.id_site='" . $babDB->quote($this->siteid) . "' AND private.id_article=at.id AND private.id_group='1'
+                    ON private.id_site=" . $babDB->quote($this->siteid) . " AND private.id_article=at.id AND private.id_group='1'
                 WHERE at.id_topic=" . $babDB->quote($id) . " AND at.archive='N'
                 ORDER by at.ordering asc, at.date_modification desc
             ";
@@ -202,10 +202,10 @@ function listArticles($id)
                     $this->datearchiving = '';
                 }
 
-                $this->rescom = $babDB->db_query("SELECT * FROM " . BAB_COMMENTS_TBL . " WHERE id_article='" . $babDB->db_escape_string($this->articleid) . "' ORDER BY date DESC");
+                $this->rescom = $babDB->db_query("SELECT * FROM " . BAB_COMMENTS_TBL . " WHERE id_article=" . $babDB->quote($this->articleid) . " ORDER BY date DESC");
                 $this->countcom = $babDB->db_num_rows($this->rescom);
 
-                $this->resfiles = $babDB->db_query("SELECT * FROM " . BAB_ART_FILES_TBL . " WHERE id_article='" . $babDB->db_escape_string($this->articleid) . "' order by ordering asc");
+                $this->resfiles = $babDB->db_query("SELECT * FROM " . BAB_ART_FILES_TBL . " WHERE id_article=" . $babDB->quote($this->articleid) . " ORDER BY ordering ASC");
                 $this->countfiles = $babDB->db_num_rows($this->resfiles);
 
                 $this->filescomments = $this->countcom > 0 || $this->countfiles > 0;
@@ -271,7 +271,11 @@ function listOldArticles($id)
 
         public $uncheckall;
 
-        public $urltitle;
+        public $articleviewurl;
+
+        public $articlecopyurl;
+
+        public $articlecopytxt;
 
         public $db;
 
@@ -293,10 +297,8 @@ function listOldArticles($id)
             $this->titlename = bab_translate("Title");
             $this->uncheckall = bab_translate("Uncheck all");
             $this->checkall = bab_translate("Check all");
-            $this->archivealt = bab_translate("Move selected articles from archive");
-            $this->archivehelp = bab_translate("Click on this image to move out selected articles from archive");
-            $this->deletealt = bab_translate("Delete articles");
-            $this->deletehelp = bab_translate("Click on this image to delete selected articles");
+            $this->articlecopytxt = bab_translate("Copy");
+            $this->articleunarchivetxt = bab_translate("Unarchive selected articles");
 
             $this->item = $id;
             $req = "select * from " . BAB_ARTICLES_TBL . " where id_topic='" . $babDB->db_escape_string($id) . "' and archive='Y' order by date desc";
@@ -308,15 +310,17 @@ function listOldArticles($id)
         {
             global $babDB;
             static $i = 0;
-            if ($i < $this->count) {
-                $arr = $babDB->db_fetch_array($this->res);
-                $this->title = $arr['title'];
-                $this->articleid = $arr['id'];
-                $this->urltitle = $GLOBALS['babUrlScript'] . "?tg=topman&idx=viewa&item=" . $arr['id_topic'] . "&art=" . $arr['id'];
-                $i ++;
-                return true;
+            if ($i >= $this->count) {
+                return false;
             }
-            return false;
+            $arr = $babDB->db_fetch_array($this->res);
+            $this->title = $arr['title'];
+            $this->articleid = $arr['id'];
+            $this->articleviewurl = $GLOBALS['babUrlScript'] . "?tg=topman&idx=viewa&item=" . $arr['id_topic'] . "&art=" . $arr['id'];
+            $this->articlecopyurl = $GLOBALS['babUrlScript'] . "?tg=articles&idx=copy&article=" . $arr['id'];
+
+            $i ++;
+            return true;
         }
     }
 

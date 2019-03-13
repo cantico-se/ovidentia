@@ -265,38 +265,24 @@ window.focus();
 <td>
 <table class="BabMailBackground" border="0" width="100%" cellpadding="2" cellspacing="0">
 <tr class="BabSiteAdminTitleFontBackground">
-<td width="1%"><a href="javascript:onCheckAll('aart', true)"><img src="{ babSkinPath }images/Puces/Pucecheked.gif" alt="{ checkall }" width="10" height="10" border="0"></a><a href="javascript:onCheckAll('aart', false)"><img src="{ babSkinPath }images/Puces/PuceUncheked.gif" alt="{ uncheckall }" width="10" height="10" border="0"></a></td>
-            <td width="90%" align="left"><img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="1" height="1" border="0"></td>
+    <td width="1%"><a href="#" onclick="onCheckAll('aart', true); return false;"><img src="{ babSkinPath }images/Puces/Pucecheked.gif" alt="{ checkall }" width="10" height="10" border="0"></a><a href="javascript:onCheckAll('aart', false)"><img src="{ babSkinPath }images/Puces/PuceUncheked.gif" alt="{ uncheckall }" width="10" height="10" border="0"></a></td>
+    <td colspan="2" align="left">{ titlename }<img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="1" height="1" border="0"></td>
 </tr>
 <!--#in getnext -->
 <tr align="center" valign="middle">
-<td width="1%">
-<input width="2%" type="checkbox" name="aart[]" value="{ articleid }">
-</td>
-<td width="90%" align="left"><a href="{ urltitle }" onclick="Start(this.href, '', 'width=550,height=500,status=no,resizable=yes,top=200,left=200,scrollbars=yes');return false;">{ title }</a></td>
+    <td width="1%"><input width="2%" type="checkbox" name="aart[]" value="{ articleid }"></td>
+    <td width="90%" align="left"><a href="{ articleviewurl }" onclick="Start(this.href, '', 'width=550,height=500,status=no,resizable=yes,top=200,left=200,scrollbars=yes');return false;">{ title }</a></td>
+    <td><a class="widget-actionbutton" href="{ articlecopyurl }">{ articlecopytxt }</a></td>
 <!--#endin getnext -->
 </tr>
 <tr class="BabSiteAdminTitleFontBackground">
-<td width="1%"><a href="javascript:submitForm('unarch', 'listform')"><img src="{ babSkinPath }images/Puces/PuceArchive.png" alt="{ archivealt }" border="0" align="absmiddle"></a></td>
-            <td width="90%" align="left"><img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="1" height="1" border="0"></td>
-
+    <td colspan="3"><a class="widget-actionbutton" href="#" onclick="submitForm('unarch', 'listform'); return false">{ articleunarchivetxt }</a></td>
 </tr>
 </table>
 </td>
 </tr>
 </table>
 </form>
-<br />
-<table border="0" width="95%" cellpadding="1" cellspacing="0" align="center" class="BabLoginCadreBackground">
-<tr>
-<td>
-<table class="BabMailBackground" border="0" width="100%" cellpadding="1" cellspacing="0">
-<tr class="BabSiteAdminTitleFontBackground">
-    <td>&nbsp;<img src="{ babSkinPath }images/Puces/PuceArchive.png" alt="{ archivealt }" border="0"></a></td>
-    <td>{ archivehelp }</td>
-</tr>
-</table>
-</td></tr></table>
 <!--#end oldarticleslist -->
 
 <!--#begin articlesorder -->
