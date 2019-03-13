@@ -736,5 +736,3 @@ class bab_ImageResize
 		fclose($fp);
 	}
 }
-
-?>

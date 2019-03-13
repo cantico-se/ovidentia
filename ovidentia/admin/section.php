@@ -56,7 +56,7 @@ function sectionModify($id)
 		var $script;
 		var $position;
 		var $modify;
-	
+
 		var $titleval;
 		var $descval;
 		var $contentval;
@@ -127,13 +127,13 @@ function sectionModify($id)
 					}
 				}
 			if ($this->arr['jscript'] == 'N') {
-				
+
 				include_once $GLOBALS['babInstallPath']."utilit/editorincl.php";
 				$editor = new bab_contentEditor('bab_section');
 				$editor->setContent($this->arr['content']);
 				$editor->setFormat($this->arr['content_format']);
 				$this->editor = $editor->getEditor();
-				
+
 				}
 			else
 				$this->editor = false;
@@ -172,7 +172,7 @@ function sectionModify($id)
 				}
 			return false;
 			}
-			
+
 		function getnextlang()
 			{
 			static $i = 0;
@@ -205,7 +205,7 @@ function sectionModify($id)
 function sectionDelete($id)
 	{
 	global $babBody;
-	
+
 	class temp
 		{
 		var $warning;
@@ -246,8 +246,8 @@ function sectionUpdate($id, $title, $desc, $template, $lang, $opt)
 
 
 	$php = "N";
-	
-	
+
+
 	$query = "select * from ".BAB_SECTIONS_TBL." where id='".$babDB->db_escape_string($id)."'";
 	$res = $babDB->db_query($query);
 	$arr = $babDB->db_fetch_array($res);
@@ -257,27 +257,27 @@ function sectionUpdate($id, $title, $desc, $template, $lang, $opt)
 		$content = bab_rp('content');
 		$contentFormat = '';
 	} else {
-	
+
 		include_once $GLOBALS['babInstallPath']."utilit/editorincl.php";
 		$editor = new bab_contentEditor('bab_section');
 		$content = $editor->getContent();
 		$contentFormat = $editor->getFormat();
 	}
-	
+
 
 	bab_debug($content);
 
-	$query = "update ".BAB_SECTIONS_TBL." 
-	set 
-		title='".$babDB->db_escape_string($title)."', 
-		description='".$babDB->db_escape_string($desc)."', 
-		content='".$babDB->db_escape_string($content)."', 
-		content_format='".$babDB->db_escape_string($contentFormat)."', 
-		script='".$babDB->db_escape_string($php)."', 
-		template='".$babDB->db_escape_string($template)."', 
-		lang='".$babDB->db_escape_string($lang)."', 
-		optional='".$babDB->db_escape_string($opt)."' 
-	where 
+	$query = "update ".BAB_SECTIONS_TBL."
+	set
+		title='".$babDB->db_escape_string($title)."',
+		description='".$babDB->db_escape_string($desc)."',
+		content='".$babDB->db_escape_string($content)."',
+		content_format='".$babDB->db_escape_string($contentFormat)."',
+		script='".$babDB->db_escape_string($php)."',
+		template='".$babDB->db_escape_string($template)."',
+		lang='".$babDB->db_escape_string($lang)."',
+		optional='".$babDB->db_escape_string($opt)."'
+	where
 		id='".$babDB->db_escape_string($id)."'
 		";
 	$babDB->db_query($query);
@@ -368,6 +368,3 @@ switch($idx)
 	}
 
 $babBody->setCurrentItemMenu($idx);
-
-
-?>

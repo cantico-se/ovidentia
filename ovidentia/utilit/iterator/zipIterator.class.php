@@ -5,12 +5,12 @@
 // it under the terms of the GNU General Public License as published by
 // the Free Software Foundation; either version 2, or (at your option)
 // any later version.
-// 
+//
 // This program is distributed in the hope that it will be useful, but
 // WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 // See the GNU General Public License for more details.
-// 
+//
 // You should have received a copy of the GNU General Public License
 // along with this program; if not, write to the Free Software
 // Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307,
@@ -30,7 +30,7 @@ class bab_ZipEntry
 	private $iSize				= null;
 	private $iCompressedSize	= null;
 	private $sCompressionMethod	= null;
-	
+
 	public function __construct($oZip, $oZipEntry)
 	{
 		if(zip_entry_open($oZip, $oZipEntry))
@@ -38,37 +38,37 @@ class bab_ZipEntry
 			$this->sName				= zip_entry_name($oZipEntry);
 			$this->sBaseName			= basename($this->sName);
 			$this->iSize				= zip_entry_filesize($oZipEntry);
-			$this->iCompressedSize		= zip_entry_compressedsize($oZipEntry); 
+			$this->iCompressedSize		= zip_entry_compressedsize($oZipEntry);
 			$this->sCompressionMethod	= zip_entry_compressionmethod($oZipEntry);
 			zip_entry_close($oZipEntry);
 		}
 	}
-	
+
 	public function __destruct()
 	{
-		
+
 	}
-	
+
 	public function getBaseName()
 	{
 		return $this->sBaseName;
 	}
-	
+
 	public function getName()
 	{
 		return $this->sName;
 	}
-	
+
 	public function getSize()
 	{
 		return $this->iSize;
 	}
-	
+
 	public function getCompressedSize()
 	{
 		return $this->iCompressedSize;
 	}
-	
+
 	public function getCompressionMethod()
 	{
 		return $this->sCompressionMethod;
@@ -83,7 +83,7 @@ class bab_ZipIterator implements Iterator
 	private $_oZip			= null;
 	private $_oObject		= null;
 	const	EOF				= -1;
-	
+
 	public function __contruct()
 	{
 	}
@@ -99,16 +99,16 @@ class bab_ZipIterator implements Iterator
 	{
 		$this->closeZip();
 		$this->openZip();
-		
+
 		$this->_oObject	= null;
 		$this->_iKey	= 0;
 	}
-	
-	public function key()   
+
+	public function key()
 	{
 		return $this->_iKey;
 	}
-	
+
 	public function current()
 	{
 		if(is_null($this->_oObject))
@@ -130,7 +130,7 @@ class bab_ZipIterator implements Iterator
 				return;
 			}
 		}
-		
+
 		$this->_oObject = null;
 		$this->_iKey = bab_ZipIterator::EOF;
 	}
@@ -155,7 +155,7 @@ class bab_ZipIterator implements Iterator
 
 
 	//Helper function
-	
+
 	public function setFullPathName($sFullPathName)
 	{
 		$this->_sFullPathName = $sFullPathName;
@@ -177,10 +177,9 @@ class bab_ZipIterator implements Iterator
 			$this->_oZip = null;
 		}
 	}
-	
+
 	private function getObject($oZipEntry)
 	{
 		return new bab_ZipEntry($this->_oZip, $oZipEntry);
 	}
 }
-?>

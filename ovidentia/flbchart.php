@@ -874,7 +874,7 @@ function updateOrgChartEntity($ocid, $name, $description, $oeid, $entityTypes = 
 	Header("Location: ". $GLOBALS['babUrlScript']."?tg=flbchart&rf=1&idx=mode&ocid=".$ocid."&oeid=".$oeid);
 	}
 
-	
+
 /**
  * Delete entity
  * @param array | string $ids
@@ -898,7 +898,7 @@ function confirmDeleteOrgChartEntity($ocid, $oeid, $what)
 	list($idnode) = $babDB->db_fetch_row($babDB->db_query("select id_node from ".BAB_OC_ENTITIES_TBL." where id='".$oeid."'"));
 
 	$arroe = array();
-	
+
 	$babTree = new bab_dbtree(BAB_OC_TREES_TBL, $ocid);
 	switch($what)
 		{
@@ -1178,7 +1178,7 @@ function delUserOrgChartRole($ocid, $oeid, $ocfid)
 	{
 	list($idduser, $isprimary) = $babDB->db_fetch_row($babDB->db_query("select id_user, isprimary from ".BAB_OC_ROLES_USERS_TBL." where id='".$ocfid[$i]."'"));
 	$babDB->db_query("delete from ".BAB_OC_ROLES_USERS_TBL." where id='".$ocfid[$i]."'");
-	
+
 	if( $isprimary == 'Y' )
 		{
 		$res = $babDB->db_query("select ocrut.id from  ".BAB_OC_ROLES_USERS_TBL." ocrut left join ".BAB_OC_ROLES_TBL." ocrt on ocrut.id_role=ocrt.id where ocrt.id_oc='".$ocid."' and  ocrut.id_user='".$idduser."'");
@@ -1418,7 +1418,7 @@ switch(bab_rp('addocr'))
 			break;
 
 	}
-	
+
 if( bab_rp('updru') == "updru" )
 {
     $ruid = bab_rp('ruid', array());
@@ -1545,4 +1545,3 @@ switch($idx)
 	}
 printFlbChartPage();
 exit;
-?>

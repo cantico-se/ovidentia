@@ -24,5 +24,3 @@
 	include "base.php";
 	require_once($GLOBALS['babInstallPath'] . 'utilit/baseFormProcessingClass.php');
 	require_once($GLOBALS['babInstallPath'] . 'utilit/tableWrapperClass.php');
-
-?>

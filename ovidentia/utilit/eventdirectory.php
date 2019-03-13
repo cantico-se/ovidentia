@@ -31,10 +31,10 @@ require_once $GLOBALS['babInstallPath'].'utilit/dirincl.php';
  * @since 6.1.1
  */
 class bab_eventDirectory extends bab_event {
-	
+
 	var $id_entry;
 	var $id_user;
-	
+
 	function getDirEntry() {
 
 		if (isset($this->id_entry)) {
@@ -44,7 +44,7 @@ class bab_eventDirectory extends bab_event {
 			$id = $this->id_user;
 			$type = BAB_DIR_ENTRY_ID_USER;
 		}
-		
+
 		return getDirEntry($id, $type, NULL, false);
 	}
 }
@@ -104,7 +104,7 @@ class bab_eventUserCreated extends bab_eventDirectory {
  * @since 6.1.1
  */
 class bab_eventUserModified extends bab_eventDirectory {
-	
+
 	function bab_eventUserModified($id_user) {
 		$this->id_user = $id_user;
 	}
@@ -158,6 +158,3 @@ class bab_eventUserDetachedFromGroup extends bab_eventDirectory {
 		$this->id_group = $id_group;
 	}
 }
-
-
-?>

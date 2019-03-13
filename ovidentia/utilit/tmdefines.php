@@ -145,4 +145,3 @@ define('BAB_TM_RADIO_FIELD', 2);
 //Field type for the customization of the list
 define('BAB_TM_TASK_FIELD', 0);
 define('BAB_TM_ADDITIONAL_FIELD', 1);
-?>

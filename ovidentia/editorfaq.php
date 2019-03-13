@@ -31,7 +31,7 @@ function browse($cat)
 
 	class temp
 		{
-	
+
 		var $db;
 		var $count;
 		var $res;
@@ -39,7 +39,7 @@ function browse($cat)
 		function temp($cat)
 			{
 			global $babDB;
-			
+
 			if ($cat != 0 )
 				{
 				$req = "select * from ".BAB_FAQQR_TBL." where idcat='".$babDB->db_escape_string($cat)."'";
@@ -50,7 +50,7 @@ function browse($cat)
 				$req = "select * from ".BAB_FAQCAT_TBL.' order by category asc';
 				$this->q = false;
 				}
-			$this->res = $babDB->db_query($req);	
+			$this->res = $babDB->db_query($req);
 			$this->count = $babDB->db_num_rows($this->res);
 			$this->target_txt = bab_translate("popup");
 			$this->backlink = bab_toHtml($GLOBALS['babUrlScript']."?tg=editorfaq&idx=browse");
@@ -72,7 +72,7 @@ function browse($cat)
 						$this->titledisp = bab_toHtml($arr['question']);
 						$this->resp = '';
 						$this->faqid = $arr['id'];
-						
+
 						}
 					else
 						$this->display = false;
@@ -88,7 +88,7 @@ function browse($cat)
 					else
 						$this->display = false;
 					}
-					
+
 				$i++;
 				return true;
 				}
@@ -97,12 +97,12 @@ function browse($cat)
 			}
 
 		}
-		
+
 	global $babBody;
-	
+
 	$babBody->setTitle(bab_translate('Faqs'));
 	$babBody->addStyleSheet('text_toolbar.css');
-	
+
 	$temp = new temp($cat);
 	$babBody->babPopup(bab_printTemplate($temp,"editorfaq.html", "editorfaq"));
 	}
@@ -119,4 +119,3 @@ switch($idx)
 		browse($cat);
 		exit;
 	}
-?>

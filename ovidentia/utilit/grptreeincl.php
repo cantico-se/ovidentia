@@ -56,7 +56,7 @@ class bab_grptree extends bab_dbtree
 		}
 
 
-	//delegation 
+	//delegation
 	$this->delegat = array();
 
 	global $babDB;
@@ -95,10 +95,10 @@ class bab_grptree extends bab_dbtree
 	{
 	$grp = array();
 	$prefix = array();
-	
+
 	$groups = $this->getChilds($id_parent, $all);
-	
-	
+
+
 
 	if ($id_parent === $this->firstnode_parent && $all)
 		{
@@ -114,7 +114,7 @@ class bab_grptree extends bab_dbtree
 				{
 				$arr['name'] = bab_translate($arr['name']);
 				}
-	
+
 			if (isset($prefix[$arr['id_parent']]))
 				{
 					require_once $GLOBALS['babInstallPath'].'utilit/addonapi.php';
@@ -124,9 +124,9 @@ class bab_grptree extends bab_dbtree
 				{
 				$prefix[$arr['id']] = '';
 				}
-	
+
 			$arr['name'] = $prefix[$arr['id']].$arr['name'];
-			
+
 			$grp[$arr['id']] = $arr;
 			}
 		}
@@ -147,7 +147,7 @@ class bab_grptree extends bab_dbtree
 		}
 	$grp['new'] = $childname;
 	bab_sort::natcasesort($grp);
-	
+
 	if (count($groups) > 0)
 		$firstchild = $groups[0]['id'];
 	else
@@ -160,13 +160,13 @@ class bab_grptree extends bab_dbtree
 	function addAlpha($id_parent, $childname)
 	{
 	global $babDB;
-	
+
 	include_once $GLOBALS['babInstallPath']."utilit/grpincl.php";
 	$node_id = getNextAvariableId();
 
 	list($grp, $firstchild) = $this->setAlphaChild($id_parent, $childname);
 	$id_previous = null;
-	
+
 	foreach($grp as $key => $value)
 		{
 		if ('new' == $key && isset($id_previous))
@@ -229,7 +229,7 @@ class bab_grp_node
 	$this->t_members = bab_translate("Members");
 	$this->childs = $this->tree->getChilds($id_group);
 	$this->bupdate = bab_getCurrentAdmGroup() == 0 || bab_isDelegated('groups');
-	
+
 	/* Icons functionality */
 	$icons = bab_functionality::get('Icons');
 	if ($icons != false) {
@@ -255,7 +255,7 @@ class bab_grp_node
 		$this->subtree = bab_grp_node_html($this->tree, $this->arr['id'], $this->file, $this->template, $this->options);
 		return true;
 		}
-	else 
+	else
 		{
 		return false;
 		}
@@ -298,35 +298,35 @@ function bab_grpGetNbChildsByParent($id_parent)
 function bab_grpTreeCreate($id_parent, $lf)
 {
 	$db = &$GLOBALS['babDB'];
-	
+
 	$db->db_query("UPDATE ".BAB_USERS_LOG_TBL." SET grp_change='1'");
-	
+
 	if (is_null($id_parent))
 		$parent = 'IS NULL';
 	else
 		$parent = " = '".$id_parent."'";
-	
-	
+
+
 	$res = $db->db_query("SELECT id, lf, lr, name FROM ".BAB_GROUPS_TBL." WHERE id_parent ".$parent." AND nb_set>='0' ORDER BY name");
 	while ($arr = $db->db_fetch_assoc($res))
 		{
 		$nb_child = bab_grpGetNbChildsByParent($arr['id']);
 
 		$tmp = 0;
-		
+
 		if ($arr['lf'] != $lf) {
 			$db->db_query("UPDATE ".BAB_GROUPS_TBL." SET lf='".$lf."' WHERE id='".$arr['id']."'");
 			$tmp = $arr['lf'] - $lf;
-			if ($tmp > 0) 
+			if ($tmp > 0)
 				$tmp = ' -'.$tmp;
-			else 
+			else
 				$tmp = ' +'.(-1*$tmp);
 
 			echo 'lf'.$tmp.' : '.$arr['name'].'<br />';
 			}
 
 		$tmp = 0;
-		
+
 		$lr = $lf + 1 + ($nb_child*2);
 		//echo $lf.','.$lr.' - '.$arr['lf'].','.$arr['lr'].' - '.$arr['name'].'<br />';
 		bab_grpTreeCreate($arr['id'], ($lf+1));
@@ -335,9 +335,9 @@ function bab_grpTreeCreate($id_parent, $lf)
 			$db->db_query("UPDATE ".BAB_GROUPS_TBL." SET lr='".$lr."' WHERE id='".$arr['id']."'");
 
 			$tmp = $arr['lr'] - $lr;
-			if ($tmp > 0) 
+			if ($tmp > 0)
 				$tmp = ' -'.$tmp;
-			else 
+			else
 				$tmp = ' +'.(-1*$tmp);
 
 			echo 'lr'.$tmp.' : '.$arr['name'].'<br />';
@@ -346,5 +346,3 @@ function bab_grpTreeCreate($id_parent, $lf)
 		$lf = $lr+1;
 		}
 }
-
-?>

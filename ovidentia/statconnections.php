@@ -6,12 +6,12 @@
 // it under the terms of the GNU General Public License as published by
 // the Free Software Foundation; either version 2, or (at your option)
 // any later version.
-// 
+//
 // This program is distributed in the hope that it will be useful, but
 // WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 // See the GNU General Public License for more details.
-// 
+//
 // You should have received a copy of the GNU General Public License
 // along with this program; if not, write to the Free Software
 // Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307,
@@ -37,7 +37,7 @@ function summaryConnections($col, $order, $pos, $startday, $endday)
 		var $url;
 		var $urlname;
 		var $altbg = true;
-		
+
 		var $startday;
 		var $endday;
 
@@ -46,9 +46,9 @@ function summaryConnections($col, $order, $pos, $startday, $endday)
 		var $total;
 		var $sortord;
 		var $sortcol;
-		
+
 		var $bnavigation;
-		
+
 		var $t_connections;
 		var $t_user_name;
 
@@ -57,7 +57,7 @@ function summaryConnections($col, $order, $pos, $startday, $endday)
 			global $babBody, $babDB;
 			$this->t_user_name = bab_translate("User");
 			$this->t_connections = bab_translate("Connections");
-	
+
 			$this->startday = $startday;
 			$this->endday = $endday;
 
@@ -157,7 +157,7 @@ function summaryConnections($col, $order, $pos, $startday, $endday)
 		}
 
 	}
-		
+
 	$temp = new summaryConnectionsCls($col, $order, $pos, $startday, $endday);
 
 	if (bab_statExport()) {
@@ -202,15 +202,15 @@ function detailConnections($col, $order, $pos, $startday, $endday, $userId)
 		var $url;
 		var $urlname;
 		var $altbg = true;
-		
+
 		var $startnum;
 		var $lastnum;
 		var $total;
 		var $sortord;
 		var $sortcol;
-		
+
 		var $bnavigation;
-		
+
 		var $id_user;
 
 		var $t_connection_time;
@@ -237,7 +237,7 @@ function detailConnections($col, $order, $pos, $startday, $endday, $userId)
 			}
 			if (!empty($where))
 				$req .= ' WHERE ' . implode(' AND ', $where);
-				
+
 			switch($col) {
 				case 'duration':
 					$order_column = 'connection_duration';
@@ -248,7 +248,7 @@ function detailConnections($col, $order, $pos, $startday, $endday, $userId)
 					break;
 			}
 			$req .= ' ORDER BY ' . $order_column . ' ' . ($order == 'asc' ? 'desc': 'asc');
-			
+
 			$res = $babDB->db_query($req);
 			$this->total = $babDB->db_num_rows($res);
 
@@ -283,7 +283,7 @@ function detailConnections($col, $order, $pos, $startday, $endday, $userId)
 					$nbSeconds = $arr['connection_duration'] % 60;
 					$nbMinutes = floor($arr['connection_duration'] / 60) % 60;
 					$nbHours = floor($arr['connection_duration'] / 3600);
-					
+
 					$tmparr['duration'] = $arr['connection_duration'];
 					$tmparr['connection_duration'] = $this->formatTime($arr['connection_duration']);
 					$this->arrinfo[] = $tmparr;
@@ -316,7 +316,7 @@ function detailConnections($col, $order, $pos, $startday, $endday, $userId)
 			$nbMinutes = floor($nbSeconds / 60) % 60;
 			$nbHours = floor($nbSeconds / 3600);
 			$nbSeconds = $nbSeconds % 60;
-			
+
 			return sprintf('%d:%02d:%02d', $nbHours, $nbMinutes, $nbSeconds);
 		}
 
@@ -347,7 +347,7 @@ function detailConnections($col, $order, $pos, $startday, $endday, $userId)
 		}
 
 	}
-		
+
 	$temp = new detailConnectionsCls($col, $order, $pos, $startday, $endday, $userId);
 
 	if (bab_statExport()) {
@@ -376,7 +376,3 @@ function detailConnections($col, $order, $pos, $startday, $endday, $userId)
 	}
 
 }
-
-
-
-?>

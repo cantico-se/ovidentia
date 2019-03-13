@@ -40,14 +40,14 @@ class bab_Dashboard
 		$this->_elements = array();
 		$this->_filters = array();
 		$this->t_filter_type = '';
-		$this->t_filter_label = '';	
+		$this->t_filter_label = '';
 		$this->t_dashboard_element = null;
 		$this->t_not_first_filter = false;
 		$this->t_export = bab_translate("Export");
 		$this->t_export_url = '';
 		$this->t_global_filter = bab_translate("Global filter");
 	}
-	
+
 	function setTitle($title)
 	{
 		$this->t_title = $title;
@@ -63,7 +63,7 @@ class bab_Dashboard
 		$this->_elements[] = $element;
 		reset($this->_elements);
 	}
-	
+
 	function addFilter($label, $type)
 	{
 		$this->_filters[$type] = $label;
@@ -113,7 +113,7 @@ class bab_Dashboard
 		reset($this->_filters);
 		return false;
 	}
-	
+
 	function getNextElementCsv()
 	{
 		static $i = 0;
@@ -156,7 +156,7 @@ class bab_DashboardElement
 	{
 		$this->_columnHeaders = $columnHeaders;
 	}
-	
+
 	function addRow($row)
 	{
 		$this->_rows[] = $row;
@@ -170,7 +170,7 @@ class bab_DashboardElement
 		$html = bab_printTemplate($this, 'dashboard.html', 'dashboard_element');
 		return $html;
 	}
-	
+
 	/**
 	 * @return string
 	 */
@@ -179,7 +179,7 @@ class bab_DashboardElement
 		$html = bab_printTemplate($this, 'dashboard.html', 'dashboard_element_csv');
 		return $html;
 	}
-	
+
 
 	// Template functions.
 	function getNextColumnHeader()
@@ -205,7 +205,7 @@ class bab_DashboardElement
 		$this->t_column_number = 0;
 		reset($this->_row);
 		return false;
-		
+
 	}
 
 	function getNextRow()
@@ -219,9 +219,6 @@ class bab_DashboardElement
 		$this->t_odd_row = false;
 		reset($this->_rows);
 		return false;
-		
+
 	}
 }
-
-
-?>

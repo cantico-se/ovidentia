@@ -169,7 +169,7 @@ class bab_sqlExport
 			}
 			$this->dumpPush('/*!40000 ALTER TABLE `'.$name.'` ENABLE KEYS */;');
 			$this->dumpPush('UNLOCK TABLES;');
-				
+
 
 		$this->brPush();
 		}
@@ -331,6 +331,3 @@ class bab_sqlExport
 		}
 
 	}
-
-
-?>

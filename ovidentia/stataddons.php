@@ -304,5 +304,3 @@ function showStatAddon($id, $date)
 		$babBodyPopup->babecho(bab_printTemplate($temp, "stataddons.html", "summarydetail"));
 		}
 }
-
-?>

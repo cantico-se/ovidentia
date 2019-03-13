@@ -65,7 +65,7 @@ class summaryBaseCls
 		else
 			{
 			$r = bab_compare(
-				mb_strtolower($a[$this->sortcol]), 
+				mb_strtolower($a[$this->sortcol]),
 				mb_strtolower($b[$this->sortcol]));
 			}
 
@@ -90,7 +90,7 @@ class summaryDetailBaseCls
 		$months = bab_DateStrings::getMonths();
 		$this->monthdate = $months[$month]." ".$year;
 		$this->yeardate = $year;
-		
+
 		$this->exporturl = $GLOBALS['babUrlScript']."?tg=stat&idx=".$idx."&item=".$item."&date=".$year.",".$month.",".$day."&export=1";
 
 		$time = mktime( 0,0,0, (int)($month)+1, 0, $year);
@@ -194,5 +194,3 @@ class summaryDetailBaseCls
 		}
 
 }
-
-?>

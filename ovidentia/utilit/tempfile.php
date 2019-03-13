@@ -42,7 +42,7 @@ function babTempFiles($path, $elapsed = 3600, $prefix = "ov_")
 		$size = 0;
 		while (($f = readdir($h)) != false)
 			{
-			if ($f != "." and $f != "..") 
+			if ($f != "." and $f != "..")
 				{
 				$fpath = $this->tmpdir.$f;
 				if (is_file($fpath) && mb_substr($f, 0, mb_strlen($this->prefix)) == $this->prefix)
@@ -64,8 +64,8 @@ function tempfile( $tmpfile, $file )
 		return "";
 
 	$iPos = mb_strpos($file, '.');
-	if(false !== $iPos)	
-		{	
+	if(false !== $iPos)
+		{
 		$ext = mb_substr($file, $iPos+1);
 		}
 	else
@@ -87,4 +87,4 @@ function tempfile( $tmpfile, $file )
 		}
 	}
 }
-?>
+

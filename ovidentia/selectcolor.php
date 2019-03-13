@@ -53,4 +53,3 @@ switch ($idx)
 	case 'popup':
 		select_color();
 	}
-?>

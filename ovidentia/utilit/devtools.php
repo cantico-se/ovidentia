@@ -777,7 +777,7 @@ function bab_export_tables($tables, $file = false)
  * @since	6.4.94
  */
 function bab_execSqlFile($file, $fileEncoding = null) {
-	
+
 	global $babDB;
 
 	$sql=file_get_contents($file);
@@ -1170,4 +1170,3 @@ function bab_debug_print_backtrace($echo = false)
 
 }
 
-?>

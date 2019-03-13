@@ -26,9 +26,9 @@
 /**
  * Additional functions for internationalisation
  */
- 
- 
- 
+
+
+
 
 /**
  * Translate text with user language configuration
@@ -42,6 +42,3 @@ function bab_userTranslate($id_user, $str, $folder='') {
 	$userlang = bab_getUserSetting($id_user, 'lang');
 	return bab_translate($str, $folder, $userlang);
 }
-
-
-?>

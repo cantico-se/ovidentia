@@ -418,5 +418,3 @@ function getNextAvariableId()
 
     die('too many groups, max : '.BAB_ACL_GROUP_TREE);
 }
-
-?>

@@ -54,12 +54,12 @@ function modifyCalendarCategory()
 			$this->desctxt = bab_translate("Description");
 			$this->bgcolortxt = bab_translate("Color");
 			$this->addtxt = bab_translate("Update");
-			
+
 			$this->idcat = $idcat = bab_rp('idcat');
 			$catname = bab_rp('catname');
 			$catdesc = bab_rp('catdesc');
 			$bgcolor = bab_rp('bgcolor');
-			
+
 			$this->add = 'updcat';
 			$this->tgval = 'admcal';
 			$arr = $babDB->db_fetch_array($babDB->db_query("SELECT * FROM ".BAB_CAL_CATEGORIES_TBL." WHERE id=".$babDB->quote($idcat)));
@@ -147,14 +147,14 @@ function modifyCalendarResource($idcal, $name, $desc, $idsa, $bgcolor)
         		{
         		$this->bgcolor = bab_toHtml($arr['bgcolor']);
         		}
-				
+
 			$this->availability_lock = false;
 			$this->selctorurl = bab_toHtml($GLOBALS['babUrlScript']."?tg=selectcolor&idx=popup&callback=setColor");
-			
+
 			if (1 === (int) $arr['availability_lock']) {
 				$this->availability_lock = true;
 			}
-				
+
 			$this->add = "modr";
 			$this->idcal = $arr['id'];
 			$this->tgval = 'admcal';
@@ -306,7 +306,7 @@ function updateResourceCalendar($idcal, $calname, $caldesc, $calidsa, $bgcolor)
 	include_once $GLOBALS['babInstallPath']."utilit/afincl.php";
 	list($id_cal) = $babDB->db_fetch_row($babDB->db_query("select id from ".BAB_CALENDAR_TBL." where owner='".$babDB->db_escape_string($idcal)."' and type='".BAB_CAL_RES_TYPE."'"));
 
-	
+
 	$res = $babDB->db_query("select * from ".BAB_CAL_EVENTS_OWNERS_TBL." where id_cal='".$babDB->db_escape_string($id_cal)."' and status='".BAB_CAL_STATUS_NONE."'");
 	while( $arr = $babDB->db_fetch_array($res))
 		{
@@ -317,23 +317,23 @@ function updateResourceCalendar($idcal, $calname, $caldesc, $calidsa, $bgcolor)
 
 		$idfai = 0;
 		$babDB->db_query("update ".BAB_CAL_EVENTS_OWNERS_TBL." set idfai='".$babDB->db_escape_string($idfai)."' where id_cal='".$babDB->db_escape_string($id_cal)."'and id_event='".$babDB->db_escape_string($arr['id_event'])."'");
-		}		
+		}
 	}
-	
+
 	$availability_lock = isset($_POST['availability_lock']) ? '1' : '0';
-	
+
 	$babDB->db_query("
-		UPDATE ".BAB_CAL_RESOURCES_TBL." 
-		SET 
-			name='".$babDB->db_escape_string($calname)."', 
-			description='".$babDB->db_escape_string($caldesc)."', 
+		UPDATE ".BAB_CAL_RESOURCES_TBL."
+		SET
+			name='".$babDB->db_escape_string($calname)."',
+			description='".$babDB->db_escape_string($caldesc)."',
 			idsa='".$babDB->db_escape_string($calidsa)."',
 			availability_lock=".$babDB->quote($availability_lock).",
 	        bgcolor=".$babDB->quote($bgcolor)."
-		WHERE 
+		WHERE
 			id='".$babDB->db_escape_string($idcal)."'
 	");
-	
+
 	Header("Location: ". $GLOBALS['babUrlScript']."?tg=admcals&idx=res");
 	exit;
 }
@@ -364,7 +364,7 @@ function updatePublicCalendar($idcal, $calname, $caldesc, $calidsa, $bgcolor)
 
 		$idfai = 0;
 		$babDB->db_query("update ".BAB_CAL_EVENTS_OWNERS_TBL." set idfai='".$babDB->db_escape_string($idfai)."' where id_cal='".$babDB->db_escape_string($id_cal)."'and id_event='".$babDB->db_escape_string($arr['id_event'])."'");
-		}		
+		}
 	}
 
 	$babDB->db_query("update ".BAB_CAL_PUBLIC_TBL." set name='".$babDB->db_escape_string($calname)."', description='".$babDB->db_escape_string($caldesc)."', idsa='".$babDB->db_escape_string($calidsa)."', bgcolor=".$babDB->quote($bgcolor)."  where id='".$babDB->db_escape_string($idcal)."'");
@@ -400,7 +400,7 @@ $idcal = bab_rp('idcal');
 if( isset($_REQUEST['addc']))
 {
     bab_requireSaveMethod();
-    
+
 	if( "modp" == bab_rp('addc') )
 	{
 		if( updatePublicCalendar(bab_rp('idcal'), bab_rp('calname'), bab_rp('caldesc'), bab_rp('calidsa'), bab_rp('bgcolor')))
@@ -429,7 +429,7 @@ elseif("updcat" == bab_rp('add')  && bab_isUserAdministrator())
     $catname = bab_rp('catname');
     $catdesc = bab_rp('catdesc');
     $bgcolor = bab_rp('bgcolor');
-    
+
 	bab_requireSaveMethod() && updateCalendarCategory($idcat, $catname, $catdesc, $bgcolor);
 
 }elseif( isset($_REQUEST['aclpub']))
@@ -525,6 +525,3 @@ switch($idx)
 	}
 
 $babBody->setCurrentItemMenu($idx);
-
-
-?>

@@ -147,7 +147,7 @@ function categoriesList($grpid, $userid)
 		var $idgrp = array();
 		var $group;
 		var $groupname;
-				
+
 		var $arr = array();
 		var $db;
 		var $count;
@@ -170,7 +170,7 @@ function categoriesList($grpid, $userid)
 			$this->res = $babDB->db_query($req);
 			$this->countcal = $babDB->db_num_rows($this->res);
 			}
-			
+
 		function getnext()
 			{
 			global $babDB;
@@ -220,7 +220,7 @@ function resourcesList($grpid, $userid)
 		var $idgrp;
 		var $group;
 		var $groupname;
-				
+
 		var $arr = array();
 		var $db;
 		var $count;
@@ -248,8 +248,8 @@ function resourcesList($grpid, $userid)
 			$this->res = $babDB->db_query("select * from ".BAB_RESOURCESCAL_TBL."");
 			$this->countcal = $babDB->db_num_rows($this->res);
 			}
-		
-			
+
+
 		function getnext()
 			{
 			global $babDB;
@@ -309,8 +309,8 @@ function addCalCategory($groups, $name, $description, $bgcolor)
 		}
 
 	for( $i = 0; $i < $count; $i++)
-		{		
-		$query = "select * from ".BAB_CATEGORIESCAL_TBL." where name='".$babDB->db_escape_string($name)."' and id_group='".$babDB->db_escape_string($groups[$i])."'";	
+		{
+		$query = "select * from ".BAB_CATEGORIESCAL_TBL." where name='".$babDB->db_escape_string($name)."' and id_group='".$babDB->db_escape_string($groups[$i])."'";
 		$res = $babDB->db_query($query);
 		if( $res && $babDB->db_num_rows($res) > 0)
 			{
@@ -340,8 +340,8 @@ function addCalResource($groups, $name, $description)
 		}
 
 	for( $i = 0; $i < $count; $i++)
-		{		
-		$query = "select * from ".BAB_RESOURCESCAL_TBL." where name='".$babDB->db_escape_string($name)."' and id_group='".$babDB->db_escape_string($groups[$i])."'";	
+		{
+		$query = "select * from ".BAB_RESOURCESCAL_TBL." where name='".$babDB->db_escape_string($name)."' and id_group='".$babDB->db_escape_string($groups[$i])."'";
 		$res = $babDB->db_query($query);
 		if( $babDB->db_num_rows($res) > 0)
 			{
@@ -355,7 +355,7 @@ function addCalResource($groups, $name, $description)
 
 			$query = "insert into ".BAB_CALENDAR_TBL." (owner, actif, type) VALUES ('" .$babDB->db_escape_string($id). "', 'Y', '3')";
 			$babDB->db_query($query);
-			
+
 			}
 		}
 	}
@@ -459,5 +459,3 @@ switch($idx)
 	}
 
 $babBody->setCurrentItemMenu($idx);
-
-?>

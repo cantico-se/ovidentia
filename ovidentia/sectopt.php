@@ -35,7 +35,7 @@ function sectionsList()
 	{
 		public $title;
 		public $description;
-		
+
 		public $enabled;
 		public $checkall;
 		public $uncheckall;
@@ -75,7 +75,7 @@ function sectionsList()
 				list($hidden) = $babDB->db_fetch_row($babDB->db_query('SELECT hidden FROM '.BAB_SECTIONS_STATES_TBL.' WHERE type=\'2\' AND id_section='.$babDB->quote($public['id']).' AND id_user='.$babDB->quote($GLOBALS['BAB_SESS_USERID'])));
 				$checked = (isset($hidden) && $hidden != 'Y');
 				$this->sections[$public['id'] . '-2'] = array('title' => $public['title'], 'description' => $public['description'], 'checked' => $checked);
-			}				
+			}
 
 			// don't get Administrator section and User's section
 			$privateSections = $babDB->db_query('SELECT * FROM '.BAB_PRIVATE_SECTIONS_TBL.' WHERE enabled=\'Y\' AND optional=\'Y\' AND id !=1 AND id!=5');
@@ -84,7 +84,7 @@ function sectionsList()
 				list($hidden) = $babDB->db_fetch_row($babDB->db_query('SELECT hidden FROM '.BAB_SECTIONS_STATES_TBL.' WHERE type=\'1\' AND id_section='.$babDB->quote($private['id']).' AND id_user='.$babDB->quote($GLOBALS['BAB_SESS_USERID'])));
 				$checked = (isset($hidden) && $hidden != 'Y');
 				$this->sections[$private['id'] . '-1'] = array('title' => $private['title'], 'description' => $private['description'], 'checked' => $checked);
-			}		
+			}
 
 
 			// Add sections from article categories.
@@ -106,7 +106,7 @@ function sectionsList()
 			}
 			$this->countcat = count($this->arrcatid);
 			$this->altbg = false;
-			
+
 			bab_Sort::asort($this->sections, 'title');
 		}
 
@@ -238,4 +238,3 @@ switch($idx)
 	}
 
 $babBody->setCurrentItemMenu($idx);
-?>

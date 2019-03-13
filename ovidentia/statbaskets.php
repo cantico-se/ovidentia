@@ -66,8 +66,7 @@ function listUserBaskets()
 
 			}
 		}
-	
+
 	$temp = new listUserBasketsCls();
 	$babBody->babecho(	bab_printTemplate($temp, "statbaskets.html", "list_baskets"));
 }
-?>

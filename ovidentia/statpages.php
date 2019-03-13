@@ -152,4 +152,3 @@ function summaryPages($col, $order, $startday, $endday)
 		return $temp->count;
 		}
 	}
-?>

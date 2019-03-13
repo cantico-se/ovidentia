@@ -25,7 +25,7 @@
 require_once($GLOBALS['babInstallPath'] . 'utilit/tmdefines.php');
 require_once($GLOBALS['babInstallPath'] . 'utilit/baseFormProcessingClass.php');
 
-		
+
 class BAB_TM_ListBase extends BAB_BaseFormProcessing
 {
 	var $m_db;
@@ -50,18 +50,18 @@ class BAB_TM_ListBase extends BAB_BaseFormProcessing
 		$this->set_data('name', '');
 		$this->set_data('description', '');
 		$this->set_data('commentary', '');
-		
+
 		$this->set_data('isLink', true);
-		
+
 		$this->m_rowDatas = false;
 		$this->m_result = $result;
-		
+
 		$this->init();
 	}
 
 	function init()
 	{
-		
+
 	}
 
 	function nextRow()
@@ -69,13 +69,13 @@ class BAB_TM_ListBase extends BAB_BaseFormProcessing
 		if(false != $this->m_result)
 		{
 			$this->m_rowDatas = $this->m_db->db_fetch_array($this->m_result);
-		}		
+		}
 	}
-	
+
 	function nextItem()
 	{
 		$this->nextRow();
-			
+
 		if(false != $this->m_rowDatas)
 		{
 			$this->m_is_altbg = !$this->m_is_altbg;
@@ -118,4 +118,3 @@ class BAB_TM_ListBase extends BAB_BaseFormProcessing
 		return false;
 	}
 }
-?>

@@ -83,7 +83,7 @@ class bab_ovmlAPI
 	 * @param string $name variable name
 	 * @param mixed $value variable value
 	 * @access public
-	 */ 
+	 */
 	function putVar($name, $value)
 	{
 		$this->_ovmlEngine->bab_PutVar(array('name'=>$name, 'value' => $value));
@@ -95,7 +95,7 @@ class bab_ovmlAPI
 	 * @param string $name variable name
 	 * @param array $param parameters to use for formating output
 	 * @access public
-	 */ 
+	 */
 	function getVar($name, $params=array())
 	{
 		$val = $this->_ovmlEngine->bab_GetVar(array('name'=>$name));
@@ -111,7 +111,7 @@ class bab_ovmlAPI
 	 * @param string $name container name
 	 * @param array $param parameters to passe to container handler
 	 * @access public
-	 */ 
+	 */
 	function getContainer($name, $params=array())
 	{
 		$handler = $this->_ovmlEngine->handle_tag($name, '', $params, 'object');
@@ -123,4 +123,3 @@ class bab_ovmlAPI
 	}
 
 }
-?>

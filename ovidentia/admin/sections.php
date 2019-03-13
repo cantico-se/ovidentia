@@ -50,7 +50,7 @@ function sectionsList()
 		var $urltitle;
 		var $url;
 		var $description;
-		
+
 		var $id;
 		var $arr = array();
 		var $db;
@@ -86,7 +86,7 @@ function sectionsList()
 			$this->groups = bab_translate("View");
 			$this->opttxt = bab_translate("Optional(fem)");
 			$this->db = &$GLOBALS['babDB'];
-			
+
 
 			$req = "select * from ".BAB_SECTIONS_TBL." where id_dgowner='".bab_getCurrentAdmGroup()."'";
 			$res = $this->db->db_query($req);
@@ -103,18 +103,18 @@ function sectionsList()
 
 			$rescat = $this->db->db_query("select * from ".BAB_TOPICS_CATEGORIES_TBL." where id_dgowner='".bab_getCurrentAdmGroup()."'");
 			$this->processres($rescat, '-3');
-			
+
 			bab_sort::ksort($this->sections, bab_sort::CASE_INSENSITIVE);
 			}
-			
+
 		function processres($res, $suffix) {
 			while ($arr = $this->db->db_fetch_array($res)) {
 				$arr['title'] = bab_translate($arr['title']);
 				$arr['description'] = bab_translate($arr['description']);
 				$idvalue = $arr['id'].$suffix;
-				
+
 				$opt = '5-1' != $idvalue;
-				
+
 				if( $arr['enabled'] == "N")
 					$secchecked = "checked";
 				else
@@ -123,7 +123,7 @@ function sectionsList()
 					$optchecked = "checked";
 				else
 					$optchecked = "";
-					
+
 				if ('-2' === $suffix) {
 					$url 		= bab_toHtml($GLOBALS['babUrlScript'].'?tg=section&idx=Modify&item='.$arr['id']);
 					$accessurl 	= bab_toHtml($GLOBALS['babUrlScript'].'?tg=section&idx=Groups&item='.$arr['id']);
@@ -131,8 +131,8 @@ function sectionsList()
 					$url 		= false;
 					$accessurl 	= false;
 				}
-					
-					
+
+
 				$this->sections[mb_strtolower($arr['title']).$idvalue] = array(
 					'title' 		=> $arr['title'],
 					'description' 	=> $arr['description'],
@@ -145,10 +145,10 @@ function sectionsList()
 				);
 			}
 		}
-			
+
 		function getnext() {
 			if (list(,$arr) = each($this->sections)) {
-				
+
 				$this->altbg 		= !$this->altbg;
 				$this->title 		= $arr['title'];
 				$this->description 	= $arr['description'];
@@ -158,15 +158,15 @@ function sectionsList()
 				$this->optchecked 	= $arr['optchecked'];
 				$this->url 			= $arr['url'];
 				$this->accessurl 	= $arr['accessurl'];
-				
+
 				return true;
 			}
-			
+
 			return false;
 		}
-		
 
-		
+
+
 	}
 
 	$temp = new temp();
@@ -249,7 +249,7 @@ function sectionsOrder()
 								$this->arrleft[] = $arr['id'];
 							else
 								$this->arright[] = $arr['id'];
-							
+
 						}
 						break;
 					case "4":
@@ -291,7 +291,7 @@ function sectionsOrder()
 								$this->arrleft[] = $arr['id'];
 							else
 								$this->arright[] = $arr['id'];
-							
+
 						}
 						break;
 					}
@@ -458,7 +458,7 @@ function sectionCreate($jscript)
 				}
 			else
 				$this->editor = false;
-			
+
 			$this->nselected = 'selected';
 			$this->yselected = '';
 
@@ -479,7 +479,7 @@ function sectionCreate($jscript)
 				}
 			$this->counttmpl = count($this->arrtmpl);
 			}
-			
+
 		function getnexttemplate()
 			{
 			static $i = 0;
@@ -547,8 +547,8 @@ function sectionSave($title, $pos, $desc, $script, $js, $template, $lang, $opt)
 	$title = $db->db_escape_string($title);
 	$template = $db->db_escape_string($template);
 
-	
-	$query = "select * from ".BAB_SECTIONS_TBL." where title='$title'";	
+
+	$query = "select * from ".BAB_SECTIONS_TBL." where title='$title'";
 	$res = $db->db_query($query);
 	if( $db->db_num_rows($res) > 0)
 		{
@@ -664,7 +664,7 @@ function saveSectionsOrder($listleft, $listright)
 						$apos[$k] = $i;
 				}
 
-				
+
 				for( $k = 0; $k < 2; $k++ )
 				{
 					$tab = func_get_arg($k);
@@ -814,7 +814,7 @@ switch($idx)
 		sectionCreate(0);
 		$babBody->addItemMenu("List", bab_translate("Sections"),$GLOBALS['babUrlScript']."?tg=sections&idx=List");
 		$babBody->addItemMenu("Order", bab_translate("Order"),$GLOBALS['babUrlScript']."?tg=sections&idx=Order");
-		
+
 		$babBody->addItemMenu("ch", bab_translate("Create")."(html)",$GLOBALS['babUrlScript']."?tg=sections&idx=ch");
 		$babBody->addItemMenu("cj", bab_translate("Create")."(javascript)",$GLOBALS['babUrlScript']."?tg=sections&idx=cj");
 		break;
@@ -824,7 +824,7 @@ switch($idx)
 		sectionCreate(1);
 		$babBody->addItemMenu("List", bab_translate("Sections"),$GLOBALS['babUrlScript']."?tg=sections&idx=List");
 		$babBody->addItemMenu("Order", bab_translate("Order"),$GLOBALS['babUrlScript']."?tg=sections&idx=Order");
-		
+
 		$babBody->addItemMenu("ch", bab_translate("Create")."(html)",$GLOBALS['babUrlScript']."?tg=sections&idx=ch");
 		$babBody->addItemMenu("cj", bab_translate("Create")."(javascript)",$GLOBALS['babUrlScript']."?tg=sections&idx=cj");
 		break;
@@ -845,4 +845,4 @@ switch($idx)
 
 $babBody->setCurrentItemMenu($idx);
 bab_siteMap::setPosition('bab','AdminSections');
-?>
+

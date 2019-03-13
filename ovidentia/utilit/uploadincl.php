@@ -397,5 +397,3 @@ function bab_getUploadedFileContent($fieldname) {
 	}
 	return false;
 }
-
-?>

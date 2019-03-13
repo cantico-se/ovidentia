@@ -56,7 +56,7 @@ function changeAdmGroup()
 				{
 				$this->delegat[0] = bab_translate("Common content");
 				}
-			
+
 			$dgAdmGroups = bab_getDgAdmGroups();
 			$res = $babDB->db_query("SELECT id,name FROM ".BAB_DG_GROUPS_TBL." WHERE id IN(".$babDB->quote($dgAdmGroups).") ORDER BY name ASC");
 			while ($arr = $babDB->db_fetch_assoc($res))
@@ -64,12 +64,12 @@ function changeAdmGroup()
 				$this->delegat[$arr['id']] = $arr['name'];
 				}
 
-			
+
 			}
 
 		function getnext()
 			{
-			global $babBody;	
+			global $babBody;
 			if( list($this->grpdgid,$this->grpdgname ) = each($this->delegat))
 				{
 				if( $this->grpdgid == bab_getCurrentAdmGroup() )
@@ -92,13 +92,13 @@ function updateAdmGroup($grpdg)
 {
 	global $babBody, $babDB;
 	require_once dirname(__FILE__).'/utilit/delegincl.php';
-	
+
 	$delegation = bab_getInstance('bab_currentDelegation');
 	/*@var $delegation bab_currentDelegation */
 
-	$row = $babDB->db_fetch_assoc($babDB->db_query("select dg.*, g.lf, g.lr from ".BAB_DG_GROUPS_TBL." dg, ".BAB_GROUPS_TBL." g 
+	$row = $babDB->db_fetch_assoc($babDB->db_query("select dg.*, g.lf, g.lr from ".BAB_DG_GROUPS_TBL." dg, ".BAB_GROUPS_TBL." g
 			where g.id=dg.id_group and dg.id='".$babDB->db_escape_string($grpdg)."'"));
-	
+
 	if ($grpdg > 0 && isset($row['id_group']) > 0)
 		{
 		$delegation->set($grpdg);
@@ -114,13 +114,13 @@ function updateAdmGroup($grpdg)
 
 	$babDB->db_query("update ".BAB_USERS_LOG_TBL." set id_dg='".$babDB->db_escape_string($grpdg)."' where sessid=".$babDB->quote(session_id()));
 	$n = $babDB->db_affected_rows();
-	
+
 	if (0 === $n)
 	{
 		$babBody->addError(bab_translate('Nothing changed'));
 		return false;
 	}
-	
+
 	bab_siteMap::clear();
 	header('Location: '. $GLOBALS['babUrlScript'].'?tg=delegusr');
 	exit;
@@ -134,7 +134,7 @@ if( count($dgAdmGroups) < 1)
 	$babBody->title = bab_translate("Access denied");
 	return;
 	}
-	
+
 $idx = bab_rp('idx', 'chgdg');
 
 if('moddg' == bab_rp('mod'))
@@ -152,4 +152,3 @@ switch($idx)
 	}
 
 $babBody->setCurrentItemMenu($idx);
-?>

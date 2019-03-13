@@ -32,7 +32,7 @@
  */
 function bab_getLdapEncoding() {
 	return array(
-		BAB_LDAP_ISO8859 	=> 'ISO-8859-1', 
+		BAB_LDAP_ISO8859 	=> 'ISO-8859-1',
 		BAB_LDAP_UTF8 		=> 'UTF-8'
 	);
 }
@@ -40,23 +40,23 @@ function bab_getLdapEncoding() {
 
 /**
  * Return a string of ldap according to ovidentia charset
- * 
+ *
  * @param	string	$str		string to decode
- * @param	int		$type		BAB_LDAP_UTF8 or BAB_LDAP_ISO8859	charset of ldap directory, 
+ * @param	int		$type		BAB_LDAP_UTF8 or BAB_LDAP_ISO8859	charset of ldap directory,
  * 								if the parmater is null, ovidentia iste configuration will be used if available
- * 
+ *
  * @return	string
  */
 function bab_ldapDecode($str, $type = null)
 {
 	global $babBody;
 	$ovCharset = bab_charset::getDatabase();
-	
+
 	if (null === $type && isset($babBody->babsite['ldap_decoding_type'])) {
 		$type = $babBody->babsite['ldap_decoding_type'];
 	}
-	
-	
+
+
 	$type = (int) $type;
 
 	switch($type)
@@ -89,22 +89,22 @@ function bab_ldapDecode($str, $type = null)
 
 /**
  * Return a string of ovidentia according to ldap charset
- * 
+ *
  * @param	string	$str		string to decode
- * @param	int		$type		BAB_LDAP_UTF8 or BAB_LDAP_ISO8859	charset of ldap directory, 
+ * @param	int		$type		BAB_LDAP_UTF8 or BAB_LDAP_ISO8859	charset of ldap directory,
  * 								if the parmater is null, ovidentia iste configuration will be used if available
- * 
+ *
  * @return 	string
  */
 function bab_ldapEncode($str, $type = null)
 {
 	global $babBody;
 	$ovCharset = bab_charset::getDatabase();
-	
+
 	if (null === $type && isset($babBody->babsite['ldap_decoding_type'])) {
 		$type = $babBody->babsite['ldap_decoding_type'];
 	}
-	
+
 	$type = (int) $type;
 
 	switch($type)
@@ -165,10 +165,10 @@ function ldap_encrypt($str, $encryption)
 			break;
 		case 'smd5':
 			$salt = mhash_keygen_s2k(MHASH_MD5,$str,mb_substr(pack("h*",md5(mt_rand()) ),0,8),4);
-			return "{SMD5}".base64_encode(mHash(MHASH_MD5, $str.$salt).$salt); 
+			return "{SMD5}".base64_encode(mHash(MHASH_MD5, $str.$salt).$salt);
 			break;
 		default:
-			return false; 
+			return false;
 			break;
 	}
 }
@@ -217,7 +217,7 @@ class babLDAP
 
 	function connect()
 	{
-		
+
 
 		if( !isset($this->port) || empty($this->port))
 			{
@@ -347,4 +347,3 @@ class babLDAP
 	}
 }
 
-?>

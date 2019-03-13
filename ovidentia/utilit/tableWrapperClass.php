@@ -21,7 +21,7 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307,*
  * USA.																	*
 ************************************************************************/
-	
+
 
 	DEFINE('BAB_NONE', -1);
 	DEFINE('BAB_ALL_ATTRIBUTS', -2);
@@ -52,7 +52,7 @@
 		{
 			return $this->m_db;
 		}
-		
+
 		//Zero based
 		function buildSelect(& $attribut, $offset = BAB_ALL_ATTRIBUTS, $length = BAB_ALL_ATTRIBUTS)
 		{
@@ -94,7 +94,7 @@
 			$size = 0;
 			$start = 0;
 			$end   = 0;
-			
+
 			if(BAB_ALL_ATTRIBUTS == $offset)
 			{
 				$end = count($attribut);
@@ -122,7 +122,7 @@
 			$idx = 0;
 			$whereClause = $key = $value = '';
 
-			while($idx < $size) 
+			while($idx < $size)
 			{
 				list($key, $value) = each($reducedArray);
 				$whereClause .= ' AND ' . $key . '=\'' . $this->m_db->db_escape_string($value) . '\'';
@@ -139,24 +139,24 @@
 			$attributNameList	= $this->buildSelect($attribut, $selectOffset, $selectLength);
 			$whereClause		= $this->buildWhereClause($attribut, $whereClauseOffset, $whereClauseLength);
 
-			$request = 'SELECT ' . $attributNameList . ' FROM ' . $this->m_TableName . $whereClause; 
+			$request = 'SELECT ' . $attributNameList . ' FROM ' . $this->m_TableName . $whereClause;
 
 			//bab_debug($request);
-			
+
 			$result = $this->m_db->db_query($request);
-			return $this->m_db->db_fetch_assoc($result); 
+			return $this->m_db->db_fetch_assoc($result);
 		}
 
 		function save(& $attributsList, $skipFirst = true)
 		{
 			reset($attributsList);
-			
+
 			if(true === $skipFirst)
 			{
 				//skip the first element
 				next($attributsList);
 			}
-				
+
 			$item 	= '';
 			$insert = '';
 			$values = '';
@@ -167,7 +167,7 @@
 				$values .= ', ' . '\'' . $this->m_db->db_escape_string($item['value']) . '\'';
 			}
 
-			$requete = 'INSERT INTO ' . $this->m_TableName . '(  '. mb_substr($insert, mb_strlen(', ')) . ') ' . 
+			$requete = 'INSERT INTO ' . $this->m_TableName . '(  '. mb_substr($insert, mb_strlen(', ')) . ') ' .
 				'VALUES ( ' . mb_substr($values, mb_strlen(', ')) . ')';
 
 			//bab_debug($requete);
@@ -180,15 +180,15 @@
 			//skip the first element
 			reset($attributsList);
 			next($attributsList);
-				
+
 			$requete = '';
 			$item = '';
 			while($item = each($attributsList))
 			{
 				$requete .= ', `' . $item['key'] . '`=\'' . $this->m_db->db_escape_string($item['value']) . '\'';
 			}
-			
-			$requete = 'UPDATE ' . $this->m_TableName . ' SET ' . mb_substr($requete, mb_strlen(', ')) . ' WHERE id = \'' 
+
+			$requete = 'UPDATE ' . $this->m_TableName . ' SET ' . mb_substr($requete, mb_strlen(', ')) . ' WHERE id = \''
 				. $this->m_db->db_escape_string($attributsList['id']) . '\'';
 
 			//bab_debug($requete);
@@ -200,11 +200,10 @@
 		{
 			$whereClause = $this->buildWhereClause($attribut, $whereClauseOffset, $whereClauseLength);
 
-			$request = 'DELETE FROM ' . $this->m_TableName . $whereClause; 
-			
+			$request = 'DELETE FROM ' . $this->m_TableName . $whereClause;
+
 			//bab_debug($request);
-			
+
 			return $this->m_db->db_query($request);
 		}
 	}
-?>

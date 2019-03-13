@@ -994,4 +994,4 @@ function bab_userSessionActive($sIdSession, $iIdUser = null)
     }
     return false;
 }
-?>
+

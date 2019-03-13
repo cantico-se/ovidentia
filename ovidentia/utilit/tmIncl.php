@@ -3972,4 +3972,3 @@ function bab_tskmgr_specificFieldDelatable($iIdProjectSpace, $iIdProject, $iIdUs
     }
     return false;
 }
-?>

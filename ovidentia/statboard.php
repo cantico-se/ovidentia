@@ -49,7 +49,7 @@ function summaryDelegatList($col, $order)
 			$this->summaryBaseCls();
 			$this->grouptxt = bab_translate("Group");
 			$this->delegtxt = bab_translate("Delegation");
-			
+
 			$res = $babDB->db_query("select dg.*,g.lf,g.lr from ".BAB_GROUPS_TBL." g, ".BAB_DG_GROUPS_TBL." dg where g.id=dg.id_group ORDER BY dg.name");
 
 			$this->babDG = array(	array("groups", bab_translate("Groups")),
@@ -208,10 +208,10 @@ function summarySections($col, $order)
 			$order = mb_strtolower($order);
 			$this->sortord = $order == "asc"? "desc": "asc";
 			$this->sortcol = $col;
-	
+
 
 			list($this->utotal) = $babDB->db_fetch_row($babDB->db_query("select count(id) from ".BAB_USERS_TBL.""));
-			
+
 			$req = "select st.*, dg.name as dgname from ".BAB_SECTIONS_TBL." st left join ".BAB_DG_GROUPS_TBL." dg on st.id_dgowner=dg.id where st.optional='Y'";
 			$ressec = $babDB->db_query($req);
 
@@ -264,7 +264,7 @@ function summarySections($col, $order)
 							}
 						}
 					}
-			
+
 				$tmparr = array();
 				$tmparr['section'] = $arr['title'];
 				$tmparr['dgname'] = $arr['dgname'];
@@ -321,7 +321,7 @@ function summarySections($col, $order)
 
 			require_once dirname(__FILE__).'/utilit/artapi.php';
 			$topcats = bab_getArticleCategories();
-			
+
 			while( $arr = $babDB->db_fetch_array($rescat) )
 				{
 				$upercent = 0;
@@ -330,7 +330,7 @@ function summarySections($col, $order)
 					{
 					$arrtopcat[$cat] = array();;
 					}
-				
+
 				while( $topcats[$cat]['parent'] != 0 )
 					{
 					for( $i = 0; $i < count($arrtopcat[$arr['id']]); $i++ )
@@ -379,7 +379,7 @@ function summarySections($col, $order)
 				$tmparr['section'] = $arr['title'];
 				$tmparr['dgname'] = $arr['dgname'];
 				$tmparr['usage'] = $upercent;
-				$this->arrinfo[] = $tmparr;				
+				$this->arrinfo[] = $tmparr;
 				}
 
 			usort($this->arrinfo, array($this, 'compare'));
@@ -481,8 +481,7 @@ function summaryUsers()
 
 			}
 		}
-	
+
 	$temp = new summaryUsersCls();
 	$babBody->babecho(	bab_printTemplate($temp, "statboard.html", "userssummary"));
 }
-?>

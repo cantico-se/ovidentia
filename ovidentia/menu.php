@@ -147,4 +147,4 @@ switch($idx)
 }
 
 bab_siteMap::setPosition('bab', 'Menu');
-?>
+

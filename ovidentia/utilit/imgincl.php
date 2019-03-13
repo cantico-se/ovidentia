@@ -175,4 +175,4 @@ function accentRemover($str)
 				);
 	return str_replace(array_keys($arrconv),array_values($arrconv),$str);
 	}
-?>
+

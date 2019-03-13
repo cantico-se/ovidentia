@@ -1518,4 +1518,3 @@ class BAB_TM_GanttTaskPeriod
         return $this->m_iId;
     }
 }
-?>

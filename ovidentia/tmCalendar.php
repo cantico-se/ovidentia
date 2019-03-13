@@ -219,4 +219,3 @@ function bab_tskmgr_getCalendar()
 //*/
     return $oTmCalendar;
 }
-?>

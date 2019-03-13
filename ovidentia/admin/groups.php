@@ -69,7 +69,7 @@ function groupCreateMod()
 			$this->bdel = false;
 			$this->maingroup = false;
 
-			
+
 			$tree = new bab_grptree();
 
 			if (bab_getCurrentAdmGroup() > 0)
@@ -83,7 +83,7 @@ function groupCreateMod()
 			else
 				$id_parent = $tree->firstnode_info['id'];
 
-			
+
 			$this->groups = $tree->getGroups($id_parent, '%s '.bab_nbsp().' '.bab_nbsp().' ');
 
 			if (isset($this->groups[BAB_UNREGISTERED_GROUP]))
@@ -134,7 +134,7 @@ function groupCreateMod()
 					);
 
 				}
-			
+
 			}
 
 		function getnextgroup()
@@ -177,14 +177,14 @@ function groupList()
 			$this->t_edit_group = bab_translate("Edit group");
 			$this->t_members = bab_translate("Members");
 			$this->t_group_members = bab_translate("Group's members");
-			
+
 			/* Icons functionality */
 			$icons = bab_functionality::get('Icons');
 			if ($icons != false) {
 				$icons->includeCss();
 			}
 			$this->iconCssClass_Members = Func_Icons::APPS_USERS;
-			
+
 			$tree = new bab_grptree();
 			$this->arr = $tree->getNodeInfo($tree->firstnode);
 			$this->arr['name'] = bab_translate($this->arr['name']);
@@ -213,7 +213,7 @@ function groupList()
 					$this->id_expand_to = BAB_ADMINISTRATOR_GROUP;
 					}
 				}
-			
+
 			}
 		}
 
@@ -248,7 +248,7 @@ function moveGroup()
 function groupDelete($id)
 	{
 	global $babBody;
-	
+
 	class groupDeleteCls
 		{
 
@@ -266,14 +266,14 @@ function groupDelete($id)
 			$this->t_delete = bab_translate("Delete");
 			$this->t_yes = bab_translate("Yes");
 			$this->t_no = bab_translate("No");
-			
+
 			}
 		}
 
 	$temp = new groupDeleteCls($id);
 	$babBody->babecho( bab_printTemplate($temp,"groups.html", "confirmdeletegroup"));
 	}
-	
+
 function groupsOptions()
 	{
 	global $babBody;
@@ -287,7 +287,7 @@ function groupsOptions()
 		var $url;
 		var $urlname;
 		var $group;
-			
+
 		var $arr = array();
 		var $db;
 		var $count;
@@ -335,10 +335,10 @@ function groupsOptions()
 				else
 					$this->bdgpds = false;
 				}
-			
+
 			$tree = new bab_grptree();
 			$this->groups = $tree->getGroups(BAB_ALLUSERS_GROUP);
-			unset($this->groups[BAB_UNREGISTERED_GROUP]);					
+			unset($this->groups[BAB_UNREGISTERED_GROUP]);
 			}
 
 		function getnext()
@@ -349,7 +349,7 @@ function groupsOptions()
 				$this->burl = true;
 				$this->grpid = $this->arr['id'];
 
-				
+
 				if( $this->arr['notes'] == "Y")
 					$this->notescheck = "checked";
 				else
@@ -383,9 +383,9 @@ function groupsOptions()
 
 
 
-	
+
 /**
- * 
+ *
  * @return string       The next idx.
  */
 function addModGroup()
@@ -394,13 +394,13 @@ function addModGroup()
 
 	global $babBody;
 	$db = &$GLOBALS['babDB'];
-	
+
 	$id_parent = bab_pp('parent', 0);
-	
+
 	$delegationId = bab_getCurrentAdmGroup();
-	
+
 	if ($delegationId != 0) {
-	    // The user is working on a delegation. We check that is allowed to work on the parent group. 
+	    // The user is working on a delegation. We check that is allowed to work on the parent group.
 	    if (!bab_isDelegated('groups')) {
 	        $babBody->msgerror = bab_translate("Access denied");
 	        return 'Create';
@@ -411,7 +411,7 @@ function addModGroup()
 	    if ($id_parent != $delegationInfo['id_group']) {
 	        // The parent group is not the administered group.
 	        $delegationSubGroups = bab_getGroups($delegationInfo['id_group']);
-	        
+
 	        if (!in_array($id_parent, $delegationSubGroups['id'])) {
     	        // The parent group is also not one of the administered group's sub-groups.
 	            $babBody->msgerror = bab_translate("Access denied");
@@ -421,7 +421,7 @@ function addModGroup()
 	}
 
 
-    
+
 	$grpdg = isset($_POST['grpdg']) ? $_POST['grpdg'] : 0;
 
 	if (!is_numeric($_POST['grpid'])) {
@@ -474,7 +474,7 @@ function addModGroup()
 		{
 		$moveoption = isset($_POST['moveoption']) ? $_POST['moveoption'] : 1;
 		}
-	
+
 
 	$idgrp = &$_POST['grpid'];
 	bab_updateGroupInfo($idgrp, $name, $description, 0, $grpdg );
@@ -508,38 +508,38 @@ function saveGroupsOptions($mailgrpids, $notgrpids, $congrpids, $pdsgrpids, $pca
 
 	for( $i=0; $i < count($mailgrpids); $i++)
 	{
-		$db->db_query("update ".BAB_GROUPS_TBL." set mail='Y' where id=".$db->quote($mailgrpids[$i]).""); 
+		$db->db_query("update ".BAB_GROUPS_TBL." set mail='Y' where id=".$db->quote($mailgrpids[$i])."");
 	}
 
 	for( $i=0; $i < count($notgrpids); $i++)
 	{
-		$db->db_query("update ".BAB_GROUPS_TBL." set notes='Y' where id=".$db->quote($notgrpids[$i]).""); 
+		$db->db_query("update ".BAB_GROUPS_TBL." set notes='Y' where id=".$db->quote($notgrpids[$i])."");
 	}
 
 	for( $i=0; $i < count($congrpids); $i++)
 	{
-		$db->db_query("update ".BAB_GROUPS_TBL." set contacts='Y' where id=".$db->quote($congrpids[$i]).""); 
+		$db->db_query("update ".BAB_GROUPS_TBL." set contacts='Y' where id=".$db->quote($congrpids[$i])."");
 	}
 
 	for( $i=0; $i < count($pdsgrpids); $i++)
 	{
-		$db->db_query("update ".BAB_GROUPS_TBL." set ustorage='Y' where id=".$db->quote($pdsgrpids[$i]).""); 
+		$db->db_query("update ".BAB_GROUPS_TBL." set ustorage='Y' where id=".$db->quote($pdsgrpids[$i])."");
 	}
 
-	$db->db_query("update ".BAB_CALENDAR_TBL." set actif='N' where type='".BAB_CAL_USER_TYPE."'"); 
+	$db->db_query("update ".BAB_CALENDAR_TBL." set actif='N' where type='".BAB_CAL_USER_TYPE."'");
 	for( $i=0; $i < count($pcalgrpids); $i++)
 	{
 		$db->db_query("update ".BAB_GROUPS_TBL." set pcalendar='Y' where id=".$db->quote($pcalgrpids[$i])."");
 		if( $pcalgrpids[$i] == BAB_REGISTERED_GROUP)
 		{
-			$db->db_query("update ".BAB_CALENDAR_TBL." set actif='Y' where type='".BAB_CAL_USER_TYPE."'"); 
+			$db->db_query("update ".BAB_CALENDAR_TBL." set actif='Y' where type='".BAB_CAL_USER_TYPE."'");
 		}
 		else
 		{
-			$db->db_query("update ".BAB_CALENDAR_TBL." ct, ".BAB_USERS_GROUPS_TBL." ugt set ct.actif='Y' where ct.type='".BAB_CAL_USER_TYPE."' and ct.owner=ugt.id_object and ugt.id_group=".$db->quote($pcalgrpids[$i]).""); 
+			$db->db_query("update ".BAB_CALENDAR_TBL." ct, ".BAB_USERS_GROUPS_TBL." ugt set ct.actif='Y' where ct.type='".BAB_CAL_USER_TYPE."' and ct.owner=ugt.id_object and ugt.id_group=".$db->quote($pcalgrpids[$i])."");
 		}
 	}
-	
+
 	bab_siteMap::clearAll();
 
 	Header("Location: ". $GLOBALS['babUrlScript']."?tg=groups&idx=options");
@@ -559,7 +559,7 @@ $idx = bab_rp('idx','List');
 
 if( isset($_POST['add']))
 	{
-	    
+
 	if (isset($_POST['deleteg']))
 		{
 		$item = $_POST['grpid'];
@@ -597,7 +597,7 @@ if ($idx != "brow")
 
 switch($idx)
 	{
-	case "brow": 
+	case "brow":
 		// Used by add-ons and deprecated after 6.1.0 for security reasons
 		// user must be admin
 		include_once $GLOBALS['babInstallPath']."utilit/grpincl.php";
@@ -654,4 +654,3 @@ switch($idx)
 
 $babBody->setCurrentItemMenu($idx);
 bab_siteMap::setPosition('bab','AdminGroups');
-?>

@@ -192,4 +192,3 @@ function summarySearchKeyWords($col, $order, $pos, $startday, $endday)
 		return $temp->count;
 		}
 	}
-?>

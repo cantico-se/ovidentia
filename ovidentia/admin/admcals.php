@@ -44,7 +44,7 @@ function calendarsCategories()
 		var $desctxt;
 		var $bgcolor;
 		var $bgcolortxt;
-				
+
 		var $arr = array();
 		var $db;
 		var $count;
@@ -63,20 +63,20 @@ function calendarsCategories()
 			$this->t_delete_checked = bab_translate("Delete checked items");
 			$this->t_confirm_delete = bab_translate("Do you want to delete selected items?");
 			$this->urladdcat = $GLOBALS['babUrlScript'].'?tg=admcals&idx=addc';
-			
+
 			if ($delete_category = bab_pp('delete_category')) {
 				foreach($delete_category as $id_category) {
 					deleteCalendarCategory($id_category);
 				}
-				
+
 				Header("Location:". $GLOBALS['babUrlScript']."?tg=admcals&idx=cats");
 				exit;
 			}
-			
+
 			$this->res = $babDB->db_query("select * from ".BAB_CAL_CATEGORIES_TBL." ORDER BY name,description ");
 			$this->countcal = $babDB->db_num_rows($this->res);
 			}
-			
+
 		function getnext()
 			{
 			global $babDB;
@@ -176,7 +176,7 @@ function calendarsPublic()
 			{
 			global $babDB;
 			static $i = 0;
-		
+
 			if( $i < $this->count)
 				{
 				$this->altbg = !$this->altbg;
@@ -215,7 +215,7 @@ function calendarsPublic()
 function bab_orderDomain(){
 	global $babBody, $babDB;
 	$domainslist = bab_pp('domainslist');
-	
+
 	if($domainslist){
 		for($i=0; $i < count($domainslist); $i++)
 		{
@@ -232,7 +232,7 @@ function bab_calendarsOrderDomains()
 {
 	global $babBody;
 	class temp
-	{		
+	{
 
 		var $sorta;
 		var $sortd;
@@ -241,7 +241,7 @@ function bab_calendarsOrderDomains()
 		function temp()
 		{
 			global $babBody, $babDB, $BAB_SESS_USERID;
-			
+
 			$id = bab_gp('id');
 			if(!$id){
 				$id = 0;
@@ -256,7 +256,7 @@ function bab_calendarsOrderDomains()
 					$domainname = bab_translate('Domains');
 				}
 			}
-			
+
 			$this->id = $id;
 			$this->topdomainname = "---- ".$domainname." ----";
 			$this->moveup = bab_translate("Move Up");
@@ -265,7 +265,7 @@ function bab_calendarsOrderDomains()
 			$this->sortd = bab_translate("Sort descending");
 			$this->create = bab_translate("Modify");
 			$this->db = $GLOBALS['babDB'];
-			
+
 			$req = "select * FROM ".BAB_CAL_DOMAINS_TBL." WHERE id_parent = ".$babDB->quote($id)." ORDER BY `order` ASC, name ASC";
 			$this->res = $this->db->db_query($req);
 			$this->count = $this->db->db_num_rows($this->res);
@@ -276,7 +276,7 @@ function bab_calendarsOrderDomains()
 			static $i = 0;
 			if( $i < $this->count){
 				$arr = $this->db->db_fetch_array($this->res);
-				
+
 				$this->iddomain = bab_toHtml($arr['id']);
 				$this->domainname = bab_toHtml($arr['name']);
 				$i++;
@@ -295,26 +295,26 @@ function bab_calendarsOrderDomains()
 function bab_rmDomain()
 {
 	global $babDB, $babBody;
-	
+
 	$id = bab_gp('id');
 	if($id){
 		$sql = "DELETE FROM ".BAB_CAL_DOMAINS_TBL." WHERE id = ".$babDB->quote($id)." OR ( id_parent=".$babDB->quote($id)." AND id_parent != '0')";
 		$babDB->db_query($sql);
-		
+
 		$babBody->addError(bab_translate('Deletion done'));
 		return true;
 	}
-	return false;	
+	return false;
 }
 
 function bab_saveDomain()
 {
 	global $babDB, $babBody;
-	
+
 	$id = bab_pp('id');
 	$name = bab_pp('name');
 	$id_parent = bab_pp('id_parent', 0);
-	
+
 	if($name){
 		$name = str_replace(array(',', ':', '/'), '', $name);//Those chars a forbiden due to caldav backend
 		if($id_parent != 0){
@@ -336,19 +336,19 @@ function bab_saveDomain()
 					id_parent = ".$babDB->quote($id_parent)."
 				WHERE id = ".$babDB->quote($id)
 			);
-			
+
 			$babBody->addError(bab_translate('Update done'));
 		}else{
 			$babDB->db_query("
 				INSERT INTO ".BAB_CAL_DOMAINS_TBL." (name, id_parent)
 				VALUES (".$babDB->quote($name).", ".$babDB->quote($id_parent).")"
 			);
-			
+
 			$babBody->addError(bab_translate('Addition done'));
 		}
 		return true;
 	}
-	return false;	
+	return false;
 }
 
 function bab_calendarsEditDomain()
@@ -356,10 +356,10 @@ function bab_calendarsEditDomain()
 	global $babDB, $babBody;
 	$W = bab_Widgets();
 	$W->includeCss();
-	
+
 	$page = $W->BabPage();
 	$page->addStyleSheet($GLOBALS['babInstallPath'].'styles/domain.css');
-	
+
 	$Form = $W->Form()->setId('bab-domaine-form')
 		->setHiddenValue('tg', bab_rp('tg'))
 		->setHiddenValue('idx', 'domain')
@@ -373,7 +373,7 @@ function bab_calendarsEditDomain()
 				$W->SubmitButton()->validate(true)->setLabel(bab_translate('Save'))
 			)->setVerticalSpacing(1,'em')
 		);
-	
+
 	$id = bab_gp('id');
 	$idParent = bab_gp('idparent');
 	if($id){
@@ -394,10 +394,10 @@ function bab_calendarsEditDomain()
 		$babBody->title = bab_translate("Domain");
 		$Form->setHiddenValue('id_parent', $idParent);
 	}
-	
+
 	$page->addItem($Form);
-	
-	
+
+
 	$page->displayHtml();
 }
 
@@ -406,14 +406,14 @@ function bab_calendarsDomain()
 	global $babDB;
 	$W = bab_Widgets();
 	$W->includeCss();
-	
+
 	$page = $W->BabPage();
-	
+
 	$treeView = $W->SimpleTreeView('bab-domain-tree');
 	$treeView->setPersistent(true);
-	
+
 	$res = $babDB->db_query("select * FROM ".BAB_CAL_DOMAINS_TBL." ORDER BY `order` ASC, name ASC");
-	
+
 	$domaines = array();
 	while($res && $arr = $babDB->db_fetch_assoc($res)){
 		$domaines[$arr['id_parent']][] = array('name' => $arr['name'], 'id' => $arr['id']);
@@ -436,11 +436,11 @@ function bab_calendarsDomain()
 		''
 	);
 	$treeView->appendElement($element, null);
-	
+
 	foreach($domaines as $idparent => $domainesParent){
 		foreach($domainesParent as $order => $domaine){
 			$element =& $treeView->createElement($domaine['id'], '', $domaine['name'], '', '');
-			
+
 			if($idparent == 0){
 				$element->setIcon($GLOBALS['babSkinPath'] . 'images/Puces/folder_add.png');
 				$element->addAction(
@@ -491,9 +491,9 @@ function bab_calendarsDomain()
 			$treeView->appendElement($element, $idparent);
 		}
 	}
-	
+
 	$page->addItem($treeView);
-	
+
 	$page->displayHtml();
 }
 
@@ -529,7 +529,7 @@ function calendarsResource()
 			{
 			global $babDB;
 			static $i = 0;
-		
+
 			if( $i < $this->count)
 				{
 				$this->altbg = !$this->altbg;
@@ -692,7 +692,7 @@ function calendarsAddResource($name, $desc, $idsa, $bgcolor)
 function calendarsDelResource($idcal)
 	{
 	global $babBody;
-	
+
 	class temp
 		{
 		var $warning;
@@ -724,7 +724,7 @@ function calendarsDelResource($idcal)
 function calendarsDelPublic($idcal)
 	{
 	global $babBody;
-	
+
 	class temp
 		{
 		var $warning;
@@ -765,12 +765,12 @@ function addPublicCalendar($calname, $caldesc, $calidsa, $bgcolor)
 
 
 	$babDB->db_query("
-	    insert into ".BAB_CAL_PUBLIC_TBL." 
-	       (name, description, id_dgowner, idsa, bgcolor) 
+	    insert into ".BAB_CAL_PUBLIC_TBL."
+	       (name, description, id_dgowner, idsa, bgcolor)
 	    values (
-	       '" .$babDB->db_escape_string($calname). "', 
-	       '".$babDB->db_escape_string($caldesc)."', 
-	       '".$babDB->db_escape_string(bab_getCurrentAdmGroup())."', 
+	       '" .$babDB->db_escape_string($calname). "',
+	       '".$babDB->db_escape_string($caldesc)."',
+	       '".$babDB->db_escape_string(bab_getCurrentAdmGroup())."',
 	       '".$babDB->db_escape_string($calidsa)."',
 	       ".$babDB->quote($bgcolor)."
 	    )"
@@ -790,29 +790,29 @@ function addResourceCalendar($calname, $caldesc, $calidsa, $bgcolor)
 		$babBody->msgerror = bab_translate("ERROR: You must provide a name")." !";
 		return false;
 		}
-		
-	
+
+
 	$availability_lock = isset($_POST['availability_lock']) ? '1' : '0';
-	
+
 
 	$babDB->db_query("
-		insert into ".BAB_CAL_RESOURCES_TBL." 
-			(name, description, id_dgowner, idsa, availability_lock, bgcolor) 
-		VALUES 
+		insert into ".BAB_CAL_RESOURCES_TBL."
+			(name, description, id_dgowner, idsa, availability_lock, bgcolor)
+		VALUES
 			(
-				'" .$babDB->db_escape_string($calname). "', 
-				'".$babDB->db_escape_string($caldesc)."', 
-				'".$babDB->db_escape_string(bab_getCurrentAdmGroup())."', 
+				'" .$babDB->db_escape_string($calname). "',
+				'".$babDB->db_escape_string($caldesc)."',
+				'".$babDB->db_escape_string(bab_getCurrentAdmGroup())."',
 				'".$babDB->db_escape_string($calidsa)."',
 				".$babDB->quote($availability_lock).",
 	            ".$babDB->quote($bgcolor)."
 			)
 	");
-	
+
 	$idowner = $babDB->db_insert_id();
-	
+
 	$babDB->db_query("insert into ".BAB_CALENDAR_TBL." (owner, type) values ('" .$babDB->db_escape_string($idowner). "', '".BAB_CAL_RES_TYPE."')");
-	
+
 	Header("Location: ". $GLOBALS['babUrlScript']."?tg=admcals&idx=res");
 	exit;
 }
@@ -835,7 +835,7 @@ function addCategoryCalendar($catname, $catdesc, $bgcolor)
 function updatePublicCalendars($calids)
 {
 	global $babDB, $babBody;
-	
+
 	$res = $babDB->db_query("select id from ".BAB_CALENDAR_TBL." where type='".BAB_CAL_PUB_TYPE."'");
 	while( $row = $babDB->db_fetch_array($res))
 		{
@@ -853,7 +853,7 @@ function updatePublicCalendars($calids)
 function updateResourceCalendars($calids)
 {
 	global $babDB, $babBody;
-	
+
 	$res = $babDB->db_query("select id from ".BAB_CALENDAR_TBL." where type='".BAB_CAL_RES_TYPE."'");
 	while( $row = $babDB->db_fetch_array($res))
 		{
@@ -876,13 +876,13 @@ function deleteCalendarCategory($idcat)
 {
 	global $babDB;
 	require_once $GLOBALS['babInstallPath'].'utilit/eventperiod.php';
-	
+
 	$babDB->db_query("delete from ".BAB_CAL_CATEGORIES_TBL." WHERE id=".$babDB->quote($idcat));
 	$babDB->db_query("update ".BAB_CAL_EVENTS_TBL." set id_cat='0' WHERE id_cat=".$babDB->quote($idcat));
 
 	$event = new bab_eventAfterEventCategoryDeleted;
 	$event->id_category = $idcat;
-	
+
 	bab_fireEvent($event);
 }
 
@@ -898,7 +898,7 @@ $idx = bab_rp('idx', 'pub');
 if( bab_rp('addc'))
 {
     bab_requireSaveMethod();
-    
+
 	if( "addp" == bab_rp('addc') )
 	{
 		if( addPublicCalendar(bab_rp('calname'), bab_rp('caldesc'), bab_rp('calidsa'), bab_rp('bgcolor')))
@@ -1110,4 +1110,3 @@ switch($idx)
 
 $babBody->setCurrentItemMenu($idx);
 bab_siteMap::setPosition('bab','AdminCalendars');
-?>

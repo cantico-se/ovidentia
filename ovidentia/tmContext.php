@@ -35,17 +35,17 @@ class BAB_TM_Context
 	var $m_iIdProject;
 	var $m_iIdTask;
 	var $m_oWorkingHours;
-	
+
 	var $m_bIsProjectVisualizer;
 	var $m_aVisualizedIdProjectSpace;
 	var $m_aVisualizedIdProject;
-	
+
 	var $m_bIsProjectCreator;
 	var $m_aProjectSpacesIdWhoUserIsCreator;
-	
+
 	var $m_bIsProjectManager;
 	var $m_aManagedIdProject;
-	
+
 	var $m_bIsProjectSupervisor;
 	var $m_aSupervisedIdProject;
 
@@ -70,52 +70,52 @@ class BAB_TM_Context
 		{
 			$this->m_iIdDelegation = (int) $aProjectSpace['idDelegation'];
 		}
-				
+
 		$this->m_oWorkingHours = null;
-		
+
 		$this->m_aConfiguration = null;
 		$this->m_bIsProjectVisualizer = null;
 		$this->m_aVisualizedIdProjectSpace = array();
 		$this->m_aVisualizedIdProject = array();
-		
+
 		$this->m_bIsProjectCreator = null;
 		$this->m_aProjectSpacesIdWhoUserIsCreator = array();
-		
+
 		$this->m_bIsProjectManager = null;
 		$this->m_aManagedIdProject = array();
-		
+
 		$this->m_bIsProjectSupervisor = null;
 		$this->m_aSupervisedIdProject = array();
-		
+
 		$this->m_bIsManageTask = null;
 		$this->m_aManagedTaskId = array();
-		
+
 		$this->m_bIsPersonnalTaskOwner = null;
 		$this->m_aPersonnalOwnedIdTask = array();
 	}
-	
-	
+
+
 	// Public
 	function getIdProjectSpace()
 	{
 		return $this->m_iIdProjectSpace;
 	}
-	
+
 	function getIdProject()
 	{
 		return $this->m_iIdProject;
 	}
-	
+
 	function getIdTask()
 	{
 		return $this->m_iIdTask;
 	}
-	
+
 	function getIdDelegation()
 	{
 		return $this->m_iIdDelegation;
 	}
-	
+
 	function &getConfiguration()
 	{
 		if(is_null($this->m_aConfiguration))
@@ -193,11 +193,11 @@ class BAB_TM_Context
 	{
 		return $this->m_oTblWr;
 	}
-	
+
 	/**
 	 * Returns the list of project spaces that can be visualized by the current user.
 	 *
-	 * @return array	An array where the keys represent the id's of visualizable project spaces 
+	 * @return array	An array where the keys represent the id's of visualizable project spaces
 	 */
 	function getVisualisedIdProjectSpace()
 	{
@@ -207,18 +207,18 @@ class BAB_TM_Context
 		}
 		return $this->m_aVisualizedIdProjectSpace;
 	}
-	
+
 	// Private
 	function loadConfiguration()
 	{
 		require_once($GLOBALS['babInstallPath'] . 'utilit/tmIncl.php');
-		
+
 		$success = false;
 		if(0 != $this->m_iIdProjectSpace)
 		{
 			if(0 == $this->m_iIdProject)
 			{
-				$success = bab_getDefaultProjectSpaceConfiguration($this->m_iIdProjectSpace, 
+				$success = bab_getDefaultProjectSpaceConfiguration($this->m_iIdProjectSpace,
 					$this->m_aConfiguration);
 			}
 			else
@@ -226,7 +226,7 @@ class BAB_TM_Context
 				$success = bab_getProjectConfiguration($this->m_iIdProject, $this->m_aConfiguration);
 			}
 		}
-		
+
 		if($success)
 		{
 			return true;
@@ -240,31 +240,31 @@ class BAB_TM_Context
 
 	/**
 	 * Determines the projets and project spaces that can be visualised by the current user.
-	 * 
+	 *
 	 * A user can view a project space for which he is a default project visualiser or if is
 	 * a project visualiser of a project contained in this space.
-	 * 
+	 *
 	 * @access private
 	 */
 	function queryVisualisedObject()
 	{
 		require_once($GLOBALS['babInstallPath'] . 'admin/acl.php');
-		
+
 		$this->m_aVisualizedIdProjectSpace = bab_getUserIdObjects(BAB_TSKMGR_PROJECT_CREATOR_GROUPS_TBL);
-		
+
 		$this->m_aVisualizedIdProject = bab_getUserIdObjects(BAB_TSKMGR_PROJECTS_VISUALIZERS_GROUPS_TBL);
 		if(count($this->m_aVisualizedIdProject) > 0)
 		{
-			$query = 
-				'SELECT ' . 
+			$query =
+				'SELECT ' .
 					'idProjectSpace ' .
-				'FROM ' . 
+				'FROM ' .
 					BAB_TSKMGR_PROJECTS_TBL . ' ' .
-				'WHERE ' . 
+				'WHERE ' .
 					'id IN(\'' . implode('\',\'', array_keys($this->m_aVisualizedIdProject)) . '\')';
-				
+
 			$db	= & $GLOBALS['babDB'];
-			
+
 			$result = $db->db_query($query);
 			if(false != $result)
 			{
@@ -277,12 +277,12 @@ class BAB_TM_Context
 				}
 			}
 		}
-		
+
 		if(count($this->m_aVisualizedIdProjectSpace) > 0)
 		{
 			$this->m_bIsProjectVisualizer = true;
 		}
-		else 
+		else
 		{
 			$this->m_bIsProjectVisualizer = false;
 		}
@@ -291,13 +291,13 @@ class BAB_TM_Context
 	function queryProjectSpaceWhoUserCanCreate()
 	{
 		require_once($GLOBALS['babInstallPath'] . 'admin/acl.php');
-		
+
 		$this->m_aProjectSpacesIdWhoUserIsCreator = bab_getUserIdObjects(BAB_TSKMGR_PROJECT_CREATOR_GROUPS_TBL);
 		if(count($this->m_aProjectSpacesIdWhoUserIsCreator) > 0)
 		{
 			$this->m_bIsProjectCreator = true;
 		}
-		else 
+		else
 		{
 			$this->m_bIsProjectCreator = false;
 		}
@@ -306,14 +306,14 @@ class BAB_TM_Context
 	function queryManagedProject()
 	{
 		require_once($GLOBALS['babInstallPath'] . 'admin/acl.php');
-		
+
 		$this->m_aManagedIdProject = bab_getUserIdObjects(BAB_TSKMGR_PROJECTS_MANAGERS_GROUPS_TBL);
-		
+
 		if(count($this->m_aManagedIdProject) > 0)
 		{
 			$this->m_bIsProjectManager = true;
 		}
-		else 
+		else
 		{
 			$this->m_bIsProjectManager = false;
 		}
@@ -322,13 +322,13 @@ class BAB_TM_Context
 	function querySupervisedProject()
 	{
 		require_once($GLOBALS['babInstallPath'] . 'admin/acl.php');
-		
+
 		$this->m_aSupervisedIdProject = bab_getUserIdObjects(BAB_TSKMGR_PROJECTS_SUPERVISORS_GROUPS_TBL);
 		if(count($this->m_aSupervisedIdProject) > 0)
 		{
 			$this->m_bIsProjectSupervisor = true;
 		}
-		else 
+		else
 		{
 			$this->m_bIsProjectSupervisor = false;
 		}
@@ -337,33 +337,33 @@ class BAB_TM_Context
 	function queryManagedTask()
 	{
 		require_once($GLOBALS['babInstallPath'] . 'admin/acl.php');
-		
+
 		$this->m_aManagedTaskId = bab_getUserIdObjects(BAB_TSKMGR_TASK_RESPONSIBLE_GROUPS_TBL);
 		if(count($this->m_aManagedTaskId) > 0)
 		{
 			$this->m_bIsManageTask = true;
 		}
-		else 
+		else
 		{
 			$this->m_bIsManageTask = false;
 		}
 	}
-	
+
 	function queryPersonnalOwnedTask()
 	{
 		require_once($GLOBALS['babInstallPath'] . 'admin/acl.php');
-		/*		
-		$query = 
-			'SELECT ' . 
+		/*
+		$query =
+			'SELECT ' .
 				'id ' .
-			'FROM ' . 
+			'FROM ' .
 				BAB_TSKMGR_TASKS_TBL . ' ' .
-			'WHERE ' . 
+			'WHERE ' .
 				'idProject = \'0\' AND ' .
 				'idResponsible = \'' . $GLOBALS['BAB_SESS_USERID'] . '\'';
-			
+
 		$db	= & $GLOBALS['babDB'];
-		
+
 		$result = $db->db_query($query);
 		if(false != $result)
 		{
@@ -376,13 +376,13 @@ class BAB_TM_Context
 			}
 		}
 		//*/
-		
+
 		$this->m_aPersonnalOwnedIdTask = bab_getUserIdObjects(BAB_TSKMGR_PERSONNAL_TASK_CREATOR_GROUPS_TBL);
 		if(count($this->m_aPersonnalOwnedIdTask) > 0)
 		{
 			$this->m_bIsPersonnalTaskOwner = true;
 		}
-		else 
+		else
 		{
 			$this->m_bIsPersonnalTaskOwner = false;
 		}
@@ -422,7 +422,7 @@ class BAB_TM_Context
 				{
 					$iUserProfil = BAB_TM_PROJECT_MANAGER;
 				}
-				else 
+				else
 				{
 				    $aTaskResponsible = null;
 					bab_getTaskResponsibles($this->m_iIdTask, $aTaskResponsible);
@@ -432,7 +432,7 @@ class BAB_TM_Context
 					}
 				}
 			}
-			else 
+			else
 			{
 				$aTask = array();
 				if(bab_getTask($this->m_iIdTask, $aTask) && $GLOBALS['BAB_SESS_USERID'] == $aTask['iIdOwner'])
@@ -456,5 +456,3 @@ function& getTskMgrContext()
 	}
 	return $GLOBALS['BAB_TM_Context'];
 }
-
-?>

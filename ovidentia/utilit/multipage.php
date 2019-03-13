@@ -570,4 +570,3 @@ class BAB_MultiPageBase
         $this->m_aAdditionnalPaginationAndFormParameters[$sName] = $sValue;
     }
 }
-?>

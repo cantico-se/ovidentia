@@ -54,7 +54,7 @@ function addOrgChart($nameval, $descriptionval, $dirid, $display_mode)
 			$this->display_horizontal = bab_translate("Horizontal view");
 			$this->display_text = bab_translate("Text view");
 			$this->display_mode = bab_translate("Default view");
-			
+
 			$this->displayval = $display_mode;
 			$this->diridval = $dirid;
 		}
@@ -90,7 +90,7 @@ function listOrgCharts()
 		var $urlname;
 		var $url;
 		var $description;
-				
+
 		var $arr = array();
 		var $db;
 		var $count;
@@ -218,4 +218,3 @@ switch($idx)
 }
 $babBody->setCurrentItemMenu($idx);
 bab_siteMap::setPosition('bab','AdminCharts');
-?>

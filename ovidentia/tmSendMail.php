@@ -26,26 +26,26 @@
 	require_once $GLOBALS['babInstallPath'] . 'admin/acl.php';
 
 	$GLOBALS['g_aEmailMsg'] = array(
-		BAB_TM_EV_PROJECT_CREATED => 
+		BAB_TM_EV_PROJECT_CREATED =>
 			array('subject' => bab_translate("Project creation"),
 				'body' => bab_translate("The project %s have been created in the project space %s")),
-		BAB_TM_EV_PROJECT_DELETED => 
-			array('subject' => bab_translate("Project deletion"), 
+		BAB_TM_EV_PROJECT_DELETED =>
+			array('subject' => bab_translate("Project deletion"),
 				'body' => bab_translate("The project %s have been deleted from the project space %s")),
-		BAB_TM_EV_TASK_CREATED => 
-			array('subject' => bab_translate("Task creation"), 
+		BAB_TM_EV_TASK_CREATED =>
+			array('subject' => bab_translate("Task creation"),
 				'body' => bab_translate("The task %s have been added to the project %s in the project space %s")),
-		BAB_TM_EV_TASK_UPDATED_BY_MGR => 
-			array('subject' => bab_translate("Task update"), 
+		BAB_TM_EV_TASK_UPDATED_BY_MGR =>
+			array('subject' => bab_translate("Task update"),
 				'body' => bab_translate("The task %s of the project %s in the project space %s have been updated by %s")),
-		BAB_TM_EV_TASK_UPDATED_BY_RESP => 
-			array('subject' => bab_translate("Task update"), 
+		BAB_TM_EV_TASK_UPDATED_BY_RESP =>
+			array('subject' => bab_translate("Task update"),
 				'body' => bab_translate("The task %s of the project %s in the project space %s have been updated by %s")),
-		BAB_TM_EV_TASK_DELETED => 
-			array('subject' => bab_translate("Task deletion"), 
+		BAB_TM_EV_TASK_DELETED =>
+			array('subject' => bab_translate("Task deletion"),
 				'body' => bab_translate("The task %s of the project %s in the project space %s have been deleted by %s")),
-		BAB_TM_EV_NOTICE_ALERT => 
-			array('subject' => bab_translate("Notice alert"), 
+		BAB_TM_EV_NOTICE_ALERT =>
+			array('subject' => bab_translate("Notice alert"),
 				'body' => bab_translate("The task %s of the project %s in the project space %s is about to exceed the envisaged time")),
 		BAB_TM_EV_NEW_TASK_RESPONSIBLE =>
 			array('subject' => bab_translate("Task update"),
@@ -56,11 +56,11 @@
 		BAB_TM_EV_TASK_RESPONSIBLE_PROPOSED =>
 			array('subject' => bab_translate("Task update"),
 				'body' => bab_translate("You are responsible for task %s of the %s project in %s project space. Please accept/refuse")),
-		BAB_TM_EV_TASK_STARTED => 
-			array('subject' => bab_translate("Task update"), 
+		BAB_TM_EV_TASK_STARTED =>
+			array('subject' => bab_translate("Task update"),
 				'body' => bab_translate("The task %s of the project %s in the project space %s is started"))
 	);
-	
+
 	class BAB_TM_SendEmail extends BAB_BaseFormProcessing
 	{
 		var $m_mail;
@@ -78,10 +78,10 @@
 			{
 				return;
 			}
-			
+
 			$admin_name = null;
 			$admin_email = null;
-			
+
 			$this->get_admin_info($admin_name, $admin_email);
 
 			$this->m_mail->mailFrom($admin_email, $admin_name);
@@ -113,34 +113,34 @@
 		{
 			$this->m_mail->mailClearAttachments();
 		}
-		
+
 		function get_admin_info(&$admin_name, &$admin_email)
 		{
 			$admin_email = $GLOBALS['babAdminEmail'];
 			$admin_name = $GLOBALS['babAdminName'];
 		}
-	}	
-	
+	}
+
 	function sendNotice($iIdProjectSpace, $iIdProject, $iIdTask, $iIdEvent, $sSubject, $sBody)
 	{
 		if(0 != $iIdProjectSpace && 0 != $iIdProject)
 		{
 			$oMail = new BAB_TM_SendEmail();
-	
+
 			$aProfilToGrpTbl = array(
 				BAB_TM_SUPERVISOR => BAB_TSKMGR_PROJECTS_SUPERVISORS_GROUPS_TBL,
-				BAB_TM_PROJECT_MANAGER => BAB_TSKMGR_PROJECTS_MANAGERS_GROUPS_TBL); 
-		
+				BAB_TM_PROJECT_MANAGER => BAB_TSKMGR_PROJECTS_MANAGERS_GROUPS_TBL);
+
 			$aNotifiedIdUser = array();
-	
+
 			foreach($aProfilToGrpTbl as $iProfil => $sTblName)
 			{
 				if(bab_isNoticeEventSet($iIdProjectSpace, $iIdProject, $iIdEvent, $iProfil))
 				{
 					$aUsers = aclGetAccessUsers($sTblName, $iIdProject);
-					
+
 					//bab_debug($aUsers);
-					
+
 					foreach($aUsers as $key => $aUserInfo)
 					{
 						$iIdUser = bab_getUserIdByEmail($aUserInfo['email']);
@@ -172,4 +172,3 @@
 			}
 		}
 	}
-?>

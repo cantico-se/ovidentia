@@ -154,4 +154,3 @@ function summaryOvmlFiles($col, $order, $pos, $startday, $endday)
 		return $temp->count;
 		}
 	}
-?>

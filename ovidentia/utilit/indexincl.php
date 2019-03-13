@@ -131,9 +131,9 @@ class bab_indexObject {
 		if( is_array($tmp['types']))
 		{
 			$types = array_flip($tmp['types']);
-			
+
 			foreach($arr as $k => $file) {
-				
+
 				$t = bab_getFileMimeType($file);
 				if (!isset($types[$t])) {
 					unset($arr[$k]);
@@ -146,7 +146,7 @@ class bab_indexObject {
 	 * get status for new uploaded files for a index file
 	 * this function take care of disabled status, on upload status, ...
 	 * @param int $id_indexFile
-	 * @return integer 
+	 * @return integer
 	 */
 	function get_onLoadStatus() {
 
@@ -212,7 +212,7 @@ class bab_indexObject {
 	function prepareIndex($files, $require_once, $function, $function_parameter) {
 
 		$this->autorized_files_only($files);
-		
+
 		if ($this->disabled) {
 			$r = new bab_indexReturn;
 			$r->addError(sprintf(bab_translate("This indexation is disabled : %s"),$this->label));
@@ -266,7 +266,7 @@ class bab_indexObject {
 		return $r;
 	}
 
-	
+
 	/**
 	 * Add files into current index for the object
 	 * if the file has been added, return true
@@ -292,7 +292,7 @@ class bab_indexObject {
 		}
 
 		$obj = new bab_indexFilesCls( $files, $this->object);
-		
+
 		$r = $obj->addFilesToIndex();
 		$r->addInfo(sprintf(bab_translate("%s : All collection of files has been added into the index (%u files)"),$this->label, count($files)));
 		return $r;
@@ -313,14 +313,14 @@ class bab_indexObject {
 			return false;
 		}
 
-		$this->db->db_query("REPLACE INTO ".BAB_INDEX_ACCESS_TBL." 
-				(file_path, id_object, id_object_access, object) 
-			VALUES 
+		$this->db->db_query("REPLACE INTO ".BAB_INDEX_ACCESS_TBL."
+				(file_path, id_object, id_object_access, object)
+			VALUES
 				(
 					'".$this->db->db_escape_string($file)."',
 					'".$this->db->db_escape_string($id_object)."',
 					'".$this->db->db_escape_string($id_object_access)."',
-					'".$this->db->db_escape_string($this->object)."' 
+					'".$this->db->db_escape_string($this->object)."'
 				)
 			");
 
@@ -356,9 +356,9 @@ class bab_indexObject {
 
 
 /**
- * Call this function when a file is loaded, 
+ * Call this function when a file is loaded,
  * the file will be indexed if necessary
- * 
+ *
  * @param string $file full path to the file, usually in upload directory
  * @param string $object if not given, the current addon name will be used
  * @param integer $id_object_access
@@ -366,8 +366,8 @@ class bab_indexObject {
  */
 function bab_indexOnLoadFiles($files, $object) {
 
-	
-	
+
+
 	$obj = new bab_indexObject($object);
 	$obj->autorized_files_only($files);
 	$status = $obj->get_onLoadStatus();
@@ -396,7 +396,7 @@ function bab_searchEngineIndexes() {
 	while ($arr = $db->db_fetch_assoc($res)) {
 		$return[$arr['object']] = array(
 				'name' =>			$arr['name'],
-				'index_onload' =>	1 == $arr['index_onload'], 
+				'index_onload' =>	1 == $arr['index_onload'],
 				'index_disabled' => 1 == $arr['index_disabled']
 			);
 	}
@@ -448,5 +448,3 @@ function bab_isFileIndex($filename) {
 		return false;
 	return true;
 }
-
-?>

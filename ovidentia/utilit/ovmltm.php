@@ -56,9 +56,9 @@ class Func_Ovml_Container_TmSpaces extends Func_Ovml_Container
 		$query = "
 				SELECT
 					id, name, description
-				FROM 
+				FROM
 					" . BAB_TSKMGR_PROJECTS_SPACES_TBL . "
-				WHERE 
+				WHERE
 					" . implode(' AND ', $conditions);
 		return $babDB->db_query($query);
 	}
@@ -157,7 +157,7 @@ class Func_Ovml_Container_TmProjects extends Func_Ovml_Container
 					'* ' .
 				' FROM ' .
 			BAB_TSKMGR_PROJECTS_TBL .
-				' WHERE ' . 
+				' WHERE ' .
 					'id IN (' . $babDB->quote($this->projectIds) . ')' .
 				' ORDER BY id';
 
@@ -231,12 +231,12 @@ class Func_Ovml_Container_TmProjects extends Func_Ovml_Container
  * - OVTaskOwnerId				The user id of the task owner
  * - OVTaskClass				The task class (integer : 0 = task, 1 = checkpoint, 2 = todo)
  * - OVTaskClassName			The task class task, checkpoint, todo
- * - OVTime 
- * - OVTimeDurationUnit 			  
+ * - OVTime
+ * - OVTimeDurationUnit
  * - OVPlannedTime
  * - OVPlannedTimeDurationUnit
  * - OVCost
- * - OVPlannedCost 
+ * - OVPlannedCost
  * - OVPriority
  */
 class Func_Ovml_Container_TmTasks extends Func_Ovml_Container
@@ -308,7 +308,7 @@ class Func_Ovml_Container_TmTasks extends Func_Ovml_Container
 		{
 			$aFilter['sPlannedEndDate'] = $plannedEndDate;
 		}
-		
+
 		// The default ordering is ascending on field 'TaskNumber'.
 		$sortFields = array('sName' => 'sTaskNumber', 'sOrder' => 'ASC');
 
@@ -360,17 +360,17 @@ class Func_Ovml_Container_TmTasks extends Func_Ovml_Container
 			$this->ctx->curctx->push('TaskClass', $task['iClass']);
 			$this->ctx->curctx->push('TaskClassName', $task['sClass']);
 			$this->ctx->curctx->push('Priority', $task['iPriority']);
-			
+
 			global $babUrlScript;
-			$sTaskUrl = $babUrlScript . '?tg=' . urlencode('usrTskMgr') . 
-				'&idx=' . urlencode(BAB_TM_IDX_DISPLAY_TASK_FORM) . 
-				'&isProject=0&iIdProjectSpace=' . urlencode($task['iIdProjectSpace']) . 
-				'&iIdProject=' . urlencode($task['iIdProject']) . 
+			$sTaskUrl = $babUrlScript . '?tg=' . urlencode('usrTskMgr') .
+				'&idx=' . urlencode(BAB_TM_IDX_DISPLAY_TASK_FORM) .
+				'&isProject=0&iIdProjectSpace=' . urlencode($task['iIdProjectSpace']) .
+				'&iIdProject=' . urlencode($task['iIdProject']) .
 				'&iIdTask=' . urlencode($task['iIdTask']);
-			
+
 			$this->ctx->curctx->push('TaskUrl', $sTaskUrl);
 			$this->ctx->curctx->push('TaskId', bab_translate($task['sClass']));
-			
+
 			$this->ctx->curctx->push('Time', '');
 			$this->ctx->curctx->push('TimeDurationUnit', '');
 			$this->ctx->curctx->push('PlannedTime', '');
@@ -470,7 +470,7 @@ class Func_Ovml_Container_TmTaskFields extends Func_Ovml_Container
 				$this->ctx->curctx->push('TaskFieldName', $aItem['value']['sFieldName']);
 				$this->ctx->curctx->push('TaskFieldType', $aItem['value']['iType']);
 				$this->ctx->curctx->push('TaskFieldTypeName', $aItem['value']['sType']);
-				
+
 				$this->idx++;
 				$this->index = $this->idx;
 				return true;
@@ -481,4 +481,3 @@ class Func_Ovml_Container_TmTaskFields extends Func_Ovml_Container
 		return false;
 	}
 }
-?>

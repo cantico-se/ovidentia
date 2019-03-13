@@ -116,7 +116,7 @@ class bab_dbtree
 	{
 		global $babDB;
 
-		$offset *= 2; 
+		$offset *= 2;
 
 		//$where = $this->getWhereClause();
 		$where = $this->getWhereClause('', false);
@@ -133,7 +133,7 @@ class bab_dbtree
 		{
 			$babDB->db_query("UPDATE ".$this->table." set lr = lr-".$offset." where lr > '".$lr."'".$where);
 		}
-		
+
 		if( $positive )
 		{
 			$babDB->db_query("UPDATE ".$this->table." set lf = lf+".$offset." where lf > '".$lr."'".$where);
@@ -188,11 +188,11 @@ class bab_dbtree
 			$where = $this->getWhereClause('p1');
 			if (!empty($where))
 				$where .= ' and ';
-				
+
 			$query = "SELECT p2.* FROM ".$this->table." p1 ,".$this->table." p2 WHERE ".$where." p1.id=p2.id_parent AND p1.id=".$babDB->quote($id)." order by p2.lf asc";
 			$res = $babDB->db_query($query);
-			
-			
+
+
 		}
 		else
 		{
@@ -237,7 +237,7 @@ class bab_dbtree
 		}
 		return $arr[0];
 	}
-	
+
 	function getLastChild($id)
 	{
 		global $babDB;
@@ -248,7 +248,7 @@ class bab_dbtree
 		}
 		return $arr[count($arr) -1];
 	}
-	
+
 	function add($parentId = 0, $previousId=0, $bprev=true, $id_node=false)
 	{
 		global $babDB;
@@ -268,7 +268,7 @@ class bab_dbtree
 				$rowdata['id_parent'] = $previnfo['id_parent'];
 				if( $rowdata['id_parent'] == $this->firstnode_parent )
 				{
-					$rowdata['id_parent'] = $previousId;					
+					$rowdata['id_parent'] = $previousId;
 					$lastchild = $this->getLastChild($previousId);
 					if( $lastchild )
 					{
@@ -285,7 +285,7 @@ class bab_dbtree
 					{
 						$lr = $previnfo['lr'];
 					}
-					else 
+					else
 					{
 						$idprev = $this->getPreviousSibling($previousId);
 						if( $idprev )
@@ -301,7 +301,7 @@ class bab_dbtree
 					}
 				}
 			}
-			else 
+			else
 			{
 				$parentinfo = $this->getNodeInfo($parentId);
 				if( !$parentinfo )
@@ -393,7 +393,7 @@ class bab_dbtree
 		$where = $this->getWhereClause();
 		if (!empty($where))
 			$where = ' AND '.$where;
-		
+
 		if(  $lr - $lf > 1 )
 		{
 			$babDB->db_query("UPDATE ".$this->table." set lr = lr-1, lf=lf-1 where lf > '".$lf."' and lr < '".$lr."'".$where);
@@ -418,7 +418,7 @@ class bab_dbtree
 
 		$lf = $nodeinfo['lf'];
 		$lr = $nodeinfo['lr'];
-		
+
 		if(  $lr - $lf > 1 )
 		{
 			$babDB->db_query("DELETE from ".$this->table." where lf between ".$lf." and ".$lr." and ".$this->getWhereClause());
@@ -467,7 +467,7 @@ class bab_dbtree
 
 		$lf = $nodeinfo['lf'];
 		$lr = $nodeinfo['lr'];
-		
+
 		if(  $lr - $lf > 1 )
 		{
 			$babDB->db_query("UPDATE ".$this->table." set lr = lr-1, lf=lf-1 where lf > '".$lf."' and lr < '".$lr."' and ".$this->getWhereClause());
@@ -565,7 +565,7 @@ class bab_dbtree
 				if( !$parentinfo )
 					return false;
 			}
-			else 
+			else
 			{
 				if( $id == $parentId )
 					return true;
@@ -678,7 +678,7 @@ class bab_arraytree
 		{
 			if( $this->where )
 				$this->where .= " and";
-			
+
 			$this->where .= " info_user='".$userinfo."'";
 		}
 
@@ -716,9 +716,9 @@ class bab_arraytree
 		$k = 0;
 		while( $arr = $babDB->db_fetch_assoc($res))
 			{
-			    
+
 			$row = array();
-			    
+
 			if( $k == 0)
 				{
 				$this->rootid = $arr['id'];
@@ -750,7 +750,7 @@ class bab_arraytree
 				}
 			$parents[] = $arr['id'];
 			}
-	
+
 	}
 
 	function getRootId()
@@ -758,7 +758,7 @@ class bab_arraytree
 		global $babDB;
 		return $this->rootid;
 	}
-	
+
 	function getNodeInfo($id)
 	{
 		global $babDB;
@@ -767,7 +767,7 @@ class bab_arraytree
 		else
 			return false;
 	}
-	
+
 	function appendChild($parentid, $child)
 	{
 		if( isset( $this->nodes[$parentid]) && isset( $this->nodes[$child]))
@@ -863,7 +863,7 @@ class bab_arraytree
 
 		reset($this->nodes);
 		$arr = array();
-		while( $row=each($this->nodes) ) 
+		while( $row=each($this->nodes) )
 			{
 			if( $row[1]['lf'] > $lf && $row[1]['lf'] < $lr )
 				{
@@ -896,7 +896,7 @@ class bab_arraytree
 		if(  $lr - $lf > 1 )
 		{
 			reset($this->nodes);
-			while( $row=each($this->nodes) ) 
+			while( $row=each($this->nodes) )
 				{
 				if( $row[1]['lf'] > $lf && $row[1]['lr'] < $lr )
 					{
@@ -948,7 +948,7 @@ class bab_arraytree
 				{
 				$this->nodes[$this->nodes[$id]['id_parent']]['firstChild'] = $this->nodes[$id]['nextSibling'];
 				}
-			
+
 			if( $this->nodes[$id]['nextSibling'] )
 				{
 				$this->nodes[$this->nodes[$id]['nextSibling']]['previousSibling'] = $this->nodes[$id]['previousSibling'];
@@ -961,7 +961,7 @@ class bab_arraytree
 			}
 
 		reset($this->nodes);
-		while( $row=each($this->nodes) ) 
+		while( $row=each($this->nodes) )
 			{
 			if( $row[1]['lr'] > $lr  )
 				{
@@ -990,7 +990,7 @@ class bab_arraytree
 		{
 			reset($this->nodes);
 			$arr = array();
-			while( $row=each($this->nodes) ) 
+			while( $row=each($this->nodes) )
 				{
 				if( $row[1]['lf'] > $lf && $row[1]['lf'] < $lr )
 					{
@@ -1005,14 +1005,14 @@ class bab_arraytree
 			$offset = $lr-$lf - 1;
 
 			reset($this->nodes);
-			while( $arr=each($this->nodes) ) 
+			while( $arr=each($this->nodes) )
 			{
 				if( $arr[1]['lr'] > $lf )
 					$this->nodes[$arr[1]['id']]['lr'] = $arr[1]['lr'] - $offset;
 			}
-			
+
 			reset($this->nodes);
-			while( $arr=each($this->nodes) ) 
+			while( $arr=each($this->nodes) )
 			{
 				if( $arr[1]['lf'] > $lf )
 				{
@@ -1041,4 +1041,3 @@ class bab_arraytree
 
 	}
 }
-?>

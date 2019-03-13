@@ -83,13 +83,13 @@ function listIndexFiles()
 			}
 
 			$this->res = $babDB->db_query("
-				SELECT f.*, s.object spool FROM 
-					".BAB_INDEX_FILES_TBL." f 
-					LEFT JOIN ".BAB_INDEX_SPOOLER_TBL." s ON s.object=f.object 
-			");			
-			
+				SELECT f.*, s.object spool FROM
+					".BAB_INDEX_FILES_TBL." f
+					LEFT JOIN ".BAB_INDEX_SPOOLER_TBL." s ON s.object=f.object
+			");
+
 			$this->allowed_ip = $this->reg->getValue('allowed_ip', '127.0.0.1');
-			
+
 			if (isset($_GET['unlock']) && isset($_GET['obj'])) {
 				$babDB->db_query('DELETE FROM '.BAB_INDEX_SPOOLER_TBL.' WHERE object='.$babDB->quote($_GET['obj']));
 				header('location:'.$GLOBALS['babUrlScript']."?tg=admindex&idx=files");
@@ -113,7 +113,7 @@ function listIndexFiles()
 			return false;
 		}
 
-	}	
+	}
 
 	$temp = new bab_listIndexFilesCls();
 	$babBody->babecho(	bab_printTemplate($temp, "indexfiles.html", "list"));
@@ -132,7 +132,7 @@ function status() {
 			$this->t_record = bab_translate("Record");
 
 			$this->db = $GLOBALS['babDB'];
-			$this->res = $this->db->db_query("SELECT * FROM ".BAB_INDEX_FILES_TBL." WHERE  
+			$this->res = $this->db->db_query("SELECT * FROM ".BAB_INDEX_FILES_TBL." WHERE
 				object  IN('bab_files','bab_art_files','bab_forumsfiles', 'bab_articles')");
 			$this->indexstatus = array(
 					BAB_INDEX_STATUS_NOINDEX => bab_getIndexStatusLabel(BAB_INDEX_STATUS_NOINDEX),
@@ -142,11 +142,11 @@ function status() {
 		}
 
 		function getnextindex() {
-			
+
 			if ($arr = $this->db->db_fetch_assoc($this->res)) {
 				$this->object		= bab_toHtml($arr['object']);
 				$this->title		= bab_toHtml(bab_translate($arr['name']));
-				
+
 				return true;
 			}
 			return false;
@@ -161,7 +161,7 @@ function status() {
 			reset($this->indexstatus);
 			return false;
 		}
-	}	
+	}
 
 	$temp = new temp();
 	$babBody->babecho(	bab_printTemplate($temp, "indexfiles.html", "status"));
@@ -211,9 +211,9 @@ $idx = bab_rp('idx','files');
 
 
 if (isset($_POST['action'])) {
-    
+
     bab_requireSaveMethod();
-    
+
 	switch($_POST['action']) {
 		case 'status':
 			if (!record_status()) {
@@ -243,6 +243,3 @@ switch($idx) {
 }
 
 $babBody->setCurrentItemMenu($idx);
-
-
-?>

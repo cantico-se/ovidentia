@@ -545,5 +545,3 @@ function bab_editor_text_toolbar($editname,$uid)
 	$tmp->editname = $editname;
 	return bab_printTemplate($tmp,"uiutil.html", "babtexttoolbartemplate");
 }
-
-?>

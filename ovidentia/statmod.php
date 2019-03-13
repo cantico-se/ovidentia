@@ -152,4 +152,3 @@ function summaryModules($col, $order, $startday, $endday)
 		return $temp->count;
 		}
 	}
-?>

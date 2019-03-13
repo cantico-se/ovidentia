@@ -23,4 +23,3 @@
 ************************************************************************/
 include "config.php";
 include $GLOBALS['babInstallPath']."index.php";
-?>

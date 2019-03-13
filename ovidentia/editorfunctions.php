@@ -30,7 +30,7 @@ function editorfunctions()
 	class temp
 		{
 		var $functions;
-		
+
 		function temp()
 			{
 			$event = new bab_eventEditorFunctions();
@@ -48,14 +48,14 @@ function editorfunctions()
 				$this->iconpath = bab_toHtml($arr['iconpath']);
 				return true;
 			}
-			
+
 			return false;
-			
+
 		}
 	}
-	
+
 	global $babBody;
-	
+
 	$babBody->addStyleSheet('text_toolbar.css');
 
 	$temp = new temp();
@@ -65,4 +65,3 @@ function editorfunctions()
 
 
 editorfunctions();
-?>

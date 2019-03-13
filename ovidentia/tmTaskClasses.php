@@ -2924,4 +2924,3 @@ bab_debug('A terminer, PB avec la date butoir de fin');
             return false;
         }
     }
-?>

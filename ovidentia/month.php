@@ -126,5 +126,3 @@ $ymax = isset($_GET['ymax']) ? $_GET['ymax'] : 60;
 
 $m = new bab_calendar($month, $year, $_GET['callback'], $ymin, $ymax);
 echo bab_printTemplate($m,"month.html");
-
-?>

@@ -43,7 +43,7 @@ class mgroups
 	$this->fields = array();
 	$this->id_expand_to = isset($_REQUEST['expand_to']) ? $_REQUEST['expand_to'] : BAB_ADMINISTRATOR_GROUP;
 	}
-	
+
 	function setExpandChecked() {
 		$this->expand_checked = true;
 	}
@@ -106,5 +106,3 @@ function mgroups_getSelected()
 	else
 		return array();
 }
-
-?>

@@ -32,71 +32,71 @@ class BAB_TM_ConfirmForm
 	var $sHiddenFieldValue	= '';
 	var	$sTg				= '';
 	var	$sMethod			= 'GET';
-	
+
 	var	$sTitle				= '';
 	var	$sWarning			= '';
 	var	$sMessage			= '';
 	var	$sQuestion			= '';
-	
+
 	var	$sImg				= 'messagebox_warning.png';
 	var	$sOkCaption			= '';
 	var	$sOk				= '';
 	var	$sCancelCaption		= '';
 	var	$sCancel			= '';
 	var	$bDisplayCancel		= false;
-	
+
 	public function BAB_TM_ConfirmForm()
 	{
 	}
-	
+
 	public function setOkInfo($sIdx, $sCaption)
 	{
 		$this->sOk			= $sIdx;
 		$this->sOkCaption	= $sCaption;
 	}
-	
+
 	public function setCancelInfo($sIdx, $sCaption)
 	{
 		$this->sCancel			= $sIdx;
 		$this->sCancelCaption	= $sCaption;
 		$this->bDisplayCancel	= (0 != strlen($sCaption));
 	}
-	
+
 	public function setWarning($sWarning)
 	{
 		$this->sWarning = $sWarning;
 	}
-		
+
 	public function setMessage($sMessage)
 	{
 		$this->sMessage = $sMessage;
 	}
-		
+
 	public function setQuestion($sQuestion)
 	{
 		$this->sQuestion = $sQuestion;
 	}
-	
+
 	public function setTitle($sTitle)
 	{
 		$this->sTitle = $sTitle;
 	}
-	
+
 	public function setTg($sTg)
 	{
 		$this->sTg = $sTg;
 	}
-	
+
 	public function addHiddenField($sName, $sValue)
 	{
 		$this->aHiddenField[] = array('sName' => $sName, 'sValue' => $sValue);
 	}
-	
+
 	public function getNextHiddenField()
 	{
 		$this->sHiddenFieldName = '';
 		$this->sHiddenFieldValue = '';
-	
+
 		$aDatas = each($this->aHiddenField);
 		if(false != $aDatas)
 		{
@@ -121,33 +121,33 @@ class BAB_TM_ConfirmForm
 function isNameUsedInProjectAndProjectSpace($sTblName, $iIdProjectSpace, $iIdProject, $iIdObject, $sName)
 {
 	$sName = str_replace('\\', '\\\\', $sName);
-	
+
 	$bIsDefined = isNameUsedInProjectSpace($sTblName, $iIdProjectSpace, $iIdObject, $sName);
-	
+
 	if(0 != $iIdProject && false == $bIsDefined)
 	{
 		global $babDB;
-		
+
 		$sIdObject = '';
 		if(0 != $iIdObject)
 		{
 			$sIdObject = ' AND id <> \'' . $babDB->db_escape_string($iIdObject) . '\'';
 		}
-	
-		$query = 
-			'SELECT ' . 
+
+		$query =
+			'SELECT ' .
 				'id, ' .
 				'name ' .
-			'FROM ' . 
+			'FROM ' .
 				$sTblName . ' ' .
-			'WHERE ' . 
+			'WHERE ' .
 				'idProjectSpace = \'' . $babDB->db_escape_string($iIdProjectSpace) . '\' AND ' .
 				'idProject = \'' . $babDB->db_escape_string($iIdProject) . '\' AND ' .
 				'name LIKE \'' . $babDB->db_escape_like($sName) . '\' ' .
 				$sIdObject;
-			
+
 		//bab_debug($query);
-		
+
 		$result = $babDB->db_query($query);
 		$bIsDefined = (false != $result && 0 == $babDB->db_num_rows($result));
 	}
@@ -164,19 +164,19 @@ function isNameUsedInProjectSpace($sTblName, $iIdProjectSpace, $iIdObject, $sNam
 		$sIdObject = ' AND id <> \'' . $babDB->db_escape_string($iIdObject) . '\'';
 	}
 
-	$query = 
-		'SELECT ' . 
+	$query =
+		'SELECT ' .
 			'id, ' .
 			'name ' .
-		'FROM ' . 
+		'FROM ' .
 			$sTblName . ' ' .
-		'WHERE ' . 
+		'WHERE ' .
 			'idProjectSpace = \'' . $babDB->db_escape_string($iIdProjectSpace) . '\' AND ' .
 			'name LIKE \'' . $babDB->db_escape_like($sName) . '\'' .
 			$sIdObject;
-		
+
 	//bab_debug($query);
-	
+
 	$result = $babDB->db_query($query);
 	return (false != $result && 0 == $babDB->db_num_rows($result));
 }
@@ -185,24 +185,24 @@ function isNameUsedInProjectSpace($sTblName, $iIdProjectSpace, $iIdObject, $sNam
 function getVisualisedIdProjectSpaces(&$aIdProjectSpaces)
 {
 	require_once($GLOBALS['babInstallPath'] . 'admin/acl.php');
-	
+
 	$aIdProjectSpaces = bab_getUserIdObjects(BAB_TSKMGR_DEFAULT_PROJECTS_VISUALIZERS_GROUPS_TBL);
-	
+
 	$aIdProjects = bab_getUserIdObjects(BAB_TSKMGR_PROJECTS_VISUALIZERS_GROUPS_TBL);
 	if(count($aIdProjects) > 0)
 	{
 		global $babDB;
-		
-		$query = 
-			'SELECT ' . 
+
+		$query =
+			'SELECT ' .
 				'idProjectSpace ' .
-			'FROM ' . 
+			'FROM ' .
 				BAB_TSKMGR_PROJECTS_TBL . ' ' .
-			'WHERE ' . 
+			'WHERE ' .
 				'id IN(' . $babDB->quote($aIdProjects) . ')';
-		
+
 		bab_debug($query);
-			
+
 		$result = $babDB->db_query($query);
 		if(false != $result)
 		{
@@ -223,13 +223,13 @@ function add_item_menu($items = array())
 	global $babBody;
 
 	$sTg = bab_rp('tg', '');
-	
-	$babBody->addItemMenu(BAB_TM_IDX_DISPLAY_PROJECTS_SPACES_LIST, bab_translate("Projects spaces"), 
+
+	$babBody->addItemMenu(BAB_TM_IDX_DISPLAY_PROJECTS_SPACES_LIST, bab_translate("Projects spaces"),
 		$GLOBALS['babUrlScript'] . '?tg=' . urlencode($sTg) . '&idx=' . urlencode(BAB_TM_IDX_DISPLAY_PROJECTS_SPACES_LIST));
-		
+
 	if('usrTskMgr' == $sTg)
 	{
-		$babBody->addItemMenu(BAB_TM_IDX_DISPLAY_MY_TASK_LIST, bab_translate("My tasks"), 
+		$babBody->addItemMenu(BAB_TM_IDX_DISPLAY_MY_TASK_LIST, bab_translate("My tasks"),
 			$GLOBALS['babUrlScript'] . '?tg=' . urlencode($sTg) . '&idx=' . urlencode(BAB_TM_IDX_DISPLAY_MY_TASK_LIST));
 	}
 
@@ -243,14 +243,14 @@ function add_item_menu($items = array())
 
 	if('admTskMgr' == $sTg)
 	{
-		$babBody->addItemMenu(BAB_TM_IDX_DISPLAY_PERSONNAL_TASK_RIGHT, bab_translate("Personnals tasks"), 
+		$babBody->addItemMenu(BAB_TM_IDX_DISPLAY_PERSONNAL_TASK_RIGHT, bab_translate("Personnals tasks"),
 			$GLOBALS['babUrlScript'] . '?tg=' . urlencode($sTg) . '&idx=' . urlencode(BAB_TM_IDX_DISPLAY_PERSONNAL_TASK_RIGHT));
 	}
 }
 
 function isFromIdxValid($sFromIdx)
 {
-	static $aFroms = array(BAB_TM_IDX_DISPLAY_PROJECTS_SPACES_LIST => 0, BAB_TM_IDX_DISPLAY_MY_TASK_LIST => 0, 
+	static $aFroms = array(BAB_TM_IDX_DISPLAY_PROJECTS_SPACES_LIST => 0, BAB_TM_IDX_DISPLAY_MY_TASK_LIST => 0,
 		BAB_TM_IDX_DISPLAY_PROJECT_TASK_LIST => 0);
 	return isset($aFroms[$sFromIdx]);
 }
@@ -266,5 +266,4 @@ if (!function_exists('is_a'))
            return true;
        return is_subclass_of($object, $class);
    }
-} 
-?>
+}

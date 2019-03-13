@@ -33,24 +33,24 @@ function bab_selectWorkingHours($iIdUser, $iWeekDay, &$bHaveWorkingHours)
 	global $babDB;
 
 	$bHaveWorkingHours = false;
-	
-	$query = 
+
+	$query =
 		'SELECT ' .
 			'wd.weekDay, ' .
 			'wh.idUser, ' .
 			'LEFT(wh.startHour, 5) startHour, ' .
 			'LEFT(wh.endHour, 5) endHour ' .
 		'FROM ' .
-			BAB_WEEK_DAYS_TBL . ' wd, ' . 
+			BAB_WEEK_DAYS_TBL . ' wd, ' .
 			BAB_WORKING_HOURS_TBL . ' wh ' .
 		'WHERE ' .
 			'wd.weekDay = ' . $babDB->quote($iWeekDay) . ' AND ' .
 			'wh.weekDay = wd.weekDay AND ' .
 			'wh.idUser = ' . $babDB->quote($iIdUser) . ' ' .
-		'ORDER BY ' . 
+		'ORDER BY ' .
 			'wd.position, ' .
 			'wh.startHour';
-			
+
 	//bab_debug($query);
 	$result = $babDB->db_query($query);
 	if(false != $result)
@@ -65,19 +65,19 @@ function bab_selectWorkingHours($iIdUser, $iWeekDay, &$bHaveWorkingHours)
 function displayWorkingHoursForm()
 {
 	require_once($GLOBALS['babInstallPath'] . 'utilit/calapi.php');
-	
+
 	class BAB_DisplayWorkingHours extends BAB_BaseFormProcessing
 	{
 		var $m_db;
 		var $m_result;
-		
+
 		var $m_oWh;
 		function BAB_DisplayWorkingHours()
 		{
 			parent::BAB_BaseFormProcessing();
-			
+
 			$this->m_db	= & $GLOBALS['babDB'];
-			
+
 			$this->set_data('day', '');
 			$this->set_caption('beginHour', bab_translate("start hour"));
 			$this->set_caption('endHour',  bab_translate("end hour"));
@@ -86,19 +86,19 @@ function displayWorkingHoursForm()
 
 			$this->set_data('save_idx',  BAB_TM_IDX_DISPLAY_MENU);
 			$this->set_data('save_action',  BAB_TM_ACTION_UPDATE_WORKING_HOURS);
-			$this->set_data('iIdUser', ('admTskMgr' != bab_rp('tg', 'admTskMgr')) ? 
+			$this->set_data('iIdUser', ('admTskMgr' != bab_rp('tg', 'admTskMgr')) ?
 				$GLOBALS['BAB_SESS_USERID'] : 0);
 			$this->set_data('bHaveWorkingHours',  false);
-			
+
 			$this->set_data('tg',  bab_rp('tg', 'admTskMgr'));
 			$this->set_data('idx',  '');
 			$this->set_data('action',  '');
-			
+
 			$action = bab_rp('action', '');
 
 			$oTmCtx =& getTskMgrContext();
 			$this->m_oWh =& $oTmCtx->getWorkingHoursObject();
-				
+
 			if('updateWorkingHours' != $action)
 			{
 				$this->m_oWh->init();
@@ -118,7 +118,7 @@ function displayWorkingHoursForm()
 			}
 			return false;
 		}
-		
+
 		function getNextWorkingHour()
 		{
 		    $iWeekDay = null;
@@ -135,22 +135,22 @@ function displayWorkingHoursForm()
 			return false;
 		}
 	}
-	
+
 	global $babBody;
-	
+
 	$itemMenu = array(
 		array(
 			'idx' => BAB_TM_IDX_DISPLAY_WORKING_HOURS_FORM,
 			'mnuStr' => bab_translate("Working hours"),
-			'url' => $GLOBALS['babUrlScript'] . '?tg=' . bab_rp('tg', '') . 
+			'url' => $GLOBALS['babUrlScript'] . '?tg=' . bab_rp('tg', '') .
 			'&idx=' . BAB_TM_IDX_DISPLAY_WORKING_HOURS_FORM)
 		);
-		
+
 	add_item_menu($itemMenu);
 	$babBody->title = bab_translate("Working hours");
-	
+
 	$dwh = new BAB_DisplayWorkingHours();
-	
+
 	$babBody->babecho(bab_printTemplate($dwh, 'tmCommon.html', 'workingHours'));
 }
 
@@ -166,11 +166,11 @@ function updateWorkingHours()
 	$oWh->buildFromPost();
 	$oWh->checkOverlapping();
 
-	
+
 	if(!$oWh->isError())
 	{
 		bab_deleteAllWorkingHours($oWh->m_iIdUser);
-		
+
 		foreach($oWh->m_aWorkingHours as $iWeekDay => $aWorkingHours)
 		{
 			foreach($aWorkingHours as $key => $aWorkingHour)
@@ -192,23 +192,23 @@ class BAB_WorkingHours
 	var $m_aWeekDays;
 	var $m_aWorkingHours;
 	var $m_aWorkingDays;
-	
+
 	var $m_bIsWorkingDaysMissing;
 	var $m_bIsWorkingHoursInvalid;
 	var $m_bIsWorkingHoursOverlapping;
 	var $m_bIsWorkingDayInvalid;
-	
+
 	var $m_iIdUser;
-	
+
 	function BAB_WorkingHours()
 	{
 	}
-	
+
 	function init()
 	{
 		$this->m_aWeekDays = array(
 			0 => bab_translate("Sunday"), 1 => bab_translate("Monday"), 2 => bab_translate("Tuesday"),
-			3 => bab_translate("Wednesday"), 4 => bab_translate("Thursday"), 5 => bab_translate("Friday"), 
+			3 => bab_translate("Wednesday"), 4 => bab_translate("Thursday"), 5 => bab_translate("Friday"),
 			6 => bab_translate("Saturday"));
 
 		$this->m_aWorkingHours = array(0 => array(), 1 => array(), 2 => array(), 3 => array(),
@@ -223,17 +223,17 @@ class BAB_WorkingHours
 			bab_calGetWorkingDays($this->m_iIdUser, $sWorkingDays);
 			$this->m_aWorkingDays = array_flip(explode(',', $sWorkingDays));
 		}
-			
+
 		$this->m_bIsWorkingDaysMissing = false;
 		$this->m_bIsWorkingHoursInvalid = false;
 		$this->m_bIsWorkingHoursOverlapping = false;
 		$this->m_bIsWorkingDayInvalid = false;
 	}
-	
+
 	function buildFromDataBase()
 	{
 		global $babDB;
-		
+
 		foreach($this->m_aWeekDays as $iWeekDay => $value)
 		{
 			$bHaveWorkingHours = false;
@@ -242,7 +242,7 @@ class BAB_WorkingHours
 			{
 				$result = bab_selectWorkingHours(0, $iWeekDay, $bHaveWorkingHours);
 			}
-			
+
 			if($bHaveWorkingHours)
 			{
 				while(false != ($datas = $babDB->db_fetch_array($result)))
@@ -251,30 +251,30 @@ class BAB_WorkingHours
 					$iEndTimeToSec = 0;
 					$this->isHourValid($datas['startHour'], $iStartTimeToSec);
 					$this->isHourValid($datas['endHour'], $iEndTimeToSec);
-								
-					$this->m_aWorkingHours[$iWeekDay][] = array('sStartHour' => $datas['startHour'], 
-							'sEndHour' => $datas['endHour'], 'iStartTimeToSec' => $iStartTimeToSec, 
+
+					$this->m_aWorkingHours[$iWeekDay][] = array('sStartHour' => $datas['startHour'],
+							'sEndHour' => $datas['endHour'], 'iStartTimeToSec' => $iStartTimeToSec,
 							'iEndTimeToSec' => $iEndTimeToSec);
 				}
 			}
 		}
 		reset($this->m_aWeekDays);
 	}
-	
+
 	function buildFromPost()
 	{
 		foreach($this->m_aWeekDays as $iWeekDay => $value)
 		{
 			$sStartHourIdx = 'startHour_' . $iWeekDay . '_';
 			$aStartHours = (isset($_POST[$sStartHourIdx])) ? $_POST[$sStartHourIdx] : array();
-			
+
 			$sEndHourIdx = 'endHour_' . $iWeekDay . '_';
 			$aEndHours = (isset($_POST[$sEndHourIdx])) ?  $_POST[$sEndHourIdx] : array();
-			
+
 			$iStartTimeToSec = 0;
 			$iEndTimeToSec = 0;
 			$bIsValid = false;
-	
+
 			if(isset($this->m_aWorkingDays[$iWeekDay]))
 			{
 				if(count($aStartHours) <= 0 && count($aEndHours) <= 0)
@@ -287,8 +287,8 @@ class BAB_WorkingHours
 			{
 				$this->m_bIsWorkingDayInvalid = true;
 			}
-			
-			
+
+
 			while( false != ($aStartHour = each($aStartHours)) && false != ($aEndHour = each($aEndHours)) )
 			{
 				$bIsValid = $this->isWorkingHourValid($aStartHour['value'], $aEndHour['value'], $iStartTimeToSec, $iEndTimeToSec);
@@ -296,9 +296,9 @@ class BAB_WorkingHours
 				{
 					$this->m_bIsWorkingHoursInvalid = true;
 				}
-				
-				$this->m_aWorkingHours[$iWeekDay][] = array('sStartHour' => $aStartHour['value'], 
-					'sEndHour' => $aEndHour['value'], 'iStartTimeToSec' => $iStartTimeToSec, 
+
+				$this->m_aWorkingHours[$iWeekDay][] = array('sStartHour' => $aStartHour['value'],
+					'sEndHour' => $aEndHour['value'], 'iStartTimeToSec' => $iStartTimeToSec,
 					'iEndTimeToSec' => $iEndTimeToSec);
 				/*
 				if($bIsValid)
@@ -314,7 +314,7 @@ class BAB_WorkingHours
 		}
 		reset($this->m_aWeekDays);
 	}
-	
+
 	function checkOverlapping()
 	{
 		foreach($this->m_aWeekDays as $iWeekDay => $value)
@@ -324,7 +324,7 @@ class BAB_WorkingHours
 				//bab_debug('weekDay ==> ' . $value . ' ' .$aWorkingHour['sStartHour'] . ' ' . $aWorkingHour['sEndHour']);
 
 				$iCount = count($this->m_aWorkingHours[$iWeekDay]);
-				$this->isOverlapping($key + 1, $iCount, $iWeekDay, 
+				$this->isOverlapping($key + 1, $iCount, $iWeekDay,
 					$aWorkingHour['iStartTimeToSec'], $aWorkingHour['iEndTimeToSec'],
 					$aWorkingHour['sStartHour'], $aWorkingHour['sEndHour']);
 			}
@@ -332,7 +332,7 @@ class BAB_WorkingHours
 		}
 		reset($this->m_aWeekDays);
 	}
-	
+
 	function isOverlapping($iStartIndex, $iCount, $iWeekDay, $iStartTimeToSec, $iEndTimeToSec, $aDebut = '', $aFin = '')
 	{
 		global $babBody;
@@ -347,7 +347,7 @@ class BAB_WorkingHours
 			$bFin = $this->m_aWorkingHours[$iWeekDay][$iIndex]['sEndHour'];
 
 			//bab_debug($bDebut . ' ' . $bFin);
-			
+
 			if( $iStartTimeToSec < $iEnd && $iEndTimeToSec > $iStart )
 			{
 				//bab_debug($aDebut . ' < ' . $bFin . ' && ' . $aFin . ' > ' . $bDebut);
@@ -355,7 +355,7 @@ class BAB_WorkingHours
 			}
 		}
 	}
-	
+
 	function isWorkingHourValid($sStartTime, $sEndTime, &$iStartTimeToSec, &$iEndTimeToSec)
 	{
 		if($this->isHourValid($sStartTime, $iStartTimeToSec) && $this->isHourValid($sEndTime, $iEndTimeToSec))
@@ -364,15 +364,15 @@ class BAB_WorkingHours
 		}
 		return false;
 	}
-	
+
 	function isHourValid($sTime, &$iTimeToSec)
 	{
 		$iTimeToSec = 0;
-		
+
 		$aHours = array();
 		$iHours = 0;
 		$iSeconds = 0;
-		
+
 		if(preg_match('/^(\d|[0-1]\d|2[0-3]):([0-5][0-9])$/', $sTime, $aHours))
 		{
 			$iHours = (int) $aHours[1];
@@ -386,7 +386,7 @@ class BAB_WorkingHours
 			}
 			$iHours = (int) $aHours[1];
 		}
-		
+
 		if(0 <= $iHours && 23 >= $iHours && 0 <= $iSeconds && 59 >= $iSeconds)
 		{
 			$iTimeToSec = (int)(3600 * $iHours) + $iSeconds;
@@ -400,4 +400,3 @@ class BAB_WorkingHours
 		return ($this->m_bIsWorkingDaysMissing || $this->m_bIsWorkingHoursInvalid || $this->m_bIsWorkingHoursOverlapping || $this->m_bIsWorkingDayInvalid);
 	}
 }
-?>

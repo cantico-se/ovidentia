@@ -28,7 +28,7 @@ include_once $GLOBALS['babInstallPath'] . 'utilit/fileincl.php';
 function DisplayFileManager()
 {
 	global $babBody;
-	
+
 	class DisplayFileManager_Class
 	{
 		function DisplayFileManager_Class()
@@ -77,7 +77,7 @@ function DisplayFileManager()
 			return false;
 			}
 	}
-	
+
 	$dfm = new DisplayFileManager_Class();
 	$babBody->babecho(bab_printTemplate($dfm,"admfms.html", "displayfm"));
 }
@@ -86,7 +86,7 @@ function DisplayFileManager()
 function addFolder()
 {
 	global $babBody;
-	
+
 	class temp
 	{
 		var $name;
@@ -109,7 +109,7 @@ function addFolder()
 		function temp()
 		{
 			global $babBody, $babDB;
-			
+
 			$this->name					= bab_translate("Name");
 			$this->description			= bab_translate("Description");
 			$this->moderation			= bab_translate("Approbation schema");
@@ -124,7 +124,7 @@ function addFolder()
 			$this->autoapprobationtxt	= bab_translate("Automatically approve author if he belongs to approbation schema");
 			$this->addtags_txt			= bab_translate("Users can add new tags");
 			$this->orderm				= bab_translate("Manual order");
-	
+
 			$this->downloadscappingtxt	= bab_translate("Manage maximum number of downloads per file");
 			$this->maxdownloadstxt		= bab_translate("Default value");
 			$this->downloadhistorytxt	= bab_translate("Manage downloads history");
@@ -137,7 +137,7 @@ function addFolder()
 			$this->thelp6				= bab_translate("Sets the default value that appears in the upload form. The upolading user can change this value while filling the upload form.");
 			$this->thelp7				= bab_translate("Allow to record which user has downloaded the files included in this folder. Downloads by anonymous users are counted as done by one single 'anonymous user'.");
 			$this->thelp8				= bab_translate("Allows the user granted with management rights on this folder to order manually the files. Subfolders are not affected by this option.");
-			
+
 			$this->sares = $babDB->db_query("select * from ".BAB_FLOW_APPROVERS_TBL." where id_dgowner='".bab_getCurrentAdmGroup()."' order by name asc");
 			if(!$this->sares)
 			{
@@ -176,7 +176,7 @@ function addFolder()
 function listFolders()
 {
 	global $babBody;
-	
+
 	class temp
 	{
 		var $fullname;
@@ -203,11 +203,11 @@ function listFolders()
 		var $add = '';
 		var $oFmFolderSet = null;
 		var $sAddUrl = '';
-		
+
 		function temp()
 		{
 			global $babBody, $babDB;
-			
+
 			$this->fullname			= bab_translate("Folders");
 			$this->notify			= bab_translate("Notify");
 			$this->version			= bab_translate("Versioning");
@@ -221,15 +221,15 @@ function listFolders()
 			$this->checkall			= bab_translate("Check all");
 			$this->add				= bab_translate("Add");
 			$this->sAddUrl			= bab_toHtml('?tg=admfms&idx=addf');
-			
+
 			$this->oFmFolderSet	= new BAB_FmFolderSet();
-			$oRelativePath		= $this->oFmFolderSet->aField['sRelativePath']; 
-			$oIdDgOwner			= $this->oFmFolderSet->aField['iIdDgOwner']; 
-			
+			$oRelativePath		= $this->oFmFolderSet->aField['sRelativePath'];
+			$oIdDgOwner			= $this->oFmFolderSet->aField['iIdDgOwner'];
+
 			$oCriteria	= $oRelativePath->in($babDB->db_escape_like(''));
 			$oCriteria	= $oCriteria->_and($oIdDgOwner->in(bab_getCurrentAdmGroup()));
 			$aOrder		= array('sName' => 'ASC');
-			
+
 			$this->oFmFolderSet->select($oCriteria, $aOrder);
 		}
 
@@ -239,7 +239,7 @@ function listFolders()
 			$this->factive = '';
 			$this->fversion = '';
 			$this->fbhide = '';
-			
+
 			if(!is_null($this->oFmFolderSet))
 			{
 				$oFmFolder = $this->oFmFolderSet->next();
@@ -249,22 +249,22 @@ function listFolders()
 					{
 						$this->fnotify = 'checked="checked"';
 					}
-					
+
 					if('Y' === $oFmFolder->getActive())
 					{
 						$this->factive = 'checked="checked"';
 					}
-					
+
 					if('Y' === $oFmFolder->getVersioning())
 					{
 						$this->fversion = 'checked="checked"';
 					}
-					
+
 					if('Y' === $oFmFolder->getHide())
 					{
 						$this->fbhide = 'checked="checked"';
 					}
-					
+
 					$this->fid			= $oFmFolder->getId();
 					$this->url			= bab_toHtml($GLOBALS['babUrlScript'] . '?tg=admfm&idx=modify&fid=' . $this->fid);
 					$this->urlname		= $oFmFolder->getName();
@@ -275,14 +275,14 @@ function listFolders()
 			}
 			return false;
 		}
-		
+
 		function count()
 		{
 			if(!is_null($this->oFmFolderSet))
 			{
 				return $this->oFmFolderSet->count();
 			}
-			return 0;			
+			return 0;
 		}
 	}
 
@@ -300,7 +300,7 @@ function saveFolder($fname, $active, $said, $notification, $version, $bhide, $ba
 		$babBody->msgerror = bab_translate("ERROR: You must provide a name !!");
 		return false;
 	}
-	
+
 	include_once $GLOBALS['babInstallPath'] . 'utilit/delegincl.php';
 	bab_setCurrentUserDelegation(bab_getCurrentAdmGroup());
 	$oFileManagerEnv = getEnvObject();
@@ -308,21 +308,21 @@ function saveFolder($fname, $active, $said, $notification, $version, $bhide, $ba
 	{
 		return false;
 	}
-	
+
 	global $babBody;
-	
+
 	$oFmFolderSet	= new BAB_FmFolderSet();
-	$oName			= $oFmFolderSet->aField['sName']; 
-	$oIdDgOwner		= $oFmFolderSet->aField['iIdDgOwner']; 
-	
+	$oName			= $oFmFolderSet->aField['sName'];
+	$oIdDgOwner		= $oFmFolderSet->aField['iIdDgOwner'];
+
 	$sName = replaceInvalidFolderNameChar($fname);
-			
+
 	if(!isStringSupportedByFileSystem($sName))
 	{
 		$babBody->addError(bab_translate("The directory name contains characters not supported by the file system"));
 		return false;
 	}
-			
+
 	$oCriteria = $oName->in($sName);
 	$oCriteria = $oCriteria->_and($oIdDgOwner->in(bab_getCurrentAdmGroup()));
 	$oFmFolder = $oFmFolderSet->get($oCriteria);
@@ -336,7 +336,7 @@ function saveFolder($fname, $active, $said, $notification, $version, $bhide, $ba
 		$sFullPathName = BAB_FileManagerEnv::getCollectivePath(bab_getCurrentAdmGroup()) . $sName;
 
 		//bab_debug($sFullPathName);
-		
+
 		if(BAB_FmFolderHelper::createDirectory($sFullPathName))
 		{
 			$oFmFolder = new BAB_FmFolder();
@@ -360,7 +360,7 @@ function saveFolder($fname, $active, $said, $notification, $version, $bhide, $ba
 		}
 		return false;
 	}
-	else 
+	else
 	{
 		$babBody->msgerror = bab_translate("This folder already exists");
 		return false;
@@ -370,7 +370,7 @@ function saveFolder($fname, $active, $said, $notification, $version, $bhide, $ba
 function updateFolders($notifies, $actives, $versions, $bhides)
 {
 	global $babBody;
-	
+
 	$oFmFolderSet	= new BAB_FmFolderSet();
 	$oIdDgOwner		= $oFmFolderSet->aField['iIdDgOwner'];
 	$oRelativePath	= $oFmFolderSet->aField['sRelativePath'];
@@ -378,47 +378,47 @@ function updateFolders($notifies, $actives, $versions, $bhides)
 	$oCriteria = $oIdDgOwner->in(bab_getCurrentAdmGroup());
 	$oCriteria = $oCriteria->_and($oRelativePath->in(''));
 	$oFmFolderSet->select($oCriteria);
-	
+
 	while(null !== ($oFmFolder = $oFmFolderSet->next()))
 	{
 		if(is_array($notifies) && count($notifies) > 0 && in_array($oFmFolder->getId(), $notifies))
 		{
-			$oFmFolder->setFileNotify('Y');	
+			$oFmFolder->setFileNotify('Y');
 		}
-		else 
+		else
 		{
-			$oFmFolder->setFileNotify('N');	
+			$oFmFolder->setFileNotify('N');
 		}
-		
+
 		if(is_array($actives) && count($actives) > 0 && in_array($oFmFolder->getId(), $actives))
 		{
-			$oFmFolder->setActive('Y');	
+			$oFmFolder->setActive('Y');
 		}
-		else 
+		else
 		{
-			$oFmFolder->setActive('N');	
+			$oFmFolder->setActive('N');
 		}
-		
+
 		if(is_array($versions) && count($versions) > 0 && in_array($oFmFolder->getId(), $versions))
 		{
-			$oFmFolder->setVersioning('Y');	
+			$oFmFolder->setVersioning('Y');
 		}
-		else 
+		else
 		{
-			$oFmFolder->setVersioning('N');	
+			$oFmFolder->setVersioning('N');
 		}
-		
+
 		if(is_array($bhides) && count($bhides) > 0 && in_array($oFmFolder->getId(), $bhides))
 		{
-			$oFmFolder->setHide('Y');	
+			$oFmFolder->setHide('Y');
 		}
-		else 
+		else
 		{
-			$oFmFolder->setHide('N');	
+			$oFmFolder->setHide('N');
 		}
 		$oFmFolder->save();
 	}
-	
+
 	bab_siteMap::clearAll();
 	header('location:'.$GLOBALS['babUrlScript']."?tg=admfms&idx=list");
 }
@@ -438,7 +438,7 @@ function updateDisplayFileManager()
 function bab_selectPurgeFolder()
 {
 	global $babBody;
-	
+
 	class temp
 	{
 		var $name;
@@ -449,16 +449,16 @@ function bab_selectPurgeFolder()
 		var $add = '';
 		var $oFmFolderSet = null;
 		var $sAddUrl = '';
-	
+
 		function temp()
 		{
 			global $babDB;
-			
+
 			$this->name		= bab_translate("Folders");
 			$this->path		= bab_translate("Path");
 			$this->select	= bab_translate("Select");
 			$this->delegation	= bab_translate("Delegation");
-				
+
 			$sql = "SELECT
 						fm.id as fmid,
 						fm.folder as folder,
@@ -467,13 +467,13 @@ function bab_selectPurgeFolder()
 						dgr.id as dgrid,
 						dgr.name as name
 					FROM ".BAB_FM_FOLDERS_TBL." as fm
-					
+
 					LEFT JOIN ".BAB_DG_GROUPS_TBL." as dgr
 					ON fm.id_dgowner = dgr.id
-					
+
 					ORDER BY name ASC, folder ASC, sRelativePath ASC";
 			$this->res = $babDB->db_query($sql);
-			
+
 			$fid = bab_gp('folder', '');
 			$fid = explode('.', $fid);
 			$this->fid = array();
@@ -481,15 +481,15 @@ function bab_selectPurgeFolder()
 				$this->fid[$id] = $id;
 			}
 		}
-	
+
 		function getnext()
 		{
 			global $babDB;
 			static $end = true;
-			
+
 			if($end){
 				$end = false;
-				
+
 				$this->foldername = bab_translate('All personnal folders');
 				$this->folderpath = '';
 				$this->dgowner = '';
@@ -499,10 +499,10 @@ function bab_selectPurgeFolder()
 				}else{
 					$this->checked = '';
 				}
-				
+
 				return true;
 			}
-							
+
 			while($this->res && $arr = $babDB->db_fetch_array($this->res))
 			{
 				$this->foldername = $arr['folder'];
@@ -513,26 +513,26 @@ function bab_selectPurgeFolder()
 					$this->dgowner = $arr['name'];
 				}
 				$this->folderid = $arr['fmid'];
-				
+
 				if(isset($this->fid[$this->folderid])){
 					$this->checked = ' checked="checked" ';
 				}else{
 					$this->checked = '';
 				}
-				
+
 				return true;
 			}
 			return false;
 		}
 	}
-	
+
 	$temp = new temp();
 	$babBody->babecho(bab_printTemplate($temp, "admfms.html", "purgetrashs"));
 }
 
 function bab_actionPurgeFolder(){
 	global $babBody;
-	
+
 	class temp
 	{
 		var $name;
@@ -543,11 +543,11 @@ function bab_actionPurgeFolder(){
 		var $add = '';
 		var $oFmFolderSet = null;
 		var $sAddUrl = '';
-	
+
 		function temp()
 		{
 			global $babDB;
-	
+
 			$this->notify			= bab_translate("Notify all managers of public folder and/or user withe personnal folder.");
 			$this->purge			= bab_translate("Purge all trashs from all selected folders.");
 			$this->notify_confirm	= bab_translate("Proceed to the notification?");
@@ -556,12 +556,12 @@ function bab_actionPurgeFolder(){
 			$this->path				= bab_translate("Path");
 			$this->select			= bab_translate("Select");
 			$this->delegation		= bab_translate("Delegation");
-			
+
 			$this->personnal = false;
-			
+
 			$arrayIds = bab_pp('selects', array());
 			$arrayIdReal = array();
-			
+
 			$ids = '';
 			foreach($arrayIds as $k => $v){
 				if($ids == ''){
@@ -574,10 +574,10 @@ function bab_actionPurgeFolder(){
 					$this->personnal = true;
 				}
 			}
-			
+
 			$this->notifyurl		= bab_toHtml($GLOBALS['babUrlScript'] . '?tg=admfms&idx=purgefm&action=notify&folder=' . $ids);
 			$this->purgeurl		= bab_toHtml($GLOBALS['babUrlScript'] . '?tg=admfms&idx=purgefm&action=purge&folder=' . $ids);
-			
+
 			$sql = "SELECT
 				fm.id as fmid,
 				fm.folder as folder,
@@ -586,32 +586,32 @@ function bab_actionPurgeFolder(){
 				dgr.id as dgrid,
 				dgr.name as name
 			FROM ".BAB_FM_FOLDERS_TBL." as fm
-			
+
 			LEFT JOIN ".BAB_DG_GROUPS_TBL." as dgr
 			ON fm.id_dgowner = dgr.id
-			
+
 			WHERE fm.id IN(".$babDB->quote($arrayIdReal).")
-			
+
 			ORDER BY name ASC, folder ASC, sRelativePath ASC";
 			$this->res = $babDB->db_query($sql);
 		}
-	
+
 		function getnext()
 		{
 			global $babDB;
 			static $end = true;
-			
+
 			if($end && $this->personnal){
 				$end = false;
 				$this->foldername = bab_translate('All personnal folders');
 				$this->folderpath = '';
 				$this->dgowner = '';
-				
+
 				return true;
 			}
 
 			$end = false;
-			
+
 			while($this->res && $arr = $babDB->db_fetch_array($this->res))
 			{
 				$this->foldername = $arr['folder'];
@@ -626,7 +626,7 @@ function bab_actionPurgeFolder(){
 			return false;
 		}
 	}
-	
+
 	$temp = new temp();
 	$babBody->babecho(bab_printTemplate($temp, "admfms.html", "actionpurgetrashs"));
 }
@@ -635,12 +635,12 @@ function bab_notifyPurgeTrashs()
 {
 	require_once $GLOBALS['babInstallPath'] . 'utilit/mailincl.php';
 	require_once $GLOBALS['babInstallPath'] . 'admin/acl.php';
-	
+
 	global $babDB;
-	
+
 	$fid = bab_gp('folder', '');
 	$fid = explode('.', $fid);
-	
+
 	$sql = "SELECT
 			fm.id as id,
 			fm.folder as folder,
@@ -649,12 +649,12 @@ function bab_notifyPurgeTrashs()
 			dgr.id as dgrid,
 			dgr.name as name
 		FROM ".BAB_FM_FOLDERS_TBL." as fm
-		
+
 		LEFT JOIN ".BAB_DG_GROUPS_TBL." as dgr
 		ON fm.id_dgowner = dgr.id
-		
+
 		ORDER BY name ASC, folder ASC, sRelativePath ASC";
-	
+
 	$res = $babDB->db_query($sql);
 	$folders = array();
 	while($res && $arr = $babDB->db_fetch_assoc($res))
@@ -672,12 +672,12 @@ function bab_notifyPurgeTrashs()
 			$sql = "SELECT * FROM ".BAB_GROUPS_TBL." WHERE id NOT IN('0','2') AND ustorage = 'Y'";
 			$res = $babDB->db_query($sql);
 			$groupsId = array();
-			
+
 			while($res && $gp = $babDB->db_fetch_assoc($res))
 			{
 				$groupsId[] = $gp['id'];
 			}
-			
+
 			$usersToNotifyPrivate = bab_getGroupsMembers($groupsId);
 			if(!$usersToNotifyPrivate){
 				$usersToNotifyPrivate = array();
@@ -697,12 +697,12 @@ function bab_notifyPurgeTrashs()
 		$babMail = bab_mail();
 		$babMail->mailFrom($GLOBALS['babAdminEmail'], $GLOBALS['babAdminName']);
 		$babMail->mailBcc($user['email'], $user['name']);
-		
+
 		$folderStr = '';
 		foreach($user['folders'] as $folder){
 			$folderStr.="\r\n".$folder;
 		}
-		
+
 		$babMail->mailSubject(bab_translate('Purge trashs'));
 		$babMail->mailBody(
 			sprintf(
@@ -712,14 +712,14 @@ function bab_notifyPurgeTrashs()
 		);
 		$babMail->send();
 	}
-	
+
 	if(!empty($usersToNotifyPrivate)){//User folder
 		$babMail = bab_mail();
 		$babMail->mailFrom($GLOBALS['babAdminEmail'], $GLOBALS['babAdminName']);
 		foreach($usersToNotifyPrivate as $user){
 			$babMail->mailBcc($user['email'], $user['name']);
 		}
-		
+
 		$babMail->mailSubject(bab_translate('Purge trashs'));
 		$babMail->mailBody(bab_translate('_MAILPURGEUSERTRASHS_'));
 		$babMail->send();
@@ -740,7 +740,7 @@ function bab_purgeTrashs()
 	if(in_array('-1', $fid)){
 		$sql = "SELECT * FROM ".BAB_FILES_TBL."
 				WHERE bgroup = 'N' AND state = 'D' ";
-		
+
 		$res = $babDB->db_query($sql);
 		$folders = array();
 		while($res && $arr = $babDB->db_fetch_assoc($res))
@@ -748,7 +748,7 @@ function bab_purgeTrashs()
 			$filesID[] = $arr['id'];
 		}
 	}
-	
+
 	if(count($fid) > 1 || (count($fid) > 0 && empty($filesID))){
 		$sql = "SELECT * FROM ".BAB_FILES_TBL."
 				WHERE bgroup = 'Y' AND state = 'D' AND id_owner IN (".$babDB->quote($fid).")";
@@ -759,7 +759,7 @@ function bab_purgeTrashs()
 			$filesID[] = $arr['id'];
 		}
 	}
-	
+
 	if(!empty($filesID)){
 		$oFolderFileSet = new BAB_FolderFileSet();
 		$oId =& $oFolderFileSet->aField['iId'];
@@ -780,8 +780,8 @@ $idx = bab_rp('idx', 'list');
 
 
 if (bab_rp('add') == 'addfolder') {
-    
-    $fname = bab_rp('fname'); 
+
+    $fname = bab_rp('fname');
     $active = bab_rp('active');
     $said = bab_rp('said');
     $notification = bab_rp('notification');
@@ -793,9 +793,9 @@ if (bab_rp('add') == 'addfolder') {
     $maxdownloads = bab_rp('maxdownloads');
     $bdownloadhistory = bab_rp('bdownloadhistory');
     $orderm = bab_rp('orderm');
-    
+
     bab_requireSaveMethod();
-    
+
 	if (!saveFolder($fname, $active, $said, $notification, $version, $bhide, $bautoapp, $baddtags, $bdownloadscapping, $maxdownloads, $bdownloadhistory, $orderm)) {
 		$idx = 'addf';
 	}
@@ -809,7 +809,7 @@ if(bab_rp('update') == 'folders')
 	$actives = bab_rp('actives', array());
 	$versions = bab_rp('versions', array());
 	$bhides = bab_rp('bhides', array());
-	
+
 	bab_requireSaveMethod() && updateFolders($notifies, $actives, $versions, $bhides);
 }
 elseif(bab_rp('update') == 'displayfm')
@@ -842,7 +842,7 @@ switch($idx)
 		$babBody->addItemMenu('purgefm', bab_translate("Purge trashs"), $GLOBALS['babUrlScript'].'?tg=admfms&idx=purgefm');
 		bab_selectPurgeFolder();
 		break;
-		
+
 	case 'actionpurgefm':
 		if(!bab_isUserAdministrator())
 		{
@@ -854,7 +854,7 @@ switch($idx)
 		$babBody->addItemMenu('actionpurgefm', bab_translate("Purge trashs"), $GLOBALS['babUrlScript'].'?tg=admfms&idx=purgefm');
 		bab_actionPurgeFolder();
 		break;
-		
+
 	case 'addf':
 		$babBody->title = bab_translate("Add a new folder");
 		$babBody->addItemMenu('list', bab_translate("Folders"), $GLOBALS['babUrlScript'].'?tg=admfms&idx=list');
@@ -868,7 +868,7 @@ switch($idx)
 		$babBody->addItemMenu('dispfm', bab_translate("Display"), $GLOBALS['babUrlScript'].'?tg=admfms&idx=dispfm');
 		DisplayFileManager();
 		break;
-	
+
 	default:
 	case 'list':
 		$babBody->title = bab_translate("File manager");
@@ -883,4 +883,3 @@ switch($idx)
 }
 $babBody->setCurrentItemMenu($idx);
 bab_siteMap::setPosition('bab','AdminFm');
-?>

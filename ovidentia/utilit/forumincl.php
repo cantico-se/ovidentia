@@ -64,7 +64,7 @@ function bab_getForumsRes($forumid = false, $delegationid = false) {
 	';
 
 	$res = $babDB->db_query($req);
-	
+
 	if (0 === $babDB->db_num_rows($res)) {
 		return false;
 	}
@@ -173,8 +173,8 @@ function bab_isForumThreadOpen($forum, $thread)
 		}
 	return false;
 	}
-	
-	
+
+
 /**
  * Marks the specified thread as closed.
  *
@@ -233,7 +233,7 @@ function bab_getForumThreadTitle($id)
 function notifyForumGroups(bab_eventForumPost $event)
 	{
 	global $babBody, $babDB, $BAB_SESS_USER, $BAB_SESS_EMAIL, $babAdminEmail;
- 
+
 	class tempa
 		{
 		var $message;
@@ -269,12 +269,12 @@ function notifyForumGroups(bab_eventForumPost $event)
 					}
 				else
 					{
-					
+
 					if (0 === mb_strpos($url, $GLOBALS['babUrl'].$GLOBALS['babPhpSelf'])) {
 						$url = mb_substr($url, mb_strlen($GLOBALS['babUrl'].$GLOBALS['babPhpSelf']));
 					}
-					
-					
+
+
 					$this->url = $GLOBALS['babUrlScript'].'?tg=login&cmd=detect&referer='.urlencode($url);
 					}
 				}
@@ -288,23 +288,23 @@ function notifyForumGroups(bab_eventForumPost $event)
 			$this->babtpl_forum = bab_toHtml($forumname);
 			}
 		}
-	
+
     $mail = bab_mail();
 	if( $mail == false )
 		return;
-		
+
 	$forum = $event->getForumId();
 	$thread = $event->getThreadId();
 	$threadTitle = $event->getThreadTitle();
 	$author = $event->getPostAuthor();
 	$author = bab_getNoticesContributor($event->getPostId(), $event->getPostAuthor());
-	
+
 	$postId = $event->getPostId();
-	
+
 	$tmp = $event->getForumInfos();
 	$forumname = $tmp['name'];
 	$flat = $tmp['bflatview'] == 'Y' ? '1' : '0';
-	
+
 	$url = $GLOBALS['babUrlScript'] ."?tg=posts&idx=List&forum=$forum&thread=$thread&flat=$flat&views=1";
 
 	$mailBCT = 'mail'.$babBody->babsite['mail_fieldaddress'];
@@ -325,11 +325,11 @@ function notifyForumGroups(bab_eventForumPost $event)
 	else
 		$mail->mailSubject($subject);
 
-	
-	
+
+
 	$users = $event->getUsersToNotify();
 	$count = 0;
-	
+
 	foreach($users as $id => $arr)
 		{
 		$mail->$mailBCT($arr['email'], $arr['name']);
@@ -353,9 +353,9 @@ function notifyForumGroups(bab_eventForumPost $event)
 		$mail->clearTo();
 		$count = 0;
 		}
-		
+
 	}
-	
+
 /**
  * Return fields to display for forums.
  */
@@ -363,12 +363,12 @@ function bab_getForumNotices()
 	{
 		global $babDB;
 		static $forums_fields = array();
-		
+
 		if( !empty($forums_fields))
 		{
 			return $forums_fields;
 		}
-		
+
 		include_once $GLOBALS['babInstallPath'].'utilit/dirincl.php';
 		$ret = array();
 		list($iddir) = $babDB->db_fetch_row($babDB->db_query("select id from ".BAB_DB_DIRECTORIES_TBL." where id_group='".BAB_REGISTERED_GROUP."'"));
@@ -396,18 +396,18 @@ function bab_getNoticesContributor($id_post, $author)
 {
 	global $babDB;
 	static $forums_contributors = array();
-	
+
 	$res = $babDB->db_query("select id_author from ".BAB_POSTS_TBL." WHERE id = " . $id_post);
 	$arr = $babDB->db_fetch_array($res);
 	$id_author = $arr['id_author'];
-	
+
 	if( isset($forums_contributors) && isset($forums_contributors[$id_author]))
 	{
 		$author = $forums_contributors[$id_author];
 	}
-	
+
 	$fields = bab_getForumNotices();
-	
+
 	if( $id_author && count($fields))
 	{
 		$author = '';
@@ -421,7 +421,7 @@ function bab_getNoticesContributor($id_post, $author)
 		}
 		$forums_contributors[$id_author] = $author;
 	}
-	
+
 	return $author;
 }
 
@@ -457,7 +457,7 @@ function notifyThreadAuthor($threadTitle, $email, $author, $idpost = null)
             $this->idpost = $idpost;
 			}
 		}
-	
+
     $mail = bab_mail();
 	if( $mail == false )
 		return;
@@ -500,7 +500,7 @@ function bab_uploadPostFiles($postid, $id_forum) {
 			}
 
 		$dest = $baseurl.$postid.','.$file['name'];
-		
+
 
 		if (move_uploaded_file($file['tmp_name'], $dest)) {
 			$postfiles[$file['name']] = $dest;
@@ -513,18 +513,18 @@ function bab_uploadPostFiles($postid, $id_forum) {
 
 
 	foreach($postfiles as $name => $dest) {
-	
+
 
 		$res = $babDB->db_query("SELECT id, index_status FROM ".BAB_FORUMSFILES_TBL." WHERE id_post='".$babDB->db_escape_string($postid)."' AND name='".$babDB->db_escape_string($name)."'");
 
 
 		if ($res && $arr = $babDB->db_fetch_assoc($res)) {
 			// old file overwrited
-			
+
 			if ($index_status != $arr['index_status']) {
 				$babDB->db_query("UPDATE ".BAB_FORUMSFILES_TBL." SET index_status='".$index_status."' WHERE id='".$arr['id']."'");
 			}
-			
+
 		} else {
 			// new file
 			$babDB->db_query("INSERT INTO ".BAB_FORUMSFILES_TBL."
@@ -555,14 +555,14 @@ function bab_getForumFileParts($file) {
 
 	$filename = basename($file);
 
-	
+
 	$iOffset = mb_strpos($filename,',');
 
 	if(false !== $iOffset)
 	{
 		$id_post = (int) mb_substr($filename, 0, $iOffset);
 		$name = mb_substr($filename, $iOffset + 1);
-		
+
 		return array($id_post, $name);
 	}
 
@@ -634,7 +634,7 @@ function bab_getPostFiles($forum,$postid)
 			unlink($path);
 		}
 	}
-	
+
 	return $out;
 	}
 
@@ -651,11 +651,11 @@ function bab_getPostFiles($forum,$postid)
  * @return object bab_indexReturn
  */
 function indexAllForumFiles($status, $prepare) {
-	
+
 	global $babDB;
 
 	$res = $babDB->db_query("
-	
+
 		SELECT
 			f.id,
 			f.name,
@@ -670,7 +670,7 @@ function indexAllForumFiles($status, $prepare) {
 			f.index_status IN(".$babDB->quote($status).")
 			AND p.id = f.id_post
 			AND t.id = p.id_thread
-		
+
 	");
 
 	$baseurl = $GLOBALS['babUploadPath'].'/forums/';
@@ -701,7 +701,7 @@ function indexAllForumFiles($status, $prepare) {
 			'status' => $status,
 			'rights' => $rights
 		);
-	
+
 	if (in_array(BAB_INDEX_STATUS_INDEXED, $status)) {
 		if ($prepare) {
 			return $obj->prepareIndex($files, $GLOBALS['babInstallPath'].'utilit/forumincl.php', 'indexAllForumFiles_end', $param );
@@ -724,7 +724,7 @@ function indexAllForumFiles_end($param) {
 
 	global $babDB;
 	$babDB->db_query("
-	
+
 		UPDATE ".BAB_FORUMSFILES_TBL." SET index_status='".BAB_INDEX_STATUS_INDEXED."'
 		WHERE
 			index_status IN(".$babDB->quote($param['status']).")
@@ -762,10 +762,10 @@ function bab_confirmPost($forum, $thread, $post)
 			p.id=t.post
 			AND t.id='".$babDB->db_escape_string($thread)."'
 		";
-	
+
 	$res = $babDB->db_query($req);
 	$arr = $babDB->db_fetch_array($res);
-	
+
 	if (!$arr)
 	{
 		throw new Exception('Thread not found');
@@ -781,9 +781,9 @@ function bab_confirmPost($forum, $thread, $post)
 
 		notifyThreadAuthor(bab_getForumThreadTitle($thread), $email, $arrpost['author'], $arrpost['id']);
 		}
-	
+
 	$bthread = ($arr['post'] == $arr['lastpost']);
-	
+
 	if ($bthread)
 	{
 		// new thread
@@ -792,11 +792,11 @@ function bab_confirmPost($forum, $thread, $post)
 		// new post
 		$event = new bab_eventForumAfterPostAdd;
 	}
-	
+
 	$event->setForum($forum);
 	$event->setThread($arr['id'], $arr['subject']);
 	$event->setPost($arrpost['id'], $arrpost['author'], true);
-	
+
 	bab_fireEvent($event);
 }
 
@@ -818,9 +818,9 @@ function bab_deletePost($forum, $post)
 	$req = "select * from ".BAB_POSTS_TBL." where id='".$babDB->db_escape_string($post)."'";
 	$res = $babDB->db_query($req);
 	$arr = $babDB->db_fetch_array($res);
-	
+
 	list($countPost) = $babDB->db_fetch_array($babDB->db_query('SELECT COUNT(*) FROM '.BAB_POSTS_TBL.' WHERE id_thread='.$babDB->quote($arr['id_thread'])));
-	
+
 
 	if($countPost === 1)
 		{
@@ -847,7 +847,7 @@ function bab_deletePost($forum, $post)
 			$req = "update ".BAB_THREADS_TBL." set lastpost='".$babDB->db_escape_string($arr2['id'])."' where id='".$babDB->db_escape_string($arr['id_thread'])."'";
 			$res = $babDB->db_query($req);
 			}
-			
+
 	    if ( $arr2['post'] == $post)
 	       {
 	       $req = "select id from ".BAB_POSTS_TBL." where id_thread='".$babDB->db_escape_string($arr['id_thread'])."' order by date asc";
@@ -855,8 +855,8 @@ function bab_deletePost($forum, $post)
 	       $arr2 = $babDB->db_fetch_array($res);
 	       $req = "update ".BAB_THREADS_TBL." set post='".$babDB->db_escape_string($arr2['id'])."' where id='".$babDB->db_escape_string($arr['id_thread'])."'";
 	       $res = $babDB->db_query($req);
-	       
-	       
+
+
 	       }
 
 		}
@@ -872,12 +872,12 @@ function bab_getForumFields($forum)
 	{
 		global $babDB;
 		static $forums_fields = array();
-		
+
 		if( isset($forums_fields[$forum]))
 		{
 			return $forums_fields[$forum];
 		}
-		
+
 		include_once $GLOBALS['babInstallPath'].'utilit/dirincl.php';
 		$ret = array();
 		list($iddir) = $babDB->db_fetch_row($babDB->db_query("select id from ".BAB_DB_DIRECTORIES_TBL." where id_group='".BAB_REGISTERED_GROUP."'"));
@@ -904,14 +904,14 @@ function bab_getForumFields($forum)
 function bab_getForumContributor($id_forum, $id_author, $author)
 {
 	static $forums_contributors = array();
-	
+
 	if( isset($forums_contributors[$id_forum]) && isset($forums_contributors[$id_forum][$id_author]))
 	{
 		$author = $forums_contributors[$id_forum][$id_author];
 	}
-	
+
 	$fields = bab_getForumFields($id_forum);
-	
+
 	if( $id_author && count($fields))
 	{
 		$author = '';
@@ -926,7 +926,6 @@ function bab_getForumContributor($id_forum, $id_author, $author)
 		}
 		$forums_contributors[$id_forum][$id_author] = $author;
 	}
-	
+
 	return $author;
 }
-?>

@@ -34,7 +34,7 @@ function bab_browseUsers($pos, $cb)
 		public $url;
 		public $email;
 		public $status;
-				
+
 		public $fullnameval;
 		public $emailval;
 
@@ -74,12 +74,12 @@ function bab_browseUsers($pos, $cb)
 			} else {
 				$reqa = "select * from ".BAB_USERS_TBL." where ".bab_userInfos::queryAllowedUsers();
 			}
-			
-			
+
+
 			list($filterColumn) = explode(' ',bab_composeUserName('firstname', 'lastname'));
-			
+
 			$this->fullname = bab_translate("Lastname").' '.bab_translate("Firstname");
-			
+
 			$this->pos = $pos;
 			$this->ord = "";
 			$reqa .= " and ".$babDB->backTick($filterColumn)." like '".$babDB->db_escape_like($this->pos)."%' order by lastname asc, firstname asc";
@@ -99,13 +99,13 @@ function bab_browseUsers($pos, $cb)
     	{
     		global $babDB;
     		static $i = 0;
-    
+
     		if ($i < $this->count) {
     			$this->arr = $babDB->db_fetch_array($this->res);
     			$this->url = bab_toHtml($GLOBALS['babUrlScript']."?tg=user&idx=Modify&item=".$this->arr['id']."&pos=".$this->ord.$this->pos."&cb=").$this->cb;
     			$this->firstlast = $this->arr['lastname'].' '.$this->arr['firstname'];
     			$this->firstlast = bab_toHtml($this->firstlast, BAB_HTML_ENTITIES | BAB_HTML_JS);
-    			
+
     			$this->urlname = $this->arr['lastname'].' '.$this->arr['firstname'];
 
     			$this->urlname = bab_toHtml($this->urlname);
@@ -117,17 +117,17 @@ function bab_browseUsers($pos, $cb)
     		}
     		return false;
     	}
-    
+
     	public function getnextselect()
     	{
     		global $BAB_SESS_USERID, $babDB;
     		static $k = 0;
     		static $t = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-    
+
     		if ($k < 26) {
     			$this->selectname = mb_substr($t, $k, 1);
     			$this->selecturl = bab_toHtml($GLOBALS['babUrlScript']."?tg=lusers&idx=brow&pos=".$this->ord.$this->selectname."&cb=").$this->cb;
-    
+
     			if ($this->pos == $this->selectname) {
     				$this->selected = 1;
     			} else {
@@ -192,7 +192,7 @@ function bab_adminBrowseUsers($pos, $cb)
             $this->allname = bab_translate("All");
             $this->nickname = bab_translate("Login ID");
             $this->cb = $cb;
-            	
+
             $currentDGGroup = bab_getCurrentDGGroup();
 
             switch ($babBody->nameorder[0]) {
@@ -286,7 +286,7 @@ function bab_adminBrowseUsers($pos, $cb)
     }
 
     $temp = new bab_adminBrowseUsersTpl($pos, $cb);
-    
+
     $babBody = bab_getBody();
     $babBody->babPopup(bab_printTemplate($temp, 'lusers.html', 'browseusers'));
 
@@ -399,7 +399,7 @@ function browseArticlesAuthors($pos, $cb)
 			}
 		}
 
-	
+
 	include_once $GLOBALS['babInstallPath']."utilit/uiutil.php";
 	$GLOBALS['babBodyPopup'] = new babBodyPopup();
 	$GLOBALS['babBodyPopup']->title = & $GLOBALS['babBody']->title;
@@ -412,4 +412,3 @@ function browseArticlesAuthors($pos, $cb)
 	die();
 
 	}
-?>

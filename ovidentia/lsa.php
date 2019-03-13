@@ -33,17 +33,17 @@ function browseSa($cb)
 	class temp
 		{
 		var $sContent;
-		
+
 		function temp($cb)
 			{
 			global $babDB;
-			
+
 			$this->sContent		= 'text/html; charset=' . bab_charset::getIso();
 			$this->cb			= $cb;
 			$this->name			= bab_translate("Name");
 			$this->description	= bab_translate("Description");
 			$this->sares		= $babDB->db_query("select id, name, description from ".BAB_FLOW_APPROVERS_TBL." order by name asc");
-			
+
 			if( !$this->sares )
 				{
 				$this->sacount = 0;
@@ -91,4 +91,3 @@ switch($idx)
 		exit;
 		break;
 	}
-?>

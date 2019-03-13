@@ -12,7 +12,7 @@ if (!function_exists('gzopen') && function_exists('gzopen64'))
 	/**
 	 * To fix a strange bug in ubuntu package, zlib is compiled with php but the gzopen function has the wrong name
 	 * found in ubuntu 11.04
-	 * 
+	 *
 	 * @link https://bugs.launchpad.net/ubuntu/+source/php5/+bug/451405
 	 */
 	function gzopen($filename , $mode ,$use_include_path = 0)
@@ -365,10 +365,10 @@ class zip
 			}
 			$tmp .= $pth[$i].'/';
 		}
-		 
+
 		if (!isset($header['external']) || (isset($header['external']) && !($header['external']==0x41FF0010)&&!($header['external']==16)))
 		{
-			 
+
 			if ($header['compression'] == 0)
 			{
 				$fp = @fopen($to.$header['filename'], 'wb');
@@ -389,7 +389,7 @@ class zip
 			}
 			else
 			{
-				 
+
 				$fp = @fopen($to.$header['filename'].'.gz', 'wb');
 				if (!$fp)
 				{
@@ -440,5 +440,3 @@ class zip
 		return true;
 	}
 }
-
-?>

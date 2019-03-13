@@ -714,6 +714,3 @@ class searchEngineInfosObjCls {
 		);
 	}
 }
-
-
-?>
