@@ -20,12 +20,12 @@
  * along with this program; if not, write to the Free Software			*
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307,*
  * USA.																	*
-************************************************************************/
+ ************************************************************************/
 include 'base.php';
 
-include_once $GLOBALS['babInstallPath'].'utilit/uiutil.php';
-include_once $GLOBALS['babInstallPath'].'utilit/dirincl.php';
-include_once $GLOBALS['babInstallPath'].'admin/acl.php';
+include_once $GLOBALS['babInstallPath'] . 'utilit/uiutil.php';
+include_once $GLOBALS['babInstallPath'] . 'utilit/dirincl.php';
+include_once $GLOBALS['babInstallPath'] . 'admin/acl.php';
 
 
 
@@ -60,34 +60,34 @@ function listAds()
 {
     global $babBody;
 
-    class temp
+    class listAdsTpl
     {
-        var $db;
-        var $resdb;
-        var $countdb;
-        var $resldap;
-        var $countldap;
-        var $directories;
-        var $urlname;
-        var $name;
-        var $description;
-        var $desctxt;
-        var $typetxt;
-        var $databasetitle;
-        var $add;
-        var $urladdldap;
-        var $urladddb;
-        var $gview;
-        var $gmodify;
-        var $gadd;
-        var $gviewurl;
-        var $gmodifyurl;
-        var $gaddurl;
-        var $grouptxt;
-        var $group;
-        var $altbg = true;
+        public $db;
+        public $resdb;
+        public $countdb;
+        public $resldap;
+        public $countldap;
+        public $directories;
+        public $urlname;
+        public $name;
+        public $description;
+        public $desctxt;
+        public $typetxt;
+        public $databasetitle;
+        public $add;
+        public $urladdldap;
+        public $urladddb;
+        public $gview;
+        public $gmodify;
+        public $gadd;
+        public $gviewurl;
+        public $gmodifyurl;
+        public $gaddurl;
+        public $grouptxt;
+        public $group;
+        public $altbg = true;
 
-        function temp()
+        function __construct()
         {
             global $babBody;
             $this->directories		= bab_translate("Directories");
@@ -185,7 +185,7 @@ function listAds()
         }
     }
 
-    $temp = new temp();
+    $temp = new listAdsTpl();
     $babBody->babecho(bab_printTemplate($temp, 'admdir.html', 'adlist'));
 }
 
@@ -195,9 +195,9 @@ function dirGroups() // liste des annuaires de groupes
     class dirGroupsCls
         {
 
-        var $altbg = true;
+        public $altbg = true;
 
-        function dirGroupsCls()
+        function __construct()
             {
             global $babBody;
             $this->fullname = bab_translate("Groups");
@@ -262,11 +262,11 @@ function search_options()
 {
     global $babBody;
 
-    class temp
+    class search_optionsTpl
         {
-        var $search_view_fields = array();
+        public $search_view_fields = array();
 
-        function temp()
+        function __construct()
             {
             global $babBody, $babDB;
             $this->listftxt = '---- '.bab_translate("Fields").' ----';
@@ -423,9 +423,9 @@ function search_options()
             }
         }
 
-    $temp = new temp();
-    $babBody->babecho(	bab_printTemplate($temp, 'admdir.html', 'dbscripts'));
-    $babBody->babecho(	bab_printTemplate($temp, 'admdir.html', 'search'));
+    $temp = new search_optionsTpl();
+    $babBody->babecho(bab_printTemplate($temp, 'admdir.html', 'dbscripts'));
+    $babBody->babecho(bab_printTemplate($temp, 'admdir.html', 'search'));
 }
 
 
@@ -433,28 +433,28 @@ function search_options()
 function addAdLdap($name, $description, $servertype, $decodetype, $host, $basedn, $userdn)
     {
     global $babBody;
-    class temp
+    class addAdLdapTpl
         {
-        var $vname;
-        var $vdescription;
-        var $name;
-        var $description;
-        var $type;
-        var $add;
-        var $ldap;
-        var $no;
-        var $yes;
-        var $password;
-        var $repassword;
-        var $host;
-        var $basedn;
-        var $userdn;
+        public $vname;
+        public $vdescription;
+        public $name;
+        public $description;
+        public $type;
+        public $add;
+        public $ldap;
+        public $no;
+        public $yes;
+        public $password;
+        public $repassword;
+        public $host;
+        public $basedn;
+        public $userdn;
 
-        var $vhost;
-        var $vbasedn;
-        var $vuserdn;
+        public $vhost;
+        public $vbasedn;
+        public $vuserdn;
 
-        function temp($name, $description, $servertype, $decodetype, $host, $basedn, $userdn)
+        function __construct($name, $description, $servertype, $decodetype, $host, $basedn, $userdn)
             {
             global $babLdapServerTypes;
             $this->name = bab_translate("Name");
@@ -535,33 +535,33 @@ function addAdLdap($name, $description, $servertype, $decodetype, $host, $basedn
             }
         }
 
-    $temp = new temp($name, $description, $servertype, $decodetype, $host, $basedn, $userdn);
+    $temp = new addAdLdapTpl($name, $description, $servertype, $decodetype, $host, $basedn, $userdn);
     $babBody->babecho(bab_printTemplate($temp,'admdir.html', 'ldapadd'));
     }
 
 function modifyLdap($id)
     {
     global $babBody;
-    class temp
+    class modifyLdapTpl
         {
-        var $vname;
-        var $vdescription;
-        var $name;
-        var $description;
-        var $add;
-        var $ldap;
-        var $password;
-        var $repassword;
-        var $host;
-        var $basedn;
-        var $userdn;
+        public $vname;
+        public $vdescription;
+        public $name;
+        public $description;
+        public $add;
+        public $ldap;
+        public $password;
+        public $repassword;
+        public $host;
+        public $basedn;
+        public $userdn;
 
-        var $vhost;
-        var $vbasedn;
-        var $vuserdn;
-        var $id;
+        public $vhost;
+        public $vbasedn;
+        public $vuserdn;
+        public $id;
 
-        function temp($id)
+        function __construct($id)
             {
             global $babLdapServerTypes;
             $this->id = $id;
@@ -647,36 +647,36 @@ function modifyLdap($id)
             }
         }
 
-    $temp = new temp($id);
+    $temp = new modifyLdapTpl($id);
     $babBody->babecho(bab_printTemplate($temp,'admdir.html', 'ldapmodify'));
     }
 
 function addAdDb($adname, $description)
     {
     global $babBody;
-    class temp
+    class addAdDbTpl
         {
-        var $vname;
-        var $vdescription;
-        var $name;
-        var $description;
-        var $multilignes;
-        var $db;
-        var $res;
-        var $fieldn;
-        var $fieldid;
-        var $field;
-        var $defaultvalue;
-        var $rw;
-        var $required;
-        var $add;
-        var $count;
-        var $arr = array();
-        var $reqchecked;
-        var $mlchecked;
-        var $dzchecked = '';
+        public $vname;
+        public $vdescription;
+        public $name;
+        public $description;
+        public $multilignes;
+        public $db;
+        public $res;
+        public $fieldn;
+        public $fieldid;
+        public $field;
+        public $defaultvalue;
+        public $rw;
+        public $required;
+        public $add;
+        public $count;
+        public $arr = array();
+        public $reqchecked;
+        public $mlchecked;
+        public $dzchecked = '';
 
-        function temp($adname, $description)
+        function __construct($adname, $description)
             {
             $this->vname = $adname == '' ? '' : $adname;
             $this->vdescription = $description == '' ? '' : $description;
@@ -722,7 +722,7 @@ function addAdDb($adname, $description)
 
         }
 
-    $temp = new temp($adname, $description);
+    $temp = new addAdDbTpl($adname, $description);
     $babBody->babecho( bab_printTemplate($temp,'admdir.html', 'dbadd'));
     }
 
@@ -730,25 +730,25 @@ function addAdDb($adname, $description)
 function modifyDb($id)
     {
     global $babBody;
-    class temp
+    class modifyDbTpl
         {
-        var $field;
-        var $defaultvalue;
-        var $rw;
-        var $required;
-        var $add;
-        var $count;
-        var $arr = array();
-        var $bdel;
-        var $bfields;
-        var $allowuserupdate;
-        var $no;
-        var $yes;
-        var $noselected;
-        var $yesselected;
-        var $ballowuserupdate;
+        public $field;
+        public $defaultvalue;
+        public $rw;
+        public $required;
+        public $add;
+        public $count;
+        public $arr = array();
+        public $bdel;
+        public $bfields;
+        public $allowuserupdate;
+        public $no;
+        public $yes;
+        public $noselected;
+        public $yesselected;
+        public $ballowuserupdate;
 
-        function temp($id)
+        function __construct($id)
             {
             $this->id = bab_toHtml($id);
             $this->name = bab_translate("Name");
@@ -973,16 +973,16 @@ function modifyDb($id)
             }
         }
 
-    $temp = new temp($id);
+    $temp = new modifyDbTpl($id);
     $babBody->babecho( bab_printTemplate($temp,'admdir.html', 'dbmodify'));
     }
 
 function displayDb($id)
     {
     global $babBody;
-    class temp
+    class displayDbTpl
         {
-        function temp($id)
+        function __construct($id)
             {
             global $babDB;
             $this->id = $id;
@@ -1162,7 +1162,7 @@ function displayDb($id)
             }
         }
 
-    $temp = new temp($id);
+        $temp = new displayDbTpl($id);
     $babBody->babecho(	bab_printTemplate($temp, 'admdir.html', 'dbscripts'));
     $babBody->babecho( bab_printTemplate($temp,'admdir.html', 'dbdisplay'));
 
@@ -1173,9 +1173,9 @@ function displayDb($id)
 function dbListOrder($id)
     {
     global $babBody;
-    class temp
+    class dbListOrderTpl
         {
-        function temp($id)
+        function __construct($id)
             {
             global $babDB;
             $this->id = $id;
@@ -1222,7 +1222,7 @@ function dbListOrder($id)
             }
         }
 
-    $temp = new temp($id);
+    $temp = new dbListOrderTpl($id);
     $babBody->babecho(	bab_printTemplate($temp, 'admdir.html', 'dbscripts'));
     $babBody->babecho( bab_printTemplate($temp,'admdir.html', 'dblistorder'));
     }
@@ -1231,19 +1231,19 @@ function deleteAd($id, $table)
     {
     global $babBody;
 
-    class temp
+    class deleteAdTpl
         {
-        var $warning;
-        var $message;
-        var $title;
-        var $urlyes;
-        var $urlno;
-        var $yes;
-        var $no;
-        var $topics;
-        var $article;
+        public $warning;
+        public $message;
+        public $title;
+        public $urlyes;
+        public $urlno;
+        public $yes;
+        public $no;
+        public $topics;
+        public $article;
 
-        function temp($id, $table)
+        function __construct($id, $table)
             {
             $this->message = bab_translate("Are you sure you want to delete this directory");
             $this->title = getDirectoryName($id, $table);
@@ -1260,7 +1260,7 @@ function deleteAd($id, $table)
             $this->no = bab_translate("No");
             }
         }
-    $temp = new temp($id, $table);
+    $temp = new deleteAdTpl($id, $table);
     $babBody->babecho(	bab_printTemplate($temp,'warning.html', 'warningyesno'));
     }
 
@@ -1268,9 +1268,9 @@ function deleteAd($id, $table)
 function showDbFieldValuesModify($id, $idfieldx)
 {
     global $babBodyPopup;
-    class temp
+    class showDbFieldValuesModifyTpl
         {
-        function temp($id, $idfieldx)
+        function __construct($id, $idfieldx)
             {
             global $babBodyPopup, $babBody, $babDB;
             $this->addtxt = bab_translate("Add a value");
@@ -1367,7 +1367,7 @@ function showDbFieldValuesModify($id, $idfieldx)
                 }
             }
         }
-    $temp = new temp($id, $idfieldx);
+        $temp = new showDbFieldValuesModifyTpl($id, $idfieldx);
     $babBodyPopup->babecho(bab_printTemplate($temp, 'admdir.html', 'dbfieldvalues'));
 }
 
@@ -1375,9 +1375,9 @@ function showDbFieldValuesModify($id, $idfieldx)
 function showDbAddField($id, $fieldn, $fieldv)
 {
     global $babBodyPopup;
-    class temp
+    class showDbAddFieldTpl
         {
-        function temp($id, $fieldn, $fieldv)
+        function __construct($id, $fieldn, $fieldv)
             {
             global $babBodyPopup, $babBody, $babDB;
             $this->savetxt = bab_translate("Add");
@@ -1389,7 +1389,7 @@ function showDbAddField($id, $fieldn, $fieldv)
             }
         }
 
-    $temp = new temp($id, $fieldn, $fieldv);
+        $temp = new showDbAddFieldTpl($id, $fieldn, $fieldv);
     $babBodyPopup->babecho(bab_printTemplate($temp, 'admdir.html', 'dbaddfield'));
 }
 
