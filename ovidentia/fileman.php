@@ -969,7 +969,7 @@ class DisplayCollectiveFolderForm extends DisplayFolderFormBase
             $sDownloadHistory		= (string) $oFileManagerEnv->oFmFolder->getDownloadHistory();
 
             $this->set_data('isDownloadsCapping', ('Y' === $sDownloadsCapping) ? true : false);
-            $this->set_data('isDownloadHistory', $oFileManagerEnv->oFmFolder->getMaxDownloads());
+            $this->set_data('isDownloadHistory', ('Y' === $sDownloadHistory) ? true : false);
             $this->set_data('iMaxDownloads', $oFileManagerEnv->oFmFolder->getMaxDownloads());
         }
         $this->set_data('bDelete', canCreateFolder($oFileManagerEnv->sRelativePath));
