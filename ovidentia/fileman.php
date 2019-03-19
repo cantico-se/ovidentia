@@ -37,24 +37,24 @@ require_once $GLOBALS['babInstallPath'].'utilit/i18n.class.php';
  */
 class BAB_GetHtmlUploadBlock
 {
-    var $iBlockNbr		= 0;
-    var $sName			= '';
-    var $sDescription	= '';
-    var $sKeywords		= '';
-    var $sFieldname		= '';
-    var $sAttribute		= '';
-    var $sYes			= '';
-    var $sNo			= '';
+    public $iBlockNbr		= 0;
+    public $sName			= '';
+    public $sDescription	= '';
+    public $sKeywords		= '';
+    public $sFieldname		= '';
+    public $sAttribute		= '';
+    public $sYes			= '';
+    public $sNo			= '';
 
-    var $descval		= '';
-    var $keysval		= '';
+    public $descval		= '';
+    public $keysval		= '';
 
-    var $oResult		= false;
-    var $iCount			= 0;
+    public $oResult		= false;
+    public $iCount			= 0;
 
-    var $bUseKeyword	= false;
+    public $bUseKeyword	= false;
 
-    function BAB_GetHtmlUploadBlock($iIdRootFolder, $sGr)
+    function __construct($iIdRootFolder, $sGr)
     {
         $this->iBlockNbr		= (int) bab_rp('iBlockNbr', 0);
         $this->sName			= bab_translate("Name");
@@ -114,48 +114,48 @@ class BAB_GetHtmlUploadBlock
 
 class listFiles
 {
-    var $db;
-    var $res;
-    var $count;
-    var $id;
-    var $gr;
-    var $path;
-    var $jpath;
-    var $countmgrp;
-    var $countwf;
-    var $reswf;
-    var $buaf;
+    public $db;
+    public $res;
+    public $count;
+    public $id;
+    public $gr;
+    public $path;
+    public $jpath;
+    public $countmgrp;
+    public $countwf;
+    public $reswf;
+    public $buaf;
 
-    var $oFolderFileSet = null;
+    public $oFolderFileSet = null;
 
-    var $aCuttedDir = array();
+    public $aCuttedDir = array();
 
-    var $sProcessedIdx = '';
-    var $sListFunctionName = '';
+    public $sProcessedIdx = '';
+    public $sListFunctionName = '';
 
-    var $bParentUrl = false;
-    var $sParentTitle = '';
-    var $sParent = '. .';
-    var $bVersion = false;
+    public $bParentUrl = false;
+    public $sParentTitle = '';
+    public $sParent = '. .';
+    public $bVersion = false;
 
     /**
      *
      * @var BAB_FileManagerEnv
      */
-    var $oFileManagerEnv = null;
+    public $oFileManagerEnv = null;
 
-    var $sRootFolderPath = '';
+    public $sRootFolderPath = '';
     /**
      * Files extracted by readdir
      */
-    var $files_from_dir = array();
+    public $files_from_dir = array();
 
-    var $aFolders = array();
+    public $aFolders = array();
 
-    var $order;
+    public $order;
 
 
-    function listFiles($what="list")
+    function __construct($what="list")
     {
         $this->sParentTitle = bab_translate("Parent");
 
@@ -698,7 +698,7 @@ class listFiles
 
 class DisplayFolderFormBase extends BAB_BaseFormProcessing
 {
-    function DisplayFolderFormBase()
+    function __construct()
     {
         parent::BAB_BaseFormProcessing();
 
@@ -766,9 +766,9 @@ class DisplayFolderFormBase extends BAB_BaseFormProcessing
 
 class DisplayUserFolderForm extends DisplayFolderFormBase
 {
-    function DisplayUserFolderForm()
+    function __construct()
     {
-        parent::DisplayFolderFormBase();
+        parent::__construct();
     }
 
     function handleEdition()
@@ -795,12 +795,12 @@ class DisplayUserFolderForm extends DisplayFolderFormBase
 
 class DisplayCollectiveFolderForm extends DisplayFolderFormBase
 {
-    var $iApprobationSchemeId = null;
-    var $oAppSchemeRes = false;
+    public $iApprobationSchemeId = null;
+    public $oAppSchemeRes = false;
 
-    function DisplayCollectiveFolderForm()
+    function __construct()
     {
-        parent::DisplayFolderFormBase();
+        parent::__construct();
 
         $this->setCaption();
         $this->set_data('sYes', 'Y');
@@ -1360,6 +1360,8 @@ function listFiles()
         public $rename;
         public $delete;
         public $directory;
+        public $download;
+        public $download_limit_reached;
         public $cuttxt;
         public $paste;
         public $undo;
@@ -1369,6 +1371,7 @@ function listFiles()
         public $nametxt;
         public $sizetxt;
         public $modifiedtxt;
+        public $createdtxt;
         public $postedtxt;
         public $diskspace;
         public $hitstxt;
@@ -1403,6 +1406,11 @@ function listFiles()
         public $sCutFolderUrl;
         public $bCutFolderUrl;
 
+        public $sFolderZipUrl;
+
+        public $sFolderZip;
+        public $unziptxt;
+        public $unzipconfirmtxt;
 
         public $bCollectiveFolder = false;
         public $bCanBrowseFolder;
@@ -1437,9 +1445,14 @@ function listFiles()
 
         public $bUnZip;
 
+        public $fname;
+        public $fmh_name;
+
+        public $pathLink;
+
         function __construct()
         {
-            $this->listFiles();
+            parent::__construct();
             $this->bytes = bab_translate("bytes");
             $this->mkdir = bab_translate("Create");
             $this->rename = bab_translate("Rename");
@@ -1673,7 +1686,6 @@ function listFiles()
                 $sEncodedName				= urlencode($aItem['sName']);
                 $sUrlEncodedPath			= urlencode($aItem['sUrlPath']);
                 $sGr						= $aItem['sGr'];
-                $sCollective				= $aItem['sCollective'];
 
                 $this->bCanBrowseFolder		= $aItem['bCanBrowseFolder'];
                 $this->bCanEditFolder		= $aItem['bCanEditFolder'];
@@ -1714,9 +1726,7 @@ function listFiles()
                 $this->bCollectiveFolder	= ('Y' == $aItem['sCollective']);
                 $sEncodedPath				= urlencode($this->path);
                 $sEncodedName				= urlencode($aItem['sName']);
-                $sUrlEncodedPath			= urlencode($aItem['sUrlPath']);
                 $sGr						= $aItem['sGr'];
-                $sCollective				= $aItem['sCollective'];
 
                 $iIdSrcRootFolder			= $aItem['iIdSrcRootFolder'];
                 $sEncodedSrcPath			= urlencode($aItem['sSrcPath']);
@@ -3465,16 +3475,16 @@ function displayFolderForm()
 function displayOrderFolder(){
     global $babBody;
     class displayOrderFolderTpl{
-        var $forumtxt;
-        var $moveup;
-        var $movedown;
-        var $create;
-        var $db;
-        var $res;
-        var $count;
-        var $arrid = array();
-        var $forumid;
-        var $forumval;
+        public $forumtxt;
+        public $moveup;
+        public $movedown;
+        public $create;
+        public $db;
+        public $res;
+        public $count;
+        public $arrid = array();
+        public $forumid;
+        public $forumval;
 
 
         function __construct(){
