@@ -403,8 +403,6 @@ class listFiles
 
     function collectiveDirectoryCallback($sPathName, $sEntry)
     {
-        global $babBody;
-
         $oFmFolderSet = new BAB_FmFolderSet();
         $oName =& $oFmFolderSet->aField['sName'];
         $oRelativePath =& $oFmFolderSet->aField['sRelativePath'];
@@ -414,10 +412,10 @@ class listFiles
         $oCriteria = $oCriteria->_and($oRelativePath->in($this->oFileManagerEnv->sRelativePath));
         $oCriteria = $oCriteria->_and($oIdDgOwner->in(bab_getCurrentUserDelegation()));
 
+        /* @var $oFmFolder BAB_FmFolder */
         $oFmFolder = $oFmFolderSet->get($oCriteria);
         if(!is_null($oFmFolder))
         {
-            $sUrlPath = $oFmFolder->getRelativePath() . $oFmFolder->getName() . '/';
             $this->addCollectiveDirectory($oFmFolder, $this->oFileManagerEnv->iId);
         }
         else
