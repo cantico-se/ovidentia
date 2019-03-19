@@ -1034,25 +1034,25 @@ function listTrashFiles()
     }
 
 
-    class temp
+    class listTrashFilesTpl
     {
-        var $db;
-        var $arrext = array();
-        var $idfile;
-        var $delete;
-        var $restore;
-        var $nametxt;
-        var $modifiedtxt;
-        var $sizetxt;
-        var $postedtxt;
-        var $oFolderFileSet = null;
-        var $sPath = '';
-        var $sRelativePath = '';
-        var $sEndSlash = '';
+        public $db;
+        public $arrext = array();
+        public $idfile;
+        public $delete;
+        public $restore;
+        public $nametxt;
+        public $modifiedtxt;
+        public $sizetxt;
+        public $postedtxt;
+        public $oFolderFileSet = null;
+        public $sPath = '';
+        public $sRelativePath = '';
+        public $sEndSlash = '';
 
-        var $oFileManagerEnv = null;
+        public $oFileManagerEnv = null;
 
-        function temp()
+        function __construct()
         {
             $this->oFileManagerEnv =& getEnvObject();
 
@@ -1134,7 +1134,7 @@ function listTrashFiles()
         }
     }
 
-    $temp = new temp();
+    $temp = new listTrashFilesTpl();
     $babBody->babecho(bab_printTemplate($temp,"fileman.html", "trashfiles"));
 }
 
@@ -1166,38 +1166,38 @@ function showDiskSpace()
 
 
 
-    class temp
+    class showDiskSpaceTpl
         {
-        var $id;
-        var $gr;
-        var $path;
-        var $cancel;
-        var $bytes;
-        var $babCss;
-        var $arrgrp = array();
-        var $arrmgrp = array();
-        var $countgrp;
-        var $countmgrp;
-        var $diskp;
-        var $diskg;
-        var $groupname;
-        var $diskspace;
-        var $allowedspace;
-        var $remainingspace;
-        var $grouptxt;
-        var $diskspacetxt;
-        var $allowedspacetxt;
-        var $remainingspacetxt;
+        public $id;
+        public $gr;
+        public $path;
+        public $cancel;
+        public $bytes;
+        public $babCss;
+        public $arrgrp = array();
+        public $arrmgrp = array();
+        public $countgrp;
+        public $countmgrp;
+        public $diskp;
+        public $diskg;
+        public $groupname;
+        public $diskspace;
+        public $allowedspace;
+        public $remainingspace;
+        public $grouptxt;
+        public $diskspacetxt;
+        public $allowedspacetxt;
+        public $remainingspacetxt;
 
         /**
          *
          * @var BAB_FileManagerEnv
          */
-        var $oFileManagerEnv;
+        public $oFileManagerEnv;
 
-        var $sContent;
+        public $sContent;
 
-        function temp()
+        function __construct()
             {
             global $babBody;
             $oFileManagerEnv =& getEnvObject();
@@ -1343,7 +1343,7 @@ function showDiskSpace()
 
         }
 
-    $temp = new temp();
+    $temp = new showDiskSpaceTpl();
     echo bab_printTemplate($temp,"fileman.html", "diskspace");
     exit;
     }
@@ -1353,91 +1353,91 @@ function listFiles()
 {
     global $babBody;
 
-    class temp extends listFiles
+    class listFilesTpl extends listFiles
         {
-        var $bytes;
-        var $mkdir;
-        var $rename;
-        var $delete;
-        var $directory;
-        var $cuttxt;
-        var $paste;
-        var $undo;
-        var $deltxt;
-        var $root;
-        var $refresh;
-        var $nametxt;
-        var $sizetxt;
-        var $modifiedtxt;
-        var $postedtxt;
-        var $diskspace;
-        var $hitstxt;
-        var $altreadonly;
-        var $rooturl;
-        var $refreshurl;
-        var $urldiskspace;
-        var $upfolderimg;
-        var $usrfolderimg;
-        var $grpfolderimg;
-        var $manfolderimg;
-        var $xres;
-        var $xcount;
-        var $block;
-        var $blockauth;
-        var $ovfurl;
-        var $ovfhisturl;
-        var $ovfcommiturl;
-        var $bfvwait;
+        public $bytes;
+        public $mkdir;
+        public $rename;
+        public $delete;
+        public $directory;
+        public $cuttxt;
+        public $paste;
+        public $undo;
+        public $deltxt;
+        public $root;
+        public $refresh;
+        public $nametxt;
+        public $sizetxt;
+        public $modifiedtxt;
+        public $postedtxt;
+        public $diskspace;
+        public $hitstxt;
+        public $altreadonly;
+        public $rooturl;
+        public $refreshurl;
+        public $urldiskspace;
+        public $upfolderimg;
+        public $usrfolderimg;
+        public $grpfolderimg;
+        public $manfolderimg;
+        public $xres;
+        public $xcount;
+        public $block;
+        public $blockauth;
+        public $ovfurl;
+        public $ovfhisturl;
+        public $ovfcommiturl;
+        public $bfvwait;
 
-        var $sFolderFormAdd;
-        var $sFolderFormEdit;
-        var $sFolderFormUrl;
-        var $sAddFolderFormUrl;
-        var $bFolderUrl;
+        public $sFolderFormAdd;
+        public $sFolderFormEdit;
+        public $sFolderFormUrl;
+        public $sAddFolderFormUrl;
+        public $bFolderUrl;
 
-        var $sRight;
-        var $sRightUrl;
-        var $bRightUrl;
+        public $sRight;
+        public $sRightUrl;
+        public $bRightUrl;
 
-        var $sCutFolder;
-        var $sCutFolderUrl;
-        var $bCutFolderUrl;
-
-
-        var $bCollectiveFolder = false;
-        var $bCanBrowseFolder;
-        var $bCanEditFolder;
-        var $bCanSetRightOnFolder;
-        var $bCanCutFolder;
-        var $bCanCreateFolder;
-        var $bCanManageFolder;
+        public $sCutFolder;
+        public $sCutFolderUrl;
+        public $bCutFolderUrl;
 
 
-        var $altfilelog;
-        var $altfilelock;
-        var $altfileunlock;
-        var $altfilewrite;
-        var $altbg = false;
+        public $bCollectiveFolder = false;
+        public $bCanBrowseFolder;
+        public $bCanEditFolder;
+        public $bCanSetRightOnFolder;
+        public $bCanCutFolder;
+        public $bCanCreateFolder;
+        public $bCanManageFolder;
 
-        var $bCanManageCurrentFolder = false;
-        var $bDownload = false;
-        var $bUpdate = false;
 
-        var $sUploadPath = '';
+        public $altfilelog;
+        public $altfilelock;
+        public $altfileunlock;
+        public $altfilewrite;
+        public $altbg = false;
 
-        var $iCurrentUserDelegation = 0;
-        var $bDisplayDelegationSelect = false;
-        var $aVisibleDelegation = array();
-        var $iIdDelegation = 0;
-        var $sDelegationName = '';
-        var $sDelegationSelected = '';
-        var $sSubmit = 'Soumettre';
+        public $bCanManageCurrentFolder = false;
+        public $bDownload = false;
+        public $bUpdate = false;
 
-        var $sWaitingFileTitle = '';
+        public $sUploadPath = '';
 
-        var $bUnZip;
+        public $iCurrentUserDelegation = 0;
+        public $bDisplayDelegationSelect = false;
+        public $aVisibleDelegation = array();
+        public $iIdDelegation = 0;
+        public $sDelegationName = '';
+        public $sDelegationSelected = '';
+        public $sSubmit = 'Soumettre';
 
-        function temp()
+        public $sWaitingFileTitle = '';
+
+        public $bUnZip;
+
+        function __construct()
         {
             $this->listFiles();
             $this->bytes = bab_translate("bytes");
@@ -2008,7 +2008,7 @@ function listFiles()
     $babBody->addJavascriptFile($GLOBALS['babScriptPath'].'scriptaculous/scriptaculous.js');
 
     $order = bab_rp('order', 'sNameA');
-    $temp = new temp($order);
+    $temp = new listFilesTpl($order);
 
     $babBody->babecho(bab_printTemplate($temp, 'fileman.html', 'fileslist'));
     return $temp->count;
@@ -2024,9 +2024,9 @@ function displayDownloadHistory()
 {
     global $babBody;
 
-    class temp_displayDownloadHistory
+    class displayDownloadHistoryTpl
     {
-        function temp_displayDownloadHistory(BAB_FolderFile $file)
+        function __construct(BAB_FolderFile $file)
         {
             global $babDB;
 
@@ -2102,7 +2102,7 @@ function displayDownloadHistory()
         return false;
     }
 
-    $template = new temp_displayDownloadHistory($file);
+    $template = new displayDownloadHistoryTpl($file);
     $babBody->setTitle(sprintf(bab_translate("Download history for %s"), $file->getName()));
 
     $oFileManagerEnv =& getEnvObject();
@@ -2147,22 +2147,22 @@ function displayAddFileForm()
             '&path=' . urlencode($oFileManagerEnv->sPath));
     }
 
-    class temp_displayAddFileForm
+    class displayAddFileFormTpl
     {
-        var $add;
-        var $path;
-        var $id;
-        var $gr;
-        var $maxfilesize;
-        var $descval;
-        var $keysval;
-        var $field;
-        var $fieldname;
-        var $fieldval;
-        var $count;
-        var $res;
+        public $add;
+        public $path;
+        public $id;
+        public $gr;
+        public $maxfilesize;
+        public $descval;
+        public $keysval;
+        public $field;
+        public $fieldname;
+        public $fieldval;
+        public $count;
+        public $res;
 
-        function temp_displayAddFileForm()
+        function __construct()
         {
             global $babBody, $babDB;
             $this->add = bab_translate("Add");
@@ -2197,7 +2197,7 @@ function displayAddFileForm()
         }
     }
 
-    $temp = new temp_displayAddFileForm();
+    $temp = new displayAddFileFormTpl();
     $babBody->babecho(bab_printTemplate($temp, 'fileman.html', 'addfile'));
 }
 
@@ -2746,50 +2746,50 @@ function viewFile()
 {
     global $babBody, $babDB, $BAB_SESS_USERID;
 
-    class temp_ViewFile
+    class ViewFileTpl
     {
-        var $name;
-        var $description;
-        var $keywords;
-        var $add;
-        var $attribute;
-        var $path;
-        var $id;
-        var $gr;
-        var $yes;
-        var $no;
-        var $descval;
-        var $keysval;
-        var $descvalhtml;
-        var $keysvalhtml;
-        var $confirm;
-        var $confirmno;
-        var $confirmyes;
-        var $idf;
+        public $name;
+        public $description;
+        public $keywords;
+        public $add;
+        public $attribute;
+        public $path;
+        public $id;
+        public $gr;
+        public $yes;
+        public $no;
+        public $descval;
+        public $keysval;
+        public $descvalhtml;
+        public $keysvalhtml;
+        public $confirm;
+        public $confirmno;
+        public $confirmyes;
+        public $idf;
 
-        var $fmodified;
-        var $fpostedby;
-        var $fmodifiedtxt;
-        var $fpostedbytxt;
-        var $fcreatedtxt;
-        var $fcreated;
-        var $fmodifiedbytxt;
-        var $fmodifiedby;
-        var $fsizetxt;
-        var $fsize;
-        var $movetofolder;
-        var $oFmFolderSet = null;
+        public $fmodified;
+        public $fpostedby;
+        public $fmodifiedtxt;
+        public $fpostedbytxt;
+        public $fcreatedtxt;
+        public $fcreated;
+        public $fmodifiedbytxt;
+        public $fmodifiedby;
+        public $fsizetxt;
+        public $fsize;
+        public $movetofolder;
+        public $oFmFolderSet = null;
 
-        var $field;
-        var $resff;
-        var $countff;
-        var $fieldval;
-        var $fieldid;
-        var $fieldvalhtml;
+        public $field;
+        public $resff;
+        public $countff;
+        public $fieldval;
+        public $fieldid;
+        public $fieldvalhtml;
 
-        var $bUseKeyword = false;
+        public $bUseKeyword = false;
 
-        function temp_ViewFile($oFmFolder, $oFolderFile, $bmanager, $bdownloadhistoryright, $access, $bconfirm, $bupdate, $bdownload, $bversion)
+        function __construct($oFmFolder, $oFolderFile, $bmanager, $bdownloadhistoryright, $access, $bconfirm, $bupdate, $bdownload, $bversion)
         {
             global $babBody, $babDB;
 
@@ -3120,9 +3120,9 @@ function viewFile()
     }
 
     if ($access) {
-        $temp = new temp_ViewFile($oFileManagerEnv->oFmFolder, $oFolderFile, $bmanager, $bdownloadhistoryright, $access, $bconfirm, $bupdate, $bdownload, $bversion);
+        $temp = new ViewFileTpl($oFileManagerEnv->oFmFolder, $oFolderFile, $bmanager, $bdownloadhistoryright, $access, $bconfirm, $bupdate, $bdownload, $bversion);
     } else {
-        $temp = new temp_ViewFile(null, $oFolderFile, $bmanager, $bdownloadhistoryright, $access, $bconfirm, $bupdate, $bdownload, $bversion);
+        $temp = new ViewFileTpl(null, $oFolderFile, $bmanager, $bdownloadhistoryright, $access, $bconfirm, $bupdate, $bdownload, $bversion);
     }
     $babBody->babpopup(bab_printTemplate($temp, 'fileman.html', 'viewfile'));
 }
@@ -3347,13 +3347,13 @@ function setRight()
 
 function fileUnload()
     {
-    class temp
+    class fileUnloadTpl
         {
-        var $message;
-        var $close;
-        var $redirecturl;
+        public $message;
+        public $close;
+        public $redirecturl;
 
-        function temp()
+        function __construct()
             {
             $oFileManagerEnv	=& getEnvObject();
             $this->message		= bab_translate("Your file list has been updated");
@@ -3363,7 +3363,7 @@ function fileUnload()
             }
         }
 
-    $temp = new temp();
+        $temp = new fileUnloadTpl();
     echo bab_printTemplate($temp,"fileman.html", "fileunload");
     }
 
@@ -3464,7 +3464,7 @@ function displayFolderForm()
 
 function displayOrderFolder(){
     global $babBody;
-    class temp{
+    class displayOrderFolderTpl{
         var $forumtxt;
         var $moveup;
         var $movedown;
@@ -3477,7 +3477,7 @@ function displayOrderFolder(){
         var $forumval;
 
 
-        function temp(){
+        function __construct(){
             global $babBody, $babDB, $BAB_SESS_USERID;
             $this->moveup = bab_translate("Move Up");
             $this->movedown = bab_translate("Move Down");
@@ -3543,7 +3543,7 @@ function displayOrderFolder(){
         return;
     }
 
-    $temp = new temp();
+    $temp = new displayOrderFolderTpl();
 
 
     $babBody->title = bab_translate("Order files");
