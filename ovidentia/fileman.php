@@ -464,14 +464,11 @@ class listFiles
 
     function getClipboardFolder()
     {
-        global $babBody;
-
         $sRootFmPath = '';
         $sGr = '';
 
         $oFmFolderCliboardSet = new BAB_FmFolderCliboardSet();
         $oIdDgOwner = $oFmFolderCliboardSet->aField['iIdDgOwner'];
-        $oIdOwner = $oFmFolderCliboardSet->aField['iIdOwner'];
         $oGroup = $oFmFolderCliboardSet->aField['sGroup'];
 
         $oCriteria = null;
