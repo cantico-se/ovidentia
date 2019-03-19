@@ -929,7 +929,7 @@ class DisplayCollectiveFolderForm extends DisplayFolderFormBase
         $oFileManagerEnv =& getEnvObject();
 
 
-        $oFmFolder = $oFmFolder = BAB_FmFolderHelper::getFmFolderById($iIdFolder);
+        $oFmFolder = BAB_FmFolderHelper::getFmFolderById($iIdFolder);
         if(!is_null($oFmFolder))
         {
             $sActive				= (string) $oFmFolder->getActive();
