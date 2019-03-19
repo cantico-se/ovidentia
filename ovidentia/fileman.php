@@ -280,7 +280,7 @@ class listFiles
         }
         bab_sort::asort($this->aFolders, 'sName', bab_Sort::CASE_INSENSITIVE);
 
-        if(userHavePersonnalStorage())
+        if(bab_userHavePersonnalStorage())
         {
             $aItem = array(
                 'iId' => 0,
@@ -1244,7 +1244,7 @@ function showDiskSpace()
             }
 
             $oFileManagerEnv =& getEnvObject();
-            if(!empty($GLOBALS['BAB_SESS_USERID']) && userHavePersonnalStorage())
+            if(!empty($GLOBALS['BAB_SESS_USERID']) && bab_userHavePersonnalStorage())
                 $this->diskp = 1;
             else
                 $this->diskp = 0;
@@ -3082,7 +3082,7 @@ function viewFile()
 
         if('N' === $oFolderFile->getGroup())
         {
-            if(userHavePersonnalStorage() && $BAB_SESS_USERID == $oFolderFile->getOwnerId())
+            if(bab_userHavePersonnalStorage() && $BAB_SESS_USERID == $oFolderFile->getOwnerId())
             {
                 $access = true;
                 $bmanager = true;
@@ -4690,7 +4690,7 @@ function deleteFolderForUserDir()
 
 
 
-    if(userHavePersonnalStorage() && canCreateFolder($oFileManagerEnv->sRelativePath))
+    if(bab_userHavePersonnalStorage() && canCreateFolder($oFileManagerEnv->sRelativePath))
     {
         $sDirName = (string) bab_pp('sDirName', '');
         if(preg_match('#^(|.*[/\\\\])\.\.(|[/\\\\].*)$#', $sDirName) === 0)
