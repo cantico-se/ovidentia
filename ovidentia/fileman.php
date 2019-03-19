@@ -1852,7 +1852,6 @@ function listFiles()
                 if ($this->bVersion) {
                     $sUrlBase		= $GLOBALS['babUrlScript'] . '?tg=filever&id=' . $iId . '&gr=' . $sGr . '&path=' . $upath;
                     $sUrlFileId		= $sUrlBase . '&idf=' . $arr['id'];
-                    $sUrlFile		= $sUrlBase . '&idf=' . $arr['id'] . '&file=' . $ufile;
 
                     $this->lastversion	= bab_toHtml($arr['ver_major'] . '.' . $arr['ver_minor']);
                     $this->ovfhisturl	= bab_toHtml($sUrlFileId . '&idx=hist');
@@ -2001,8 +2000,7 @@ function listFiles()
     $babBody->addJavascriptFile($GLOBALS['babScriptPath'].'prototype/prototype.js');
     $babBody->addJavascriptFile($GLOBALS['babScriptPath'].'scriptaculous/scriptaculous.js');
 
-    $order = bab_rp('order', 'sNameA');
-    $temp = new listFilesTpl($order);
+    $temp = new listFilesTpl();
 
     $babBody->babecho(bab_printTemplate($temp, 'fileman.html', 'fileslist'));
     return $temp->count;
@@ -2519,7 +2517,6 @@ function bab_moveUnzipFolder(bab_Path $source, $destination, $absolutePath){
                 }
             }
             $fmFile = bab_FmFile::move($babPath->tostring());
-            $currentBabPath = new bab_Path($destination,$babPath->getBasename());
             $returntmp = bab_importFmFile($fmFile, $id, $destination, $bgroup, false);
             if($return){
                 $return = $returntmp;
@@ -3128,7 +3125,6 @@ function displayRightForm()
 
     $iIdFolder = (int) bab_gp('iIdFolder', 0);
 
-    $sFolderName = '';
     $oFmFolder = BAB_FmFolderHelper::getFmFolderById($iIdFolder);
     if(!is_null($oFmFolder))
     {
@@ -3402,7 +3398,7 @@ function restoreFiles($items)
 
 /**
  *
- * @return unknown_type
+ * @return void
  */
 function displayFolderForm()
 {
@@ -3755,7 +3751,6 @@ function cutCollectiveDir()
             return;
         }
 
-        $sUploadPath = $oFileManagerEnv->getCollectiveRootFmPath();
         $sFullPathName = realpath($oFileManagerEnv->getCollectiveRootFmPath() . $oFileManagerEnv->sRelativePath . $sDirName);
 
         if(!is_dir($sFullPathName))
@@ -3885,7 +3880,6 @@ function undoPasteFolder()
 
     $oFileManagerEnv =& getEnvObject();
 
-    $iIdSrcRootFolder		= (int) bab_gp('iIdSrcRootFolder', 0);
     $sSrcPath				= (string) bab_gp('sSrcPath', '');
 
     $oFmFolder				= null;
@@ -3937,7 +3931,7 @@ function pasteCollectiveDir()
             $oSrcFmFolder	= null;
             BAB_FmFolderHelper::getInfoFromCollectivePath($sSrcPath, $iIdRootFolder, $oSrcFmFolder);
 
-            $iSrcIdOwner			= $oSrcFmFolder->getId();
+            /* @var $oSrcFmFolder BAB_FmFolder */
             $bSrcPathCollective		= ((string) $sSrcPath . '/' === (string) $oSrcFmFolder->getRelativePath() . $oSrcFmFolder->getName() . '/');
         }
 
@@ -3947,7 +3941,8 @@ function pasteCollectiveDir()
             //Recuperation des informations concernant le repertoire cible (i.e le repertoire dans lequel le source est deplace)
             $oTrgFmFolder = null;
             BAB_FmFolderHelper::getInfoFromCollectivePath($sTrgPath, $iIdRootFolder, $oTrgFmFolder);
-            $iTrgIdOwner = $oTrgFmFolder->getId();
+
+            /* @var $oTrgFmFolder BAB_FmFolder */
             $bTrgPathHaveVersioning = ('Y' === $oTrgFmFolder->getVersioning());
         }
         else if($oFileManagerEnv->userIsInRootFolder())
@@ -4026,7 +4021,6 @@ function pasteCollectiveDir()
                         return;
                     }
                     $bTrgPathHaveVersioning = false;
-                    $iTrgIdOwner			= $oFmFolder->getId();
                 }
 
                 global $babDB, $babBody;
@@ -4102,7 +4096,6 @@ function pasteUserFolder()
 {
 //	bab_debug(__LINE__ . ' ' . basename(__FILE__) . ' ' . __FUNCTION__);
 
-    global $babBody;
     $oFileManagerEnv =& getEnvObject();
 
     $iIdSrcRootFolder		= (int) bab_gp('iIdSrcRootFolder', 0);
@@ -4164,7 +4157,7 @@ function pasteUserFolder()
                         $oFmFolderCliboardSet->move($sLastRelativePath, $sNewRelativePath, 'N');
 
 
-                        global $babBody, $babDB, $BAB_SESS_USERID;
+                        global $babDB, $BAB_SESS_USERID;
                         // update database files
                         $oFolderFileSet = new BAB_FolderFileSet();
                         $oPathName		=& $oFolderFileSet->aField['sPathName'];
