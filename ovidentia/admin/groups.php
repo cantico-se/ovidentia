@@ -486,7 +486,7 @@ function addModGroup()
 
 
 
-function saveGroupsOptions($mailgrpids, $notgrpids, $congrpids, $pdsgrpids, $pcalgrpids)
+function saveGroupsOptions($notgrpids, $congrpids, $pdsgrpids, $pcalgrpids)
 {
 
 	global $babBody;
@@ -499,17 +499,13 @@ function saveGroupsOptions($mailgrpids, $notgrpids, $congrpids, $pdsgrpids, $pca
 		{
 		return false;
 		$dg = bab_getCurrentDGGroup();
-		$db->db_query("update ".BAB_GROUPS_TBL." set mail='N', notes='N', contacts='N', ustorage='N', pcalendar='N' where  lf>'".$dg['lf']."' AND lr<'".$dg['lr']."'");
+		$db->db_query("update ".BAB_GROUPS_TBL." set notes='N', contacts='N', ustorage='N', pcalendar='N' where  lf>'".$dg['lf']."' AND lr<'".$dg['lr']."'");
 		}
 	else
 		{
-		$db->db_query("update ".BAB_GROUPS_TBL." set mail='N', notes='N', contacts='N', ustorage='N', pcalendar='N'");
+		$db->db_query("update ".BAB_GROUPS_TBL." set notes='N', contacts='N', ustorage='N', pcalendar='N'");
 		}
 
-	for( $i=0; $i < count($mailgrpids); $i++)
-	{
-		$db->db_query("update ".BAB_GROUPS_TBL." set mail='Y' where id=".$db->quote($mailgrpids[$i])."");
-	}
 
 	for( $i=0; $i < count($notgrpids); $i++)
 	{
@@ -574,13 +570,12 @@ if( isset($_POST['add']))
 
 if( bab_rp('update') == "options")
 	{
-    $mailgrpids = bab_rp('mailgrpids', array());
     $notgrpids = bab_rp('notgrpids', array());
     $congrpids = bab_rp('congrpids', array());
     $pdsgrpids = bab_rp('pdsgrpids', array());
     $pcalgrpids = bab_rp('pcalgrpids',array());
 
-	bab_requireSaveMethod() && saveGroupsOptions($mailgrpids, $notgrpids, $congrpids, $pdsgrpids, $pcalgrpids);
+	bab_requireSaveMethod() && saveGroupsOptions($notgrpids, $congrpids, $pdsgrpids, $pcalgrpids);
 	}
 
 if ($idx != "brow")
