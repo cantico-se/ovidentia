@@ -251,21 +251,21 @@ function bab_initTree(div)
 	var showToolbar = hasClass(div, 'bab-show-toolbar');
 	if (showToolbar) {
 		var toolbar = document.createElement('DIV');
-		toolbar.className = 'bab_treeToolbar BabSiteAdminTitleFontBackground';
+		toolbar.className = 'bab_treeToolbar BabSiteAdminTitleFontBackground icon-left-16 icon-left icon-16x16';
 		toolbar.tree = tree;
 		div.insertBefore(toolbar, div.firstChild);
 	
 		var expand = document.createElement('A');
 		txt = document.createTextNode(bab_translate('Expand'));
 		expand.onclick = bab_treeExpand;
-		expand.className = 'bab_expandAll';
+		expand.className = 'widget-link icon actions-go-down';
 		expand.appendChild(txt);
 		toolbar.appendChild(expand);
 				
 		var collapse = document.createElement('A');
 		txt = document.createTextNode(bab_translate('Collapse'));
 		collapse.onclick = bab_treeCollapse;
-		collapse.className = 'bab_collapseAll';
+		collapse.className = 'widget-link icon actions-go-up';
 		collapse.appendChild(txt);
 		toolbar.appendChild(collapse);
 				
