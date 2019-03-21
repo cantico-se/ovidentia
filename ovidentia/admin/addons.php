@@ -213,20 +213,16 @@ function goto_list($addon)
     $type = $addon->getAddonType();
 
     switch ($type) {
-        case 'EXTENSION':
-            header('location:' . $GLOBALS['babUrlScript'] . '?tg=addons&idx=list');
-            break;
-
         case 'THEME':
-            header('location:' . $GLOBALS['babUrlScript'] . '?tg=addons&idx=theme');
-            break;
+            bab_redirect($GLOBALS['babUrlScript'] . '?tg=addons&idx=theme');
 
         case 'LIBRARY':
-            header('location:' . $GLOBALS['babUrlScript'] . '?tg=addons&idx=library');
-            break;
-    }
+            bab_redirect($GLOBALS['babUrlScript'] . '?tg=addons&idx=library');
 
-    exit();
+        case 'EXTENSION':
+        default:
+            bab_redirect($GLOBALS['babUrlScript'] . '?tg=addons&idx=list');
+    }
 }
 
 
@@ -304,8 +300,7 @@ function disableAddons($addons)
 
     bab_siteMap::clearAll();
 
-    Header("Location: " . $GLOBALS['babUrlScript'] . "?tg=addons&idx=list");
-    exit();
+    bab_redirect($GLOBALS['babUrlScript'] . "?tg=addons&idx=list");
 }
 
 
@@ -1221,15 +1216,13 @@ function functionalities()
 
         $func->copyToParent($uppath);
 
-        header('location:' . bab_url::request('tg', 'idx', 'failsafe'));
-        exit();
+        bab_redirect(bab_url::request('tg', 'idx', 'failsafe'));
     }
 
     if ($remove = bab_gp('remove', false)) {
         $func->unregister($remove);
 
-        header('location:' . bab_url::request('tg', 'idx', 'failsafe'));
-        exit();
+        bab_redirect(bab_url::request('tg', 'idx', 'failsafe'));
     }
 
     $tree = new bab_TreeView('bab_functionalities');
