@@ -3944,3 +3944,14 @@ function bab_getCoreFolders()
 
     return $dirs;
 }
+
+
+/**
+ * Add a header "location" for this URL and exit program
+ * @param string $url
+ */
+function bab_redirect($url)
+{
+    header('Location: ' . $url);
+    exit;
+}
