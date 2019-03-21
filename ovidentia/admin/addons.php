@@ -65,7 +65,7 @@ class bab_addons_list
 
     public $altbg = true;
 
-    function __construct()
+    public function __construct()
     {
         include_once $GLOBALS['babInstallPath'] . 'utilit/addonsincl.php';
 
@@ -393,8 +393,6 @@ function addon_call_upgrade($id)
     $frame->startInstall(array($addon, 'upgrade'));
     die();
 }
-
-
 
 
 
@@ -843,19 +841,19 @@ function bab_display_addon_requirements()
             $this->installed = false;
 
             $ini = new bab_inifile();
-            
+
             $tmpFolder = bab_gp('folder', null);
-            
+
             if (isset($tmpFolder)) {
                 $tmpPath = new bab_Path($GLOBALS['babUploadPath' ] . '/tmp/' . $tmpFolder);
-                
+
                 $ul = null;
                 foreach ($tmpPath as $uploadedFile) {
                     $ul = $uploadedFile->toString();
                 }
                 // display requirements from temporary package into installation process
                 $this->item = '';
-                
+
                 $name = bab_Path::decode($uploadedFile->getBasename());
                 $this->tmpFolder =  bab_toHtml($tmpFolder);
                 $this->action = 'import';
@@ -1066,7 +1064,6 @@ class bab_import_package
             return false;
         }
 
-
         $repository = bab_getInstance('bab_InstallRepository');
         /*@var $repository bab_InstallRepository */
 
@@ -1083,7 +1080,6 @@ class bab_import_package
             bab_installWindow::message($e->getMessage());
             return false;
         }
-
 
         return true;
     }
@@ -1544,6 +1540,8 @@ function bab_addonUploadToolbar($message, $func = null)
             ->setTitle($message)
             ->addClass('widget-actionbutton', 'icon', Func_Icons::ACTIONS_DOCUMENT_UPLOAD);
 
+        $uploadButton->setAssociatedDropTarget($uploadButton);
+
         $toolbar->addItem($uploadButton);
     }
 
@@ -1558,6 +1556,7 @@ function bab_addonUploadToolbar($message, $func = null)
 
     $babBody->babEcho($toolbar->display($W->HtmlCanvas()));
 }
+
 
 
 
