@@ -1531,11 +1531,13 @@ function bab_addonUploadToolbar($message, $func = null)
         );
 
         $uploadButton = $W->FilePicker()
-        ->onUploadAction($uploadAction)
-        ->hideFiles()
-        ->setFolder($uploadPath)
-        ->setTitle($message)
-        ->addClass('widget-actionbutton', 'icon', Func_Icons::ACTIONS_DOCUMENT_UPLOAD);
+            ->onUploadAction($uploadAction)
+            ->hideFiles()
+            ->setFolder($uploadPath)
+            ->setTitle($message)
+            ->addClass('widget-actionbutton', 'icon', Func_Icons::ACTIONS_DOCUMENT_UPLOAD);
+
+        $uploadButton->setAssociatedDropTarget($uploadButton);
 
         $toolbar->addItem($uploadButton);
     }
