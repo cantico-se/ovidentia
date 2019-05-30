@@ -1506,8 +1506,8 @@ function bab_addonUploadToolbar($message, $func = null)
 {
     global $babBody;
 
+    bab_Functionality::includefile('Icons');
     $W = bab_Widgets();
-
     $toolbar = $W->FlowItems();
     $toolbar->addClass(Func_Icons::ICON_LEFT_16, 'widget-toolbar');
 

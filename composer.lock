@@ -1,0 +1,673 @@
+{
+    "_readme": [
+        "This file locks the dependencies of your project to a known state",
+        "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
+        "This file is @generated automatically"
+    ],
+    "hash": "db1bde4246cfd6f8e346bccc6e81b3a8",
+    "content-hash": "542435f96e1220028f60b77a36bd2437",
+    "packages": [
+        {
+            "name": "ovidentia/applications",
+            "version": "4.7.0",
+            "source": {
+                "type": "git",
+                "url": "https://bitbucket.org/cantico/applications.git",
+                "reference": "f53f4af89aec4b85053fb59d328392e46595a716"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://bitbucket.org/cantico/applications/get/f53f4af89aec4b85053fb59d328392e46595a716.zip",
+                "reference": "f53f4af89aec4b85053fb59d328392e46595a716",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.1.0"
+            },
+            "type": "library",
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "GPL-2.0+"
+            ],
+            "description": "Ovidentia addon, add links to external applications",
+            "homepage": "http://www.ovidentia.org",
+            "time": "2019-02-07 11:13:34"
+        },
+        {
+            "name": "ovidentia/approbation_schema",
+            "version": "0.2.5",
+            "source": {
+                "type": "git",
+                "url": "https://bitbucket.org/cantico/approbation_schema.git",
+                "reference": "e5d06978a2da8cb0d911d7071689b2b78f20a74e"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://bitbucket.org/cantico/approbation_schema/get/e5d06978a2da8cb0d911d7071689b2b78f20a74e.zip",
+                "reference": "e5d06978a2da8cb0d911d7071689b2b78f20a74e",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.1.0"
+            },
+            "type": "library",
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "GPL-2.0+"
+            ],
+            "description": "Approbation schema management addon",
+            "homepage": "http://www.ovidentia.org",
+            "time": "2017-05-11 13:56:04"
+        },
+        {
+            "name": "ovidentia/approbnotify",
+            "version": "0.4.1",
+            "source": {
+                "type": "git",
+                "url": "https://bitbucket.org/cantico/approbnotify.git",
+                "reference": "d2754aa1c84f30ea040341c255ead79b91bc7b72"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://bitbucket.org/cantico/approbnotify/get/d2754aa1c84f30ea040341c255ead79b91bc7b72.zip",
+                "reference": "d2754aa1c84f30ea040341c255ead79b91bc7b72",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.1.0"
+            },
+            "type": "library",
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "GPL-2.0+"
+            ],
+            "description": "Ovidentia addon, display a notification on page if an approval is required",
+            "homepage": "http://www.ovidentia.org",
+            "time": "2017-02-02 11:46:32"
+        },
+        {
+            "name": "ovidentia/authldap",
+            "version": "1.0.4",
+            "source": {
+                "type": "git",
+                "url": "https://bitbucket.org/cantico/authldap.git",
+                "reference": "a19656c1a85b23c35637bcba246834dca31ba5da"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://bitbucket.org/cantico/authldap/get/a19656c1a85b23c35637bcba246834dca31ba5da.zip",
+                "reference": "a19656c1a85b23c35637bcba246834dca31ba5da",
+                "shasum": ""
+            },
+            "require": {
+                "ovidentia/liborm": ">=0.9.0",
+                "ovidentia/libtranslate": ">=1.12.0rc3.01",
+                "ovidentia/widgets": ">=1.0.89",
+                "php": ">=5.2.0"
+            },
+            "require-dev": {
+                "ovidentia/ovidentia": "dev-master"
+            },
+            "type": "library",
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "GPL-2.0+"
+            ],
+            "description": "Authentification with LDAP or AD",
+            "homepage": "https://bitbucket.org/cantico/authldap",
+            "keywords": [
+                "Authentication",
+                "ad",
+                "ldap",
+                "ovidentia",
+                "php"
+            ],
+            "time": "2018-04-16 15:35:50"
+        },
+        {
+            "name": "ovidentia/captcha",
+            "version": "0.9.3",
+            "source": {
+                "type": "git",
+                "url": "https://bitbucket.org/cantico/captcha.git",
+                "reference": "007d8605484dbc7deda510ab3a55677dd59fedcd"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://bitbucket.org/cantico/captcha/get/007d8605484dbc7deda510ab3a55677dd59fedcd.zip",
+                "reference": "007d8605484dbc7deda510ab3a55677dd59fedcd",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.1.0"
+            },
+            "type": "library",
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "GPL-2.0+"
+            ],
+            "description": "Ovidentia addon, captcha in public forms",
+            "homepage": "http://www.ovidentia.org",
+            "time": "2019-02-07 11:34:55"
+        },
+        {
+            "name": "ovidentia/editlink",
+            "version": "0.9.8",
+            "source": {
+                "type": "git",
+                "url": "https://bitbucket.org/cantico/editlinks.git",
+                "reference": "88c248265d20b9e82be51c61c3584923767f2a8f"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://bitbucket.org/cantico/editlinks/get/88c248265d20b9e82be51c61c3584923767f2a8f.zip",
+                "reference": "88c248265d20b9e82be51c61c3584923767f2a8f",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.1.0"
+            },
+            "type": "library",
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "GPL-2.0+"
+            ],
+            "description": "Ovidentia addon, add button to edit articles",
+            "homepage": "http://www.ovidentia.org",
+            "time": "2018-01-15 14:49:13"
+        },
+        {
+            "name": "ovidentia/icons_oxygen",
+            "version": "0.7.0",
+            "source": {
+                "type": "git",
+                "url": "https://bitbucket.org/cantico/icons_oxygen.git",
+                "reference": "ec76a93322618dd555b0f1173edd101ba02a86ba"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://bitbucket.org/cantico/icons_oxygen/get/ec76a93322618dd555b0f1173edd101ba02a86ba.zip",
+                "reference": "ec76a93322618dd555b0f1173edd101ba02a86ba",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.1.0"
+            },
+            "type": "library",
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "GPL-2.0+"
+            ],
+            "description": "icon package in Ovidentia addon",
+            "homepage": "http://www.ovidentia.org",
+            "time": "2017-10-04 15:33:40"
+        },
+        {
+            "name": "ovidentia/jquery",
+            "version": "1.12.4.1",
+            "source": {
+                "type": "git",
+                "url": "https://bitbucket.org/cantico/jquery.git",
+                "reference": "36d26ab1f1aa4a22d556efbe40bdd0a4c81356bd"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://bitbucket.org/cantico/jquery/get/36d26ab1f1aa4a22d556efbe40bdd0a4c81356bd.zip",
+                "reference": "36d26ab1f1aa4a22d556efbe40bdd0a4c81356bd",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.1.0"
+            },
+            "type": "library",
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "GPL-2.0+"
+            ],
+            "description": "JavaScript library packaged as Ovidentia addon",
+            "homepage": "http://www.ovidentia.org",
+            "time": "2017-02-21 10:56:05"
+        },
+        {
+            "name": "ovidentia/libckeditor",
+            "version": "2.9.0",
+            "source": {
+                "type": "git",
+                "url": "https://bitbucket.org/cantico/libckeditor.git",
+                "reference": "7798bae397c51e75c506a759903197f279d367e3"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://bitbucket.org/cantico/libckeditor/get/7798bae397c51e75c506a759903197f279d367e3.zip",
+                "reference": "7798bae397c51e75c506a759903197f279d367e3",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.1.0"
+            },
+            "type": "library",
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "GPL-2.0+"
+            ],
+            "description": "html editor packaged as an ovidentia addon",
+            "homepage": "http://ckeditor.com/",
+            "time": "2018-01-15 14:26:33"
+        },
+        {
+            "name": "ovidentia/libfilemanagement",
+            "version": "0.4.2",
+            "source": {
+                "type": "git",
+                "url": "https://bitbucket.org/cantico/libfilemanagement.git",
+                "reference": "b6d2348fd03294f50fe17c26c45503590fae61ed"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://bitbucket.org/cantico/libfilemanagement/get/b6d2348fd03294f50fe17c26c45503590fae61ed.zip",
+                "reference": "b6d2348fd03294f50fe17c26c45503590fae61ed",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.1.0"
+            },
+            "type": "library",
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "GPL-2.0+"
+            ],
+            "description": "Ovidentia addon, thumbnailer and file metadatas",
+            "homepage": "http://www.ovidentia.org",
+            "time": "2019-03-26 11:08:18"
+        },
+        {
+            "name": "ovidentia/liborm",
+            "version": "0.11.12",
+            "source": {
+                "type": "git",
+                "url": "https://bitbucket.org/cantico/liborm.git",
+                "reference": "8e574702f1c689fa1351eb72b0d292c1bf59229d"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://bitbucket.org/cantico/liborm/get/8e574702f1c689fa1351eb72b0d292c1bf59229d.zip",
+                "reference": "8e574702f1c689fa1351eb72b0d292c1bf59229d",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.1.0"
+            },
+            "require-dev": {
+                "ovidentia/librrule": "dev-master",
+                "ovidentia/ovidentia": "dev-master"
+            },
+            "type": "library",
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "GPL-2.0+"
+            ],
+            "description": "Mapping library between relational database and PHP objects (object-relational mapping)",
+            "homepage": "https://bitbucket.org/cantico/liborm",
+            "time": "2019-02-20 15:28:08"
+        },
+        {
+            "name": "ovidentia/libtimer",
+            "version": "1.1.4",
+            "source": {
+                "type": "git",
+                "url": "https://bitbucket.org/cantico/libtimer.git",
+                "reference": "09ac968be23e5d5fc791c98b9ee4fad4e2b02340"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://bitbucket.org/cantico/libtimer/get/09ac968be23e5d5fc791c98b9ee4fad4e2b02340.zip",
+                "reference": "09ac968be23e5d5fc791c98b9ee4fad4e2b02340",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.1.0"
+            },
+            "type": "library",
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "GPL-2.0+"
+            ],
+            "description": "Ovidentia addon, timer for sheduled tasks",
+            "homepage": "http://www.ovidentia.org",
+            "time": "2017-08-14 12:16:23"
+        },
+        {
+            "name": "ovidentia/libtranslate",
+            "version": "1.12.0.6",
+            "source": {
+                "type": "git",
+                "url": "https://bitbucket.org/cantico/libtranslate.git",
+                "reference": "4ae0603f429d516aaa64416a2dbe54706076d07c"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://bitbucket.org/cantico/libtranslate/get/4ae0603f429d516aaa64416a2dbe54706076d07c.zip",
+                "reference": "4ae0603f429d516aaa64416a2dbe54706076d07c",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.1.0"
+            },
+            "type": "library",
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "GPL-2.0+"
+            ],
+            "description": "Ovidentia addon, translate library",
+            "homepage": "http://www.ovidentia.org",
+            "time": "2017-02-21 15:29:36"
+        },
+        {
+            "name": "ovidentia/mailspooler",
+            "version": "0.13.6",
+            "source": {
+                "type": "git",
+                "url": "https://bitbucket.org/cantico/mailspooler.git",
+                "reference": "95f7ed0f9d4df414638540ddaa68285d3feebab8"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://bitbucket.org/cantico/mailspooler/get/95f7ed0f9d4df414638540ddaa68285d3feebab8.zip",
+                "reference": "95f7ed0f9d4df414638540ddaa68285d3feebab8",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.1.0"
+            },
+            "type": "library",
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "GPL-2.0+"
+            ],
+            "description": "Ovidentia addon, queue for failed mail dispatch",
+            "homepage": "http://www.ovidentia.org",
+            "time": "2019-02-07 11:43:33"
+        },
+        {
+            "name": "ovidentia/orgchart",
+            "version": "0.13.10",
+            "source": {
+                "type": "git",
+                "url": "https://bitbucket.org/cantico/orgchart.git",
+                "reference": "5389ab95fb321700a5b143d1eef926baaaa41e67"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://bitbucket.org/cantico/orgchart/get/5389ab95fb321700a5b143d1eef926baaaa41e67.zip",
+                "reference": "5389ab95fb321700a5b143d1eef926baaaa41e67",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.1.0"
+            },
+            "type": "library",
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "GPL-2.0+"
+            ],
+            "description": "Orgchart UI",
+            "homepage": "http://www.ovidentia.org",
+            "time": "2019-03-13 11:26:07"
+        },
+        {
+            "name": "ovidentia/ovmlportlets",
+            "version": "1.6.5",
+            "source": {
+                "type": "git",
+                "url": "https://bitbucket.org/cantico/ovmlportlets.git",
+                "reference": "3bc7cd62e0ed69391b8c7711b4017ce4901fa91e"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://bitbucket.org/cantico/ovmlportlets/get/3bc7cd62e0ed69391b8c7711b4017ce4901fa91e.zip",
+                "reference": "3bc7cd62e0ed69391b8c7711b4017ce4901fa91e",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.1.0"
+            },
+            "type": "library",
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "GPL-2.0+"
+            ],
+            "description": "Ovidentia addon, customs portlets in ovml",
+            "homepage": "http://www.ovidentia.org",
+            "time": "2018-09-28 10:44:41"
+        },
+        {
+            "name": "ovidentia/portal_summary",
+            "version": "0.2.8",
+            "source": {
+                "type": "git",
+                "url": "https://bitbucket.org/cantico/portal_summary.git",
+                "reference": "300ffcc7d8d2cfc7fc75dca56a06ff73f10032e8"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://bitbucket.org/cantico/portal_summary/get/300ffcc7d8d2cfc7fc75dca56a06ff73f10032e8.zip",
+                "reference": "300ffcc7d8d2cfc7fc75dca56a06ff73f10032e8",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.1.0"
+            },
+            "type": "library",
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "GPL-2.0+"
+            ],
+            "description": "Ovidentia addon, summary of changes in portal",
+            "homepage": "http://www.ovidentia.org",
+            "time": "2018-09-04 12:46:46"
+        },
+        {
+            "name": "ovidentia/portlets",
+            "version": "0.23.10",
+            "source": {
+                "type": "git",
+                "url": "https://bitbucket.org/cantico/portlets.git",
+                "reference": "bf438f00ab79bfc8ee8d65f1b57fbdd59388f276"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://bitbucket.org/cantico/portlets/get/bf438f00ab79bfc8ee8d65f1b57fbdd59388f276.zip",
+                "reference": "bf438f00ab79bfc8ee8d65f1b57fbdd59388f276",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.1.0"
+            },
+            "type": "library",
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "GPL-2.0+"
+            ],
+            "description": "Ovidentia addon, portlets management",
+            "homepage": "http://www.ovidentia.org",
+            "time": "2018-09-26 13:13:16"
+        },
+        {
+            "name": "ovidentia/rssfeed",
+            "version": "5.9.7",
+            "source": {
+                "type": "git",
+                "url": "https://bitbucket.org/cantico/rssfeed.git",
+                "reference": "91d2b81933ad60aef249765d9720b0a04f9180a8"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://bitbucket.org/cantico/rssfeed/get/91d2b81933ad60aef249765d9720b0a04f9180a8.zip",
+                "reference": "91d2b81933ad60aef249765d9720b0a04f9180a8",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.1.0"
+            },
+            "type": "library",
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "GPL-2.0+"
+            ],
+            "description": "Ovidentia addon, RSS and atom agregator",
+            "homepage": "http://www.ovidentia.org",
+            "time": "2018-03-14 09:11:53"
+        },
+        {
+            "name": "ovidentia/search",
+            "version": "0.6.4",
+            "source": {
+                "type": "git",
+                "url": "https://bitbucket.org/cantico/search.git",
+                "reference": "c5d0543e0df160de1220b82a19a82f6005882d4b"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://bitbucket.org/cantico/search/get/c5d0543e0df160de1220b82a19a82f6005882d4b.zip",
+                "reference": "c5d0543e0df160de1220b82a19a82f6005882d4b",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.1.0"
+            },
+            "type": "library",
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "GPL-2.0+"
+            ],
+            "description": "Ovidentia addon, search UI",
+            "homepage": "http://www.ovidentia.org",
+            "time": "2018-08-20 15:13:01"
+        },
+        {
+            "name": "ovidentia/sitemap_editor",
+            "version": "0.9.0",
+            "source": {
+                "type": "git",
+                "url": "https://bitbucket.org/cantico/sitemap_editor.git",
+                "reference": "a2c38b5fc6161eb7f1d2fd2d7113c6a6d20a9cfc"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://bitbucket.org/cantico/sitemap_editor/get/a2c38b5fc6161eb7f1d2fd2d7113c6a6d20a9cfc.zip",
+                "reference": "a2c38b5fc6161eb7f1d2fd2d7113c6a6d20a9cfc",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.1.0"
+            },
+            "type": "library",
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "GPL-2.0+"
+            ],
+            "description": "Ovidentia addon, sitemap editor",
+            "homepage": "http://www.ovidentia.org",
+            "time": "2018-09-17 15:48:40"
+        },
+        {
+            "name": "ovidentia/storeclient",
+            "version": "0.4.14",
+            "source": {
+                "type": "git",
+                "url": "https://bitbucket.org/cantico/storeclient.git",
+                "reference": "c945214b871adae597fff29b8633af0af06b2d06"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://bitbucket.org/cantico/storeclient/get/c945214b871adae597fff29b8633af0af06b2d06.zip",
+                "reference": "c945214b871adae597fff29b8633af0af06b2d06",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.1.0"
+            },
+            "type": "library",
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "GPL-2.0+"
+            ],
+            "description": "Install ovidentia addons over HTTP",
+            "homepage": "http://www.ovidentia.org",
+            "time": "2018-08-10 12:08:38"
+        },
+        {
+            "name": "ovidentia/theme_ovidentia_sw",
+            "version": "1.6.3",
+            "source": {
+                "type": "git",
+                "url": "https://bitbucket.org/cantico/theme_ovidentia_sw.git",
+                "reference": "e572cd3938c6abb5d83069f35f312859f70c4797"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://bitbucket.org/cantico/theme_ovidentia_sw/get/e572cd3938c6abb5d83069f35f312859f70c4797.zip",
+                "reference": "e572cd3938c6abb5d83069f35f312859f70c4797",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.1.0"
+            },
+            "type": "library",
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "GPL-2.0+"
+            ],
+            "description": "Ovidentia addon, default skin",
+            "homepage": "http://www.ovidentia.org",
+            "time": "2016-11-17 17:31:05"
+        },
+        {
+            "name": "ovidentia/widgets",
+            "version": "dev-master",
+            "source": {
+                "type": "git",
+                "url": "https://bitbucket.org/cantico/widgets.git",
+                "reference": "b5fe033a43a8304213de98e5dbed336c39945d50"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://bitbucket.org/cantico/widgets/get/b5fe033a43a8304213de98e5dbed336c39945d50.zip",
+                "reference": "b5fe033a43a8304213de98e5dbed336c39945d50",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.2.0"
+            },
+            "require-dev": {
+                "ovidentia/liborm": ">=0.11.7",
+                "ovidentia/ovidentia": "dev-master"
+            },
+            "type": "library",
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "GPL-2.0+"
+            ],
+            "description": "Widgets library.",
+            "homepage": "https://bitbucket.org/cantico/widgets",
+            "keywords": [
+                "library",
+                "ovidentia",
+                "php"
+            ],
+            "time": "2019-05-28 14:24:09"
+        }
+    ],
+    "packages-dev": [],
+    "aliases": [],
+    "minimum-stability": "dev",
+    "stability-flags": {
+        "ovidentia/widgets": 20
+    },
+    "prefer-stable": true,
+    "prefer-lowest": false,
+    "platform": {
+        "php": ">=5.3.0"
+    },
+    "platform-dev": []
+}

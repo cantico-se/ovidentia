@@ -2,3 +2,10 @@
 /.project
 /.buildpath
 /.externalToolBuilders/
+/.idea/
+/functionalities/
+/images/addons/
+/install.old
+/lang/*.dat
+/upload/
+/vendor/
