@@ -20,10 +20,10 @@
  * along with this program; if not, write to the Free Software			*
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307,*
  * USA.																	*
-************************************************************************/
-$babDBHost = "mysql"; /* MySql database server */
-$babDBLogin = "root"; /* MySql database login */
-$babDBPasswd = "secret"; /* MySql database password */
+ ************************************************************************/
+$babDBHost = "localhost"; /* MySql database server */
+$babDBLogin = ""; /* MySql database login */
+$babDBPasswd = ""; /* MySql database password */
 $babDBName ="ovidentia"; /* MySql database name */
 $babInstallPath = "ovidentia/"; /* relatif path to ovidentia distribution */
 $babSiteName = "Ovidentia"; /* your site name */
@@ -36,8 +36,8 @@ $babFileNameTranslation = array('\\' => '_', '/' => '_', ':' => '_', '*' => '_',
  * To show the errors PHP on the site, remove comments on the following lines.
  * It is advised not to show the errors in production.
  */
-ini_set('display_errors', 1);
-error_reporting(E_ALL & ~E_STRICT & ~E_WARNING & ~E_DEPRECATED & ~E_NOTICE);
+ini_set('display_errors', 0);
+error_reporting(E_ALL & ~E_STRICT);
 
 /**
  * Allow administrators to upload addons and versions or download database
